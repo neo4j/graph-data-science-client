@@ -7,48 +7,48 @@ gds = GraphDataScience(RUNNER)
 GRAPH_NAME = "g"
 
 
-def test_pageRank_mutate():
+def test_algoName_mutate():
     graph = gds.graph.create(GRAPH_NAME, "Node", "REL")
 
-    gds.pageRank.mutate(graph, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
+    gds.algoName.mutate(graph, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
 
-    assert RUNNER.last_query() == "CALL gds.pageRank.mutate($graph_name, $config)"
+    assert RUNNER.last_query() == "CALL gds.algoName.mutate($graph_name, $config)"
     assert RUNNER.last_params() == {
         "graph_name": GRAPH_NAME,
         "config": {"mutateProperty": "rank", "dampingFactor": 0.2, "tolerance": 0.3},
     }
 
 
-def test_pageRank_stats():
+def test_algoName_stats():
     graph = gds.graph.create(GRAPH_NAME, "Node", "REL")
 
-    gds.pageRank.stats(graph, dampingFactor=0.2, tolerance=0.3)
+    gds.algoName.stats(graph, dampingFactor=0.2, tolerance=0.3)
 
-    assert RUNNER.last_query() == "CALL gds.pageRank.stats($graph_name, $config)"
+    assert RUNNER.last_query() == "CALL gds.algoName.stats($graph_name, $config)"
     assert RUNNER.last_params() == {
         "graph_name": GRAPH_NAME,
         "config": {"dampingFactor": 0.2, "tolerance": 0.3},
     }
 
 
-def test_pageRank_stream():
+def test_algoName_stream():
     graph = gds.graph.create(GRAPH_NAME, "Node", "REL")
 
-    gds.pageRank.stream(graph, dampingFactor=0.2, tolerance=0.3)
+    gds.algoName.stream(graph, dampingFactor=0.2, tolerance=0.3)
 
-    assert RUNNER.last_query() == "CALL gds.pageRank.stream($graph_name, $config)"
+    assert RUNNER.last_query() == "CALL gds.algoName.stream($graph_name, $config)"
     assert RUNNER.last_params() == {
         "graph_name": GRAPH_NAME,
         "config": {"dampingFactor": 0.2, "tolerance": 0.3},
     }
 
 
-def test_pageRank_write():
+def test_algoName_write():
     graph = gds.graph.create(GRAPH_NAME, "Node", "REL")
 
-    gds.pageRank.write(graph, writeProperty="rank", dampingFactor=0.2, tolerance=0.3)
+    gds.algoName.write(graph, writeProperty="rank", dampingFactor=0.2, tolerance=0.3)
 
-    assert RUNNER.last_query() == "CALL gds.pageRank.write($graph_name, $config)"
+    assert RUNNER.last_query() == "CALL gds.algoName.write($graph_name, $config)"
     assert RUNNER.last_params() == {
         "graph_name": GRAPH_NAME,
         "config": {"writeProperty": "rank", "dampingFactor": 0.2, "tolerance": 0.3},
