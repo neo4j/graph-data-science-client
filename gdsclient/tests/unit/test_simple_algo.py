@@ -15,5 +15,5 @@ def test_pageRank_mutate():
     assert RUNNER.last_query() == "CALL gds.pageRank.mutate($graph_name, $config)"
     assert RUNNER.last_params() == {
         "graph_name": GRAPH_NAME,
-        "config": {"dampingFactor": 0.2, "tolerance": 0.3},
+        "config": {"mutateProperty": "rank", "dampingFactor": 0.2, "tolerance": 0.3},
     }
