@@ -1,3 +1,3 @@
-from .graphproc import GDS
+from .graphproc import GDS, QueryRunner
 
-__all__ = [GDS]
+__all__ = [GDS, QueryRunner]
