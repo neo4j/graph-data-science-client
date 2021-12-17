@@ -19,6 +19,6 @@ class CollectingQueryRunner(QueryRunner):
         self.queries = []
         self.params = []
 
-    def run_query(self, query, query_params):
+    def run_query(self, query, params={}):
         self.queries.append(query)
-        self.params.append(query_params)
+        self.params.append(params)
