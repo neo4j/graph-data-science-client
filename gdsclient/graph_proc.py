@@ -1,12 +1,3 @@
-class GDS:
-    def __init__(self, query_runner):
-        self.graph_proc = GraphProc(query_runner)
-
-    @property
-    def graph(self):
-        return self.graph_proc
-
-
 class GraphProc:
     def __init__(self, query_runner):
         self.query_runner = query_runner
@@ -24,7 +15,7 @@ class GraphProc:
 
 
 class Graph:
-    def __init__(self, graph_name, node_projection, relationship_projection):
-        self.graph_name = graph_name
+    def __init__(self, name, node_projection, relationship_projection):
+        self.name = name
         self.node_projection = node_projection
         self.relationship_projection = relationship_projection

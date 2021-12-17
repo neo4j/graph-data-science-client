@@ -1,4 +1,4 @@
-from gdsclient import GDS, Neo4jQueryRunner
+from gdsclient import GraphDataScience, Neo4jQueryRunner
 from neo4j import GraphDatabase
 
 
@@ -14,7 +14,7 @@ def setup_module():
 
 def test_create_graph_native():
     runner = Neo4jQueryRunner(driver)
-    gds = GDS(runner)
+    gds = GraphDataScience(runner)
     gds.graph.create(GRAPH_NAME, "Node", "REL")
     runner.run_query(f"CALL gds.graph.exists('{GRAPH_NAME}') YIELD exists")
 
