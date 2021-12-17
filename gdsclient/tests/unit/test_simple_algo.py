@@ -1,8 +1,8 @@
 from gdsclient import GraphDataScience
-from . import TestQueryRunner
+from . import CollectingQueryRunner
 
 
-RUNNER = TestQueryRunner()
+RUNNER = CollectingQueryRunner()
 gds = GraphDataScience(RUNNER)
 GRAPH_NAME = "g"
 

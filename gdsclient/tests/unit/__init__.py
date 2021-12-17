@@ -1,7 +1,7 @@
 from gdsclient import QueryRunner
 
 
-class TestQueryRunner(QueryRunner):
+class CollectingQueryRunner(QueryRunner):
     def __init__(self):
         self.queries = []
         self.params = []

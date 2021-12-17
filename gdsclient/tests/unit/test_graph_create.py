@@ -1,9 +1,9 @@
 from gdsclient import GraphDataScience
-from . import TestQueryRunner
+from . import CollectingQueryRunner
 
 
 def test_create_graph_native():
-    runner = TestQueryRunner()
+    runner = CollectingQueryRunner()
     gds = GraphDataScience(runner)
     graph = gds.graph.create("g", "A", "R")
     assert graph
