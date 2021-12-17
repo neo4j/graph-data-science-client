@@ -1,4 +1,5 @@
-from gdsclient import GDS, QueryRunner
+from gdsclient import GDS
+from . import CollectingQueryRunner
 
 
 def test_create_graph_native():
@@ -12,13 +13,3 @@ def test_create_graph_native():
     assert runner.params == [
         {"graph_name": "g", "node_projection": "A", "relationship_projection": "R"}
     ]
-
-
-class CollectingQueryRunner(QueryRunner):
-    def __init__(self):
-        self.queries = []
-        self.params = []
-
-    def run_query(self, query, params={}):
-        self.queries.append(query)
-        self.params.append(params)
