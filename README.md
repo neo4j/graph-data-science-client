@@ -8,3 +8,10 @@ This repo hosts the sources for `gdsclient`, a Python wrapper API for operating 
 ```bash
 pip3 install .
 ```
+
+## Acknowledgements
+
+This work has been inspired by the great work done in the following libraries:
+
+* [pygds](https://github.com/stellasia/pygds) by stellasia
+* [gds-python](https://github.com/moxious/gds-python) by moxious
