@@ -3,7 +3,7 @@ class AlgoProcRunner:
         self.query_runner = query_runner
         self.proc_name = proc_name
 
-    def __call__(self, graph, **config):
+    def _run_procedure(self, graph, config):
         query = f"CALL {self.proc_name}($graph_name, $config)"
 
         params = {}
@@ -11,3 +11,10 @@ class AlgoProcRunner:
         params["config"] = config
 
         return self.query_runner.run_query(query, params)
+
+    def __call__(self, graph, **config):
+        return self._run_procedure(graph, config)
+
+    def estimate(self, graph, **config):
+        self.proc_name += "." + "estimate"
+        return self._run_procedure(graph, config)

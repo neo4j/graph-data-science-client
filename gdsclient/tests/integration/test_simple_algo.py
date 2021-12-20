@@ -26,7 +26,7 @@ def run_around_tests():
             """
         )
 
-    yield
+    yield  # Test runs here
 
     # Runs after each test
     with DRIVER.session() as session:
@@ -49,12 +49,30 @@ def test_pageRank_mutate():
     assert list(props) == ["rank"]
 
 
+def test_pageRank_mutate_estimate():
+    graph = gds.graph.create(GRAPH_NAME, "*", "*")
+
+    result = gds.pageRank.mutate.estimate(
+        graph, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
+    )
+
+    assert result[0]["requiredMemory"]
+
+
 def test_wcc_stats():
     graph = gds.graph.create(GRAPH_NAME, "*", "*")
 
     result = gds.wcc.stats(graph)
 
     assert result[0]["componentCount"] == 1
+
+
+def test_wcc_stats_estimate():
+    graph = gds.graph.create(GRAPH_NAME, "*", "*")
+
+    result = gds.wcc.stats.estimate(graph)
+
+    assert result[0]["requiredMemory"]
 
 
 def test_nodeSimilarity_stream():
@@ -64,6 +82,14 @@ def test_nodeSimilarity_stream():
 
     assert len(result) == 2
     assert result[0]["similarity"] == 0.5
+
+
+def test_nodeSimilarity_stream_estimate():
+    graph = gds.graph.create(GRAPH_NAME, "*", "*")
+
+    result = gds.nodeSimilarity.stream.estimate(graph, similarityCutoff=0)
+
+    assert result[0]["requiredMemory"]
 
 
 def test_fastRP_write():
@@ -81,3 +107,13 @@ def test_fastRP_write():
     )
     assert len(embeddings) == 3
     assert embeddings[0]["embedding"][0] != 0
+
+
+def test_fastRP_write_estimate():
+    graph = gds.graph.create(GRAPH_NAME, "*", "*")
+
+    result = gds.fastRP.write.estimate(
+        graph, writeProperty="embedding", embeddingDimension=4, randomSeed=42
+    )
+
+    assert result[0]["requiredMemory"]
