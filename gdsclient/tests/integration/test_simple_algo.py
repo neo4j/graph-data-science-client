@@ -1,6 +1,7 @@
-from pytest import fixture
-from gdsclient import GraphDataScience, Neo4jQueryRunner
 from neo4j import GraphDatabase
+from pytest import fixture
+
+from gdsclient import GraphDataScience, Neo4jQueryRunner
 
 
 URI = "bolt://localhost:7687"

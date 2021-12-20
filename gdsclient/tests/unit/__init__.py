@@ -1,3 +1,4 @@
+from neo4j.work.result import Result
 from gdsclient import QueryRunner
 
 
