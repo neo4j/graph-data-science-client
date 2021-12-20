@@ -20,7 +20,28 @@ pip3 install .
 
 ## Documentation
 
-Refer to the [GDS Manual](https://neo4j.com/docs/graph-data-science/current/).
+A minimal example of using `gdsclient` to connect to a Neo4j database and run GDS algorithms:
+
+```python
+from neo4j import GraphDatabase
+from gdsclient import Neo4jQueryRunner, GraphDataScience
+
+# Set up driver and gds module
+URI = "bolt://localhost:7687" # Override according to your setup
+driver = GraphDatabase.driver(URI) # You might also have auth set up in your db
+runner = Neo4jQueryRunner(driver)
+gds = GraphDataScience(runner)
+
+# Project your graph
+graph = gds.graph.create("graph", "*", "*")
+
+# Run the PageRank algorithm with custom configuration
+gds.pageRank.write(graph, tolerance=0.5, writeProperty="pagerank")
+```
+
+For extensive documentation of all operations supported by GDS, please refer to the [GDS Manual](https://neo4j.com/docs/graph-data-science/current/).
+
+A full end-to-end example of using KNN and FastRP with multiple execution modes in a Jupyter ready-to-run notebook can be found in the `examples` directory.
 
 
 ## Acknowledgements
