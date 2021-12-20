@@ -52,6 +52,11 @@ This work has been inspired by the great work done in the following libraries:
 * [gds-python](https://github.com/moxious/gds-python) by moxious
 
 
+## Contributing
+
+The `gdsclient` project does not yet have contribution guidelines.
+
+
 ## License
 
 See LICENSE file.
