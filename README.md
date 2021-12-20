@@ -11,6 +11,8 @@ Happy coding!
 
 ## Installation
 
+To build and install `gdsclient` from this repository, simply run the following command:
+
 ```bash
 pip3 install .
 ```
