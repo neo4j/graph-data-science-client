@@ -41,8 +41,9 @@ gds.pageRank.write(graph, tolerance=0.5, writeProperty="pagerank")
 
 For extensive documentation of all operations supported by GDS, please refer to the [GDS Manual](https://neo4j.com/docs/graph-data-science/current/).
 
-A full end-to-end example of using KNN and FastRP with multiple execution modes in a Jupyter ready-to-run notebook can be found in the `examples` directory.
+Extensive end-to-end examples in Jupyter ready-to-run notebooks can be found in the `examples` directory:
 
+* [Computing similarities with KNN based on FastRP embeddings](examples/fastrp-and-knn.ipynb)
 
 ## Acknowledgements
 
