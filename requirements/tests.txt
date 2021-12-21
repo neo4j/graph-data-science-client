@@ -1,2 +1,4 @@
-pytest
+black
+black[jupyter]
 flake8
+pytest
