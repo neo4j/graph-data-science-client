@@ -3,7 +3,6 @@ from pytest import fixture
 
 from gdsclient import GraphDataScience, Neo4jQueryRunner
 
-
 URI = "bolt://localhost:7687"
 GRAPH_NAME = "g"
 DRIVER = GraphDatabase.driver(URI)
@@ -107,7 +106,9 @@ def test_fastRP_write():
         """
     )
     assert len(embeddings) == 3
-    assert embeddings[0]["embedding"][0] != 0
+    assert len(embeddings[0]["embedding"]) == 4
+    assert len(embeddings[1]["embedding"]) == 4
+    assert len(embeddings[2]["embedding"]) == 4
 
 
 def test_fastRP_write_estimate():
