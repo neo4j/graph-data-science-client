@@ -62,5 +62,5 @@ The `gdsclient` project does not yet have contribution guidelines.
 
 ## License
 
-See LICENSE file.
+`gdsclient` is licensed under the Apache Software License version 2.0.
 All content is copyright © Neo4j Sweden AB.
