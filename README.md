@@ -1,5 +1,7 @@
 # gdsclient
 
+**NOTE:** This is a work in progress and many GDS features are known to be missing or not working properly.
+
 This repo hosts the sources for `gdsclient`, a Python wrapper API for operating and working with the [Neo4j Graph Data Science (GDS) library](https://github.com/neo4j/graph-data-science).
 gdsclient enables users to write pure Python code to project graphs, run algorithms, and define and use machine learning pipelines in GDS.
 The API is designed to mimic the GDS Cypher procedure API, but in Python code.
