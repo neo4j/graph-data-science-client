@@ -3,7 +3,6 @@ from pytest import fixture
 
 from gdsclient import GraphDataScience, Neo4jQueryRunner
 
-
 URI = "bolt://localhost:7687"
 GRAPH_NAME = "g"
 DRIVER = GraphDatabase.driver(URI)

@@ -1,6 +1,6 @@
 from gdsclient import GraphDataScience
-from . import CollectingQueryRunner
 
+from . import CollectingQueryRunner
 
 RUNNER = CollectingQueryRunner()
 gds = GraphDataScience(RUNNER)

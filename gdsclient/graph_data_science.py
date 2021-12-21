@@ -1,5 +1,5 @@
-from .graph import GraphProcBuilder
 from .algo_proc_builder import AlgoProcBuilder
+from .graph import GraphProcBuilder
 
 
 class GraphDataScience:
