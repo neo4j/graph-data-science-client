@@ -5,33 +5,31 @@ from gdsclient import GraphDataScience, Neo4jQueryRunner
 
 URI = "bolt://localhost:7687"
 GRAPH_NAME = "g"
-DRIVER = GraphDatabase.driver(URI)
-RUNNER = Neo4jQueryRunner(DRIVER)
-gds = GraphDataScience(RUNNER)
+driver = GraphDatabase.driver(URI)
+runner = Neo4jQueryRunner(driver)
+gds = GraphDataScience(runner)
 
 
 @fixture(autouse=True)
 def run_around_tests():
     # Runs before each test
-    with DRIVER.session() as session:
-        session.run(
-            """
-            CREATE
-            (a: Node),
-            (b: Node),
-            (c: Node),
-            (a)-[:REL]->(b),
-            (a)-[:REL]->(c),
-            (b)-[:REL]->(c)
-            """
-        )
+    runner.run_query(
+        """
+        CREATE
+        (a: Node),
+        (b: Node),
+        (c: Node),
+        (a)-[:REL]->(b),
+        (a)-[:REL]->(c),
+        (b)-[:REL]->(c)
+        """
+    )
 
     yield  # Test runs here
 
     # Runs after each test
-    with DRIVER.session() as session:
-        session.run("MATCH (n) DETACH DELETE n")
-        session.run(f"CALL gds.graph.drop('{GRAPH_NAME}')")
+    runner.run_query("MATCH (n) DETACH DELETE n")
+    runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}')")
 
 
 def test_pageRank_mutate():
@@ -39,7 +37,7 @@ def test_pageRank_mutate():
 
     gds.pageRank.mutate(graph, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
 
-    props = RUNNER.run_query(
+    props = runner.run_query(
         f"""
         CALL gds.graph.list('{GRAPH_NAME}')
         YIELD schema
@@ -99,7 +97,7 @@ def test_fastRP_write():
         graph, writeProperty="embedding", embeddingDimension=4, randomSeed=42
     )
 
-    embeddings = RUNNER.run_query(
+    embeddings = runner.run_query(
         """
         MATCH(n:Node)
         RETURN n.embedding as embedding
@@ -119,3 +117,7 @@ def test_fastRP_write_estimate():
     )
 
     assert result[0]["requiredMemory"]
+
+
+def teardown_module():
+    driver.close()
