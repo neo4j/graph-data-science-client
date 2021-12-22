@@ -5,9 +5,16 @@ from gdsclient import GraphDataScience, Neo4jQueryRunner
 
 URI = "bolt://localhost:7687"
 GRAPH_NAME = "g"
-driver = GraphDatabase.driver(URI)
-runner = Neo4jQueryRunner(driver)
-gds = GraphDataScience(runner)
+
+
+def setup_module():
+    global driver
+    global runner
+    global gds
+
+    driver = GraphDatabase.driver(URI)
+    runner = Neo4jQueryRunner(driver)
+    gds = GraphDataScience(runner)
 
 
 @fixture(autouse=True)

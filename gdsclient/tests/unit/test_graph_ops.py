@@ -2,8 +2,13 @@ from gdsclient import GraphDataScience
 
 from . import CollectingQueryRunner
 
-runner = CollectingQueryRunner()
-gds = GraphDataScience(runner)
+
+def setup_module():
+    global runner
+    global gds
+
+    runner = CollectingQueryRunner()
+    gds = GraphDataScience(runner)
 
 
 def test_project_graph_native():

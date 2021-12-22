@@ -10,6 +10,13 @@ gds = GraphDataScience(runner)
 
 
 def setup_module():
+    global driver
+    global graph
+    global runner
+
+    driver = GraphDatabase.driver(URI)
+    runner = Neo4jQueryRunner(driver)
+
     runner.run_query(
         """
         CREATE
@@ -21,7 +28,8 @@ def setup_module():
         (b)-[:REL {z: 7.9}]->(c)
         """
     )
-    global graph
+
+    gds = GraphDataScience(runner)
     graph = gds.graph.project(
         GRAPH_NAME, {"Node": {"properties": "x"}}, {"REL": {"properties": ["y", "z"]}}
     )
