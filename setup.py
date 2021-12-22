@@ -14,7 +14,7 @@ setuptools.setup(
     description="Python bindings for the Neo4j Graph Data Science library",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    license='Apache License 2.0',
+    license="Apache License 2.0",
     url="https://github.com/neo4j/graph-data-science",
     classifiers=[
         "Programming Language :: Python :: 3",
