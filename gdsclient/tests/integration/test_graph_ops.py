@@ -102,5 +102,15 @@ def test_graph_exists():
     assert result[0]["exists"]
 
 
+def test_graph_drop():
+    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+
+    result = gds.graph.drop(graph, True)
+    assert result[0]["graphName"] == GRAPH_NAME
+
+    result = gds.graph.drop(graph, False)
+    assert result == []
+
+
 def teardown_module():
     driver.close()

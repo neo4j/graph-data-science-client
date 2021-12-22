@@ -107,3 +107,31 @@ def test_graph_exists():
 
     assert runner.last_query() == "CALL gds.graph.exists($graph_name)"
     assert runner.last_params() == {"graph_name": graph.name}
+
+
+def test_graph_drop():
+    graph = gds.graph.project("g", "*", "*")
+    gds.graph.drop(graph, True, "dummy")
+
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.drop($graph_name, $fail_if_missing, $db_name)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "fail_if_missing": True,
+        "db_name": "dummy",
+    }
+
+    gds.graph.drop(graph, True, "dummy", "veselin")
+
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.drop($graph_name, $fail_if_missing, $db_name, $username)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "fail_if_missing": True,
+        "db_name": "dummy",
+        "username": "veselin",
+    }
