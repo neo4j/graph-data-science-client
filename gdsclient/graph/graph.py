@@ -37,3 +37,6 @@ class Graph:
 
     def degree_distribution(self):
         return self._graph_info()["degreeDistribution"]
+
+    def density(self):
+        return self._graph_info()["density"]
