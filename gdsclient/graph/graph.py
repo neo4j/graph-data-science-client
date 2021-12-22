@@ -7,9 +7,14 @@ class Graph:
         return self._name
 
     def _graph_info(self):
-        return self._query_runner.run_query(
+        info = self._query_runner.run_query(
             "CALL gds.graph.list($graph_name)", {"graph_name": self._name}
-        )[0]
+        )
+
+        if len(info) == 0:
+            raise ValueError(f"There is no projected graph named '{self.name()}'")
+
+        return info[0]
 
     def node_count(self):
         return self._graph_info()["nodeCount"]
@@ -43,3 +48,6 @@ class Graph:
 
     def memory_usage(self):
         return self._graph_info()["memoryUsage"]
+
+    def size_in_bytes(self):
+        return self._graph_info()["sizeInBytes"]

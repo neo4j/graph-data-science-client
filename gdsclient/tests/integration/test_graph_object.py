@@ -53,6 +53,10 @@ def test_graph_memory_usage():
     assert graph.memory_usage()
 
 
+def test_graph_size_in_bytes():
+    assert graph.size_in_bytes() > 0
+
+
 def teardown_module():
     runner.run_query("MATCH (n) DETACH DELETE n")
     runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
