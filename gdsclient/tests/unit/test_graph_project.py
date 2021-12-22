@@ -64,3 +64,23 @@ def test_project_graph_cypher_estimate():
         "node_spec": "RETURN 0 as id",
         "relationship_spec": "RETURN 0 as source, 0 as target",
     }
+
+
+def test_project_subgraph():
+    from_graph = gds.graph.project("g", "*", "*")
+    gds.beta.graph.project.subgraph(
+        "s", from_graph, {"Node": {}}, {"REL": {}}, concurrency=2
+    )
+
+    assert (
+        runner.last_query()
+        == "CALL "
+        + "gds.beta.graph.project.subgraph($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "s",
+        "from_graph_name": "g",
+        "node_filter": {"Node": {}},
+        "relationship_filter": {"REL": {}},
+        "config": {"concurrency": 2},
+    }
