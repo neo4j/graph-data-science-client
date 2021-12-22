@@ -34,3 +34,6 @@ class Graph:
             )
 
         return list(types_to_props[type].keys())
+
+    def degree_distribution(self):
+        return self._graph_info()["degreeDistribution"]

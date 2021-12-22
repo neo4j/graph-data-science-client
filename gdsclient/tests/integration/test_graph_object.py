@@ -41,6 +41,10 @@ def test_graph_relationship_properties():
     assert graph.relationship_properties("REL") == ["y", "z"]
 
 
+def test_graph_degree_distribution():
+    assert graph.degree_distribution()["mean"] == 2.0
+
+
 def teardown_module():
     runner.run_query("MATCH (n) DETACH DELETE n")
     runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
