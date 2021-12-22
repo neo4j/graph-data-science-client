@@ -16,9 +16,9 @@ def run_around_tests():
     runner.run_query(
         """
         CREATE
-        (a: Node),
-        (b: Node),
-        (c: Node),
+        (a: Node {x: 1}),
+        (b: Node {x: 2}),
+        (c: Node {x: 3}),
         (a)-[:REL]->(b),
         (a)-[:REL]->(c),
         (b)-[:REL]->(c)
@@ -34,7 +34,7 @@ def run_around_tests():
 
 def test_project_graph_native():
     graph = gds.graph.project(GRAPH_NAME, "*", "*")
-    assert graph
+    assert graph.name == GRAPH_NAME
 
     result = runner.run_query(f"CALL gds.graph.exists('{GRAPH_NAME}') YIELD exists")
     assert result[0]["exists"]
@@ -52,7 +52,7 @@ def test_project_graph_cypher():
         "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
     )
     graph = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
-    assert graph
+    assert graph.name == GRAPH_NAME
 
     result = runner.run_query(f"CALL gds.graph.exists('{GRAPH_NAME}') YIELD exists")
     assert result[0]["exists"]
@@ -66,6 +66,33 @@ def test_project_graph_cypher_estimate():
     result = gds.graph.project.cypher.estimate(node_query, relationship_query)
 
     assert result[0]["requiredMemory"]
+
+
+def test_project_subgraph():
+    from_graph = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    subgraph = gds.beta.graph.project.subgraph(
+        "s", from_graph, "n.x > 1", "*", concurrency=2
+    )
+
+    assert subgraph.name == "s"
+
+    result = gds.graph.list(subgraph)
+    assert result[0]["nodeCount"] == 2
+
+    runner.run_query(f"CALL gds.graph.drop('{subgraph.name}')")
+
+
+def test_graph_list():
+    result = gds.graph.list()
+    assert len(result) == 0
+
+    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    result = gds.graph.list()
+    assert len(result) == 1
+
+    result = gds.graph.list(graph)
+    assert result[0]["graphName"] == GRAPH_NAME
 
 
 def teardown_module():
