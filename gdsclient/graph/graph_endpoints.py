@@ -44,3 +44,12 @@ class GraphEndpoints:
             params = {}
 
         return self._query_runner.run_query(query, params)
+
+    def export(self, graph, **config):
+        self._namespace += ".export"
+
+        query = f"CALL {self._namespace}($graph_name, $config)"
+
+        params = {"graph_name": graph.name, "config": config}
+
+        return self._query_runner.run_query(query, params)

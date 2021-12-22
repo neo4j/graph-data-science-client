@@ -135,3 +135,14 @@ def test_graph_drop():
         "db_name": "dummy",
         "username": "veselin",
     }
+
+
+def test_graph_export():
+    graph = gds.graph.project("g", "*", "*")
+    gds.graph.export(graph, dbName="db", batchSize=10)
+
+    assert runner.last_query() == "CALL gds.graph.export($graph_name, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "config": {"dbName": "db", "batchSize": 10},
+    }
