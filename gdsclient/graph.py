@@ -1,4 +1,4 @@
-class GraphProcBuilder:
+class GraphEndpoints:
     def __init__(self, query_runner):
         self.query_runner = query_runner
 

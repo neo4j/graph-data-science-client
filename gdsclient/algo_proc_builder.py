@@ -1,8 +1,8 @@
 from .algo_proc_runner import AlgoProcRunner
 
 
-class AlgoProcBuilder:
-    def __init__(self, query_runner, namespace="gds"):
+class AlgoEndpoints:
+    def __init__(self, query_runner, namespace):
         self.query_runner = query_runner
         self.namespace = namespace
 
@@ -21,7 +21,3 @@ class AlgoProcBuilder:
     @property
     def write(self):
         return AlgoProcRunner(self.query_runner, self.namespace + ".write")
-
-    def __getattr__(self, attr):
-        namespace = ".".join([self.namespace, attr])
-        return AlgoProcBuilder(self.query_runner, namespace)
