@@ -16,7 +16,7 @@ class GraphProjectRunner:
             },
         )
 
-        return Graph(graph_name)
+        return Graph(graph_name, self._query_runner)
 
     def estimate(self, node_spec, relationship_spec):
         self._namespace += ".estimate"
@@ -49,4 +49,4 @@ class GraphProjectRunner:
             },
         )
 
-        return Graph(graph_name)
+        return Graph(graph_name, self._query_runner)
