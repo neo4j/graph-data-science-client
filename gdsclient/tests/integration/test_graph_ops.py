@@ -77,6 +77,9 @@ def test_project_subgraph():
 
     assert subgraph.name == "s"
 
+    result = gds.graph.list(subgraph)
+    assert result[0]["nodeCount"] == 2
+
     runner.run_query(f"CALL gds.graph.drop('{subgraph.name}')")
 
 
