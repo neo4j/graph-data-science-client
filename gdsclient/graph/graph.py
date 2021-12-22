@@ -13,3 +13,6 @@ class Graph:
 
     def node_count(self):
         return self._graph_info()["nodeCount"]
+
+    def relationship_count(self):
+        return self._graph_info()["relationshipCount"]
