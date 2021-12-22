@@ -7,7 +7,7 @@ class AlgoProcRunner:
         query = f"CALL {self._proc_name}($graph_name, $config)"
 
         params = {}
-        params["graph_name"] = graph.name
+        params["graph_name"] = graph.name()
         params["config"] = config
 
         return self._query_runner.run_query(query, params)

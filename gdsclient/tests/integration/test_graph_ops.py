@@ -34,7 +34,7 @@ def run_around_tests():
 
 def test_project_graph_native():
     graph = gds.graph.project(GRAPH_NAME, "*", "*")
-    assert graph.name == GRAPH_NAME
+    assert graph.name() == GRAPH_NAME
 
     result = gds.graph.exists(graph)
     assert result[0]["exists"]
@@ -52,7 +52,7 @@ def test_project_graph_cypher():
         "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
     )
     graph = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
-    assert graph.name == GRAPH_NAME
+    assert graph.name() == GRAPH_NAME
 
     result = gds.graph.exists(graph)
     assert result[0]["exists"]
@@ -75,12 +75,12 @@ def test_project_subgraph():
         "s", from_graph, "n.x > 1", "*", concurrency=2
     )
 
-    assert subgraph.name == "s"
+    assert subgraph.name() == "s"
 
     result = gds.graph.list(subgraph)
     assert result[0]["nodeCount"] == 2
 
-    runner.run_query(f"CALL gds.graph.drop('{subgraph.name}')")
+    runner.run_query(f"CALL gds.graph.drop('{subgraph.name()}')")
 
 
 def test_graph_list():

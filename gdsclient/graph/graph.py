@@ -1,3 +1,6 @@
 class Graph:
     def __init__(self, name):
-        self.name = name
+        self._name = name
+
+    def name(self):
+        return self._name

@@ -42,7 +42,7 @@ class GraphProjectRunner:
             f"CALL {self._namespace}($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)",
             {
                 "graph_name": graph_name,
-                "from_graph_name": from_graph.name,
+                "from_graph_name": from_graph.name(),
                 "node_filter": node_filter,
                 "relationship_filter": relationship_filter,
                 "config": config,
