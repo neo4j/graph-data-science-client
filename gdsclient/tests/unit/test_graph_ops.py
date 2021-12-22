@@ -8,7 +8,7 @@ gds = GraphDataScience(runner)
 
 def test_project_graph_native():
     graph = gds.graph.project("g", "A", "R")
-    assert graph
+    assert graph.name == "g"
 
     assert (
         runner.last_query()
@@ -38,7 +38,7 @@ def test_project_graph_cypher():
     graph = gds.graph.project.cypher(
         "g", "RETURN 0 as id", "RETURN 0 as source, 0 as target"
     )
-    assert graph
+    assert graph.name == "g"
 
     assert (
         runner.last_query()
@@ -84,3 +84,17 @@ def test_project_subgraph():
         "relationship_filter": {"REL": {}},
         "config": {"concurrency": 2},
     }
+
+
+def test_graph_list():
+    gds.graph.list()
+
+    assert runner.last_query() == "CALL gds.graph.list()"
+    assert runner.last_params() == {}
+
+    graph = gds.graph.project("g", "A", "R")
+
+    gds.graph.list(graph)
+
+    assert runner.last_query() == "CALL gds.graph.list($graph_name)"
+    assert runner.last_params() == {"graph_name": graph.name}
