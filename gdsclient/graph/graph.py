@@ -40,3 +40,6 @@ class Graph:
 
     def density(self):
         return self._graph_info()["density"]
+
+    def memory_usage(self):
+        return self._graph_info()["memoryUsage"]

@@ -49,6 +49,10 @@ def test_graph_density():
     assert graph.density() == 0.5
 
 
+def test_graph_memory_usage():
+    assert graph.memory_usage()
+
+
 def teardown_module():
     runner.run_query("MATCH (n) DETACH DELETE n")
     runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
