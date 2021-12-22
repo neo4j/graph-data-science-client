@@ -1,4 +1,4 @@
-from neo4j import GraphDatabase, DEFAULT_DATABASE
+from neo4j import DEFAULT_DATABASE, GraphDatabase
 from pytest import fixture
 
 from gdsclient import GraphDataScience, Neo4jQueryRunner
