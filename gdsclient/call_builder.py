@@ -11,3 +11,6 @@ class CallBuilder(AlgoEndpoints, GraphEndpoints):
     def __getattr__(self, attr):
         namespace = f"{self.namespace}.{attr}"
         return CallBuilder(self.query_runner, namespace)
+
+    def __call__(self, *args, **kwargs):
+        raise SyntaxError(f"There is no {self.namespace} to call")

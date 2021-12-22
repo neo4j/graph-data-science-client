@@ -1,4 +1,4 @@
-from .graph_create_runner import GraphCreateRunner
+from .graph_project_runner import GraphProjectRunner
 
 
 class GraphEndpoints:
@@ -6,5 +6,5 @@ class GraphEndpoints:
         self.query_runner = query_runner
 
     @property
-    def create(self):
-        return GraphCreateRunner(self.query_runner)
+    def project(self):
+        return GraphProjectRunner(self.query_runner)
