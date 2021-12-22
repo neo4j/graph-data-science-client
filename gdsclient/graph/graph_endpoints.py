@@ -15,7 +15,7 @@ class GraphEndpoints:
         self._namespace += ".drop"
 
         params = {
-            "graph_name": graph.name,
+            "graph_name": graph.name(),
             "fail_if_missing": failIfMissing,
             "db_name": dbName,
         }
@@ -30,7 +30,7 @@ class GraphEndpoints:
     def exists(self, graph):
         self._namespace += ".exists"
         return self._query_runner.run_query(
-            f"CALL {self._namespace}($graph_name)", {"graph_name": graph.name}
+            f"CALL {self._namespace}($graph_name)", {"graph_name": graph.name()}
         )
 
     def list(self, graph=None):
@@ -38,7 +38,7 @@ class GraphEndpoints:
 
         if graph:
             query = f"CALL {self._namespace}($graph_name)"
-            params = {"graph_name": graph.name}
+            params = {"graph_name": graph.name()}
         else:
             query = "CALL gds.graph.list()"
             params = {}
@@ -50,6 +50,6 @@ class GraphEndpoints:
 
         query = f"CALL {self._namespace}($graph_name, $config)"
 
-        params = {"graph_name": graph.name, "config": config}
+        params = {"graph_name": graph.name(), "config": config}
 
         return self._query_runner.run_query(query, params)

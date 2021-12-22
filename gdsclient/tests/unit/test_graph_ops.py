@@ -8,7 +8,7 @@ gds = GraphDataScience(runner)
 
 def test_project_graph_native():
     graph = gds.graph.project("g", "A", "R")
-    assert graph.name == "g"
+    assert graph.name() == "g"
 
     assert (
         runner.last_query()
@@ -38,7 +38,7 @@ def test_project_graph_cypher():
     graph = gds.graph.project.cypher(
         "g", "RETURN 0 as id", "RETURN 0 as source, 0 as target"
     )
-    assert graph.name == "g"
+    assert graph.name() == "g"
 
     assert (
         runner.last_query()
@@ -97,7 +97,7 @@ def test_graph_list():
     gds.graph.list(graph)
 
     assert runner.last_query() == "CALL gds.graph.list($graph_name)"
-    assert runner.last_params() == {"graph_name": graph.name}
+    assert runner.last_params() == {"graph_name": graph.name()}
 
 
 def test_graph_exists():
@@ -106,7 +106,7 @@ def test_graph_exists():
     gds.graph.exists(graph)
 
     assert runner.last_query() == "CALL gds.graph.exists($graph_name)"
-    assert runner.last_params() == {"graph_name": graph.name}
+    assert runner.last_params() == {"graph_name": graph.name()}
 
 
 def test_graph_drop():

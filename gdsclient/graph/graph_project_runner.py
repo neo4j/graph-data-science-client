@@ -16,7 +16,7 @@ class GraphProjectRunner:
             },
         )
 
-        return Graph(graph_name)
+        return Graph(graph_name, self._query_runner)
 
     def estimate(self, node_spec, relationship_spec):
         self._namespace += ".estimate"
@@ -42,11 +42,11 @@ class GraphProjectRunner:
             f"CALL {self._namespace}($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)",
             {
                 "graph_name": graph_name,
-                "from_graph_name": from_graph.name,
+                "from_graph_name": from_graph.name(),
                 "node_filter": node_filter,
                 "relationship_filter": relationship_filter,
                 "config": config,
             },
         )
 
-        return Graph(graph_name)
+        return Graph(graph_name, self._query_runner)
