@@ -29,10 +29,10 @@ from neo4j import GraphDatabase
 from gdsclient import Neo4jQueryRunner, GraphDataScience
 
 # Set up driver and gds module
-URI = "bolt://localhost:7687" # Override according to your setup
-driver = GraphDatabase.driver(URI) # You might also have auth set up in your db
-runner = Neo4jQueryRunner(driver)
-gds = GraphDataScience(runner)
+URI = "bolt://localhost:7687"  # Override according to your setup
+driver = GraphDatabase.driver(URI)  # You might also have auth set up in your db
+gds = GraphDataScience(Neo4jQueryRunner(driver))
+gds.set_database("my-db")  # Not using the default database
 
 # Project your graph
 graph = gds.graph.project("graph", "*", "*")

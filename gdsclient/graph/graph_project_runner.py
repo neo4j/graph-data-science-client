@@ -3,12 +3,12 @@ from .graph import Graph
 
 class GraphProjectRunner:
     def __init__(self, query_runner, proc_name="gds.graph.project"):
-        self.query_runner = query_runner
-        self.proc_name = proc_name
+        self._query_runner = query_runner
+        self._proc_name = proc_name
 
     def __call__(self, graph_name, node_spec, relationship_spec):
-        self.query_runner.run_query(
-            f"CALL {self.proc_name}($graph_name, $node_spec, $relationship_spec)",
+        self._query_runner.run_query(
+            f"CALL {self._proc_name}($graph_name, $node_spec, $relationship_spec)",
             {
                 "graph_name": graph_name,
                 "node_spec": node_spec,
@@ -19,9 +19,9 @@ class GraphProjectRunner:
         return Graph(graph_name, node_spec, relationship_spec)
 
     def estimate(self, node_spec, relationship_spec):
-        self.proc_name += ".estimate"
-        result = self.query_runner.run_query(
-            f"CALL {self.proc_name}($node_spec, $relationship_spec)",
+        self._proc_name += ".estimate"
+        result = self._query_runner.run_query(
+            f"CALL {self._proc_name}($node_spec, $relationship_spec)",
             {
                 "node_spec": node_spec,
                 "relationship_spec": relationship_spec,
@@ -32,4 +32,4 @@ class GraphProjectRunner:
 
     @property
     def cypher(self):
-        return GraphProjectRunner(self.query_runner, self.proc_name + ".cypher")
+        return GraphProjectRunner(self._query_runner, self._proc_name + ".cypher")
