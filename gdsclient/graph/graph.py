@@ -16,3 +16,21 @@ class Graph:
 
     def relationship_count(self):
         return self._graph_info()["relationshipCount"]
+
+    def node_properties(self, label):
+        labels_to_props = self._graph_info()["schema"]["nodes"]
+        if label not in labels_to_props.keys():
+            raise ValueError(
+                f"There is no node label '{label}' projected onto '{self.name()}'"
+            )
+
+        return list(labels_to_props[label].keys())
+
+    def relationship_properties(self, type):
+        types_to_props = self._graph_info()["schema"]["relationships"]
+        if type not in types_to_props.keys():
+            raise ValueError(
+                f"There is no relationship type '{type}' projected onto '{self.name()}'"
+            )
+
+        return list(types_to_props[type].keys())

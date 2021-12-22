@@ -15,12 +15,14 @@ runner.run_query(
     (a: Node {x: 1}),
     (b: Node {x: 2}),
     (c: Node {x: 3}),
-    (a)-[:REL]->(b),
-    (a)-[:REL]->(c),
-    (b)-[:REL]->(c)
+    (a)-[:REL {y: 42.0}]->(b),
+    (a)-[:REL {y: 13.37}]->(c),
+    (b)-[:REL {z: 7.9}]->(c)
     """
 )
-graph = gds.graph.project(GRAPH_NAME, "*", "*")
+graph = gds.graph.project(
+    GRAPH_NAME, {"Node": {"properties": "x"}}, {"REL": {"properties": ["y", "z"]}}
+)
 
 
 def test_graph_node_count():
@@ -29,6 +31,14 @@ def test_graph_node_count():
 
 def test_graph_relationship_count():
     assert graph.relationship_count() == 3
+
+
+def test_graph_node_properties():
+    assert graph.node_properties("Node") == ["x"]
+
+
+def test_graph_relationship_properties():
+    assert graph.relationship_properties("REL") == ["y", "z"]
 
 
 def teardown_module():
