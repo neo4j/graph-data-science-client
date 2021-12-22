@@ -11,14 +11,45 @@ class GraphEndpoints:
         self._namespace += ".project"
         return GraphProjectRunner(self._query_runner, self._namespace)
 
+    def drop(self, graph, failIfMissing=False, dbName="", username=None):
+        self._namespace += ".drop"
+
+        params = {
+            "graph_name": graph.name,
+            "fail_if_missing": failIfMissing,
+            "db_name": dbName,
+        }
+        if username:
+            query = f"CALL {self._namespace}($graph_name, $fail_if_missing, $db_name, $username)"
+            params["username"] = username
+        else:
+            query = f"CALL {self._namespace}($graph_name, $fail_if_missing, $db_name)"
+
+        return self._query_runner.run_query(query, params)
+
+    def exists(self, graph):
+        self._namespace += ".exists"
+        return self._query_runner.run_query(
+            f"CALL {self._namespace}($graph_name)", {"graph_name": graph.name}
+        )
+
     def list(self, graph=None):
         self._namespace += ".list"
 
         if graph:
-            query = "CALL gds.graph.list($graph_name)"
+            query = f"CALL {self._namespace}($graph_name)"
             params = {"graph_name": graph.name}
         else:
             query = "CALL gds.graph.list()"
             params = {}
+
+        return self._query_runner.run_query(query, params)
+
+    def export(self, graph, **config):
+        self._namespace += ".export"
+
+        query = f"CALL {self._namespace}($graph_name, $config)"
+
+        params = {"graph_name": graph.name, "config": config}
 
         return self._query_runner.run_query(query, params)

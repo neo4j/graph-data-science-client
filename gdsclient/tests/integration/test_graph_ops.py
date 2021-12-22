@@ -1,4 +1,4 @@
-from neo4j import GraphDatabase
+from neo4j import DEFAULT_DATABASE, GraphDatabase
 from pytest import fixture
 
 from gdsclient import GraphDataScience, Neo4jQueryRunner
@@ -36,7 +36,7 @@ def test_project_graph_native():
     graph = gds.graph.project(GRAPH_NAME, "*", "*")
     assert graph.name == GRAPH_NAME
 
-    result = runner.run_query(f"CALL gds.graph.exists('{GRAPH_NAME}') YIELD exists")
+    result = gds.graph.exists(graph)
     assert result[0]["exists"]
 
 
@@ -54,7 +54,7 @@ def test_project_graph_cypher():
     graph = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
     assert graph.name == GRAPH_NAME
 
-    result = runner.run_query(f"CALL gds.graph.exists('{GRAPH_NAME}') YIELD exists")
+    result = gds.graph.exists(graph)
     assert result[0]["exists"]
 
 
@@ -93,6 +93,42 @@ def test_graph_list():
 
     result = gds.graph.list(graph)
     assert result[0]["graphName"] == GRAPH_NAME
+
+
+def test_graph_exists():
+    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    result = gds.graph.exists(graph)
+
+    assert result[0]["exists"]
+
+
+def test_graph_drop():
+    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+
+    result = gds.graph.drop(graph, True)
+    assert result[0]["graphName"] == GRAPH_NAME
+
+    result = gds.graph.drop(graph, False)
+    assert result == []
+
+
+def test_graph_export():
+    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+
+    MY_DB_NAME = "test-database"
+    result = gds.graph.export(graph, dbName=MY_DB_NAME, batchSize=10000)
+
+    assert result[0]["graphName"] == GRAPH_NAME
+    assert result[0]["dbName"] == MY_DB_NAME
+
+    runner.run_query("CREATE DATABASE $dbName", {"dbName": MY_DB_NAME})
+    runner.set_database(MY_DB_NAME)
+    node_count = runner.run_query("MATCH (n) RETURN COUNT(n) AS c")[0]["c"]
+
+    assert node_count == 3
+
+    runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
+    runner.set_database(DEFAULT_DATABASE)
 
 
 def teardown_module():
