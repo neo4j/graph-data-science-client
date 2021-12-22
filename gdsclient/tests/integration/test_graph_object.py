@@ -2,11 +2,9 @@ from neo4j import GraphDatabase
 
 from gdsclient import GraphDataScience, Neo4jQueryRunner
 
-URI = "bolt://localhost:7687"
+from . import AUTH, URI
+
 GRAPH_NAME = "g"
-driver = GraphDatabase.driver(URI)
-runner = Neo4jQueryRunner(driver)
-gds = GraphDataScience(runner)
 
 
 def setup_module():
@@ -14,7 +12,7 @@ def setup_module():
     global graph
     global runner
 
-    driver = GraphDatabase.driver(URI)
+    driver = GraphDatabase.driver(URI, auth=AUTH)
     runner = Neo4jQueryRunner(driver)
 
     runner.run_query(
