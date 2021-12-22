@@ -11,6 +11,12 @@ class GraphEndpoints:
         self._namespace += ".project"
         return GraphProjectRunner(self._query_runner, self._namespace)
 
+    def exists(self, graph):
+        self._namespace += ".exists"
+        return self._query_runner.run_query(
+            "CALL gds.graph.exists($graph_name)", {"graph_name": graph.name}
+        )
+
     def list(self, graph=None):
         self._namespace += ".list"
 

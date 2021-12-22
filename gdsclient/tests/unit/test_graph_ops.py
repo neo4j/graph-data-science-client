@@ -98,3 +98,12 @@ def test_graph_list():
 
     assert runner.last_query() == "CALL gds.graph.list($graph_name)"
     assert runner.last_params() == {"graph_name": graph.name}
+
+
+def test_graph_exists():
+    graph = gds.graph.project("g", "A", "R")
+
+    gds.graph.exists(graph)
+
+    assert runner.last_query() == "CALL gds.graph.exists($graph_name)"
+    assert runner.last_params() == {"graph_name": graph.name}

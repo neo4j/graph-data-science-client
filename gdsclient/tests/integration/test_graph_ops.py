@@ -36,7 +36,7 @@ def test_project_graph_native():
     graph = gds.graph.project(GRAPH_NAME, "*", "*")
     assert graph.name == GRAPH_NAME
 
-    result = runner.run_query(f"CALL gds.graph.exists('{GRAPH_NAME}') YIELD exists")
+    result = gds.graph.exists(graph)
     assert result[0]["exists"]
 
 
@@ -54,7 +54,7 @@ def test_project_graph_cypher():
     graph = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
     assert graph.name == GRAPH_NAME
 
-    result = runner.run_query(f"CALL gds.graph.exists('{GRAPH_NAME}') YIELD exists")
+    result = gds.graph.exists(graph)
     assert result[0]["exists"]
 
 
@@ -93,6 +93,13 @@ def test_graph_list():
 
     result = gds.graph.list(graph)
     assert result[0]["graphName"] == GRAPH_NAME
+
+
+def test_graph_exists():
+    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    result = gds.graph.exists(graph)
+
+    assert result[0]["exists"]
 
 
 def teardown_module():
