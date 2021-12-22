@@ -1,5 +1,4 @@
-from neo4j import DEFAULT_DATABASE, GraphDatabase
-from pytest import fixture
+from neo4j import GraphDatabase
 
 from gdsclient import GraphDataScience, Neo4jQueryRunner
 
