@@ -1,8 +1,8 @@
 from .graph import Graph
 
 
-class GraphCreateRunner:
-    def __init__(self, query_runner, proc_name="gds.graph.create"):
+class GraphProjectRunner:
+    def __init__(self, query_runner, proc_name="gds.graph.project"):
         self.query_runner = query_runner
         self.proc_name = proc_name
 
@@ -32,4 +32,4 @@ class GraphCreateRunner:
 
     @property
     def cypher(self):
-        return GraphCreateRunner(self.query_runner, self.proc_name + ".cypher")
+        return GraphProjectRunner(self.query_runner, self.proc_name + ".cypher")

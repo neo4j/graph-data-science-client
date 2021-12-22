@@ -33,7 +33,7 @@ def run_around_tests():
 
 
 def test_pageRank_mutate():
-    graph = gds.graph.create(GRAPH_NAME, "*", "*")
+    graph = gds.graph.project(GRAPH_NAME, "*", "*")
 
     gds.pageRank.mutate(graph, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
 
@@ -48,7 +48,7 @@ def test_pageRank_mutate():
 
 
 def test_pageRank_mutate_estimate():
-    graph = gds.graph.create(GRAPH_NAME, "*", "*")
+    graph = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.pageRank.mutate.estimate(
         graph, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
@@ -58,7 +58,7 @@ def test_pageRank_mutate_estimate():
 
 
 def test_wcc_stats():
-    graph = gds.graph.create(GRAPH_NAME, "*", "*")
+    graph = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.wcc.stats(graph)
 
@@ -66,7 +66,7 @@ def test_wcc_stats():
 
 
 def test_wcc_stats_estimate():
-    graph = gds.graph.create(GRAPH_NAME, "*", "*")
+    graph = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.wcc.stats.estimate(graph)
 
@@ -74,7 +74,7 @@ def test_wcc_stats_estimate():
 
 
 def test_nodeSimilarity_stream():
-    graph = gds.graph.create(GRAPH_NAME, "*", "*")
+    graph = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.nodeSimilarity.stream(graph, similarityCutoff=0)
 
@@ -83,7 +83,7 @@ def test_nodeSimilarity_stream():
 
 
 def test_nodeSimilarity_stream_estimate():
-    graph = gds.graph.create(GRAPH_NAME, "*", "*")
+    graph = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.nodeSimilarity.stream.estimate(graph, similarityCutoff=0)
 
@@ -91,7 +91,7 @@ def test_nodeSimilarity_stream_estimate():
 
 
 def test_fastRP_write():
-    graph = gds.graph.create(GRAPH_NAME, "*", "*")
+    graph = gds.graph.project(GRAPH_NAME, "*", "*")
 
     gds.fastRP.write(
         graph, writeProperty="embedding", embeddingDimension=4, randomSeed=42
@@ -110,7 +110,7 @@ def test_fastRP_write():
 
 
 def test_fastRP_write_estimate():
-    graph = gds.graph.create(GRAPH_NAME, "*", "*")
+    graph = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.fastRP.write.estimate(
         graph, writeProperty="embedding", embeddingDimension=4, randomSeed=42

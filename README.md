@@ -35,7 +35,7 @@ runner = Neo4jQueryRunner(driver)
 gds = GraphDataScience(runner)
 
 # Project your graph
-graph = gds.graph.create("graph", "*", "*")
+graph = gds.graph.project("graph", "*", "*")
 
 # Run the PageRank algorithm with custom configuration
 gds.pageRank.write(graph, tolerance=0.5, writeProperty="pagerank")
