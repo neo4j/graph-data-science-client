@@ -2,10 +2,17 @@ from neo4j import DEFAULT_DATABASE, GraphDatabase
 
 from gdsclient import Neo4jQueryRunner
 
-URI = "bolt://localhost:7687"
+from . import AUTH, URI
+
 GRAPH_NAME = "g"
-driver = GraphDatabase.driver(URI)
-runner = Neo4jQueryRunner(driver)
+
+
+def setup_module():
+    global driver
+    global runner
+
+    driver = GraphDatabase.driver(URI, auth=AUTH)
+    runner = Neo4jQueryRunner(driver)
 
 
 def test_switching_db():

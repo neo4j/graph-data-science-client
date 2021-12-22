@@ -2,10 +2,17 @@ from gdsclient import GraphDataScience
 
 from . import CollectingQueryRunner
 
-runner = CollectingQueryRunner()
-gds = GraphDataScience(runner)
 GRAPH_NAME = "g"
-graph = gds.graph.project(GRAPH_NAME, "Node", "REL")
+
+
+def setup_module():
+    global runner
+    global gds
+    global graph
+
+    runner = CollectingQueryRunner()
+    gds = GraphDataScience(runner)
+    graph = gds.graph.project(GRAPH_NAME, "Node", "REL")
 
 
 def test_algoName_mutate():
