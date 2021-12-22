@@ -1,14 +1,9 @@
-from .algo_proc_builder import AlgoProcBuilder
-from .graph import GraphProcBuilder
+from .call_builder import CallBuilder
 
 
 class GraphDataScience:
     def __init__(self, query_runner):
         self.query_runner = query_runner
 
-    @property
-    def graph(self):
-        return GraphProcBuilder(self.query_runner)
-
     def __getattr__(self, attr):
-        return getattr(AlgoProcBuilder(self.query_runner), attr)
+        return getattr(CallBuilder(self.query_runner, "gds"), attr)

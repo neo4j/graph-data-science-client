@@ -1,10 +1,4 @@
-class GraphProcBuilder:
-    def __init__(self, query_runner):
-        self.query_runner = query_runner
-
-    @property
-    def create(self):
-        return GraphCreateRunner(self.query_runner)
+from .graph import Graph
 
 
 class GraphCreateRunner:
@@ -39,10 +33,3 @@ class GraphCreateRunner:
     @property
     def cypher(self):
         return GraphCreateRunner(self.query_runner, self.proc_name + ".cypher")
-
-
-class Graph:
-    def __init__(self, name, node_spec, relationship_spec):
-        self.name = name
-        self.node_spec = node_spec
-        self.relationship_spec = relationship_spec
