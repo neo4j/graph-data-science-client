@@ -105,9 +105,12 @@ def test_graph_list():
 
 def test_graph_exists():
     graph = gds.graph.project(GRAPH_NAME, "*", "*")
-    result = gds.graph.exists(graph.name())
 
+    result = gds.graph.exists(graph.name())
     assert result[0]["exists"]
+
+    result = gds.graph.exists("bogusName")
+    assert not result[0]["exists"]
 
 
 def test_graph_drop():

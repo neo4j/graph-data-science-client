@@ -15,7 +15,14 @@ class GraphEndpoints:
 
     @validation.assert_graph(args_pos=1)
     def drop(self, graph, failIfMissing=False, dbName="", username=None):
-        self._namespace += ".drop"
+        if self._namespace != "gds.graph":
+            raise SyntaxError(f"There is no {self._namespace + '.drop'} to call")
+
+        # Make sure graph is marked as dropped if not existing.
+        if not self.exists(graph.name())[0]["exists"]:
+            graph._dropped = True
+
+        self._namespace = "gds.graph.drop"
 
         params = {
             "graph_name": graph.name(),
@@ -66,8 +73,7 @@ class GraphEndpoints:
         if self._namespace != "gds.graph":
             raise SyntaxError(f"There is no {self._namespace + '.get'} to call")
 
-        result = self.exists(graph_name)
-        if not result[0]["exists"]:
+        if not self.exists(graph_name)[0]["exists"]:
             raise ValueError(f"No projected graph named '{graph_name}' exists")
 
         return Graph(graph_name, self._query_runner)

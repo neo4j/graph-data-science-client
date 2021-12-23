@@ -78,8 +78,9 @@ class Graph:
 
     @_assert_not_dropped
     def drop(self):
-        self._query_runner.run_query(
-            "CALL gds.graph.drop($graph_name, false)",
-            {"graph_name": self._name},
-        )
+        if self.exists():
+            self._query_runner.run_query(
+                "CALL gds.graph.drop($graph_name, true)",
+                {"graph_name": self._name},
+            )
         self._dropped = True
