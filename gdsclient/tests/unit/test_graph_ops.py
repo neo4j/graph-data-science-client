@@ -106,12 +106,10 @@ def test_graph_list():
 
 
 def test_graph_exists():
-    graph = gds.graph.project("g", "A", "R")
-
-    gds.graph.exists(graph)
+    gds.graph.exists("g")
 
     assert runner.last_query() == "CALL gds.graph.exists($graph_name)"
-    assert runner.last_params() == {"graph_name": graph.name()}
+    assert runner.last_params() == {"graph_name": "g"}
 
 
 def test_graph_drop():

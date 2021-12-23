@@ -78,9 +78,7 @@ def test_graph_exists():
 
     gds.graph.drop(graph)
 
-    result = runner.run_query(
-        "CALL gds.graph.exists($graph_name)", {"graph_name": graph.name()}
-    )
+    result = gds.graph.exists(graph.name())
     assert not result[0]["exists"]
 
     graph = project_graph()
@@ -89,16 +87,15 @@ def test_graph_exists():
 def test_graph_drop():
     global graph
 
-    result = gds.graph.exists(graph)
+    result = gds.graph.exists(graph.name())
     assert result[0]["exists"]
     graph.node_count()
 
     graph.drop()
 
-    result = runner.run_query(
-        "CALL gds.graph.exists($graph_name)", {"graph_name": graph.name()}
-    )
+    result = gds.graph.exists(graph.name())
     assert not result[0]["exists"]
+
     with pytest.raises(ValueError):
         graph.node_count()
 
