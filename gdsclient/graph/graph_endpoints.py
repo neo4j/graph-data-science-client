@@ -14,18 +14,18 @@ class GraphEndpoints:
         return GraphProjectRunner(self._query_runner, self._namespace)
 
     @validation.assert_graph(args_pos=1)
-    def drop(self, graph, failIfMissing=False, dbName="", username=None):
+    def drop(self, G, failIfMissing=False, dbName="", username=None):
         if self._namespace != "gds.graph":
             raise SyntaxError(f"There is no {self._namespace + '.drop'} to call")
 
         # Make sure graph is marked as dropped if not existing.
-        if not self.exists(graph.name())[0]["exists"]:
-            graph._dropped = True
+        if not self.exists(G.name())[0]["exists"]:
+            G._dropped = True
 
         self._namespace = "gds.graph.drop"
 
         params = {
-            "graph_name": graph.name(),
+            "graph_name": G.name(),
             "fail_if_missing": failIfMissing,
             "db_name": dbName,
         }
@@ -36,7 +36,7 @@ class GraphEndpoints:
             query = f"CALL {self._namespace}($graph_name, $fail_if_missing, $db_name)"
 
         result = self._query_runner.run_query(query, params)
-        graph._dropped = True
+        G._dropped = True
 
         return result
 
@@ -46,13 +46,13 @@ class GraphEndpoints:
             f"CALL {self._namespace}($graph_name)", {"graph_name": graph_name}
         )
 
-    @validation.assert_graph(key="graph")
-    def list(self, graph=None):
+    @validation.assert_graph(key="G")
+    def list(self, G=None):
         self._namespace += ".list"
 
-        if graph:
+        if G:
             query = f"CALL {self._namespace}($graph_name)"
-            params = {"graph_name": graph.name()}
+            params = {"graph_name": G.name()}
         else:
             query = "CALL gds.graph.list()"
             params = {}
@@ -60,12 +60,12 @@ class GraphEndpoints:
         return self._query_runner.run_query(query, params)
 
     @validation.assert_graph(args_pos=1)
-    def export(self, graph, **config):
+    def export(self, G, **config):
         self._namespace += ".export"
 
         query = f"CALL {self._namespace}($graph_name, $config)"
 
-        params = {"graph_name": graph.name(), "config": config}
+        params = {"graph_name": G.name(), "config": config}
 
         return self._query_runner.run_query(query, params)
 

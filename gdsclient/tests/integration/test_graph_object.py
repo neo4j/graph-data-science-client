@@ -10,7 +10,7 @@ GRAPH_NAME = "g"
 
 def setup_module():
     global driver
-    global graph
+    global G
     global runner
     global gds
 
@@ -30,7 +30,7 @@ def setup_module():
     )
 
     gds = GraphDataScience(runner)
-    graph = project_graph()
+    G = project_graph()
 
 
 def project_graph():
@@ -40,66 +40,66 @@ def project_graph():
 
 
 def test_graph_node_count():
-    assert graph.node_count() == 3
+    assert G.node_count() == 3
 
 
 def test_graph_relationship_count():
-    assert graph.relationship_count() == 3
+    assert G.relationship_count() == 3
 
 
 def test_graph_node_properties():
-    assert graph.node_properties("Node") == ["x"]
+    assert G.node_properties("Node") == ["x"]
 
 
 def test_graph_relationship_properties():
-    assert graph.relationship_properties("REL") == ["y", "z"]
+    assert G.relationship_properties("REL") == ["y", "z"]
 
 
 def test_graph_degree_distribution():
-    assert graph.degree_distribution()["mean"] == 2.0
+    assert G.degree_distribution()["mean"] == 2.0
 
 
 def test_graph_density():
-    assert graph.density() == 0.5
+    assert G.density() == 0.5
 
 
 def test_graph_memory_usage():
-    assert graph.memory_usage()
+    assert G.memory_usage()
 
 
 def test_graph_size_in_bytes():
-    assert graph.size_in_bytes() > 0
+    assert G.size_in_bytes() > 0
 
 
 def test_graph_exists():
-    global graph
+    global G
 
-    assert graph.exists()
+    assert G.exists()
 
-    gds.graph.drop(graph)
+    gds.graph.drop(G)
 
-    result = gds.graph.exists(graph.name())
+    result = gds.graph.exists(G.name())
     assert not result[0]["exists"]
 
-    graph = project_graph()
+    G = project_graph()
 
 
 def test_graph_drop():
-    global graph
+    global G
 
-    result = gds.graph.exists(graph.name())
+    result = gds.graph.exists(G.name())
     assert result[0]["exists"]
-    graph.node_count()
+    G.node_count()
 
-    graph.drop()
+    G.drop()
 
-    result = gds.graph.exists(graph.name())
+    result = gds.graph.exists(G.name())
     assert not result[0]["exists"]
 
     with pytest.raises(ValueError):
-        graph.node_count()
+        G.node_count()
 
-    graph = project_graph()
+    G = project_graph()
 
 
 def teardown_module():

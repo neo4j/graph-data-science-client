@@ -41,9 +41,9 @@ def run_around_tests():
 
 
 def test_nonexisting_algo():
-    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
     with pytest.raises(Exception):
-        gds.bogusAlgo.stream(graph)
+        gds.bogusAlgo.stream(G)
 
 
 def teardown_module():

@@ -41,9 +41,9 @@ def run_around_tests():
 
 
 def test_pageRank_mutate():
-    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    gds.pageRank.mutate(graph, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
+    gds.pageRank.mutate(G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
 
     props = runner.run_query(
         f"""
@@ -56,54 +56,52 @@ def test_pageRank_mutate():
 
 
 def test_pageRank_mutate_estimate():
-    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.pageRank.mutate.estimate(
-        graph, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
+        G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
     )
 
     assert result[0]["requiredMemory"]
 
 
 def test_wcc_stats():
-    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    result = gds.wcc.stats(graph)
+    result = gds.wcc.stats(G)
 
     assert result[0]["componentCount"] == 1
 
 
 def test_wcc_stats_estimate():
-    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    result = gds.wcc.stats.estimate(graph)
+    result = gds.wcc.stats.estimate(G)
 
     assert result[0]["requiredMemory"]
 
 
 def test_nodeSimilarity_stream():
-    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    result = gds.nodeSimilarity.stream(graph, similarityCutoff=0)
+    result = gds.nodeSimilarity.stream(G, similarityCutoff=0)
 
     assert len(result) == 2
     assert result[0]["similarity"] == 0.5
 
 
 def test_nodeSimilarity_stream_estimate():
-    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    result = gds.nodeSimilarity.stream.estimate(graph, similarityCutoff=0)
+    result = gds.nodeSimilarity.stream.estimate(G, similarityCutoff=0)
 
     assert result[0]["requiredMemory"]
 
 
 def test_fastRP_write():
-    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    gds.fastRP.write(
-        graph, writeProperty="embedding", embeddingDimension=4, randomSeed=42
-    )
+    gds.fastRP.write(G, writeProperty="embedding", embeddingDimension=4, randomSeed=42)
 
     embeddings = runner.run_query(
         """
@@ -118,10 +116,10 @@ def test_fastRP_write():
 
 
 def test_fastRP_write_estimate():
-    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.fastRP.write.estimate(
-        graph, writeProperty="embedding", embeddingDimension=4, randomSeed=42
+        G, writeProperty="embedding", embeddingDimension=4, randomSeed=42
     )
 
     assert result[0]["requiredMemory"]
