@@ -1,8 +1,12 @@
+from ..validation import validation
+
+
 class AlgoProcRunner:
     def __init__(self, query_runner, proc_name):
         self._query_runner = query_runner
         self._proc_name = proc_name
 
+    @validation.assert_graph(args_pos=1)
     def _run_procedure(self, graph, config):
         query = f"CALL {self._proc_name}($graph_name, $config)"
 
