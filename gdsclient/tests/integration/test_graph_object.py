@@ -1,3 +1,4 @@
+import pytest
 from neo4j import GraphDatabase
 
 from gdsclient import GraphDataScience, Neo4jQueryRunner
@@ -85,11 +86,16 @@ def test_graph_exists():
 def test_graph_drop():
     global graph
 
-    assert gds.graph.exists(graph)
+    result = gds.graph.exists(graph)
+    assert result[0]["exists"]
+    graph.node_count()
 
     graph.drop()
 
-    assert not graph.exists()
+    result = gds.graph.exists(graph)
+    assert not result[0]["exists"]
+    with pytest.raises(ValueError):
+        graph.node_count()
 
     graph = project_graph()
 
