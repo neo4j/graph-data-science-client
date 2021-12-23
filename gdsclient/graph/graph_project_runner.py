@@ -36,15 +36,13 @@ class GraphProjectRunner:
         return GraphProjectRunner(self._query_runner, self._namespace + ".cypher")
 
     @validation.assert_graph(2)
-    def subgraph(
-        self, graph_name, from_graph, node_filter, relationship_filter, **config
-    ):
+    def subgraph(self, graph_name, from_G, node_filter, relationship_filter, **config):
         self._namespace += ".subgraph"
         self._query_runner.run_query(
             f"CALL {self._namespace}($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)",
             {
                 "graph_name": graph_name,
-                "from_graph_name": from_graph.name(),
+                "from_graph_name": from_G.name(),
                 "node_filter": node_filter,
                 "relationship_filter": relationship_filter,
                 "config": config,

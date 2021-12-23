@@ -27,16 +27,16 @@ def assert_graph(args_pos=None, key=None):
         def wrapper(*args, **kwargs):
 
             if args_pos:
-                graph = args[args_pos]
+                G = args[args_pos]
             else:
                 # Graph is optional as a keyword argument.
                 if key not in kwargs.keys():
                     return function(*args, **kwargs)
-                graph = kwargs[key]
+                G = kwargs[key]
 
-            if not isinstance(graph, graph_object.Graph):
+            if not isinstance(G, graph_object.Graph):
                 raise ValueError("A valid Graph object must be provided")
-            if graph.dropped():
+            if G.dropped():
                 raise ValueError("This Graph object has been dropped")
 
             return function(*args, **kwargs)

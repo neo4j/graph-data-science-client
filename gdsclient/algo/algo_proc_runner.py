@@ -7,18 +7,18 @@ class AlgoProcRunner:
         self._proc_name = proc_name
 
     @validation.assert_graph(args_pos=1)
-    def _run_procedure(self, graph, config):
+    def _run_procedure(self, G, config):
         query = f"CALL {self._proc_name}($graph_name, $config)"
 
         params = {}
-        params["graph_name"] = graph.name()
+        params["graph_name"] = G.name()
         params["config"] = config
 
         return self._query_runner.run_query(query, params)
 
-    def __call__(self, graph, **config):
-        return self._run_procedure(graph, config)
+    def __call__(self, G, **config):
+        return self._run_procedure(G, config)
 
-    def estimate(self, graph, **config):
+    def estimate(self, G, **config):
         self._proc_name += "." + "estimate"
-        return self._run_procedure(graph, config)
+        return self._run_procedure(G, config)

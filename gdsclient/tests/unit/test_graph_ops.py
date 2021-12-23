@@ -12,8 +12,8 @@ def setup_module():
 
 
 def test_project_graph_native():
-    graph = gds.graph.project("g", "A", "R")
-    assert graph.name() == "g"
+    G = gds.graph.project("g", "A", "R")
+    assert G.name() == "g"
 
     assert (
         runner.last_query()
@@ -40,10 +40,10 @@ def test_project_graph_native_estimate():
 
 
 def test_project_graph_cypher():
-    graph = gds.graph.project.cypher(
+    G = gds.graph.project.cypher(
         "g", "RETURN 0 as id", "RETURN 0 as source, 0 as target"
     )
-    assert graph.name() == "g"
+    assert G.name() == "g"
 
     assert (
         runner.last_query()
@@ -72,9 +72,9 @@ def test_project_graph_cypher_estimate():
 
 
 def test_project_subgraph():
-    from_graph = gds.graph.project("g", "*", "*")
+    from_G = gds.graph.project("g", "*", "*")
     gds.beta.graph.project.subgraph(
-        "s", from_graph, {"Node": {}}, {"REL": {}}, concurrency=2
+        "s", from_G, {"Node": {}}, {"REL": {}}, concurrency=2
     )
 
     assert (
@@ -97,12 +97,12 @@ def test_graph_list():
     assert runner.last_query() == "CALL gds.graph.list()"
     assert runner.last_params() == {}
 
-    graph = gds.graph.project("g", "A", "R")
+    G = gds.graph.project("g", "A", "R")
 
-    gds.graph.list(graph)
+    gds.graph.list(G)
 
     assert runner.last_query() == "CALL gds.graph.list($graph_name)"
-    assert runner.last_params() == {"graph_name": graph.name()}
+    assert runner.last_params() == {"graph_name": G.name()}
 
 
 def test_graph_exists():
@@ -113,8 +113,8 @@ def test_graph_exists():
 
 
 def test_graph_export():
-    graph = gds.graph.project("g", "*", "*")
-    gds.graph.export(graph, dbName="db", batchSize=10)
+    G = gds.graph.project("g", "*", "*")
+    gds.graph.export(G, dbName="db", batchSize=10)
 
     assert runner.last_query() == "CALL gds.graph.export($graph_name, $config)"
     assert runner.last_params() == {

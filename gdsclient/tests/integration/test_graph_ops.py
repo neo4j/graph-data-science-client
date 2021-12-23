@@ -41,10 +41,10 @@ def run_around_tests():
 
 
 def test_project_graph_native():
-    graph = gds.graph.project(GRAPH_NAME, "*", "*")
-    assert graph.name() == GRAPH_NAME
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    assert G.name() == GRAPH_NAME
 
-    result = gds.graph.exists(graph.name())
+    result = gds.graph.exists(G.name())
     assert result[0]["exists"]
 
 
@@ -59,10 +59,10 @@ def test_project_graph_cypher():
     relationship_query = (
         "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
     )
-    graph = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
-    assert graph.name() == GRAPH_NAME
+    G = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
+    assert G.name() == GRAPH_NAME
 
-    result = gds.graph.exists(graph.name())
+    result = gds.graph.exists(G.name())
     assert result[0]["exists"]
 
 
@@ -77,36 +77,34 @@ def test_project_graph_cypher_estimate():
 
 
 def test_project_subgraph():
-    from_graph = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+    from_G = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    subgraph = gds.beta.graph.project.subgraph(
-        "s", from_graph, "n.x > 1", "*", concurrency=2
-    )
+    subG = gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
 
-    assert subgraph.name() == "s"
+    assert subG.name() == "s"
 
-    result = gds.graph.list(subgraph)
+    result = gds.graph.list(subG)
     assert result[0]["nodeCount"] == 2
 
-    runner.run_query(f"CALL gds.graph.drop('{subgraph.name()}')")
+    runner.run_query(f"CALL gds.graph.drop('{subG.name()}')")
 
 
 def test_graph_list():
     result = gds.graph.list()
     assert len(result) == 0
 
-    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
     result = gds.graph.list()
     assert len(result) == 1
 
-    result = gds.graph.list(graph)
+    result = gds.graph.list(G)
     assert result[0]["graphName"] == GRAPH_NAME
 
 
 def test_graph_exists():
-    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    result = gds.graph.exists(graph.name())
+    result = gds.graph.exists(G.name())
     assert result[0]["exists"]
 
     result = gds.graph.exists("bogusName")
@@ -114,20 +112,20 @@ def test_graph_exists():
 
 
 def test_graph_drop():
-    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    result = gds.graph.drop(graph, True)
+    result = gds.graph.drop(G, True)
     assert result[0]["graphName"] == GRAPH_NAME
 
     with pytest.raises(ValueError):
-        gds.graph.drop(graph, True)
+        gds.graph.drop(G, True)
 
 
 def test_graph_export():
-    graph = gds.graph.project(GRAPH_NAME, "*", "*")
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     MY_DB_NAME = "test-database"
-    result = gds.graph.export(graph, dbName=MY_DB_NAME, batchSize=10000)
+    result = gds.graph.export(G, dbName=MY_DB_NAME, batchSize=10000)
 
     assert result[0]["graphName"] == GRAPH_NAME
     assert result[0]["dbName"] == MY_DB_NAME
@@ -145,8 +143,8 @@ def test_graph_export():
 def test_graph_get():
     gds.graph.project(GRAPH_NAME, "*", "*")
 
-    graph = gds.graph.get(GRAPH_NAME)
-    assert graph.name() == GRAPH_NAME
+    G = gds.graph.get(GRAPH_NAME)
+    assert G.name() == GRAPH_NAME
 
     with pytest.raises(ValueError):
         gds.graph.get("bogusName")

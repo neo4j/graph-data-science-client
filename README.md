@@ -35,10 +35,10 @@ gds = GraphDataScience(Neo4jQueryRunner(driver))
 gds.set_database("my-db")  # Not using the default database
 
 # Project your graph
-graph = gds.graph.project("graph", "*", "*")
+G = gds.graph.project("graph", "*", "*")
 
 # Run the PageRank algorithm with custom configuration
-gds.pageRank.write(graph, tolerance=0.5, writeProperty="pagerank")
+gds.pageRank.write(G, tolerance=0.5, writeProperty="pagerank")
 ```
 
 For extensive documentation of all operations supported by GDS, please refer to the [GDS Manual](https://neo4j.com/docs/graph-data-science/current/).
