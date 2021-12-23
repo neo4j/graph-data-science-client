@@ -44,7 +44,7 @@ def test_project_graph_native():
     graph = gds.graph.project(GRAPH_NAME, "*", "*")
     assert graph.name() == GRAPH_NAME
 
-    result = gds.graph.exists(graph)
+    result = gds.graph.exists(graph.name())
     assert result[0]["exists"]
 
 
@@ -62,7 +62,7 @@ def test_project_graph_cypher():
     graph = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
     assert graph.name() == GRAPH_NAME
 
-    result = gds.graph.exists(graph)
+    result = gds.graph.exists(graph.name())
     assert result[0]["exists"]
 
 
@@ -105,7 +105,7 @@ def test_graph_list():
 
 def test_graph_exists():
     graph = gds.graph.project(GRAPH_NAME, "*", "*")
-    result = gds.graph.exists(graph)
+    result = gds.graph.exists(graph.name())
 
     assert result[0]["exists"]
 

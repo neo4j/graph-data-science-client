@@ -32,11 +32,10 @@ class GraphEndpoints:
 
         return result
 
-    @validation.assert_graph(args_pos=1)
-    def exists(self, graph):
+    def exists(self, graph_name):
         self._namespace += ".exists"
         return self._query_runner.run_query(
-            f"CALL {self._namespace}($graph_name)", {"graph_name": graph.name()}
+            f"CALL {self._namespace}($graph_name)", {"graph_name": graph_name}
         )
 
     @validation.assert_graph(key="graph")
