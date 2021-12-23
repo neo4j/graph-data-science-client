@@ -57,7 +57,7 @@ This work has been inspired by the great work done in the following libraries:
 
 ## Contributing
 
-The `gdsclient` project does not yet have contribution guidelines.
+Please see our guidelines in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 
 ## License
