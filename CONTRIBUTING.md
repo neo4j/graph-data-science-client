@@ -53,9 +53,6 @@ Remember that many community members have become regular contributors and some a
 
 ## Specifically for this project
 
-
-### Development environment
-
 Setting up the development environment:
 
  * Install Python 3.6+
@@ -65,14 +62,6 @@ Setting up the development environment:
    pip install -r requirements/base.txt -r requirements/tests.txt
    ```
  * (Optional) To run integration tests locally, set up a [Neo4j DBMS](https://neo4j.com/docs/getting-started/current/) with [GDS](https://neo4j.com/docs/graph-data-science/current/) installed
-
-
-### Guidelines
-
-We generally ask that any contribution:
-
- * Follows the style guide
- * Is covered by tests if new features are added (and testing them makes sense)
 
 
 ## Got an idea for a new project?
