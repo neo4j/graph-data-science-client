@@ -128,7 +128,8 @@ def test_graph_drop():
         "db_name": "dummy",
     }
 
-    gds.graph.drop(graph, True, "dummy", "veselin")
+    graph2 = gds.graph.project("g", "*", "*")
+    gds.graph.drop(graph2, True, "dummy", "veselin")
 
     assert (
         runner.last_query()

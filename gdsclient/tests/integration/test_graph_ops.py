@@ -1,5 +1,5 @@
+import pytest
 from neo4j import DEFAULT_DATABASE, GraphDatabase
-from pytest import fixture
 
 from gdsclient import GraphDataScience, Neo4jQueryRunner
 
@@ -18,7 +18,7 @@ def setup_module():
     gds = GraphDataScience(runner)
 
 
-@fixture(autouse=True)
+@pytest.fixture(autouse=True)
 def run_around_tests():
     # Runs before each test
     runner.run_query(
@@ -116,8 +116,8 @@ def test_graph_drop():
     result = gds.graph.drop(graph, True)
     assert result[0]["graphName"] == GRAPH_NAME
 
-    result = gds.graph.drop(graph, False)
-    assert result == []
+    with pytest.raises(ValueError):
+        gds.graph.drop(graph, True)
 
 
 def test_graph_export():

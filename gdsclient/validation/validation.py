@@ -2,8 +2,8 @@ from ..graph import graph_object
 
 
 def assert_graph(args_pos=None, key=None):
-    """Generates a validation that a graph given as an input
-    parameter is valid.
+    """Generates a decorator that validates that a graph given as an
+    input parameter is valid.
 
     Exactly one of the optional parameters must be given.
 

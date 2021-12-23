@@ -27,7 +27,10 @@ class GraphEndpoints:
         else:
             query = f"CALL {self._namespace}($graph_name, $fail_if_missing, $db_name)"
 
-        return self._query_runner.run_query(query, params)
+        result = self._query_runner.run_query(query, params)
+        graph._dropped = True
+
+        return result
 
     @validation.assert_graph(args_pos=1)
     def exists(self, graph):
