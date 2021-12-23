@@ -16,7 +16,7 @@ Happy coding!
 To build and install `gdsclient` from this repository, simply run the following command:
 
 ```bash
-pip3 install .
+pip install .
 ```
 
 
@@ -47,12 +47,47 @@ Extensive end-to-end examples in Jupyter ready-to-run notebooks can be found in 
 
 * [Computing similarities with KNN based on FastRP embeddings](examples/fastrp-and-knn.ipynb)
 
-## Acknowledgements
 
-This work has been inspired by the great work done in the following libraries:
+## Testing
 
-* [pygds](https://github.com/stellasia/pygds) by stellasia
-* [gds-python](https://github.com/moxious/gds-python) by moxious
+Tests can be found in `gdsclient/tests`. In each of the folders there, `unit` and `integration`, the tests of that respective type reside.
+
+To install the Python requirements for running tests simply run:
+
+```bash
+pip install -r requirements/tests.txt
+```
+
+
+### Unit testing
+
+The unit tests are run without a connection a database. Typically the `CollectingQueryRunner` is used to mock running queries.
+To run the unit tests, simply call:
+
+```bash
+pytest gdsclient/tests/unit
+```
+
+
+### Integration testing
+
+In order to run the integration tests one must have a [Neo4j DBMS](https://neo4j.com/docs/getting-started/current/) with the Neo4j Graph Data Science library installed running.
+
+The tests will through the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) connect to a Neo4j DBMS based on the environment variables:
+
+* `NEO4J_URI` (defaulting to "bolt://localhost:7687" if unset),
+* `NEO4J_USER`,
+* `NEO4J_PASSWORD` (defaulting to "neo4j" if unset).
+
+However, if `NEO4J_USER` is not set the tests will try to connect without authentication.
+
+Once the driver connects successfully to the Neo4j DBMS the tests will go on to execute against the DBMS's default database.
+
+The command for running the integration tests is the following:
+
+```bash
+pytest gdsclient/tests/integration
+```
 
 
 ## Contributing
@@ -64,3 +99,11 @@ Please see our guidelines in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 `gdsclient` is licensed under the Apache Software License version 2.0.
 All content is copyright © Neo4j Sweden AB.
+
+
+## Acknowledgements
+
+This work has been inspired by the great work done in the following libraries:
+
+* [pygds](https://github.com/stellasia/pygds) by stellasia
+* [gds-python](https://github.com/moxious/gds-python) by moxious
