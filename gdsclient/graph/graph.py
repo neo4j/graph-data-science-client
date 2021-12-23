@@ -53,3 +53,10 @@ class Graph:
 
     def size_in_bytes(self):
         return self._graph_info(["sizeInBytes"])["sizeInBytes"]
+
+    def exists(self):
+        result = self._query_runner.run_query(
+            "CALL gds.graph.exists($graph_name)",
+            {"graph_name": self._name},
+        )
+        return result[0]["exists"]

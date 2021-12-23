@@ -11,6 +11,7 @@ def setup_module():
     global driver
     global graph
     global runner
+    global gds
 
     driver = GraphDatabase.driver(URI, auth=AUTH)
     runner = Neo4jQueryRunner(driver)
@@ -28,7 +29,11 @@ def setup_module():
     )
 
     gds = GraphDataScience(runner)
-    graph = gds.graph.project(
+    graph = project_graph()
+
+
+def project_graph():
+    return gds.graph.project(
         GRAPH_NAME, {"Node": {"properties": "x"}}, {"REL": {"properties": ["y", "z"]}}
     )
 
@@ -63,6 +68,18 @@ def test_graph_memory_usage():
 
 def test_graph_size_in_bytes():
     assert graph.size_in_bytes() > 0
+
+
+def test_graph_exists():
+    global graph
+
+    assert graph.exists()
+
+    gds.graph.drop(graph)
+
+    assert not graph.exists()
+
+    graph = project_graph()
 
 
 def teardown_module():
