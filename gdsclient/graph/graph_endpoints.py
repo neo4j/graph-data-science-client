@@ -1,3 +1,4 @@
+from ..validation import validation
 from .graph_project_runner import GraphProjectRunner
 
 
@@ -11,6 +12,7 @@ class GraphEndpoints:
         self._namespace += ".project"
         return GraphProjectRunner(self._query_runner, self._namespace)
 
+    @validation.assert_graph(args_pos=1)
     def drop(self, graph, failIfMissing=False, dbName="", username=None):
         self._namespace += ".drop"
 
@@ -25,14 +27,19 @@ class GraphEndpoints:
         else:
             query = f"CALL {self._namespace}($graph_name, $fail_if_missing, $db_name)"
 
-        return self._query_runner.run_query(query, params)
+        result = self._query_runner.run_query(query, params)
+        graph._dropped = True
 
+        return result
+
+    @validation.assert_graph(args_pos=1)
     def exists(self, graph):
         self._namespace += ".exists"
         return self._query_runner.run_query(
             f"CALL {self._namespace}($graph_name)", {"graph_name": graph.name()}
         )
 
+    @validation.assert_graph(key="graph")
     def list(self, graph=None):
         self._namespace += ".list"
 
@@ -45,6 +52,7 @@ class GraphEndpoints:
 
         return self._query_runner.run_query(query, params)
 
+    @validation.assert_graph(args_pos=1)
     def export(self, graph, **config):
         self._namespace += ".export"
 
