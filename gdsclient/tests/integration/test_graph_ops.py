@@ -139,5 +139,15 @@ def test_graph_export():
     runner.set_database(DEFAULT_DATABASE)
 
 
+def test_graph_get():
+    gds.graph.project(GRAPH_NAME, "*", "*")
+
+    graph = gds.graph.get(GRAPH_NAME)
+    assert graph.name() == GRAPH_NAME
+
+    with pytest.raises(ValueError):
+        gds.graph.get("bogusName")
+
+
 def teardown_module():
     driver.close()

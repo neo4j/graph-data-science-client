@@ -1,4 +1,5 @@
 from ..validation import validation
+from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
 
 
@@ -60,3 +61,13 @@ class GraphEndpoints:
         params = {"graph_name": graph.name(), "config": config}
 
         return self._query_runner.run_query(query, params)
+
+    def get(self, graph_name):
+        if self._namespace != "gds.graph":
+            raise SyntaxError(f"There is no {self._namespace + '.get'} to call")
+
+        result = self.exists(graph_name)
+        if not result[0]["exists"]:
+            raise ValueError(f"No projected graph named '{graph_name}' exists")
+
+        return Graph(graph_name, self._query_runner)
