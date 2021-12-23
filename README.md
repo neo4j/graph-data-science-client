@@ -90,6 +90,49 @@ pytest gdsclient/tests/integration
 ```
 
 
+## Style guide
+
+The code follows a rather opinionated style based on [pep8](https://www.python.org/dev/peps/pep-0008/).
+
+To enforce code style we use several tools, and they can all be installed by running:
+
+```bash
+pip install -r requirements/tests.txt
+```
+
+### Linting
+
+To enforce pep8 conformity (with the exception of using max line length = 120) [flake8](https://flake8.pycqa.org/en/latest/) is used.
+To run it on the entire repository, simply call
+
+```bash
+flake8
+```
+
+from the root. See `.flake8` for our custom settings.
+
+
+### Formatting
+
+For general formatting we use [black](https://black.readthedocs.io/en/stable/) with default settings.
+black can be run on the entire repository by calling:
+
+```bash
+black .
+```
+
+from the root.
+
+Additionally [isort](https://pycqa.github.io/isort/) (also with default settings) is used for consistent import sorting.
+It can similarly be run over all source code by calling:
+
+```bash
+isort .
+```
+
+from the root.
+
+
 ## Contributing
 
 Please see our guidelines in [CONTRIBUTING.md](CONTRIBUTING.md).
