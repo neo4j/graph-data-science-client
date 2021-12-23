@@ -2,6 +2,7 @@ class Graph:
     def __init__(self, name, query_runner):
         self._name = name
         self._query_runner = query_runner
+        self._dropped = False
 
     def name(self):
         return self._name
@@ -60,3 +61,10 @@ class Graph:
             {"graph_name": self._name},
         )
         return result[0]["exists"]
+
+    def drop(self):
+        self._query_runner.run_query(
+            "CALL gds.graph.drop($graph_name, false)",
+            {"graph_name": self._name},
+        )
+        self._dropped = True

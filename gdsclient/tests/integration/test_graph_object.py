@@ -82,6 +82,18 @@ def test_graph_exists():
     graph = project_graph()
 
 
+def test_graph_drop():
+    global graph
+
+    assert gds.graph.exists(graph)
+
+    graph.drop()
+
+    assert not graph.exists()
+
+    graph = project_graph()
+
+
 def teardown_module():
     runner.run_query("MATCH (n) DETACH DELETE n")
     runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
