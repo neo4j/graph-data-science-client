@@ -1,4 +1,3 @@
-from ..validation import validation
 from .graph_object import Graph
 
 
@@ -35,7 +34,6 @@ class GraphProjectRunner:
     def cypher(self):
         return GraphProjectRunner(self._query_runner, self._namespace + ".cypher")
 
-    @validation.assert_graph(2)
     def subgraph(self, graph_name, from_G, node_filter, relationship_filter, **config):
         self._namespace += ".subgraph"
         self._query_runner.run_query(

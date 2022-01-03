@@ -78,8 +78,7 @@ def test_graph_exists():
 
     gds.graph.drop(G)
 
-    result = gds.graph.exists(G.name())
-    assert not result[0]["exists"]
+    assert not G.exists()
 
     G = project_graph()
 
@@ -87,14 +86,11 @@ def test_graph_exists():
 def test_graph_drop():
     global G
 
-    result = gds.graph.exists(G.name())
-    assert result[0]["exists"]
-    G.node_count()
+    assert G.exists()
 
     G.drop()
 
-    result = gds.graph.exists(G.name())
-    assert not result[0]["exists"]
+    assert not G.exists()
 
     with pytest.raises(ValueError):
         G.node_count()
