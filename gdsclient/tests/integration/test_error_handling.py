@@ -1,25 +1,14 @@
+from typing import Generator
+
 import pytest
-from neo4j import GraphDatabase
 
 from gdsclient import GraphDataScience, Neo4jQueryRunner
-
-from . import AUTH, URI
 
 GRAPH_NAME = "g"
 
 
-def setup_module():
-    global driver
-    global runner
-    global gds
-
-    driver = GraphDatabase.driver(URI, auth=AUTH)
-    runner = Neo4jQueryRunner(driver)
-    gds = GraphDataScience(runner)
-
-
 @pytest.fixture(autouse=True)
-def run_around_tests():
+def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     # Runs before each test
     runner.run_query(
         """
@@ -40,11 +29,7 @@ def run_around_tests():
     runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
 
 
-def test_nonexisting_algo():
+def test_nonexisting_algo(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
     with pytest.raises(Exception):
         gds.bogusAlgo.stream(G)
-
-
-def teardown_module():
-    driver.close()

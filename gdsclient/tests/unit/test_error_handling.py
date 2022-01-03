@@ -1,18 +1,8 @@
 import pytest
 
-from gdsclient import GraphDataScience
-
-from . import CollectingQueryRunner
+from gdsclient.graph_data_science import GraphDataScience
 
 
-def setup_module():
-    global runner
-    global gds
-
-    runner = CollectingQueryRunner()
-    gds = GraphDataScience(runner)
-
-
-def test_call_nonexisting_endpoint():
+def test_call_nonexisting_endpoint(gds: GraphDataScience) -> None:
     with pytest.raises(SyntaxError):
         gds.bogus.thing()

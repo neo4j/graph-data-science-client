@@ -59,7 +59,7 @@ Setting up the development environment:
  * [Install pip](https://pip.pypa.io/en/stable/installation/)
  * Install the project's Python dependencies:
    ```bash
-   pip install -r requirements/base.txt -r requirements/tests.txt
+   pip install -r requirements/base.txt -r requirements/dev.txt
    ```
  * (Optional) To run integration tests locally, set up a [Neo4j DBMS](https://neo4j.com/docs/getting-started/current/) with [GDS](https://neo4j.com/docs/graph-data-science/current/) installed
 

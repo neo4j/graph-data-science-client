@@ -55,7 +55,7 @@ Tests can be found in `gdsclient/tests`. In each of the folders there, `unit` an
 To install the Python requirements for running tests simply run:
 
 ```bash
-pip install -r requirements/tests.txt
+pip install -r requirements/dev.txt
 ```
 
 
@@ -97,19 +97,19 @@ The code follows a rather opinionated style based on [pep8](https://www.python.o
 To enforce code style we use several tools, and they can all be installed by running:
 
 ```bash
-pip install -r requirements/tests.txt
+pip install -r requirements/dev.txt
 ```
 
 ### Linting
 
 To enforce pep8 conformity (with the exception of using max line length = 120) [flake8](https://flake8.pycqa.org/en/latest/) is used.
-To run it on the entire repository, simply call
+To run it on the entire repository, simply call:
 
 ```bash
 flake8
 ```
 
-from the root. See `.flake8` for our custom settings.
+from the root. See `.flake8` for our custom flake8 settings.
 
 
 ### Formatting
@@ -131,6 +131,19 @@ isort .
 ```
 
 from the root.
+
+
+### Static typing
+
+The code is annotated with type hints in order to provide documentation and allow for static type analysis with [mypy](http://mypy-lang.org/).
+Please note that the `typing` library is used for annotation types in order to stay compatible with Python versions < 3.9.
+To run static analysis on the entire repository with mypy, just run:
+
+```bash
+mypy .
+```
+
+from the root. See `mypy.ini` for our custom mypy settings.
 
 
 ## Contributing

@@ -1,25 +1,17 @@
+from typing import Generator
+
 import pytest
-from neo4j import DEFAULT_DATABASE, GraphDatabase
+from neo4j import DEFAULT_DATABASE
 
-from gdsclient import GraphDataScience, Neo4jQueryRunner
-
-from . import AUTH, URI
+from gdsclient.graph_data_science import GraphDataScience
+from gdsclient.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from gdsclient.query_runner.query_runner import QueryRunner
 
 GRAPH_NAME = "g"
 
 
-def setup_module():
-    global driver
-    global runner
-    global gds
-
-    driver = GraphDatabase.driver(URI, auth=AUTH)
-    runner = Neo4jQueryRunner(driver)
-    gds = GraphDataScience(runner)
-
-
 @pytest.fixture(autouse=True)
-def run_around_tests():
+def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     # Runs before each test
     runner.run_query(
         """
@@ -40,7 +32,7 @@ def run_around_tests():
     runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
 
 
-def test_project_graph_native():
+def test_project_graph_native(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
     assert G.name() == GRAPH_NAME
 
@@ -48,13 +40,13 @@ def test_project_graph_native():
     assert result[0]["exists"]
 
 
-def test_project_graph_native_estimate():
+def test_project_graph_native_estimate(gds: GraphDataScience) -> None:
     result = gds.graph.project.estimate("*", "*")
 
     assert result[0]["requiredMemory"]
 
 
-def test_project_graph_cypher():
+def test_project_graph_cypher(gds: GraphDataScience) -> None:
     node_query = "MATCH (n:Node) RETURN id(n) as id"
     relationship_query = (
         "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
@@ -66,7 +58,7 @@ def test_project_graph_cypher():
     assert result[0]["exists"]
 
 
-def test_project_graph_cypher_estimate():
+def test_project_graph_cypher_estimate(gds: GraphDataScience) -> None:
     node_query = "MATCH (n:Node) RETURN id(n) as id"
     relationship_query = (
         "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
@@ -76,7 +68,7 @@ def test_project_graph_cypher_estimate():
     assert result[0]["requiredMemory"]
 
 
-def test_project_subgraph():
+def test_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     subG = gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
@@ -89,7 +81,7 @@ def test_project_subgraph():
     runner.run_query(f"CALL gds.graph.drop('{subG.name()}')")
 
 
-def test_graph_list():
+def test_graph_list(gds: GraphDataScience) -> None:
     result = gds.graph.list()
     assert len(result) == 0
 
@@ -101,7 +93,7 @@ def test_graph_list():
     assert result[0]["graphName"] == GRAPH_NAME
 
 
-def test_graph_exists():
+def test_graph_exists(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.graph.exists(G.name())
@@ -111,7 +103,7 @@ def test_graph_exists():
     assert not result[0]["exists"]
 
 
-def test_graph_drop():
+def test_graph_drop(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.graph.drop(G, True)
@@ -121,7 +113,7 @@ def test_graph_drop():
         gds.graph.drop(G, True)
 
 
-def test_graph_export():
+def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     MY_DB_NAME = "test-database"
@@ -140,7 +132,7 @@ def test_graph_export():
     runner.set_database(DEFAULT_DATABASE)
 
 
-def test_graph_get():
+def test_graph_get(gds: GraphDataScience) -> None:
     gds.graph.project(GRAPH_NAME, "*", "*")
 
     G = gds.graph.get(GRAPH_NAME)
@@ -148,7 +140,3 @@ def test_graph_get():
 
     with pytest.raises(ValueError):
         gds.graph.get("bogusName")
-
-
-def teardown_module():
-    driver.close()
