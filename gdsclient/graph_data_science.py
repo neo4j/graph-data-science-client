@@ -8,7 +8,7 @@ class GraphDataScience(DirectEndpoints):
         super().__init__(query_runner, "gds")
         self._query_runner = query_runner
 
-    def __getattr__(self, attr: str) -> CallBuilder:
+    def __getattr__(self, attr: float) -> CallBuilder:
         return CallBuilder(self._query_runner, f"gds.{attr}")
 
     def set_database(self, db: str) -> None:
