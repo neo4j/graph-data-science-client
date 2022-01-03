@@ -1,7 +1,6 @@
-from gdsclient.algo.algo_endpoints import AlgoEndpoints
-from gdsclient.query_runner.query_runner import QueryRunner
-
+from .algo.algo_endpoints import AlgoEndpoints
 from .graph.graph_endpoints import GraphEndpoints
+from .query_runner.query_runner import QueryRunner
 
 
 class IndirectEndpoints(AlgoEndpoints, GraphEndpoints):

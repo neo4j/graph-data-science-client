@@ -1,6 +1,5 @@
-from gdsclient.query_runner.query_runner import QueryRunner
-
 from .graph.graph_endpoints import GraphEndpoints
+from .query_runner.query_runner import QueryRunner
 
 
 class DirectEndpoints(GraphEndpoints):
