@@ -121,6 +121,8 @@ gds.graph.drop
 gds.graph.export
 ```
 
+Further, there's a new call named `gds.graph.get` which takes a name as input and returns a `Graph` object if a graph projection of that name exists in the user's graph catalog.
+The idea is to have a way of creating `Graph`s for already projected graphs, without having to do a new projection.
 
 ## Known limitations
 
