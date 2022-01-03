@@ -22,6 +22,8 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     packages=["gdsclient"],
+    package_data={"gdsclient": ["py.typed"]},
     python_requires=">=3.6",
     install_requires=reqs,
+    zip_safe=False,
 )
