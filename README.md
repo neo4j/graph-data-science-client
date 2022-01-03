@@ -1,38 +1,38 @@
 # gdsclient
 
-This repository hosts the sources for `gdsclient`, a Python wrapper API for operating and working with the [Neo4j Graph Data Science (GDS) library](https://github.com/neo4j/graph-data-science).
-`gdsclient` enables users to write pure Python code to project graphs, run algorithms, and define and use machine learning pipelines in GDS.
+`gdsclient` is a Python wrapper API for operating and working with the [Neo4j Graph Data Science (GDS) library](https://github.com/neo4j/graph-data-science).
+It enables users to write pure Python code to project graphs, run algorithms, and define and use machine learning pipelines in GDS.
 
-The API is designed to mimic the GDS Cypher procedure API, but in Python code.
+The API is designed to mimic the GDS Cypher procedure API in Python code.
 It abstracts the necessary operations of the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) to offer a simpler surface.
 
-Please leave any feedback as issues on this repository.
+Please leave any feedback as issues on [the source repository](https://github.com/neo4j/gdsclient).
 Happy coding!
 
 
 ## NOTE
 
-This is a work in progress and [several GDS features](#known-limitations) are known to be missing or not working properly.
+This is a work in progress and several GDS features are known to be missing or not working properly (see [Known limitations](#known-limitations) below).
 Further, this library targets GDS versions 2.0+ (not yet released) and as such may not work with older versions.
 
 
 ## Installation
 
-To build and install `gdsclient` from this repository, simply run the following command:
+To install the latest deployed version of `gdsclient`, simply run:
 
 ```bash
-pip install .
+pip install gdsclient
 ```
 
 
-## Using the library
+## Usage
 
 What follows is a high level description of some of the operations supported by `gdsclient`.
 For extensive documentation of all operations supported by GDS, please refer to the [GDS Manual](https://neo4j.com/docs/graph-data-science/current/).
 
-Extensive end-to-end examples in Jupyter ready-to-run notebooks can be found in the `examples` directory:
+Extensive end-to-end examples in Jupyter ready-to-run notebooks can be found in the [`examples` source directory](https://github.com/neo4j/gdsclient/tree/main/examples):
 
-* [Computing similarities with kNN based on FastRP embeddings](examples/fastrp-and-knn.ipynb)
+* [Computing similarities with kNN based on FastRP embeddings](https://github.com/neo4j/gdsclient/tree/main/examples/fastrp-and-knn.ipynb)
 
 
 ### Imports and setup
@@ -87,7 +87,7 @@ The first (positional) argument is a `Graph`, and the keyword arguments map dire
 The other [algorithm execution modes](https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/) - mutate, stats and stream - are also supported via analogous calls.
 
 Though most algorithms are supported this way, not all are yet.
-Please see [Known limitations](#known-limitations) for more on this.
+Please see [Known limitations](#known-limitations) below for more on this.
 
 
 ### The Graph object
