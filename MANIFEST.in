@@ -1,2 +1,3 @@
 include requirements/base.txt
+include LICENSE
 prune gdsclient/tests
