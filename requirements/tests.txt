@@ -2,4 +2,5 @@ black
 black[jupyter]
 flake8
 isort
+mypy
 pytest
