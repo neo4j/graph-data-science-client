@@ -63,6 +63,8 @@ Setting up the development environment:
    ```
  * (Optional) To run integration tests locally, set up a [Neo4j DBMS](https://neo4j.com/docs/getting-started/current/) with [GDS](https://neo4j.com/docs/graph-data-science/current/) installed
 
+See [TESTING.md](TESTING.md) for instructions on how to run tests and check that code style is maintained.
+
 
 ## Got an idea for a new project?
 
