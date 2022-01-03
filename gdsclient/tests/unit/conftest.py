@@ -27,11 +27,11 @@ class CollectingQueryRunner(QueryRunner):
         pass
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="package")
 def runner() -> CollectingQueryRunner:
     return CollectingQueryRunner()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="package")
 def gds(runner: CollectingQueryRunner) -> GraphDataScience:
     return GraphDataScience(runner)

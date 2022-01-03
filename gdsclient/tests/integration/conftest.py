@@ -17,7 +17,7 @@ if os.environ.get("NEO4J_USER") is not None:
     )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="package")
 def runner() -> Generator[Neo4jQueryRunner, None, None]:
     driver = GraphDatabase.driver(URI, auth=AUTH)
     runner = Neo4jQueryRunner(driver)
@@ -27,6 +27,6 @@ def runner() -> Generator[Neo4jQueryRunner, None, None]:
     driver.close()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="package")
 def gds(runner: Neo4jQueryRunner) -> GraphDataScience:
     return GraphDataScience(runner)
