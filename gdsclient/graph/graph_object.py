@@ -1,25 +1,11 @@
-def _assert_not_dropped(function):
-    def wrapper(self, *args, **kwargs):
-        if self.dropped():
-            raise ValueError("This Graph object has been dropped")
-        return function(self, *args, **kwargs)
-
-    return wrapper
-
-
 class Graph:
     def __init__(self, name, query_runner):
         self._name = name
         self._query_runner = query_runner
-        self._dropped = False
 
     def name(self):
         return self._name
 
-    def dropped(self):
-        return self._dropped
-
-    @_assert_not_dropped
     def _graph_info(self, yields=[]):
         yield_suffix = "" if len(yields) == 0 else " YIELD " + ", ".join(yields)
         info = self._query_runner.run_query(
@@ -68,7 +54,6 @@ class Graph:
     def size_in_bytes(self):
         return self._graph_info(["sizeInBytes"])["sizeInBytes"]
 
-    @_assert_not_dropped
     def exists(self):
         result = self._query_runner.run_query(
             "CALL gds.graph.exists($graph_name)",
@@ -76,11 +61,8 @@ class Graph:
         )
         return result[0]["exists"]
 
-    @_assert_not_dropped
     def drop(self):
-        if self.exists():
-            self._query_runner.run_query(
-                "CALL gds.graph.drop($graph_name, true)",
-                {"graph_name": self._name},
-            )
-        self._dropped = True
+        self._query_runner.run_query(
+            "CALL gds.graph.drop($graph_name, false)",
+            {"graph_name": self._name},
+        )

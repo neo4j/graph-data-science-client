@@ -117,7 +117,7 @@ def test_graph_drop():
     result = gds.graph.drop(G, True)
     assert result[0]["graphName"] == GRAPH_NAME
 
-    with pytest.raises(ValueError):
+    with pytest.raises(Exception):
         gds.graph.drop(G, True)
 
 

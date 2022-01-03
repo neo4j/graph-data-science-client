@@ -1,4 +1,3 @@
-from ..validation import validation
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
 
@@ -13,16 +12,8 @@ class GraphEndpoints:
         self._namespace += ".project"
         return GraphProjectRunner(self._query_runner, self._namespace)
 
-    @validation.assert_graph(args_pos=1)
     def drop(self, G, failIfMissing=False, dbName="", username=None):
-        if self._namespace != "gds.graph":
-            raise SyntaxError(f"There is no {self._namespace + '.drop'} to call")
-
-        # Make sure graph is marked as dropped if not existing.
-        if not self.exists(G.name())[0]["exists"]:
-            G._dropped = True
-
-        self._namespace = "gds.graph.drop"
+        self._namespace += ".drop"
 
         params = {
             "graph_name": G.name(),
@@ -36,7 +27,6 @@ class GraphEndpoints:
             query = f"CALL {self._namespace}($graph_name, $fail_if_missing, $db_name)"
 
         result = self._query_runner.run_query(query, params)
-        G._dropped = True
 
         return result
 
@@ -46,7 +36,6 @@ class GraphEndpoints:
             f"CALL {self._namespace}($graph_name)", {"graph_name": graph_name}
         )
 
-    @validation.assert_graph(key="G")
     def list(self, G=None):
         self._namespace += ".list"
 
@@ -59,7 +48,6 @@ class GraphEndpoints:
 
         return self._query_runner.run_query(query, params)
 
-    @validation.assert_graph(args_pos=1)
     def export(self, G, **config):
         self._namespace += ".export"
 
