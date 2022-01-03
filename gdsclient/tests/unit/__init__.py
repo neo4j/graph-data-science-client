@@ -15,3 +15,6 @@ class CollectingQueryRunner(QueryRunner):
 
     def last_params(self):
         return self.params[-1]
+
+    def set_database(self, _):
+        pass

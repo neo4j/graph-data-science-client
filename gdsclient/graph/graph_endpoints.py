@@ -1,18 +1,28 @@
+from typing import Any
+
+from gdsclient.query_runner.query_runner import QueryResult, QueryRunner
+
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
 
 
 class GraphEndpoints:
-    def __init__(self, query_runner, namespace):
+    def __init__(self, query_runner: QueryRunner, namespace: str):
         self._query_runner = query_runner
         self._namespace = namespace
 
     @property
-    def project(self):
+    def project(self) -> GraphProjectRunner:
         self._namespace += ".project"
         return GraphProjectRunner(self._query_runner, self._namespace)
 
-    def drop(self, G, failIfMissing=False, dbName="", username=None):
+    def drop(
+        self,
+        G: Graph,
+        failIfMissing: bool = False,
+        dbName: str = "",
+        username: str = None,
+    ) -> QueryResult:
         self._namespace += ".drop"
 
         params = {
@@ -30,13 +40,13 @@ class GraphEndpoints:
 
         return result
 
-    def exists(self, graph_name):
+    def exists(self, graph_name: str) -> QueryResult:
         self._namespace += ".exists"
         return self._query_runner.run_query(
             f"CALL {self._namespace}($graph_name)", {"graph_name": graph_name}
         )
 
-    def list(self, G=None):
+    def list(self, G: Graph = None) -> QueryResult:
         self._namespace += ".list"
 
         if G:
@@ -48,7 +58,7 @@ class GraphEndpoints:
 
         return self._query_runner.run_query(query, params)
 
-    def export(self, G, **config):
+    def export(self, G: Graph, **config: Any) -> QueryResult:
         self._namespace += ".export"
 
         query = f"CALL {self._namespace}($graph_name, $config)"
@@ -57,7 +67,7 @@ class GraphEndpoints:
 
         return self._query_runner.run_query(query, params)
 
-    def get(self, graph_name):
+    def get(self, graph_name: str) -> Graph:
         if self._namespace != "gds.graph":
             raise SyntaxError(f"There is no {self._namespace + '.get'} to call")
 

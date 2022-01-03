@@ -1,23 +1,24 @@
+from ..query_runner.query_runner import QueryRunner
 from .algo_proc_runner import AlgoProcRunner
 
 
 class AlgoEndpoints:
-    def __init__(self, query_runner, namespace):
+    def __init__(self, query_runner: QueryRunner, namespace: str):
         self._query_runner = query_runner
         self._namespace = namespace
 
     @property
-    def mutate(self):
+    def mutate(self) -> AlgoProcRunner:
         return AlgoProcRunner(self._query_runner, self._namespace + ".mutate")
 
     @property
-    def stats(self):
+    def stats(self) -> AlgoProcRunner:
         return AlgoProcRunner(self._query_runner, self._namespace + ".stats")
 
     @property
-    def stream(self):
+    def stream(self) -> AlgoProcRunner:
         return AlgoProcRunner(self._query_runner, self._namespace + ".stream")
 
     @property
-    def write(self):
+    def write(self) -> AlgoProcRunner:
         return AlgoProcRunner(self._query_runner, self._namespace + ".write")
