@@ -12,7 +12,7 @@ class AlgoProcRunner:
     def _run_procedure(self, G: Graph, config: Dict[str, Any]) -> QueryResult:
         query = f"CALL {self._proc_name}($graph_name, $config)"
 
-        params = {}
+        params: Dict[str, Any] = {}
         params["graph_name"] = G.name()
         params["config"] = config
 

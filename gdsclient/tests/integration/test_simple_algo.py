@@ -1,25 +1,15 @@
-from neo4j import GraphDatabase
+from typing import Generator
+
 from pytest import fixture
 
-from gdsclient import GraphDataScience, Neo4jQueryRunner
-
-from . import AUTH, URI
+from gdsclient.graph_data_science import GraphDataScience
+from gdsclient.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 GRAPH_NAME = "g"
 
 
-def setup_module():
-    global driver
-    global runner
-    global gds
-
-    driver = GraphDatabase.driver(URI, auth=AUTH)
-    runner = Neo4jQueryRunner(driver)
-    gds = GraphDataScience(runner)
-
-
 @fixture(autouse=True)
-def run_around_tests():
+def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     # Runs before each test
     runner.run_query(
         """
@@ -40,7 +30,7 @@ def run_around_tests():
     runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}')")
 
 
-def test_pageRank_mutate():
+def test_pageRank_mutate(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     gds.pageRank.mutate(G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
@@ -55,7 +45,7 @@ def test_pageRank_mutate():
     assert list(props) == ["rank"]
 
 
-def test_pageRank_mutate_estimate():
+def test_pageRank_mutate_estimate(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.pageRank.mutate.estimate(
@@ -65,7 +55,7 @@ def test_pageRank_mutate_estimate():
     assert result[0]["requiredMemory"]
 
 
-def test_wcc_stats():
+def test_wcc_stats(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.wcc.stats(G)
@@ -73,7 +63,7 @@ def test_wcc_stats():
     assert result[0]["componentCount"] == 1
 
 
-def test_wcc_stats_estimate():
+def test_wcc_stats_estimate(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.wcc.stats.estimate(G)
@@ -81,7 +71,7 @@ def test_wcc_stats_estimate():
     assert result[0]["requiredMemory"]
 
 
-def test_nodeSimilarity_stream():
+def test_nodeSimilarity_stream(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.nodeSimilarity.stream(G, similarityCutoff=0)
@@ -90,7 +80,7 @@ def test_nodeSimilarity_stream():
     assert result[0]["similarity"] == 0.5
 
 
-def test_nodeSimilarity_stream_estimate():
+def test_nodeSimilarity_stream_estimate(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.nodeSimilarity.stream.estimate(G, similarityCutoff=0)
@@ -98,7 +88,7 @@ def test_nodeSimilarity_stream_estimate():
     assert result[0]["requiredMemory"]
 
 
-def test_fastRP_write():
+def test_fastRP_write(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     gds.fastRP.write(G, writeProperty="embedding", embeddingDimension=4, randomSeed=42)
@@ -115,7 +105,7 @@ def test_fastRP_write():
     assert len(embeddings[2]["embedding"]) == 4
 
 
-def test_fastRP_write_estimate():
+def test_fastRP_write_estimate(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.fastRP.write.estimate(
@@ -123,7 +113,3 @@ def test_fastRP_write_estimate():
     )
 
     assert result[0]["requiredMemory"]
-
-
-def teardown_module():
-    driver.close()

@@ -1,21 +1,11 @@
-from neo4j import DEFAULT_DATABASE, GraphDatabase
+from neo4j import DEFAULT_DATABASE
 
-from gdsclient import Neo4jQueryRunner
-
-from . import AUTH, URI
+from gdsclient.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 GRAPH_NAME = "g"
 
 
-def setup_module():
-    global driver
-    global runner
-
-    driver = GraphDatabase.driver(URI, auth=AUTH)
-    runner = Neo4jQueryRunner(driver)
-
-
-def test_switching_db():
+def test_switching_db(runner: Neo4jQueryRunner) -> None:
     runner.run_query("CREATE (a: Node)")
 
     pre_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")[0]["c"]
@@ -31,7 +21,3 @@ def test_switching_db():
     runner.set_database(DEFAULT_DATABASE)
     runner.run_query("MATCH (n) DETACH DELETE n")
     runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
-
-
-def teardown_module():
-    driver.close()
