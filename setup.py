@@ -6,6 +6,18 @@ with open("README.md", "r", encoding="utf-8") as f:
 with open("requirements/base.txt", "r", encoding="utf-8") as f:
     reqs = f.read().split()
 
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development",
+    "Typing :: Typed",
+]
+
 setuptools.setup(
     name="gdsclient",
     version="0.0.3",
@@ -16,11 +28,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     license="Apache License 2.0",
     url="https://github.com/neo4j/graph-data-science",
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: Apache Software License",
-        "Operating System :: OS Independent",
-    ],
+    classifiers=classifiers,
     packages=setuptools.find_packages(),
     package_data={"gdsclient": ["py.typed"]},
     python_requires=">=3.6",
