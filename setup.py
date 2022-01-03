@@ -23,6 +23,7 @@ setuptools.setup(
     ],
     packages=["gdsclient"],
     package_data={"gdsclient": ["py.typed"]},
+    include_package_data=True,
     python_requires=">=3.6",
     install_requires=reqs,
     zip_safe=False,
