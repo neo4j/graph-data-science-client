@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 from gdsclient.query_runner.query_runner import QueryResult, QueryRunner
 
@@ -21,7 +21,7 @@ class GraphEndpoints:
         G: Graph,
         failIfMissing: bool = False,
         dbName: str = "",
-        username: str = None,
+        username: Optional[str] = None,
     ) -> QueryResult:
         self._namespace += ".drop"
 
@@ -46,7 +46,7 @@ class GraphEndpoints:
             f"CALL {self._namespace}($graph_name)", {"graph_name": graph_name}
         )
 
-    def list(self, G: Graph = None) -> QueryResult:
+    def list(self, G: Optional[Graph] = None) -> QueryResult:
         self._namespace += ".list"
 
         if G:
