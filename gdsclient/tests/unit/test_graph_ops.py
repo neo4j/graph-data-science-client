@@ -73,9 +73,7 @@ def test_project_graph_cypher_estimate(
 
 def test_project_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     from_G = gds.graph.project("g", "*", "*")
-    gds.beta.graph.project.subgraph(
-        "s", from_G, {"Node": {}}, {"REL": {}}, concurrency=2
-    )
+    gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
 
     assert (
         runner.last_query()
@@ -85,8 +83,8 @@ def test_project_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) 
     assert runner.last_params() == {
         "graph_name": "s",
         "from_graph_name": "g",
-        "node_filter": {"Node": {}},
-        "relationship_filter": {"REL": {}},
+        "node_filter": "n.x > 1",
+        "relationship_filter": "*",
         "config": {"concurrency": 2},
     }
 

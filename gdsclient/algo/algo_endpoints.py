@@ -9,16 +9,16 @@ class AlgoEndpoints:
 
     @property
     def mutate(self) -> AlgoProcRunner:
-        return AlgoProcRunner(self._query_runner, self._namespace + ".mutate")
+        return AlgoProcRunner(self._query_runner, f"{self._namespace}.mutate")
 
     @property
     def stats(self) -> AlgoProcRunner:
-        return AlgoProcRunner(self._query_runner, self._namespace + ".stats")
+        return AlgoProcRunner(self._query_runner, f"{self._namespace}.stats")
 
     @property
     def stream(self) -> AlgoProcRunner:
-        return AlgoProcRunner(self._query_runner, self._namespace + ".stream")
+        return AlgoProcRunner(self._query_runner, f"{self._namespace}.stream")
 
     @property
     def write(self) -> AlgoProcRunner:
-        return AlgoProcRunner(self._query_runner, self._namespace + ".write")
+        return AlgoProcRunner(self._query_runner, f"{self._namespace}.write")
