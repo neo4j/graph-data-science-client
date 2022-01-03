@@ -8,7 +8,7 @@ with open("requirements/base.txt", "r", encoding="utf-8") as f:
 
 setuptools.setup(
     name="gdsclient",
-    version="0.0.1",
+    version="0.0.3",
     author="Neo4j",
     author_email="team-gds@neo4j.org",
     description="Python bindings for the Neo4j Graph Data Science library",
