@@ -1,3 +1,2 @@
 include requirements/base.txt
-recursive-include gdsclient/ *.py
 prune gdsclient/tests
