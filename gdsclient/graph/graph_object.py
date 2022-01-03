@@ -24,10 +24,10 @@ class Graph:
         return info[0]
 
     def node_count(self) -> int:
-        return self._graph_info(["nodeCount"])["nodeCount"]
+        return self._graph_info(["nodeCount"])["nodeCount"]  # type: ignore
 
     def relationship_count(self) -> int:
-        return self._graph_info(["relationshipCount"])["relationshipCount"]
+        return self._graph_info(["relationshipCount"])["relationshipCount"]  # type: ignore
 
     def node_properties(self, label: str) -> List[str]:
         labels_to_props = self._graph_info(["schema"])["schema"]["nodes"]
@@ -48,23 +48,23 @@ class Graph:
         return list(types_to_props[type].keys())
 
     def degree_distribution(self) -> Dict[str, float]:
-        return self._graph_info(["degreeDistribution"])["degreeDistribution"]
+        return self._graph_info(["degreeDistribution"])["degreeDistribution"]  # type: ignore
 
     def density(self) -> float:
-        return self._graph_info(["density"])["density"]
+        return self._graph_info(["density"])["density"]  # type: ignore
 
     def memory_usage(self) -> str:
-        return self._graph_info(["memoryUsage"])["memoryUsage"]
+        return self._graph_info(["memoryUsage"])["memoryUsage"]  # type: ignore
 
     def size_in_bytes(self) -> int:
-        return self._graph_info(["sizeInBytes"])["sizeInBytes"]
+        return self._graph_info(["sizeInBytes"])["sizeInBytes"]  # type: ignore
 
     def exists(self) -> bool:
         result = self._query_runner.run_query(
             "CALL gds.graph.exists($graph_name)",
             {"graph_name": self._name},
         )
-        return result[0]["exists"]
+        return result[0]["exists"]  # type: ignore
 
     def drop(self) -> None:
         self._query_runner.run_query(

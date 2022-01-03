@@ -13,7 +13,7 @@ class Neo4jQueryRunner(QueryRunner):
     def run_query(self, query: str, params: Dict[str, Any] = {}) -> QueryResult:
         with self._driver.session(database=self._db) as session:
             result = session.run(query, params)
-            return result.data()
+            return result.data()  # type: ignore
 
     def set_database(self, db: str) -> None:
         self._db = db
