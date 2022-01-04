@@ -161,3 +161,10 @@ def test_graph_streamRelationshipProperty(gds: GraphDataScience) -> None:
 
     result = gds.graph.streamRelationshipProperty(G, "relX", concurrency=2)
     assert [e["propertyValue"] for e in result] == [4, 5, 6]
+
+
+def test_graph_streamRelationshipProperties(gds: GraphDataScience) -> None:
+    G = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
+
+    result = gds.graph.streamRelationshipProperties(G, ["relX"], concurrency=2)
+    assert [e["propertyValue"] for e in result] == [4, 5, 6]

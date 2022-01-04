@@ -209,3 +209,33 @@ def test_graph_streamRelationshipProperty(
         "entities": "dummyType",
         "config": {"concurrency": 2},
     }
+
+
+def test_graph_streamRelationshipProperties(
+    runner: CollectingQueryRunner, gds: GraphDataScience
+) -> None:
+    G = gds.graph.project("g", "*", "*")
+
+    gds.graph.streamRelationshipProperties(G, ["dummyProp"], concurrency=2)
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.streamRelationshipProperties($graph_name, $properties, $entities, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": ["dummyProp"],
+        "entities": ["*"],
+        "config": {"concurrency": 2},
+    }
+
+    gds.graph.streamRelationshipProperties(G, ["dummyProp"], "dummyType", concurrency=2)
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.streamRelationshipProperties($graph_name, $properties, $entities, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": ["dummyProp"],
+        "entities": "dummyType",
+        "config": {"concurrency": 2},
+    }
