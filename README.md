@@ -74,17 +74,17 @@ We can take a projected graph, represented to us by a `Graph` object named `G`, 
 
 ```python
 # Optionally we can estimate memory of the operation first (if the algo supports it)
-res = gds.pageRank.write.estimate (G, tolerance=0.5, writeProperty="pagerank")
+res = gds.pageRank.write.estimate(G, tolerance=0.5, writeProperty="pagerank")
 assert res[0]["requiredMemory"] < 1e12
 
-res = gds.pageRank.write(G, tolerance=0.5, writeProperty="pagerank")
+res = gds.pageRank.mutate(G, tolerance=0.5, writeProperty="pagerank")
 assert res[0]["nodePropertiesWritten"] == G.node_count()
 ```
 
 These calls take one positional argument and a number of keyword arguments depending on the algorithm.
 The first (positional) argument is a `Graph`, and the keyword arguments map directly to the algorithm's [configuration map](https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/#algorithms-syntax-configuration-parameters).
 
-The other [algorithm execution modes](https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/) - mutate, stats and stream - are also supported via analogous calls.
+The other [algorithm execution modes](https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/) - stats, stream and write - are also supported via analogous calls.
 
 Though most algorithms are supported this way, not all are yet.
 Please see [Known limitations](#known-limitations) below for more on this.
@@ -98,11 +98,11 @@ Some examples are (where `G` is a `Graph`):
 
 ```python
 # Get the graph's node count
-G.node_count()
+n = G.node_count()
 
 # Get a list of all relationship properties present on
 # relationships of the type "myRelType"
-G.relationship_properties("myRelType")
+rel_props = G.relationship_properties("myRelType")
 
 # Drop the projection represented by G
 G.drop()
@@ -111,18 +111,18 @@ G.drop()
 
 ### Graph catalog utils
 
-Apart from the project calls, some additional [GDS Graph catalog](https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/) operations are supported. Some notable examples are:
+All procedures from the [GDS Graph catalog](https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/) are supported with `gdsclient`.
+Some examples are (where `G` is a `Graph`):
 
 ```python
-gds.beta.graph.subgraph
-gds.graph.list
-gds.graph.exists
-gds.graph.drop
-gds.graph.export
-gds.graph.stream{Node,Relationship}Propert{y,ies}
+res = gds.graph.list()
+assert len(res) == 1  # Exactly one graph is projected
+
+res = gds.graph.streamNodeProperties(G, "rank")
+assert len(res) == G.node_count()
 ```
 
-Further, there's a new call named `gds.graph.get` which takes a name as input and returns a `Graph` object if a graph projection of that name exists in the user's graph catalog.
+Further, there's a new call named `gds.graph.get` (`gdsclient` only) which takes a name as input and returns a `Graph` object if a graph projection of that name exists in the user's graph catalog.
 The idea is to have a way of creating `Graph`s for already projected graphs, without having to do a new projection.
 
 ## Known limitations
@@ -133,7 +133,7 @@ Several operations are known to not yet work with `gdsclient`:
 * Topological link prediction
 * Supervised machine learning (GraphSAGE, Link prediction, Node classification)
 * Progress logging and system monitoring
-* Some Graph catalog operations
+* Some utility functions
 
 
 ## License

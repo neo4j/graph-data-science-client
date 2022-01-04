@@ -112,12 +112,23 @@ def test_graph_exists(runner: CollectingQueryRunner, gds: GraphDataScience) -> N
 
 def test_graph_export(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G = gds.graph.project("g", "*", "*")
-    gds.graph.export(G, dbName="db", batchSize=10)
 
+    gds.graph.export(G, dbName="db", batchSize=10)
     assert runner.last_query() == "CALL gds.graph.export($graph_name, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "config": {"dbName": "db", "batchSize": 10},
+    }
+
+
+def test_graph_export_csv(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G = gds.graph.project("g", "*", "*")
+
+    gds.beta.graph.export.csv(G, exportName="fileName")
+    assert runner.last_query() == "CALL gds.beta.graph.export.csv($graph_name, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "config": {"exportName": "fileName"},
     }
 
 
