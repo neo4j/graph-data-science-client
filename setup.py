@@ -18,6 +18,13 @@ classifiers = [
     "Typing :: Typed",
 ]
 
+project_urls = {
+    "Documentation": "https://neo4j.com/docs/graph-data-science/current/",
+    "Source": "https://github.com/neo4j/gdsclient",
+    "Bug Tracker": "https://github.com/neo4j/gdsclient/issues",
+    "GDS Source": "https://github.com/neo4j/graph-data-science",
+}
+
 setuptools.setup(
     name="gdsclient",
     version="0.0.3",
@@ -27,10 +34,11 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="Apache License 2.0",
-    url="https://github.com/neo4j/graph-data-science",
+    url="https://neo4j.com/product/graph-data-science/",
     classifiers=classifiers,
     packages=setuptools.find_packages(),
     package_data={"gdsclient": ["py.typed"]},
+    project_urls=project_urls,
     python_requires=">=3.6",
     install_requires=reqs,
     zip_safe=False,
