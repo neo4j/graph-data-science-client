@@ -1,9 +1,11 @@
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from gdsclient.query_runner.query_runner import QueryResult, QueryRunner
 
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
+
+Strings = Union[str, List[str]]
 
 
 class GraphProcRunner:
@@ -62,7 +64,6 @@ class GraphProcRunner:
         self._namespace += ".export"
 
         query = f"CALL {self._namespace}($graph_name, $config)"
-
         params = {"graph_name": G.name(), "config": config}
 
         return self._query_runner.run_query(query, params)
@@ -75,3 +76,68 @@ class GraphProcRunner:
             raise ValueError(f"No projected graph named '{graph_name}' exists")
 
         return Graph(graph_name, self._query_runner)
+
+    def _stream_properties(
+        self,
+        G: Graph,
+        properties: Strings,
+        entities: Strings,
+        config: Dict[str, Any],
+    ) -> QueryResult:
+        query = f"CALL {self._namespace}($graph_name, $properties, $entities, $config)"
+        params = {
+            "graph_name": G.name(),
+            "properties": properties,
+            "entities": entities,
+            "config": config,
+        }
+
+        return self._query_runner.run_query(query, params)
+
+    def streamNodeProperties(
+        self,
+        G: Graph,
+        node_properties: List[str],
+        node_labels: Strings = ["*"],
+        **config: Any,
+    ) -> QueryResult:
+        self._namespace += ".streamNodeProperties"
+
+        return self._stream_properties(G, node_properties, node_labels, config)
+
+    def streamNodeProperty(
+        self,
+        G: Graph,
+        node_properties: str,
+        node_labels: Strings = ["*"],
+        **config: Any,
+    ) -> QueryResult:
+        self._namespace += ".streamNodeProperty"
+
+        return self._stream_properties(G, node_properties, node_labels, config)
+
+    def streamRelationshipProperties(
+        self,
+        G: Graph,
+        relationship_properties: List[str],
+        relationship_types: Strings = ["*"],
+        **config: Any,
+    ) -> QueryResult:
+        self._namespace += ".streamRelationshipProperties"
+
+        return self._stream_properties(
+            G, relationship_properties, relationship_types, config
+        )
+
+    def streamRelationshipProperty(
+        self,
+        G: Graph,
+        relationship_properties: str,
+        relationship_types: Strings = ["*"],
+        **config: Any,
+    ) -> QueryResult:
+        self._namespace += ".streamRelationshipProperty"
+
+        return self._stream_properties(
+            G, relationship_properties, relationship_types, config
+        )

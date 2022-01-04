@@ -19,9 +19,9 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
         (a: Node {x: 1}),
         (b: Node {x: 2}),
         (c: Node {x: 3}),
-        (a)-[:REL]->(b),
-        (a)-[:REL]->(c),
-        (b)-[:REL]->(c)
+        (a)-[:REL {relX: 4}]->(b),
+        (a)-[:REL {relX: 5}]->(c),
+        (b)-[:REL {relX: 6}]->(c)
         """
     )
 
@@ -140,3 +140,31 @@ def test_graph_get(gds: GraphDataScience) -> None:
 
     with pytest.raises(ValueError):
         gds.graph.get("bogusName")
+
+
+def test_graph_streamNodeProperty(gds: GraphDataScience) -> None:
+    G = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds.graph.streamNodeProperty(G, "x", concurrency=2)
+    assert [e["propertyValue"] for e in result] == [1, 2, 3]
+
+
+def test_graph_streamNodeProperties(gds: GraphDataScience) -> None:
+    G = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds.graph.streamNodeProperties(G, ["x"], concurrency=2)
+    assert [e["propertyValue"] for e in result] == [1, 2, 3]
+
+
+def test_graph_streamRelationshipProperty(gds: GraphDataScience) -> None:
+    G = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
+
+    result = gds.graph.streamRelationshipProperty(G, "relX", concurrency=2)
+    assert [e["propertyValue"] for e in result] == [4, 5, 6]
+
+
+def test_graph_streamRelationshipProperties(gds: GraphDataScience) -> None:
+    G = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
+
+    result = gds.graph.streamRelationshipProperties(G, ["relX"], concurrency=2)
+    assert [e["propertyValue"] for e in result] == [4, 5, 6]
