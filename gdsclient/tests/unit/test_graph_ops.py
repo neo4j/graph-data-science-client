@@ -129,24 +129,24 @@ def test_graph_streamNodeProperty(
     gds.graph.streamNodeProperty(G, "dummyProp", concurrency=2)
     assert (
         runner.last_query()
-        == "CALL gds.graph.streamNodeProperty($graph_name, $nodeProperties, $nodeLabels, $config)"
+        == "CALL gds.graph.streamNodeProperty($graph_name, $properties, $entities, $config)"
     )
     assert runner.last_params() == {
         "graph_name": "g",
-        "nodeProperties": "dummyProp",
-        "nodeLabels": ["*"],
+        "properties": "dummyProp",
+        "entities": ["*"],
         "config": {"concurrency": 2},
     }
 
     gds.graph.streamNodeProperty(G, "dummyProp", "dummyLabel", concurrency=2)
     assert (
         runner.last_query()
-        == "CALL gds.graph.streamNodeProperty($graph_name, $nodeProperties, $nodeLabels, $config)"
+        == "CALL gds.graph.streamNodeProperty($graph_name, $properties, $entities, $config)"
     )
     assert runner.last_params() == {
         "graph_name": "g",
-        "nodeProperties": "dummyProp",
-        "nodeLabels": "dummyLabel",
+        "properties": "dummyProp",
+        "entities": "dummyLabel",
         "config": {"concurrency": 2},
     }
 
@@ -159,23 +159,23 @@ def test_graph_streamNodeProperties(
     gds.graph.streamNodeProperties(G, ["dummyProp"], concurrency=2)
     assert (
         runner.last_query()
-        == "CALL gds.graph.streamNodeProperties($graph_name, $nodeProperties, $nodeLabels, $config)"
+        == "CALL gds.graph.streamNodeProperties($graph_name, $properties, $entities, $config)"
     )
     assert runner.last_params() == {
         "graph_name": "g",
-        "nodeProperties": ["dummyProp"],
-        "nodeLabels": ["*"],
+        "properties": ["dummyProp"],
+        "entities": ["*"],
         "config": {"concurrency": 2},
     }
 
     gds.graph.streamNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
     assert (
         runner.last_query()
-        == "CALL gds.graph.streamNodeProperties($graph_name, $nodeProperties, $nodeLabels, $config)"
+        == "CALL gds.graph.streamNodeProperties($graph_name, $properties, $entities, $config)"
     )
     assert runner.last_params() == {
         "graph_name": "g",
-        "nodeProperties": ["dummyProp"],
-        "nodeLabels": "dummyLabel",
+        "properties": ["dummyProp"],
+        "entities": "dummyLabel",
         "config": {"concurrency": 2},
     }
