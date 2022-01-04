@@ -77,6 +77,27 @@ class GraphProcRunner:
 
         return Graph(graph_name, self._query_runner)
 
+    def streamNodeProperties(
+        self,
+        G: Graph,
+        node_properties: List[str],
+        node_labels: Optional[Strings] = None,
+        **config: Any,
+    ) -> QueryResult:
+        self._namespace += ".streamNodeProperties"
+
+        query = f"CALL {self._namespace}($graph_name, $nodeProperties, $nodeLabels, $config)"
+        params = {
+            "graph_name": G.name(),
+            "nodeProperties": node_properties,
+            "nodeLabels": ["*"],
+            "config": config,
+        }
+        if node_labels:
+            params["nodeLabels"] = node_labels
+
+        return self._query_runner.run_query(query, params)
+
     def streamNodeProperty(
         self,
         G: Graph,

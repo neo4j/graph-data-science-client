@@ -149,3 +149,33 @@ def test_graph_streamNodeProperty(
         "nodeLabels": "dummyLabel",
         "config": {"concurrency": 2},
     }
+
+
+def test_graph_streamNodeProperties(
+    runner: CollectingQueryRunner, gds: GraphDataScience
+) -> None:
+    G = gds.graph.project("g", "*", "*")
+
+    gds.graph.streamNodeProperties(G, ["dummyProp"], concurrency=2)
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.streamNodeProperties($graph_name, $nodeProperties, $nodeLabels, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "nodeProperties": ["dummyProp"],
+        "nodeLabels": ["*"],
+        "config": {"concurrency": 2},
+    }
+
+    gds.graph.streamNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.streamNodeProperties($graph_name, $nodeProperties, $nodeLabels, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "nodeProperties": ["dummyProp"],
+        "nodeLabels": "dummyLabel",
+        "config": {"concurrency": 2},
+    }
