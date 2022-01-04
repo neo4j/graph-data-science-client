@@ -182,3 +182,14 @@ class GraphProcRunner:
         self._namespace += ".removeNodeProperties"
 
         return self._handle_properties(G, node_properties, node_labels, config)
+
+    def deleteRelationships(self, G: Graph, relationship_type: str) -> QueryResult:
+        self._namespace += ".deleteRelationships"
+
+        query = f"CALL {self._namespace}($graph_name, $relationship_type)"
+        params = {
+            "graph_name": G.name(),
+            "relationship_type": relationship_type,
+        }
+
+        return self._query_runner.run_query(query, params)
