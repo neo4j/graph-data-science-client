@@ -171,3 +171,14 @@ class GraphProcRunner:
         }
 
         return self._query_runner.run_query(query, params)
+
+    def removeNodeProperties(
+        self,
+        G: Graph,
+        node_properties: List[str],
+        node_labels: Strings = ["*"],
+        **config: Any,
+    ) -> QueryResult:
+        self._namespace += ".removeNodeProperties"
+
+        return self._handle_properties(G, node_properties, node_labels, config)
