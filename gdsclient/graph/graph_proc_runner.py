@@ -2,6 +2,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from gdsclient.query_runner.query_runner import QueryResult, QueryRunner
 
+from .graph_export_runner import GraphExportRunner
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
 
@@ -17,6 +18,11 @@ class GraphProcRunner:
     def project(self) -> GraphProjectRunner:
         self._namespace += ".project"
         return GraphProjectRunner(self._query_runner, self._namespace)
+
+    @property
+    def export(self) -> GraphExportRunner:
+        self._namespace += ".export"
+        return GraphExportRunner(self._query_runner, self._namespace)
 
     def drop(
         self,
@@ -57,14 +63,6 @@ class GraphProcRunner:
         else:
             query = "CALL gds.graph.list()"
             params = {}
-
-        return self._query_runner.run_query(query, params)
-
-    def export(self, G: Graph, **config: Any) -> QueryResult:
-        self._namespace += ".export"
-
-        query = f"CALL {self._namespace}($graph_name, $config)"
-        params = {"graph_name": G.name(), "config": config}
 
         return self._query_runner.run_query(query, params)
 
