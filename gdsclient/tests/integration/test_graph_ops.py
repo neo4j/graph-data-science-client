@@ -168,3 +168,24 @@ def test_graph_streamRelationshipProperties(gds: GraphDataScience) -> None:
 
     result = gds.graph.streamRelationshipProperties(G, ["relX"], concurrency=2)
     assert [e["propertyValue"] for e in result] == [4, 5, 6]
+
+
+def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
+
+    gds.pageRank.mutate(G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
+
+    result = gds.graph.writeNodeProperties(G, ["rank"], concurrency=2)
+    assert result[0]["propertiesWritten"] == 3
+
+
+def test_graph_writeRelationship(gds: GraphDataScience) -> None:
+    G = gds.graph.project(GRAPH_NAME, "*", "*")
+
+    gds.nodeSimilarity.mutate(
+        G, mutateRelationshipType="SIMILAR", mutateProperty="score", similarityCutoff=0
+    )
+
+    result = gds.graph.writeRelationship(G, "SIMILAR", "score", concurrency=2)
+    assert result[0]["relationshipsWritten"] == 2
+    assert result[0]["propertiesWritten"] == 2

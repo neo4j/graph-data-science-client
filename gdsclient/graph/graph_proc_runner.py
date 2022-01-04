@@ -77,7 +77,7 @@ class GraphProcRunner:
 
         return Graph(graph_name, self._query_runner)
 
-    def _stream_properties(
+    def _handle_properties(
         self,
         G: Graph,
         properties: Strings,
@@ -103,7 +103,7 @@ class GraphProcRunner:
     ) -> QueryResult:
         self._namespace += ".streamNodeProperties"
 
-        return self._stream_properties(G, node_properties, node_labels, config)
+        return self._handle_properties(G, node_properties, node_labels, config)
 
     def streamNodeProperty(
         self,
@@ -114,7 +114,7 @@ class GraphProcRunner:
     ) -> QueryResult:
         self._namespace += ".streamNodeProperty"
 
-        return self._stream_properties(G, node_properties, node_labels, config)
+        return self._handle_properties(G, node_properties, node_labels, config)
 
     def streamRelationshipProperties(
         self,
@@ -125,7 +125,7 @@ class GraphProcRunner:
     ) -> QueryResult:
         self._namespace += ".streamRelationshipProperties"
 
-        return self._stream_properties(
+        return self._handle_properties(
             G, relationship_properties, relationship_types, config
         )
 
@@ -138,6 +138,36 @@ class GraphProcRunner:
     ) -> QueryResult:
         self._namespace += ".streamRelationshipProperty"
 
-        return self._stream_properties(
+        return self._handle_properties(
             G, relationship_properties, relationship_types, config
         )
+
+    def writeNodeProperties(
+        self,
+        G: Graph,
+        node_properties: List[str],
+        node_labels: Strings = ["*"],
+        **config: Any,
+    ) -> QueryResult:
+        self._namespace += ".writeNodeProperties"
+
+        return self._handle_properties(G, node_properties, node_labels, config)
+
+    def writeRelationship(
+        self,
+        G: Graph,
+        relationship_type: str,
+        relationship_property: str = "",
+        **config: Any,
+    ) -> QueryResult:
+        self._namespace += ".writeRelationship"
+
+        query = f"CALL {self._namespace}($graph_name, $relationship_type, $relationship_property, $config)"
+        params = {
+            "graph_name": G.name(),
+            "relationship_type": relationship_type,
+            "relationship_property": relationship_property,
+            "config": config,
+        }
+
+        return self._query_runner.run_query(query, params)
