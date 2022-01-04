@@ -21,7 +21,8 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
         (c: Node {x: 3}),
         (a)-[:REL {relX: 4}]->(b),
         (a)-[:REL {relX: 5}]->(c),
-        (b)-[:REL {relX: 6}]->(c)
+        (b)-[:REL {relX: 6}]->(c),
+        (b)-[:REL2]->(c)
         """
     )
 
@@ -196,3 +197,10 @@ def test_graph_removeNodeProperties(gds: GraphDataScience) -> None:
 
     result = gds.graph.removeNodeProperties(G, ["x"], concurrency=2)
     assert result[0]["propertiesRemoved"] == 3
+
+
+def test_graph_deleteRelationships(gds: GraphDataScience) -> None:
+    G = gds.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
+
+    result = gds.graph.deleteRelationships(G, "REL")
+    assert result[0]["deletedRelationships"] == 3

@@ -329,3 +329,16 @@ def test_graph_removeNodeProperties(
         "entities": "dummyLabel",
         "config": {"concurrency": 2},
     }
+
+
+def test_graph_deleteRelationships(
+    runner: CollectingQueryRunner, gds: GraphDataScience
+) -> None:
+    G = gds.graph.project("g", "*", "*")
+
+    gds.graph.deleteRelationships(G, "REL_A")
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.deleteRelationships($graph_name, $relationship_type)"
+    )
+    assert runner.last_params() == {"graph_name": "g", "relationship_type": "REL_A"}
