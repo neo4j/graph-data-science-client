@@ -189,3 +189,10 @@ def test_graph_writeRelationship(gds: GraphDataScience) -> None:
     result = gds.graph.writeRelationship(G, "SIMILAR", "score", concurrency=2)
     assert result[0]["relationshipsWritten"] == 2
     assert result[0]["propertiesWritten"] == 2
+
+
+def test_graph_removeNodeProperties(gds: GraphDataScience) -> None:
+    G = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds.graph.removeNodeProperties(G, ["x"], concurrency=2)
+    assert result[0]["propertiesRemoved"] == 3

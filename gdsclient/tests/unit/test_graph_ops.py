@@ -299,3 +299,33 @@ def test_graph_writeRelationship(
         "relationship_property": "",
         "config": {"concurrency": 2},
     }
+
+
+def test_graph_removeNodeProperties(
+    runner: CollectingQueryRunner, gds: GraphDataScience
+) -> None:
+    G = gds.graph.project("g", "*", "*")
+
+    gds.graph.removeNodeProperties(G, ["dummyProp"], concurrency=2)
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.removeNodeProperties($graph_name, $properties, $entities, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": ["dummyProp"],
+        "entities": ["*"],
+        "config": {"concurrency": 2},
+    }
+
+    gds.graph.removeNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.removeNodeProperties($graph_name, $properties, $entities, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": ["dummyProp"],
+        "entities": "dummyLabel",
+        "config": {"concurrency": 2},
+    }
