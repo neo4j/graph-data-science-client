@@ -239,3 +239,33 @@ def test_graph_streamRelationshipProperties(
         "entities": "dummyType",
         "config": {"concurrency": 2},
     }
+
+
+def test_graph_writeNodeProperties(
+    runner: CollectingQueryRunner, gds: GraphDataScience
+) -> None:
+    G = gds.graph.project("g", "*", "*")
+
+    gds.graph.writeNodeProperties(G, ["dummyProp"], concurrency=2)
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.writeNodeProperties($graph_name, $properties, $entities, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": ["dummyProp"],
+        "entities": ["*"],
+        "config": {"concurrency": 2},
+    }
+
+    gds.graph.writeNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.writeNodeProperties($graph_name, $properties, $entities, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": ["dummyProp"],
+        "entities": "dummyLabel",
+        "config": {"concurrency": 2},
+    }
