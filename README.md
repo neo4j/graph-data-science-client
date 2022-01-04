@@ -119,6 +119,7 @@ gds.graph.list
 gds.graph.exists
 gds.graph.drop
 gds.graph.export
+gds.graph.stream{Node,Relationship}Propert{y,ies}
 ```
 
 Further, there's a new call named `gds.graph.get` which takes a name as input and returns a `Graph` object if a graph projection of that name exists in the user's graph catalog.
