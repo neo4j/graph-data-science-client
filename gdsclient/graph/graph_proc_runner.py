@@ -152,3 +152,22 @@ class GraphProcRunner:
         self._namespace += ".writeNodeProperties"
 
         return self._handle_properties(G, node_properties, node_labels, config)
+
+    def writeRelationship(
+        self,
+        G: Graph,
+        relationship_type: str,
+        relationship_property: str = "",
+        **config: Any,
+    ) -> QueryResult:
+        self._namespace += ".writeRelationship"
+
+        query = f"CALL {self._namespace}($graph_name, $relationship_type, $relationship_property, $config)"
+        params = {
+            "graph_name": G.name(),
+            "relationship_type": relationship_type,
+            "relationship_property": relationship_property,
+            "config": config,
+        }
+
+        return self._query_runner.run_query(query, params)
