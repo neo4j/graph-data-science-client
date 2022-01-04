@@ -1,9 +1,11 @@
-from typing import Any, Optional
+from typing import Any, List, Optional, TypeVar
 
 from gdsclient.query_runner.query_runner import QueryResult, QueryRunner
 
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
+
+Strings = TypeVar("Strings", str, List[str])
 
 
 class GraphProcRunner:
@@ -62,7 +64,6 @@ class GraphProcRunner:
         self._namespace += ".export"
 
         query = f"CALL {self._namespace}($graph_name, $config)"
-
         params = {"graph_name": G.name(), "config": config}
 
         return self._query_runner.run_query(query, params)
@@ -75,3 +76,24 @@ class GraphProcRunner:
             raise ValueError(f"No projected graph named '{graph_name}' exists")
 
         return Graph(graph_name, self._query_runner)
+
+    def streamNodeProperty(
+        self,
+        G: Graph,
+        node_properties: str,
+        node_labels: Optional[Strings] = None,
+        **config: Any,
+    ) -> QueryResult:
+        self._namespace += ".streamNodeProperty"
+
+        query = f"CALL {self._namespace}($graph_name, $nodeProperties, $nodeLabels, $config)"
+        params = {
+            "graph_name": G.name(),
+            "nodeProperties": node_properties,
+            "nodeLabels": ["*"],
+            "config": config,
+        }
+        if node_labels:
+            params["nodeLabels"] = node_labels
+
+        return self._query_runner.run_query(query, params)

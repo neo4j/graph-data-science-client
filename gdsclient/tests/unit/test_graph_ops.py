@@ -119,3 +119,33 @@ def test_graph_export(runner: CollectingQueryRunner, gds: GraphDataScience) -> N
         "graph_name": "g",
         "config": {"dbName": "db", "batchSize": 10},
     }
+
+
+def test_graph_streamNodeProperty(
+    runner: CollectingQueryRunner, gds: GraphDataScience
+) -> None:
+    G = gds.graph.project("g", "*", "*")
+
+    gds.graph.streamNodeProperty(G, "dummyProp", concurrency=2)
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.streamNodeProperty($graph_name, $nodeProperties, $nodeLabels, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "nodeProperties": "dummyProp",
+        "nodeLabels": ["*"],
+        "config": {"concurrency": 2},
+    }
+
+    gds.graph.streamNodeProperty(G, "dummyProp", "dummyLabel", concurrency=2)
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.streamNodeProperty($graph_name, $nodeProperties, $nodeLabels, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "nodeProperties": "dummyProp",
+        "nodeLabels": "dummyLabel",
+        "config": {"concurrency": 2},
+    }

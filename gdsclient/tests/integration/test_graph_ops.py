@@ -140,3 +140,10 @@ def test_graph_get(gds: GraphDataScience) -> None:
 
     with pytest.raises(ValueError):
         gds.graph.get("bogusName")
+
+
+def test_graph_streamNodeProperty(gds: GraphDataScience) -> None:
+    G = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds.graph.streamNodeProperty(G, "x", concurrency=2)
+    assert [e["propertyValue"] for e in result] == [1, 2, 3]
