@@ -115,3 +115,16 @@ class GraphProcRunner:
         self._namespace += ".streamNodeProperty"
 
         return self._stream_properties(G, node_properties, node_labels, config)
+
+    def streamRelationshipProperty(
+        self,
+        G: Graph,
+        relationship_properties: str,
+        relationship_types: Strings = ["*"],
+        **config: Any,
+    ) -> QueryResult:
+        self._namespace += ".streamRelationshipProperty"
+
+        return self._stream_properties(
+            G, relationship_properties, relationship_types, config
+        )
