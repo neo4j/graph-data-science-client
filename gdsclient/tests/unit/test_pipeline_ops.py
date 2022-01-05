@@ -62,3 +62,18 @@ def test_add_feature_lp_pipeline(
         "feature_type": "l2",
         "config": {"nodeProperties": ["prop1"]},
     }
+
+
+def test_configure_split_lp_pipeline(
+    runner: CollectingQueryRunner, pipe: LPPipeline
+) -> None:
+    pipe.configureSplit(trainFraction=0.42)
+
+    assert (
+        runner.last_query()
+        == "CALL gds.alpha.ml.pipeline.linkPrediction.configureSplit($pipeline_name, $config)"
+    )
+    assert runner.last_params() == {
+        "pipeline_name": pipe.name(),
+        "config": {"trainFraction": 0.42},
+    }

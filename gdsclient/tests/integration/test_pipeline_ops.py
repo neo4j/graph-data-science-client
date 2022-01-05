@@ -66,9 +66,19 @@ def test_add_feature_lp_pipeline(runner: Neo4jQueryRunner, pipe: LPPipeline) -> 
     assert steps[0]["name"] == "L2"
 
 
-def test_node_property_steps_lp_pipeline(
+def test_configure_split_lp_pipeline(
     runner: Neo4jQueryRunner, pipe: LPPipeline
 ) -> None:
+    pipe.configureSplit(trainFraction=0.42)
+
+    query = "CALL gds.beta.model.list($name)"
+    params = {"name": pipe.name()}
+    model_info = runner.run_query(query, params)[0]["modelInfo"]
+
+    assert model_info["splitConfig"]["trainFraction"] == 0.42
+
+
+def test_node_property_steps_lp_pipeline(pipe: LPPipeline) -> None:
     assert len(pipe.node_property_steps()) == 0
 
     pipe.addNodeProperty(
@@ -80,7 +90,7 @@ def test_node_property_steps_lp_pipeline(
     assert steps[0]["name"] == "gds.pageRank.mutate"
 
 
-def test_feature_steps_lp_pipeline(runner: Neo4jQueryRunner, pipe: LPPipeline) -> None:
+def test_feature_steps_lp_pipeline(pipe: LPPipeline) -> None:
     pipe.addNodeProperty("degree", mutateProperty="rank")
     assert len(pipe.feature_steps()) == 0
 
@@ -90,3 +100,8 @@ def test_feature_steps_lp_pipeline(runner: Neo4jQueryRunner, pipe: LPPipeline) -
 
     assert len(steps) == 1
     assert steps[0]["name"] == "L2"
+
+
+def test_split_config_lp_pipeline(pipe: LPPipeline) -> None:
+    split_config = pipe.split_config()
+    assert "trainFraction" in split_config.keys()

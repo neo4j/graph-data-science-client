@@ -39,8 +39,16 @@ class LPPipeline:
         }
         self._query_runner.run_query(query, params)
 
+    def configureSplit(self, **config: Any) -> None:
+        query = f"{self._QUERY_PREFIX}configureSplit($pipeline_name, $config)"
+        params = {"pipeline_name": self.name(), "config": config}
+        self._query_runner.run_query(query, params)
+
     def node_property_steps(self) -> List[Dict[str, Any]]:
         return self._pipeline_info()["featurePipeline"]["nodePropertySteps"]  # type: ignore
 
     def feature_steps(self) -> List[Dict[str, Any]]:
         return self._pipeline_info()["featurePipeline"]["featureSteps"]  # type: ignore
+
+    def split_config(self) -> Dict[str, Any]:
+        return self._pipeline_info()["splitConfig"]  # type: ignore
