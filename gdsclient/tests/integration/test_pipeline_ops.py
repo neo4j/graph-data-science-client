@@ -139,8 +139,8 @@ def test_train_lp_pipeline(
     lp_pipe.addFeature("l2", nodeProperties=["rank"])
     lp_pipe.configureSplit(trainFraction=0.2, testFraction=0.2)
 
-    trainedPipe = lp_pipe.train(G, modelName="m", concurrency=2)
-    assert trainedPipe.name() == "m"
+    lp_trained_pipe = lp_pipe.train(G, modelName="m", concurrency=2)
+    assert lp_trained_pipe.name() == "m"
 
     query = "CALL gds.beta.model.drop($name)"
     params = {"name": "m"}

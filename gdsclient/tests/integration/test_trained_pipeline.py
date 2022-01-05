@@ -38,7 +38,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
 
 @pytest.fixture(scope="module")
-def trainedPipe(
+def lp_trained_pipe(
     runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
 ) -> Generator[TrainedPipeline, None, None]:
     pipe = gds.alpha.ml.pipeline.linkPrediction.create("pipe")
@@ -47,27 +47,29 @@ def trainedPipe(
         pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.addFeature("l2", nodeProperties=["rank"])
         pipe.configureSplit(trainFraction=0.4, testFraction=0.2)
-        trainedPipe = pipe.train(G, modelName="m", concurrency=2)
+        lp_trained_pipe = pipe.train(G, modelName="m", concurrency=2)
     finally:
         query = "CALL gds.beta.model.drop($name)"
         params = {"name": "pipe"}
         runner.run_query(query, params)
 
-    yield trainedPipe
+    yield lp_trained_pipe
 
     params = {"name": "m"}
     runner.run_query(query, params)
 
 
 def test_predict_stream_lp_trained_pipeline(
-    trainedPipe: LPTrainedPipeline, G: Graph
+    lp_trained_pipe: LPTrainedPipeline, G: Graph
 ) -> None:
-    result = trainedPipe.predict_stream(G, topN=2)
+    result = lp_trained_pipe.predict_stream(G, topN=2)
     assert len(result) == 2
 
 
 def test_predict_mutate_lp_trained_pipeline(
-    trainedPipe: LPTrainedPipeline, G: Graph
+    lp_trained_pipe: LPTrainedPipeline, G: Graph
 ) -> None:
-    result = trainedPipe.predict_mutate(G, topN=2, mutateRelationshipType="PRED_REL")
+    result = lp_trained_pipe.predict_mutate(
+        G, topN=2, mutateRelationshipType="PRED_REL"
+    )
     assert result[0]["relationshipsWritten"] == 4
