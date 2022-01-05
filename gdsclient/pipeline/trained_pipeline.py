@@ -1,5 +1,5 @@
-from typing import Any
 from abc import ABC, abstractmethod
+from typing import Any
 
 from ..graph.graph_object import Graph
 from ..query_runner.query_runner import QueryResult, QueryRunner

@@ -1,9 +1,8 @@
 from typing import Any, Dict, List
 
-from .pipeline import Pipeline
-
 from ..query_runner.query_runner import QueryRunner
 from .lp_trained_pipeline import LPTrainedPipeline
+from .pipeline import Pipeline
 
 
 class LPPipeline(Pipeline):
@@ -27,5 +26,7 @@ class LPPipeline(Pipeline):
     def _query_prefix(self) -> str:
         return "CALL gds.alpha.ml.pipeline.linkPrediction."
 
-    def _create_trained_model(self, name: str, query_runner: QueryRunner) -> Any:
+    def _create_trained_model(
+        self, name: str, query_runner: QueryRunner
+    ) -> LPTrainedPipeline:
         return LPTrainedPipeline(name, query_runner)
