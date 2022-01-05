@@ -8,7 +8,7 @@ from gdsclient.pipeline.lp_trained_pipeline import LPTrainedPipeline
 from gdsclient.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None, None]:
     runner.run_query(
         """
@@ -36,7 +36,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
     G.drop()
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def trainedPipe(
     runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
 ) -> Generator[LPTrainedPipeline, None, None]:
