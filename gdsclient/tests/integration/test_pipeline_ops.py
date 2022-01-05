@@ -5,6 +5,7 @@ import pytest
 from gdsclient.graph.graph_object import Graph
 from gdsclient.graph_data_science import GraphDataScience
 from gdsclient.pipeline.lp_pipeline import LPPipeline
+from gdsclient.pipeline.nc_pipeline import NCPipeline
 from gdsclient.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 PIPE_NAME = "pipe"
@@ -35,10 +36,23 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
 
 @pytest.fixture
-def pipe(
+def lp_pipe(
     runner: Neo4jQueryRunner, gds: GraphDataScience
 ) -> Generator[LPPipeline, None, None]:
     pipe = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
+
+    yield pipe
+
+    query = "CALL gds.beta.model.drop($name)"
+    params = {"name": pipe.name()}
+    runner.run_query(query, params)
+
+
+@pytest.fixture
+def nc_pipe(
+    runner: Neo4jQueryRunner, gds: GraphDataScience
+) -> Generator[NCPipeline, None, None]:
+    pipe = gds.alpha.ml.pipeline.nodeClassification.create(PIPE_NAME)
 
     yield pipe
 
@@ -62,14 +76,14 @@ def test_create_lp_pipeline(runner: Neo4jQueryRunner, gds: GraphDataScience) -> 
 
 
 def test_add_node_property_lp_pipeline(
-    runner: Neo4jQueryRunner, pipe: LPPipeline
+    runner: Neo4jQueryRunner, lp_pipe: LPPipeline
 ) -> None:
-    pipe.addNodeProperty(
+    lp_pipe.addNodeProperty(
         "pageRank", mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
     )
 
     query = "CALL gds.beta.model.list($name)"
-    params = {"name": pipe.name()}
+    params = {"name": lp_pipe.name()}
     model_info = runner.run_query(query, params)[0]["modelInfo"]
 
     steps = model_info["featurePipeline"]["nodePropertySteps"]
@@ -77,13 +91,13 @@ def test_add_node_property_lp_pipeline(
     assert steps[0]["name"] == "gds.pageRank.mutate"
 
 
-def test_add_feature_lp_pipeline(runner: Neo4jQueryRunner, pipe: LPPipeline) -> None:
-    pipe.addNodeProperty("degree", mutateProperty="rank")
+def test_add_feature_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPPipeline) -> None:
+    lp_pipe.addNodeProperty("degree", mutateProperty="rank")
 
-    pipe.addFeature("l2", nodeProperties=["degree"])
+    lp_pipe.addFeature("l2", nodeProperties=["degree"])
 
     query = "CALL gds.beta.model.list($name)"
-    params = {"name": pipe.name()}
+    params = {"name": lp_pipe.name()}
     model_info = runner.run_query(query, params)[0]["modelInfo"]
 
     steps = model_info["featurePipeline"]["featureSteps"]
@@ -92,24 +106,24 @@ def test_add_feature_lp_pipeline(runner: Neo4jQueryRunner, pipe: LPPipeline) -> 
 
 
 def test_configure_split_lp_pipeline(
-    runner: Neo4jQueryRunner, pipe: LPPipeline
+    runner: Neo4jQueryRunner, lp_pipe: LPPipeline
 ) -> None:
-    pipe.configureSplit(trainFraction=0.42)
+    lp_pipe.configureSplit(trainFraction=0.42)
 
     query = "CALL gds.beta.model.list($name)"
-    params = {"name": pipe.name()}
+    params = {"name": lp_pipe.name()}
     model_info = runner.run_query(query, params)[0]["modelInfo"]
 
     assert model_info["splitConfig"]["trainFraction"] == 0.42
 
 
 def test_configure_params_lp_pipeline(
-    runner: Neo4jQueryRunner, pipe: LPPipeline
+    runner: Neo4jQueryRunner, lp_pipe: LPPipeline
 ) -> None:
-    pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
+    lp_pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
 
     query = "CALL gds.beta.model.list($name)"
-    params = {"name": pipe.name()}
+    params = {"name": lp_pipe.name()}
     model_info = runner.run_query(query, params)[0]["modelInfo"]
 
     parameter_space = model_info["trainingParameterSpace"]
@@ -119,49 +133,76 @@ def test_configure_params_lp_pipeline(
 
 
 def test_train_lp_pipeline(
-    runner: Neo4jQueryRunner, pipe: LPPipeline, G: Graph
+    runner: Neo4jQueryRunner, lp_pipe: LPPipeline, G: Graph
 ) -> None:
-    pipe.addNodeProperty("degree", mutateProperty="rank")
-    pipe.addFeature("l2", nodeProperties=["rank"])
-    pipe.configureSplit(trainFraction=0.2, testFraction=0.2)
+    lp_pipe.addNodeProperty("degree", mutateProperty="rank")
+    lp_pipe.addFeature("l2", nodeProperties=["rank"])
+    lp_pipe.configureSplit(trainFraction=0.2, testFraction=0.2)
 
-    trainedPipe = pipe.train(G, modelName="m", concurrency=2)
-    assert trainedPipe.name() == "m"
+    lp_trained_pipe = lp_pipe.train(G, modelName="m", concurrency=2)
+    assert lp_trained_pipe.name() == "m"
 
     query = "CALL gds.beta.model.drop($name)"
     params = {"name": "m"}
     runner.run_query(query, params)
 
 
-def test_node_property_steps_lp_pipeline(pipe: LPPipeline) -> None:
-    assert len(pipe.node_property_steps()) == 0
+def test_node_property_steps_lp_pipeline(lp_pipe: LPPipeline) -> None:
+    assert len(lp_pipe.node_property_steps()) == 0
 
-    pipe.addNodeProperty(
+    lp_pipe.addNodeProperty(
         "pageRank", mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
     )
 
-    steps = pipe.node_property_steps()
+    steps = lp_pipe.node_property_steps()
     assert len(steps) == 1
     assert steps[0]["name"] == "gds.pageRank.mutate"
 
 
-def test_feature_steps_lp_pipeline(pipe: LPPipeline) -> None:
-    pipe.addNodeProperty("degree", mutateProperty="rank")
-    assert len(pipe.feature_steps()) == 0
+def test_feature_steps_lp_pipeline(lp_pipe: LPPipeline) -> None:
+    lp_pipe.addNodeProperty("degree", mutateProperty="rank")
+    assert len(lp_pipe.feature_steps()) == 0
 
-    pipe.addFeature("l2", nodeProperties=["degree"])
+    lp_pipe.addFeature("l2", nodeProperties=["degree"])
 
-    steps = pipe.feature_steps()
+    steps = lp_pipe.feature_steps()
     assert len(steps) == 1
     assert steps[0]["name"] == "L2"
 
 
-def test_split_config_lp_pipeline(pipe: LPPipeline) -> None:
-    split_config = pipe.split_config()
+def test_split_config_lp_pipeline(lp_pipe: LPPipeline) -> None:
+    split_config = lp_pipe.split_config()
     assert "trainFraction" in split_config.keys()
 
 
-def test_parameter_space_lp_pipeline(pipe: LPPipeline) -> None:
-    parameter_space = pipe.parameter_space()
+def test_parameter_space_lp_pipeline(lp_pipe: LPPipeline) -> None:
+    parameter_space = lp_pipe.parameter_space()
     assert len(parameter_space) > 0
     assert "penalty" in parameter_space[0]
+
+
+def test_select_features_nc_pipeline(
+    runner: Neo4jQueryRunner, nc_pipe: NCPipeline
+) -> None:
+    nc_pipe.addNodeProperty("degree", mutateProperty="rank")
+
+    nc_pipe.selectFeatures("rank")
+
+    query = "CALL gds.beta.model.list($name)"
+    params = {"name": nc_pipe.name()}
+    model_info = runner.run_query(query, params)[0]["modelInfo"]
+
+    steps = model_info["featurePipeline"]["featureProperties"]
+    assert len(steps) == 1
+    assert steps[0]["feature"] == "rank"
+
+
+def test_feature_properties_nc_pipeline(nc_pipe: NCPipeline) -> None:
+    nc_pipe.addNodeProperty("degree", mutateProperty="rank")
+    assert len(nc_pipe.feature_properties()) == 0
+
+    nc_pipe.selectFeatures("rank")
+
+    steps = nc_pipe.feature_properties()
+    assert len(steps) == 1
+    assert steps[0]["feature"] == "rank"
