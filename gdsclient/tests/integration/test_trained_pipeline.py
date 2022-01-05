@@ -62,7 +62,7 @@ def lp_trained_pipe(
     runner.run_query(query, params)
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def nc_trained_pipe(
     runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
 ) -> Generator[TrainedPipeline, None, None]:
