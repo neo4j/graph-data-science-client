@@ -32,8 +32,6 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         "g", {"Node": {"properties": ["age"]}}, {"REL": {"orientation": "UNDIRECTED"}}
     )
 
-    print(G.relationship_count())
-
     yield G
 
     runner.run_query("MATCH (n) DETACH DELETE n")
