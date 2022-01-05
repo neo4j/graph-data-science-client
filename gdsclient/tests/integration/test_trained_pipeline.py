@@ -63,3 +63,9 @@ def test_predict_stream_lp_trained_pipeline(trainedPipe: LPTrainedPipeline, G: G
     result = trainedPipe.predict_stream(G, topN=2)
 
     assert len(result) == 2
+
+
+def test_predict_mutate_lp_trained_pipeline(trainedPipe: LPTrainedPipeline, G: Graph):
+    result = trainedPipe.predict_mutate(G, topN=2, mutateRelationshipType="PRED_REL")
+    
+    assert result[0]["relationshipsWritten"] == 4

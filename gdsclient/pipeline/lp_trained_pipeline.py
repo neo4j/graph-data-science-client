@@ -21,3 +21,10 @@ class LPTrainedPipeline:
         params = {"graph_name": G.name(), "config": config}
 
         return self._query_runner.run_query(query, params)
+
+    def predict_mutate(self, G: Graph, **config: Any) -> QueryResult:
+        query = f"{self._PREDICT_QUERY_PREFIX}mutate($graph_name, $config)"
+        config["modelName"] = self.name()
+        params = {"graph_name": G.name(), "config": config}
+
+        return self._query_runner.run_query(query, params)
