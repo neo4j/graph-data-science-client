@@ -90,3 +90,20 @@ def test_configure_params_lp_pipeline(
         "pipeline_name": pipe.name(),
         "parameter_space": [{"tolerance": 0.01}, {"maxEpochs": 500}],
     }
+
+
+def test_train_lp_pipeline(
+    runner: CollectingQueryRunner, gds: GraphDataScience, pipe: LPPipeline
+) -> None:
+    G = gds.graph.project("g", "*", "*")
+
+    pipe.train(G, modelName="m", concurrency=2)
+
+    assert (
+        runner.last_query()
+        == "CALL gds.alpha.ml.pipeline.linkPrediction.train($graph_name, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": G.name(),
+        "config": {"pipeline": pipe.name(), "modelName": "m", "concurrency": 2},
+    }

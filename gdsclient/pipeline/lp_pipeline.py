@@ -1,6 +1,7 @@
 from typing import Any, Dict, List
 
-from ..query_runner.query_runner import QueryRunner
+from ..graph.graph_object import Graph
+from ..query_runner.query_runner import QueryResult, QueryRunner
 
 
 class LPPipeline:
@@ -46,6 +47,15 @@ class LPPipeline:
             "parameter_space": parameter_space,
         }
         self._query_runner.run_query(query, params)
+
+    def train(self, G: Graph, **config: Any) -> QueryResult:
+        query = f"{self._QUERY_PREFIX}train($graph_name, $config)"
+        config["pipeline"] = self.name()
+        params = {
+            "graph_name": G.name(),
+            "config": config,
+        }
+        return self._query_runner.run_query(query, params)
 
     def configureSplit(self, **config: Any) -> None:
         query = f"{self._QUERY_PREFIX}configureSplit($pipeline_name, $config)"

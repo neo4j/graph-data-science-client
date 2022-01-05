@@ -2,11 +2,36 @@ from typing import Generator
 
 import pytest
 
+from gdsclient.graph.graph_object import Graph
 from gdsclient.graph_data_science import GraphDataScience
 from gdsclient.pipeline.lp_pipeline import LPPipeline
 from gdsclient.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 PIPE_NAME = "pipe"
+
+
+@pytest.fixture
+def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None, None]:
+    runner.run_query(
+        """
+        CREATE
+        (a: Node),
+        (b: Node),
+        (c: Node),
+        (a)-[:REL]->(b),
+        (a)-[:REL]->(c),
+        (b)-[:REL]->(c),
+        (b)-[:REL]->(a),
+        (c)-[:REL]->(a),
+        (c)-[:REL]->(b)
+        """
+    )
+    G = gds.graph.project("g", "*", "*")
+
+    yield G
+
+    runner.run_query("MATCH (n) DETACH DELETE n")
+    G.drop()
 
 
 @pytest.fixture
@@ -91,6 +116,22 @@ def test_configure_params_lp_pipeline(
     assert len(parameter_space) == 2
     assert parameter_space[0]["tolerance"] == 0.01
     assert parameter_space[1]["maxEpochs"] == 500
+
+
+def test_train_lp_pipeline(
+    runner: Neo4jQueryRunner, pipe: LPPipeline, G: Graph
+) -> None:
+    pipe.addNodeProperty("degree", mutateProperty="rank")
+    pipe.addFeature("l2", nodeProperties=["rank"])
+    pipe.configureSplit(trainFraction=0.2, testFraction=0.2)
+
+    result = pipe.train(G, modelName="m", concurrency=2)
+    assert result[0]["trainMillis"] >= 0
+    assert result[0]["modelInfo"]["modelName"] == "m"
+
+    query = "CALL gds.beta.model.drop($name)"
+    params = {"name": "m"}
+    runner.run_query(query, params)
 
 
 def test_node_property_steps_lp_pipeline(pipe: LPPipeline) -> None:
