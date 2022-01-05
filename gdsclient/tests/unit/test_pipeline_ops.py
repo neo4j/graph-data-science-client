@@ -75,3 +75,18 @@ def test_configure_split_lp_pipeline(
         "pipeline_name": pipe.name(),
         "config": {"trainFraction": 0.42},
     }
+
+
+def test_configure_params_lp_pipeline(
+    runner: CollectingQueryRunner, pipe: LPPipeline
+) -> None:
+    pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
+
+    assert (
+        runner.last_query()
+        == "CALL gds.alpha.ml.pipeline.linkPrediction.configureParams($pipeline_name, $parameter_space)"
+    )
+    assert runner.last_params() == {
+        "pipeline_name": pipe.name(),
+        "parameter_space": [{"tolerance": 0.01}, {"maxEpochs": 500}],
+    }

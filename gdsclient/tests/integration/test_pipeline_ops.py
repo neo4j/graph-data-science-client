@@ -78,6 +78,21 @@ def test_configure_split_lp_pipeline(
     assert model_info["splitConfig"]["trainFraction"] == 0.42
 
 
+def test_configure_params_lp_pipeline(
+    runner: Neo4jQueryRunner, pipe: LPPipeline
+) -> None:
+    pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
+
+    query = "CALL gds.beta.model.list($name)"
+    params = {"name": pipe.name()}
+    model_info = runner.run_query(query, params)[0]["modelInfo"]
+
+    parameter_space = model_info["trainingParameterSpace"]
+    assert len(parameter_space) == 2
+    assert parameter_space[0]["tolerance"] == 0.01
+    assert parameter_space[1]["maxEpochs"] == 500
+
+
 def test_node_property_steps_lp_pipeline(pipe: LPPipeline) -> None:
     assert len(pipe.node_property_steps()) == 0
 
@@ -97,7 +112,6 @@ def test_feature_steps_lp_pipeline(pipe: LPPipeline) -> None:
     pipe.addFeature("l2", nodeProperties=["degree"])
 
     steps = pipe.feature_steps()
-
     assert len(steps) == 1
     assert steps[0]["name"] == "L2"
 
@@ -105,3 +119,9 @@ def test_feature_steps_lp_pipeline(pipe: LPPipeline) -> None:
 def test_split_config_lp_pipeline(pipe: LPPipeline) -> None:
     split_config = pipe.split_config()
     assert "trainFraction" in split_config.keys()
+
+
+def test_parameter_space_lp_pipeline(pipe: LPPipeline) -> None:
+    parameter_space = pipe.parameter_space()
+    assert len(parameter_space) > 0
+    assert "penalty" in parameter_space[0]

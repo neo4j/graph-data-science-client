@@ -39,6 +39,14 @@ class LPPipeline:
         }
         self._query_runner.run_query(query, params)
 
+    def configureParams(self, parameter_space: List[Dict[str, Any]]) -> None:
+        query = f"{self._QUERY_PREFIX}configureParams($pipeline_name, $parameter_space)"
+        params = {
+            "pipeline_name": self.name(),
+            "parameter_space": parameter_space,
+        }
+        self._query_runner.run_query(query, params)
+
     def configureSplit(self, **config: Any) -> None:
         query = f"{self._QUERY_PREFIX}configureSplit($pipeline_name, $config)"
         params = {"pipeline_name": self.name(), "config": config}
@@ -52,3 +60,6 @@ class LPPipeline:
 
     def split_config(self) -> Dict[str, Any]:
         return self._pipeline_info()["splitConfig"]  # type: ignore
+
+    def parameter_space(self) -> List[Dict[str, Any]]:
+        return self._pipeline_info()["trainingParameterSpace"]  # type: ignore
