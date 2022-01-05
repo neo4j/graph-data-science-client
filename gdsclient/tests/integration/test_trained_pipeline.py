@@ -4,7 +4,6 @@ import pytest
 
 from gdsclient.graph.graph_object import Graph
 from gdsclient.graph_data_science import GraphDataScience
-from gdsclient.pipeline.lp_pipeline import LPPipeline
 from gdsclient.pipeline.lp_trained_pipeline import LPTrainedPipeline
 from gdsclient.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
@@ -40,7 +39,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 @pytest.fixture
 def trainedPipe(
     runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
-) -> Generator[LPPipeline, None, None]:
+) -> Generator[LPTrainedPipeline, None, None]:
     pipe = gds.alpha.ml.pipeline.linkPrediction.create("pipe")
 
     try:
@@ -59,13 +58,15 @@ def trainedPipe(
     runner.run_query(query, params)
 
 
-def test_predict_stream_lp_trained_pipeline(trainedPipe: LPTrainedPipeline, G: Graph):
+def test_predict_stream_lp_trained_pipeline(
+    trainedPipe: LPTrainedPipeline, G: Graph
+) -> None:
     result = trainedPipe.predict_stream(G, topN=2)
-
     assert len(result) == 2
 
 
-def test_predict_mutate_lp_trained_pipeline(trainedPipe: LPTrainedPipeline, G: Graph):
+def test_predict_mutate_lp_trained_pipeline(
+    trainedPipe: LPTrainedPipeline, G: Graph
+) -> None:
     result = trainedPipe.predict_mutate(G, topN=2, mutateRelationshipType="PRED_REL")
-    
     assert result[0]["relationshipsWritten"] == 4

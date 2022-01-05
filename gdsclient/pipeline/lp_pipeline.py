@@ -1,9 +1,8 @@
 from typing import Any, Dict, List
 
-from .lp_trained_pipeline import LPTrainedPipeline
-
 from ..graph.graph_object import Graph
-from ..query_runner.query_runner import QueryResult, QueryRunner
+from ..query_runner.query_runner import QueryRunner
+from .lp_trained_pipeline import LPTrainedPipeline
 
 
 class LPPipeline:
