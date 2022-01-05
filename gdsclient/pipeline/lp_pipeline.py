@@ -1,5 +1,7 @@
 from typing import Any, Dict, List
 
+from .lp_trained_pipeline import LPTrainedPipeline
+
 from ..graph.graph_object import Graph
 from ..query_runner.query_runner import QueryResult, QueryRunner
 
@@ -48,14 +50,18 @@ class LPPipeline:
         }
         self._query_runner.run_query(query, params)
 
-    def train(self, G: Graph, **config: Any) -> QueryResult:
+    # TODO: do we want to log the train result or return Pair(Result, Model)
+    def train(self, G: Graph, **config: Any) -> LPTrainedPipeline:
         query = f"{self._QUERY_PREFIX}train($graph_name, $config)"
         config["pipeline"] = self.name()
         params = {
             "graph_name": G.name(),
             "config": config,
         }
-        return self._query_runner.run_query(query, params)
+
+        self._query_runner.run_query(query, params)
+
+        return LPTrainedPipeline(config["modelName"], self._query_runner)
 
     def configureSplit(self, **config: Any) -> None:
         query = f"{self._QUERY_PREFIX}configureSplit($pipeline_name, $config)"
