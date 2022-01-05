@@ -46,3 +46,19 @@ def test_add_node_property_lp_pipeline(
         "procedure_name": "pageRank",
         "config": {"mutateProperty": "rank", "dampingFactor": 0.2, "tolerance": 0.3},
     }
+
+
+def test_add_feature_lp_pipeline(
+    runner: CollectingQueryRunner, pipe: LPPipeline
+) -> None:
+    pipe.addFeature("l2", nodeProperties=["prop1"])
+
+    assert (
+        runner.last_query()
+        == "CALL gds.alpha.ml.pipeline.linkPrediction.addFeature($pipeline_name, $feature_type, $config)"
+    )
+    assert runner.last_params() == {
+        "pipeline_name": pipe.name(),
+        "feature_type": "l2",
+        "config": {"nodeProperties": ["prop1"]},
+    }
