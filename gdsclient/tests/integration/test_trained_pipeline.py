@@ -114,3 +114,10 @@ def test_predict_mutate_nc_trained_pipeline(
 ) -> None:
     result = nc_trained_pipe.predict_mutate(G, mutateProperty="whoa")
     assert result[0]["nodePropertiesWritten"] == G.node_count()
+
+
+def test_predict_write_nc_trained_pipeline(
+    nc_trained_pipe: NCTrainedPipeline, G: Graph
+) -> None:
+    result = nc_trained_pipe.predict_write(G, writeProperty="whoa")
+    assert result[0]["nodePropertiesWritten"] == G.node_count()
