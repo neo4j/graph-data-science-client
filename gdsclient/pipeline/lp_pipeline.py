@@ -24,7 +24,7 @@ class LPPipeline(Pipeline):
     def feature_steps(self) -> List[Dict[str, Any]]:
         return self._pipeline_info()["featurePipeline"]["featureSteps"]  # type: ignore
 
-    def _query_prefix(self):
+    def _query_prefix(self) -> str:
         return "CALL gds.alpha.ml.pipeline.linkPrediction."
 
     def _create_trained_model(self, name: str, query_runner: QueryRunner) -> Any:

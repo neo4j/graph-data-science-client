@@ -12,7 +12,7 @@ class Pipeline(ABC):
         self._query_runner = query_runner
 
     @abstractmethod
-    def _query_prefix(self):
+    def _query_prefix(self) -> str:
         pass
 
     @abstractmethod
