@@ -1,5 +1,3 @@
-from typing import Generator
-
 import pytest
 
 from gdsclient.graph_data_science import GraphDataScience
