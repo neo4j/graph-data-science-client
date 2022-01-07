@@ -1,11 +1,12 @@
 from typing import Any
 
+from gdsclient.pipeline.prediction_pipeline import PredictionPipeline
+
 from ..graph.graph_object import Graph
 from ..query_runner.query_runner import QueryResult, QueryRunner
-from .trained_pipeline import TrainedPipeline
 
 
-class NCTrainedPipeline(TrainedPipeline):
+class NCPredictionPipeline(PredictionPipeline):
     def __init__(self, name: str, query_runner: QueryRunner) -> None:
         super().__init__(name, query_runner)
 

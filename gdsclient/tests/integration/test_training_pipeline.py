@@ -4,8 +4,8 @@ import pytest
 
 from gdsclient.graph.graph_object import Graph
 from gdsclient.graph_data_science import GraphDataScience
-from gdsclient.pipeline.lp_pipeline import LPPipeline
-from gdsclient.pipeline.nc_pipeline import NCPipeline
+from gdsclient.pipeline.lp_training_pipeline import LPTrainingPipeline
+from gdsclient.pipeline.nc_training_pipeline import NCTrainingPipeline
 from gdsclient.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 PIPE_NAME = "pipe"
@@ -38,7 +38,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 @pytest.fixture
 def lp_pipe(
     runner: Neo4jQueryRunner, gds: GraphDataScience
-) -> Generator[LPPipeline, None, None]:
+) -> Generator[LPTrainingPipeline, None, None]:
     pipe = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
 
     yield pipe
@@ -51,7 +51,7 @@ def lp_pipe(
 @pytest.fixture
 def nc_pipe(
     runner: Neo4jQueryRunner, gds: GraphDataScience
-) -> Generator[NCPipeline, None, None]:
+) -> Generator[NCTrainingPipeline, None, None]:
     pipe = gds.alpha.ml.pipeline.nodeClassification.create(PIPE_NAME)
 
     yield pipe
@@ -76,7 +76,7 @@ def test_create_lp_pipeline(runner: Neo4jQueryRunner, gds: GraphDataScience) -> 
 
 
 def test_add_node_property_lp_pipeline(
-    runner: Neo4jQueryRunner, lp_pipe: LPPipeline
+    runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
 ) -> None:
     lp_pipe.addNodeProperty(
         "pageRank", mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
@@ -91,7 +91,9 @@ def test_add_node_property_lp_pipeline(
     assert steps[0]["name"] == "gds.pageRank.mutate"
 
 
-def test_add_feature_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPPipeline) -> None:
+def test_add_feature_lp_pipeline(
+    runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
+) -> None:
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
 
     lp_pipe.addFeature("l2", nodeProperties=["degree"])
@@ -106,7 +108,7 @@ def test_add_feature_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPPipeline) 
 
 
 def test_configure_split_lp_pipeline(
-    runner: Neo4jQueryRunner, lp_pipe: LPPipeline
+    runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
 ) -> None:
     lp_pipe.configureSplit(trainFraction=0.42)
 
@@ -118,7 +120,7 @@ def test_configure_split_lp_pipeline(
 
 
 def test_configure_params_lp_pipeline(
-    runner: Neo4jQueryRunner, lp_pipe: LPPipeline
+    runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
 ) -> None:
     lp_pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
 
@@ -133,7 +135,7 @@ def test_configure_params_lp_pipeline(
 
 
 def test_train_lp_pipeline(
-    runner: Neo4jQueryRunner, lp_pipe: LPPipeline, G: Graph
+    runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, G: Graph
 ) -> None:
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
     lp_pipe.addFeature("l2", nodeProperties=["rank"])
@@ -147,7 +149,7 @@ def test_train_lp_pipeline(
     runner.run_query(query, params)
 
 
-def test_node_property_steps_lp_pipeline(lp_pipe: LPPipeline) -> None:
+def test_node_property_steps_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     assert len(lp_pipe.node_property_steps()) == 0
 
     lp_pipe.addNodeProperty(
@@ -159,7 +161,7 @@ def test_node_property_steps_lp_pipeline(lp_pipe: LPPipeline) -> None:
     assert steps[0]["name"] == "gds.pageRank.mutate"
 
 
-def test_feature_steps_lp_pipeline(lp_pipe: LPPipeline) -> None:
+def test_feature_steps_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
     assert len(lp_pipe.feature_steps()) == 0
 
@@ -170,19 +172,19 @@ def test_feature_steps_lp_pipeline(lp_pipe: LPPipeline) -> None:
     assert steps[0]["name"] == "L2"
 
 
-def test_split_config_lp_pipeline(lp_pipe: LPPipeline) -> None:
+def test_split_config_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     split_config = lp_pipe.split_config()
     assert "trainFraction" in split_config.keys()
 
 
-def test_parameter_space_lp_pipeline(lp_pipe: LPPipeline) -> None:
+def test_parameter_space_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     parameter_space = lp_pipe.parameter_space()
     assert len(parameter_space) > 0
     assert "penalty" in parameter_space[0]
 
 
 def test_select_features_nc_pipeline(
-    runner: Neo4jQueryRunner, nc_pipe: NCPipeline
+    runner: Neo4jQueryRunner, nc_pipe: NCTrainingPipeline
 ) -> None:
     nc_pipe.addNodeProperty("degree", mutateProperty="rank")
 
@@ -197,7 +199,7 @@ def test_select_features_nc_pipeline(
     assert steps[0]["feature"] == "rank"
 
 
-def test_feature_properties_nc_pipeline(nc_pipe: NCPipeline) -> None:
+def test_feature_properties_nc_pipeline(nc_pipe: NCTrainingPipeline) -> None:
     nc_pipe.addNodeProperty("degree", mutateProperty="rank")
     assert len(nc_pipe.feature_properties()) == 0
 

@@ -1,8 +1,8 @@
 from ..query_runner.query_runner import QueryRunner
-from .trained_pipeline import TrainedPipeline
+from .prediction_pipeline import PredictionPipeline
 
 
-class LPTrainedPipeline(TrainedPipeline):
+class LPPredictionPipeline(PredictionPipeline):
     def __init__(self, name: str, query_runner: QueryRunner) -> None:
         super().__init__(name, query_runner)
 

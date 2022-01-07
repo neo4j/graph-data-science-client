@@ -6,7 +6,7 @@ from ..query_runner.query_runner import QueryResult, QueryRunner
 from .model import Model
 
 
-class TrainedPipeline(Model, ABC):
+class PredictionPipeline(Model, ABC):
     def __init__(self, name: str, query_runner: QueryRunner) -> None:
         super().__init__(name, query_runner)
 
