@@ -119,3 +119,36 @@ def test_predict_write_nc_trained_pipeline(
 ) -> None:
     result = nc_trained_pipe.predict_write(G, writeProperty="whoa")
     assert result[0]["nodePropertiesWritten"] == G.node_count()
+
+
+def test_type_nc_trained_pipeline(nc_trained_pipe: NCTrainedPipeline) -> None:
+    assert nc_trained_pipe.type() == "Node classification pipeline"
+
+
+def test_train_config_nc_trained_pipeline(
+    nc_trained_pipe: NCTrainedPipeline, G: Graph
+) -> None:
+    train_config = nc_trained_pipe.train_config()
+    assert train_config["modelName"] == nc_trained_pipe.name()
+    assert train_config["graphName"] == G.name()
+
+
+def test_graph_schema_nc_trained_pipeline(nc_trained_pipe: NCTrainedPipeline) -> None:
+    graph_schema = nc_trained_pipe.graph_schema()
+    assert "nodes" in graph_schema.keys()
+
+
+def test_loaded_nc_trained_pipeline(nc_trained_pipe: NCTrainedPipeline) -> None:
+    assert nc_trained_pipe.loaded()
+
+
+def test_stored_nc_trained_pipeline(nc_trained_pipe: NCTrainedPipeline) -> None:
+    assert not nc_trained_pipe.stored()
+
+
+def test_creation_time_nc_trained_pipeline(nc_trained_pipe: NCTrainedPipeline) -> None:
+    assert nc_trained_pipe.creation_time()
+
+
+def test_shared_nc_trained_pipeline(nc_trained_pipe: NCTrainedPipeline) -> None:
+    assert not nc_trained_pipe.shared()
