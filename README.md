@@ -74,7 +74,7 @@ We can take a projected graph, represented to us by a `Graph` object named `G`, 
 
 ```python
 # Optionally we can estimate memory of the operation first (if the algo supports it)
-res = gds.pageRank.write.estimate(G, tolerance=0.5, writeProperty="pagerank")
+res = gds.pageRank.mutate.estimate(G, tolerance=0.5, writeProperty="pagerank")
 assert res[0]["requiredMemory"] < 1e12
 
 res = gds.pageRank.mutate(G, tolerance=0.5, writeProperty="pagerank")
