@@ -147,28 +147,28 @@ def test_graph_streamNodeProperty(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     result = gds.graph.streamNodeProperty(G, "x", concurrency=2)
-    assert [e["propertyValue"] for e in result] == [1, 2, 3]
+    assert {e["propertyValue"] for e in result} == {1, 2, 3}
 
 
 def test_graph_streamNodeProperties(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     result = gds.graph.streamNodeProperties(G, ["x"], concurrency=2)
-    assert [e["propertyValue"] for e in result] == [1, 2, 3]
+    assert {e["propertyValue"] for e in result} == {1, 2, 3}
 
 
 def test_graph_streamRelationshipProperty(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 
     result = gds.graph.streamRelationshipProperty(G, "relX", concurrency=2)
-    assert [e["propertyValue"] for e in result] == [4, 5, 6]
+    assert {e["propertyValue"] for e in result} == {4, 5, 6}
 
 
 def test_graph_streamRelationshipProperties(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 
     result = gds.graph.streamRelationshipProperties(G, ["relX"], concurrency=2)
-    assert [e["propertyValue"] for e in result] == [4, 5, 6]
+    assert {e["propertyValue"] for e in result} == {4, 5, 6}
 
 
 def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
