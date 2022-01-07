@@ -17,7 +17,7 @@ class NCPipeline(Pipeline):
         self._query_runner.run_query(query, params)
 
     def feature_properties(self) -> List[Dict[str, Any]]:
-        return self._pipeline_info()["featurePipeline"]["featureProperties"]  # type: ignore
+        return self._list_info()["modelInfo"]["featurePipeline"]["featureProperties"]  # type: ignore
 
     def _query_prefix(self) -> str:
         return "CALL gds.alpha.ml.pipeline.nodeClassification."

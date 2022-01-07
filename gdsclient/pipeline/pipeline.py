@@ -5,12 +5,12 @@ from gdsclient.pipeline.trained_pipeline import TrainedPipeline
 
 from ..graph.graph_object import Graph
 from ..query_runner.query_runner import QueryRunner
+from .model import Model
 
 
-class Pipeline(ABC):
+class Pipeline(Model, ABC):
     def __init__(self, name: str, query_runner: QueryRunner):
-        self._name = name
-        self._query_runner = query_runner
+        super().__init__(name, query_runner)
 
     @abstractmethod
     def _query_prefix(self) -> str:
@@ -21,15 +21,6 @@ class Pipeline(ABC):
         self, name: str, query_runner: QueryRunner
     ) -> TrainedPipeline:
         pass
-
-    def _pipeline_info(self) -> Dict[str, Any]:
-        query = "CALL gds.beta.model.list($name)"
-        params = {"name": self.name()}
-
-        return self._query_runner.run_query(query, params)[0]["modelInfo"]  # type: ignore
-
-    def name(self) -> str:
-        return self._name
 
     def addNodeProperty(self, procedure_name: str, **config: Any) -> None:
         query = f"{self._query_prefix()}addNodeProperty($pipeline_name, $procedure_name, $config)"
@@ -69,10 +60,10 @@ class Pipeline(ABC):
         self._query_runner.run_query(query, params)
 
     def node_property_steps(self) -> List[Dict[str, Any]]:
-        return self._pipeline_info()["featurePipeline"]["nodePropertySteps"]  # type: ignore
+        return self._list_info()["modelInfo"]["featurePipeline"]["nodePropertySteps"]  # type: ignore
 
     def split_config(self) -> Dict[str, Any]:
-        return self._pipeline_info()["splitConfig"]  # type: ignore
+        return self._list_info()["modelInfo"]["splitConfig"]  # type: ignore
 
     def parameter_space(self) -> List[Dict[str, Any]]:
-        return self._pipeline_info()["trainingParameterSpace"]  # type: ignore
+        return self._list_info()["modelInfo"]["trainingParameterSpace"]  # type: ignore
