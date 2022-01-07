@@ -6,32 +6,34 @@ from .conftest import CollectingQueryRunner
 def test_project_graph_native(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
-    G = gds.graph.project("g", "A", "R")
+    G = gds.graph.project("g", "A", "R", readConcurrency=2)
     assert G.name() == "g"
 
     assert (
         runner.last_query()
-        == "CALL gds.graph.project($graph_name, $node_spec, $relationship_spec)"
+        == "CALL gds.graph.project($graph_name, $node_spec, $relationship_spec, $config)"
     )
     assert runner.last_params() == {
         "graph_name": "g",
         "node_spec": "A",
         "relationship_spec": "R",
+        "config": {"readConcurrency": 2},
     }
 
 
 def test_project_graph_native_estimate(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
-    gds.graph.project.estimate("A", "R")
+    gds.graph.project.estimate("A", "R", readConcurrency=2)
 
     assert (
         runner.last_query()
-        == "CALL gds.graph.project.estimate($node_spec, $relationship_spec)"
+        == "CALL gds.graph.project.estimate($node_spec, $relationship_spec, $config)"
     )
     assert runner.last_params() == {
         "node_spec": "A",
         "relationship_spec": "R",
+        "config": {"readConcurrency": 2},
     }
 
 
@@ -39,18 +41,19 @@ def test_project_graph_cypher(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
     G = gds.graph.project.cypher(
-        "g", "RETURN 0 as id", "RETURN 0 as source, 0 as target"
+        "g", "RETURN 0 as id", "RETURN 0 as source, 0 as target", readConcurrency=2
     )
     assert G.name() == "g"
 
     assert (
         runner.last_query()
-        == "CALL gds.graph.project.cypher($graph_name, $node_spec, $relationship_spec)"
+        == "CALL gds.graph.project.cypher($graph_name, $node_spec, $relationship_spec, $config)"
     )
     assert runner.last_params() == {
         "graph_name": "g",
         "node_spec": "RETURN 0 as id",
         "relationship_spec": "RETURN 0 as source, 0 as target",
+        "config": {"readConcurrency": 2},
     }
 
 
@@ -58,16 +61,17 @@ def test_project_graph_cypher_estimate(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
     gds.graph.project.cypher.estimate(
-        "RETURN 0 as id", "RETURN 0 as source, 0 as target"
+        "RETURN 0 as id", "RETURN 0 as source, 0 as target", readConcurrency=2
     )
 
     assert (
         runner.last_query()
-        == "CALL gds.graph.project.cypher.estimate($node_spec, $relationship_spec)"
+        == "CALL gds.graph.project.cypher.estimate($node_spec, $relationship_spec, $config)"
     )
     assert runner.last_params() == {
         "node_spec": "RETURN 0 as id",
         "relationship_spec": "RETURN 0 as source, 0 as target",
+        "config": {"readConcurrency": 2},
     }
 
 
