@@ -1,5 +1,5 @@
 from ..query_runner.query_runner import QueryRunner
-from .nc_pipeline import NCPipeline
+from .nc_training_pipeline import NCTrainingPipeline
 
 
 class NCPipelineCreateRunner:
@@ -7,11 +7,11 @@ class NCPipelineCreateRunner:
         self._query_runner = query_runner
         self._namespace = namespace
 
-    def create(self, name: str) -> NCPipeline:
+    def create(self, name: str) -> NCTrainingPipeline:
         self._namespace += ".create"
 
         query = f"CALL {self._namespace}($name)"
         params = {"name": name}
         self._query_runner.run_query(query, params)
 
-        return NCPipeline(name, self._query_runner)
+        return NCTrainingPipeline(name, self._query_runner)

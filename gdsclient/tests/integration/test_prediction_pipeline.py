@@ -4,9 +4,9 @@ import pytest
 
 from gdsclient.graph.graph_object import Graph
 from gdsclient.graph_data_science import GraphDataScience
-from gdsclient.pipeline.lp_trained_pipeline import LPTrainedPipeline
-from gdsclient.pipeline.nc_trained_pipeline import NCTrainedPipeline
-from gdsclient.pipeline.trained_pipeline import TrainedPipeline
+from gdsclient.pipeline.lp_prediction_pipeline import LPPredictionPipeline
+from gdsclient.pipeline.nc_prediction_pipeline import NCPredictionPipeline
+from gdsclient.pipeline.prediction_pipeline import PredictionPipeline
 from gdsclient.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
@@ -41,7 +41,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 @pytest.fixture(scope="module")
 def lp_trained_pipe(
     runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
-) -> Generator[TrainedPipeline, None, None]:
+) -> Generator[PredictionPipeline, None, None]:
     pipe = gds.alpha.ml.pipeline.linkPrediction.create("pipe")
 
     try:
@@ -63,7 +63,7 @@ def lp_trained_pipe(
 @pytest.fixture(scope="module")
 def nc_trained_pipe(
     runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
-) -> Generator[TrainedPipeline, None, None]:
+) -> Generator[PredictionPipeline, None, None]:
     pipe = gds.alpha.ml.pipeline.nodeClassification.create("pipe")
 
     try:
@@ -85,14 +85,14 @@ def nc_trained_pipe(
 
 
 def test_predict_stream_lp_trained_pipeline(
-    lp_trained_pipe: LPTrainedPipeline, G: Graph
+    lp_trained_pipe: LPPredictionPipeline, G: Graph
 ) -> None:
     result = lp_trained_pipe.predict_stream(G, topN=2)
     assert len(result) == 2
 
 
 def test_predict_mutate_lp_trained_pipeline(
-    lp_trained_pipe: LPTrainedPipeline, G: Graph
+    lp_trained_pipe: LPPredictionPipeline, G: Graph
 ) -> None:
     result = lp_trained_pipe.predict_mutate(
         G, topN=2, mutateRelationshipType="PRED_REL"
@@ -101,54 +101,58 @@ def test_predict_mutate_lp_trained_pipeline(
 
 
 def test_predict_stream_nc_trained_pipeline(
-    nc_trained_pipe: NCTrainedPipeline, G: Graph
+    nc_trained_pipe: NCPredictionPipeline, G: Graph
 ) -> None:
     result = nc_trained_pipe.predict_stream(G)
     assert len(result) == G.node_count()
 
 
 def test_predict_mutate_nc_trained_pipeline(
-    nc_trained_pipe: NCTrainedPipeline, G: Graph
+    nc_trained_pipe: NCPredictionPipeline, G: Graph
 ) -> None:
     result = nc_trained_pipe.predict_mutate(G, mutateProperty="whoa")
     assert result[0]["nodePropertiesWritten"] == G.node_count()
 
 
 def test_predict_write_nc_trained_pipeline(
-    nc_trained_pipe: NCTrainedPipeline, G: Graph
+    nc_trained_pipe: NCPredictionPipeline, G: Graph
 ) -> None:
     result = nc_trained_pipe.predict_write(G, writeProperty="whoa")
     assert result[0]["nodePropertiesWritten"] == G.node_count()
 
 
-def test_type_nc_trained_pipeline(nc_trained_pipe: NCTrainedPipeline) -> None:
+def test_type_nc_trained_pipeline(nc_trained_pipe: NCPredictionPipeline) -> None:
     assert nc_trained_pipe.type() == "Node classification pipeline"
 
 
 def test_train_config_nc_trained_pipeline(
-    nc_trained_pipe: NCTrainedPipeline, G: Graph
+    nc_trained_pipe: NCPredictionPipeline, G: Graph
 ) -> None:
     train_config = nc_trained_pipe.train_config()
     assert train_config["modelName"] == nc_trained_pipe.name()
     assert train_config["graphName"] == G.name()
 
 
-def test_graph_schema_nc_trained_pipeline(nc_trained_pipe: NCTrainedPipeline) -> None:
+def test_graph_schema_nc_trained_pipeline(
+    nc_trained_pipe: NCPredictionPipeline,
+) -> None:
     graph_schema = nc_trained_pipe.graph_schema()
     assert "nodes" in graph_schema.keys()
 
 
-def test_loaded_nc_trained_pipeline(nc_trained_pipe: NCTrainedPipeline) -> None:
+def test_loaded_nc_trained_pipeline(nc_trained_pipe: NCPredictionPipeline) -> None:
     assert nc_trained_pipe.loaded()
 
 
-def test_stored_nc_trained_pipeline(nc_trained_pipe: NCTrainedPipeline) -> None:
+def test_stored_nc_trained_pipeline(nc_trained_pipe: NCPredictionPipeline) -> None:
     assert not nc_trained_pipe.stored()
 
 
-def test_creation_time_nc_trained_pipeline(nc_trained_pipe: NCTrainedPipeline) -> None:
+def test_creation_time_nc_trained_pipeline(
+    nc_trained_pipe: NCPredictionPipeline,
+) -> None:
     assert nc_trained_pipe.creation_time()
 
 
-def test_shared_nc_trained_pipeline(nc_trained_pipe: NCTrainedPipeline) -> None:
+def test_shared_nc_trained_pipeline(nc_trained_pipe: NCPredictionPipeline) -> None:
     assert not nc_trained_pipe.shared()

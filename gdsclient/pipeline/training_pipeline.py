@@ -1,14 +1,13 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
-from gdsclient.pipeline.trained_pipeline import TrainedPipeline
-
 from ..graph.graph_object import Graph
 from ..query_runner.query_runner import QueryRunner
 from .model import Model
+from .prediction_pipeline import PredictionPipeline
 
 
-class Pipeline(Model, ABC):
+class TrainingPipeline(Model, ABC):
     def __init__(self, name: str, query_runner: QueryRunner):
         super().__init__(name, query_runner)
 
@@ -19,7 +18,7 @@ class Pipeline(Model, ABC):
     @abstractmethod
     def _create_trained_model(
         self, name: str, query_runner: QueryRunner
-    ) -> TrainedPipeline:
+    ) -> PredictionPipeline:
         pass
 
     def addNodeProperty(self, procedure_name: str, **config: Any) -> None:
@@ -42,7 +41,7 @@ class Pipeline(Model, ABC):
         self._query_runner.run_query(query, params)
 
     # TODO: do we want to log the train result or return Pair(Result, Model)
-    def train(self, G: Graph, **config: Any) -> TrainedPipeline:
+    def train(self, G: Graph, **config: Any) -> PredictionPipeline:
         query = f"{self._query_prefix()}train($graph_name, $config)"
         config["pipeline"] = self.name()
         params = {

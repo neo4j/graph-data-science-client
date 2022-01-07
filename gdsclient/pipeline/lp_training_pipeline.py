@@ -1,11 +1,11 @@
 from typing import Any, Dict, List
 
 from ..query_runner.query_runner import QueryRunner
-from .lp_trained_pipeline import LPTrainedPipeline
-from .pipeline import Pipeline
+from .lp_prediction_pipeline import LPPredictionPipeline
+from .training_pipeline import TrainingPipeline
 
 
-class LPPipeline(Pipeline):
+class LPTrainingPipeline(TrainingPipeline):
     def __init__(self, name: str, query_runner: QueryRunner):
         super().__init__(name, query_runner)
 
@@ -28,5 +28,5 @@ class LPPipeline(Pipeline):
 
     def _create_trained_model(
         self, name: str, query_runner: QueryRunner
-    ) -> LPTrainedPipeline:
-        return LPTrainedPipeline(name, query_runner)
+    ) -> LPPredictionPipeline:
+        return LPPredictionPipeline(name, query_runner)

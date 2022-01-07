@@ -1,11 +1,12 @@
 from typing import Any, Dict, List, Union
 
+from gdsclient.pipeline.nc_prediction_pipeline import NCPredictionPipeline
+from gdsclient.pipeline.training_pipeline import TrainingPipeline
+
 from ..query_runner.query_runner import QueryRunner
-from .nc_trained_pipeline import NCTrainedPipeline
-from .pipeline import Pipeline
 
 
-class NCPipeline(Pipeline):
+class NCTrainingPipeline(TrainingPipeline):
     def __init__(self, name: str, query_runner: QueryRunner):
         super().__init__(name, query_runner)
 
@@ -24,5 +25,5 @@ class NCPipeline(Pipeline):
 
     def _create_trained_model(
         self, name: str, query_runner: QueryRunner
-    ) -> NCTrainedPipeline:
-        return NCTrainedPipeline(name, query_runner)
+    ) -> NCPredictionPipeline:
+        return NCPredictionPipeline(name, query_runner)

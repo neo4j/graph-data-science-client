@@ -1,8 +1,8 @@
 import pytest
 
 from gdsclient.graph_data_science import GraphDataScience
-from gdsclient.pipeline.lp_pipeline import LPPipeline
-from gdsclient.pipeline.nc_pipeline import NCPipeline
+from gdsclient.pipeline.lp_training_pipeline import LPTrainingPipeline
+from gdsclient.pipeline.nc_training_pipeline import NCTrainingPipeline
 
 from .conftest import CollectingQueryRunner
 
@@ -10,12 +10,12 @@ PIPE_NAME = "pipe"
 
 
 @pytest.fixture
-def lp_pipe(gds: GraphDataScience) -> LPPipeline:
+def lp_pipe(gds: GraphDataScience) -> LPTrainingPipeline:
     return gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
 
 
 @pytest.fixture
-def nc_pipe(gds: GraphDataScience) -> NCPipeline:
+def nc_pipe(gds: GraphDataScience) -> NCTrainingPipeline:
     return gds.alpha.ml.pipeline.nodeClassification.create(PIPE_NAME)
 
 
@@ -34,7 +34,7 @@ def test_create_lp_pipeline(
 
 
 def test_add_node_property_lp_pipeline(
-    runner: CollectingQueryRunner, lp_pipe: LPPipeline
+    runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline
 ) -> None:
     lp_pipe.addNodeProperty(
         "pageRank", mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
@@ -52,7 +52,7 @@ def test_add_node_property_lp_pipeline(
 
 
 def test_add_feature_lp_pipeline(
-    runner: CollectingQueryRunner, lp_pipe: LPPipeline
+    runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline
 ) -> None:
     lp_pipe.addFeature("l2", nodeProperties=["prop1"])
 
@@ -68,7 +68,7 @@ def test_add_feature_lp_pipeline(
 
 
 def test_configure_split_lp_pipeline(
-    runner: CollectingQueryRunner, lp_pipe: LPPipeline
+    runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline
 ) -> None:
     lp_pipe.configureSplit(trainFraction=0.42)
 
@@ -83,7 +83,7 @@ def test_configure_split_lp_pipeline(
 
 
 def test_configure_params_lp_pipeline(
-    runner: CollectingQueryRunner, lp_pipe: LPPipeline
+    runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline
 ) -> None:
     lp_pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
 
@@ -98,7 +98,7 @@ def test_configure_params_lp_pipeline(
 
 
 def test_train_lp_pipeline(
-    runner: CollectingQueryRunner, gds: GraphDataScience, lp_pipe: LPPipeline
+    runner: CollectingQueryRunner, gds: GraphDataScience, lp_pipe: LPTrainingPipeline
 ) -> None:
     G = gds.graph.project("g", "*", "*")
 
@@ -115,7 +115,7 @@ def test_train_lp_pipeline(
 
 
 def test_select_features_nc_pipeline(
-    runner: CollectingQueryRunner, nc_pipe: NCPipeline
+    runner: CollectingQueryRunner, nc_pipe: NCTrainingPipeline
 ) -> None:
     nc_pipe.selectFeatures("hello")
 
