@@ -1,6 +1,5 @@
-from .algo_proc_runner import (StandardModeRunner,
-                               TrainProcRunner)
 from ..query_runner.query_runner import QueryRunner
+from .algo_proc_runner import GraphSageRunner, StandardModeRunner
 
 
 class AlgoEndpoints:
@@ -9,8 +8,8 @@ class AlgoEndpoints:
         self._namespace = namespace
 
     @property
-    def train(self) -> TrainProcRunner:
-        return TrainProcRunner(self._query_runner, f"{self._namespace}.train")
+    def train(self) -> GraphSageRunner:
+        return GraphSageRunner(self._query_runner, f"{self._namespace}.train")
 
     @property
     def mutate(self) -> StandardModeRunner:

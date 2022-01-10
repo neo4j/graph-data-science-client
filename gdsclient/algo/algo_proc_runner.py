@@ -2,7 +2,7 @@ from abc import ABC
 from typing import Any, Dict
 
 from ..graph.graph_object import Graph
-from ..model.model import Model
+from ..model.trained_model import GraphSageModel
 from ..query_runner.query_runner import QueryResult, QueryRunner
 
 
@@ -30,8 +30,8 @@ class StandardModeRunner(AlgoProcRunner):
         return self._run_procedure(G, config)
 
 
-class TrainProcRunner(AlgoProcRunner):
-    def __call__(self, G: Graph, **config: Any) -> Model:
+class GraphSageRunner(AlgoProcRunner):
+    def __call__(self, G: Graph, **config: Any) -> GraphSageModel:
         model_name = self._run_procedure(G, config)[0]["modelInfo"]["modelName"]
 
-        return Model(model_name, self._query_runner)
+        return GraphSageModel(model_name, self._query_runner)

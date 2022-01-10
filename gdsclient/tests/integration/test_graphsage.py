@@ -40,3 +40,18 @@ def test_graphsage_train(G: Graph, gds: GraphDataScience) -> None:
     assert model.exists()
 
     model.drop()
+
+
+def test_graphsage_write(
+    G: Graph, gds: GraphDataScience, runner: Neo4jQueryRunner
+) -> None:
+    model = gds.beta.graphSage.train(
+        G, modelName="m", featureProperties=["x"], embeddingDimension=20
+    )
+    model.predict_write(G, writeProperty="gs")
+
+    result = runner.run_query("MATCH (n:Node) RETURN size(n.gs) AS embeddingDim")
+    assert len(result) == 3
+    assert result[0]["embeddingDim"] == 20
+
+    model.drop()

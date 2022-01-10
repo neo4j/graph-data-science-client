@@ -1,9 +1,10 @@
+from abc import ABC
 from typing import Any, Dict
 
 from ..query_runner.query_runner import QueryRunner
 
 
-class Model:
+class Model(ABC):
     def __init__(self, name: str, query_runner: QueryRunner):
         self._name = name
         self._query_runner = query_runner
