@@ -94,4 +94,12 @@ class ModelProcRunner:
 
         return self._query_runner.run_query(query, params)
 
-    # delete, *get (get model object)
+    def get(self, model_name: str) -> Model:
+        if self._namespace != "gds.model":
+            raise SyntaxError(f"There is no {self._namespace + '.get'} to call")
+
+        self._namespace = "gds.beta.model"
+        if not self.exists(model_name)[0]["exists"]:
+            raise ValueError(f"No loaded model named '{model_name}' exists")
+
+        return Model(model_name, self._query_runner)

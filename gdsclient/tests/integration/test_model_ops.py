@@ -55,3 +55,10 @@ def test_model_drop(gds: GraphDataScience) -> None:
 
     assert gds.beta.model.drop(pipe)[0]["modelInfo"]["modelName"] == pipe.name()
     assert not gds.beta.model.exists(pipe)[0]["exists"]
+
+
+def test_model_get(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> None:
+    pipe = gds.model.get(lp_pipe.name())
+
+    assert pipe.name() == lp_pipe.name()
+    assert pipe.stored() == lp_pipe.stored()
