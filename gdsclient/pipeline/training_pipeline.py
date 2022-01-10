@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
 from ..graph.graph_object import Graph
+from ..model.model import Model
 from ..query_runner.query_runner import QueryRunner
-from .model import Model
 from .prediction_pipeline import PredictionPipeline
 
 
