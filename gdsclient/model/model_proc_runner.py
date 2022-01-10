@@ -85,4 +85,13 @@ class ModelProcRunner:
 
         return Model(result[0]["modelName"], self._query_runner)
 
+    # TODO: Figure out how to integration test
+    def delete(self, model_id: ModelId) -> QueryResult:
+        self._namespace += ".delete"
+
+        query = f"CALL {self._namespace}($model_name)"
+        params = {"model_name": ModelProcRunner._model_name(model_id)}
+
+        return self._query_runner.run_query(query, params)
+
     # delete, *get (get model object)
