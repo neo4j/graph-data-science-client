@@ -11,6 +11,7 @@ class ModelProcRunner:
         self._query_runner = query_runner
         self._namespace = namespace
 
+    @staticmethod
     def _model_name(model_id: ModelId) -> str:
         if isinstance(model_id, str):
             return model_id

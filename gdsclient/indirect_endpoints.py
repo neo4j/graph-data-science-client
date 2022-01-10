@@ -1,7 +1,7 @@
 from .algo.algo_endpoints import AlgoEndpoints
 from .graph.graph_endpoints import GraphEndpoints
-from .pipeline.pipeline_endpoints import PipelineEndpoints
 from .model.model_endpoints import ModelEndpoints
+from .pipeline.pipeline_endpoints import PipelineEndpoints
 from .query_runner.query_runner import QueryRunner
 
 

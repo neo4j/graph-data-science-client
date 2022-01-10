@@ -1,13 +1,15 @@
+from typing import Any
+
 import pytest
 
 
-def pytest_addoption(parser):
+def pytest_addoption(parser: Any) -> None:
     parser.addoption(
         "--include-enterprise", action="store_true", help="include enterprise tests"
     )
 
 
-def pytest_collection_modifyitems(config, items):
+def pytest_collection_modifyitems(config: Any, items: Any) -> None:
     if config.getoption("--include-enterprise"):
         # --include-enterprise given in cli: do not skip enterprise tests
         return

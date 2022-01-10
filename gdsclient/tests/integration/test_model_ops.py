@@ -1,4 +1,5 @@
 from typing import Generator
+
 import pytest
 
 from gdsclient.graph_data_science import GraphDataScience
@@ -29,19 +30,19 @@ def test_model_list(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> None:
 
 
 def test_model_exists(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> None:
-    assert gds.beta.model.exists("NOTHING")[0]["exists"] == False
-    assert gds.beta.model.exists(lp_pipe)[0]["exists"] == True
+    assert not gds.beta.model.exists("NOTHING")[0]["exists"]
+    assert gds.beta.model.exists(lp_pipe)[0]["exists"]
 
 
 @pytest.mark.enterprise
 def test_model_publish(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     pipe = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
 
-    assert pipe.shared() == False
+    assert not pipe.shared()
 
     shared_pipe = gds.alpha.model.publish(pipe)
 
-    assert shared_pipe.shared() == True
+    assert shared_pipe.shared()
 
     query = "CALL gds.beta.model.drop($name)"
     params = {"name": shared_pipe.name()}
