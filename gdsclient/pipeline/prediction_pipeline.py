@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Dict
 
 from ..graph.graph_object import Graph
 from ..query_runner.query_runner import QueryResult, QueryRunner
@@ -13,6 +13,9 @@ class PredictionPipeline(Model, ABC):
     @abstractmethod
     def _query_prefix(self) -> str:
         pass
+
+    def metrics(self) -> Dict[str, Dict[str, Any]]:
+        return self._list_info()["modelInfo"]["metrics"]  # type: ignore
 
     def predict_stream(self, G: Graph, **config: Any) -> QueryResult:
         query = f"{self._query_prefix()}stream($graph_name, $config)"

@@ -156,3 +156,7 @@ def test_creation_time_nc_trained_pipeline(
 
 def test_shared_nc_trained_pipeline(nc_trained_pipe: NCPredictionPipeline) -> None:
     assert not nc_trained_pipe.shared()
+
+
+def test_metrics_nc_trained_pipeline(nc_trained_pipe: NCPredictionPipeline) -> None:
+    assert "ACCURACY" in nc_trained_pipe.metrics().keys()
