@@ -42,6 +42,7 @@ pytest gdsclient/tests/integration
 ```
 
 To include tests that require the Enterprise Edition of the Neo4j Graph Data Science library, you can specify the option `--include-enterprise`.
+Naturally, this requires access to a valid Neo4j GDS license key, which can be acquired via https://neo4j.com/product/graph-data-science/
 
 
 ## Style guide
