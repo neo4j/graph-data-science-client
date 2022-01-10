@@ -128,7 +128,7 @@ assert len(steps) == 1
 assert steps[0]["feature"] == "rank"
 
 trained_pipe = pipe.train(G, modelName="myModel", targetProperty="myClass", metrics=["ACCURACY"])
-assert trained_pipe.train_config()["graphName"] == G.name()
+assert trained_pipe.metrics()["ACCURACY"]["test"] > 0
 
 res = trained_pipe.predict_stream(G)
 assert len(res) == G.node_count()
