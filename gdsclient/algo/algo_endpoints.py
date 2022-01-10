@@ -1,5 +1,6 @@
+from .algo_proc_runner import (StandardModeRunner,
+                               TrainProcRunner)
 from ..query_runner.query_runner import QueryRunner
-from .algo_proc_runner import AlgoProcRunner
 
 
 class AlgoEndpoints:
@@ -8,17 +9,21 @@ class AlgoEndpoints:
         self._namespace = namespace
 
     @property
-    def mutate(self) -> AlgoProcRunner:
-        return AlgoProcRunner(self._query_runner, f"{self._namespace}.mutate")
+    def train(self) -> TrainProcRunner:
+        return TrainProcRunner(self._query_runner, f"{self._namespace}.train")
 
     @property
-    def stats(self) -> AlgoProcRunner:
-        return AlgoProcRunner(self._query_runner, f"{self._namespace}.stats")
+    def mutate(self) -> StandardModeRunner:
+        return StandardModeRunner(self._query_runner, f"{self._namespace}.mutate")
 
     @property
-    def stream(self) -> AlgoProcRunner:
-        return AlgoProcRunner(self._query_runner, f"{self._namespace}.stream")
+    def stats(self) -> StandardModeRunner:
+        return StandardModeRunner(self._query_runner, f"{self._namespace}.stats")
 
     @property
-    def write(self) -> AlgoProcRunner:
-        return AlgoProcRunner(self._query_runner, f"{self._namespace}.write")
+    def stream(self) -> StandardModeRunner:
+        return StandardModeRunner(self._query_runner, f"{self._namespace}.stream")
+
+    @property
+    def write(self) -> StandardModeRunner:
+        return StandardModeRunner(self._query_runner, f"{self._namespace}.write")
