@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 from ..query_runner.query_runner import QueryResult, QueryRunner
 from .model import Model
@@ -34,6 +34,34 @@ class ModelProcRunner:
 
         return self._query_runner.run_query(query, params)
 
-    # store, load, delete, publish
+    def list(self, model_id: Optional[ModelId] = None) -> QueryResult:
+        self._namespace += ".list"
 
-    # exists?
+        if model_id:
+            query = f"CALL {self._namespace}($model_name)"
+            params = {"model_name": ModelProcRunner._model_name(model_id)}
+        else:
+            query = f"CALL {self._namespace}()"
+            params = {}
+
+        return self._query_runner.run_query(query, params)
+
+    def exists(self, model_id: ModelId) -> QueryResult:
+        self._namespace += ".exists"
+
+        query = f"CALL {self._namespace}($model_name)"
+        params = {"model_name": ModelProcRunner._model_name(model_id)}
+
+        return self._query_runner.run_query(query, params)
+
+    def publish(self, model_id: ModelId) -> Model:
+        self._namespace += ".publish"
+
+        query = f"CALL {self._namespace}($model_name)"
+        params = {"model_name": ModelProcRunner._model_name(model_id)}
+
+        result = self._query_runner.run_query(query, params)
+
+        return Model(result[0]["modelInfo"]["modelName"], self._query_runner)
+
+    # load, delete, drop, *get (get model object)
