@@ -109,6 +109,34 @@ G.drop()
 ```
 
 
+### Machine learning pipelines
+
+There's native support for [Link prediction pipelines](https://neo4j.com/docs/graph-data-science/current/algorithms/ml-models/linkprediction-pipelines/) and [Node classification pipelines](https://neo4j.com/docs/graph-data-science/current/algorithms/ml-models/nodeclassification-pipelines/).
+Apart from the call to create a pipeline, the GDS native pipelines calls are represented by methods on pipeline Python objects.
+Additionally to the standard GDS calls, there are several methods to query the pipeline for information about it.
+
+Below is a minimal example for node classification (supposing we have a graph `G` with a property "myClass"):
+
+```python
+pipe = gds.alpha.ml.pipeline.nodeClassification.create("myPipe")
+assert pipe.type() == "Node classification training pipeline"
+
+pipe.addNodeProperty("degree", mutateProperty="rank")
+pipe.selectFeatures("rank")
+steps = pipe.feature_properties()
+assert len(steps) == 1
+assert steps[0]["feature"] == "rank"
+
+trained_pipe = pipe.train(G, modelName="myModel", targetProperty="myClass", metrics=["ACCURACY"])
+assert trained_pipe.train_config()["graphName"] == G.name()
+
+res = trained_pipe.predict_stream(G)
+assert len(res) == G.node_count()
+```
+
+Link prediction works the same way, just with different method names for calls specific to that pipeline.
+Please see the GDS documentation for more on the pipelines' procedure APIs.
+
 ### Graph catalog utils
 
 All procedures from the [GDS Graph catalog](https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/) are supported with `gdsclient`.
@@ -125,13 +153,14 @@ assert len(res) == G.node_count()
 Further, there's a new call named `gds.graph.get` (`gdsclient` only) which takes a name as input and returns a `Graph` object if a graph projection of that name exists in the user's graph catalog.
 The idea is to have a way of creating `Graph`s for already projected graphs, without having to do a new projection.
 
+
 ## Known limitations
 
 Several operations are known to not yet work with `gdsclient`:
 
 * Path finding algorithms
 * Topological link prediction
-* Supervised machine learning (GraphSAGE, Link prediction, Node classification)
+* Supervised machine learning with GraphSAGE
 * Progress logging and system monitoring
 * Some utility functions
 
