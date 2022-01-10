@@ -22,7 +22,6 @@ project_urls = {
     "Documentation": "https://neo4j.com/docs/graph-data-science/current/",
     "Source": "https://github.com/neo4j/gdsclient",
     "Bug Tracker": "https://github.com/neo4j/gdsclient/issues",
-    "GDS Source": "https://github.com/neo4j/graph-data-science",
 }
 
 setuptools.setup(
