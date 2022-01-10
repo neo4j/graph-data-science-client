@@ -22,6 +22,7 @@ class ModelProcRunner:
             f"Provided model identifier is of the wrong type: {type(model_id)}"
         )
 
+    # TODO: Figure out how to integration test
     def store(
         self, model_id: ModelId, failIfUnsupportedType: bool = True
     ) -> QueryResult:
@@ -73,4 +74,15 @@ class ModelProcRunner:
 
         return self._query_runner.run_query(query, params)
 
-    # load, delete, *get (get model object)
+    # TODO: Figure out how to integration test
+    def load(self, model_name: str) -> Model:
+        self._namespace += ".load"
+
+        query = f"CALL {self._namespace}($model_name)"
+        params = {"model_name": model_name}
+
+        result = self._query_runner.run_query(query, params)
+
+        return Model(result[0]["modelName"], self._query_runner)
+
+    # delete, *get (get model object)
