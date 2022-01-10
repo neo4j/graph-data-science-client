@@ -65,4 +65,12 @@ class ModelProcRunner:
 
         return Model(result[0]["modelInfo"]["modelName"], self._query_runner)
 
-    # load, delete, drop, *get (get model object)
+    def drop(self, model_id: ModelId) -> QueryResult:
+        self._namespace += ".drop"
+
+        query = f"CALL {self._namespace}($model_name)"
+        params = {"model_name": ModelProcRunner._model_name(model_id)}
+
+        return self._query_runner.run_query(query, params)
+
+    # load, delete, *get (get model object)

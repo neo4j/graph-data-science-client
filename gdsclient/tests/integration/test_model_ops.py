@@ -47,3 +47,11 @@ def test_model_publish(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     query = "CALL gds.beta.model.drop($name)"
     params = {"name": shared_pipe.name()}
     runner.run_query(query, params)
+
+
+def test_model_drop(gds: GraphDataScience) -> None:
+    pipe = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
+    assert gds.beta.model.exists(pipe)[0]["exists"]
+
+    assert gds.beta.model.drop(pipe)[0]["modelInfo"]["modelName"] == pipe.name()
+    assert not gds.beta.model.exists(pipe)[0]["exists"]

@@ -27,3 +27,10 @@ def test_exists_model(runner: CollectingQueryRunner, gds: GraphDataScience) -> N
 
     assert runner.last_query() == "CALL gds.alpha.model.exists($model_name)"
     assert runner.last_params() == {"model_name": "my_model"}
+
+
+def test_drop_model(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    gds.alpha.model.drop("my_model")
+
+    assert runner.last_query() == "CALL gds.alpha.model.drop($model_name)"
+    assert runner.last_params() == {"model_name": "my_model"}
