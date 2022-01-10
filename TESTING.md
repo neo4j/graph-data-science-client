@@ -41,6 +41,8 @@ The command for running the integration tests is the following:
 pytest gdsclient/tests/integration
 ```
 
+To include tests that require the Enterprise Edition of the Neo4j Graph Data Science library, you can specify the option `--include-enterprise`.
+
 
 ## Style guide
 
