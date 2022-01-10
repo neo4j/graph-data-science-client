@@ -43,3 +43,15 @@ class Model(ABC):
 
     def shared(self) -> bool:
         return self._list_info()["shared"]  # type: ignore
+
+    def exists(self) -> bool:
+        query = "CALL gds.beta.model.exists($model_name) YIELD exists"
+        params = {"model_name": self._name}
+
+        return self._query_runner.run_query(query, params)[0]["exists"]  # type: ignore
+
+    def drop(self) -> None:
+        query = "CALL gds.beta.model.drop($model_name)"
+        params = {"model_name": self._name}
+
+        self._query_runner.run_query(query, params)
