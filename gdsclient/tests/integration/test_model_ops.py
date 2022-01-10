@@ -4,7 +4,6 @@ import pytest
 from gdsclient.graph_data_science import GraphDataScience
 from gdsclient.pipeline.lp_training_pipeline import LPTrainingPipeline
 from gdsclient.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from gdsclient.tests.integration.conftest import skip_if_not_enterprise, enterprise
 
 PIPE_NAME = "pipe"
 
@@ -34,7 +33,7 @@ def test_model_exists(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> Non
     assert gds.beta.model.exists(lp_pipe)[0]["exists"] == True
 
 
-@enterprise
+@pytest.mark.enterprise
 def test_model_publish(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     pipe = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
 

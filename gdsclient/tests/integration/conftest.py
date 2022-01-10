@@ -17,25 +17,6 @@ if os.environ.get("NEO4J_USER") is not None:
     )
 
 
-def pytest_addoption(parser):
-    parser.addoption(
-        "--include-enterprise", action="store_true", help="include enterprise tests"
-    )
-
-
-@pytest.fixture
-def skip_if_not_enterprise(request) -> None:
-    if not request.config.getoption("--include-enterprise"):
-        pytest.skip()
-
-
-def enterprise(func):
-    def wrapper(skip_if_not_enterprise):
-        return func
-
-    return wrapper
-
-
 @pytest.fixture(scope="package")
 def runner() -> Generator[Neo4jQueryRunner, None, None]:
     driver = GraphDatabase.driver(URI, auth=AUTH)
