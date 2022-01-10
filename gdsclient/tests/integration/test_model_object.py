@@ -24,3 +24,10 @@ def nc_pipe(
 
 def test_model_exists(nc_pipe: NCTrainingPipeline) -> None:
     assert nc_pipe.exists()
+
+
+def test_model_drop(gds: GraphDataScience) -> None:
+    pipe = gds.alpha.ml.pipeline.nodeClassification.create(PIPE_NAME)
+
+    pipe.drop()
+    assert not pipe.exists()
