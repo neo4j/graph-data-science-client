@@ -1,7 +1,12 @@
 from typing import Optional, Union
 
+from ..pipeline.lp_prediction_pipeline import LPPredictionPipeline
+from ..pipeline.lp_training_pipeline import LPTrainingPipeline
+from ..pipeline.nc_prediction_pipeline import NCPredictionPipeline
+from ..pipeline.nc_training_pipeline import NCTrainingPipeline
 from ..query_runner.query_runner import QueryResult, QueryRunner
 from .model import Model
+from .trained_model import GraphSageModel
 
 ModelId = Union[Model, str]
 
@@ -22,7 +27,6 @@ class ModelProcRunner:
             f"Provided model identifier is of the wrong type: {type(model_id)}"
         )
 
-    # TODO: Figure out how to integration test
     def store(
         self, model_id: ModelId, failIfUnsupportedType: bool = True
     ) -> QueryResult:
@@ -64,7 +68,9 @@ class ModelProcRunner:
 
         result = self._query_runner.run_query(query, params)
 
-        return Model(result[0]["modelInfo"]["modelName"], self._query_runner)
+        model_name = result[0]["modelInfo"]["modelName"]
+        model_type = result[0]["modelInfo"]["modelType"]
+        return self._resolve_model(model_type, model_name)
 
     def drop(self, model_id: ModelId) -> QueryResult:
         self._namespace += ".drop"
@@ -74,7 +80,6 @@ class ModelProcRunner:
 
         return self._query_runner.run_query(query, params)
 
-    # TODO: Figure out how to integration test
     def load(self, model_name: str) -> Model:
         self._namespace += ".load"
 
@@ -83,9 +88,9 @@ class ModelProcRunner:
 
         result = self._query_runner.run_query(query, params)
 
-        return Model(result[0]["modelName"], self._query_runner)
+        self._namespace = "gds.model"
+        return self.get(result[0]["modelName"])
 
-    # TODO: Figure out how to integration test
     def delete(self, model_id: ModelId) -> QueryResult:
         self._namespace += ".delete"
 
@@ -99,7 +104,23 @@ class ModelProcRunner:
             raise SyntaxError(f"There is no {self._namespace + '.get'} to call")
 
         self._namespace = "gds.beta.model"
-        if not self.exists(model_name)[0]["exists"]:
+        result = self.list(model_name)
+        if len(result) == 0:
             raise ValueError(f"No loaded model named '{model_name}' exists")
 
-        return Model(model_name, self._query_runner)
+        model_type = result[0]["modelInfo"]["modelType"]
+        return self._resolve_model(model_type, model_name)
+
+    def _resolve_model(self, model_type: str, model_name: str) -> Model:
+        if model_type == "Link prediction training pipeline":
+            return LPTrainingPipeline(model_name, self._query_runner)
+        elif model_type == "Node classification training pipeline":
+            return NCTrainingPipeline(model_name, self._query_runner)
+        elif model_type == "Node classification pipeline":
+            return NCPredictionPipeline(model_name, self._query_runner)
+        elif model_type == "Link prediction pipeline":
+            return LPPredictionPipeline(model_name, self._query_runner)
+        elif model_type == "graphSage":
+            return GraphSageModel(model_name, self._query_runner)
+
+        raise ValueError(f"Unknown model type encountered: '{model_type}'")

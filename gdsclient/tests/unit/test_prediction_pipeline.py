@@ -2,9 +2,9 @@ import pytest
 
 from gdsclient.graph.graph_object import Graph
 from gdsclient.graph_data_science import GraphDataScience
+from gdsclient.model.trained_model import TrainedModel
 from gdsclient.pipeline.lp_prediction_pipeline import LPPredictionPipeline
 from gdsclient.pipeline.nc_prediction_pipeline import NCPredictionPipeline
-from gdsclient.pipeline.prediction_pipeline import PredictionPipeline
 
 from .conftest import CollectingQueryRunner
 
@@ -17,13 +17,13 @@ def G(gds: GraphDataScience) -> Graph:
 
 
 @pytest.fixture
-def lp_trained_pipe(gds: GraphDataScience, G: Graph) -> PredictionPipeline:
+def lp_trained_pipe(gds: GraphDataScience, G: Graph) -> TrainedModel:
     pipe = gds.alpha.ml.pipeline.linkPrediction.create("pipe")
     return pipe.train(G, modelName="m", concurrency=2)
 
 
 @pytest.fixture
-def nc_trained_pipe(gds: GraphDataScience, G: Graph) -> PredictionPipeline:
+def nc_trained_pipe(gds: GraphDataScience, G: Graph) -> TrainedModel:
     pipe = gds.alpha.ml.pipeline.nodeClassification.create("pipe")
     return pipe.train(G, modelName="m", concurrency=2)
 

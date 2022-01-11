@@ -109,7 +109,16 @@ G.drop()
 ```
 
 
-### Machine learning pipelines
+### Machine learning models
+
+In GDS, you can train machine learning models.
+When doing this using the `gdsclient`, you can get a model object returned directly in the client.
+The model object allows for convenient access to details about the model via Python methods.
+It also offers the ability to directly compute predictions using the appropriate GDS procedure for that model.
+This includes support for models trained using pipelines (for Link Prediction and Node Classification) as well as GraphSAGE models.
+
+
+#### Pipelines
 
 There's native support for [Link prediction pipelines](https://neo4j.com/docs/graph-data-science/current/algorithms/ml-models/linkprediction-pipelines/) and [Node classification pipelines](https://neo4j.com/docs/graph-data-science/current/algorithms/ml-models/nodeclassification-pipelines/).
 Apart from the call to create a pipeline, the GDS native pipelines calls are represented by methods on pipeline Python objects.
@@ -137,6 +146,22 @@ assert len(res) == G.node_count()
 Link prediction works the same way, just with different method names for calls specific to that pipeline.
 Please see the GDS documentation for more on the pipelines' procedure APIs.
 
+
+#### GraphSAGE
+
+Assuming we have a graph `G` with node property `x`, we can do the following:
+
+```python
+model = gds.beta.graphSage.train(G, modelName="myModel", featureProperties=["x"])
+assert len(model.metrics()["epochLosses"]) == model.metrics()["ranEpochs"] 
+
+res = model.predict_stream(G)
+assert len(res) == G.node_count()
+```
+
+Note that with GraphSAGE we call the `train` method directly and supply all training configuration.
+
+
 ### Graph catalog utils
 
 All procedures from the [GDS Graph catalog](https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/) are supported with `gdsclient`.
@@ -154,13 +179,29 @@ Further, there's a new call named `gds.graph.get` (`gdsclient` only) which takes
 The idea is to have a way of creating `Graph`s for already projected graphs, without having to do a new projection.
 
 
+### Model catalog utils
+
+All procedures from the [GDS Model catalog](https://neo4j.com/docs/graph-data-science/current/model-catalog/) are supported with `gdsclient`.
+Some examples are (where `model` is a machine learning model object):
+
+```python
+res = gds.beta.model.list()
+assert len(res) == 1  # Exactly one model is loaded
+
+res = gds.beta.model.drop(model)
+assert res[0]["modelInfo"]["modelName"] == model.name()
+```
+
+Further, there's a new call named `gds.model.get` (`gdsclient` only) which takes a model name as input and returns a model object if a model of that name exists in the user's model catalog.
+The idea is to have a way of creating model objects for already loaded models, without having to create them again.
+
+
 ## Known limitations
 
 Several operations are known to not yet work with `gdsclient`:
 
 * Path finding algorithms
 * Topological link prediction
-* Supervised machine learning with GraphSAGE
 * Progress logging and system monitoring
 * Some utility functions
 

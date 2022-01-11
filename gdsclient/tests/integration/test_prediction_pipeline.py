@@ -4,9 +4,9 @@ import pytest
 
 from gdsclient.graph.graph_object import Graph
 from gdsclient.graph_data_science import GraphDataScience
+from gdsclient.model.trained_model import TrainedModel
 from gdsclient.pipeline.lp_prediction_pipeline import LPPredictionPipeline
 from gdsclient.pipeline.nc_prediction_pipeline import NCPredictionPipeline
-from gdsclient.pipeline.prediction_pipeline import PredictionPipeline
 from gdsclient.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
@@ -41,7 +41,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 @pytest.fixture(scope="module")
 def lp_trained_pipe(
     runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
-) -> Generator[PredictionPipeline, None, None]:
+) -> Generator[TrainedModel, None, None]:
     pipe = gds.alpha.ml.pipeline.linkPrediction.create("pipe")
 
     try:
@@ -63,7 +63,7 @@ def lp_trained_pipe(
 @pytest.fixture(scope="module")
 def nc_trained_pipe(
     runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
-) -> Generator[PredictionPipeline, None, None]:
+) -> Generator[TrainedModel, None, None]:
     pipe = gds.alpha.ml.pipeline.nodeClassification.create("pipe")
 
     try:
