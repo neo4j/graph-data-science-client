@@ -27,6 +27,15 @@ def lp_pipe(
     runner.run_query(query, params)
 
 
+@pytest.fixture
+def gs_model(gds: GraphDataScience, G: Graph) -> Generator[GraphSageModel, None, None]:
+    model = gds.beta.graphSage.train(G, modelName="m", featureProperties=["age"])
+
+    yield model
+
+    model.drop()
+
+
 @pytest.fixture(scope="module")
 def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None, None]:
     runner.run_query(
@@ -84,23 +93,23 @@ def test_model_publish(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
 
 
 @pytest.mark.model_store_location
-def test_model_load(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> None:
-    gsmodel = gds.beta.graphSage.train(G, modelName="m", featureProperties=["age"])
-    runner.run_query(f"CALL gds.alpha.model.store('{gsmodel.name()}')")
-    runner.run_query(f"CALL gds.beta.model.drop('{gsmodel.name()}')")
+def test_model_load(
+    runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel
+) -> None:
+    runner.run_query(f"CALL gds.alpha.model.store('{gs_model.name()}')")
+    runner.run_query(f"CALL gds.beta.model.drop('{gs_model.name()}')")
 
-    model = gds.alpha.model.load(gsmodel.name())
+    model = gds.alpha.model.load(gs_model.name())
     assert isinstance(model, GraphSageModel)
 
-    runner.run_query(f"CALL gds.beta.model.drop('{model.name()}')")
     runner.run_query(f"CALL gds.alpha.model.delete('{model.name()}')")
 
 
 @pytest.mark.model_store_location
-def test_model_store(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> None:
-    gsmodel = gds.beta.graphSage.train(G, modelName="m", featureProperties=["age"])
-    model_name = gds.alpha.model.store(gsmodel)[0]["modelName"]
-    runner.run_query(f"CALL gds.beta.model.drop('{gsmodel.name()}')")
+def test_model_store(
+    runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel
+) -> None:
+    model_name = gds.alpha.model.store(gs_model)[0]["modelName"]
 
     # Should be deletable now
     runner.run_query(f"CALL gds.alpha.model.delete('{model_name}')")
@@ -108,13 +117,11 @@ def test_model_store(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) 
 
 @pytest.mark.model_store_location
 def test_model_delete(
-    runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
+    runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel
 ) -> None:
-    gsmodel = gds.beta.graphSage.train(G, modelName="m", featureProperties=["age"])
-    model_name = runner.run_query(f"CALL gds.alpha.model.store('{gsmodel.name()}')")[0][
-        "modelName"
-    ]
-    runner.run_query(f"CALL gds.beta.model.drop('{gsmodel.name()}')")
+    model_name = runner.run_query(f"CALL gds.alpha.model.store('{gs_model.name()}')")[
+        0
+    ]["modelName"]
 
     gds.alpha.model.delete(model_name)[0]["deleteMillis"] >= 0
 
@@ -188,12 +195,9 @@ def test_model_get_nc_trained(gds: GraphDataScience, G: Graph) -> None:
     nc_trained_pipe.drop()
 
 
-def test_model_get_graphsage(gds: GraphDataScience, G: Graph) -> None:
-    gsmodel = gds.beta.graphSage.train(G, modelName="m", featureProperties=["age"])
-    model = gds.model.get(gsmodel.name())
+def test_model_get_graphsage(gds: GraphDataScience, gs_model: GraphSageModel) -> None:
+    model = gds.model.get(gs_model.name())
 
-    assert model.type() == gsmodel.type()
-    assert model.name() == gsmodel.name()
+    assert model.type() == gs_model.type()
+    assert model.name() == gs_model.name()
     assert isinstance(model, GraphSageModel)
-
-    gsmodel.drop()
