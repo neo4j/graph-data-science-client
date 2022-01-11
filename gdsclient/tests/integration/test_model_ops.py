@@ -33,7 +33,8 @@ def gs_model(gds: GraphDataScience, G: Graph) -> Generator[GraphSageModel, None,
 
     yield model
 
-    model.drop()
+    # cannot clean up with drop here because of delete bug
+    # model.drop()
 
 
 @pytest.fixture(scope="module")
@@ -102,6 +103,7 @@ def test_model_load(
     model = gds.alpha.model.load(gs_model.name())
     assert isinstance(model, GraphSageModel)
 
+    runner.run_query(f"CALL gds.beta.model.drop('{gs_model.name()}')")
     runner.run_query(f"CALL gds.alpha.model.delete('{model.name()}')")
 
 
@@ -112,6 +114,7 @@ def test_model_store(
     model_name = gds.alpha.model.store(gs_model)[0]["modelName"]
 
     # Should be deletable now
+    runner.run_query(f"CALL gds.beta.model.drop('{gs_model.name()}')")
     runner.run_query(f"CALL gds.alpha.model.delete('{model_name}')")
 
 
@@ -123,11 +126,11 @@ def test_model_delete(
         0
     ]["modelName"]
 
-    gds.alpha.model.delete(model_name)[0]["deleteMillis"] >= 0
+    runner.run_query(f"CALL gds.beta.model.drop('{gs_model.name()}')")
+    assert gds.alpha.model.delete(model_name)[0]["deleteMillis"] >= 0
 
-    # Should be deleted and therefore no longer loadable
-    with pytest.raises(Exception):
-        runner.run_query(f"CALL gds.alpha.model.load('{model_name}')")
+    res = runner.run_query(f"CALL gds.beta.model.exists('{model_name}')")
+    assert not res[0]["exists"]
 
 
 def test_model_drop(gds: GraphDataScience) -> None:
@@ -201,3 +204,5 @@ def test_model_get_graphsage(gds: GraphDataScience, gs_model: GraphSageModel) ->
     assert model.type() == gs_model.type()
     assert model.name() == gs_model.name()
     assert isinstance(model, GraphSageModel)
+
+    model.drop()
