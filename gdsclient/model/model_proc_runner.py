@@ -1,7 +1,12 @@
 from typing import Optional, Union
 
+from ..pipeline.lp_prediction_pipeline import LPPredictionPipeline
+from ..pipeline.lp_training_pipeline import LPTrainingPipeline
+from ..pipeline.nc_prediction_pipeline import NCPredictionPipeline
+from ..pipeline.nc_training_pipeline import NCTrainingPipeline
 from ..query_runner.query_runner import QueryResult, QueryRunner
 from .model import Model
+from .trained_model import GraphSageModel
 
 ModelId = Union[Model, str]
 
@@ -99,7 +104,20 @@ class ModelProcRunner:
             raise SyntaxError(f"There is no {self._namespace + '.get'} to call")
 
         self._namespace = "gds.beta.model"
-        if not self.exists(model_name)[0]["exists"]:
+        result = self.list(model_name)
+        if len(result) == 0:
             raise ValueError(f"No loaded model named '{model_name}' exists")
 
-        return Model(model_name, self._query_runner)
+        model_type = result[0]["modelInfo"]["modelType"]
+        if model_type == "Link prediction training pipeline":
+            return LPTrainingPipeline(model_name, self._query_runner)
+        elif model_type == "Node classification training pipeline":
+            return NCTrainingPipeline(model_name, self._query_runner)
+        elif model_type == "Node classification pipeline":
+            return NCPredictionPipeline(model_name, self._query_runner)
+        elif model_type == "Link prediction pipeline":
+            return LPPredictionPipeline(model_name, self._query_runner)
+        elif model_type == "graphSage":
+            return GraphSageModel(model_name, self._query_runner)
+
+        raise ValueError(f"Unknown model type encountered: '{model_type}'")
