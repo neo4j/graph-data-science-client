@@ -14,7 +14,7 @@ class TrainedModel(Model, ABC):
     def _query_prefix(self) -> str:
         pass
 
-    def metrics(self) -> Dict[str, Dict[str, Any]]:
+    def metrics(self) -> Dict[str, Any]:
         return self._list_info()["modelInfo"]["metrics"]  # type: ignore
 
     def predict_stream(self, G: Graph, **config: Any) -> QueryResult:

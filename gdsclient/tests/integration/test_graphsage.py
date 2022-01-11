@@ -48,6 +48,7 @@ def model(gds: GraphDataScience, G: Graph) -> Generator[GraphSageModel, None, No
 def test_graphsage_train(model: GraphSageModel) -> None:
     assert model.name() == "m"
     assert model.exists()
+    assert len(model.metrics()["epochLosses"]) == model.metrics()["ranEpochs"]
 
 
 def test_graphsage_write(
