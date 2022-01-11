@@ -51,7 +51,21 @@ def test_graphsage_write(
     model.predict_write(G, writeProperty="gs")
 
     result = runner.run_query("MATCH (n:Node) RETURN size(n.gs) AS embeddingDim")
-    assert len(result) == 3
+    assert len(result) == G.node_count()
     assert result[0]["embeddingDim"] == 20
+
+    model.drop()
+
+
+def test_graphsage_stream(
+    G: Graph, gds: GraphDataScience, runner: Neo4jQueryRunner
+) -> None:
+    model = gds.beta.graphSage.train(
+        G, modelName="m", featureProperties=["x"], embeddingDimension=20
+    )
+    stream = model.predict_stream(G)
+
+    assert len(stream) == G.node_count()
+    assert len(stream[0]["embedding"]) == 20
 
     model.drop()
