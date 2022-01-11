@@ -76,10 +76,51 @@ def test_model_publish(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     shared_pipe = gds.alpha.model.publish(pipe)
 
     assert shared_pipe.shared()
+    assert isinstance(shared_pipe, LPTrainingPipeline)
 
     query = "CALL gds.beta.model.drop($name)"
     params = {"name": shared_pipe.name()}
     runner.run_query(query, params)
+
+
+@pytest.mark.model_store_location
+def test_model_load(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> None:
+    gsmodel = gds.beta.graphSage.train(G, modelName="m", featureProperties=["age"])
+    runner.run_query(f"CALL gds.alpha.model.store('{gsmodel.name()}')")
+    runner.run_query(f"CALL gds.beta.model.drop('{gsmodel.name()}')")
+
+    model = gds.alpha.model.load(gsmodel.name())
+    assert isinstance(model, GraphSageModel)
+
+    runner.run_query(f"CALL gds.beta.model.drop('{model.name()}')")
+    runner.run_query(f"CALL gds.alpha.model.delete('{model.name()}')")
+
+
+@pytest.mark.model_store_location
+def test_model_store(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> None:
+    gsmodel = gds.beta.graphSage.train(G, modelName="m", featureProperties=["age"])
+    model_name = gds.alpha.model.store(gsmodel)[0]["modelName"]
+    runner.run_query(f"CALL gds.beta.model.drop('{gsmodel.name()}')")
+
+    # Should be deletable now
+    runner.run_query(f"CALL gds.alpha.model.delete('{model_name}')")
+
+
+@pytest.mark.model_store_location
+def test_model_delete(
+    runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
+) -> None:
+    gsmodel = gds.beta.graphSage.train(G, modelName="m", featureProperties=["age"])
+    model_name = runner.run_query(f"CALL gds.alpha.model.store('{gsmodel.name()}')")[0][
+        "modelName"
+    ]
+    runner.run_query(f"CALL gds.beta.model.drop('{gsmodel.name()}')")
+
+    gds.alpha.model.delete(model_name)[0]["deleteMillis"] >= 0
+
+    # Should be deleted and therefore no longer loadable
+    with pytest.raises(Exception):
+        runner.run_query(f"CALL gds.alpha.model.load('{model_name}')")
 
 
 def test_model_drop(gds: GraphDataScience) -> None:

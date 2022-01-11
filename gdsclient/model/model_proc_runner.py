@@ -27,7 +27,6 @@ class ModelProcRunner:
             f"Provided model identifier is of the wrong type: {type(model_id)}"
         )
 
-    # TODO: Figure out how to integration test
     def store(
         self, model_id: ModelId, failIfUnsupportedType: bool = True
     ) -> QueryResult:
@@ -69,7 +68,9 @@ class ModelProcRunner:
 
         result = self._query_runner.run_query(query, params)
 
-        return Model(result[0]["modelInfo"]["modelName"], self._query_runner)
+        model_name = result[0]["modelInfo"]["modelName"]
+        model_type = result[0]["modelInfo"]["modelType"]
+        return self._resolve_model(model_type, model_name)
 
     def drop(self, model_id: ModelId) -> QueryResult:
         self._namespace += ".drop"
@@ -79,7 +80,6 @@ class ModelProcRunner:
 
         return self._query_runner.run_query(query, params)
 
-    # TODO: Figure out how to integration test
     def load(self, model_name: str) -> Model:
         self._namespace += ".load"
 
@@ -88,9 +88,9 @@ class ModelProcRunner:
 
         result = self._query_runner.run_query(query, params)
 
-        return Model(result[0]["modelName"], self._query_runner)
+        self._namespace = "gds.model"
+        return self.get(result[0]["modelName"])
 
-    # TODO: Figure out how to integration test
     def delete(self, model_id: ModelId) -> QueryResult:
         self._namespace += ".delete"
 
@@ -109,6 +109,9 @@ class ModelProcRunner:
             raise ValueError(f"No loaded model named '{model_name}' exists")
 
         model_type = result[0]["modelInfo"]["modelType"]
+        return self._resolve_model(model_type, model_name)
+
+    def _resolve_model(self, model_type: str, model_name: str) -> Model:
         if model_type == "Link prediction training pipeline":
             return LPTrainingPipeline(model_name, self._query_runner)
         elif model_type == "Node classification training pipeline":
