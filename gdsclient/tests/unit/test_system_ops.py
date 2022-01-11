@@ -13,3 +13,10 @@ def test_listProgress(runner: CollectingQueryRunner, gds: GraphDataScience) -> N
 
     assert runner.last_query() == "CALL gds.beta.listProgress($job_id)"
     assert runner.last_params() == {"job_id": "myJobId"}
+
+
+def test_systemMonitor(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    gds.alpha.systemMonitor()
+
+    assert runner.last_query() == "CALL gds.alpha.systemMonitor()"
+    assert runner.last_params() == {}

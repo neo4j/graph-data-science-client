@@ -19,3 +19,9 @@ class SystemEndpoints:
             params = {}
 
         return self._query_runner.run_query(query, params)
+
+    def systemMonitor(self) -> QueryResult:
+        self._namespace += ".systemMonitor"
+        query = f"CALL {self._namespace}()"
+
+        return self._query_runner.run_query(query)
