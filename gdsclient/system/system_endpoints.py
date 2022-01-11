@@ -3,6 +3,18 @@ from typing import Optional
 from ..query_runner.query_runner import QueryResult, QueryRunner
 
 
+class DebugProcRunner:
+    def __init__(self, query_runner: QueryRunner, namespace: str):
+        self._query_runner = query_runner
+        self._namespace = namespace
+
+    def sysInfo(self) -> QueryResult:
+        self._namespace += ".sysInfo"
+        query = f"CALL {self._namespace}()"
+
+        return self._query_runner.run_query(query)
+
+
 class SystemEndpoints:
     def __init__(self, query_runner: QueryRunner, namespace: str):
         self._query_runner = query_runner
@@ -25,3 +37,7 @@ class SystemEndpoints:
         query = f"CALL {self._namespace}()"
 
         return self._query_runner.run_query(query)
+
+    @property
+    def debug(self) -> DebugProcRunner:
+        return DebugProcRunner(self._query_runner, f"{self._namespace}.debug")
