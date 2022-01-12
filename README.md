@@ -12,7 +12,7 @@ Happy coding!
 
 ## NOTE
 
-This is a work in progress and several GDS features are known to be missing or not working properly (see [Known limitations](#known-limitations) below).
+This is a work in progress and some GDS features are known to be missing or not working properly (see [Known limitations](#known-limitations) below).
 Further, this library targets GDS versions 2.0+ (not yet released) and as such may not work with older versions.
 
 
@@ -83,35 +83,16 @@ assert res[0]["nodePropertiesWritten"] == G.node_count()
 
 These calls take one positional argument and a number of keyword arguments depending on the algorithm.
 The first (positional) argument is a `Graph`, and the keyword arguments map directly to the algorithm's [configuration map](https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/#algorithms-syntax-configuration-parameters).
+The calls return a list of dictionaries (with contents depending on the algorithm of course) as is also the case when using the Neo4j Python driver directly.
 
 The other [algorithm execution modes](https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/) - stats, stream and write - are also supported via analogous calls.
 
-Though most algorithms are supported this way, not all are yet.
-Please see [Known limitations](#known-limitations) below for more on this.
 
+#### Topological link prediction
 
-#### Additional path finding support
-
-For path findings algorithms we must often provide source nodes and sometimes target nodes as arguments.
-In order to find valid representations of such nodes using the GDS procedure API, typically a Cypher `MATCH` statement is used, see eg. [this example in the GDS docs](https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/#algorithms-dijkstra-source-target-examples-stream).
-To simplify this, `gdsclient` provides a utility function, `gds.find_node_id`, for letting one find nodes without using Cypher.
-
-Below is an example of how this can be done (supposing `G` is a projected `Graph` with `City` nodes having `name` properties):
-
-```python
-# gds.find_node_id takes a list of labels and a dictionary of
-# property key-value pairs
-source_id = gds.find_node_id(["City"], {"name": "New York"})
-target_id = gds.find_node_id(["City"], {"name": "Philadelphia"})
-
-res = gds.shortestPath.dijkstra.stream(G, sourceNode=source_id, targetNode=target_id)
-assert res[0]["totalCost"] == 100
-```
-
-The nodes found by `gds.find_node_id` are those that have all labels specified and fully match all property key-value pairs given.
-Note that exactly one node per method call must be matched.
-
-For more advanced filtering we recommend users do matching via Cypher's `MATCH`.
+The methods for doing [topological link prediction](https://neo4j.com/docs/graph-data-science/current/algorithms/linkprediction/) are a bit different.
+Just like in the GDS procedure API they do not take a graph as an argument, but rather two node references as positional arguments.
+And they simply return the similarity score of the prediction just made as a float - not a list of dictionaries.
 
 
 ### The Graph object
@@ -119,7 +100,6 @@ For more advanced filtering we recommend users do matching via Cypher's `MATCH`.
 In this library, graphs projected onto server-side memory are represented by `Graph` objects.
 There are convenience methods on the `Graph` object that let us extract information about our projected graph.
 Some examples are (where `G` is a `Graph`):
-
 
 ```python
 # Get the graph's node count
@@ -221,11 +201,34 @@ Further, there's a new call named `gds.model.get` (`gdsclient` only) which takes
 The idea is to have a way of creating model objects for already loaded models, without having to create them again.
 
 
+### Node matching without Cypher
+
+When calling path finding or topological link prediction algorithms one has to provide specific nodes as input arguments.
+When using the GDS procedure API directly to call such algorithms, typically Cypher `MATCH` statements are used in order to find valid representations of input nodes of interest, see eg. [this example in the GDS docs](https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/#algorithms-dijkstra-source-target-examples-stream).
+To simplify this, `gdsclient` provides a utility function, `gds.find_node_id`, for letting one find nodes without using Cypher.
+
+Below is an example of how this can be done (supposing `G` is a projected `Graph` with `City` nodes having `name` properties):
+
+```python
+# gds.find_node_id takes a list of labels and a dictionary of
+# property key-value pairs
+source_id = gds.find_node_id(["City"], {"name": "New York"})
+target_id = gds.find_node_id(["City"], {"name": "Philadelphia"})
+
+res = gds.shortestPath.dijkstra.stream(G, sourceNode=source_id, targetNode=target_id)
+assert res[0]["totalCost"] == 100
+```
+
+The nodes found by `gds.find_node_id` are those that have all labels specified and fully match all property key-value pairs given.
+Note that exactly one node per method call must be matched.
+
+For more advanced filtering we recommend users do matching via Cypher's `MATCH`.
+
+
 ## Known limitations
 
-Several operations are known to not yet work with `gdsclient`:
+Operations known to not yet work with `gdsclient`:
 
-* Topological link prediction
 * Some utility functions
 
 
