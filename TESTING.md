@@ -54,7 +54,7 @@ You can check all code using all the below mentioned code checking tools by runn
 ### Linting
 
 To enforce pep8 conformity (with the exception of using max line length = 120) [flake8](https://flake8.pycqa.org/en/latest/) is used.
-To run it on the entire repository, simply call:
+To run it to check the entire repository, simply call:
 
 ```bash
 flake8
@@ -66,7 +66,7 @@ from the root. See `.flake8` for our custom flake8 settings.
 ### Formatting
 
 For general formatting we use [black](https://black.readthedocs.io/en/stable/) with default settings.
-black can be run on the entire repository by calling:
+black can be run to format the entire repository by calling:
 
 ```bash
 black .
@@ -74,14 +74,14 @@ black .
 
 from the root.
 
-Additionally [isort](https://pycqa.github.io/isort/) (also with default settings) is used for consistent import sorting.
-It can similarly be run over all source code by calling:
+Additionally [isort](https://pycqa.github.io/isort/) is used for consistent import sorting.
+It can similarly be run to format all source code by calling:
 
 ```bash
 isort .
 ```
 
-from the root.
+from the root. See `.isort.cfg` for our custom isort settings.
 
 
 ### Static typing
