@@ -4,7 +4,6 @@ from typing import Any, Dict
 from ..graph.graph_object import Graph
 from ..model.trained_model import GraphSageModel
 from ..query_runner.query_runner import QueryResult, QueryRunner
-from .match_proc_runner import MatchProcRunner
 
 
 class AlgoProcRunner(ABC):
@@ -29,10 +28,6 @@ class AlgoProcRunner(ABC):
 class StandardModeRunner(AlgoProcRunner):
     def __call__(self, G: Graph, **config: Any) -> QueryResult:
         return self._run_procedure(G, config)
-
-    @property
-    def match(self) -> MatchProcRunner:
-        return MatchProcRunner(self._query_runner, self._proc_name)
 
 
 class GraphSageRunner(AlgoProcRunner):

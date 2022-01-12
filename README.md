@@ -93,24 +93,25 @@ Please see [Known limitations](#known-limitations) below for more on this.
 #### Additional path finding support
 
 For path findings algorithms we must often provide source nodes and sometimes target nodes as arguments.
-In order to find valid representations of such nodes, typically a Cypher `MATCH` statement is used, see eg. [this example in the GDS docs](https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/#algorithms-dijkstra-source-target-examples-stream).
-While this is still certainly possible, `gdsclient` provides additional support for letting one specify the matching in native Python by adding `.match` to the path finding call one wants to make.
+In order to find valid representations of such nodes using the GDS procedure API, typically a Cypher `MATCH` statement is used, see eg. [this example in the GDS docs](https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/#algorithms-dijkstra-source-target-examples-stream).
+To simplify this, `gdsclient` provides a utility function, `gds.find_node_id`, for letting one find nodes without using Cypher.
 
-Below is an example of how this can be leveraged (supposing `G` is a projected `Graph` with `City` nodes having `name` properties):
+Below is an example of how this can be done (supposing `G` is a projected `Graph` with `City` nodes having `name` properties):
 
 ```python
-source_match = {"labels": ["City"], "properties": {"name": "New York"}}
-target_match = {"labels": ["City"], "properties": {"name": "Philadelphia"}}
+# gds.find_node_id takes a list of labels and a dictionary of
+# property key-value pairs
+source_id = gds.find_node_id(["City"], {"name": "New York"})
+target_id = gds.find_node_id(["City"], {"name": "Philadelphia"})
 
-res = gds.shortestPath.dijkstra.stream.match(G, sourceNode=source_match, targetNode=target_match)
+res = gds.shortestPath.dijkstra.stream(G, sourceNode=source_id, targetNode=target_id)
 assert res[0]["totalCost"] == 100
 ```
 
-Instead of providing eg. node ids from the Neo4j database as `sourceNode` and `targetNode` (as we would to `gds.shortestPath.dijkstra.stream`) we now give Python dictionaries with keys "labels" and/or "properties" that filter out nodes.
-The nodes that match the filters are those that have all labels specified and fully match all property key-value pairs given.
-Note that exactly one node per filter must be matched for the algorithm to proceed.
+The nodes found by `gds.find_node_id` are those that have all labels specified and fully match all property key-value pairs given.
+Note that exactly one node per method call must be matched.
 
-For more advanced filtering we recommend users to do matching via Cypher's `MATCH` followed by calls to the non-match versions of the path finding algorithm methods.
+For more advanced filtering we recommend users do matching via Cypher's `MATCH`.
 
 
 ### The Graph object
