@@ -90,11 +90,35 @@ Though most algorithms are supported this way, not all are yet.
 Please see [Known limitations](#known-limitations) below for more on this.
 
 
+#### Additional path finding support
+
+For path findings algorithms we must often provide source nodes and sometimes target nodes as arguments.
+In order to find valid representations of such nodes, typically a Cypher `MATCH` statement is used, see eg. [this example in the GDS docs](https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/#algorithms-dijkstra-source-target-examples-stream).
+While this is still certainly possible, `gdsclient` provides additional support for letting one specify the matching in native Python by adding `.match` to the path finding call one wants to make.
+
+Below is an example of how this can be leveraged (supposing `G` is a projected `Graph` with `City` nodes having `name` properties):
+
+```python
+source_match = {"labels": ["City"], "properties": {"name": "New York"}}
+target_match = {"labels": ["City"], "properties": {"name": "Philadelphia"}}
+
+res = gds.shortestPath.dijkstra.stream.match(G, sourceNode=source_match, targetNode=target_match)
+assert res[0]["totalCost"] == 100
+```
+
+Instead of providing eg. node ids from the Neo4j database as `sourceNode` and `targetNode` (as we would to `gds.shortestPath.dijkstra.stream`) we now give Python dictionaries with keys "labels" and/or "properties" that filter out nodes.
+The nodes that match the filters are those that have all labels specified and fully match all property key-value pairs given.
+Note that exactly one node per filter must be matched for the algorithm to proceed.
+
+For more advanced filtering we recommend users to do matching via Cypher's `MATCH` followed by calls to the non-match versions of the path finding algorithm methods.
+
+
 ### The Graph object
 
 In this library, graphs projected onto server-side memory are represented by `Graph` objects.
 There are convenience methods on the `Graph` object that let us extract information about our projected graph.
 Some examples are (where `G` is a `Graph`):
+
 
 ```python
 # Get the graph's node count
@@ -200,7 +224,6 @@ The idea is to have a way of creating model objects for already loaded models, w
 
 Several operations are known to not yet work with `gdsclient`:
 
-* Path finding algorithms
 * Topological link prediction
 * Some utility functions
 
