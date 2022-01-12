@@ -90,11 +90,36 @@ Though most algorithms are supported this way, not all are yet.
 Please see [Known limitations](#known-limitations) below for more on this.
 
 
+#### Additional path finding support
+
+For path findings algorithms we must often provide source nodes and sometimes target nodes as arguments.
+In order to find valid representations of such nodes using the GDS procedure API, typically a Cypher `MATCH` statement is used, see eg. [this example in the GDS docs](https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/#algorithms-dijkstra-source-target-examples-stream).
+To simplify this, `gdsclient` provides a utility function, `gds.find_node_id`, for letting one find nodes without using Cypher.
+
+Below is an example of how this can be done (supposing `G` is a projected `Graph` with `City` nodes having `name` properties):
+
+```python
+# gds.find_node_id takes a list of labels and a dictionary of
+# property key-value pairs
+source_id = gds.find_node_id(["City"], {"name": "New York"})
+target_id = gds.find_node_id(["City"], {"name": "Philadelphia"})
+
+res = gds.shortestPath.dijkstra.stream(G, sourceNode=source_id, targetNode=target_id)
+assert res[0]["totalCost"] == 100
+```
+
+The nodes found by `gds.find_node_id` are those that have all labels specified and fully match all property key-value pairs given.
+Note that exactly one node per method call must be matched.
+
+For more advanced filtering we recommend users do matching via Cypher's `MATCH`.
+
+
 ### The Graph object
 
 In this library, graphs projected onto server-side memory are represented by `Graph` objects.
 There are convenience methods on the `Graph` object that let us extract information about our projected graph.
 Some examples are (where `G` is a `Graph`):
+
 
 ```python
 # Get the graph's node count
@@ -200,7 +225,6 @@ The idea is to have a way of creating model objects for already loaded models, w
 
 Several operations are known to not yet work with `gdsclient`:
 
-* Path finding algorithms
 * Topological link prediction
 * Some utility functions
 

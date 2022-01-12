@@ -12,7 +12,7 @@ def G(gds: GraphDataScience) -> Graph:
     return gds.graph.project(GRAPH_NAME, "Node", "REL")
 
 
-def test_algoName_mutate(
+def test_simple_mutate(
     runner: CollectingQueryRunner, gds: GraphDataScience, G: Graph
 ) -> None:
     gds.algoName.mutate(G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
@@ -24,7 +24,7 @@ def test_algoName_mutate(
     }
 
 
-def test_algoName_stats(
+def test_simple_stats(
     runner: CollectingQueryRunner, gds: GraphDataScience, G: Graph
 ) -> None:
     gds.algoName.stats(G, dampingFactor=0.2, tolerance=0.3)
@@ -36,7 +36,7 @@ def test_algoName_stats(
     }
 
 
-def test_algoName_stream(
+def test_simple_stream(
     runner: CollectingQueryRunner, gds: GraphDataScience, G: Graph
 ) -> None:
     gds.algoName.stream(G, dampingFactor=0.2, tolerance=0.3)
@@ -48,7 +48,7 @@ def test_algoName_stream(
     }
 
 
-def test_algoName_write(
+def test_simple_write(
     runner: CollectingQueryRunner, gds: GraphDataScience, G: Graph
 ) -> None:
     gds.algoName.write(G, writeProperty="rank", dampingFactor=0.2, tolerance=0.3)
@@ -60,7 +60,7 @@ def test_algoName_write(
     }
 
 
-def test_algoName_mutate_estimate(
+def test_simple_mutate_estimate(
     runner: CollectingQueryRunner, gds: GraphDataScience, G: Graph
 ) -> None:
     gds.algoName.mutate.estimate(
@@ -76,7 +76,7 @@ def test_algoName_mutate_estimate(
     }
 
 
-def test_algoName_stats_estimate(
+def test_simple_stats_estimate(
     runner: CollectingQueryRunner, gds: GraphDataScience, G: Graph
 ) -> None:
     gds.algoName.stats.estimate(G, dampingFactor=0.2, tolerance=0.3)
@@ -90,7 +90,7 @@ def test_algoName_stats_estimate(
     }
 
 
-def test_algoName_stream_estimate(
+def test_simple_stream_estimate(
     runner: CollectingQueryRunner, gds: GraphDataScience, G: Graph
 ) -> None:
     gds.algoName.stream.estimate(G, dampingFactor=0.2, tolerance=0.3)
@@ -104,7 +104,7 @@ def test_algoName_stream_estimate(
     }
 
 
-def test_algoName_write_estimate(
+def test_simple_write_estimate(
     runner: CollectingQueryRunner, gds: GraphDataScience, G: Graph
 ) -> None:
     gds.algoName.write.estimate(
