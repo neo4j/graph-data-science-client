@@ -48,7 +48,8 @@ Naturally, this requires access to a valid Neo4j GDS license key, which can be a
 ## Style guide
 
 The code follows a rather opinionated style based on [pep8](https://www.python.org/dev/peps/pep-0008/).
-You can check all code using all the below mentioned code checking tools by running the `scripts/checkstyle` bash script. 
+You can check all code using all the below mentioned code checking tools by running the `scripts/checkstyle` bash script.
+There's also a `scripts/makestyle` to do formatting.
 
 
 ### Linting
