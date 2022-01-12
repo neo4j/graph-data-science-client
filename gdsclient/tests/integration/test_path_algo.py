@@ -12,12 +12,12 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
     runner.run_query(
         """
         CREATE
-        (a:Location {name: 'A'}),
-        (b:Location {name: 'B'}),
-        (c:Location {name: 'C'}),
-        (d:Location {name: 'D'}),
-        (e:Location {name: 'G'}),
-        (f:Location {name: 2}),
+        (a:Location {name: 'A', latitude: 51.5308, longitude: -0.1238}),
+        (b:Location {name: 'B', latitude: 51.5282, longitude: -0.1337}),
+        (c:Location {name: 'C', latitude: 51.5392, longitude: -0.1426}),
+        (d:Location {name: 'D', latitude: 51.5342, longitude: -0.1387}),
+        (e:Location {name: 'G', latitude: 51.5507, longitude: -0.1401}),
+        (f:Location {name: 2, latitude: 51.5308, longitude: -0.1238}),
         (a)-[:ROAD {cost: 50}]->(b),
         (a)-[:ROAD {cost: 50}]->(c),
         (a)-[:ROAD {cost: 100}]->(d),
@@ -29,7 +29,11 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (e)-[:ROAD {cost: 40}]->(f)
         """
     )
-    G = gds.graph.project("g", "Location", {"ROAD": {"properties": "cost"}})
+    G = gds.graph.project(
+        "g",
+        {"Location": {"properties": ["latitude", "longitude"]}},
+        {"ROAD": {"properties": "cost"}},
+    )
 
     yield G
 
@@ -37,7 +41,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
     runner.run_query("MATCH (n) DETACH DELETE n")
 
 
-def test_dijsktra_source_target_stream(gds: GraphDataScience, G: Graph) -> None:
+def test_match_dijkstra_source_target_stream(gds: GraphDataScience, G: Graph) -> None:
     source_match = {"labels": ["Location"], "properties": {"name": "A"}}
     target_match = {"labels": ["Location"], "properties": {"name": 2}}
 
@@ -49,3 +53,43 @@ def test_dijsktra_source_target_stream(gds: GraphDataScience, G: Graph) -> None:
     )
 
     assert result[0]["totalCost"] == 160
+
+
+def test_match_dijkstra_single_source_mutate(gds: GraphDataScience, G: Graph) -> None:
+    source_match = {"labels": ["Location"], "properties": {"name": "A"}}
+
+    result = gds.allShortestPaths.dijkstra.mutate.match(
+        G,
+        sourceNode=source_match,
+        mutateRelationshipType="PATH",
+    )
+
+    assert result[0]["relationshipsWritten"] == 6
+    assert G.relationship_properties("PATH") == ["totalCost"]
+
+
+def test_match_AStar_write(
+    runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
+) -> None:
+    source_match = {"labels": ["Location"], "properties": {"name": "A"}}
+    target_match = {"labels": ["Location"], "properties": {"name": 2}}
+
+    result = gds.shortestPath.astar.write.match(
+        G,
+        sourceNode=source_match,
+        targetNode=target_match,
+        latitudeProperty="latitude",
+        longitudeProperty="longitude",
+        relationshipWeightProperty="cost",
+        writeRelationshipType="PATH",
+    )
+
+    assert result[0]["relationshipsWritten"] == 1
+
+    path_costs = runner.run_query(
+        """
+        MATCH(n)-[r:PATH]-(m)
+        RETURN r.totalCost as totalCost
+        """
+    )
+    assert path_costs[0]["totalCost"] == 160.0
