@@ -16,8 +16,8 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (b:Location {name: 'B'}),
         (c:Location {name: 'C'}),
         (d:Location {name: 'D'}),
-        (e:Location {name: 'E'}),
-        (f:Location {name: 'F'}),
+        (e:Location {name: 'G'}),
+        (f:Location {name: 2}),
         (a)-[:ROAD {cost: 50}]->(b),
         (a)-[:ROAD {cost: 50}]->(c),
         (a)-[:ROAD {cost: 100}]->(d),
@@ -39,7 +39,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
 def test_dijsktra_source_target_stream(gds: GraphDataScience, G: Graph) -> None:
     source_match = {"labels": ["Location"], "properties": {"name": "A"}}
-    target_match = {"labels": ["Location"], "properties": {"name": "F"}}
+    target_match = {"labels": ["Location"], "properties": {"name": 2}}
 
     result = gds.shortestPath.dijkstra.stream.match(
         G,

@@ -26,9 +26,13 @@ class MatchProcRunner:
             label_match = " AND ".join([f"n:{label}" for label in node_match["labels"]])
         if "properties" in node_match and len(node_match["properties"]) > 0:
             assert isinstance(node_match["properties"], Dict)  # Make type checker happy
-            prop_match = " AND ".join(
-                [f"n.{key} = '{val}'" for key, val in node_match["properties"].items()]
-            )
+            parsed_props = []
+            for key, val in node_match["properties"].items():
+                if isinstance(val, str):
+                    parsed_props.append(f"n.{key} = '{val}'")
+                else:
+                    parsed_props.append(f"n.{key} = {val}")
+            prop_match = " AND ".join(parsed_props)
 
         if label_match and prop_match:
             query = f"MATCH (n) WHERE {label_match} AND {prop_match} RETURN id(n) AS id"
