@@ -202,7 +202,6 @@ Several operations are known to not yet work with `gdsclient`:
 
 * Path finding algorithms
 * Topological link prediction
-* Progress logging and system monitoring
 * Some utility functions
 
 
