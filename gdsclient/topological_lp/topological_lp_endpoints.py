@@ -1,6 +1,5 @@
-from gdsclient.topological_lp.topological_lp_runner import TopologicalLPRunner
-
 from ..query_runner.query_runner import QueryRunner
+from .topological_lp_runner import TopologicalLPRunner
 
 
 class TopologicalLPEndpoints:

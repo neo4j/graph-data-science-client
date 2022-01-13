@@ -1,12 +1,13 @@
 from abc import ABC
 from typing import Any, Dict
 
+from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..graph.graph_object import Graph
 from ..model.graphsage_model import GraphSageModel
 from ..query_runner.query_runner import QueryResult, QueryRunner
 
 
-class AlgoProcRunner(ABC):
+class AlgoProcRunner(IllegalAttrChecker, ABC):
     def __init__(self, query_runner: QueryRunner, proc_name: str):
         self._query_runner = query_runner
         self._proc_name = proc_name

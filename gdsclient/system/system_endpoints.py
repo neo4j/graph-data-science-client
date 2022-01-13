@@ -1,9 +1,11 @@
 from typing import Optional
 
+from ..error.illegal_attr_checker import IllegalAttrChecker
+from ..error.uncallable_namespace import UncallableNamespace
 from ..query_runner.query_runner import QueryResult, QueryRunner
 
 
-class DebugProcRunner:
+class DebugProcRunner(UncallableNamespace, IllegalAttrChecker):
     def __init__(self, query_runner: QueryRunner, namespace: str):
         self._query_runner = query_runner
         self._namespace = namespace
