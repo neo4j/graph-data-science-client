@@ -3,13 +3,10 @@ from typing import Any, Dict
 
 from gdsclient.graph.graph_object import Graph
 from gdsclient.model.model import Model
-from gdsclient.query_runner.query_runner import QueryResult, QueryRunner
+from gdsclient.query_runner.query_runner import QueryResult
 
 
 class TrainedModel(Model, ABC):
-    def __init__(self, name: str, query_runner: QueryRunner) -> None:
-        super().__init__(name, query_runner)
-
     @abstractmethod
     def _query_prefix(self) -> str:
         pass

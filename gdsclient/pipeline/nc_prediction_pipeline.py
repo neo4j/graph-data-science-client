@@ -3,13 +3,10 @@ from typing import Any
 from gdsclient.model.trained_model import TrainedModel
 
 from ..graph.graph_object import Graph
-from ..query_runner.query_runner import QueryResult, QueryRunner
+from ..query_runner.query_runner import QueryResult
 
 
 class NCPredictionPipeline(TrainedModel):
-    def __init__(self, name: str, query_runner: QueryRunner) -> None:
-        super().__init__(name, query_runner)
-
     def _query_prefix(self) -> str:
         return "CALL gds.alpha.ml.pipeline.nodeClassification.predict."
 

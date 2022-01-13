@@ -6,9 +6,6 @@ from .training_pipeline import TrainingPipeline
 
 
 class LPTrainingPipeline(TrainingPipeline):
-    def __init__(self, name: str, query_runner: QueryRunner):
-        super().__init__(name, query_runner)
-
     def addFeature(self, feature_type: str, **config: Any) -> None:
         query = (
             f"{self._query_prefix()}addFeature($pipeline_name, $feature_type, $config)"
