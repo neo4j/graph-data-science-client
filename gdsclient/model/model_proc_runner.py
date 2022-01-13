@@ -5,8 +5,8 @@ from ..pipeline.lp_training_pipeline import LPTrainingPipeline
 from ..pipeline.nc_prediction_pipeline import NCPredictionPipeline
 from ..pipeline.nc_training_pipeline import NCTrainingPipeline
 from ..query_runner.query_runner import QueryResult, QueryRunner
+from .graphsage_model import GraphSageModel
 from .model import Model
-from .trained_model import GraphSageModel
 
 ModelId = Union[Model, str]
 

@@ -4,7 +4,7 @@ import pytest
 
 from gdsclient.graph.graph_object import Graph
 from gdsclient.graph_data_science import GraphDataScience
-from gdsclient.model.trained_model import GraphSageModel
+from gdsclient.model.graphsage_model import GraphSageModel
 from gdsclient.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 MODEL_NAME = "gs"

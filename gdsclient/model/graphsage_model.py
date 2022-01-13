@@ -1,14 +1,13 @@
 from typing import Any
 
+from gdsclient.graph.graph_object import Graph
 from gdsclient.model.trained_model import TrainedModel
-
-from ..graph.graph_object import Graph
-from ..query_runner.query_runner import QueryResult
+from gdsclient.query_runner.query_runner import QueryResult
 
 
-class NCPredictionPipeline(TrainedModel):
+class GraphSageModel(TrainedModel):
     def _query_prefix(self) -> str:
-        return "CALL gds.alpha.ml.pipeline.nodeClassification.predict."
+        return "CALL gds.beta.graphSage."
 
     def predict_write(self, G: Graph, **config: Any) -> QueryResult:
         query = f"{self._query_prefix()}write($graph_name, $config)"

@@ -9,9 +9,6 @@ from ..query_runner.query_runner import QueryRunner
 
 
 class TrainingPipeline(Model, ABC):
-    def __init__(self, name: str, query_runner: QueryRunner):
-        super().__init__(name, query_runner)
-
     @abstractmethod
     def _query_prefix(self) -> str:
         pass
