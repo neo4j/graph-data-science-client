@@ -2,7 +2,7 @@ from abc import ABC
 from typing import Any, Dict
 
 from ..graph.graph_object import Graph
-from ..model.trained_model import GraphSageModel
+from ..model.graphsage_model import GraphSageModel
 from ..query_runner.query_runner import QueryResult, QueryRunner
 
 

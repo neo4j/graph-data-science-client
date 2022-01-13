@@ -4,7 +4,7 @@ import pytest
 
 from gdsclient import Graph
 from gdsclient.graph_data_science import GraphDataScience
-from gdsclient.model.trained_model import GraphSageModel
+from gdsclient.model.graphsage_model import GraphSageModel
 from gdsclient.pipeline.lp_prediction_pipeline import LPPredictionPipeline
 from gdsclient.pipeline.lp_training_pipeline import LPTrainingPipeline
 from gdsclient.pipeline.nc_prediction_pipeline import NCPredictionPipeline
