@@ -1,5 +1,7 @@
 from typing import Optional, Union
 
+from ..error.illegal_attr_checker import IllegalAttrChecker
+from ..error.uncallable_namespace import UncallableNamespace
 from ..pipeline.lp_prediction_pipeline import LPPredictionPipeline
 from ..pipeline.lp_training_pipeline import LPTrainingPipeline
 from ..pipeline.nc_prediction_pipeline import NCPredictionPipeline
@@ -11,7 +13,7 @@ from .model import Model
 ModelId = Union[Model, str]
 
 
-class ModelProcRunner:
+class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
     def __init__(self, query_runner: QueryRunner, namespace: str):
         self._query_runner = query_runner
         self._namespace = namespace

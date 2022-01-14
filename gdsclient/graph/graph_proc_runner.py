@@ -1,5 +1,7 @@
 from typing import Any, Dict, List, Optional, Union
 
+from ..error.illegal_attr_checker import IllegalAttrChecker
+from ..error.uncallable_namespace import UncallableNamespace
 from ..query_runner.query_runner import QueryResult, QueryRunner
 from .graph_export_runner import GraphExportRunner
 from .graph_object import Graph
@@ -8,7 +10,7 @@ from .graph_project_runner import GraphProjectRunner
 Strings = Union[str, List[str]]
 
 
-class GraphProcRunner:
+class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def __init__(self, query_runner: QueryRunner, namespace: str):
         self._query_runner = query_runner
         self._namespace = namespace

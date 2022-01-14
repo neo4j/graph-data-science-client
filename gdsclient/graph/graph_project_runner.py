@@ -1,10 +1,11 @@
 from typing import Any
 
+from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..query_runner.query_runner import QueryResult, QueryRunner
 from .graph_object import Graph
 
 
-class GraphProjectRunner:
+class GraphProjectRunner(IllegalAttrChecker):
     def __init__(self, query_runner: QueryRunner, namespace: str):
         self._query_runner = query_runner
         self._namespace = namespace

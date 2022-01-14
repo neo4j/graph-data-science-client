@@ -1,8 +1,10 @@
+from ..error.illegal_attr_checker import IllegalAttrChecker
+from ..error.uncallable_namespace import UncallableNamespace
 from ..query_runner.query_runner import QueryRunner
 from .lp_training_pipeline import LPTrainingPipeline
 
 
-class LPPipelineCreateRunner:
+class LPPipelineCreateRunner(UncallableNamespace, IllegalAttrChecker):
     def __init__(self, query_runner: QueryRunner, namespace: str):
         self._query_runner = query_runner
         self._namespace = namespace

@@ -1,9 +1,10 @@
 from .call_builder import CallBuilder
 from .direct_endpoints import DirectEndpoints
+from .error.uncallable_namespace import UncallableNamespace
 from .query_runner.query_runner import QueryRunner
 
 
-class GraphDataScience(DirectEndpoints):
+class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def __init__(self, query_runner: QueryRunner):
         super().__init__(query_runner, "gds")
         self._query_runner = query_runner
