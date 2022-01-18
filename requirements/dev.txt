@@ -5,4 +5,5 @@ isort
 mypy
 pytest
 pytest-annotate
+tox
 types-setuptools
