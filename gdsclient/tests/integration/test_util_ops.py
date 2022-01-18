@@ -78,3 +78,8 @@ def test_dijkstra_with_find_node_id(gds: GraphDataScience, G: Graph) -> None:
 def test_version(gds: GraphDataScience) -> None:
     result = gds.version()
     assert isinstance(result[0]["version"], str)
+
+
+def test_list(gds: GraphDataScience) -> None:
+    result = gds.list()
+    assert len(result) > 10
