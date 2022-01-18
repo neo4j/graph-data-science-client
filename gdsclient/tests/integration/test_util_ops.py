@@ -104,3 +104,8 @@ def test_util_nodeProperty(gds: GraphDataScience, G: Graph) -> None:
     id = gds.find_node_id(["Location"], {"name": "A"})
     result = gds.util.nodeProperty(G, id, "population")
     assert result == 1337
+
+
+def test_ml_oneHotEncoding(gds: GraphDataScience) -> None:
+    result = gds.alpha.ml.oneHotEncoding(["Chinese", "Indian", "Italian"], ["Italian"])
+    assert result == [0, 0, 1]

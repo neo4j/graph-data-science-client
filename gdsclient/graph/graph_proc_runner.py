@@ -192,3 +192,20 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         }
 
         return self._query_runner.run_query(query, params)
+
+    def generate(
+        self, graph_name: str, node_count: int, average_degree: int, **config: Any
+    ) -> Graph:
+        self._namespace += ".generate"
+
+        query = f"CALL {self._namespace}($graph_name, $node_count, $average_degree, $config)"
+        params = {
+            "graph_name": graph_name,
+            "node_count": node_count,
+            "average_degree": average_degree,
+            "config": config,
+        }
+
+        self._query_runner.run_query(query, params)
+
+        return Graph(graph_name, self._query_runner)

@@ -237,9 +237,6 @@ Operations known to not yet work with `gdsclient`:
   * [Cosine similarity function](https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/cosine/#algorithms-similarity-cosine-function-sample)
   * [Euclidean distance function](https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/euclidean/#algorithms-similarity-euclidean-function-sample)
   * [Overlap similarity function](https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/overlap/#algorithms-similarity-overlap-function-sample)
-* Some auxiliary procedures:
-  * [Graph generation](https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/graph-generation/)
-  * [One hot encoding](https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/one-hot-encoding/)
 
 
 ## License
