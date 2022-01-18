@@ -103,3 +103,13 @@ def test_calling_debug(gds: GraphDataScience) -> None:
 def test_nonexisting_debug_endpoint(gds: GraphDataScience) -> None:
     with pytest.raises(SyntaxError, match="There is no 'gds.debug.sniffDumpo' to call"):
         gds.debug.sniffDumpo()  # type: ignore
+
+
+def test_calling_util(gds: GraphDataScience) -> None:
+    with pytest.raises(SyntaxError, match="There is no 'gds.util' to call"):
+        gds.util()
+
+
+def test_nonexisting_util_endpoint(gds: GraphDataScience) -> None:
+    with pytest.raises(SyntaxError, match="There is no 'gds.util.askNodez' to call"):
+        gds.util.askNodez()  # type: ignore

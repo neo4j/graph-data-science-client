@@ -1,6 +1,7 @@
 from typing import Any, Dict, List
 
-from ..query_runner.query_runner import QueryRunner
+from ..query_runner.query_runner import QueryResult, QueryRunner
+from .util_proc_runner import UtilProcRunner
 
 
 class UtilEndpoints:
@@ -8,10 +9,13 @@ class UtilEndpoints:
         self._query_runner = query_runner
         self._namespace = namespace
 
+    @property
+    def util(self) -> UtilProcRunner:
+        return UtilProcRunner(self._query_runner, f"{self._namespace}.util")
+
     def find_node_id(
         self, labels: List[str] = [], properties: Dict[str, Any] = {}
     ) -> int:
-
         label_match = None
         if labels:
             label_match = " AND ".join([f"n:{label}" for label in labels])
@@ -42,3 +46,11 @@ class UtilEndpoints:
             )
 
         return node_match[0]["id"]  # type: ignore
+
+    def version(self) -> QueryResult:
+        namespace = self._namespace + ".version"
+        return self._query_runner.run_query(f"RETURN {namespace}() as version")
+
+    def list(self) -> QueryResult:
+        namespace = self._namespace + ".list"
+        return self._query_runner.run_query(f"CALL {namespace}()")

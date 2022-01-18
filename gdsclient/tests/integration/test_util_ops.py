@@ -12,7 +12,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
     runner.run_query(
         """
         CREATE
-        (a:Location {name: 'A'}),
+        (a:Location {name: 'A', population: 1337}),
         (b:Location {name: 'B'}),
         (c:Location {name: 'C'}),
         (d:Location {name: 'D'}),
@@ -31,7 +31,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
     )
     G = gds.graph.project(
         "g",
-        "Location",
+        {"Location": {"properties": "population"}},
         {"ROAD": {"properties": "cost"}},
     )
 
@@ -73,3 +73,34 @@ def test_dijkstra_with_find_node_id(gds: GraphDataScience, G: Graph) -> None:
     )
 
     assert result[0]["totalCost"] == 160
+
+
+def test_version(gds: GraphDataScience) -> None:
+    result = gds.version()
+    assert isinstance(result[0]["version"], str)
+
+
+def test_list(gds: GraphDataScience) -> None:
+    result = gds.list()
+    assert len(result) > 10
+
+
+def test_util_asNode(gds: GraphDataScience) -> None:
+    id = gds.find_node_id(["Location"], {"name": "A"})
+    result = gds.util.asNode(id)
+    assert result["name"] == "A"
+
+
+def test_util_asNodes(gds: GraphDataScience) -> None:
+    ids = [
+        gds.find_node_id(["Location"], {"name": "A"}),
+        gds.find_node_id(["Location"], {"name": 2}),
+    ]
+    result = gds.util.asNodes(ids)
+    assert len(result) == 2
+
+
+def test_util_nodeProperty(gds: GraphDataScience, G: Graph) -> None:
+    id = gds.find_node_id(["Location"], {"name": "A"})
+    result = gds.util.nodeProperty(G, id, "population")
+    assert result == 1337
