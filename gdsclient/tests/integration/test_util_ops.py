@@ -12,7 +12,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
     runner.run_query(
         """
         CREATE
-        (a:Location {name: 'A'}),
+        (a:Location {name: 'A', population: 1337}),
         (b:Location {name: 'B'}),
         (c:Location {name: 'C'}),
         (d:Location {name: 'D'}),
@@ -31,7 +31,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
     )
     G = gds.graph.project(
         "g",
-        "Location",
+        {"Location": {"properties": "population"}},
         {"ROAD": {"properties": "cost"}},
     )
 
@@ -98,3 +98,9 @@ def test_util_asNodes(gds: GraphDataScience) -> None:
     ]
     result = gds.util.asNodes(ids)
     assert len(result) == 2
+
+
+def test_util_nodeProperty(gds: GraphDataScience, G: Graph) -> None:
+    id = gds.find_node_id(["Location"], {"name": "A"})
+    result = gds.util.nodeProperty(G, id, "population")
+    assert result == 1337

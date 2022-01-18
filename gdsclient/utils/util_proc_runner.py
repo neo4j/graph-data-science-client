@@ -2,6 +2,7 @@ from typing import Any, Dict, List
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
+from ..graph.graph_object import Graph
 from ..query_runner.query_runner import QueryRunner
 
 
@@ -25,3 +26,19 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
         )
 
         return result[0]["nodes"]  # type: ignore
+
+    def nodeProperty(
+        self, G: Graph, node_id: int, property_key: str, node_label: str = "*"
+    ) -> Any:
+        self._namespace += ".nodeProperty"
+
+        query = f"RETURN {self._namespace}($graph_name, $node_id, $property_key, $node_label) as property"
+        params = {
+            "graph_name": G.name(),
+            "node_id": node_id,
+            "property_key": property_key,
+            "node_label": node_label,
+        }
+        result = self._query_runner.run_query(query, params)
+
+        return result[0]["property"]
