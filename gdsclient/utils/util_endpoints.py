@@ -54,3 +54,17 @@ class UtilEndpoints:
     def list(self) -> QueryResult:
         namespace = self._namespace + ".list"
         return self._query_runner.run_query(f"CALL {namespace}()")
+
+    def oneHotEncoding(
+        self, available_values: List[Any], selected_values: List[Any]
+    ) -> List[int]:
+        namespace = self._namespace + ".oneHotEncoding"
+
+        query = f"RETURN {namespace}($available_values, $selected_values) AS embedding"
+        params = {
+            "available_values": available_values,
+            "selected_values": selected_values,
+        }
+        result = self._query_runner.run_query(query, params)
+
+        return result[0]["embedding"]  # type: ignore
