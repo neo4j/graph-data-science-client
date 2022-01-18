@@ -357,3 +357,18 @@ def test_graph_deleteRelationships(
         == "CALL gds.graph.deleteRelationships($graph_name, $relationship_type)"
     )
     assert runner.last_params() == {"graph_name": "g", "relationship_type": "REL_A"}
+
+
+def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    gds.beta.graph.generate("g", 1337, 42, orientation="NATURAL")
+
+    assert (
+        runner.last_query()
+        == "CALL gds.beta.graph.generate($graph_name, $node_count, $average_degree, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "node_count": 1337,
+        "average_degree": 42,
+        "config": {"orientation": "NATURAL"},
+    }
