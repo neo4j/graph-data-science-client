@@ -1,12 +1,17 @@
 from typing import Any, Dict, List
 
 from ..query_runner.query_runner import QueryResult, QueryRunner
+from .util_proc_runner import UtilProcRunner
 
 
 class UtilEndpoints:
     def __init__(self, query_runner: QueryRunner, namespace: str):
         self._query_runner = query_runner
         self._namespace = namespace
+
+    @property
+    def util(self) -> UtilProcRunner:
+        return UtilProcRunner(self._query_runner, f"{self._namespace}.util")
 
     def find_node_id(
         self, labels: List[str] = [], properties: Dict[str, Any] = {}

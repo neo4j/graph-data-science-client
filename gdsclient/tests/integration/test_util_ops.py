@@ -83,3 +83,18 @@ def test_version(gds: GraphDataScience) -> None:
 def test_list(gds: GraphDataScience) -> None:
     result = gds.list()
     assert len(result) > 10
+
+
+def test_util_asNode(gds: GraphDataScience) -> None:
+    id = gds.find_node_id(["Location"], {"name": "A"})
+    result = gds.util.asNode(id)
+    assert result["name"] == "A"
+
+
+def test_util_asNodes(gds: GraphDataScience) -> None:
+    ids = [
+        gds.find_node_id(["Location"], {"name": "A"}),
+        gds.find_node_id(["Location"], {"name": 2}),
+    ]
+    result = gds.util.asNodes(ids)
+    assert len(result) == 2
