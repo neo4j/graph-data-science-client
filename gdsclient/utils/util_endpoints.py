@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 
-from ..query_runner.query_runner import QueryRunner
+from ..query_runner.query_runner import QueryResult, QueryRunner
 
 
 class UtilEndpoints:
@@ -11,7 +11,6 @@ class UtilEndpoints:
     def find_node_id(
         self, labels: List[str] = [], properties: Dict[str, Any] = {}
     ) -> int:
-
         label_match = None
         if labels:
             label_match = " AND ".join([f"n:{label}" for label in labels])
@@ -42,3 +41,7 @@ class UtilEndpoints:
             )
 
         return node_match[0]["id"]  # type: ignore
+
+    def version(self) -> QueryResult:
+        self._namespace += ".version"
+        return self._query_runner.run_query(f"RETURN {self._namespace}() as version")

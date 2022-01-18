@@ -73,3 +73,8 @@ def test_dijkstra_with_find_node_id(gds: GraphDataScience, G: Graph) -> None:
     )
 
     assert result[0]["totalCost"] == 160
+
+
+def test_version(gds: GraphDataScience) -> None:
+    result = gds.version()
+    assert isinstance(result[0]["version"], str)
