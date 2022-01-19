@@ -26,7 +26,7 @@ class SimilarityAlgoRunner(IllegalAttrChecker):
             f"CALL {self._namespace}($config)", {"config": config}
         )
 
-    def __call__(self, vector1: List[int], vector2: List[int]) -> float:
+    def __call__(self, vector1: List[float], vector2: List[float]) -> float:
         result = self._query_runner.run_query(
             f"RETURN {self._namespace}({vector1}, {vector2}) AS similarity"
         )

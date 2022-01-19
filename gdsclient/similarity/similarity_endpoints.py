@@ -14,3 +14,7 @@ class SimilarityEndpoints:
     @property
     def cosine(self) -> SimilarityAlgoRunner:
         return SimilarityAlgoRunner(self._query_runner, f"{self._namespace}.cosine")
+
+    @property
+    def pearson(self) -> SimilarityAlgoRunner:
+        return SimilarityAlgoRunner(self._query_runner, f"{self._namespace}.pearson")
