@@ -12,11 +12,19 @@ class SimilarityEndpoints:
         self._query_runner = query_runner
         self._namespace = namespace
 
-    def jaccard(self, vector1: List[int], vector2: List[int]) -> float:
-        namespace = self._namespace + ".jaccard"
-
+    def _run_function(
+        self, namespace: str, vector1: List[int], vector2: List[int]
+    ) -> float:
         result = self._query_runner.run_query(
             f"RETURN {namespace}({vector1}, {vector2}) AS similarity"
         )
 
         return result[0]["similarity"]  # type: ignore
+
+    def jaccard(self, vector1: List[int], vector2: List[int]) -> float:
+        namespace = self._namespace + ".jaccard"
+        return self._run_function(namespace, vector1, vector2)
+
+    def cosine(self, vector1: List[int], vector2: List[int]) -> float:
+        namespace = self._namespace + ".cosine"
+        return self._run_function(namespace, vector1, vector2)
