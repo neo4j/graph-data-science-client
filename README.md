@@ -229,14 +229,8 @@ For more advanced filtering we recommend users do matching via Cypher's `MATCH`.
 
 Operations known to not yet work with `gdsclient`:
 
-* [Numeric utility functions](https://neo4j.com/docs/graph-data-science/current/management-ops/utility-functions/#utility-functions-numeric)
-* [Cypher on GDS](https://neo4j.com/docs/graph-data-science/current/management-ops/create-cypher-db/)
-* Some similarity algorithm functions:
-  * [Jaccard similarity](https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/jaccard/)
-  * [Pearson similarity function](https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/pearson/#algorithms-similarity-pearson-function-sample)
-  * [Cosine similarity function](https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/cosine/#algorithms-similarity-cosine-function-sample)
-  * [Euclidean distance function](https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/euclidean/#algorithms-similarity-euclidean-function-sample)
-  * [Overlap similarity function](https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/overlap/#algorithms-similarity-overlap-function-sample)
+* [Numeric utility functions](https://neo4j.com/docs/graph-data-science/current/management-ops/utility-functions/#utility-functions-numeric) (will never be supported)
+* [Cypher on GDS](https://neo4j.com/docs/graph-data-science/current/management-ops/create-cypher-db/) (might be supported in the future)
 
 
 ## License
