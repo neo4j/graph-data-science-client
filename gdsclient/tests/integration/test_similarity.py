@@ -56,6 +56,11 @@ def test_similarity_euclideanDistance(gds: GraphDataScience) -> None:
     assert result == pytest.approx(8.42, 0.01)
 
 
+def test_similarity_overlap(gds: GraphDataScience) -> None:
+    result = gds.alpha.similarity.overlap([1, 2, 3], [1, 2, 4, 5])
+    assert result == pytest.approx(0.666, 0.01)
+
+
 def test_similarity_cosine_stats(gds: GraphDataScience) -> None:
     node1 = {"item": 1, "weights": [42.0, 13.37]}
     node2 = {"item": 2, "weights": [13.37, 42]}

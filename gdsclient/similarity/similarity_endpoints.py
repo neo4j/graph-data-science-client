@@ -28,3 +28,7 @@ class SimilarityEndpoints:
     @property
     def euclidean(self) -> SimilarityAlgoRunner:
         return SimilarityAlgoRunner(self._query_runner, f"{self._namespace}.euclidean")
+
+    @property
+    def overlap(self) -> SimilarityAlgoRunner:
+        return SimilarityAlgoRunner(self._query_runner, f"{self._namespace}.overlap")
