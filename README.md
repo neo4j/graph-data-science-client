@@ -95,6 +95,13 @@ Just like in the GDS procedure API they do not take a graph as an argument, but 
 And they simply return the similarity score of the prediction just made as a float - not a list of dictionaries.
 
 
+#### Similarity
+
+Some of the methods for computing [similarity](https://neo4j.com/docs/graph-data-science/current/algorithms/similarity/) are also different.
+The functions take two positional `List[float]` vectors as input and return a similarty score.
+The procedures that don't take a graph name as input (but only a configuration map) in the GDS API are represented by methods that only take keyword arguments mapping to the keys of their GDS configuration map.
+
+
 ### The Graph object
 
 In this library, graphs projected onto server-side memory are represented by `Graph` objects.
