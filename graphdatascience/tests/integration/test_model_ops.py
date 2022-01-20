@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph
+from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.model.graphsage_model import GraphSageModel
 from graphdatascience.pipeline.lp_prediction_pipeline import LPPredictionPipeline

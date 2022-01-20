@@ -2,7 +2,8 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import GraphDataScience, Neo4jQueryRunner
+from graphdatascience import GraphDataScience
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 GRAPH_NAME = "g"
 
