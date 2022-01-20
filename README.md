@@ -1,7 +1,7 @@
-# Graph Data Science Python Bindings
+# Graph Data Science Client
 
-`graphdatascience` is a Python wrapper API for operating and working with the [Neo4j Graph Data Science (GDS) library](https://github.com/neo4j/graph-data-science).
-It enables users to write pure Python code to project graphs, run algorithms, and define and use machine learning pipelines in GDS.
+`graphdatascience` is a Python client for operating and working with the [Neo4j Graph Data Science (GDS) library](https://github.com/neo4j/graph-data-science).
+It enables users to write pure Python code to project graphs, run algorithms, as well as define and use machine learning pipelines in GDS.
 
 The API is designed to mimic the GDS Cypher procedure API in Python code.
 It abstracts the necessary operations of the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) to offer a simpler surface.
@@ -49,7 +49,7 @@ driver = GraphDatabase.driver(URI)
 gds = GraphDataScience.from_neo4j_driver(driver)
 ```
 
-Optionally we can specify which database of our DBMS we want to use:
+If we don't want to use the default database of our DBMS, we can specify which one to use:
 
 ```python
 gds.set_database("my-db")
