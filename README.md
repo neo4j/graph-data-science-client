@@ -1,6 +1,6 @@
-# gdsclient
+# Graph Data Science Python Bindings
 
-`gdsclient` is a Python wrapper API for operating and working with the [Neo4j Graph Data Science (GDS) library](https://github.com/neo4j/graph-data-science).
+`graphdatascience` is a Python wrapper API for operating and working with the [Neo4j Graph Data Science (GDS) library](https://github.com/neo4j/graph-data-science).
 It enables users to write pure Python code to project graphs, run algorithms, and define and use machine learning pipelines in GDS.
 
 The API is designed to mimic the GDS Cypher procedure API in Python code.
@@ -18,16 +18,16 @@ Further, this library targets GDS versions 2.0+ (not yet released) and as such m
 
 ## Installation
 
-To install the latest deployed version of `gdsclient`, simply run:
+To install the latest deployed version of `graphdatascience`, simply run:
 
 ```bash
-pip install gdsclient
+pip install graphdatascience
 ```
 
 
 ## Usage
 
-What follows is a high level description of some of the operations supported by `gdsclient`.
+What follows is a high level description of some of the operations supported by `graphdatascience`.
 For extensive documentation of all operations supported by GDS, please refer to the [GDS Manual](https://neo4j.com/docs/graph-data-science/current/).
 
 Extensive end-to-end examples in Jupyter ready-to-run notebooks can be found in the [`examples` source directory](https://github.com/neo4j/gdsclient/tree/main/examples):
@@ -41,7 +41,7 @@ The library wraps the [Neo4j Python driver](https://neo4j.com/docs/python-manual
 
 ```python
 from neo4j import GraphDatabase
-from gdsclient import Neo4jQueryRunner, GraphDataScience
+from graphdatascience import Neo4jQueryRunner, GraphDataScience
 
 # Replace Neo4j Python driver settings according to your setup
 URI = "bolt://localhost:7687"
@@ -124,7 +124,7 @@ G.drop()
 ### Machine learning models
 
 In GDS, you can train machine learning models.
-When doing this using the `gdsclient`, you can get a model object returned directly in the client.
+When doing this using the `graphdatascience`, you can get a model object returned directly in the client.
 The model object allows for convenient access to details about the model via Python methods.
 It also offers the ability to directly compute predictions using the appropriate GDS procedure for that model.
 This includes support for models trained using pipelines (for Link Prediction and Node Classification) as well as GraphSAGE models.
@@ -176,7 +176,7 @@ Note that with GraphSAGE we call the `train` method directly and supply all trai
 
 ### Graph catalog utils
 
-All procedures from the [GDS Graph catalog](https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/) are supported with `gdsclient`.
+All procedures from the [GDS Graph catalog](https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/) are supported with `graphdatascience`.
 Some examples are (where `G` is a `Graph`):
 
 ```python
@@ -187,13 +187,13 @@ res = gds.graph.streamNodeProperties(G, "rank")
 assert len(res) == G.node_count()
 ```
 
-Further, there's a new call named `gds.graph.get` (`gdsclient` only) which takes a name as input and returns a `Graph` object if a graph projection of that name exists in the user's graph catalog.
+Further, there's a new call named `gds.graph.get` (`graphdatascience` only) which takes a name as input and returns a `Graph` object if a graph projection of that name exists in the user's graph catalog.
 The idea is to have a way of creating `Graph`s for already projected graphs, without having to do a new projection.
 
 
 ### Model catalog utils
 
-All procedures from the [GDS Model catalog](https://neo4j.com/docs/graph-data-science/current/model-catalog/) are supported with `gdsclient`.
+All procedures from the [GDS Model catalog](https://neo4j.com/docs/graph-data-science/current/model-catalog/) are supported with `graphdatascience`.
 Some examples are (where `model` is a machine learning model object):
 
 ```python
@@ -204,7 +204,7 @@ res = gds.beta.model.drop(model)
 assert res[0]["modelInfo"]["modelName"] == model.name()
 ```
 
-Further, there's a new call named `gds.model.get` (`gdsclient` only) which takes a model name as input and returns a model object if a model of that name exists in the user's model catalog.
+Further, there's a new call named `gds.model.get` (`graphdatascience` only) which takes a model name as input and returns a model object if a model of that name exists in the user's model catalog.
 The idea is to have a way of creating model objects for already loaded models, without having to create them again.
 
 
@@ -212,7 +212,7 @@ The idea is to have a way of creating model objects for already loaded models, w
 
 When calling path finding or topological link prediction algorithms one has to provide specific nodes as input arguments.
 When using the GDS procedure API directly to call such algorithms, typically Cypher `MATCH` statements are used in order to find valid representations of input nodes of interest, see eg. [this example in the GDS docs](https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/#algorithms-dijkstra-source-target-examples-stream).
-To simplify this, `gdsclient` provides a utility function, `gds.find_node_id`, for letting one find nodes without using Cypher.
+To simplify this, `graphdatascience` provides a utility function, `gds.find_node_id`, for letting one find nodes without using Cypher.
 
 Below is an example of how this can be done (supposing `G` is a projected `Graph` with `City` nodes having `name` properties):
 
@@ -234,7 +234,7 @@ For more advanced filtering we recommend users do matching via Cypher's `MATCH`.
 
 ## Known limitations
 
-Operations known to not yet work with `gdsclient`:
+Operations known to not yet work with `graphdatascience`:
 
 * [Numeric utility functions](https://neo4j.com/docs/graph-data-science/current/management-ops/utility-functions/#utility-functions-numeric) (will never be supported)
 * [Cypher on GDS](https://neo4j.com/docs/graph-data-science/current/management-ops/create-cypher-db/) (might be supported in the future)
@@ -242,7 +242,7 @@ Operations known to not yet work with `gdsclient`:
 
 ## License
 
-`gdsclient` is licensed under the Apache Software License version 2.0.
+`graphdatascience` is licensed under the Apache Software License version 2.0.
 All content is copyright © Neo4j Sweden AB.
 
 

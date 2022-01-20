@@ -1,8 +1,8 @@
-# gdsclient testing
+# graphdatascience testing
 
-This document describes how to run tests for `gdsclient` as well as how to check that the code style is maintained.
+This document describes how to run tests for `graphdatascience` as well as how to check that the code style is maintained.
 
-Tests can be found in `gdsclient/tests`. In each of the folders there, `unit` and `integration`, the tests of that respective type reside.
+Tests can be found in `graphdatascience/tests`. In each of the folders there, `unit` and `integration`, the tests of that respective type reside.
 
 To install all Python requirements for testing and code style checking, simply run:
 
@@ -17,7 +17,7 @@ The unit tests are run without a connection a database. Typically the `Collectin
 To run the unit tests, simply call:
 
 ```bash
-pytest gdsclient/tests/unit
+pytest graphdatascience/tests/unit
 ```
 
 
@@ -38,7 +38,7 @@ Once the driver connects successfully to the Neo4j DBMS the tests will go on to 
 The command for running the integration tests is the following:
 
 ```bash
-pytest gdsclient/tests/integration
+pytest graphdatascience/tests/integration
 ```
 
 To include tests that require the Enterprise Edition of the Neo4j Graph Data Science library, you can specify the option `--include-enterprise`.

@@ -25,7 +25,7 @@ project_urls = {
 }
 
 setuptools.setup(
-    name="gdsclient",
+    name="graphdatascience",
     version="0.0.7",
     author="Neo4j",
     author_email="team-gds@neo4j.org",
@@ -36,7 +36,7 @@ setuptools.setup(
     url="https://neo4j.com/product/graph-data-science/",
     classifiers=classifiers,
     packages=setuptools.find_packages(),
-    package_data={"gdsclient": ["py.typed"]},
+    package_data={"graphdatascience": ["py.typed"]},
     project_urls=project_urls,
     python_requires=">=3.6",
     install_requires=reqs,
