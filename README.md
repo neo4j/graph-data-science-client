@@ -6,7 +6,7 @@ It enables users to write pure Python code to project graphs, run algorithms, as
 The API is designed to mimic the GDS Cypher procedure API in Python code.
 It abstracts the necessary operations of the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) to offer a simpler surface.
 
-Please leave any feedback as issues on [the source repository](https://github.com/neo4j/gdsclient).
+Please leave any feedback as issues on [the source repository](https://github.com/neo4j/graph-data-science-client).
 Happy coding!
 
 
@@ -30,9 +30,9 @@ pip install graphdatascience
 What follows is a high level description of some of the operations supported by `graphdatascience`.
 For extensive documentation of all operations supported by GDS, please refer to the [GDS Manual](https://neo4j.com/docs/graph-data-science/current/).
 
-Extensive end-to-end examples in Jupyter ready-to-run notebooks can be found in the [`examples` source directory](https://github.com/neo4j/gdsclient/tree/main/examples):
+Extensive end-to-end examples in Jupyter ready-to-run notebooks can be found in the [`examples` source directory](https://github.com/neo4j/graph-data-science-client/tree/main/examples):
 
-* [Computing similarities with kNN based on FastRP embeddings](https://github.com/neo4j/gdsclient/tree/main/examples/fastrp-and-knn.ipynb)
+* [Computing similarities with kNN based on FastRP embeddings](https://github.com/neo4j/graph-data-science-client/tree/main/examples/fastrp-and-knn.ipynb)
 
 
 ### Imports and setup
