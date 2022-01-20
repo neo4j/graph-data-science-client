@@ -2,10 +2,10 @@ import os
 from typing import Generator
 
 import pytest
-from neo4j import GraphDatabase
+from neo4j import Driver, GraphDatabase
 
-from graphdatascience import Neo4jQueryRunner
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
 
@@ -18,13 +18,17 @@ if os.environ.get("NEO4J_USER") is not None:
 
 
 @pytest.fixture(scope="package")
-def runner() -> Generator[Neo4jQueryRunner, None, None]:
+def neo4j_driver() -> Generator[Driver, None, None]:
     driver = GraphDatabase.driver(URI, auth=AUTH)
-    runner = Neo4jQueryRunner(driver)
 
-    yield runner
+    yield driver
 
     driver.close()
+
+
+@pytest.fixture(scope="package")
+def runner(neo4j_driver: Driver) -> Neo4jQueryRunner:
+    return GraphDataScience.create_neo4j_query_runner(neo4j_driver)
 
 
 @pytest.fixture(scope="package")

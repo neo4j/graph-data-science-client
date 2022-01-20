@@ -41,15 +41,19 @@ The library wraps the [Neo4j Python driver](https://neo4j.com/docs/python-manual
 
 ```python
 from neo4j import GraphDatabase
-from graphdatascience import Neo4jQueryRunner, GraphDataScience
+from graphdatascience import GraphDataScience
 
 # Replace Neo4j Python driver settings according to your setup
 URI = "bolt://localhost:7687"
 driver = GraphDatabase.driver(URI)
-gds = GraphDataScience(Neo4jQueryRunner(driver))
-gds.set_database("my-db")  # (Optional) Use a specific Neo4j database
+gds = GraphDataScience.from_neo4j_driver(driver)
 ```
 
+Optionally we can specify which database of our DBMS we want to use:
+
+```python
+gds.set_database("my-db")
+```
 
 ### Projecting a graph
 
