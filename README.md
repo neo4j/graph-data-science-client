@@ -1,4 +1,4 @@
-# Graph Data Science Client
+# Neo4j Graph Data Science Client
 
 `graphdatascience` is a Python client for operating and working with the [Neo4j Graph Data Science (GDS) library](https://github.com/neo4j/graph-data-science).
 It enables users to write pure Python code to project graphs, run algorithms, as well as define and use machine learning pipelines in GDS.
