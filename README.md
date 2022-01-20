@@ -4,7 +4,7 @@
 It enables users to write pure Python code to project graphs, run algorithms, as well as define and use machine learning pipelines in GDS.
 
 The API is designed to mimic the GDS Cypher procedure API in Python code.
-It abstracts the necessary operations of the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) to offer a simpler surface.
+It abstracts the necessary operations of the [Neo4j Python driver](https://neo4j.com/docs/python-manual/2.0-preview/) to offer a simpler surface.
 
 Please leave any feedback as issues on [the source repository](https://github.com/neo4j/graph-data-science-client).
 Happy coding!
@@ -28,7 +28,7 @@ pip install graphdatascience
 ## Usage
 
 What follows is a high level description of some of the operations supported by `graphdatascience`.
-For extensive documentation of all operations supported by GDS, please refer to the [GDS Manual](https://neo4j.com/docs/graph-data-science/current/).
+For extensive documentation of all operations supported by GDS, please refer to the [GDS Manual](https://neo4j.com/docs/graph-data-science/2.0-preview/).
 
 Extensive end-to-end examples in Jupyter ready-to-run notebooks can be found in the [`examples` source directory](https://github.com/neo4j/graph-data-science-client/tree/main/examples):
 
@@ -37,7 +37,7 @@ Extensive end-to-end examples in Jupyter ready-to-run notebooks can be found in 
 
 ### Imports and setup
 
-The library wraps the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) with a `GraphDataScience` object through which most calls to GDS will be made.
+The library wraps the [Neo4j Python driver](https://neo4j.com/docs/python-manual/2.0-preview/) with a `GraphDataScience` object through which most calls to GDS will be made.
 
 ```python
 from neo4j import GraphDatabase
@@ -57,7 +57,7 @@ gds.set_database("my-db")
 
 ### Projecting a graph
 
-Supposing that we have some graph data in our Neo4j database, we can [project the graph into memory](https://neo4j.com/docs/graph-data-science/current/graph-create/).
+Supposing that we have some graph data in our Neo4j database, we can [project the graph into memory](https://neo4j.com/docs/graph-data-science/2.0-preview/graph-project/).
 
 ```python
 # Optionally we can estimate memory of the operation first
@@ -69,12 +69,12 @@ G = gds.graph.project("graph", "*", "*")
 
 The `G` that is returned here is a `Graph` which on the client side represents the projection on the server side.
 
-The analogous calls `gds.graph.project.cypher{,.estimate}` for [Cypher based projection](https://neo4j.com/docs/graph-data-science/current/graph-create-cypher/) are also supported.
+The analogous calls `gds.graph.project.cypher{,.estimate}` for [Cypher based projection](https://neo4j.com/docs/graph-data-science/2.0-preview/graph-project-cypher/) are also supported.
 
 
 ### Running algorithms
 
-We can take a projected graph, represented to us by a `Graph` object named `G`, and run [algorithms](https://neo4j.com/docs/graph-data-science/current/algorithms/) on it.
+We can take a projected graph, represented to us by a `Graph` object named `G`, and run [algorithms](https://neo4j.com/docs/graph-data-science/2.0-preview/algorithms/) on it.
 
 ```python
 # Optionally we can estimate memory of the operation first (if the algo supports it)
@@ -86,22 +86,22 @@ assert res[0]["nodePropertiesWritten"] == G.node_count()
 ```
 
 These calls take one positional argument and a number of keyword arguments depending on the algorithm.
-The first (positional) argument is a `Graph`, and the keyword arguments map directly to the algorithm's [configuration map](https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/#algorithms-syntax-configuration-parameters).
+The first (positional) argument is a `Graph`, and the keyword arguments map directly to the algorithm's [configuration map](https://neo4j.com/docs/graph-data-science/2.0-preview/common-usage/running-algos/#algorithms-syntax-configuration-parameters).
 The calls return a list of dictionaries (with contents depending on the algorithm of course) as is also the case when using the Neo4j Python driver directly.
 
-The other [algorithm execution modes](https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/) - stats, stream and write - are also supported via analogous calls.
+The other [algorithm execution modes](https://neo4j.com/docs/graph-data-science/2.0-preview/common-usage/running-algos/) - stats, stream and write - are also supported via analogous calls.
 
 
 #### Topological link prediction
 
-The methods for doing [topological link prediction](https://neo4j.com/docs/graph-data-science/current/algorithms/linkprediction/) are a bit different.
+The methods for doing [topological link prediction](https://neo4j.com/docs/graph-data-science/2.0-preview/algorithms/linkprediction/) are a bit different.
 Just like in the GDS procedure API they do not take a graph as an argument, but rather two node references as positional arguments.
 And they simply return the similarity score of the prediction just made as a float - not a list of dictionaries.
 
 
 #### Similarity
 
-Some of the methods for computing [similarity](https://neo4j.com/docs/graph-data-science/current/algorithms/similarity/) are also different.
+Some of the methods for computing [similarity](https://neo4j.com/docs/graph-data-science/2.0-preview/algorithms/similarity/) are also different.
 The functions take two positional `List[float]` vectors as input and return a similarty score.
 The procedures that don't take a graph name as input (but only a configuration map) in the GDS API are represented by methods that only take keyword arguments mapping to the keys of their GDS configuration map.
 
@@ -136,7 +136,7 @@ This includes support for models trained using pipelines (for Link Prediction an
 
 #### Pipelines
 
-There's native support for [Link prediction pipelines](https://neo4j.com/docs/graph-data-science/current/algorithms/ml-models/linkprediction-pipelines/) and [Node classification pipelines](https://neo4j.com/docs/graph-data-science/current/algorithms/ml-models/nodeclassification-pipelines/).
+There's native support for [Link prediction pipelines](https://neo4j.com/docs/graph-data-science/2.0-preview/algorithms/ml-models/linkprediction-pipelines/) and [Node classification pipelines](https://neo4j.com/docs/graph-data-science/2.0-preview/algorithms/ml-models/nodeclassification-pipelines/).
 Apart from the call to create a pipeline, the GDS native pipelines calls are represented by methods on pipeline Python objects.
 Additionally to the standard GDS calls, there are several methods to query the pipeline for information about it.
 
@@ -180,7 +180,7 @@ Note that with GraphSAGE we call the `train` method directly and supply all trai
 
 ### Graph catalog utils
 
-All procedures from the [GDS Graph catalog](https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/) are supported with `graphdatascience`.
+All procedures from the [GDS Graph catalog](https://neo4j.com/docs/graph-data-science/2.0-preview/management-ops/graph-catalog-ops/) are supported with `graphdatascience`.
 Some examples are (where `G` is a `Graph`):
 
 ```python
@@ -197,7 +197,7 @@ The idea is to have a way of creating `Graph`s for already projected graphs, wit
 
 ### Model catalog utils
 
-All procedures from the [GDS Model catalog](https://neo4j.com/docs/graph-data-science/current/model-catalog/) are supported with `graphdatascience`.
+All procedures from the [GDS Model catalog](https://neo4j.com/docs/graph-data-science/2.0-preview/model-catalog/) are supported with `graphdatascience`.
 Some examples are (where `model` is a machine learning model object):
 
 ```python
@@ -215,7 +215,7 @@ The idea is to have a way of creating model objects for already loaded models, w
 ### Node matching without Cypher
 
 When calling path finding or topological link prediction algorithms one has to provide specific nodes as input arguments.
-When using the GDS procedure API directly to call such algorithms, typically Cypher `MATCH` statements are used in order to find valid representations of input nodes of interest, see eg. [this example in the GDS docs](https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/#algorithms-dijkstra-source-target-examples-stream).
+When using the GDS procedure API directly to call such algorithms, typically Cypher `MATCH` statements are used in order to find valid representations of input nodes of interest, see eg. [this example in the GDS docs](https://neo4j.com/docs/graph-data-science/2.0-preview/algorithms/dijkstra-source-target/#algorithms-dijkstra-source-target-examples-stream).
 To simplify this, `graphdatascience` provides a utility function, `gds.find_node_id`, for letting one find nodes without using Cypher.
 
 Below is an example of how this can be done (supposing `G` is a projected `Graph` with `City` nodes having `name` properties):
@@ -240,8 +240,8 @@ For more advanced filtering we recommend users do matching via Cypher's `MATCH`.
 
 Operations known to not yet work with `graphdatascience`:
 
-* [Numeric utility functions](https://neo4j.com/docs/graph-data-science/current/management-ops/utility-functions/#utility-functions-numeric) (will never be supported)
-* [Cypher on GDS](https://neo4j.com/docs/graph-data-science/current/management-ops/create-cypher-db/) (might be supported in the future)
+* [Numeric utility functions](https://neo4j.com/docs/graph-data-science/2.0-preview/management-ops/utility-functions/#utility-functions-numeric) (will never be supported)
+* [Cypher on GDS](https://neo4j.com/docs/graph-data-science/2.0-preview/management-ops/create-cypher-db/) (might be supported in the future)
 
 
 ## License
