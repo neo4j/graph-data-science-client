@@ -29,7 +29,7 @@ setuptools.setup(
     version="0.0.8",
     author="Neo4j",
     author_email="team-gds@neo4j.org",
-    description="Python bindings for the Neo4j Graph Data Science library",
+    description="A Python client for the Neo4j Graph Data Science (GDS) library",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="Apache License 2.0",
