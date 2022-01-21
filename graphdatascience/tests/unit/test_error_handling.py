@@ -120,3 +120,8 @@ def test_nonexisting_similarity_endpoint(gds: GraphDataScience) -> None:
         SyntaxError, match="There is no 'gds.alpha.similarity.pearson.bogus' to call"
     ):
         gds.alpha.similarity.pearson.bogus()  # type: ignore
+
+
+def test_wrong_client_only_prefix(gds: GraphDataScience) -> None:
+    with pytest.raises(SyntaxError, match="There is no 'gds.beta.model.get' to call"):
+        gds.beta.model.get("model")

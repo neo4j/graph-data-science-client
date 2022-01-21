@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Optional, Union
 
+from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..query_runner.query_runner import QueryResult, QueryRunner
@@ -67,10 +68,8 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params)
 
+    @client_only_endpoint("gds.graph")
     def get(self, graph_name: str) -> Graph:
-        if self._namespace != "gds.graph":
-            raise SyntaxError(f"There is no {self._namespace + '.get'} to call")
-
         if not self.exists(graph_name)[0]["exists"]:
             raise ValueError(f"No projected graph named '{graph_name}' exists")
 

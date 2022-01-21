@@ -1,5 +1,6 @@
 from typing import Optional, Union
 
+from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..pipeline.lp_prediction_pipeline import LPPredictionPipeline
@@ -101,10 +102,8 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params)
 
+    @client_only_endpoint("gds.model")
     def get(self, model_name: str) -> Model:
-        if self._namespace != "gds.model":
-            raise SyntaxError(f"There is no {self._namespace + '.get'} to call")
-
         self._namespace = "gds.beta.model"
         result = self.list(model_name)
         if len(result) == 0:
