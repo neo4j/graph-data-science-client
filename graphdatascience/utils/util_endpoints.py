@@ -1,5 +1,6 @@
 from typing import Any, Dict, List
 
+from ..error.client_only_endpoint import client_only_endpoint
 from ..query_runner.query_runner import QueryResult, QueryRunner
 from .util_proc_runner import UtilProcRunner
 
@@ -13,6 +14,7 @@ class UtilEndpoints:
     def util(self) -> UtilProcRunner:
         return UtilProcRunner(self._query_runner, f"{self._namespace}.util")
 
+    @client_only_endpoint("gds")
     def find_node_id(
         self, labels: List[str] = [], properties: Dict[str, Any] = {}
     ) -> int:
