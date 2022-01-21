@@ -1,9 +1,10 @@
-from typing import Any, Callable, Protocol, TypeVar, cast
+from abc import ABC
+from typing import Any, Callable, TypeVar, cast
 
 F = TypeVar("F", bound=Callable[..., Any])
 
 
-class WithNamespace(Protocol):
+class WithNamespace(ABC):
     _namespace: str
 
 
