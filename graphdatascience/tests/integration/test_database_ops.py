@@ -33,3 +33,8 @@ def test_from_neo4j_driver(neo4j_driver: Driver) -> None:
 def test_from_neo4j_credentials() -> None:
     gds = GraphDataScience(URI, auth=AUTH)
     assert len(gds.list()) > 10
+
+
+def test_run_cypher(gds: GraphDataScience) -> None:
+    result = gds.run_cypher("CALL gds.list()")
+    assert len(result) > 10
