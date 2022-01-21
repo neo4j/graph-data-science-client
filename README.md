@@ -40,14 +40,13 @@ Extensive end-to-end examples in Jupyter ready-to-run notebooks can be found in 
 The library wraps the [Neo4j Python driver](https://neo4j.com/docs/python-manual/2.0-preview/) with a `GraphDataScience` object through which most calls to GDS will be made.
 
 ```python
-from neo4j import GraphDatabase
 from graphdatascience import GraphDataScience
 
-# Replace Neo4j Python driver settings according to your setup
-URI = "bolt://localhost:7687"
-driver = GraphDatabase.driver(URI)
-gds = GraphDataScience.from_neo4j_driver(driver)
+# Use Neo4j URI and credentials according to your setup
+gds = GraphDataScience("bolt://localhost:7687", auth=None)
 ```
+
+There's also a method `GraphDataScience.from_neo4j_driver` for instantiating the `gds` object directly from a Neo4j driver object.
 
 If we don't want to use the default database of our DBMS, we can specify which one to use:
 

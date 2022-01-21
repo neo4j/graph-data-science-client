@@ -2,6 +2,7 @@ from neo4j import DEFAULT_DATABASE, Driver
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.tests.integration.conftest import AUTH, URI
 
 GRAPH_NAME = "g"
 
@@ -26,4 +27,9 @@ def test_switching_db(runner: Neo4jQueryRunner) -> None:
 
 def test_from_neo4j_driver(neo4j_driver: Driver) -> None:
     gds = GraphDataScience.from_neo4j_driver(neo4j_driver)
+    assert len(gds.list()) > 10
+
+
+def test_from_neo4j_credentials() -> None:
+    gds = GraphDataScience(URI, auth=AUTH)
     assert len(gds.list()) > 10

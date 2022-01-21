@@ -1,6 +1,6 @@
-from typing import Type, TypeVar
+from typing import Any, Type, TypeVar, Union
 
-from neo4j import Driver
+from neo4j import Driver, GraphDatabase
 
 from .call_builder import CallBuilder
 from .direct_endpoints import DirectEndpoints
@@ -12,9 +12,16 @@ GDS = TypeVar("GDS", bound="GraphDataScience")
 
 
 class GraphDataScience(DirectEndpoints, UncallableNamespace):
-    def __init__(self, query_runner: QueryRunner):
-        super().__init__(query_runner, "gds")
-        self._query_runner = query_runner
+    def __init__(
+        self, endpoint: Union[str, QueryRunner], auth: Any = None, **config: Any
+    ):
+        if isinstance(endpoint, str):
+            driver = GraphDatabase.driver(endpoint, auth=auth, **config)
+            self._query_runner = self.create_neo4j_query_runner(driver)
+        else:
+            self._query_runner = endpoint
+
+        super().__init__(self._query_runner, "gds")
 
     def __getattr__(self, attr: str) -> CallBuilder:
         return CallBuilder(self._query_runner, f"gds.{attr}")
