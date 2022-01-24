@@ -4,7 +4,7 @@
 It enables users to write pure Python code to project graphs, run algorithms, as well as define and use machine learning pipelines in GDS.
 
 The API is designed to mimic the GDS Cypher procedure API in Python code.
-It abstracts the necessary operations of the [Neo4j Python driver](https://neo4j.com/docs/python-manual/2.0-preview/) to offer a simpler surface.
+It abstracts the necessary operations of the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) to offer a simpler surface.
 
 Please leave any feedback as issues on [the source repository](https://github.com/neo4j/graph-data-science-client).
 Happy coding!
