@@ -19,9 +19,9 @@ classifiers = [
 ]
 
 project_urls = {
-    "Documentation": "https://neo4j.com/docs/graph-data-science/current/",
-    "Source": "https://github.com/neo4j/gdsclient",
-    "Bug Tracker": "https://github.com/neo4j/gdsclient/issues",
+    "Documentation": "https://neo4j.com/docs/graph-data-science/2.0-preview/",
+    "Source": "https://github.com/neo4j/graph-data-science-client",
+    "Bug Tracker": "https://github.com/neo4j/graph-data-science-client/issues",
 }
 
 setuptools.setup(
