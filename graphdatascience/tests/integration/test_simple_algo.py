@@ -33,7 +33,8 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 def test_pageRank_mutate(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    gds.pageRank.mutate(G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
+    result = gds.pageRank.mutate(G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
+    assert result["nodePropertiesWritten"] == 3
 
     props = runner.run_query(
         f"""
@@ -52,7 +53,7 @@ def test_pageRank_mutate_estimate(gds: GraphDataScience) -> None:
         G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
     )
 
-    assert result[0]["requiredMemory"]
+    assert result["requiredMemory"]
 
 
 def test_wcc_stats(gds: GraphDataScience) -> None:
@@ -60,7 +61,7 @@ def test_wcc_stats(gds: GraphDataScience) -> None:
 
     result = gds.wcc.stats(G)
 
-    assert result[0]["componentCount"] == 1
+    assert result["componentCount"] == 1
 
 
 def test_wcc_stats_estimate(gds: GraphDataScience) -> None:
@@ -68,7 +69,7 @@ def test_wcc_stats_estimate(gds: GraphDataScience) -> None:
 
     result = gds.wcc.stats.estimate(G)
 
-    assert result[0]["requiredMemory"]
+    assert result["requiredMemory"]
 
 
 def test_nodeSimilarity_stream(gds: GraphDataScience) -> None:
@@ -85,13 +86,14 @@ def test_nodeSimilarity_stream_estimate(gds: GraphDataScience) -> None:
 
     result = gds.nodeSimilarity.stream.estimate(G, similarityCutoff=0)
 
-    assert result[0]["requiredMemory"]
+    assert result["requiredMemory"]
 
 
 def test_fastRP_write(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    gds.fastRP.write(G, writeProperty="embedding", embeddingDimension=4, randomSeed=42)
+    result = gds.fastRP.write(G, writeProperty="embedding", embeddingDimension=4, randomSeed=42)
+    assert result["nodePropertiesWritten"] == 3
 
     embeddings = runner.run_query(
         """
@@ -112,4 +114,4 @@ def test_fastRP_write_estimate(gds: GraphDataScience) -> None:
         G, writeProperty="embedding", embeddingDimension=4, randomSeed=42
     )
 
-    assert result[0]["requiredMemory"]
+    assert result["requiredMemory"]
