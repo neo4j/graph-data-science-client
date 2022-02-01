@@ -13,11 +13,11 @@ def test_listProgress(gds: GraphDataScience) -> None:
 def test_systemMonitor(gds: GraphDataScience) -> None:
     result = gds.alpha.systemMonitor()
 
-    assert result[0]["freeHeap"] >= 0
-    assert len(result[0]["ongoingGdsProcedures"]) >= 0
+    assert result["freeHeap"] >= 0
+    assert len(result["ongoingGdsProcedures"]) >= 0
 
 
 def test_sysInfo(gds: GraphDataScience) -> None:
     result = gds.debug.sysInfo()
 
-    assert result[0]["key"] == "gdsVersion"
+    assert result["key"] == "gdsVersion"

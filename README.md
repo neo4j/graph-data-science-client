@@ -61,7 +61,7 @@ Supposing that we have some graph data in our Neo4j database, we can [project th
 ```python
 # Optionally we can estimate memory of the operation first
 res = gds.graph.project.estimate("*", "*")
-assert res[0]["requiredMemory"] < 1e12
+assert res["requiredMemory"] < 1e12
 
 G = gds.graph.project("graph", "*", "*")
 ```
@@ -78,17 +78,18 @@ We can take a projected graph, represented to us by a `Graph` object named `G`, 
 ```python
 # Optionally we can estimate memory of the operation first (if the algo supports it)
 res = gds.pageRank.mutate.estimate(G, tolerance=0.5, mutateProperty="pagerank")
-assert res[0]["requiredMemory"] < 1e12
+assert res["requiredMemory"] < 1e12
 
 res = gds.pageRank.mutate(G, tolerance=0.5, mutateProperty="pagerank")
-assert res[0]["nodePropertiesWritten"] == G.node_count()
+assert res["nodePropertiesWritten"] == G.node_count()
 ```
 
 These calls take one positional argument and a number of keyword arguments depending on the algorithm.
 The first (positional) argument is a `Graph`, and the keyword arguments map directly to the algorithm's [configuration map](https://neo4j.com/docs/graph-data-science/2.0-preview/common-usage/running-algos/#algorithms-syntax-configuration-parameters).
-The calls return a list of dictionaries (with contents depending on the algorithm of course) as is also the case when using the Neo4j Python driver directly.
 
 The other [algorithm execution modes](https://neo4j.com/docs/graph-data-science/2.0-preview/common-usage/running-algos/) - stats, stream and write - are also supported via analogous calls.
+The stream mode call returns a list of dictionaries (with contents depending on the algorithm of course) - which we can think of as a table - as is also the case when using the Neo4j Python driver directly.
+The mutate, stats and write mode calls however return a dictionary with metadata about the algorithm execution.
 
 
 #### Topological link prediction
@@ -204,7 +205,7 @@ res = gds.beta.model.list()
 assert len(res) == 1  # Exactly one model is loaded
 
 res = gds.beta.model.drop(model)
-assert res[0]["modelInfo"]["modelName"] == model.name()
+assert res["modelInfo"]["modelName"] == model.name()
 ```
 
 Further, there's a new call named `gds.model.get` (`graphdatascience` only) which takes a model name as input and returns a model object if a model of that name exists in the user's model catalog.

@@ -2,7 +2,7 @@ from typing import Optional
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
-from ..query_runner.query_runner import QueryResult, QueryRunner
+from ..query_runner.query_runner import QueryResult, QueryRunner, Row
 
 
 class DebugProcRunner(UncallableNamespace, IllegalAttrChecker):
@@ -10,11 +10,11 @@ class DebugProcRunner(UncallableNamespace, IllegalAttrChecker):
         self._query_runner = query_runner
         self._namespace = namespace
 
-    def sysInfo(self) -> QueryResult:
+    def sysInfo(self) -> Row:
         self._namespace += ".sysInfo"
         query = f"CALL {self._namespace}()"
 
-        return self._query_runner.run_query(query)
+        return self._query_runner.run_query(query)[0]
 
 
 class SystemEndpoints:
@@ -34,11 +34,11 @@ class SystemEndpoints:
 
         return self._query_runner.run_query(query, params)
 
-    def systemMonitor(self) -> QueryResult:
+    def systemMonitor(self) -> Row:
         self._namespace += ".systemMonitor"
         query = f"CALL {self._namespace}()"
 
-        return self._query_runner.run_query(query)
+        return self._query_runner.run_query(query)[0]
 
     @property
     def debug(self) -> DebugProcRunner:

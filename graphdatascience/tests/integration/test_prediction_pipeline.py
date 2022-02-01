@@ -97,7 +97,7 @@ def test_predict_mutate_lp_trained_pipeline(
     result = lp_trained_pipe.predict_mutate(
         G, topN=2, mutateRelationshipType="PRED_REL"
     )
-    assert result[0]["relationshipsWritten"] == 4
+    assert result["relationshipsWritten"] == 4
 
 
 def test_predict_stream_nc_trained_pipeline(
@@ -111,14 +111,14 @@ def test_predict_mutate_nc_trained_pipeline(
     nc_trained_pipe: NCPredictionPipeline, G: Graph
 ) -> None:
     result = nc_trained_pipe.predict_mutate(G, mutateProperty="whoa")
-    assert result[0]["nodePropertiesWritten"] == G.node_count()
+    assert result["nodePropertiesWritten"] == G.node_count()
 
 
 def test_predict_write_nc_trained_pipeline(
     nc_trained_pipe: NCPredictionPipeline, G: Graph
 ) -> None:
     result = nc_trained_pipe.predict_write(G, writeProperty="whoa")
-    assert result[0]["nodePropertiesWritten"] == G.node_count()
+    assert result["nodePropertiesWritten"] == G.node_count()
 
 
 def test_type_nc_trained_pipeline(nc_trained_pipe: NCPredictionPipeline) -> None:

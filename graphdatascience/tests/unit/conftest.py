@@ -15,7 +15,7 @@ class CollectingQueryRunner(QueryRunner):
     def run_query(self, query: str, params: Dict[str, Any] = {}) -> QueryResult:
         self.queries.append(query)
         self.params.append(params)
-        return []
+        return [{"version": "X.Y.Z"}]
 
     def last_query(self) -> str:
         return self.queries[-1]

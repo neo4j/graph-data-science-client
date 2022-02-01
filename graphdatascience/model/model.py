@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Any, Dict
 
-from ..query_runner.query_runner import QueryRunner
+from ..query_runner.query_runner import QueryRunner, Row
 
 
 class Model(ABC):
@@ -9,7 +9,7 @@ class Model(ABC):
         self._name = name
         self._query_runner = query_runner
 
-    def _list_info(self) -> Dict[str, Any]:
+    def _list_info(self) -> Row:
         query = "CALL gds.beta.model.list($name)"
         params = {"name": self.name()}
 

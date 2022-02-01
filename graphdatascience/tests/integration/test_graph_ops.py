@@ -38,13 +38,13 @@ def test_project_graph_native(gds: GraphDataScience) -> None:
     assert G.name() == GRAPH_NAME
 
     result = gds.graph.exists(G.name())
-    assert result[0]["exists"]
+    assert result["exists"]
 
 
 def test_project_graph_native_estimate(gds: GraphDataScience) -> None:
     result = gds.graph.project.estimate("*", "*")
 
-    assert result[0]["requiredMemory"]
+    assert result["requiredMemory"]
 
 
 def test_project_graph_cypher(gds: GraphDataScience) -> None:
@@ -56,7 +56,7 @@ def test_project_graph_cypher(gds: GraphDataScience) -> None:
     assert G.name() == GRAPH_NAME
 
     result = gds.graph.exists(G.name())
-    assert result[0]["exists"]
+    assert result["exists"]
 
 
 def test_project_graph_cypher_estimate(gds: GraphDataScience) -> None:
@@ -66,7 +66,7 @@ def test_project_graph_cypher_estimate(gds: GraphDataScience) -> None:
     )
     result = gds.graph.project.cypher.estimate(node_query, relationship_query)
 
-    assert result[0]["requiredMemory"]
+    assert result["requiredMemory"]
 
 
 def test_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
@@ -98,17 +98,18 @@ def test_graph_exists(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.graph.exists(G.name())
-    assert result[0]["exists"]
+    assert result["exists"]
 
     result = gds.graph.exists("bogusName")
-    assert not result[0]["exists"]
+    assert not result["exists"]
 
 
 def test_graph_drop(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.graph.drop(G, True)
-    assert result[0]["graphName"] == GRAPH_NAME
+    assert result
+    assert result["graphName"] == GRAPH_NAME
 
     with pytest.raises(Exception):
         gds.graph.drop(G, True)
@@ -120,8 +121,8 @@ def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     MY_DB_NAME = "test-database"
     result = gds.graph.export(G, dbName=MY_DB_NAME, batchSize=10000)
 
-    assert result[0]["graphName"] == GRAPH_NAME
-    assert result[0]["dbName"] == MY_DB_NAME
+    assert result["graphName"] == GRAPH_NAME
+    assert result["dbName"] == MY_DB_NAME
 
     runner.run_query("CREATE DATABASE $dbName", {"dbName": MY_DB_NAME})
     runner.set_database(MY_DB_NAME)
@@ -177,7 +178,7 @@ def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
     gds.pageRank.mutate(G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
 
     result = gds.graph.writeNodeProperties(G, ["rank"], concurrency=2)
-    assert result[0]["propertiesWritten"] == 3
+    assert result["propertiesWritten"] == 3
 
 
 def test_graph_writeRelationship(gds: GraphDataScience) -> None:
@@ -188,22 +189,22 @@ def test_graph_writeRelationship(gds: GraphDataScience) -> None:
     )
 
     result = gds.graph.writeRelationship(G, "SIMILAR", "score", concurrency=2)
-    assert result[0]["relationshipsWritten"] == 2
-    assert result[0]["propertiesWritten"] == 2
+    assert result["relationshipsWritten"] == 2
+    assert result["propertiesWritten"] == 2
 
 
 def test_graph_removeNodeProperties(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     result = gds.graph.removeNodeProperties(G, ["x"], concurrency=2)
-    assert result[0]["propertiesRemoved"] == 3
+    assert result["propertiesRemoved"] == 3
 
 
 def test_graph_deleteRelationships(gds: GraphDataScience) -> None:
     G = gds.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
 
     result = gds.graph.deleteRelationships(G, "REL")
-    assert result[0]["deletedRelationships"] == 3
+    assert result["deletedRelationships"] == 3
 
 
 def test_graph_generate(gds: GraphDataScience) -> None:

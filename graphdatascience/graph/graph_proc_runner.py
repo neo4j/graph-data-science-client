@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Union
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
-from ..query_runner.query_runner import QueryResult, QueryRunner
+from ..query_runner.query_runner import QueryResult, QueryRunner, Row
 from .graph_export_runner import GraphExportRunner
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
@@ -32,7 +32,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         failIfMissing: bool = False,
         dbName: str = "",
         username: Optional[str] = None,
-    ) -> QueryResult:
+    ) -> Optional[Row]:
         self._namespace += ".drop"
 
         params = {
@@ -47,14 +47,16 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             query = f"CALL {self._namespace}($graph_name, $fail_if_missing, $db_name)"
 
         result = self._query_runner.run_query(query, params)
+        if result:
+            return result[0]
 
-        return result
+        return None
 
-    def exists(self, graph_name: str) -> QueryResult:
+    def exists(self, graph_name: str) -> Row:
         self._namespace += ".exists"
         return self._query_runner.run_query(
             f"CALL {self._namespace}($graph_name)", {"graph_name": graph_name}
-        )
+        )[0]
 
     def list(self, G: Optional[Graph] = None) -> QueryResult:
         self._namespace += ".list"
@@ -70,7 +72,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @client_only_endpoint("gds.graph")
     def get(self, graph_name: str) -> Graph:
-        if not self.exists(graph_name)[0]["exists"]:
+        if not self.exists(graph_name)["exists"]:
             raise ValueError(f"No projected graph named '{graph_name}' exists")
 
         return Graph(graph_name, self._query_runner)
@@ -146,10 +148,10 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         node_properties: List[str],
         node_labels: Strings = ["*"],
         **config: Any,
-    ) -> QueryResult:
+    ) -> Row:
         self._namespace += ".writeNodeProperties"
 
-        return self._handle_properties(G, node_properties, node_labels, config)
+        return self._handle_properties(G, node_properties, node_labels, config)[0]
 
     def writeRelationship(
         self,
@@ -157,7 +159,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         relationship_type: str,
         relationship_property: str = "",
         **config: Any,
-    ) -> QueryResult:
+    ) -> Row:
         self._namespace += ".writeRelationship"
 
         query = f"CALL {self._namespace}($graph_name, $relationship_type, $relationship_property, $config)"
@@ -168,7 +170,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             "config": config,
         }
 
-        return self._query_runner.run_query(query, params)
+        return self._query_runner.run_query(query, params)[0]
 
     def removeNodeProperties(
         self,
@@ -176,12 +178,12 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         node_properties: List[str],
         node_labels: Strings = ["*"],
         **config: Any,
-    ) -> QueryResult:
+    ) -> Row:
         self._namespace += ".removeNodeProperties"
 
-        return self._handle_properties(G, node_properties, node_labels, config)
+        return self._handle_properties(G, node_properties, node_labels, config)[0]
 
-    def deleteRelationships(self, G: Graph, relationship_type: str) -> QueryResult:
+    def deleteRelationships(self, G: Graph, relationship_type: str) -> Row:
         self._namespace += ".deleteRelationships"
 
         query = f"CALL {self._namespace}($graph_name, $relationship_type)"
@@ -190,7 +192,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             "relationship_type": relationship_type,
         }
 
-        return self._query_runner.run_query(query, params)
+        return self._query_runner.run_query(query, params)[0]
 
     def generate(
         self, graph_name: str, node_count: int, average_degree: int, **config: Any
