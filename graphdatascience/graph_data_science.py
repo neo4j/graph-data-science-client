@@ -28,6 +28,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                 self._config = {
                     "max_connection_lifetime": 60 * 8,  # 8 minutes
                     "keep_alive": True,
+                    "max_connection_pool_size": 50,
                 }
 
             driver = GraphDatabase.driver(endpoint, auth=auth, **self._config)

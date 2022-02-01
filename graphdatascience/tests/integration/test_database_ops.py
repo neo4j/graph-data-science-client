@@ -65,6 +65,7 @@ def test_aurads_accepts_neo4j_s() -> None:
 
     assert gds.driver_config()["keep_alive"]
     assert gds.driver_config()["max_connection_lifetime"] == 60 * 8
+    assert gds.driver_config()["max_connection_pool_size"] == 50
 
 
 def test_run_cypher(gds: GraphDataScience) -> None:
