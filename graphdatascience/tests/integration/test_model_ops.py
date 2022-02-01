@@ -72,9 +72,8 @@ def test_model_list(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> None:
     assert result[0]["modelInfo"]["modelName"] == lp_pipe.name()
 
 
-def test_model_exists(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> None:
+def test_model_exists(gds: GraphDataScience) -> None:
     assert not gds.beta.model.exists("NOTHING")["exists"]
-    assert gds.beta.model.exists(lp_pipe)["exists"]
 
 
 @pytest.mark.enterprise
@@ -126,8 +125,9 @@ def test_model_delete(
         0
     ]["modelName"]
 
+    model = gds.model.get(model_name)
     runner.run_query(f"CALL gds.beta.model.drop('{gs_model.name()}')")
-    assert gds.alpha.model.delete(model_name)["deleteMillis"] >= 0
+    assert gds.alpha.model.delete(model)["deleteMillis"] >= 0
 
     res = runner.run_query(f"CALL gds.beta.model.exists('{model_name}')")
     assert not res[0]["exists"]
@@ -135,10 +135,10 @@ def test_model_delete(
 
 def test_model_drop(gds: GraphDataScience) -> None:
     pipe = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
-    assert gds.beta.model.exists(pipe)["exists"]
+    assert gds.beta.model.exists(pipe.name())["exists"]
 
     assert gds.beta.model.drop(pipe)["modelInfo"]["modelName"] == pipe.name()
-    assert not gds.beta.model.exists(pipe)["exists"]
+    assert not gds.beta.model.exists(pipe.name())["exists"]
 
 
 def test_model_get_lp(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> None:
