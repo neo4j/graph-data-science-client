@@ -28,7 +28,7 @@ pip install graphdatascience
 ## Usage
 
 What follows is a high level description of some of the operations supported by `graphdatascience`.
-For extensive documentation of all operations supported by GDS, please refer to the [GDS Manual](https://neo4j.com/docs/graph-data-science/2.0-preview/).
+For extensive documentation of all capabilities, please refer to the [Python client chapter of the GDS Manual](https://neo4j.com/docs/graph-data-science/2.0-preview/python-client/).
 
 Extensive end-to-end examples in Jupyter ready-to-run notebooks can be found in the [`examples` source directory](https://github.com/neo4j/graph-data-science-client/tree/main/examples):
 
