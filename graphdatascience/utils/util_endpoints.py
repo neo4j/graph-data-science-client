@@ -49,9 +49,11 @@ class UtilEndpoints:
 
         return node_match[0]["id"]  # type: ignore
 
-    def version(self) -> QueryResult:
+    def version(self) -> str:
         namespace = self._namespace + ".version"
-        return self._query_runner.run_query(f"RETURN {namespace}() as version")
+        result = self._query_runner.run_query(f"RETURN {namespace}() as version")
+
+        return result[0]["version"]  # type: ignore
 
     def list(self) -> QueryResult:
         namespace = self._namespace + ".list"

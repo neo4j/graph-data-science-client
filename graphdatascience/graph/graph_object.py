@@ -1,6 +1,6 @@
-from typing import Any, Dict, List
+from typing import Dict, List
 
-from ..query_runner.query_runner import QueryRunner
+from ..query_runner.query_runner import QueryRunner, Row
 
 
 class Graph:
@@ -11,7 +11,7 @@ class Graph:
     def name(self) -> str:
         return self._name
 
-    def _graph_info(self, yields: List[str] = []) -> Dict[str, Any]:
+    def _graph_info(self, yields: List[str] = []) -> Row:
         yield_suffix = "" if len(yields) == 0 else " YIELD " + ", ".join(yields)
         info = self._query_runner.run_query(
             f"CALL gds.graph.list($graph_name){yield_suffix}",

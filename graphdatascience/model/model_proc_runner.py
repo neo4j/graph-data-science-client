@@ -7,7 +7,7 @@ from ..pipeline.lp_prediction_pipeline import LPPredictionPipeline
 from ..pipeline.lp_training_pipeline import LPTrainingPipeline
 from ..pipeline.nc_prediction_pipeline import NCPredictionPipeline
 from ..pipeline.nc_training_pipeline import NCTrainingPipeline
-from ..query_runner.query_runner import QueryResult, QueryRunner
+from ..query_runner.query_runner import QueryResult, QueryRunner, Row
 from .graphsage_model import GraphSageModel
 from .model import Model
 
@@ -30,9 +30,7 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
             f"Provided model identifier is of the wrong type: {type(model_id)}"
         )
 
-    def store(
-        self, model_id: ModelId, failIfUnsupportedType: bool = True
-    ) -> QueryResult:
+    def store(self, model_id: ModelId, failIfUnsupportedType: bool = True) -> Row:
         self._namespace += ".store"
 
         query = f"CALL {self._namespace}($model_name, $fail_flag)"
@@ -41,7 +39,7 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
             "fail_flag": failIfUnsupportedType,
         }
 
-        return self._query_runner.run_query(query, params)
+        return self._query_runner.run_query(query, params)[0]
 
     def list(self, model_id: Optional[ModelId] = None) -> QueryResult:
         self._namespace += ".list"
@@ -55,13 +53,13 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params)
 
-    def exists(self, model_id: ModelId) -> QueryResult:
+    def exists(self, model_id: ModelId) -> Row:
         self._namespace += ".exists"
 
         query = f"CALL {self._namespace}($model_name)"
         params = {"model_name": ModelProcRunner._model_name(model_id)}
 
-        return self._query_runner.run_query(query, params)
+        return self._query_runner.run_query(query, params)[0]
 
     def publish(self, model_id: ModelId) -> Model:
         self._namespace += ".publish"
@@ -75,13 +73,13 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
         model_type = result[0]["modelInfo"]["modelType"]
         return self._resolve_model(model_type, model_name)
 
-    def drop(self, model_id: ModelId) -> QueryResult:
+    def drop(self, model_id: ModelId) -> Row:
         self._namespace += ".drop"
 
         query = f"CALL {self._namespace}($model_name)"
         params = {"model_name": ModelProcRunner._model_name(model_id)}
 
-        return self._query_runner.run_query(query, params)
+        return self._query_runner.run_query(query, params)[0]
 
     def load(self, model_name: str) -> Model:
         self._namespace += ".load"
@@ -94,13 +92,13 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace = "gds.model"
         return self.get(result[0]["modelName"])
 
-    def delete(self, model_id: ModelId) -> QueryResult:
+    def delete(self, model_id: ModelId) -> Row:
         self._namespace += ".delete"
 
         query = f"CALL {self._namespace}($model_name)"
         params = {"model_name": ModelProcRunner._model_name(model_id)}
 
-        return self._query_runner.run_query(query, params)
+        return self._query_runner.run_query(query, params)[0]
 
     @client_only_endpoint("gds.model")
     def get(self, model_name: str) -> Model:

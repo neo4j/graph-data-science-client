@@ -4,7 +4,7 @@ from typing import Any, Dict
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..graph.graph_object import Graph
 from ..model.graphsage_model import GraphSageModel
-from ..query_runner.query_runner import QueryResult, QueryRunner, SingleRow
+from ..query_runner.query_runner import QueryResult, QueryRunner, Row
 
 
 class AlgoProcRunner(IllegalAttrChecker, ABC):
@@ -21,7 +21,7 @@ class AlgoProcRunner(IllegalAttrChecker, ABC):
 
         return self._query_runner.run_query(query, params)
 
-    def estimate(self, G: Graph, **config: Any) -> SingleRow:
+    def estimate(self, G: Graph, **config: Any) -> Row:
         self._proc_name += "." + "estimate"
         return self._run_procedure(G, config)[0]
 
@@ -32,7 +32,7 @@ class StreamModeRunner(AlgoProcRunner):
 
 
 class StandardModeRunner(AlgoProcRunner):
-    def __call__(self, G: Graph, **config: Any) -> SingleRow:
+    def __call__(self, G: Graph, **config: Any) -> Row:
         return self._run_procedure(G, config)[0]
 
 

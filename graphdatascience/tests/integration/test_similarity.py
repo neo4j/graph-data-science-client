@@ -66,7 +66,7 @@ def test_similarity_cosine_stats(gds: GraphDataScience) -> None:
     node2 = {"item": 2, "weights": [13.37, 42]}
 
     result = gds.alpha.similarity.cosine.stats(data=[node1, node2])
-    assert result[0]["nodes"] == 2
+    assert result["nodes"] == 2
 
 
 def test_similarity_pearson_stream(gds: GraphDataScience) -> None:
@@ -74,7 +74,7 @@ def test_similarity_pearson_stream(gds: GraphDataScience) -> None:
     node2 = {"item": 2, "weights": [13.37, 42]}
 
     result = gds.alpha.similarity.pearson.stream(data=[node1, node2])
-    assert result[0]["similarity"] == pytest.approx(-1.0, 0.01)
+    assert result["similarity"] == pytest.approx(-1.0, 0.01)
 
 
 def test_similarity_euclideanDistance_write(gds: GraphDataScience) -> None:
@@ -84,7 +84,7 @@ def test_similarity_euclideanDistance_write(gds: GraphDataScience) -> None:
     node2 = {"item": node_id2, "weights": [13.37, 42]}
 
     result = gds.alpha.similarity.euclidean.write(data=[node1, node2])
-    assert result[0]["nodes"] == 2
+    assert result["nodes"] == 2
 
 
 def test_similarity_ann_stream(gds: GraphDataScience) -> None:
@@ -92,4 +92,4 @@ def test_similarity_ann_stream(gds: GraphDataScience) -> None:
     node2 = {"item": 2, "weights": [13.37, 42]}
 
     result = gds.alpha.ml.ann.stream(algorithm="euclidean", data=[node1, node2])
-    assert result[0]["similarity"] == pytest.approx(1639.353, 0.01)
+    assert result["similarity"] == pytest.approx(1639.353, 0.01)

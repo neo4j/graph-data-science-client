@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
-SingleRow = Dict[str, Any]
-QueryResult = List[SingleRow]
+Row = Dict[str, Any]
+QueryResult = List[Row]
 
 
 class QueryRunner(ABC):

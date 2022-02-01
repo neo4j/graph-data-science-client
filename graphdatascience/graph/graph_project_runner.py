@@ -1,7 +1,7 @@
 from typing import Any
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
-from ..query_runner.query_runner import QueryResult, QueryRunner
+from ..query_runner.query_runner import QueryRunner, Row
 from .graph_object import Graph
 
 
@@ -25,9 +25,7 @@ class GraphProjectRunner(IllegalAttrChecker):
 
         return Graph(graph_name, self._query_runner)
 
-    def estimate(
-        self, node_spec: Any, relationship_spec: Any, **config: Any
-    ) -> QueryResult:
+    def estimate(self, node_spec: Any, relationship_spec: Any, **config: Any) -> Row:
         self._namespace += ".estimate"
         result = self._query_runner.run_query(
             f"CALL {self._namespace}($node_spec, $relationship_spec, $config)",
@@ -38,7 +36,7 @@ class GraphProjectRunner(IllegalAttrChecker):
             },
         )
 
-        return result
+        return result[0]
 
     @property
     def cypher(self) -> "GraphProjectRunner":

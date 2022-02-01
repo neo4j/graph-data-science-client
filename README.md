@@ -61,7 +61,7 @@ Supposing that we have some graph data in our Neo4j database, we can [project th
 ```python
 # Optionally we can estimate memory of the operation first
 res = gds.graph.project.estimate("*", "*")
-assert res[0]["requiredMemory"] < 1e12
+assert res["requiredMemory"] < 1e12
 
 G = gds.graph.project("graph", "*", "*")
 ```
@@ -204,7 +204,7 @@ res = gds.beta.model.list()
 assert len(res) == 1  # Exactly one model is loaded
 
 res = gds.beta.model.drop(model)
-assert res[0]["modelInfo"]["modelName"] == model.name()
+assert res["modelInfo"]["modelName"] == model.name()
 ```
 
 Further, there's a new call named `gds.model.get` (`graphdatascience` only) which takes a model name as input and returns a model object if a model of that name exists in the user's model catalog.
