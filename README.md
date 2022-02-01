@@ -86,9 +86,10 @@ assert res["nodePropertiesWritten"] == G.node_count()
 
 These calls take one positional argument and a number of keyword arguments depending on the algorithm.
 The first (positional) argument is a `Graph`, and the keyword arguments map directly to the algorithm's [configuration map](https://neo4j.com/docs/graph-data-science/2.0-preview/common-usage/running-algos/#algorithms-syntax-configuration-parameters).
-The calls return a list of dictionaries (with contents depending on the algorithm of course) as is also the case when using the Neo4j Python driver directly.
 
 The other [algorithm execution modes](https://neo4j.com/docs/graph-data-science/2.0-preview/common-usage/running-algos/) - stats, stream and write - are also supported via analogous calls.
+The stream mode call returns a list of dictionaries (with contents depending on the algorithm of course) - which we can think of as a table - as is also the case when using the Neo4j Python driver directly.
+The mutate, stats and write mode calls however return a dictionary with metadata about the algorithm execution.
 
 
 #### Topological link prediction
