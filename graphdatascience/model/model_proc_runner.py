@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional
 
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
@@ -11,61 +11,48 @@ from ..query_runner.query_runner import QueryResult, QueryRunner, Row
 from .graphsage_model import GraphSageModel
 from .model import Model
 
-ModelId = Union[Model, str]
-
 
 class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
     def __init__(self, query_runner: QueryRunner, namespace: str):
         self._query_runner = query_runner
         self._namespace = namespace
 
-    @staticmethod
-    def _model_name(model_id: ModelId) -> str:
-        if isinstance(model_id, str):
-            return model_id
-        elif isinstance(model_id, Model):
-            return model_id.name()
-
-        raise ValueError(
-            f"Provided model identifier is of the wrong type: {type(model_id)}"
-        )
-
-    def store(self, model_id: ModelId, failIfUnsupportedType: bool = True) -> Row:
+    def store(self, model: Model, failIfUnsupportedType: bool = True) -> Row:
         self._namespace += ".store"
 
         query = f"CALL {self._namespace}($model_name, $fail_flag)"
         params = {
-            "model_name": ModelProcRunner._model_name(model_id),
+            "model_name": model.name(),
             "fail_flag": failIfUnsupportedType,
         }
 
         return self._query_runner.run_query(query, params)[0]
 
-    def list(self, model_id: Optional[ModelId] = None) -> QueryResult:
+    def list(self, model: Optional[Model] = None) -> QueryResult:
         self._namespace += ".list"
 
-        if model_id:
+        if model:
             query = f"CALL {self._namespace}($model_name)"
-            params = {"model_name": ModelProcRunner._model_name(model_id)}
+            params = {"model_name": model.name()}
         else:
             query = f"CALL {self._namespace}()"
             params = {}
 
         return self._query_runner.run_query(query, params)
 
-    def exists(self, model_id: ModelId) -> Row:
+    def exists(self, model_name: str) -> Row:
         self._namespace += ".exists"
 
         query = f"CALL {self._namespace}($model_name)"
-        params = {"model_name": ModelProcRunner._model_name(model_id)}
+        params = {"model_name": model_name}
 
         return self._query_runner.run_query(query, params)[0]
 
-    def publish(self, model_id: ModelId) -> Model:
+    def publish(self, model: Model) -> Model:
         self._namespace += ".publish"
 
         query = f"CALL {self._namespace}($model_name)"
-        params = {"model_name": ModelProcRunner._model_name(model_id)}
+        params = {"model_name": model.name()}
 
         result = self._query_runner.run_query(query, params)
 
@@ -73,11 +60,11 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
         model_type = result[0]["modelInfo"]["modelType"]
         return self._resolve_model(model_type, model_name)
 
-    def drop(self, model_id: ModelId) -> Row:
+    def drop(self, model: Model) -> Row:
         self._namespace += ".drop"
 
         query = f"CALL {self._namespace}($model_name)"
-        params = {"model_name": ModelProcRunner._model_name(model_id)}
+        params = {"model_name": model.name()}
 
         return self._query_runner.run_query(query, params)[0]
 
@@ -92,18 +79,20 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace = "gds.model"
         return self.get(result[0]["modelName"])
 
-    def delete(self, model_id: ModelId) -> Row:
+    def delete(self, model: Model) -> Row:
         self._namespace += ".delete"
 
         query = f"CALL {self._namespace}($model_name)"
-        params = {"model_name": ModelProcRunner._model_name(model_id)}
+        params = {"model_name": model.name()}
 
         return self._query_runner.run_query(query, params)[0]
 
     @client_only_endpoint("gds.model")
     def get(self, model_name: str) -> Model:
-        self._namespace = "gds.beta.model"
-        result = self.list(model_name)
+        query = "CALL gds.beta.model.list($model_name)"
+        params = {"model_name": model_name}
+        result = self._query_runner.run_query(query, params)
+
         if len(result) == 0:
             raise ValueError(f"No loaded model named '{model_name}' exists")
 
