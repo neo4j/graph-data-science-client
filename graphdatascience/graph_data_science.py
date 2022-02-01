@@ -12,11 +12,25 @@ GDS = TypeVar("GDS", bound="GraphDataScience")
 
 
 class GraphDataScience(DirectEndpoints, UncallableNamespace):
+    _AURA_DS_PROTOCOL = "neo4j+s"
+
     def __init__(
-        self, endpoint: Union[str, QueryRunner], auth: Any = None, **config: Any
+        self, endpoint: Union[str, QueryRunner], auth: Any = None, aura_ds: bool = False
     ):
         if isinstance(endpoint, str):
-            driver = GraphDatabase.driver(endpoint, auth=auth, **config)
+            self._config = {}
+            if aura_ds:
+                protocol = endpoint.split(":")[0]
+                if not protocol == self._AURA_DS_PROTOCOL:
+                    raise ValueError(
+                        f"AuraDS requires using the 'neo4j+s' protocol (provided protocol was '{protocol}')"
+                    )
+                self._config = {
+                    "max_connection_lifetime": 60 * 8,  # 8 minutes
+                    "keep_alive": True,
+                }
+
+            driver = GraphDatabase.driver(endpoint, auth=auth, **self._config)
             self._query_runner = self.create_neo4j_query_runner(driver)
         else:
             self._query_runner = endpoint
@@ -31,6 +45,9 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def run_cypher(self, query: str, params: Dict[str, Any] = {}) -> QueryResult:
         return self._query_runner.run_query(query, params)
+
+    def driver_config(self) -> Dict[str, Any]:
+        return self._config
 
     @classmethod
     def from_neo4j_driver(cls: Type[GDS], driver: Driver) -> "GraphDataScience":
