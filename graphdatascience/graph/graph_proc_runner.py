@@ -22,6 +22,11 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         return GraphProjectRunner(self._query_runner, self._namespace)
 
     @property
+    def create(self) -> GraphProjectRunner:
+        self._namespace += ".create"
+        return GraphProjectRunner(self._query_runner, self._namespace)
+
+    @property
     def export(self) -> GraphExportRunner:
         self._namespace += ".export"
         return GraphExportRunner(self._query_runner, self._namespace)
