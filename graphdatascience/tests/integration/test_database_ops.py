@@ -1,3 +1,4 @@
+import pytest
 from neo4j import DEFAULT_DATABASE, Driver
 
 from graphdatascience.graph_data_science import GraphDataScience
@@ -33,6 +34,38 @@ def test_from_neo4j_driver(neo4j_driver: Driver) -> None:
 def test_from_neo4j_credentials() -> None:
     gds = GraphDataScience(URI, auth=AUTH)
     assert len(gds.list()) > 10
+
+
+def test_aurads_rejects_bolt() -> None:
+    with pytest.raises(
+        ValueError,
+        match=r"AuraDS requires using the 'neo4j\+s' protocol \(provided protocol was 'bolt'\)",
+    ):
+        GraphDataScience("bolt://localhost:7687", auth=AUTH, aura_ds=True)
+
+
+def test_aurads_rejects_neo4j() -> None:
+    with pytest.raises(
+        ValueError,
+        match=r"AuraDS requires using the 'neo4j\+s' protocol \(provided protocol was 'neo4j'\)",
+    ):
+        GraphDataScience("neo4j://localhost:7687", auth=AUTH, aura_ds=True)
+
+
+def test_aurads_rejects_neo4j_ssc() -> None:
+    with pytest.raises(
+        ValueError,
+        match=r"AuraDS requires using the 'neo4j\+s' protocol \(provided protocol was 'neo4j\+ssc'\)",
+    ):
+        GraphDataScience("neo4j+ssc://localhost:7687", auth=AUTH, aura_ds=True)
+
+
+def test_aurads_accepts_neo4j_s() -> None:
+    gds = GraphDataScience("neo4j+s://localhost:7687", auth=AUTH, aura_ds=True)
+
+    assert gds.driver_config()["keep_alive"]
+    assert gds.driver_config()["max_connection_lifetime"] == 60 * 8
+    assert gds.driver_config()["max_connection_pool_size"] == 50
 
 
 def test_run_cypher(gds: GraphDataScience) -> None:

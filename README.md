@@ -54,6 +54,20 @@ If we don't want to use the default database of our DBMS, we can specify which o
 gds.set_database("my-db")
 ```
 
+
+#### AuraDS
+
+If you are connecting the client to an [AuraDS instance](https://neo4j.com/cloud/graph-data-science/), you can get recommended non-default configuration settings of the Python Driver applied automatically.
+To achieve this, set the constructor argument `aura_ds=True`:
+
+```python
+from graphdatascience import GraphDataScience
+
+# Configures the driver with AuraDS-recommended settings
+gds = GraphDataScience("neo4j+s://my-aura-ds.databases.neo4j.io:7687", auth=("neo4j", "my-password"), aura_ds=True)
+```
+
+
 ### Projecting a graph
 
 Supposing that we have some graph data in our Neo4j database, we can [project the graph into memory](https://neo4j.com/docs/graph-data-science/2.0-preview/graph-project/).
