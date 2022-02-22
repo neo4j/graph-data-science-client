@@ -31,6 +31,6 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 
 
 def test_nonexisting_algo(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
     with pytest.raises(Exception):
         gds.bogusAlgo.stream(G)

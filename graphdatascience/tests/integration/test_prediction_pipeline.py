@@ -28,7 +28,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (c)-[:REL]->(b)
         """
     )
-    G = gds.graph.project(
+    G, _ = gds.graph.project(
         "g", {"Node": {"properties": ["age"]}}, {"REL": {"orientation": "UNDIRECTED"}}
     )
 
