@@ -34,6 +34,7 @@ def test_from_neo4j_driver(neo4j_driver: Driver) -> None:
 def test_from_neo4j_credentials() -> None:
     gds = GraphDataScience(URI, auth=AUTH)
     assert len(gds.list()) > 10
+    assert gds.driver_config()["user_agent"] == "neo4j-gds-client"
 
 
 def test_aurads_rejects_bolt() -> None:
@@ -66,6 +67,7 @@ def test_aurads_accepts_neo4j_s() -> None:
     assert gds.driver_config()["keep_alive"]
     assert gds.driver_config()["max_connection_lifetime"] == 60 * 8
     assert gds.driver_config()["max_connection_pool_size"] == 50
+    assert gds.driver_config()["user_agent"] == "neo4j-gds-client"
 
 
 def test_run_cypher(gds: GraphDataScience) -> None:
