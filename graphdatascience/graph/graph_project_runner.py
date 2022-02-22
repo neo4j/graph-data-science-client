@@ -49,9 +49,9 @@ class GraphProjectRunner(IllegalAttrChecker):
         node_filter: str,
         relationship_filter: str,
         **config: Any,
-    ) -> Graph:
+    ) -> Tuple[Graph, Row]:
         self._namespace += ".subgraph"
-        self._query_runner.run_query(
+        result = self._query_runner.run_query(
             f"CALL {self._namespace}($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)",
             {
                 "graph_name": graph_name,
@@ -60,6 +60,6 @@ class GraphProjectRunner(IllegalAttrChecker):
                 "relationship_filter": relationship_filter,
                 "config": config,
             },
-        )
+        )[0]
 
-        return Graph(graph_name, self._query_runner)
+        return Graph(graph_name, self._query_runner), result

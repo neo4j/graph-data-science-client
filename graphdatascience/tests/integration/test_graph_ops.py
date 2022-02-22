@@ -75,12 +75,15 @@ def test_project_graph_cypher_estimate(gds: GraphDataScience) -> None:
 def test_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    subG = gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
+    subG, result = gds.beta.graph.project.subgraph(
+        "s", from_G, "n.x > 1", "*", concurrency=2
+    )
 
     assert subG.name() == "s"
+    assert result["graphName"] == "s"
 
-    result = gds.graph.list(subG)
-    assert result[0]["nodeCount"] == 2
+    result2 = gds.graph.list(subG)
+    assert result2[0]["nodeCount"] == 2
 
     runner.run_query(f"CALL gds.graph.drop('{subG.name()}')")
 
