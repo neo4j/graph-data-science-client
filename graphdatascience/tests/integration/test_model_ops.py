@@ -99,8 +99,9 @@ def test_model_load(
     runner.run_query(f"CALL gds.alpha.model.store('{gs_model.name()}')")
     runner.run_query(f"CALL gds.beta.model.drop('{gs_model.name()}')")
 
-    model = gds.alpha.model.load(gs_model.name())
+    model, result = gds.alpha.model.load(gs_model.name())
     assert isinstance(model, GraphSageModel)
+    assert result["loadMillis"] >= 0
 
     runner.run_query(f"CALL gds.beta.model.drop('{gs_model.name()}')")
     runner.run_query(f"CALL gds.alpha.model.delete('{model.name()}')")
