@@ -208,6 +208,7 @@ def test_graph_deleteRelationships(gds: GraphDataScience) -> None:
 
 
 def test_graph_generate(gds: GraphDataScience) -> None:
-    G = gds.beta.graph.generate(GRAPH_NAME, 12, 2)
+    G, result = gds.beta.graph.generate(GRAPH_NAME, 12, 2)
 
     assert G.node_count() == 12
+    assert result["generateMillis"] >= 0
