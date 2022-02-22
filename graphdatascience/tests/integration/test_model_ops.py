@@ -167,7 +167,7 @@ def test_model_get_lp_trained(gds: GraphDataScience, G: Graph) -> None:
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
     lp_pipe.addFeature("l2", nodeProperties=["rank"])
     lp_pipe.configureSplit(trainFraction=0.4, testFraction=0.2)
-    lp_trained_pipe = lp_pipe.train(G, modelName="m", concurrency=2)
+    lp_trained_pipe, _ = lp_pipe.train(G, modelName="m", concurrency=2)
 
     pipe = gds.model.get(lp_trained_pipe.name())
 
@@ -184,7 +184,7 @@ def test_model_get_nc_trained(gds: GraphDataScience, G: Graph) -> None:
     nc_pipe.addNodeProperty("degree", mutateProperty="rank")
     nc_pipe.selectFeatures("rank")
     nc_pipe.configureSplit(testFraction=0.3)
-    nc_trained_pipe = nc_pipe.train(
+    nc_trained_pipe, _ = nc_pipe.train(
         G, modelName="n", targetProperty="age", metrics=["ACCURACY"]
     )
 

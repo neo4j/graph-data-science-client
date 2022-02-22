@@ -84,8 +84,8 @@ def test_create_lp_pipeline(runner: Neo4jQueryRunner, gds: GraphDataScience) -> 
 
     query = "CALL gds.beta.model.exists($name)"
     params = {"name": pipe.name()}
-    result = runner.run_query(query, params)
-    assert result[0]["exists"]
+    result2 = runner.run_query(query, params)
+    assert result2[0]["exists"]
 
     query = "CALL gds.beta.model.drop($name)"
     params = {"name": pipe.name()}
@@ -158,8 +158,9 @@ def test_train_lp_pipeline(
     lp_pipe.addFeature("l2", nodeProperties=["rank"])
     lp_pipe.configureSplit(trainFraction=0.2, testFraction=0.2)
 
-    lp_trained_pipe = lp_pipe.train(G, modelName="m", concurrency=2)
+    lp_trained_pipe, result = lp_pipe.train(G, modelName="m", concurrency=2)
     assert lp_trained_pipe.name() == "m"
+    assert result["configuration"]["modelName"] == "m"
 
     query = "CALL gds.beta.model.drop($name)"
     params = {"name": "m"}

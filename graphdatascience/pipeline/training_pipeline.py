@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 from graphdatascience.model.trained_model import TrainedModel
 
 from ..graph.graph_object import Graph
 from ..model.model import Model
-from ..query_runner.query_runner import QueryRunner
+from ..query_runner.query_runner import QueryRunner, Row
 
 
 class TrainingPipeline(Model, ABC):
@@ -38,8 +38,7 @@ class TrainingPipeline(Model, ABC):
         }
         self._query_runner.run_query(query, params)
 
-    # TODO: do we want to log the train result or return Pair(Result, Model)
-    def train(self, G: Graph, **config: Any) -> TrainedModel:
+    def train(self, G: Graph, **config: Any) -> Tuple[TrainedModel, Row]:
         query = f"{self._query_prefix()}train($graph_name, $config)"
         config["pipeline"] = self.name()
         params = {
@@ -47,9 +46,12 @@ class TrainingPipeline(Model, ABC):
             "config": config,
         }
 
-        self._query_runner.run_query(query, params)
+        result = self._query_runner.run_query(query, params)[0]
 
-        return self._create_trained_model(config["modelName"], self._query_runner)
+        return (
+            self._create_trained_model(config["modelName"], self._query_runner),
+            result,
+        )
 
     def configureSplit(self, **config: Any) -> None:
         query = f"{self._query_prefix()}configureSplit($pipeline_name, $config)"

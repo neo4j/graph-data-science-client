@@ -48,7 +48,7 @@ def lp_trained_pipe(
         pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.addFeature("l2", nodeProperties=["rank"])
         pipe.configureSplit(trainFraction=0.4, testFraction=0.2)
-        lp_trained_pipe = pipe.train(G, modelName="m", concurrency=2)
+        lp_trained_pipe, _ = pipe.train(G, modelName="m", concurrency=2)
     finally:
         query = "CALL gds.beta.model.drop($name)"
         params = {"name": "pipe"}
@@ -70,7 +70,7 @@ def nc_trained_pipe(
         pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.selectFeatures("rank")
         pipe.configureSplit(testFraction=0.3)
-        nc_trained_pipe = pipe.train(
+        nc_trained_pipe, _ = pipe.train(
             G, modelName="n", targetProperty="age", metrics=["ACCURACY"]
         )
     finally:
