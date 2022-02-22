@@ -11,18 +11,20 @@ PIPE_NAME = "pipe"
 
 @pytest.fixture
 def lp_pipe(gds: GraphDataScience) -> LPTrainingPipeline:
-    return gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
+    pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
+    return pipe
 
 
 @pytest.fixture
 def nc_pipe(gds: GraphDataScience) -> NCTrainingPipeline:
-    return gds.alpha.ml.pipeline.nodeClassification.create(PIPE_NAME)
+    pipe, _ = gds.alpha.ml.pipeline.nodeClassification.create(PIPE_NAME)
+    return pipe
 
 
 def test_create_lp_pipeline(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
-    lp_pipe = gds.alpha.ml.pipeline.linkPrediction.create("hello")
+    lp_pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create("hello")
     assert lp_pipe.name() == "hello"
 
     assert (

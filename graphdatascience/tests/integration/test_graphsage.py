@@ -40,8 +40,7 @@ def model(gds: GraphDataScience, G: Graph) -> Generator[GraphSageModel, None, No
         G, modelName="m", featureProperties=["x"], embeddingDimension=20
     )
 
-    # mypy bug
-    yield model  # type: ignore
+    yield model
 
     model.drop()
 

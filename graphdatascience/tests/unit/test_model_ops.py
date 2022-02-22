@@ -10,7 +10,8 @@ MODEL_NAME = "m"
 
 @pytest.fixture
 def model(gds: GraphDataScience) -> Model:
-    return gds.alpha.ml.pipeline.linkPrediction.create(MODEL_NAME)
+    pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create(MODEL_NAME)
+    return pipe
 
 
 def test_store_model(

@@ -18,7 +18,7 @@ PIPE_NAME = "pipe"
 def lp_pipe(
     runner: Neo4jQueryRunner, gds: GraphDataScience
 ) -> Generator[LPTrainingPipeline, None, None]:
-    pipe = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
+    pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
 
     yield pipe
 
@@ -29,7 +29,7 @@ def lp_pipe(
 
 @pytest.fixture
 def gs_model(gds: GraphDataScience, G: Graph) -> Generator[GraphSageModel, None, None]:
-    model = gds.beta.graphSage.train(G, modelName="m", featureProperties=["age"])
+    model, _ = gds.beta.graphSage.train(G, modelName="m", featureProperties=["age"])
 
     yield model
 
@@ -78,7 +78,7 @@ def test_model_exists(gds: GraphDataScience) -> None:
 
 @pytest.mark.enterprise
 def test_model_publish(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
-    pipe = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
+    pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
 
     assert not pipe.shared()
 
@@ -134,7 +134,7 @@ def test_model_delete(
 
 
 def test_model_drop(gds: GraphDataScience) -> None:
-    pipe = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
+    pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
     assert gds.beta.model.exists(pipe.name())["exists"]
 
     assert gds.beta.model.drop(pipe)["modelInfo"]["modelName"] == pipe.name()
@@ -151,7 +151,7 @@ def test_model_get_lp(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> Non
 
 
 def test_model_get_nc(gds: GraphDataScience) -> None:
-    nc_pipe = gds.alpha.ml.pipeline.nodeClassification.create(PIPE_NAME)
+    nc_pipe, _ = gds.alpha.ml.pipeline.nodeClassification.create(PIPE_NAME)
     pipe = gds.model.get(nc_pipe.name())
 
     assert pipe.name() == nc_pipe.name()
@@ -163,7 +163,7 @@ def test_model_get_nc(gds: GraphDataScience) -> None:
 
 
 def test_model_get_lp_trained(gds: GraphDataScience, G: Graph) -> None:
-    lp_pipe = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
+    lp_pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
     lp_pipe.addFeature("l2", nodeProperties=["rank"])
     lp_pipe.configureSplit(trainFraction=0.4, testFraction=0.2)
@@ -180,7 +180,7 @@ def test_model_get_lp_trained(gds: GraphDataScience, G: Graph) -> None:
 
 
 def test_model_get_nc_trained(gds: GraphDataScience, G: Graph) -> None:
-    nc_pipe = gds.alpha.ml.pipeline.nodeClassification.create(PIPE_NAME)
+    nc_pipe, _ = gds.alpha.ml.pipeline.nodeClassification.create(PIPE_NAME)
     nc_pipe.addNodeProperty("degree", mutateProperty="rank")
     nc_pipe.selectFeatures("rank")
     nc_pipe.configureSplit(testFraction=0.3)
