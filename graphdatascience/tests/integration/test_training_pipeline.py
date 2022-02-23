@@ -95,9 +95,10 @@ def test_create_lp_pipeline(runner: Neo4jQueryRunner, gds: GraphDataScience) -> 
 def test_add_node_property_lp_pipeline(
     runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
 ) -> None:
-    lp_pipe.addNodeProperty(
+    result = lp_pipe.addNodeProperty(
         "pageRank", mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
     )
+    assert len(result["nodePropertySteps"]) == 1
 
     query = "CALL gds.beta.model.list($name)"
     params = {"name": lp_pipe.name()}

@@ -19,14 +19,14 @@ class TrainingPipeline(Model, ABC):
     ) -> TrainedModel:
         pass
 
-    def addNodeProperty(self, procedure_name: str, **config: Any) -> None:
+    def addNodeProperty(self, procedure_name: str, **config: Any) -> Row:
         query = f"{self._query_prefix()}addNodeProperty($pipeline_name, $procedure_name, $config)"
         params = {
             "pipeline_name": self.name(),
             "procedure_name": procedure_name,
             "config": config,
         }
-        self._query_runner.run_query(query, params)
+        return self._query_runner.run_query(query, params)[0]
 
     def configureParams(self, parameter_space: List[Dict[str, Any]]) -> None:
         query = (
