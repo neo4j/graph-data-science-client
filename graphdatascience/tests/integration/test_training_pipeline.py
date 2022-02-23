@@ -210,7 +210,8 @@ def test_select_features_nc_pipeline(
 ) -> None:
     nc_pipe.addNodeProperty("degree", mutateProperty="rank")
 
-    nc_pipe.selectFeatures("rank")
+    result = nc_pipe.selectFeatures("rank")
+    assert result["featureProperties"][0] == "rank"
 
     query = "CALL gds.beta.model.list($name)"
     params = {"name": nc_pipe.name()}
