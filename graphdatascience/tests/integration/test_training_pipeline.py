@@ -114,7 +114,8 @@ def test_add_feature_lp_pipeline(
 ) -> None:
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
 
-    lp_pipe.addFeature("l2", nodeProperties=["degree"])
+    result = lp_pipe.addFeature("l2", nodeProperties=["degree"])
+    assert result["featureSteps"][0]["name"] == "L2"
 
     query = "CALL gds.beta.model.list($name)"
     params = {"name": lp_pipe.name()}
