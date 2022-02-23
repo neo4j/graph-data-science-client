@@ -53,10 +53,11 @@ class TrainingPipeline(Model, ABC):
             result,
         )
 
-    def configureSplit(self, **config: Any) -> None:
+    def configureSplit(self, **config: Any) -> Row:
         query = f"{self._query_prefix()}configureSplit($pipeline_name, $config)"
         params = {"pipeline_name": self.name(), "config": config}
-        self._query_runner.run_query(query, params)
+
+        return self._query_runner.run_query(query, params)[0]
 
     def node_property_steps(self) -> List[Dict[str, Any]]:
         return self._list_info()["modelInfo"]["featurePipeline"]["nodePropertySteps"]  # type: ignore

@@ -128,7 +128,8 @@ def test_add_feature_lp_pipeline(
 def test_configure_split_lp_pipeline(
     runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
 ) -> None:
-    lp_pipe.configureSplit(trainFraction=0.42)
+    result = lp_pipe.configureSplit(trainFraction=0.42)
+    assert result["splitConfig"]["trainFraction"] == 0.42
 
     query = "CALL gds.beta.model.list($name)"
     params = {"name": lp_pipe.name()}
