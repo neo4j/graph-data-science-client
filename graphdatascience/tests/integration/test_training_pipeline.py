@@ -140,7 +140,8 @@ def test_configure_split_lp_pipeline(
 def test_configure_params_lp_pipeline(
     runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
 ) -> None:
-    lp_pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
+    result = lp_pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
+    assert len(result["parameterSpace"]) == 2
 
     query = "CALL gds.beta.model.list($name)"
     params = {"name": lp_pipe.name()}
