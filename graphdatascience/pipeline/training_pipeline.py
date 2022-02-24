@@ -19,16 +19,16 @@ class TrainingPipeline(Model, ABC):
     ) -> TrainedModel:
         pass
 
-    def addNodeProperty(self, procedure_name: str, **config: Any) -> None:
+    def addNodeProperty(self, procedure_name: str, **config: Any) -> Row:
         query = f"{self._query_prefix()}addNodeProperty($pipeline_name, $procedure_name, $config)"
         params = {
             "pipeline_name": self.name(),
             "procedure_name": procedure_name,
             "config": config,
         }
-        self._query_runner.run_query(query, params)
+        return self._query_runner.run_query(query, params)[0]
 
-    def configureParams(self, parameter_space: List[Dict[str, Any]]) -> None:
+    def configureParams(self, parameter_space: List[Dict[str, Any]]) -> Row:
         query = (
             f"{self._query_prefix()}configureParams($pipeline_name, $parameter_space)"
         )
@@ -36,7 +36,7 @@ class TrainingPipeline(Model, ABC):
             "pipeline_name": self.name(),
             "parameter_space": parameter_space,
         }
-        self._query_runner.run_query(query, params)
+        return self._query_runner.run_query(query, params)[0]
 
     def train(self, G: Graph, **config: Any) -> Tuple[TrainedModel, Row]:
         query = f"{self._query_prefix()}train($graph_name, $config)"
@@ -53,10 +53,11 @@ class TrainingPipeline(Model, ABC):
             result,
         )
 
-    def configureSplit(self, **config: Any) -> None:
+    def configureSplit(self, **config: Any) -> Row:
         query = f"{self._query_prefix()}configureSplit($pipeline_name, $config)"
         params = {"pipeline_name": self.name(), "config": config}
-        self._query_runner.run_query(query, params)
+
+        return self._query_runner.run_query(query, params)[0]
 
     def node_property_steps(self) -> List[Dict[str, Any]]:
         return self._list_info()["modelInfo"]["featurePipeline"]["nodePropertySteps"]  # type: ignore

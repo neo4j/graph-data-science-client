@@ -95,9 +95,10 @@ def test_create_lp_pipeline(runner: Neo4jQueryRunner, gds: GraphDataScience) -> 
 def test_add_node_property_lp_pipeline(
     runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
 ) -> None:
-    lp_pipe.addNodeProperty(
+    result = lp_pipe.addNodeProperty(
         "pageRank", mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
     )
+    assert len(result["nodePropertySteps"]) == 1
 
     query = "CALL gds.beta.model.list($name)"
     params = {"name": lp_pipe.name()}
@@ -113,7 +114,8 @@ def test_add_feature_lp_pipeline(
 ) -> None:
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
 
-    lp_pipe.addFeature("l2", nodeProperties=["degree"])
+    result = lp_pipe.addFeature("l2", nodeProperties=["degree"])
+    assert result["featureSteps"][0]["name"] == "L2"
 
     query = "CALL gds.beta.model.list($name)"
     params = {"name": lp_pipe.name()}
@@ -127,7 +129,8 @@ def test_add_feature_lp_pipeline(
 def test_configure_split_lp_pipeline(
     runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
 ) -> None:
-    lp_pipe.configureSplit(trainFraction=0.42)
+    result = lp_pipe.configureSplit(trainFraction=0.42)
+    assert result["splitConfig"]["trainFraction"] == 0.42
 
     query = "CALL gds.beta.model.list($name)"
     params = {"name": lp_pipe.name()}
@@ -139,7 +142,8 @@ def test_configure_split_lp_pipeline(
 def test_configure_params_lp_pipeline(
     runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
 ) -> None:
-    lp_pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
+    result = lp_pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
+    assert len(result["parameterSpace"]) == 2
 
     query = "CALL gds.beta.model.list($name)"
     params = {"name": lp_pipe.name()}
@@ -206,7 +210,8 @@ def test_select_features_nc_pipeline(
 ) -> None:
     nc_pipe.addNodeProperty("degree", mutateProperty="rank")
 
-    nc_pipe.selectFeatures("rank")
+    result = nc_pipe.selectFeatures("rank")
+    assert result["featureProperties"][0] == "rank"
 
     query = "CALL gds.beta.model.list($name)"
     params = {"name": nc_pipe.name()}
