@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
@@ -68,16 +68,16 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params)[0]
 
-    def load(self, model_name: str) -> Model:
+    def load(self, model_name: str) -> Tuple[Model, Row]:
         self._namespace += ".load"
 
         query = f"CALL {self._namespace}($model_name)"
         params = {"model_name": model_name}
 
-        result = self._query_runner.run_query(query, params)
+        result = self._query_runner.run_query(query, params)[0]
 
         self._namespace = "gds.model"
-        return self.get(result[0]["modelName"])
+        return self.get(result["modelName"]), result
 
     def delete(self, model: Model) -> Row:
         self._namespace += ".delete"

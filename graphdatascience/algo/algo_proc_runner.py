@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..graph.graph_object import Graph
@@ -37,7 +37,8 @@ class StandardModeRunner(AlgoProcRunner):
 
 
 class GraphSageRunner(AlgoProcRunner):
-    def __call__(self, G: Graph, **config: Any) -> GraphSageModel:
-        model_name = self._run_procedure(G, config)[0]["modelInfo"]["modelName"]
+    def __call__(self, G: Graph, **config: Any) -> Tuple[GraphSageModel, Row]:
+        result = self._run_procedure(G, config)[0]
+        model_name = result["modelInfo"]["modelName"]
 
-        return GraphSageModel(model_name, self._query_runner)
+        return GraphSageModel(model_name, self._query_runner), result

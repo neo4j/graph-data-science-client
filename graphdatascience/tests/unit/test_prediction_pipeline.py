@@ -18,14 +18,16 @@ def G(gds: GraphDataScience) -> Graph:
 
 @pytest.fixture
 def lp_trained_pipe(gds: GraphDataScience, G: Graph) -> TrainedModel:
-    pipe = gds.alpha.ml.pipeline.linkPrediction.create("pipe")
-    return pipe.train(G, modelName="m", concurrency=2)
+    pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create("pipe")
+    trainedPipe, _ = pipe.train(G, modelName="m", concurrency=2)
+    return trainedPipe
 
 
 @pytest.fixture
 def nc_trained_pipe(gds: GraphDataScience, G: Graph) -> TrainedModel:
-    pipe = gds.alpha.ml.pipeline.nodeClassification.create("pipe")
-    return pipe.train(G, modelName="m", concurrency=2)
+    pipe, _ = gds.alpha.ml.pipeline.nodeClassification.create("pipe")
+    trainedPipe, _ = pipe.train(G, modelName="m", concurrency=2)
+    return trainedPipe
 
 
 def test_predict_stream_lp_trained_pipeline(

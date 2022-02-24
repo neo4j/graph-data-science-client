@@ -36,7 +36,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
 @pytest.fixture
 def model(gds: GraphDataScience, G: Graph) -> Generator[GraphSageModel, None, None]:
-    model = gds.beta.graphSage.train(
+    model, _ = gds.beta.graphSage.train(
         G, modelName="m", featureProperties=["x"], embeddingDimension=20
     )
 
