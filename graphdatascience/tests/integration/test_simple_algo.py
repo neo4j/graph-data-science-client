@@ -31,7 +31,7 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 
 
 def test_pageRank_mutate(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.pageRank.mutate(
         G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
@@ -49,7 +49,7 @@ def test_pageRank_mutate(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Non
 
 
 def test_pageRank_mutate_estimate(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.pageRank.mutate.estimate(
         G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
@@ -59,7 +59,7 @@ def test_pageRank_mutate_estimate(gds: GraphDataScience) -> None:
 
 
 def test_wcc_stats(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.wcc.stats(G)
 
@@ -67,7 +67,7 @@ def test_wcc_stats(gds: GraphDataScience) -> None:
 
 
 def test_wcc_stats_estimate(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.wcc.stats.estimate(G)
 
@@ -75,7 +75,7 @@ def test_wcc_stats_estimate(gds: GraphDataScience) -> None:
 
 
 def test_nodeSimilarity_stream(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.nodeSimilarity.stream(G, similarityCutoff=0)
 
@@ -84,7 +84,7 @@ def test_nodeSimilarity_stream(gds: GraphDataScience) -> None:
 
 
 def test_nodeSimilarity_stream_estimate(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.nodeSimilarity.stream.estimate(G, similarityCutoff=0)
 
@@ -92,7 +92,7 @@ def test_nodeSimilarity_stream_estimate(gds: GraphDataScience) -> None:
 
 
 def test_fastRP_write(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.fastRP.write(
         G, writeProperty="embedding", embeddingDimension=4, randomSeed=42
@@ -112,7 +112,7 @@ def test_fastRP_write(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
 
 
 def test_fastRP_write_estimate(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.fastRP.write.estimate(
         G, writeProperty="embedding", embeddingDimension=4, randomSeed=42

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Tuple
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..query_runner.query_runner import QueryRunner, Row
@@ -12,8 +12,8 @@ class GraphProjectRunner(IllegalAttrChecker):
 
     def __call__(
         self, graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any
-    ) -> Graph:
-        self._query_runner.run_query(
+    ) -> Tuple[Graph, Row]:
+        result = self._query_runner.run_query(
             f"CALL {self._namespace}($graph_name, $node_spec, $relationship_spec, $config)",
             {
                 "graph_name": graph_name,
@@ -21,9 +21,9 @@ class GraphProjectRunner(IllegalAttrChecker):
                 "relationship_spec": relationship_spec,
                 "config": config,
             },
-        )
+        )[0]
 
-        return Graph(graph_name, self._query_runner)
+        return Graph(graph_name, self._query_runner), result
 
     def estimate(self, node_spec: Any, relationship_spec: Any, **config: Any) -> Row:
         self._namespace += ".estimate"
@@ -49,9 +49,9 @@ class GraphProjectRunner(IllegalAttrChecker):
         node_filter: str,
         relationship_filter: str,
         **config: Any,
-    ) -> Graph:
+    ) -> Tuple[Graph, Row]:
         self._namespace += ".subgraph"
-        self._query_runner.run_query(
+        result = self._query_runner.run_query(
             f"CALL {self._namespace}($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)",
             {
                 "graph_name": graph_name,
@@ -60,6 +60,6 @@ class GraphProjectRunner(IllegalAttrChecker):
                 "relationship_filter": relationship_filter,
                 "config": config,
             },
-        )
+        )[0]
 
-        return Graph(graph_name, self._query_runner)
+        return Graph(graph_name, self._query_runner), result

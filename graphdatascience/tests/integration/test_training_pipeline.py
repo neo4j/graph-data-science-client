@@ -43,7 +43,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (c)-[:REL]->(g)
         """
     )
-    G = gds.graph.project("g", "*", "*")
+    G, _ = gds.graph.project("g", "*", "*")
 
     yield G
 

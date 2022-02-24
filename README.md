@@ -77,7 +77,8 @@ Supposing that we have some graph data in our Neo4j database, we can [project th
 res = gds.graph.project.estimate("*", "*")
 assert res["requiredMemory"] < 1e12
 
-G = gds.graph.project("graph", "*", "*")
+G, res = gds.graph.project("graph", "*", "*")
+assert res["projectMillis"] >= 0
 ```
 
 The `G` that is returned here is a `Graph` which on the client side represents the projection on the server side.

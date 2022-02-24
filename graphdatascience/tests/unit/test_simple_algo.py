@@ -9,7 +9,8 @@ GRAPH_NAME = "g"
 
 @pytest.fixture(scope="module")
 def G(gds: GraphDataScience) -> Graph:
-    return gds.graph.project(GRAPH_NAME, "Node", "REL")
+    G_, _ = gds.graph.project(GRAPH_NAME, "Node", "REL")
+    return G_
 
 
 def test_simple_mutate(

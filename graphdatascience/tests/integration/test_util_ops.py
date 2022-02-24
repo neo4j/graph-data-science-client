@@ -29,7 +29,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (e)-[:ROAD {cost: 40}]->(f)
         """
     )
-    G = gds.graph.project(
+    G, _ = gds.graph.project(
         "g",
         {"Location": {"properties": "population"}},
         {"ROAD": {"properties": "cost"}},

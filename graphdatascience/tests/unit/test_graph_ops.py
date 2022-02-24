@@ -6,7 +6,7 @@ from .conftest import CollectingQueryRunner
 def test_project_graph_native(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
-    G = gds.graph.project("g", "A", "R", readConcurrency=2)
+    G, _ = gds.graph.project("g", "A", "R", readConcurrency=2)
     assert G.name() == "g"
 
     assert (
@@ -40,7 +40,7 @@ def test_project_graph_native_estimate(
 def test_project_graph_cypher(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
-    G = gds.graph.project.cypher(
+    G, _ = gds.graph.project.cypher(
         "g", "RETURN 0 as id", "RETURN 0 as source, 0 as target", readConcurrency=2
     )
     assert G.name() == "g"
@@ -76,7 +76,7 @@ def test_project_graph_cypher_estimate(
 
 
 def test_project_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    from_G = gds.graph.project("g", "*", "*")
+    from_G, _ = gds.graph.project("g", "*", "*")
     gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
 
     assert (
@@ -99,7 +99,7 @@ def test_graph_list(runner: CollectingQueryRunner, gds: GraphDataScience) -> Non
     assert runner.last_query() == "CALL gds.graph.list()"
     assert runner.last_params() == {}
 
-    G = gds.graph.project("g", "A", "R")
+    G, _ = gds.graph.project("g", "A", "R")
 
     gds.graph.list(G)
 
@@ -115,7 +115,7 @@ def test_graph_exists(runner: CollectingQueryRunner, gds: GraphDataScience) -> N
 
 
 def test_graph_export(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    G = gds.graph.project("g", "*", "*")
+    G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.export(G, dbName="db", batchSize=10)
     assert runner.last_query() == "CALL gds.graph.export($graph_name, $config)"
@@ -126,7 +126,7 @@ def test_graph_export(runner: CollectingQueryRunner, gds: GraphDataScience) -> N
 
 
 def test_graph_export_csv(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    G = gds.graph.project("g", "*", "*")
+    G, _ = gds.graph.project("g", "*", "*")
 
     gds.beta.graph.export.csv(G, exportName="fileName")
     assert runner.last_query() == "CALL gds.beta.graph.export.csv($graph_name, $config)"
@@ -139,7 +139,7 @@ def test_graph_export_csv(runner: CollectingQueryRunner, gds: GraphDataScience) 
 def test_graph_streamNodeProperty(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
-    G = gds.graph.project("g", "*", "*")
+    G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.streamNodeProperty(G, "dummyProp", concurrency=2)
     assert (
@@ -169,7 +169,7 @@ def test_graph_streamNodeProperty(
 def test_graph_streamNodeProperties(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
-    G = gds.graph.project("g", "*", "*")
+    G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.streamNodeProperties(G, ["dummyProp"], concurrency=2)
     assert (
@@ -199,7 +199,7 @@ def test_graph_streamNodeProperties(
 def test_graph_streamRelationshipProperty(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
-    G = gds.graph.project("g", "*", "*")
+    G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.streamRelationshipProperty(G, "dummyProp", concurrency=2)
     assert (
@@ -229,7 +229,7 @@ def test_graph_streamRelationshipProperty(
 def test_graph_streamRelationshipProperties(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
-    G = gds.graph.project("g", "*", "*")
+    G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.streamRelationshipProperties(G, ["dummyProp"], concurrency=2)
     assert (
@@ -259,7 +259,7 @@ def test_graph_streamRelationshipProperties(
 def test_graph_writeNodeProperties(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
-    G = gds.graph.project("g", "*", "*")
+    G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.writeNodeProperties(G, ["dummyProp"], concurrency=2)
     assert (
@@ -289,7 +289,7 @@ def test_graph_writeNodeProperties(
 def test_graph_writeRelationship(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
-    G = gds.graph.project("g", "*", "*")
+    G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.writeRelationship(G, "dummyType", "dummyProp", concurrency=2)
     assert (
@@ -319,7 +319,7 @@ def test_graph_writeRelationship(
 def test_graph_removeNodeProperties(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
-    G = gds.graph.project("g", "*", "*")
+    G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.removeNodeProperties(G, ["dummyProp"], concurrency=2)
     assert (
@@ -349,7 +349,7 @@ def test_graph_removeNodeProperties(
 def test_graph_deleteRelationships(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
-    G = gds.graph.project("g", "*", "*")
+    G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.deleteRelationships(G, "REL_A")
     assert (

@@ -30,7 +30,7 @@ def setup_module(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 
 @pytest.fixture
 def G(gds: GraphDataScience) -> Generator[Graph, None, None]:
-    G = gds.graph.project(
+    G, _ = gds.graph.project(
         GRAPH_NAME, {"Node": {"properties": "x"}}, {"REL": {"properties": ["y", "z"]}}
     )
     yield G

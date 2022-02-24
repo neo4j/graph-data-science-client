@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
@@ -201,7 +201,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     def generate(
         self, graph_name: str, node_count: int, average_degree: int, **config: Any
-    ) -> Graph:
+    ) -> Tuple[Graph, Row]:
         self._namespace += ".generate"
 
         query = f"CALL {self._namespace}($graph_name, $node_count, $average_degree, $config)"
@@ -212,6 +212,6 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             "config": config,
         }
 
-        self._query_runner.run_query(query, params)
+        result = self._query_runner.run_query(query, params)[0]
 
-        return Graph(graph_name, self._query_runner)
+        return Graph(graph_name, self._query_runner), result

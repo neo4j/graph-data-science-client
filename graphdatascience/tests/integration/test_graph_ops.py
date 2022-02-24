@@ -34,8 +34,9 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 
 
 def test_project_graph_native(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, result = gds.graph.project(GRAPH_NAME, "*", "*")
     assert G.name() == GRAPH_NAME
+    assert result["graphName"] == GRAPH_NAME
 
     result = gds.graph.exists(G.name())
     assert result["exists"]
@@ -52,8 +53,10 @@ def test_project_graph_cypher(gds: GraphDataScience) -> None:
     relationship_query = (
         "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
     )
-    G = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
+    G, result = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
+
     assert G.name() == GRAPH_NAME
+    assert result["graphName"] == GRAPH_NAME
 
     result = gds.graph.exists(G.name())
     assert result["exists"]
@@ -70,14 +73,17 @@ def test_project_graph_cypher_estimate(gds: GraphDataScience) -> None:
 
 
 def test_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
-    from_G = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+    from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    subG = gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
+    subG, result = gds.beta.graph.project.subgraph(
+        "s", from_G, "n.x > 1", "*", concurrency=2
+    )
 
     assert subG.name() == "s"
+    assert result["graphName"] == "s"
 
-    result = gds.graph.list(subG)
-    assert result[0]["nodeCount"] == 2
+    result2 = gds.graph.list(subG)
+    assert result2[0]["nodeCount"] == 2
 
     runner.run_query(f"CALL gds.graph.drop('{subG.name()}')")
 
@@ -86,7 +92,7 @@ def test_graph_list(gds: GraphDataScience) -> None:
     result = gds.graph.list()
     assert len(result) == 0
 
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
     result = gds.graph.list()
     assert len(result) == 1
 
@@ -95,7 +101,7 @@ def test_graph_list(gds: GraphDataScience) -> None:
 
 
 def test_graph_exists(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.graph.exists(G.name())
     assert result["exists"]
@@ -105,7 +111,7 @@ def test_graph_exists(gds: GraphDataScience) -> None:
 
 
 def test_graph_drop(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.graph.drop(G, True)
     assert result
@@ -116,7 +122,7 @@ def test_graph_drop(gds: GraphDataScience) -> None:
 
 
 def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     MY_DB_NAME = "test-database"
     result = gds.graph.export(G, dbName=MY_DB_NAME, batchSize=10000)
@@ -145,35 +151,35 @@ def test_graph_get(gds: GraphDataScience) -> None:
 
 
 def test_graph_streamNodeProperty(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     result = gds.graph.streamNodeProperty(G, "x", concurrency=2)
     assert {e["propertyValue"] for e in result} == {1, 2, 3}
 
 
 def test_graph_streamNodeProperties(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     result = gds.graph.streamNodeProperties(G, ["x"], concurrency=2)
     assert {e["propertyValue"] for e in result} == {1, 2, 3}
 
 
 def test_graph_streamRelationshipProperty(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
+    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 
     result = gds.graph.streamRelationshipProperty(G, "relX", concurrency=2)
     assert {e["propertyValue"] for e in result} == {4, 5, 6}
 
 
 def test_graph_streamRelationshipProperties(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
+    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 
     result = gds.graph.streamRelationshipProperties(G, ["relX"], concurrency=2)
     assert {e["propertyValue"] for e in result} == {4, 5, 6}
 
 
 def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     gds.pageRank.mutate(G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
 
@@ -182,7 +188,7 @@ def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
 
 
 def test_graph_writeRelationship(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     gds.nodeSimilarity.mutate(
         G, mutateRelationshipType="SIMILAR", mutateProperty="score", similarityCutoff=0
@@ -194,20 +200,21 @@ def test_graph_writeRelationship(gds: GraphDataScience) -> None:
 
 
 def test_graph_removeNodeProperties(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     result = gds.graph.removeNodeProperties(G, ["x"], concurrency=2)
     assert result["propertiesRemoved"] == 3
 
 
 def test_graph_deleteRelationships(gds: GraphDataScience) -> None:
-    G = gds.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
+    G, _ = gds.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
 
     result = gds.graph.deleteRelationships(G, "REL")
     assert result["deletedRelationships"] == 3
 
 
 def test_graph_generate(gds: GraphDataScience) -> None:
-    G = gds.beta.graph.generate(GRAPH_NAME, 12, 2)
+    G, result = gds.beta.graph.generate(GRAPH_NAME, 12, 2)
 
     assert G.node_count() == 12
+    assert result["generateMillis"] >= 0

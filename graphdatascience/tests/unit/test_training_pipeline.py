@@ -102,7 +102,7 @@ def test_configure_params_lp_pipeline(
 def test_train_lp_pipeline(
     runner: CollectingQueryRunner, gds: GraphDataScience, lp_pipe: LPTrainingPipeline
 ) -> None:
-    G = gds.graph.project("g", "*", "*")
+    G, _ = gds.graph.project("g", "*", "*")
 
     lp_pipe.train(G, modelName="m", concurrency=2)
 

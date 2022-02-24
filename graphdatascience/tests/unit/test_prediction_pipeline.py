@@ -13,7 +13,8 @@ PIPE_NAME = "pipe"
 
 @pytest.fixture(scope="module")
 def G(gds: GraphDataScience) -> Graph:
-    return gds.graph.project("g", "Node", "REL")
+    G_, _ = gds.graph.project("g", "Node", "REL")
+    return G_
 
 
 @pytest.fixture
