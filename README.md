@@ -184,8 +184,9 @@ Please see the GDS documentation for more on the pipelines' procedure APIs.
 Assuming we have a graph `G` with node property `x`, we can do the following:
 
 ```python
-model = gds.beta.graphSage.train(G, modelName="myModel", featureProperties=["x"])
+model, res = gds.beta.graphSage.train(G, modelName="myModel", featureProperties=["x"])
 assert len(model.metrics()["epochLosses"]) == model.metrics()["ranEpochs"] 
+assert res["trainMillis"] >= 0
 
 res = model.predict_stream(G)
 assert len(res) == G.node_count()
