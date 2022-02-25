@@ -6,6 +6,9 @@ with open("README.md", "r", encoding="utf-8") as f:
 with open("requirements/base.txt", "r", encoding="utf-8") as f:
     reqs = f.read().splitlines()
 
+with open("graphdatascience/version.py") as f:
+    version = f.readline().strip().split()[-1][1:-1]
+
 classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
@@ -26,7 +29,7 @@ project_urls = {
 
 setuptools.setup(
     name="graphdatascience",
-    version="0.1.0",
+    version=version,
     author="Neo4j",
     author_email="team-gds@neo4j.org",
     description="A Python client for the Neo4j Graph Data Science (GDS) library",

@@ -7,6 +7,7 @@ from .direct_endpoints import DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryResult, QueryRunner
+from .version import __version__
 
 GDS = TypeVar("GDS", bound="GraphDataScience")
 
@@ -18,20 +19,23 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         self, endpoint: Union[str, QueryRunner], auth: Any = None, aura_ds: bool = False
     ):
         if isinstance(endpoint, str):
-            self._config = {}
+            self._config: Dict[str, Any] = {
+                "user_agent": f"neo4j-graphdatascience-v{__version__}"
+            }
+
             if aura_ds:
                 protocol = endpoint.split(":")[0]
                 if not protocol == self._AURA_DS_PROTOCOL:
                     raise ValueError(
-                        f"AuraDS requires using the 'neo4j+s' protocol (provided protocol was '{protocol}')"
+                        f"AuraDS requires using the '{self._AURA_DS_PROTOCOL}' protocol ('{protocol}' was provided)"
                     )
-                self._config = {
-                    "max_connection_lifetime": 60 * 8,  # 8 minutes
-                    "keep_alive": True,
-                    "max_connection_pool_size": 50,
-                }
+
+                self._config["max_connection_lifetime"] = 60 * 8  # 8 minutes
+                self._config["keep_alive"] = True
+                self._config["max_connection_pool_size"] = 50
 
             driver = GraphDatabase.driver(endpoint, auth=auth, **self._config)
+
             self._query_runner = self.create_neo4j_query_runner(driver)
         else:
             self._query_runner = endpoint
