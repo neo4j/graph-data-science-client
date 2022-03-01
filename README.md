@@ -75,7 +75,7 @@ Supposing that we have some graph data in our Neo4j database, we can [project th
 ```python
 # Optionally we can estimate memory of the operation first
 res = gds.graph.project.estimate("*", "*")
-assert res["requiredMemory"] < 1e12
+assert res["bytesMax"] < 1e12
 
 G, res = gds.graph.project("graph", "*", "*")
 assert res["projectMillis"] >= 0
@@ -93,7 +93,7 @@ We can take a projected graph, represented to us by a `Graph` object named `G`, 
 ```python
 # Optionally we can estimate memory of the operation first (if the algo supports it)
 res = gds.pageRank.mutate.estimate(G, tolerance=0.5, mutateProperty="pagerank")
-assert res["requiredMemory"] < 1e12
+assert res["bytesMax"] < 1e12
 
 res = gds.pageRank.mutate(G, tolerance=0.5, mutateProperty="pagerank")
 assert res["nodePropertiesWritten"] == G.node_count()
