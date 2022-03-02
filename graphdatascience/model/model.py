@@ -21,8 +21,9 @@ class Model(ABC):
 
         return info[0]
 
-
-    def _estimate_predict(self, predict_mode: str,graph_name: str, config: Dict[str, Any]) -> Row:
+    def _estimate_predict(
+        self, predict_mode: str, graph_name: str, config: Dict[str, Any]
+    ) -> Row:
         query = f"{self._query_prefix()}{predict_mode}.estimate($graph_name, $config)"
         config["modelName"] = self.name()
         params = {"graph_name": graph_name, "config": config}
