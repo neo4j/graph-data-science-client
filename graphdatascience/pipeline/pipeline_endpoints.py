@@ -1,6 +1,5 @@
 from ..query_runner.query_runner import QueryRunner
-from .lp_pipeline_create_runner import LPPipelineCreateRunner
-from .nc_pipeline_create_runner import NCPipelineCreateRunner
+from .pipeline_proc_runner import PipelineProcRunner
 
 
 class PipelineEndpoints:
@@ -9,13 +8,5 @@ class PipelineEndpoints:
         self._namespace = namespace
 
     @property
-    def linkPrediction(self) -> LPPipelineCreateRunner:
-        return LPPipelineCreateRunner(
-            self._query_runner, f"{self._namespace}.linkPrediction"
-        )
-
-    @property
-    def nodeClassification(self) -> NCPipelineCreateRunner:
-        return NCPipelineCreateRunner(
-            self._query_runner, f"{self._namespace}.nodeClassification"
-        )
+    def pipeline(self) -> PipelineProcRunner:
+        return PipelineProcRunner(self._query_runner, f"{self._namespace}.pipeline")
