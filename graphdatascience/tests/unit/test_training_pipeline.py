@@ -96,6 +96,7 @@ def test_configure_params_lp_pipeline(
         "parameter_space": [{"tolerance": 0.01}, {"maxEpochs": 500}],
     }
 
+
 def test_train_estimate_lp_pipeline(
     runner: CollectingQueryRunner, gds: GraphDataScience, lp_pipe: LPTrainingPipeline
 ) -> None:

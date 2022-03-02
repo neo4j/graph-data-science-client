@@ -56,7 +56,6 @@ class TrainingPipeline(ABC):
             result,
         )
 
-    
     def train_estimate(self, G: Graph, **config: Any) -> Row:
         query = f"{self._query_prefix()}train.estimate($graph_name, $config)"
         config["pipeline"] = self.name()

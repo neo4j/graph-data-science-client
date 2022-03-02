@@ -62,7 +62,10 @@ def test_predict_mutate_lp_model(
         },
     }
 
-def test_estimate_predict_stream_nc_model(runner: CollectingQueryRunner, nc_model: NCModel, G: Graph) -> None: 
+
+def test_estimate_predict_stream_nc_model(
+    runner: CollectingQueryRunner, nc_model: NCModel, G: Graph
+) -> None:
     nc_model.predict_stream_estimate(G)
 
     assert (
@@ -88,7 +91,10 @@ def test_predict_stream_nc_model(
         "config": {"modelName": nc_model.name()},
     }
 
-def test_estimate_predict_write_nc_model(runner: CollectingQueryRunner, nc_model: NCModel, G: Graph) -> None: 
+
+def test_estimate_predict_write_nc_model(
+    runner: CollectingQueryRunner, nc_model: NCModel, G: Graph
+) -> None:
     nc_model.predict_write_estimate(G)
 
     assert (
@@ -99,6 +105,7 @@ def test_estimate_predict_write_nc_model(runner: CollectingQueryRunner, nc_model
         "graph_name": G.name(),
         "config": {"modelName": nc_model.name()},
     }
+
 
 def test_predict_mutate_nc_model(
     runner: CollectingQueryRunner, nc_model: NCModel, G: Graph
@@ -116,7 +123,10 @@ def test_predict_mutate_nc_model(
         },
     }
 
-def test_estimate_predict_mutate_nc_model(runner: CollectingQueryRunner, nc_model: NCModel, G: Graph) -> None: 
+
+def test_estimate_predict_mutate_nc_model(
+    runner: CollectingQueryRunner, nc_model: NCModel, G: Graph
+) -> None:
     nc_model.predict_mutate_estimate(G)
 
     assert (

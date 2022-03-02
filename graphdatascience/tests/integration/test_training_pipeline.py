@@ -170,6 +170,7 @@ def test_train_lp_pipeline(
     params = {"name": lp_model.name()}
     runner.run_query(query, params)
 
+
 def test_train_estimate_lp_pipeline(
     runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, G: Graph
 ) -> None:
