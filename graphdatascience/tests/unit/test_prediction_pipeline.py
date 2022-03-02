@@ -3,8 +3,8 @@ import pytest
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.model.link_prediction_model import LPModel
+from graphdatascience.model.model import Model
 from graphdatascience.model.node_classification_model import NCModel
-from graphdatascience.model.trained_model import TrainedModel
 
 from .conftest import CollectingQueryRunner
 
@@ -18,14 +18,14 @@ def G(gds: GraphDataScience) -> Graph:
 
 
 @pytest.fixture
-def lp_trained_pipe(gds: GraphDataScience, G: Graph) -> TrainedModel:
+def lp_trained_pipe(gds: GraphDataScience, G: Graph) -> Model:
     pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create("pipe")
     trainedPipe, _ = pipe.train(G, modelName="m", concurrency=2)
     return trainedPipe
 
 
 @pytest.fixture
-def nc_trained_pipe(gds: GraphDataScience, G: Graph) -> TrainedModel:
+def nc_trained_pipe(gds: GraphDataScience, G: Graph) -> Model:
     pipe, _ = gds.alpha.ml.pipeline.nodeClassification.create("pipe")
     trainedPipe, _ = pipe.train(G, modelName="m", concurrency=2)
     return trainedPipe

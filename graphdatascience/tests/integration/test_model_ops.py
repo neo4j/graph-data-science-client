@@ -6,8 +6,8 @@ from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.model.graphsage_model import GraphSageModel
 from graphdatascience.model.link_prediction_model import LPModel
+from graphdatascience.model.model import Model
 from graphdatascience.model.node_classification_model import NCModel
-from graphdatascience.model.trained_model import TrainedModel
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 PIPE_NAME = "pipe"
@@ -44,7 +44,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 @pytest.fixture(scope="module")
 def lp_model(
     runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
-) -> Generator[TrainedModel, None, None]:
+) -> Generator[Model, None, None]:
     pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create("pipe")
 
     try:
@@ -67,7 +67,7 @@ def lp_model(
 @pytest.fixture(scope="module")
 def nc_model(
     runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
-) -> Generator[TrainedModel, None, None]:
+) -> Generator[Model, None, None]:
     pipe, _ = gds.alpha.ml.pipeline.nodeClassification.create("pipe")
 
     try:

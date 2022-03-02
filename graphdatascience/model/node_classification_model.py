@@ -2,10 +2,10 @@ from typing import Any
 
 from ..graph.graph_object import Graph
 from ..query_runner.query_runner import Row
-from .trained_model import TrainedModel
+from .model import Model
 
 
-class NCModel(TrainedModel):
+class NCModel(Model):
     def _query_prefix(self) -> str:
         return "CALL gds.alpha.ml.pipeline.nodeClassification.predict."
 

@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Tuple
 
-from graphdatascience.model.trained_model import TrainedModel
-
 from ..graph.graph_object import Graph
+from ..model.model import Model
 from ..query_runner.query_runner import QueryRunner, Row
 
 
@@ -20,9 +19,7 @@ class TrainingPipeline(ABC):
         pass
 
     @abstractmethod
-    def _create_trained_model(
-        self, name: str, query_runner: QueryRunner
-    ) -> TrainedModel:
+    def _create_trained_model(self, name: str, query_runner: QueryRunner) -> Model:
         pass
 
     def addNodeProperty(self, procedure_name: str, **config: Any) -> Row:
@@ -44,7 +41,7 @@ class TrainingPipeline(ABC):
         }
         return self._query_runner.run_query(query, params)[0]
 
-    def train(self, G: Graph, **config: Any) -> Tuple[TrainedModel, Row]:
+    def train(self, G: Graph, **config: Any) -> Tuple[Model, Row]:
         query = f"{self._query_prefix()}train($graph_name, $config)"
         config["pipeline"] = self.name()
         params = {
