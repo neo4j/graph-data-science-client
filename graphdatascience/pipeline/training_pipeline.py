@@ -81,3 +81,21 @@ class TrainingPipeline(ABC):
             raise ValueError(f"There is no '{self.name()}' in the pipeline catalog")
 
         return info[0]
+
+    def type(self) -> str:
+        return self._list_info()["pipelineType"]  # type: ignore
+
+    def creation_time(self) -> Any:  # neo4j.time.DateTime not exported
+        return self._list_info()["creationTime"]
+
+    def exists(self) -> bool:
+        query = "CALL gds.beta.pipeline.exists($pipeline_name) YIELD exists"
+        params = {"pipeline_name": self._name}
+
+        return self._query_runner.run_query(query, params)[0]["exists"]  # type: ignore
+
+    def drop(self) -> None:
+        query = "CALL gds.beta.pipeline.drop($pipeline_name)"
+        params = {"pipeline_name": self._name}
+
+        self._query_runner.run_query(query, params)
