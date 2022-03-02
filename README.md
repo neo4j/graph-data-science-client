@@ -167,11 +167,11 @@ steps = pipe.feature_properties()
 assert len(steps) == 1
 assert steps[0]["feature"] == "rank"
 
-trained_pipe, res = pipe.train(G, modelName="myModel", targetProperty="myClass", metrics=["ACCURACY"])
-assert trained_pipe.metrics()["ACCURACY"]["test"] > 0
+model, res = pipe.train(G, modelName="myModel", targetProperty="myClass", metrics=["ACCURACY"])
+assert model.metrics()["ACCURACY"]["test"] > 0
 assert res["trainMillis"] >= 0
 
-res = trained_pipe.predict_stream(G)
+res = model.predict_stream(G)
 assert len(res) == G.node_count()
 ```
 
@@ -210,6 +210,23 @@ assert len(res) == G.node_count()
 
 Further, there's a new call named `gds.graph.get` (`graphdatascience` only) which takes a name as input and returns a `Graph` object if a graph projection of that name exists in the user's graph catalog.
 The idea is to have a way of creating `Graph`s for already projected graphs, without having to do a new projection.
+
+
+### Pipeline catalog utils
+
+All procedures from the [GDS Pipeline catalog](https://neo4j.com/docs/graph-data-science/2.0-preview/pipeline-catalog/) are supported with `graphdatascience`.
+Some examples are (where `pipe` is a machine learning training pipeline object):
+
+```python
+res = gds.beta.pipeline.list()
+assert len(res) == 1  # Exactly one pipeline is in the catalog
+
+res = gds.beta.pipeline.drop(pipe)
+assert res["pipelineName"] == pipe.name()
+```
+
+Further, there's a new call named `gds.pipeline.get` (`graphdatascience` only) which takes a pipeline name as input and returns a training pipeline object if a pipeline of that name exists in the user's pipeline catalog.
+The idea is to have a way of creating pipeline objects for already existing pipelines, without having to create them again.
 
 
 ### Model catalog utils
