@@ -1,12 +1,11 @@
 from typing import Any
 
-from graphdatascience.model.trained_model import TrainedModel
-
 from ..graph.graph_object import Graph
 from ..query_runner.query_runner import Row
+from .trained_model import TrainedModel
 
 
-class NCPredictionPipeline(TrainedModel):
+class NCModel(TrainedModel):
     def _query_prefix(self) -> str:
         return "CALL gds.alpha.ml.pipeline.nodeClassification.predict."
 

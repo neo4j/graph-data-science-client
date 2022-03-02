@@ -1,17 +1,17 @@
 import pytest
 
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.model.graphsage_model import GraphSageModel
 from graphdatascience.model.model import Model
 
 from .conftest import CollectingQueryRunner
 
-MODEL_NAME = "m"
+MODEL_NAME = "dummy"
 
 
 @pytest.fixture
-def model(gds: GraphDataScience) -> Model:
-    pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create(MODEL_NAME)
-    return pipe
+def model(runner: CollectingQueryRunner) -> Model:
+    return GraphSageModel(MODEL_NAME, runner)
 
 
 def test_store_model(

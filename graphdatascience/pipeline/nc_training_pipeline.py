@@ -1,8 +1,7 @@
 from typing import Any, Dict, List, Union
 
-from graphdatascience.pipeline.nc_prediction_pipeline import NCPredictionPipeline
-from graphdatascience.pipeline.training_pipeline import TrainingPipeline
-
+from ..model.node_classification_model import NCModel
+from ..pipeline.training_pipeline import TrainingPipeline
 from ..query_runner.query_runner import QueryRunner, Row
 
 
@@ -16,12 +15,10 @@ class NCTrainingPipeline(TrainingPipeline):
         return self._query_runner.run_query(query, params)[0]
 
     def feature_properties(self) -> List[Dict[str, Any]]:
-        return self._list_info()["modelInfo"]["featurePipeline"]["featureProperties"]  # type: ignore
+        return self._list_info()["pipelineInfo"]["featurePipeline"]["featureProperties"]  # type: ignore
 
     def _query_prefix(self) -> str:
         return "CALL gds.alpha.ml.pipeline.nodeClassification."
 
-    def _create_trained_model(
-        self, name: str, query_runner: QueryRunner
-    ) -> NCPredictionPipeline:
-        return NCPredictionPipeline(name, query_runner)
+    def _create_trained_model(self, name: str, query_runner: QueryRunner) -> NCModel:
+        return NCModel(name, query_runner)

@@ -2,9 +2,9 @@ import pytest
 
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.model.link_prediction_model import LPModel
+from graphdatascience.model.node_classification_model import NCModel
 from graphdatascience.model.trained_model import TrainedModel
-from graphdatascience.pipeline.lp_prediction_pipeline import LPPredictionPipeline
-from graphdatascience.pipeline.nc_prediction_pipeline import NCPredictionPipeline
 
 from .conftest import CollectingQueryRunner
 
@@ -32,7 +32,7 @@ def nc_trained_pipe(gds: GraphDataScience, G: Graph) -> TrainedModel:
 
 
 def test_predict_stream_lp_trained_pipeline(
-    runner: CollectingQueryRunner, lp_trained_pipe: LPPredictionPipeline, G: Graph
+    runner: CollectingQueryRunner, lp_trained_pipe: LPModel, G: Graph
 ) -> None:
     lp_trained_pipe.predict_stream(G, topN=2)
     assert (
@@ -46,7 +46,7 @@ def test_predict_stream_lp_trained_pipeline(
 
 
 def test_predict_mutate_lp_trained_pipeline(
-    runner: CollectingQueryRunner, lp_trained_pipe: LPPredictionPipeline, G: Graph
+    runner: CollectingQueryRunner, lp_trained_pipe: LPModel, G: Graph
 ) -> None:
     lp_trained_pipe.predict_mutate(G, topN=2, mutateRelationshipType="HELO")
     assert (
@@ -64,7 +64,7 @@ def test_predict_mutate_lp_trained_pipeline(
 
 
 def test_predict_stream_nc_trained_pipeline(
-    runner: CollectingQueryRunner, nc_trained_pipe: NCPredictionPipeline, G: Graph
+    runner: CollectingQueryRunner, nc_trained_pipe: NCModel, G: Graph
 ) -> None:
     nc_trained_pipe.predict_stream(G)
     assert (
@@ -78,7 +78,7 @@ def test_predict_stream_nc_trained_pipeline(
 
 
 def test_predict_mutate_nc_trained_pipeline(
-    runner: CollectingQueryRunner, nc_trained_pipe: NCPredictionPipeline, G: Graph
+    runner: CollectingQueryRunner, nc_trained_pipe: NCModel, G: Graph
 ) -> None:
     nc_trained_pipe.predict_mutate(G, mutateProperty="helo")
     assert (
@@ -95,7 +95,7 @@ def test_predict_mutate_nc_trained_pipeline(
 
 
 def test_predict_write_nc_trained_pipeline(
-    runner: CollectingQueryRunner, nc_trained_pipe: NCPredictionPipeline, G: Graph
+    runner: CollectingQueryRunner, nc_trained_pipe: NCModel, G: Graph
 ) -> None:
     nc_trained_pipe.predict_write(G, writeProperty="helo")
     assert (

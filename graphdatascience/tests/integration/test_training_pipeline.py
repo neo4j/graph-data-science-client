@@ -59,7 +59,7 @@ def lp_pipe(
 
     yield pipe
 
-    query = "CALL gds.beta.model.drop($name)"
+    query = "CALL gds.beta.pipeline.drop($name)"
     params = {"name": pipe.name()}
     runner.run_query(query, params)
 
@@ -72,7 +72,7 @@ def nc_pipe(
 
     yield pipe
 
-    query = "CALL gds.beta.model.drop($name)"
+    query = "CALL gds.beta.pipeline.drop($name)"
     params = {"name": pipe.name()}
     runner.run_query(query, params)
 
@@ -82,12 +82,12 @@ def test_create_lp_pipeline(runner: Neo4jQueryRunner, gds: GraphDataScience) -> 
     assert pipe.name() == "hello"
     assert result["name"] == pipe.name()
 
-    query = "CALL gds.beta.model.exists($name)"
+    query = "CALL gds.beta.pipeline.exists($name)"
     params = {"name": pipe.name()}
     result2 = runner.run_query(query, params)
     assert result2[0]["exists"]
 
-    query = "CALL gds.beta.model.drop($name)"
+    query = "CALL gds.beta.pipeline.drop($name)"
     params = {"name": pipe.name()}
     runner.run_query(query, params)
 
@@ -100,11 +100,11 @@ def test_add_node_property_lp_pipeline(
     )
     assert len(result["nodePropertySteps"]) == 1
 
-    query = "CALL gds.beta.model.list($name)"
+    query = "CALL gds.beta.pipeline.list($name)"
     params = {"name": lp_pipe.name()}
-    model_info = runner.run_query(query, params)[0]["modelInfo"]
+    pipeline_info = runner.run_query(query, params)[0]["pipelineInfo"]
 
-    steps = model_info["featurePipeline"]["nodePropertySteps"]
+    steps = pipeline_info["featurePipeline"]["nodePropertySteps"]
     assert len(steps) == 1
     assert steps[0]["name"] == "gds.pageRank.mutate"
 
@@ -117,11 +117,11 @@ def test_add_feature_lp_pipeline(
     result = lp_pipe.addFeature("l2", nodeProperties=["degree"])
     assert result["featureSteps"][0]["name"] == "L2"
 
-    query = "CALL gds.beta.model.list($name)"
+    query = "CALL gds.beta.pipeline.list($name)"
     params = {"name": lp_pipe.name()}
-    model_info = runner.run_query(query, params)[0]["modelInfo"]
+    pipeline_info = runner.run_query(query, params)[0]["pipelineInfo"]
 
-    steps = model_info["featurePipeline"]["featureSteps"]
+    steps = pipeline_info["featurePipeline"]["featureSteps"]
     assert len(steps) == 1
     assert steps[0]["name"] == "L2"
 
@@ -132,11 +132,11 @@ def test_configure_split_lp_pipeline(
     result = lp_pipe.configureSplit(trainFraction=0.42)
     assert result["splitConfig"]["trainFraction"] == 0.42
 
-    query = "CALL gds.beta.model.list($name)"
+    query = "CALL gds.beta.pipeline.list($name)"
     params = {"name": lp_pipe.name()}
-    model_info = runner.run_query(query, params)[0]["modelInfo"]
+    pipeline_info = runner.run_query(query, params)[0]["pipelineInfo"]
 
-    assert model_info["splitConfig"]["trainFraction"] == 0.42
+    assert pipeline_info["splitConfig"]["trainFraction"] == 0.42
 
 
 def test_configure_params_lp_pipeline(
@@ -145,11 +145,11 @@ def test_configure_params_lp_pipeline(
     result = lp_pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
     assert len(result["parameterSpace"]) == 2
 
-    query = "CALL gds.beta.model.list($name)"
+    query = "CALL gds.beta.pipeline.list($name)"
     params = {"name": lp_pipe.name()}
-    model_info = runner.run_query(query, params)[0]["modelInfo"]
+    pipeline_info = runner.run_query(query, params)[0]["pipelineInfo"]
 
-    parameter_space = model_info["trainingParameterSpace"]
+    parameter_space = pipeline_info["trainingParameterSpace"]
     assert len(parameter_space) == 2
     assert parameter_space[0]["tolerance"] == 0.01
     assert parameter_space[1]["maxEpochs"] == 500
@@ -162,12 +162,12 @@ def test_train_lp_pipeline(
     lp_pipe.addFeature("l2", nodeProperties=["rank"])
     lp_pipe.configureSplit(trainFraction=0.2, testFraction=0.2)
 
-    lp_trained_pipe, result = lp_pipe.train(G, modelName="m", concurrency=2)
-    assert lp_trained_pipe.name() == "m"
+    lp_model, result = lp_pipe.train(G, modelName="m", concurrency=2)
+    assert lp_model.name() == "m"
     assert result["configuration"]["modelName"] == "m"
 
     query = "CALL gds.beta.model.drop($name)"
-    params = {"name": "m"}
+    params = {"name": lp_model.name()}
     runner.run_query(query, params)
 
 
@@ -213,11 +213,11 @@ def test_select_features_nc_pipeline(
     result = nc_pipe.selectFeatures("rank")
     assert result["featureProperties"][0] == "rank"
 
-    query = "CALL gds.beta.model.list($name)"
+    query = "CALL gds.beta.pipeline.list($name)"
     params = {"name": nc_pipe.name()}
-    model_info = runner.run_query(query, params)[0]["modelInfo"]
+    pipeline_info = runner.run_query(query, params)[0]["pipelineInfo"]
 
-    steps = model_info["featurePipeline"]["featureProperties"]
+    steps = pipeline_info["featurePipeline"]["featureProperties"]
     assert len(steps) == 1
     assert steps[0]["feature"] == "rank"
 
