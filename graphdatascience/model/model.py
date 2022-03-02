@@ -21,6 +21,14 @@ class Model(ABC):
 
         return info[0]
 
+
+    def _estimate_predict(self, predict_mode: str,graph_name: str, config: Dict[str, Any]) -> Row:
+        query = f"{self._query_prefix()}{predict_mode}.estimate($graph_name, $config)"
+        config["modelName"] = self.name()
+        params = {"graph_name": graph_name, "config": config}
+
+        return self._query_runner.run_query(query, params)[0]
+
     def name(self) -> str:
         return self._name
 
@@ -71,9 +79,15 @@ class Model(ABC):
 
         return self._query_runner.run_query(query, params)
 
+    def predict_stream_estimate(self, G: Graph, **config: Any) -> Row:
+        return self._estimate_predict("stream", G.name(), config)
+
     def predict_mutate(self, G: Graph, **config: Any) -> Row:
         query = f"{self._query_prefix()}mutate($graph_name, $config)"
         config["modelName"] = self.name()
         params = {"graph_name": G.name(), "config": config}
 
         return self._query_runner.run_query(query, params)[0]
+
+    def predict_mutate_estimate(self, G: Graph, **config: Any) -> Row:
+        return self._estimate_predict("mutate", G.name(), config)
