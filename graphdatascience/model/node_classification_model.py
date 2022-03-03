@@ -7,7 +7,7 @@ from .model import Model
 
 class NCModel(Model):
     def _query_prefix(self) -> str:
-        return "CALL gds.alpha.ml.pipeline.nodeClassification.predict."
+        return "CALL gds.beta.pipeline.nodeClassification.predict."
 
     def predict_write(self, G: Graph, **config: Any) -> Row:
         query = f"{self._query_prefix()}write($graph_name, $config)"

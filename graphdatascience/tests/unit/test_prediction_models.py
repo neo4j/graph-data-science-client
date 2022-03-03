@@ -19,14 +19,14 @@ def G(gds: GraphDataScience) -> Graph:
 
 @pytest.fixture
 def lp_model(gds: GraphDataScience, G: Graph) -> Model:
-    pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create("pipe")
+    pipe, _ = gds.beta.pipeline.linkPrediction.create("pipe")
     trainedPipe, _ = pipe.train(G, modelName="m", concurrency=2)
     return trainedPipe
 
 
 @pytest.fixture
 def nc_model(gds: GraphDataScience, G: Graph) -> Model:
-    pipe, _ = gds.alpha.ml.pipeline.nodeClassification.create("pipe")
+    pipe, _ = gds.beta.pipeline.nodeClassification.create("pipe")
     trainedPipe, _ = pipe.train(G, modelName="m", concurrency=2)
     return trainedPipe
 
@@ -37,7 +37,7 @@ def test_predict_stream_lp_model(
     lp_model.predict_stream(G, topN=2)
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.linkPrediction.predict.stream($graph_name, $config)"
+        == "CALL gds.beta.pipeline.linkPrediction.predict.stream($graph_name, $config)"
     )
     assert runner.last_params() == {
         "graph_name": G.name(),
@@ -51,7 +51,7 @@ def test_predict_mutate_lp_model(
     lp_model.predict_mutate(G, topN=2, mutateRelationshipType="HELO")
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.linkPrediction.predict.mutate($graph_name, $config)"
+        == "CALL gds.beta.pipeline.linkPrediction.predict.mutate($graph_name, $config)"
     )
     assert runner.last_params() == {
         "graph_name": G.name(),
@@ -70,7 +70,7 @@ def test_estimate_predict_stream_nc_model(
 
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.nodeClassification.predict.stream.estimate($graph_name, $config)"
+        == "CALL gds.beta.pipeline.nodeClassification.predict.stream.estimate($graph_name, $config)"
     )
     assert runner.last_params() == {
         "graph_name": G.name(),
@@ -84,7 +84,7 @@ def test_predict_stream_nc_model(
     nc_model.predict_stream(G)
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.nodeClassification.predict.stream($graph_name, $config)"
+        == "CALL gds.beta.pipeline.nodeClassification.predict.stream($graph_name, $config)"
     )
     assert runner.last_params() == {
         "graph_name": G.name(),
@@ -99,7 +99,7 @@ def test_estimate_predict_write_nc_model(
 
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.nodeClassification.predict.write.estimate($graph_name, $config)"
+        == "CALL gds.beta.pipeline.nodeClassification.predict.write.estimate($graph_name, $config)"
     )
     assert runner.last_params() == {
         "graph_name": G.name(),
@@ -113,7 +113,7 @@ def test_predict_mutate_nc_model(
     nc_model.predict_mutate(G, mutateProperty="helo")
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.nodeClassification.predict.mutate($graph_name, $config)"
+        == "CALL gds.beta.pipeline.nodeClassification.predict.mutate($graph_name, $config)"
     )
     assert runner.last_params() == {
         "graph_name": G.name(),
@@ -131,7 +131,7 @@ def test_estimate_predict_mutate_nc_model(
 
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.nodeClassification.predict.mutate.estimate($graph_name, $config)"
+        == "CALL gds.beta.pipeline.nodeClassification.predict.mutate.estimate($graph_name, $config)"
     )
     assert runner.last_params() == {
         "graph_name": G.name(),
@@ -145,7 +145,7 @@ def test_predict_write_nc_model(
     nc_model.predict_write(G, writeProperty="helo")
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.nodeClassification.predict.write($graph_name, $config)"
+        == "CALL gds.beta.pipeline.nodeClassification.predict.write($graph_name, $config)"
     )
     assert runner.last_params() == {
         "graph_name": G.name(),

@@ -11,25 +11,23 @@ PIPE_NAME = "pipe"
 
 @pytest.fixture
 def lp_pipe(gds: GraphDataScience) -> LPTrainingPipeline:
-    pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
+    pipe, _ = gds.beta.pipeline.linkPrediction.create(PIPE_NAME)
     return pipe
 
 
 @pytest.fixture
 def nc_pipe(gds: GraphDataScience) -> NCTrainingPipeline:
-    pipe, _ = gds.alpha.ml.pipeline.nodeClassification.create(PIPE_NAME)
+    pipe, _ = gds.beta.pipeline.nodeClassification.create(PIPE_NAME)
     return pipe
 
 
 def test_create_lp_pipeline(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
-    lp_pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create("hello")
+    lp_pipe, _ = gds.beta.pipeline.linkPrediction.create("hello")
     assert lp_pipe.name() == "hello"
 
-    assert (
-        runner.last_query() == "CALL gds.alpha.ml.pipeline.linkPrediction.create($name)"
-    )
+    assert runner.last_query() == "CALL gds.beta.pipeline.linkPrediction.create($name)"
     assert runner.last_params() == {
         "name": "hello",
     }
@@ -44,7 +42,7 @@ def test_add_node_property_lp_pipeline(
 
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.linkPrediction.addNodeProperty($pipeline_name, $procedure_name, $config)"
+        == "CALL gds.beta.pipeline.linkPrediction.addNodeProperty($pipeline_name, $procedure_name, $config)"
     )
     assert runner.last_params() == {
         "pipeline_name": lp_pipe.name(),
@@ -60,7 +58,7 @@ def test_add_feature_lp_pipeline(
 
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.linkPrediction.addFeature($pipeline_name, $feature_type, $config)"
+        == "CALL gds.beta.pipeline.linkPrediction.addFeature($pipeline_name, $feature_type, $config)"
     )
     assert runner.last_params() == {
         "pipeline_name": lp_pipe.name(),
@@ -76,7 +74,7 @@ def test_configure_split_lp_pipeline(
 
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.linkPrediction.configureSplit($pipeline_name, $config)"
+        == "CALL gds.beta.pipeline.linkPrediction.configureSplit($pipeline_name, $config)"
     )
     assert runner.last_params() == {
         "pipeline_name": lp_pipe.name(),
@@ -91,7 +89,7 @@ def test_configure_params_lp_pipeline(
 
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.linkPrediction.configureParams($pipeline_name, $parameter_space)"
+        == "CALL gds.beta.pipeline.linkPrediction.configureParams($pipeline_name, $parameter_space)"
     )
     assert runner.last_params() == {
         "pipeline_name": lp_pipe.name(),
@@ -108,7 +106,7 @@ def test_train_estimate_lp_pipeline(
 
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.linkPrediction.train.estimate($graph_name, $config)"
+        == "CALL gds.beta.pipeline.linkPrediction.train.estimate($graph_name, $config)"
     )
     assert runner.last_params() == {
         "graph_name": G.name(),
@@ -125,7 +123,7 @@ def test_train_lp_pipeline(
 
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.linkPrediction.train($graph_name, $config)"
+        == "CALL gds.beta.pipeline.linkPrediction.train($graph_name, $config)"
     )
     assert runner.last_params() == {
         "graph_name": G.name(),
@@ -140,7 +138,7 @@ def test_select_features_nc_pipeline(
 
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.nodeClassification.selectFeatures($pipeline_name, $node_properties)"
+        == "CALL gds.beta.pipeline.nodeClassification.selectFeatures($pipeline_name, $node_properties)"
     )
     assert runner.last_params() == {
         "pipeline_name": nc_pipe.name(),

@@ -22,7 +22,7 @@ class LPTrainingPipeline(TrainingPipeline):
         return self._list_info()["pipelineInfo"]["featurePipeline"]["featureSteps"]  # type: ignore
 
     def _query_prefix(self) -> str:
-        return "CALL gds.alpha.ml.pipeline.linkPrediction."
+        return "CALL gds.beta.pipeline.linkPrediction."
 
     def _create_trained_model(self, name: str, query_runner: QueryRunner) -> LPModel:
         return LPModel(name, query_runner)

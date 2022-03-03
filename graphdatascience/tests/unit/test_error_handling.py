@@ -66,33 +66,33 @@ def test_nonexisting_pipeline_endpoint(gds: GraphDataScience) -> None:
 
 def test_calling_linkPrediction(gds: GraphDataScience) -> None:
     with pytest.raises(
-        SyntaxError, match="There is no 'gds.alpha.ml.pipeline.linkPrediction' to call"
+        SyntaxError, match="There is no 'gds.beta.pipeline.linkPrediction' to call"
     ):
-        gds.alpha.ml.pipeline.linkPrediction()
+        gds.beta.pipeline.linkPrediction()
 
 
 def test_nonexisting_linkPrediction_endpoint(gds: GraphDataScience) -> None:
     with pytest.raises(
         SyntaxError,
-        match="There is no 'gds.alpha.ml.pipeline.linkPrediction.whoops' to call",
+        match="There is no 'gds.beta.pipeline.linkPrediction.whoops' to call",
     ):
-        gds.alpha.ml.pipeline.linkPrediction.whoops()  # type: ignore
+        gds.beta.pipeline.linkPrediction.whoops()  # type: ignore
 
 
 def test_calling_nodeClassification(gds: GraphDataScience) -> None:
     with pytest.raises(
         SyntaxError,
-        match="There is no 'gds.alpha.ml.pipeline.nodeClassification' to call",
+        match="There is no 'gds.beta.pipeline.nodeClassification' to call",
     ):
-        gds.alpha.ml.pipeline.nodeClassification(13.37)
+        gds.beta.pipeline.nodeClassification(13.37)
 
 
 def test_nonexisting_nodeClassification_endpoint(gds: GraphDataScience) -> None:
     with pytest.raises(
         SyntaxError,
-        match="There is no 'gds.alpha.ml.pipeline.nodeClassification.whoops' to call",
+        match="There is no 'gds.beta.pipeline.nodeClassification.whoops' to call",
     ):
-        gds.alpha.ml.pipeline.nodeClassification.whoops(13.37)  # type: ignore
+        gds.beta.pipeline.nodeClassification.whoops(13.37)  # type: ignore
 
 
 def test_calling_linkprediction(gds: GraphDataScience) -> None:

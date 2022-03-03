@@ -158,7 +158,7 @@ Additionally to the standard GDS calls, there are several methods to query the p
 Below is a minimal example for node classification (supposing we have a graph `G` with a property "myClass"):
 
 ```python
-pipe, _ = gds.alpha.ml.pipeline.nodeClassification.create("myPipe")
+pipe, _ = gds.beta.pipeline.nodeClassification.create("myPipe")
 assert pipe.type() == "Node classification training pipeline"
 
 pipe.addNodeProperty("degree", mutateProperty="rank")
