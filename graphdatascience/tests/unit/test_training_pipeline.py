@@ -106,7 +106,7 @@ def test_train_estimate_lp_pipeline(
 
     assert (
         runner.last_query()
-        == "CALL gds.alpha.ml.pipeline.linkPrediction.train.estimate($graph_name, $config)"
+        == "CALL gds.beta.pipeline.linkPrediction.train.estimate($graph_name, $config)"
     )
     assert runner.last_params() == {
         "graph_name": G.name(),
