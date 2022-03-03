@@ -42,7 +42,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 def lp_model(
     runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
 ) -> Generator[Model, None, None]:
-    pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create("pipe")
+    pipe, _ = gds.beta.pipeline.linkPrediction.create("pipe")
 
     try:
         pipe.addNodeProperty("degree", mutateProperty="rank")
@@ -65,7 +65,7 @@ def lp_model(
 def nc_model(
     runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
 ) -> Generator[Model, None, None]:
-    pipe, _ = gds.alpha.ml.pipeline.nodeClassification.create("pipe")
+    pipe, _ = gds.beta.pipeline.nodeClassification.create("pipe")
 
     try:
         pipe.addNodeProperty("degree", mutateProperty="rank")

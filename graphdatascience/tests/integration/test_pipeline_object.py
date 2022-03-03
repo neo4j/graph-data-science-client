@@ -13,7 +13,7 @@ PIPE_NAME = "pipe"
 def pipe(
     runner: Neo4jQueryRunner, gds: GraphDataScience
 ) -> Generator[TrainingPipeline, None, None]:
-    pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
+    pipe, _ = gds.beta.pipeline.linkPrediction.create(PIPE_NAME)
 
     yield pipe
 
@@ -39,7 +39,7 @@ def test_pipeline_exists(pipe: TrainingPipeline) -> None:
 
 
 def test_pipeline_drop(gds: GraphDataScience) -> None:
-    pipe, _ = gds.alpha.ml.pipeline.linkPrediction.create(PIPE_NAME)
+    pipe, _ = gds.beta.pipeline.linkPrediction.create(PIPE_NAME)
 
     pipe.drop()
     assert not pipe.exists()

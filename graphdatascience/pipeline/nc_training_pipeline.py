@@ -18,7 +18,7 @@ class NCTrainingPipeline(TrainingPipeline):
         return self._list_info()["pipelineInfo"]["featurePipeline"]["featureProperties"]  # type: ignore
 
     def _query_prefix(self) -> str:
-        return "CALL gds.alpha.ml.pipeline.nodeClassification."
+        return "CALL gds.beta.pipeline.nodeClassification."
 
     def _create_trained_model(self, name: str, query_runner: QueryRunner) -> NCModel:
         return NCModel(name, query_runner)
