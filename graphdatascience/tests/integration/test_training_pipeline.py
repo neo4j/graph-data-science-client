@@ -171,6 +171,13 @@ def test_train_lp_pipeline(
     runner.run_query(query, params)
 
 
+def test_train_estimate_lp_pipeline(
+    runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, G: Graph
+) -> None:
+    result = lp_pipe.train_estimate(G, modelName="m", concurrency=2)
+    assert result["requiredMemory"]
+
+
 def test_node_property_steps_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     assert len(lp_pipe.node_property_steps()) == 0
 

@@ -97,6 +97,23 @@ def test_configure_params_lp_pipeline(
     }
 
 
+def test_train_estimate_lp_pipeline(
+    runner: CollectingQueryRunner, gds: GraphDataScience, lp_pipe: LPTrainingPipeline
+) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    lp_pipe.train_estimate(G, modelName="m", concurrency=2)
+
+    assert (
+        runner.last_query()
+        == "CALL gds.beta.pipeline.linkPrediction.train.estimate($graph_name, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": G.name(),
+        "config": {"pipeline": lp_pipe.name(), "modelName": "m", "concurrency": 2},
+    }
+
+
 def test_train_lp_pipeline(
     runner: CollectingQueryRunner, gds: GraphDataScience, lp_pipe: LPTrainingPipeline
 ) -> None:

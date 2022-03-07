@@ -96,6 +96,11 @@ def test_predict_mutate_lp_model(lp_model: LPModel, G: Graph) -> None:
     assert result["relationshipsWritten"] == 4
 
 
+def test_estimate_predict_stream_nc_model(nc_model: NCModel, G: Graph) -> None:
+    result = nc_model.predict_stream_estimate(G)
+    assert result["requiredMemory"]
+
+
 def test_predict_stream_nc_model(nc_model: NCModel, G: Graph) -> None:
     result = nc_model.predict_stream(G)
     assert len(result) == G.node_count()
