@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 
+from ..model.link_prediction_model import LPModel
 from ..query_runner.query_runner import QueryRunner, Row
-from .lp_prediction_pipeline import LPPredictionPipeline
 from .training_pipeline import TrainingPipeline
 
 
@@ -19,12 +19,10 @@ class LPTrainingPipeline(TrainingPipeline):
         return self._query_runner.run_query(query, params)[0]
 
     def feature_steps(self) -> List[Dict[str, Any]]:
-        return self._list_info()["modelInfo"]["featurePipeline"]["featureSteps"]  # type: ignore
+        return self._list_info()["pipelineInfo"]["featurePipeline"]["featureSteps"]  # type: ignore
 
     def _query_prefix(self) -> str:
-        return "CALL gds.alpha.ml.pipeline.linkPrediction."
+        return "CALL gds.beta.pipeline.linkPrediction."
 
-    def _create_trained_model(
-        self, name: str, query_runner: QueryRunner
-    ) -> LPPredictionPipeline:
-        return LPPredictionPipeline(name, query_runner)
+    def _create_trained_model(self, name: str, query_runner: QueryRunner) -> LPModel:
+        return LPModel(name, query_runner)

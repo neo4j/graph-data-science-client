@@ -1,11 +1,11 @@
 from typing import Any
 
-from graphdatascience.graph.graph_object import Graph
-from graphdatascience.model.trained_model import TrainedModel
-from graphdatascience.query_runner.query_runner import Row
+from ..graph.graph_object import Graph
+from ..query_runner.query_runner import Row
+from .model import Model
 
 
-class GraphSageModel(TrainedModel):
+class GraphSageModel(Model):
     def _query_prefix(self) -> str:
         return "CALL gds.beta.graphSage."
 

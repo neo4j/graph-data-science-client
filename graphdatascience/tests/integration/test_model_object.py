@@ -2,32 +2,63 @@ from typing import Generator
 
 import pytest
 
+from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
-from graphdatascience.pipeline.nc_training_pipeline import NCTrainingPipeline
+from graphdatascience.model.graphsage_model import GraphSageModel
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
-PIPE_NAME = "p"
+
+@pytest.fixture(scope="module")
+def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None, None]:
+    runner.run_query(
+        """
+        CREATE
+        (a: Node {age: 2}),
+        (b: Node {age: 3}),
+        (c: Node {age: 2}),
+        (d: Node {age: 1}),
+        (e: Node {age: 2}),
+        (a)-[:REL]->(b),
+        (a)-[:REL]->(c),
+        (b)-[:REL]->(c),
+        (b)-[:REL]->(a),
+        (c)-[:REL]->(a),
+        (c)-[:REL]->(b)
+        """
+    )
+    G, _ = gds.graph.project(
+        "g", {"Node": {"properties": ["age"]}}, {"REL": {"orientation": "UNDIRECTED"}}
+    )
+
+    yield G
+
+    runner.run_query("MATCH (n) DETACH DELETE n")
+    G.drop()
 
 
 @pytest.fixture
-def nc_pipe(
-    runner: Neo4jQueryRunner, gds: GraphDataScience
-) -> Generator[NCTrainingPipeline, None, None]:
-    pipe, _ = gds.alpha.ml.pipeline.nodeClassification.create(PIPE_NAME)
+def gs_model(
+    gds: GraphDataScience, G: Graph, runner: Neo4jQueryRunner
+) -> Generator[GraphSageModel, None, None]:
+    model, _ = gds.beta.graphSage.train(
+        G, modelName="gs-model", featureProperties=["age"]
+    )
 
-    yield pipe
+    yield model
 
     query = "CALL gds.beta.model.drop($name)"
-    params = {"name": pipe.name()}
+    params = {"name": model.name()}
     runner.run_query(query, params)
 
 
-def test_model_exists(nc_pipe: NCTrainingPipeline) -> None:
-    assert nc_pipe.exists()
+def test_model_exists(gs_model: GraphSageModel) -> None:
+    assert gs_model.exists()
 
 
-def test_model_drop(gds: GraphDataScience) -> None:
-    pipe, _ = gds.alpha.ml.pipeline.nodeClassification.create(PIPE_NAME)
+def test_model_drop(gds: GraphDataScience, G: Graph) -> None:
+    model, _ = gds.beta.graphSage.train(
+        G, modelName="gs-model", featureProperties=["age"]
+    )
 
-    pipe.drop()
-    assert not pipe.exists()
+    model.drop()
+    assert not model.exists()

@@ -3,10 +3,8 @@ from typing import Optional, Tuple
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
-from ..pipeline.lp_prediction_pipeline import LPPredictionPipeline
-from ..pipeline.lp_training_pipeline import LPTrainingPipeline
-from ..pipeline.nc_prediction_pipeline import NCPredictionPipeline
-from ..pipeline.nc_training_pipeline import NCTrainingPipeline
+from ..model.link_prediction_model import LPModel
+from ..model.node_classification_model import NCModel
 from ..query_runner.query_runner import QueryResult, QueryRunner, Row
 from .graphsage_model import GraphSageModel
 from .model import Model
@@ -100,14 +98,10 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
         return self._resolve_model(model_type, model_name)
 
     def _resolve_model(self, model_type: str, model_name: str) -> Model:
-        if model_type == "Link prediction training pipeline":
-            return LPTrainingPipeline(model_name, self._query_runner)
-        elif model_type == "Node classification training pipeline":
-            return NCTrainingPipeline(model_name, self._query_runner)
-        elif model_type == "Node classification pipeline":
-            return NCPredictionPipeline(model_name, self._query_runner)
-        elif model_type == "Link prediction pipeline":
-            return LPPredictionPipeline(model_name, self._query_runner)
+        if model_type == "NodeClassification":
+            return NCModel(model_name, self._query_runner)
+        elif model_type == "LinkPrediction":
+            return LPModel(model_name, self._query_runner)
         elif model_type == "graphSage":
             return GraphSageModel(model_name, self._query_runner)
 

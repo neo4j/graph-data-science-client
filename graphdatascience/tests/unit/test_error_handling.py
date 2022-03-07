@@ -52,33 +52,47 @@ def test_nonexisting_model_endpoint(gds: GraphDataScience) -> None:
         gds.beta.model.bogus(42, 1337)  # type: ignore
 
 
+def test_calling_pipeline(gds: GraphDataScience) -> None:
+    with pytest.raises(SyntaxError, match="There is no 'gds.beta.pipeline' to call"):
+        gds.beta.pipeline(42, 1337)
+
+
+def test_nonexisting_pipeline_endpoint(gds: GraphDataScience) -> None:
+    with pytest.raises(
+        SyntaxError, match="There is no 'gds.beta.pipeline.bogus' to call"
+    ):
+        gds.beta.pipeline.bogus(42, 1337)  # type: ignore
+
+
 def test_calling_linkPrediction(gds: GraphDataScience) -> None:
     with pytest.raises(
-        SyntaxError, match="There is no 'gds.alpha.ml.linkPrediction' to call"
+        SyntaxError, match="There is no 'gds.beta.pipeline.linkPrediction' to call"
     ):
-        gds.alpha.ml.linkPrediction()
+        gds.beta.pipeline.linkPrediction()
 
 
 def test_nonexisting_linkPrediction_endpoint(gds: GraphDataScience) -> None:
     with pytest.raises(
-        SyntaxError, match="There is no 'gds.alpha.ml.linkPrediction.whoops' to call"
+        SyntaxError,
+        match="There is no 'gds.beta.pipeline.linkPrediction.whoops' to call",
     ):
-        gds.alpha.ml.linkPrediction.whoops()  # type: ignore
+        gds.beta.pipeline.linkPrediction.whoops()  # type: ignore
 
 
 def test_calling_nodeClassification(gds: GraphDataScience) -> None:
     with pytest.raises(
-        SyntaxError, match="There is no 'gds.alpha.ml.nodeClassification' to call"
+        SyntaxError,
+        match="There is no 'gds.beta.pipeline.nodeClassification' to call",
     ):
-        gds.alpha.ml.nodeClassification(13.37)
+        gds.beta.pipeline.nodeClassification(13.37)
 
 
 def test_nonexisting_nodeClassification_endpoint(gds: GraphDataScience) -> None:
     with pytest.raises(
         SyntaxError,
-        match="There is no 'gds.alpha.ml.nodeClassification.whoops' to call",
+        match="There is no 'gds.beta.pipeline.nodeClassification.whoops' to call",
     ):
-        gds.alpha.ml.nodeClassification.whoops(13.37)  # type: ignore
+        gds.beta.pipeline.nodeClassification.whoops(13.37)  # type: ignore
 
 
 def test_calling_linkprediction(gds: GraphDataScience) -> None:
