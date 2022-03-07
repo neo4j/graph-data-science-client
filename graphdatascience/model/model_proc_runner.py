@@ -98,9 +98,9 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
         return self._resolve_model(model_type, model_name)
 
     def _resolve_model(self, model_type: str, model_name: str) -> Model:
-        if model_type == "Node classification model":
+        if model_type == "NodeClassification":
             return NCModel(model_name, self._query_runner)
-        elif model_type == "Link prediction model":
+        elif model_type == "LinkPrediction":
             return LPModel(model_name, self._query_runner)
         elif model_type == "graphSage":
             return GraphSageModel(model_name, self._query_runner)

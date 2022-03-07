@@ -112,7 +112,7 @@ def test_predict_write_nc_model(nc_model: NCModel, G: Graph) -> None:
 
 
 def test_type_nc_model(nc_model: NCModel) -> None:
-    assert nc_model.type() == "Node classification model"
+    assert nc_model.type() == "NodeClassification"
 
 
 def test_train_config_nc_model(nc_model: NCModel, G: Graph) -> None:
