@@ -86,7 +86,9 @@ def nc_model(
 
 
 @pytest.fixture
-def gs_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[GraphSageModel, None, None]:
+def gs_model(
+    runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
+) -> Generator[GraphSageModel, None, None]:
     model, _ = gds.beta.graphSage.train(
         G, modelName="gs-model", featureProperties=["age"]
     )
