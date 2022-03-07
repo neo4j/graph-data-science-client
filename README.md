@@ -208,7 +208,8 @@ res = gds.graph.streamNodeProperties(G, "rank")
 assert len(res) == G.node_count()
 ```
 
-Further, there's a new call named `gds.graph.get` (`graphdatascience` only) which takes a name as input and returns a `Graph` object if a graph projection of that name exists in the user's graph catalog.
+Further, there's a call named `gds.graph.get` (`graphdatascience` only).
+It takes a graph name as input and returns a `Graph` object, if a graph projection of that name exists in the user's graph catalog.
 The idea is to have a way of creating `Graph`s for already projected graphs, without having to do a new projection.
 
 
@@ -225,7 +226,8 @@ res = gds.beta.pipeline.drop(pipe)
 assert res["pipelineName"] == pipe.name()
 ```
 
-Further, there's a new call named `gds.pipeline.get` (`graphdatascience` only) which takes a pipeline name as input and returns a training pipeline object if a pipeline of that name exists in the user's pipeline catalog.
+Further, there's a call named `gds.pipeline.get` (`graphdatascience` only).
+It takes a pipeline name as input and returns a training pipeline object, if a pipeline of that name exists in the user's pipeline catalog.
 The idea is to have a way of creating pipeline objects for already existing pipelines, without having to create them again.
 
 
@@ -242,7 +244,8 @@ res = gds.beta.model.drop(model)
 assert res["modelInfo"]["modelName"] == model.name()
 ```
 
-Further, there's a new call named `gds.model.get` (`graphdatascience` only) which takes a model name as input and returns a model object if a model of that name exists in the user's model catalog.
+Further, there's a call named `gds.model.get` (`graphdatascience` only).
+It takes a model name as input and returns a model object, if a model of that name exists in the user's model catalog.
 The idea is to have a way of creating model objects for already loaded models, without having to create them again.
 
 
