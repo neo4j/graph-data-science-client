@@ -59,9 +59,7 @@ def lp_model(
 
     yield lp_model
 
-    query = "CALL gds.beta.model.drop($name)"
-    params = {"name": lp_model.name()}
-    runner.run_query(query, params)
+    lp_model.drop()
 
 
 @pytest.fixture(scope="module")
@@ -84,21 +82,20 @@ def nc_model(
 
     yield nc_model
 
-    query = "CALL gds.beta.model.drop($name)"
-    params = {"name": nc_model.name()}
-    runner.run_query(query, params)
+    nc_model.drop()
 
 
 @pytest.fixture
-def gs_model(gds: GraphDataScience, G: Graph) -> Generator[GraphSageModel, None, None]:
+def gs_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[GraphSageModel, None, None]:
     model, _ = gds.beta.graphSage.train(
         G, modelName="gs-model", featureProperties=["age"]
     )
 
     yield model
 
-    # cannot clean up with drop here because of delete bug
-    # model.drop()
+    query = "CALL gds.beta.model.drop($name, false)"
+    params = {"name": model.name()}
+    runner.run_query(query, params)
 
 
 def test_model_list(gds: GraphDataScience, lp_model: LPModel) -> None:
@@ -114,14 +111,14 @@ def test_model_exists(gds: GraphDataScience) -> None:
 
 @pytest.mark.enterprise
 def test_model_publish(
-    runner: Neo4jQueryRunner, gds: GraphDataScience, lp_model: LPModel
+    runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel
 ) -> None:
-    assert not lp_model.shared()
+    assert not gs_model.shared()
 
-    shared_model = gds.alpha.model.publish(lp_model)
+    shared_model = gds.alpha.model.publish(gs_model)
 
     assert shared_model.shared()
-    assert isinstance(shared_model, LPModel)
+    assert isinstance(shared_model, GraphSageModel)
 
     query = "CALL gds.beta.model.drop($name)"
     params = {"name": shared_model.name()}
