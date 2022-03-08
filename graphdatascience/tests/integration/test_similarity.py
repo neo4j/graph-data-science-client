@@ -85,11 +85,3 @@ def test_similarity_euclideanDistance_write(gds: GraphDataScience) -> None:
 
     result = gds.alpha.similarity.euclidean.write(data=[node1, node2])
     assert result["nodes"] == 2
-
-
-def test_similarity_ann_stream(gds: GraphDataScience) -> None:
-    node1 = {"item": 1, "weights": [42.0, 13.37]}
-    node2 = {"item": 2, "weights": [13.37, 42]}
-
-    result = gds.alpha.ml.ann.stream(algorithm="euclidean", data=[node1, node2])
-    assert result["similarity"] == pytest.approx(1639.353, 0.01)

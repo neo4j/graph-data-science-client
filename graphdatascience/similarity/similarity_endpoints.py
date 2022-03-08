@@ -32,7 +32,3 @@ class SimilarityEndpoints:
     @property
     def overlap(self) -> SimilarityAlgoRunner:
         return SimilarityAlgoRunner(self._query_runner, f"{self._namespace}.overlap")
-
-    @property
-    def ann(self) -> SimilarityAlgoRunner:
-        return SimilarityAlgoRunner(self._query_runner, f"{self._namespace}.ann")
