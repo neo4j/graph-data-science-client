@@ -3,16 +3,11 @@ from graphdatascience.graph_data_science import GraphDataScience
 from .conftest import CollectingQueryRunner
 
 
-def test_project_graph_native(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
+def test_project_graph_native(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "A", "R", readConcurrency=2)
     assert G.name() == "g"
 
-    assert (
-        runner.last_query()
-        == "CALL gds.graph.project($graph_name, $node_spec, $relationship_spec, $config)"
-    )
+    assert runner.last_query() == "CALL gds.graph.project($graph_name, $node_spec, $relationship_spec, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "node_spec": "A",
@@ -21,15 +16,10 @@ def test_project_graph_native(
     }
 
 
-def test_project_graph_native_estimate(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
+def test_project_graph_native_estimate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     gds.graph.project.estimate("A", "R", readConcurrency=2)
 
-    assert (
-        runner.last_query()
-        == "CALL gds.graph.project.estimate($node_spec, $relationship_spec, $config)"
-    )
+    assert runner.last_query() == "CALL gds.graph.project.estimate($node_spec, $relationship_spec, $config)"
     assert runner.last_params() == {
         "node_spec": "A",
         "relationship_spec": "R",
@@ -37,18 +27,11 @@ def test_project_graph_native_estimate(
     }
 
 
-def test_project_graph_cypher(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
-    G, _ = gds.graph.project.cypher(
-        "g", "RETURN 0 as id", "RETURN 0 as source, 0 as target", readConcurrency=2
-    )
+def test_project_graph_cypher(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project.cypher("g", "RETURN 0 as id", "RETURN 0 as source, 0 as target", readConcurrency=2)
     assert G.name() == "g"
 
-    assert (
-        runner.last_query()
-        == "CALL gds.graph.project.cypher($graph_name, $node_spec, $relationship_spec, $config)"
-    )
+    assert runner.last_query() == "CALL gds.graph.project.cypher($graph_name, $node_spec, $relationship_spec, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "node_spec": "RETURN 0 as id",
@@ -57,17 +40,10 @@ def test_project_graph_cypher(
     }
 
 
-def test_project_graph_cypher_estimate(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
-    gds.graph.project.cypher.estimate(
-        "RETURN 0 as id", "RETURN 0 as source, 0 as target", readConcurrency=2
-    )
+def test_project_graph_cypher_estimate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    gds.graph.project.cypher.estimate("RETURN 0 as id", "RETURN 0 as source, 0 as target", readConcurrency=2)
 
-    assert (
-        runner.last_query()
-        == "CALL gds.graph.project.cypher.estimate($node_spec, $relationship_spec, $config)"
-    )
+    assert runner.last_query() == "CALL gds.graph.project.cypher.estimate($node_spec, $relationship_spec, $config)"
     assert runner.last_params() == {
         "node_spec": "RETURN 0 as id",
         "relationship_spec": "RETURN 0 as source, 0 as target",
@@ -136,16 +112,11 @@ def test_graph_export_csv(runner: CollectingQueryRunner, gds: GraphDataScience) 
     }
 
 
-def test_graph_streamNodeProperty(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
+def test_graph_streamNodeProperty(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.streamNodeProperty(G, "dummyProp", concurrency=2)
-    assert (
-        runner.last_query()
-        == "CALL gds.graph.streamNodeProperty($graph_name, $properties, $entities, $config)"
-    )
+    assert runner.last_query() == "CALL gds.graph.streamNodeProperty($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "properties": "dummyProp",
@@ -154,10 +125,7 @@ def test_graph_streamNodeProperty(
     }
 
     gds.graph.streamNodeProperty(G, "dummyProp", "dummyLabel", concurrency=2)
-    assert (
-        runner.last_query()
-        == "CALL gds.graph.streamNodeProperty($graph_name, $properties, $entities, $config)"
-    )
+    assert runner.last_query() == "CALL gds.graph.streamNodeProperty($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "properties": "dummyProp",
@@ -166,16 +134,11 @@ def test_graph_streamNodeProperty(
     }
 
 
-def test_graph_streamNodeProperties(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
+def test_graph_streamNodeProperties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.streamNodeProperties(G, ["dummyProp"], concurrency=2)
-    assert (
-        runner.last_query()
-        == "CALL gds.graph.streamNodeProperties($graph_name, $properties, $entities, $config)"
-    )
+    assert runner.last_query() == "CALL gds.graph.streamNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "properties": ["dummyProp"],
@@ -184,10 +147,7 @@ def test_graph_streamNodeProperties(
     }
 
     gds.graph.streamNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
-    assert (
-        runner.last_query()
-        == "CALL gds.graph.streamNodeProperties($graph_name, $properties, $entities, $config)"
-    )
+    assert runner.last_query() == "CALL gds.graph.streamNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "properties": ["dummyProp"],
@@ -196,15 +156,12 @@ def test_graph_streamNodeProperties(
     }
 
 
-def test_graph_streamRelationshipProperty(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
+def test_graph_streamRelationshipProperty(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.streamRelationshipProperty(G, "dummyProp", concurrency=2)
     assert (
-        runner.last_query()
-        == "CALL gds.graph.streamRelationshipProperty($graph_name, $properties, $entities, $config)"
+        runner.last_query() == "CALL gds.graph.streamRelationshipProperty($graph_name, $properties, $entities, $config)"
     )
     assert runner.last_params() == {
         "graph_name": "g",
@@ -215,8 +172,7 @@ def test_graph_streamRelationshipProperty(
 
     gds.graph.streamRelationshipProperty(G, "dummyProp", "dummyType", concurrency=2)
     assert (
-        runner.last_query()
-        == "CALL gds.graph.streamRelationshipProperty($graph_name, $properties, $entities, $config)"
+        runner.last_query() == "CALL gds.graph.streamRelationshipProperty($graph_name, $properties, $entities, $config)"
     )
     assert runner.last_params() == {
         "graph_name": "g",
@@ -226,9 +182,7 @@ def test_graph_streamRelationshipProperty(
     }
 
 
-def test_graph_streamRelationshipProperties(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
+def test_graph_streamRelationshipProperties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.streamRelationshipProperties(G, ["dummyProp"], concurrency=2)
@@ -256,16 +210,11 @@ def test_graph_streamRelationshipProperties(
     }
 
 
-def test_graph_writeNodeProperties(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
+def test_graph_writeNodeProperties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.writeNodeProperties(G, ["dummyProp"], concurrency=2)
-    assert (
-        runner.last_query()
-        == "CALL gds.graph.writeNodeProperties($graph_name, $properties, $entities, $config)"
-    )
+    assert runner.last_query() == "CALL gds.graph.writeNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "properties": ["dummyProp"],
@@ -274,10 +223,7 @@ def test_graph_writeNodeProperties(
     }
 
     gds.graph.writeNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
-    assert (
-        runner.last_query()
-        == "CALL gds.graph.writeNodeProperties($graph_name, $properties, $entities, $config)"
-    )
+    assert runner.last_query() == "CALL gds.graph.writeNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "properties": ["dummyProp"],
@@ -286,9 +232,7 @@ def test_graph_writeNodeProperties(
     }
 
 
-def test_graph_writeRelationship(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
+def test_graph_writeRelationship(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.writeRelationship(G, "dummyType", "dummyProp", concurrency=2)
@@ -316,16 +260,11 @@ def test_graph_writeRelationship(
     }
 
 
-def test_graph_removeNodeProperties(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
+def test_graph_removeNodeProperties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.removeNodeProperties(G, ["dummyProp"], concurrency=2)
-    assert (
-        runner.last_query()
-        == "CALL gds.graph.removeNodeProperties($graph_name, $properties, $entities, $config)"
-    )
+    assert runner.last_query() == "CALL gds.graph.removeNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "properties": ["dummyProp"],
@@ -334,10 +273,7 @@ def test_graph_removeNodeProperties(
     }
 
     gds.graph.removeNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
-    assert (
-        runner.last_query()
-        == "CALL gds.graph.removeNodeProperties($graph_name, $properties, $entities, $config)"
-    )
+    assert runner.last_query() == "CALL gds.graph.removeNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "properties": ["dummyProp"],
@@ -346,26 +282,18 @@ def test_graph_removeNodeProperties(
     }
 
 
-def test_graph_deleteRelationships(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
+def test_graph_deleteRelationships(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.deleteRelationships(G, "REL_A")
-    assert (
-        runner.last_query()
-        == "CALL gds.graph.deleteRelationships($graph_name, $relationship_type)"
-    )
+    assert runner.last_query() == "CALL gds.graph.deleteRelationships($graph_name, $relationship_type)"
     assert runner.last_params() == {"graph_name": "g", "relationship_type": "REL_A"}
 
 
 def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     gds.beta.graph.generate("g", 1337, 42, orientation="NATURAL")
 
-    assert (
-        runner.last_query()
-        == "CALL gds.beta.graph.generate($graph_name, $node_count, $average_degree, $config)"
-    )
+    assert runner.last_query() == "CALL gds.beta.graph.generate($graph_name, $node_count, $average_degree, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "node_count": 1337,

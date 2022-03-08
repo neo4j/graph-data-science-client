@@ -18,15 +18,11 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @property
     def linkPrediction(self) -> LPPipelineCreateRunner:
-        return LPPipelineCreateRunner(
-            self._query_runner, f"{self._namespace}.linkPrediction"
-        )
+        return LPPipelineCreateRunner(self._query_runner, f"{self._namespace}.linkPrediction")
 
     @property
     def nodeClassification(self) -> NCPipelineCreateRunner:
-        return NCPipelineCreateRunner(
-            self._query_runner, f"{self._namespace}.nodeClassification"
-        )
+        return NCPipelineCreateRunner(self._query_runner, f"{self._namespace}.nodeClassification")
 
     def list(self, pipeline: Optional[TrainingPipeline] = None) -> QueryResult:
         self._namespace += ".list"
@@ -68,9 +64,7 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
         pipeline_type = result[0]["pipelineType"]
         return self._resolve_pipeline(pipeline_type, pipeline_name)
 
-    def _resolve_pipeline(
-        self, pipeline_type: str, pipeline_name: str
-    ) -> TrainingPipeline:
+    def _resolve_pipeline(self, pipeline_type: str, pipeline_name: str) -> TrainingPipeline:
         if pipeline_type == "Node classification training pipeline":
             return NCTrainingPipeline(pipeline_name, self._query_runner)
         elif pipeline_type == "Link prediction training pipeline":

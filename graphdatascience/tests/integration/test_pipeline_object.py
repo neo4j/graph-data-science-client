@@ -10,9 +10,7 @@ PIPE_NAME = "pipe"
 
 
 @pytest.fixture
-def pipe(
-    runner: Neo4jQueryRunner, gds: GraphDataScience
-) -> Generator[TrainingPipeline, None, None]:
+def pipe(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[TrainingPipeline, None, None]:
     pipe, _ = gds.beta.pipeline.linkPrediction.create(PIPE_NAME)
 
     yield pipe

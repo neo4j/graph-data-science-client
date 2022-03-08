@@ -10,9 +10,7 @@ class TopologicalLPRunner(UncallableNamespace, IllegalAttrChecker):
         self._query_runner = query_runner
         self._namespace = namespace
 
-    def _run_standard_function(
-        self, node1: int, node2: int, config: Dict[str, Any]
-    ) -> float:
+    def _run_standard_function(self, node1: int, node2: int, config: Dict[str, Any]) -> float:
         query = f"""
         MATCH (n1) WHERE id(n1) = {node1}
         MATCH (n2) WHERE id(n2) = {node2}
@@ -38,9 +36,7 @@ class TopologicalLPRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".resourceAllocation"
         return self._run_standard_function(node1, node2, config)
 
-    def sameCommunity(
-        self, node1: int, node2: int, communityProperty: Optional[str] = None
-    ) -> float:
+    def sameCommunity(self, node1: int, node2: int, communityProperty: Optional[str] = None) -> float:
         self._namespace += ".sameCommunity"
         community_property = f", '{communityProperty}'" if communityProperty else ""
 

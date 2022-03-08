@@ -15,13 +15,9 @@ GDS = TypeVar("GDS", bound="GraphDataScience")
 class GraphDataScience(DirectEndpoints, UncallableNamespace):
     _AURA_DS_PROTOCOL = "neo4j+s"
 
-    def __init__(
-        self, endpoint: Union[str, QueryRunner], auth: Any = None, aura_ds: bool = False
-    ):
+    def __init__(self, endpoint: Union[str, QueryRunner], auth: Any = None, aura_ds: bool = False):
         if isinstance(endpoint, str):
-            self._config: Dict[str, Any] = {
-                "user_agent": f"neo4j-graphdatascience-v{__version__}"
-            }
+            self._config: Dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
 
             if aura_ds:
                 protocol = endpoint.split(":")[0]
