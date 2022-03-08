@@ -50,9 +50,7 @@ def test_project_graph_native_estimate(gds: GraphDataScience) -> None:
 
 def test_project_graph_cypher(gds: GraphDataScience) -> None:
     node_query = "MATCH (n:Node) RETURN id(n) as id"
-    relationship_query = (
-        "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
-    )
+    relationship_query = "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
     G, result = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
 
     assert G.name() == GRAPH_NAME
@@ -64,9 +62,7 @@ def test_project_graph_cypher(gds: GraphDataScience) -> None:
 
 def test_project_graph_cypher_estimate(gds: GraphDataScience) -> None:
     node_query = "MATCH (n:Node) RETURN id(n) as id"
-    relationship_query = (
-        "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
-    )
+    relationship_query = "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
     result = gds.graph.project.cypher.estimate(node_query, relationship_query)
 
     assert result["requiredMemory"]
@@ -75,9 +71,7 @@ def test_project_graph_cypher_estimate(gds: GraphDataScience) -> None:
 def test_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    subG, result = gds.beta.graph.project.subgraph(
-        "s", from_G, "n.x > 1", "*", concurrency=2
-    )
+    subG, result = gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
 
     assert subG.name() == "s"
     assert result["graphName"] == "s"
@@ -190,9 +184,7 @@ def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
 def test_graph_writeRelationship(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    gds.nodeSimilarity.mutate(
-        G, mutateRelationshipType="SIMILAR", mutateProperty="score", similarityCutoff=0
-    )
+    gds.nodeSimilarity.mutate(G, mutateRelationshipType="SIMILAR", mutateProperty="score", similarityCutoff=0)
 
     result = gds.graph.writeRelationship(G, "SIMILAR", "score", concurrency=2)
     assert result["relationshipsWritten"] == 2

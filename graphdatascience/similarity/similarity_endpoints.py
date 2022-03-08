@@ -21,9 +21,7 @@ class SimilarityEndpoints:
 
     @property
     def euclideanDistance(self) -> SimilarityAlgoRunner:
-        return SimilarityAlgoRunner(
-            self._query_runner, f"{self._namespace}.euclideanDistance"
-        )
+        return SimilarityAlgoRunner(self._query_runner, f"{self._namespace}.euclideanDistance")
 
     @property
     def euclidean(self) -> SimilarityAlgoRunner:

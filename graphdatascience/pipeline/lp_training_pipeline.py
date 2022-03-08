@@ -7,9 +7,7 @@ from .training_pipeline import TrainingPipeline
 
 class LPTrainingPipeline(TrainingPipeline):
     def addFeature(self, feature_type: str, **config: Any) -> Row:
-        query = (
-            f"{self._query_prefix()}addFeature($pipeline_name, $feature_type, $config)"
-        )
+        query = f"{self._query_prefix()}addFeature($pipeline_name, $feature_type, $config)"
         params = {
             "pipeline_name": self.name(),
             "feature_type": feature_type,

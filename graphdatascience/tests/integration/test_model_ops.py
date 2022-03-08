@@ -31,9 +31,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (c)-[:REL]->(b)
         """
     )
-    G, _ = gds.graph.project(
-        "g", {"Node": {"properties": ["age"]}}, {"REL": {"orientation": "UNDIRECTED"}}
-    )
+    G, _ = gds.graph.project("g", {"Node": {"properties": ["age"]}}, {"REL": {"orientation": "UNDIRECTED"}})
 
     yield G
 
@@ -42,9 +40,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
 
 @pytest.fixture(scope="module")
-def lp_model(
-    runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
-) -> Generator[Model, None, None]:
+def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
     pipe, _ = gds.beta.pipeline.linkPrediction.create("pipe")
 
     try:
@@ -63,18 +59,14 @@ def lp_model(
 
 
 @pytest.fixture(scope="module")
-def nc_model(
-    runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
-) -> Generator[Model, None, None]:
+def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
     pipe, _ = gds.beta.pipeline.nodeClassification.create("pipe")
 
     try:
         pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.selectFeatures("rank")
         pipe.configureSplit(testFraction=0.3)
-        nc_model, _ = pipe.train(
-            G, modelName="nc-model", targetProperty="age", metrics=["ACCURACY"]
-        )
+        nc_model, _ = pipe.train(G, modelName="nc-model", targetProperty="age", metrics=["ACCURACY"])
     finally:
         query = "CALL gds.beta.pipeline.drop($name)"
         params = {"name": "pipe"}
@@ -86,12 +78,8 @@ def nc_model(
 
 
 @pytest.fixture
-def gs_model(
-    runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
-) -> Generator[GraphSageModel, None, None]:
-    model, _ = gds.beta.graphSage.train(
-        G, modelName="gs-model", featureProperties=["age"]
-    )
+def gs_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[GraphSageModel, None, None]:
+    model, _ = gds.beta.graphSage.train(G, modelName="gs-model", featureProperties=["age"])
 
     yield model
 
@@ -112,9 +100,7 @@ def test_model_exists(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.enterprise
-def test_model_publish(
-    runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel
-) -> None:
+def test_model_publish(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
     assert not gs_model.shared()
 
     shared_model = gds.alpha.model.publish(gs_model)
@@ -128,9 +114,7 @@ def test_model_publish(
 
 
 @pytest.mark.model_store_location
-def test_model_load(
-    runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel
-) -> None:
+def test_model_load(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
     runner.run_query(f"CALL gds.alpha.model.store('{gs_model.name()}')")
     runner.run_query(f"CALL gds.beta.model.drop('{gs_model.name()}')")
 
@@ -143,9 +127,7 @@ def test_model_load(
 
 
 @pytest.mark.model_store_location
-def test_model_store(
-    runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel
-) -> None:
+def test_model_store(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
     model_name = gds.alpha.model.store(gs_model)["modelName"]
 
     # Should be deletable now
@@ -154,12 +136,8 @@ def test_model_store(
 
 
 @pytest.mark.model_store_location
-def test_model_delete(
-    runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel
-) -> None:
-    model_name = runner.run_query(f"CALL gds.alpha.model.store('{gs_model.name()}')")[
-        0
-    ]["modelName"]
+def test_model_delete(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
+    model_name = runner.run_query(f"CALL gds.alpha.model.store('{gs_model.name()}')")[0]["modelName"]
 
     model = gds.model.get(model_name)
     runner.run_query(f"CALL gds.beta.model.drop('{gs_model.name()}')")

@@ -15,9 +15,7 @@ class UtilEndpoints:
         return UtilProcRunner(self._query_runner, f"{self._namespace}.util")
 
     @client_only_endpoint("gds")
-    def find_node_id(
-        self, labels: List[str] = [], properties: Dict[str, Any] = {}
-    ) -> int:
+    def find_node_id(self, labels: List[str] = [], properties: Dict[str, Any] = {}) -> int:
         label_match = None
         if labels:
             label_match = " AND ".join([f"n:{label}" for label in labels])
@@ -43,9 +41,7 @@ class UtilEndpoints:
 
         node_match = self._query_runner.run_query(query)
         if len(node_match) != 1:
-            raise ValueError(
-                f"Filter did not match with exactly one node: {node_match}"
-            )
+            raise ValueError(f"Filter did not match with exactly one node: {node_match}")
 
         return node_match[0]["id"]  # type: ignore
 
@@ -59,9 +55,7 @@ class UtilEndpoints:
         namespace = self._namespace + ".list"
         return self._query_runner.run_query(f"CALL {namespace}()")
 
-    def oneHotEncoding(
-        self, available_values: List[Any], selected_values: List[Any]
-    ) -> List[int]:
+    def oneHotEncoding(self, available_values: List[Any], selected_values: List[Any]) -> List[int]:
         namespace = self._namespace + ".oneHotEncoding"
 
         query = f"RETURN {namespace}($available_values, $selected_values) AS embedding"

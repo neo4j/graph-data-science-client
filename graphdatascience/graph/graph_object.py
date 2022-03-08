@@ -32,18 +32,14 @@ class Graph:
     def node_properties(self, label: str) -> List[str]:
         labels_to_props = self._graph_info(["schema"])["schema"]["nodes"]
         if label not in labels_to_props.keys():
-            raise ValueError(
-                f"There is no node label '{label}' projected onto '{self.name()}'"
-            )
+            raise ValueError(f"There is no node label '{label}' projected onto '{self.name()}'")
 
         return list(labels_to_props[label].keys())
 
     def relationship_properties(self, type: str) -> List[str]:
         types_to_props = self._graph_info(["schema"])["schema"]["relationships"]
         if type not in types_to_props.keys():
-            raise ValueError(
-                f"There is no relationship type '{type}' projected onto '{self.name()}'"
-            )
+            raise ValueError(f"There is no relationship type '{type}' projected onto '{self.name()}'")
 
         return list(types_to_props[type].keys())
 

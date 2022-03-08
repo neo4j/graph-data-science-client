@@ -32,9 +32,7 @@ class TrainingPipeline(ABC):
         return self._query_runner.run_query(query, params)[0]
 
     def configureParams(self, parameter_space: List[Dict[str, Any]]) -> Row:
-        query = (
-            f"{self._query_prefix()}configureParams($pipeline_name, $parameter_space)"
-        )
+        query = f"{self._query_prefix()}configureParams($pipeline_name, $parameter_space)"
         params = {
             "pipeline_name": self.name(),
             "parameter_space": parameter_space,

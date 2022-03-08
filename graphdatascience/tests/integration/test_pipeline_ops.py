@@ -11,9 +11,7 @@ PIPE_NAME = "pipe"
 
 
 @pytest.fixture
-def lp_pipe(
-    runner: Neo4jQueryRunner, gds: GraphDataScience
-) -> Generator[LPTrainingPipeline, None, None]:
+def lp_pipe(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[LPTrainingPipeline, None, None]:
     pipe, _ = gds.beta.pipeline.linkPrediction.create(PIPE_NAME)
 
     yield pipe
@@ -24,9 +22,7 @@ def lp_pipe(
 
 
 @pytest.fixture
-def nc_pipe(
-    runner: Neo4jQueryRunner, gds: GraphDataScience
-) -> Generator[NCTrainingPipeline, None, None]:
+def nc_pipe(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[NCTrainingPipeline, None, None]:
     pipe, _ = gds.beta.pipeline.nodeClassification.create(PIPE_NAME)
 
     yield pipe

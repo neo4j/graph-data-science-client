@@ -7,9 +7,7 @@ from ..query_runner.query_runner import QueryRunner, Row
 
 class NCTrainingPipeline(TrainingPipeline):
     def selectFeatures(self, node_properties: Union[str, List[str]]) -> Row:
-        query = (
-            f"{self._query_prefix()}selectFeatures($pipeline_name, $node_properties)"
-        )
+        query = f"{self._query_prefix()}selectFeatures($pipeline_name, $node_properties)"
         params = {"pipeline_name": self.name(), "node_properties": node_properties}
 
         return self._query_runner.run_query(query, params)[0]

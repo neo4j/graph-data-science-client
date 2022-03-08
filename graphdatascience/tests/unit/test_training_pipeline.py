@@ -21,9 +21,7 @@ def nc_pipe(gds: GraphDataScience) -> NCTrainingPipeline:
     return pipe
 
 
-def test_create_lp_pipeline(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
+def test_create_lp_pipeline(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     lp_pipe, _ = gds.beta.pipeline.linkPrediction.create("hello")
     assert lp_pipe.name() == "hello"
 
@@ -33,12 +31,8 @@ def test_create_lp_pipeline(
     }
 
 
-def test_add_node_property_lp_pipeline(
-    runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline
-) -> None:
-    lp_pipe.addNodeProperty(
-        "pageRank", mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
-    )
+def test_add_node_property_lp_pipeline(runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
+    lp_pipe.addNodeProperty("pageRank", mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
 
     assert (
         runner.last_query()
@@ -51,9 +45,7 @@ def test_add_node_property_lp_pipeline(
     }
 
 
-def test_add_feature_lp_pipeline(
-    runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline
-) -> None:
+def test_add_feature_lp_pipeline(runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
     lp_pipe.addFeature("l2", nodeProperties=["prop1"])
 
     assert (
@@ -67,29 +59,21 @@ def test_add_feature_lp_pipeline(
     }
 
 
-def test_configure_split_lp_pipeline(
-    runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline
-) -> None:
+def test_configure_split_lp_pipeline(runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
     lp_pipe.configureSplit(trainFraction=0.42)
 
-    assert (
-        runner.last_query()
-        == "CALL gds.beta.pipeline.linkPrediction.configureSplit($pipeline_name, $config)"
-    )
+    assert runner.last_query() == "CALL gds.beta.pipeline.linkPrediction.configureSplit($pipeline_name, $config)"
     assert runner.last_params() == {
         "pipeline_name": lp_pipe.name(),
         "config": {"trainFraction": 0.42},
     }
 
 
-def test_configure_params_lp_pipeline(
-    runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline
-) -> None:
+def test_configure_params_lp_pipeline(runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
     lp_pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
 
     assert (
-        runner.last_query()
-        == "CALL gds.beta.pipeline.linkPrediction.configureParams($pipeline_name, $parameter_space)"
+        runner.last_query() == "CALL gds.beta.pipeline.linkPrediction.configureParams($pipeline_name, $parameter_space)"
     )
     assert runner.last_params() == {
         "pipeline_name": lp_pipe.name(),
@@ -104,36 +88,26 @@ def test_train_estimate_lp_pipeline(
 
     lp_pipe.train_estimate(G, modelName="m", concurrency=2)
 
-    assert (
-        runner.last_query()
-        == "CALL gds.beta.pipeline.linkPrediction.train.estimate($graph_name, $config)"
-    )
+    assert runner.last_query() == "CALL gds.beta.pipeline.linkPrediction.train.estimate($graph_name, $config)"
     assert runner.last_params() == {
         "graph_name": G.name(),
         "config": {"pipeline": lp_pipe.name(), "modelName": "m", "concurrency": 2},
     }
 
 
-def test_train_lp_pipeline(
-    runner: CollectingQueryRunner, gds: GraphDataScience, lp_pipe: LPTrainingPipeline
-) -> None:
+def test_train_lp_pipeline(runner: CollectingQueryRunner, gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
     lp_pipe.train(G, modelName="m", concurrency=2)
 
-    assert (
-        runner.last_query()
-        == "CALL gds.beta.pipeline.linkPrediction.train($graph_name, $config)"
-    )
+    assert runner.last_query() == "CALL gds.beta.pipeline.linkPrediction.train($graph_name, $config)"
     assert runner.last_params() == {
         "graph_name": G.name(),
         "config": {"pipeline": lp_pipe.name(), "modelName": "m", "concurrency": 2},
     }
 
 
-def test_select_features_nc_pipeline(
-    runner: CollectingQueryRunner, nc_pipe: NCTrainingPipeline
-) -> None:
+def test_select_features_nc_pipeline(runner: CollectingQueryRunner, nc_pipe: NCTrainingPipeline) -> None:
     nc_pipe.selectFeatures("hello")
 
     assert (

@@ -28,9 +28,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (c)-[:REL]->(b)
         """
     )
-    G, _ = gds.graph.project(
-        "g", {"Node": {"properties": ["age"]}}, {"REL": {"orientation": "UNDIRECTED"}}
-    )
+    G, _ = gds.graph.project("g", {"Node": {"properties": ["age"]}}, {"REL": {"orientation": "UNDIRECTED"}})
 
     yield G
 
@@ -39,9 +37,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
 
 @pytest.fixture(scope="module")
-def lp_model(
-    runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
-) -> Generator[Model, None, None]:
+def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
     pipe, _ = gds.beta.pipeline.linkPrediction.create("pipe")
 
     try:
@@ -62,18 +58,14 @@ def lp_model(
 
 
 @pytest.fixture(scope="module")
-def nc_model(
-    runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph
-) -> Generator[Model, None, None]:
+def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
     pipe, _ = gds.beta.pipeline.nodeClassification.create("pipe")
 
     try:
         pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.selectFeatures("rank")
         pipe.configureSplit(testFraction=0.3)
-        nc_model, _ = pipe.train(
-            G, modelName="nc-model", targetProperty="age", metrics=["ACCURACY"]
-        )
+        nc_model, _ = pipe.train(G, modelName="nc-model", targetProperty="age", metrics=["ACCURACY"])
     finally:
         query = "CALL gds.beta.pipeline.drop($name)"
         params = {"name": "pipe"}

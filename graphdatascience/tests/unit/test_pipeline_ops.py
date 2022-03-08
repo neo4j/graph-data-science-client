@@ -14,9 +14,7 @@ def pipeline(runner: CollectingQueryRunner) -> TrainingPipeline:
     return LPTrainingPipeline(PIPELINE_NAME, runner)
 
 
-def test_list_pipelines(
-    runner: CollectingQueryRunner, gds: GraphDataScience, pipeline: TrainingPipeline
-) -> None:
+def test_list_pipelines(runner: CollectingQueryRunner, gds: GraphDataScience, pipeline: TrainingPipeline) -> None:
     gds.beta.pipeline.list(pipeline)
 
     assert runner.last_query() == "CALL gds.beta.pipeline.list($pipeline_name)"
@@ -35,9 +33,7 @@ def test_exists_pipeline(runner: CollectingQueryRunner, gds: GraphDataScience) -
     assert runner.last_params() == {"pipeline_name": "my_pipeline"}
 
 
-def test_drop_pipeline(
-    runner: CollectingQueryRunner, gds: GraphDataScience, pipeline: TrainingPipeline
-) -> None:
+def test_drop_pipeline(runner: CollectingQueryRunner, gds: GraphDataScience, pipeline: TrainingPipeline) -> None:
     gds.alpha.pipeline.drop(pipeline)
 
     assert runner.last_query() == "CALL gds.alpha.pipeline.drop($pipeline_name)"

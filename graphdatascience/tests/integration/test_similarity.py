@@ -50,9 +50,7 @@ def test_similarity_pearson(gds: GraphDataScience) -> None:
 
 
 def test_similarity_euclideanDistance(gds: GraphDataScience) -> None:
-    result = gds.alpha.similarity.euclideanDistance(
-        [3, 8, 7, 5, 2, 9], [10, 8, 6, 6, 4, 5]
-    )
+    result = gds.alpha.similarity.euclideanDistance([3, 8, 7, 5, 2, 9], [10, 8, 6, 6, 4, 5])
     assert result == pytest.approx(8.42, 0.01)
 
 

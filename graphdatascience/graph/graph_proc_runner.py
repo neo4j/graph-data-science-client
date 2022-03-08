@@ -59,9 +59,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     def exists(self, graph_name: str) -> Row:
         self._namespace += ".exists"
-        return self._query_runner.run_query(
-            f"CALL {self._namespace}($graph_name)", {"graph_name": graph_name}
-        )[0]
+        return self._query_runner.run_query(f"CALL {self._namespace}($graph_name)", {"graph_name": graph_name})[0]
 
     def list(self, G: Optional[Graph] = None) -> QueryResult:
         self._namespace += ".list"
@@ -130,9 +128,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     ) -> QueryResult:
         self._namespace += ".streamRelationshipProperties"
 
-        return self._handle_properties(
-            G, relationship_properties, relationship_types, config
-        )
+        return self._handle_properties(G, relationship_properties, relationship_types, config)
 
     def streamRelationshipProperty(
         self,
@@ -143,9 +139,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     ) -> QueryResult:
         self._namespace += ".streamRelationshipProperty"
 
-        return self._handle_properties(
-            G, relationship_properties, relationship_types, config
-        )
+        return self._handle_properties(G, relationship_properties, relationship_types, config)
 
     def writeNodeProperties(
         self,
@@ -199,9 +193,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params)[0]
 
-    def generate(
-        self, graph_name: str, node_count: int, average_degree: int, **config: Any
-    ) -> Tuple[Graph, Row]:
+    def generate(self, graph_name: str, node_count: int, average_degree: int, **config: Any) -> Tuple[Graph, Row]:
         self._namespace += ".generate"
 
         query = f"CALL {self._namespace}($graph_name, $node_count, $average_degree, $config)"

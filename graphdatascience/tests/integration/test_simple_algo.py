@@ -33,9 +33,7 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 def test_pageRank_mutate(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    result = gds.pageRank.mutate(
-        G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
-    )
+    result = gds.pageRank.mutate(G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
     assert result["nodePropertiesWritten"] == 3
 
     props = runner.run_query(
@@ -51,9 +49,7 @@ def test_pageRank_mutate(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Non
 def test_pageRank_mutate_estimate(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    result = gds.pageRank.mutate.estimate(
-        G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3
-    )
+    result = gds.pageRank.mutate.estimate(G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
 
     assert result["requiredMemory"]
 
@@ -94,9 +90,7 @@ def test_nodeSimilarity_stream_estimate(gds: GraphDataScience) -> None:
 def test_fastRP_write(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    result = gds.fastRP.write(
-        G, writeProperty="embedding", embeddingDimension=4, randomSeed=42
-    )
+    result = gds.fastRP.write(G, writeProperty="embedding", embeddingDimension=4, randomSeed=42)
     assert result["nodePropertiesWritten"] == 3
 
     embeddings = runner.run_query(
@@ -114,8 +108,6 @@ def test_fastRP_write(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
 def test_fastRP_write_estimate(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    result = gds.fastRP.write.estimate(
-        G, writeProperty="embedding", embeddingDimension=4, randomSeed=42
-    )
+    result = gds.fastRP.write.estimate(G, writeProperty="embedding", embeddingDimension=4, randomSeed=42)
 
     assert result["requiredMemory"]

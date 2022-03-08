@@ -11,9 +11,7 @@ def test_similarity_stats(runner: CollectingQueryRunner, gds: GraphDataScience) 
     }
 
 
-def test_similarity_stream(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
+def test_similarity_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     gds.alpha.similarity.pearson.stream(hello=0.2, you=42)
 
     assert runner.last_query() == "CALL gds.alpha.similarity.pearson.stream($config)"

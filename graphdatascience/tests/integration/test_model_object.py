@@ -26,9 +26,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (c)-[:REL]->(b)
         """
     )
-    G, _ = gds.graph.project(
-        "g", {"Node": {"properties": ["age"]}}, {"REL": {"orientation": "UNDIRECTED"}}
-    )
+    G, _ = gds.graph.project("g", {"Node": {"properties": ["age"]}}, {"REL": {"orientation": "UNDIRECTED"}})
 
     yield G
 
@@ -37,12 +35,8 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
 
 @pytest.fixture
-def gs_model(
-    gds: GraphDataScience, G: Graph, runner: Neo4jQueryRunner
-) -> Generator[GraphSageModel, None, None]:
-    model, _ = gds.beta.graphSage.train(
-        G, modelName="gs-model", featureProperties=["age"]
-    )
+def gs_model(gds: GraphDataScience, G: Graph, runner: Neo4jQueryRunner) -> Generator[GraphSageModel, None, None]:
+    model, _ = gds.beta.graphSage.train(G, modelName="gs-model", featureProperties=["age"])
 
     yield model
 
@@ -56,9 +50,7 @@ def test_model_exists(gs_model: GraphSageModel) -> None:
 
 
 def test_model_drop(gds: GraphDataScience, G: Graph) -> None:
-    model, _ = gds.beta.graphSage.train(
-        G, modelName="gs-model", featureProperties=["age"]
-    )
+    model, _ = gds.beta.graphSage.train(G, modelName="gs-model", featureProperties=["age"])
 
     model.drop()
     assert not model.exists()

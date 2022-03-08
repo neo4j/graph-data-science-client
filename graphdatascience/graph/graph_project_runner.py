@@ -10,9 +10,7 @@ class GraphProjectRunner(IllegalAttrChecker):
         self._query_runner = query_runner
         self._namespace = namespace
 
-    def __call__(
-        self, graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any
-    ) -> Tuple[Graph, Row]:
+    def __call__(self, graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> Tuple[Graph, Row]:
         result = self._query_runner.run_query(
             f"CALL {self._namespace}($graph_name, $node_spec, $relationship_spec, $config)",
             {

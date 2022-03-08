@@ -9,6 +9,4 @@ class TopologicalLPEndpoints:
 
     @property
     def linkprediction(self) -> TopologicalLPRunner:
-        return TopologicalLPRunner(
-            self._query_runner, f"{self._namespace}.linkprediction"
-        )
+        return TopologicalLPRunner(self._query_runner, f"{self._namespace}.linkprediction")

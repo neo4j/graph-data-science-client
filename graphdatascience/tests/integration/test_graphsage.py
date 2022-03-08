@@ -36,9 +36,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
 @pytest.fixture
 def model(gds: GraphDataScience, G: Graph) -> Generator[GraphSageModel, None, None]:
-    model, _ = gds.beta.graphSage.train(
-        G, modelName="m", featureProperties=["x"], embeddingDimension=20
-    )
+    model, _ = gds.beta.graphSage.train(G, modelName="m", featureProperties=["x"], embeddingDimension=20)
 
     yield model
 
@@ -51,9 +49,7 @@ def test_graphsage_train(model: GraphSageModel) -> None:
     assert len(model.metrics()["epochLosses"]) == model.metrics()["ranEpochs"]
 
 
-def test_graphsage_write(
-    G: Graph, model: GraphSageModel, runner: Neo4jQueryRunner
-) -> None:
+def test_graphsage_write(G: Graph, model: GraphSageModel, runner: Neo4jQueryRunner) -> None:
     model.predict_write(G, writeProperty="gs")
 
     result = runner.run_query("MATCH (n:Node) RETURN size(n.gs) AS embeddingDim")
@@ -61,9 +57,7 @@ def test_graphsage_write(
     assert result[0]["embeddingDim"] == 20
 
 
-def test_graphsage_stream(
-    G: Graph, model: GraphSageModel, runner: Neo4jQueryRunner
-) -> None:
+def test_graphsage_stream(G: Graph, model: GraphSageModel, runner: Neo4jQueryRunner) -> None:
     stream = model.predict_stream(G)
 
     assert len(stream) == G.node_count()
