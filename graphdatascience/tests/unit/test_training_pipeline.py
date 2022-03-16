@@ -85,7 +85,8 @@ def test_add_logistic_regression_nc_pipeline(runner: CollectingQueryRunner, nc_p
     nc_pipe.addLogisticRegression(penalty=1)
 
     assert (
-        runner.last_query() == "CALL gds.beta.pipeline.nodeClassification.addLogisticRegression($pipeline_name, $config)"
+        runner.last_query()
+        == "CALL gds.beta.pipeline.nodeClassification.addLogisticRegression($pipeline_name, $config)"
     )
     assert runner.last_params() == {
         "pipeline_name": nc_pipe.name(),
@@ -96,13 +97,12 @@ def test_add_logistic_regression_nc_pipeline(runner: CollectingQueryRunner, nc_p
 def test_add_random_forest_nc_pipeline(runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
     lp_pipe.addRandomForest(penalty=1)
 
-    assert (
-        runner.last_query() == "CALL gds.beta.pipeline.linkPrediction.addRandomForest($pipeline_name, $config)"
-    )
+    assert runner.last_query() == "CALL gds.beta.pipeline.linkPrediction.addRandomForest($pipeline_name, $config)"
     assert runner.last_params() == {
         "pipeline_name": lp_pipe.name(),
         "config": {"penalty": 1},
     }
+
 
 def test_train_estimate_lp_pipeline(
     runner: CollectingQueryRunner, gds: GraphDataScience, lp_pipe: LPTrainingPipeline

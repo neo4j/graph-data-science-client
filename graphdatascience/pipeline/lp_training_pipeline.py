@@ -21,10 +21,7 @@ class LPTrainingPipeline(TrainingPipeline):
 
     def addRandomForest(self, **config: Any) -> Row:
         query = f"{self._query_prefix()}addRandomForest($pipeline_name, $config)"
-        params = {
-            "pipeline_name": self.name(),
-            "config": config
-        }
+        params = {"pipeline_name": self.name(), "config": config}
         return self._query_runner.run_query(query, params)[0]
 
     def _query_prefix(self) -> str:
