@@ -167,6 +167,8 @@ steps = pipe.feature_properties()
 assert len(steps) == 1
 assert steps[0]["feature"] == "rank"
 
+pipe.addLogisticRegression()
+
 model, res = pipe.train(G, modelName="myModel", targetProperty="myClass", metrics=["ACCURACY"])
 assert model.metrics()["ACCURACY"]["test"] > 0
 assert res["trainMillis"] >= 0
