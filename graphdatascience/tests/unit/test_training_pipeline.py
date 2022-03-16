@@ -69,18 +69,6 @@ def test_configure_split_lp_pipeline(runner: CollectingQueryRunner, lp_pipe: LPT
     }
 
 
-def test_configure_params_lp_pipeline(runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
-    lp_pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
-
-    assert (
-        runner.last_query() == "CALL gds.beta.pipeline.linkPrediction.configureParams($pipeline_name, $parameter_space)"
-    )
-    assert runner.last_params() == {
-        "pipeline_name": lp_pipe.name(),
-        "parameter_space": [{"tolerance": 0.01}, {"maxEpochs": 500}],
-    }
-
-
 def test_add_logistic_regression_nc_pipeline(runner: CollectingQueryRunner, nc_pipe: NCTrainingPipeline) -> None:
     nc_pipe.addLogisticRegression(penalty=1)
 

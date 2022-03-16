@@ -127,20 +127,6 @@ def test_configure_split_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTraini
     assert pipeline_info["splitConfig"]["trainFraction"] == 0.42
 
 
-def test_configure_params_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
-    result = lp_pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
-    assert len(result["parameterSpace"]) == 2
-
-    query = "CALL gds.beta.pipeline.list($name)"
-    params = {"name": lp_pipe.name()}
-    pipeline_info = runner.run_query(query, params)[0]["pipelineInfo"]
-
-    parameter_space = pipeline_info["trainingParameterSpace"]
-    assert len(parameter_space) == 2
-    assert parameter_space[0]["tolerance"] == 0.01
-    assert parameter_space[1]["maxEpochs"] == 500
-
-
 def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, G: Graph) -> None:
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
     lp_pipe.addFeature("l2", nodeProperties=["rank"])
