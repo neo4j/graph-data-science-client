@@ -1,8 +1,9 @@
 from typing import Any, Dict
 
 import neo4j
+from pandas.core.frame import DataFrame
 
-from .query_runner import QueryResult, QueryRunner
+from .query_runner import QueryRunner
 
 
 class Neo4jQueryRunner(QueryRunner):
@@ -10,10 +11,10 @@ class Neo4jQueryRunner(QueryRunner):
         self._driver = driver
         self._db = db
 
-    def run_query(self, query: str, params: Dict[str, Any] = {}) -> QueryResult:
+    def run_query(self, query: str, params: Dict[str, Any] = {}) -> DataFrame:
         with self._driver.session(database=self._db) as session:
             result = session.run(query, params)
-            return result.data()  # type: ignore
+            return result.to_df()
 
     def set_database(self, db: str) -> None:
         self._db = db
