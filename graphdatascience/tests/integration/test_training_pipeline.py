@@ -145,6 +145,7 @@ def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
     lp_pipe.addFeature("l2", nodeProperties=["rank"])
     lp_pipe.configureSplit(trainFraction=0.2, testFraction=0.2)
+    lp_pipe.addLogisticRegression(penalty=1)
 
     lp_model, result = lp_pipe.train(G, modelName="m", concurrency=2)
     assert lp_model.name() == "m"

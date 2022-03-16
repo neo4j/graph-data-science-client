@@ -19,6 +19,14 @@ class LPTrainingPipeline(TrainingPipeline):
     def feature_steps(self) -> List[Dict[str, Any]]:
         return self._list_info()["pipelineInfo"]["featurePipeline"]["featureSteps"]  # type: ignore
 
+    def addRandomForest(self, **config: Any) -> Row:
+        query = f"{self._query_prefix()}addRandomForest($pipeline_name, $config)"
+        params = {
+            "pipeline_name": self.name(),
+            "config": config
+        }
+        return self._query_runner.run_query(query, params)[0]
+
     def _query_prefix(self) -> str:
         return "CALL gds.beta.pipeline.linkPrediction."
 

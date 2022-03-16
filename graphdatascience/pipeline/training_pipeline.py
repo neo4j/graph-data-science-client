@@ -39,6 +39,14 @@ class TrainingPipeline(ABC):
         }
         return self._query_runner.run_query(query, params)[0]
 
+    def addLogisticRegression(self, **config: Any) -> Row:
+        query = f"{self._query_prefix()}addLogisticRegression($pipeline_name, $config)"
+        params = {
+            "pipeline_name": self.name(),
+            "config": config
+        }
+        return self._query_runner.run_query(query, params)[0]
+
     def train(self, G: Graph, **config: Any) -> Tuple[Model, Row]:
         query = f"{self._query_prefix()}train($graph_name, $config)"
         config["pipeline"] = self.name()
