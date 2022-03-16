@@ -37,7 +37,8 @@ class TrainingPipeline(ABC):
         return self._query_runner.run_query(query, params)[0]
 
     def addRandomForest(self, **config: Any) -> Row:
-        query = f"{self._query_prefix()}addRandomForest($pipeline_name, $config)"
+        query_prefix = self._query_prefix().replace("beta", "alpha")
+        query = f"{query_prefix}addRandomForest($pipeline_name, $config)"
         params = {"pipeline_name": self.name(), "config": config}
         return self._query_runner.run_query(query, params)[0]
 

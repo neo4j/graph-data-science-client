@@ -174,6 +174,18 @@ def test_split_config_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     assert "trainFraction" in split_config.keys()
 
 
+def test_add_logistic_regression_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    res = lp_pipe.addLogisticRegression(penalty=42)
+    lr_parameter_space = res["parameterSpace"]["LogisticRegression"]
+    assert lr_parameter_space[0]["penalty"] == 42
+
+
+def test_add_random_forest_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    res = lp_pipe.addRandomForest(maxDepth=1337)
+    rf_parameter_space = res["parameterSpace"]["RandomForest"]
+    assert rf_parameter_space[0]["maxDepth"] == 1337
+
+
 def test_parameter_space_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     lp_pipe.addLogisticRegression()
     parameter_space = lp_pipe.parameter_space()
