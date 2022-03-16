@@ -143,6 +143,7 @@ def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
 
 
 def test_train_estimate_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, G: Graph) -> None:
+    lp_pipe.addLogisticRegression()
     result = lp_pipe.train_estimate(G, modelName="m", concurrency=2)
     assert result["requiredMemory"]
 
@@ -174,9 +175,10 @@ def test_split_config_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
 
 
 def test_parameter_space_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    lp_pipe.addLogisticRegression()
     parameter_space = lp_pipe.parameter_space()
-    assert len(parameter_space) > 0
-    assert "penalty" in parameter_space[0]
+    assert len(parameter_space.keys()) == 2
+    assert "penalty" in parameter_space["LogisticRegression"][0]
 
 
 def test_select_features_nc_pipeline(runner: Neo4jQueryRunner, nc_pipe: NCTrainingPipeline) -> None:

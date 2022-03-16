@@ -78,7 +78,7 @@ class TrainingPipeline(ABC):
     def split_config(self) -> Dict[str, Any]:
         return self._list_info()["pipelineInfo"]["splitConfig"]  # type: ignore
 
-    def parameter_space(self) -> List[Dict[str, Any]]:
+    def parameter_space(self) -> Dict[str, List[Dict[str, Any]]]:
         return self._list_info()["pipelineInfo"]["trainingParameterSpace"]  # type: ignore
 
     def _list_info(self) -> Row:
