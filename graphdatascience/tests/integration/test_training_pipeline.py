@@ -127,24 +127,11 @@ def test_configure_split_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTraini
     assert pipeline_info["splitConfig"]["trainFraction"] == 0.42
 
 
-def test_configure_params_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
-    result = lp_pipe.configureParams([{"tolerance": 0.01}, {"maxEpochs": 500}])
-    assert len(result["parameterSpace"]) == 2
-
-    query = "CALL gds.beta.pipeline.list($name)"
-    params = {"name": lp_pipe.name()}
-    pipeline_info = runner.run_query(query, params)[0]["pipelineInfo"]
-
-    parameter_space = pipeline_info["trainingParameterSpace"]
-    assert len(parameter_space) == 2
-    assert parameter_space[0]["tolerance"] == 0.01
-    assert parameter_space[1]["maxEpochs"] == 500
-
-
 def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, G: Graph) -> None:
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
     lp_pipe.addFeature("l2", nodeProperties=["rank"])
     lp_pipe.configureSplit(trainFraction=0.2, testFraction=0.2)
+    lp_pipe.addLogisticRegression(penalty=1)
 
     lp_model, result = lp_pipe.train(G, modelName="m", concurrency=2)
     assert lp_model.name() == "m"
@@ -156,6 +143,7 @@ def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
 
 
 def test_train_estimate_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, G: Graph) -> None:
+    lp_pipe.addLogisticRegression()
     result = lp_pipe.train_estimate(G, modelName="m", concurrency=2)
     assert result["requiredMemory"]
 
@@ -186,10 +174,23 @@ def test_split_config_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     assert "trainFraction" in split_config.keys()
 
 
+def test_add_logistic_regression_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    res = lp_pipe.addLogisticRegression(penalty=42)
+    lr_parameter_space = res["parameterSpace"]["LogisticRegression"]
+    assert lr_parameter_space[0]["penalty"] == 42
+
+
+def test_add_random_forest_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    res = lp_pipe.addRandomForest(maxDepth=1337)
+    rf_parameter_space = res["parameterSpace"]["RandomForest"]
+    assert rf_parameter_space[0]["maxDepth"] == 1337
+
+
 def test_parameter_space_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    lp_pipe.addLogisticRegression()
     parameter_space = lp_pipe.parameter_space()
-    assert len(parameter_space) > 0
-    assert "penalty" in parameter_space[0]
+    assert len(parameter_space.keys()) == 2
+    assert "penalty" in parameter_space["LogisticRegression"][0]
 
 
 def test_select_features_nc_pipeline(runner: Neo4jQueryRunner, nc_pipe: NCTrainingPipeline) -> None:
