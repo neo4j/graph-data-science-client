@@ -7,4 +7,3 @@ pytest
 pytest-annotate
 tox
 types-setuptools
-neo4j
