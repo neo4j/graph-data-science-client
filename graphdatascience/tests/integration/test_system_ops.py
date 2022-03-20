@@ -20,4 +20,4 @@ def test_systemMonitor(gds: GraphDataScience) -> None:
 def test_sysInfo(gds: GraphDataScience) -> None:
     result = gds.debug.sysInfo()
 
-    assert result["key"] == "gdsVersion"
+    assert "gdsVersion" in (list(result["key"]))
