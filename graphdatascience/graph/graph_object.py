@@ -1,5 +1,6 @@
-from typing import Dict, List
+from typing import List
 
+import pandas
 from pandas.core.series import Series
 
 from ..query_runner.query_runner import QueryRunner
@@ -45,8 +46,8 @@ class Graph:
 
         return list(types_to_props[type].keys())
 
-    def degree_distribution(self) -> Dict[str, float]:
-        return self._graph_info(["degreeDistribution"])  # type: ignore
+    def degree_distribution(self) -> Series:
+        return pandas.Series(self._graph_info(["degreeDistribution"]))
 
     def density(self) -> float:
         return self._graph_info(["density"])  # type: ignore
