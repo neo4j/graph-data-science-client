@@ -81,7 +81,7 @@ def test_create_lp_pipeline(runner: Neo4jQueryRunner, gds: GraphDataScience) -> 
     query = "CALL gds.beta.pipeline.exists($name)"
     params = {"name": pipe.name()}
     result2 = runner.run_query(query, params)
-    assert result2[0]["exists"]
+    assert result2["exists"][0]
 
     query = "CALL gds.beta.pipeline.drop($name)"
     params = {"name": pipe.name()}
@@ -94,7 +94,7 @@ def test_add_node_property_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrai
 
     query = "CALL gds.beta.pipeline.list($name)"
     params = {"name": lp_pipe.name()}
-    pipeline_info = runner.run_query(query, params)[0]["pipelineInfo"]
+    pipeline_info = runner.run_query(query, params)["pipelineInfo"][0]
 
     steps = pipeline_info["featurePipeline"]["nodePropertySteps"]
     assert len(steps) == 1
@@ -109,7 +109,7 @@ def test_add_feature_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPi
 
     query = "CALL gds.beta.pipeline.list($name)"
     params = {"name": lp_pipe.name()}
-    pipeline_info = runner.run_query(query, params)[0]["pipelineInfo"]
+    pipeline_info = runner.run_query(query, params)["pipelineInfo"][0]
 
     steps = pipeline_info["featurePipeline"]["featureSteps"]
     assert len(steps) == 1
@@ -122,7 +122,7 @@ def test_configure_split_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTraini
 
     query = "CALL gds.beta.pipeline.list($name)"
     params = {"name": lp_pipe.name()}
-    pipeline_info = runner.run_query(query, params)[0]["pipelineInfo"]
+    pipeline_info = runner.run_query(query, params)["pipelineInfo"][0]
 
     assert pipeline_info["splitConfig"]["trainFraction"] == 0.42
 
@@ -142,7 +142,7 @@ def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
     runner.run_query(query, params)
 
 
-def test_train_estimate_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, G: Graph) -> None:
+def test_train_estimate_lp_pipeline(lp_pipe: LPTrainingPipeline, G: Graph) -> None:
     lp_pipe.addLogisticRegression()
     result = lp_pipe.train_estimate(G, modelName="m", concurrency=2)
     assert result["requiredMemory"]
@@ -155,7 +155,7 @@ def test_node_property_steps_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
 
     steps = lp_pipe.node_property_steps()
     assert len(steps) == 1
-    assert steps[0]["name"] == "gds.pageRank.mutate"
+    assert steps["name"][0] == "gds.pageRank.mutate"
 
 
 def test_feature_steps_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
@@ -166,7 +166,7 @@ def test_feature_steps_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
 
     steps = lp_pipe.feature_steps()
     assert len(steps) == 1
-    assert steps[0]["name"] == "L2"
+    assert steps["name"][0] == "L2"
 
 
 def test_split_config_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
@@ -201,7 +201,7 @@ def test_select_features_nc_pipeline(runner: Neo4jQueryRunner, nc_pipe: NCTraini
 
     query = "CALL gds.beta.pipeline.list($name)"
     params = {"name": nc_pipe.name()}
-    pipeline_info = runner.run_query(query, params)[0]["pipelineInfo"]
+    pipeline_info = runner.run_query(query, params)["pipelineInfo"][0]
 
     steps = pipeline_info["featurePipeline"]["featureProperties"]
     assert len(steps) == 1

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Tuple
 
+import pandas
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
 
@@ -76,14 +77,17 @@ class TrainingPipeline(ABC):
 
         return self._query_runner.run_query(query, params).squeeze()
 
-    def node_property_steps(self) -> List[Dict[str, Any]]:
-        return self._list_info()["pipelineInfo"]["featurePipeline"]["nodePropertySteps"]  # type: ignore
+    def node_property_steps(self) -> DataFrame:
+        pipeline_info = self._list_info()["pipelineInfo"][0]
+        return pandas.DataFrame(pipeline_info["featurePipeline"]["nodePropertySteps"])
 
-    def split_config(self) -> Dict[str, Any]:
-        return self._list_info()["pipelineInfo"]["splitConfig"]  # type: ignore
+    def split_config(self) -> Series:
+        pipeline_info = self._list_info()["pipelineInfo"][0]
+        return pandas.Series(pipeline_info["splitConfig"])
 
-    def parameter_space(self) -> Dict[str, List[Dict[str, Any]]]:
-        return self._list_info()["pipelineInfo"]["trainingParameterSpace"]  # type: ignore
+    def parameter_space(self) -> Series:
+        pipeline_info = self._list_info()["pipelineInfo"][0]
+        return pandas.Series(pipeline_info["trainingParameterSpace"])
 
     def _list_info(self) -> DataFrame:
         query = "CALL gds.beta.pipeline.list($name)"
@@ -97,16 +101,16 @@ class TrainingPipeline(ABC):
         return info
 
     def type(self) -> str:
-        return self._list_info()["pipelineType"]  # type: ignore
+        return self._list_info()["pipelineType"].squeeze()  # type: ignore
 
     def creation_time(self) -> Any:  # neo4j.time.DateTime not exported
-        return self._list_info()["creationTime"]
+        return self._list_info()["creationTime"].squeeze()
 
     def exists(self) -> bool:
         query = "CALL gds.beta.pipeline.exists($pipeline_name) YIELD exists"
         params = {"pipeline_name": self._name}
 
-        return self._query_runner.run_query(query, params)["exists"]  # type: ignore
+        return self._query_runner.run_query(query, params)["exists"].squeeze()  # type: ignore
 
     def drop(self) -> None:
         query = "CALL gds.beta.pipeline.drop($pipeline_name)"

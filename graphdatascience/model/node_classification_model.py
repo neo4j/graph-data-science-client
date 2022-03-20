@@ -15,7 +15,7 @@ class NCModel(Model):
         config["modelName"] = self.name()
         params = {"graph_name": G.name(), "config": config}
 
-        return self._query_runner.run_query(query, params)[0]
+        return self._query_runner.run_query(query, params).squeeze()
 
     def predict_write_estimate(self, G: Graph, **config: Any) -> Series:
         return self._estimate_predict("write", G.name(), config)
