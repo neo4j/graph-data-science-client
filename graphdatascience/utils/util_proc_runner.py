@@ -15,13 +15,12 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".asNode"
         result = self._query_runner.run_query(f"RETURN {self._namespace}({node_id}) AS node")
 
-        return result["node"].squeeze()  # type: ignore
+        return result["node"].squeeze()
 
     def asNodes(self, node_ids: List[int]) -> List[Any]:
         self._namespace += ".asNodes"
         result = self._query_runner.run_query(f"RETURN {self._namespace}({node_ids}) AS nodes")
 
-        print(result)
         return result["nodes"].squeeze()  # type: ignore
 
     def nodeProperty(self, G: Graph, node_id: int, property_key: str, node_label: str = "*") -> Any:

@@ -34,7 +34,7 @@ class Model(ABC):
         config["modelName"] = self.name()
         params = {"graph_name": graph_name, "config": config}
 
-        return self._query_runner.run_query(query, params).squeeze()
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def name(self) -> str:
         return self._name
@@ -91,7 +91,7 @@ class Model(ABC):
         config["modelName"] = self.name()
         params = {"graph_name": G.name(), "config": config}
 
-        return self._query_runner.run_query(query, params).squeeze()
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def predict_mutate_estimate(self, G: Graph, **config: Any) -> Series:
         return self._estimate_predict("mutate", G.name(), config)

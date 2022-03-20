@@ -18,7 +18,7 @@ class LPTrainingPipeline(TrainingPipeline):
             "config": config,
         }
 
-        return self._query_runner.run_query(query, params).squeeze()
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def feature_steps(self) -> DataFrame:
         pipeline_info = self._list_info()["pipelineInfo"][0]

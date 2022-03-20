@@ -36,7 +36,7 @@ class GraphProjectRunner(IllegalAttrChecker):
             },
         )
 
-        return result.squeeze()
+        return result.squeeze()  # type: ignore
 
     @property
     def cypher(self) -> "GraphProjectRunner":

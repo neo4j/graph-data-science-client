@@ -17,7 +17,7 @@ class DebugProcRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".sysInfo"
         query = f"CALL {self._namespace}()"
 
-        return self._query_runner.run_query(query).squeeze()
+        return self._query_runner.run_query(query).squeeze()  # type: ignore
 
 
 class SystemEndpoints:
@@ -41,7 +41,7 @@ class SystemEndpoints:
         self._namespace += ".systemMonitor"
         query = f"CALL {self._namespace}()"
 
-        return self._query_runner.run_query(query).squeeze()
+        return self._query_runner.run_query(query).squeeze()  # type: ignore
 
     @property
     def debug(self) -> DebugProcRunner:

@@ -3,6 +3,7 @@ black[jupyter]
 flake8
 isort
 mypy
+pandas-stubs
 pytest
 pytest-annotate
 tox

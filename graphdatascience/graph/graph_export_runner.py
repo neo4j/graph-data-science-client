@@ -19,7 +19,7 @@ class GraphExportRunner(IllegalAttrChecker):
         query = f"CALL {self._namespace}($graph_name, $config)"
         params = {"graph_name": G.name(), "config": config}
 
-        return self._query_runner.run_query(query, params).squeeze()
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     # TODO: Add an integration test for this call.
     def csv(self, G: Graph, **config: Any) -> Series:

@@ -1,10 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from pandas.core.frame import DataFrame
-
-Row = Dict[str, Any]
-QueryResult = List[Row]
 
 
 class QueryRunner(ABC):

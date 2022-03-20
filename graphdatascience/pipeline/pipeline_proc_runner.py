@@ -45,7 +45,7 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
         query = f"CALL {self._namespace}($pipeline_name)"
         params = {"pipeline_name": pipeline_name}
 
-        return self._query_runner.run_query(query, params).squeeze()
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def drop(self, pipeline: TrainingPipeline) -> Series:
         self._namespace += ".drop"
@@ -53,7 +53,7 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
         query = f"CALL {self._namespace}($pipeline_name)"
         params = {"pipeline_name": pipeline.name()}
 
-        return self._query_runner.run_query(query, params).squeeze()
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     @client_only_endpoint("gds.pipeline")
     def get(self, pipeline_name: str) -> TrainingPipeline:

@@ -26,7 +26,7 @@ class AlgoProcRunner(IllegalAttrChecker, ABC):
 
     def estimate(self, G: Graph, **config: Any) -> Series:
         self._proc_name += "." + "estimate"
-        return self._run_procedure(G, config).squeeze()
+        return self._run_procedure(G, config).squeeze()  # type: ignore
 
 
 class StreamModeRunner(AlgoProcRunner):
@@ -36,7 +36,7 @@ class StreamModeRunner(AlgoProcRunner):
 
 class StandardModeRunner(AlgoProcRunner):
     def __call__(self, G: Graph, **config: Any) -> Series:
-        return self._run_procedure(G, config).squeeze()
+        return self._run_procedure(G, config).squeeze()  # type: ignore
 
 
 class GraphSageRunner(AlgoProcRunner):

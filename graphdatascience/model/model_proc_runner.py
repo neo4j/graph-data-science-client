@@ -27,7 +27,7 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
             "fail_flag": failIfUnsupportedType,
         }
 
-        return self._query_runner.run_query(query, params).squeeze()
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def list(self, model: Optional[Model] = None) -> DataFrame:
         self._namespace += ".list"
@@ -47,7 +47,7 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
         query = f"CALL {self._namespace}($model_name)"
         params = {"model_name": model_name}
 
-        return self._query_runner.run_query(query, params).squeeze()
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def publish(self, model: Model) -> Model:
         self._namespace += ".publish"
@@ -59,6 +59,7 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         model_name = result["modelInfo"][0]["modelName"]
         model_type = result["modelInfo"][0]["modelType"]
+
         return self._resolve_model(model_type, model_name)
 
     def drop(self, model: Model) -> Series:
@@ -67,7 +68,7 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
         query = f"CALL {self._namespace}($model_name)"
         params = {"model_name": model.name()}
 
-        return self._query_runner.run_query(query, params).squeeze()
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def load(self, model_name: str) -> Tuple[Model, Series]:
         self._namespace += ".load"
@@ -86,7 +87,7 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
         query = f"CALL {self._namespace}($model_name)"
         params = {"model_name": model.name()}
 
-        return self._query_runner.run_query(query, params).squeeze()
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     @client_only_endpoint("gds.model")
     def get(self, model_name: str) -> Model:

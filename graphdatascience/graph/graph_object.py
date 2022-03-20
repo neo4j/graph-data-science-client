@@ -23,7 +23,7 @@ class Graph:
         if len(info) == 0:
             raise ValueError(f"There is no projected graph named '{self.name()}'")
 
-        return info.squeeze()
+        return info.squeeze()  # type: ignore
 
     def node_count(self) -> int:
         return self._graph_info(["nodeCount"])  # type: ignore

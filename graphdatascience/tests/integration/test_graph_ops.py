@@ -108,7 +108,7 @@ def test_graph_drop(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.graph.drop(G, True)
-    assert not result.empty
+    assert result is not None
     assert result["graphName"] == GRAPH_NAME
 
     with pytest.raises(Exception):

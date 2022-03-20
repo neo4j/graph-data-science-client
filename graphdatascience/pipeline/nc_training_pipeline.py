@@ -13,7 +13,7 @@ class NCTrainingPipeline(TrainingPipeline):
         query = f"{self._query_prefix()}selectFeatures($pipeline_name, $node_properties)"
         params = {"pipeline_name": self.name(), "node_properties": node_properties}
 
-        return self._query_runner.run_query(query, params).squeeze()
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def feature_properties(self) -> Series:
         pipeline_info = self._list_info()["pipelineInfo"][0]

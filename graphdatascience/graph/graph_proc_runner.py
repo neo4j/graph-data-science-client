@@ -51,15 +51,15 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         result = self._query_runner.run_query(query, params)
         if not result.empty:
-            return result.squeeze()
+            return result.squeeze()  # type: ignore
 
         return None
 
     def exists(self, graph_name: str) -> Series:
         self._namespace += ".exists"
-        return self._query_runner.run_query(
-            f"CALL {self._namespace}($graph_name)", {"graph_name": graph_name}
-        ).squeeze()
+        result = self._query_runner.run_query(f"CALL {self._namespace}($graph_name)", {"graph_name": graph_name})
+
+        return result.squeeze()  # type: ignore
 
     def list(self, G: Optional[Graph] = None) -> DataFrame:
         self._namespace += ".list"
@@ -150,7 +150,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     ) -> Series:
         self._namespace += ".writeNodeProperties"
 
-        return self._handle_properties(G, node_properties, node_labels, config).squeeze()
+        return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
     def writeRelationship(
         self,
@@ -169,7 +169,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             "config": config,
         }
 
-        return self._query_runner.run_query(query, params).squeeze()
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def removeNodeProperties(
         self,
@@ -180,7 +180,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     ) -> Series:
         self._namespace += ".removeNodeProperties"
 
-        return self._handle_properties(G, node_properties, node_labels, config).squeeze()
+        return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
     def deleteRelationships(self, G: Graph, relationship_type: str) -> Series:
         self._namespace += ".deleteRelationships"
@@ -191,7 +191,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             "relationship_type": relationship_type,
         }
 
-        return self._query_runner.run_query(query, params).squeeze()
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def generate(self, graph_name: str, node_count: int, average_degree: int, **config: Any) -> Tuple[Graph, Series]:
         self._namespace += ".generate"
