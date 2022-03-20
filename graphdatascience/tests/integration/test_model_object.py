@@ -7,6 +7,8 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.model.graphsage_model import GraphSageModel
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
+MODEL_NAME = "gs-model"
+
 
 @pytest.fixture(scope="module")
 def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None, None]:
@@ -36,7 +38,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
 @pytest.fixture
 def gs_model(gds: GraphDataScience, G: Graph, runner: Neo4jQueryRunner) -> Generator[GraphSageModel, None, None]:
-    model, _ = gds.beta.graphSage.train(G, modelName="gs-model", featureProperties=["age"])
+    model, _ = gds.beta.graphSage.train(G, modelName=MODEL_NAME, featureProperties=["age"])
 
     yield model
 
@@ -54,3 +56,39 @@ def test_model_drop(gds: GraphDataScience, G: Graph) -> None:
 
     model.drop()
     assert not model.exists()
+
+
+def test_model_name(gs_model: GraphSageModel) -> None:
+    assert gs_model.name() == MODEL_NAME
+
+
+def test_model_type(gs_model: GraphSageModel) -> None:
+    assert gs_model.type() == "graphSage"
+
+
+def test_model_train_config(gs_model: GraphSageModel) -> None:
+    assert gs_model.train_config()["modelName"] == MODEL_NAME
+
+
+def test_model_graph_schema(gs_model: GraphSageModel) -> None:
+    assert "age" in gs_model.graph_schema()["nodes"]["Node"].keys()
+
+
+def test_model_loaded(gs_model: GraphSageModel) -> None:
+    assert gs_model.loaded()
+
+
+def test_model_stored(gs_model: GraphSageModel) -> None:
+    assert not gs_model.stored()
+
+
+def test_model_creation_time(gs_model: GraphSageModel) -> None:
+    assert gs_model.creation_time().year > 2000
+
+
+def test_model_shared(gs_model: GraphSageModel) -> None:
+    assert not gs_model.shared()
+
+
+def test_model_metrics(gs_model: GraphSageModel) -> None:
+    assert isinstance(gs_model.metrics()["didConverge"], bool)

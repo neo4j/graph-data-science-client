@@ -41,7 +41,7 @@ class StandardModeRunner(AlgoProcRunner):
 
 class GraphSageRunner(AlgoProcRunner):
     def __call__(self, G: Graph, **config: Any) -> Tuple[GraphSageModel, Series]:
-        result = self._run_procedure(G, config)[0]
+        result = self._run_procedure(G, config).squeeze()
         model_name = result["modelInfo"]["modelName"]
 
         return GraphSageModel(model_name, self._query_runner), result
