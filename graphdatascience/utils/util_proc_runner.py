@@ -1,6 +1,4 @@
-from typing import Any, Dict, List
-
-import neo4j
+from typing import Any, List
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
