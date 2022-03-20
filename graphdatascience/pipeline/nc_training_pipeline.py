@@ -1,5 +1,7 @@
-from typing import Any, Dict, List, Union
+from typing import List, Union
 
+import pandas
+from pandas.core.frame import DataFrame
 from pandas.core.series import Series
 
 from ..model.node_classification_model import NCModel
@@ -14,8 +16,9 @@ class NCTrainingPipeline(TrainingPipeline):
 
         return self._query_runner.run_query(query, params).squeeze()
 
-    def feature_properties(self) -> List[Dict[str, Any]]:
-        return self._list_info()["pipelineInfo"]["featurePipeline"]["featureProperties"]  # type: ignore
+    def feature_properties(self) -> DataFrame:
+        pipeline_info = self._list_info()["pipelineInfo"][0]
+        return pandas.DataFrame(pipeline_info["featurePipeline"]["featureProperties"])
 
     def _query_prefix(self) -> str:
         return "CALL gds.beta.pipeline.nodeClassification."

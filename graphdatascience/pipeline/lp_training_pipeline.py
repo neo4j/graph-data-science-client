@@ -1,5 +1,7 @@
-from typing import Any, Dict, List
+from typing import Any
 
+import pandas
+from pandas.core.frame import DataFrame
 from pandas.core.series import Series
 
 from ..model.link_prediction_model import LPModel
@@ -18,8 +20,9 @@ class LPTrainingPipeline(TrainingPipeline):
 
         return self._query_runner.run_query(query, params).squeeze()
 
-    def feature_steps(self) -> List[Dict[str, Any]]:
-        return self._list_info()["pipelineInfo"]["featurePipeline"]["featureSteps"]  # type: ignore
+    def feature_steps(self) -> DataFrame:
+        pipeline_info = self._list_info()["pipelineInfo"][0]
+        return pandas.DataFrame(pipeline_info["featurePipeline"]["featureSteps"])
 
     def _query_prefix(self) -> str:
         return "CALL gds.beta.pipeline.linkPrediction."
