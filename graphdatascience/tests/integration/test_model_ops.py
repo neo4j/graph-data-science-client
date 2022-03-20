@@ -94,7 +94,7 @@ def test_model_list(gds: GraphDataScience, lp_model: LPModel) -> None:
     result = gds.beta.model.list()
 
     assert len(result) == 1
-    assert result[0]["modelInfo"]["modelName"] == lp_model.name()
+    assert result["modelInfo"][0]["modelName"] == lp_model.name()
 
 
 def test_model_exists(gds: GraphDataScience) -> None:
