@@ -45,12 +45,12 @@ def test_find_node_id(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     id = gds.find_node_id(["Location"], {"name": "A"})
     res = runner.run_query(f"MATCH(n) WHERE id(n) = {id} RETURN n")
     assert len(res) == 1
-    assert res[0]["n"]["name"] == "A"
+    assert res["n"][0]["name"] == "A"
 
     id = gds.find_node_id(["Location"], {"name": 2})
     res = runner.run_query(f"MATCH(n) WHERE id(n) = {id} RETURN n")
     assert len(res) == 1
-    assert res[0]["n"]["name"] == 2
+    assert res["n"][0]["name"] == 2
 
     # No matches
     with pytest.raises(ValueError):
@@ -72,7 +72,7 @@ def test_dijkstra_with_find_node_id(gds: GraphDataScience, G: Graph) -> None:
         relationshipWeightProperty="cost",
     )
 
-    assert result[0]["totalCost"] == 160
+    assert result["totalCost"][0] == 160
 
 
 def test_version(gds: GraphDataScience) -> None:
