@@ -139,14 +139,14 @@ def test_model_store(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: 
 
 @pytest.mark.model_store_location
 def test_model_delete(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
-    model_name = runner.run_query(f"CALL gds.alpha.model.store('{gs_model.name()}')")[0]["modelName"]
+    model_name = runner.run_query(f"CALL gds.alpha.model.store('{gs_model.name()}')")["modelName"][0]
 
     model = gds.model.get(model_name)
     runner.run_query(f"CALL gds.beta.model.drop('{gs_model.name()}')")
     assert gds.alpha.model.delete(model)["deleteMillis"] >= 0
 
     res = runner.run_query(f"CALL gds.beta.model.exists('{model_name}')")
-    assert not res[0]["exists"]
+    assert not res["exists"][0]
 
 
 def test_model_drop(gds: GraphDataScience, G: Graph) -> None:
