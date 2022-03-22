@@ -18,7 +18,7 @@ class TopologicalLPRunner(UncallableNamespace, IllegalAttrChecker):
         """
         params = {"config": config}
 
-        return self._query_runner.run_query(query, params)[0]["score"]  # type: ignore
+        return self._query_runner.run_query(query, params)["score"].squeeze()  # type: ignore
 
     def adamicAdar(self, node1: int, node2: int, **config: Any) -> float:
         self._namespace += ".adamicAdar"
@@ -46,7 +46,7 @@ class TopologicalLPRunner(UncallableNamespace, IllegalAttrChecker):
         RETURN {self._namespace}(n1, n2{community_property}) AS score
         """
 
-        return self._query_runner.run_query(query)[0]["score"]  # type: ignore
+        return self._query_runner.run_query(query)["score"].squeeze()  # type: ignore
 
     def totalNeighbors(self, node1: int, node2: int, **config: Any) -> float:
         self._namespace += ".totalNeighbors"

@@ -77,7 +77,7 @@ def test_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
     assert result["graphName"] == "s"
 
     result2 = gds.graph.list(subG)
-    assert result2[0]["nodeCount"] == 2
+    assert result2["nodeCount"][0] == 2
 
     runner.run_query(f"CALL gds.graph.drop('{subG.name()}')")
 
@@ -91,7 +91,7 @@ def test_graph_list(gds: GraphDataScience) -> None:
     assert len(result) == 1
 
     result = gds.graph.list(G)
-    assert result[0]["graphName"] == GRAPH_NAME
+    assert result["graphName"][0] == GRAPH_NAME
 
 
 def test_graph_exists(gds: GraphDataScience) -> None:
@@ -108,7 +108,7 @@ def test_graph_drop(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
     result = gds.graph.drop(G, True)
-    assert result
+    assert result is not None
     assert result["graphName"] == GRAPH_NAME
 
     with pytest.raises(Exception):
@@ -118,7 +118,7 @@ def test_graph_drop(gds: GraphDataScience) -> None:
 def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    MY_DB_NAME = "test-database"
+    MY_DB_NAME = "testdatabase"
     result = gds.graph.export(G, dbName=MY_DB_NAME, batchSize=10000)
 
     assert result["graphName"] == GRAPH_NAME
@@ -126,7 +126,7 @@ def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
 
     runner.run_query("CREATE DATABASE $dbName", {"dbName": MY_DB_NAME})
     runner.set_database(MY_DB_NAME)
-    node_count = runner.run_query("MATCH (n) RETURN COUNT(n) AS c")[0]["c"]
+    node_count = runner.run_query("MATCH (n) RETURN COUNT(n) AS c").squeeze()
 
     assert node_count == 3
 
@@ -148,28 +148,28 @@ def test_graph_streamNodeProperty(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     result = gds.graph.streamNodeProperty(G, "x", concurrency=2)
-    assert {e["propertyValue"] for e in result} == {1, 2, 3}
+    assert {e for e in result["propertyValue"]} == {1, 2, 3}
 
 
 def test_graph_streamNodeProperties(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     result = gds.graph.streamNodeProperties(G, ["x"], concurrency=2)
-    assert {e["propertyValue"] for e in result} == {1, 2, 3}
+    assert {e for e in result["propertyValue"]} == {1, 2, 3}
 
 
 def test_graph_streamRelationshipProperty(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 
     result = gds.graph.streamRelationshipProperty(G, "relX", concurrency=2)
-    assert {e["propertyValue"] for e in result} == {4, 5, 6}
+    assert {e for e in result["propertyValue"]} == {4, 5, 6}
 
 
 def test_graph_streamRelationshipProperties(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 
     result = gds.graph.streamRelationshipProperties(G, ["relX"], concurrency=2)
-    assert {e["propertyValue"] for e in result} == {4, 5, 6}
+    assert {e for e in result["propertyValue"]} == {4, 5, 6}
 
 
 def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:

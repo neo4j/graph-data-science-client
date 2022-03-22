@@ -29,7 +29,7 @@ def test_pipeline_type(pipe: TrainingPipeline) -> None:
 
 
 def test_pipeline_creation_time(pipe: TrainingPipeline) -> None:
-    assert pipe.creation_time()
+    assert pipe.creation_time().year > 2000
 
 
 def test_pipeline_exists(pipe: TrainingPipeline) -> None:

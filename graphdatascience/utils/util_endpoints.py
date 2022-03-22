@@ -1,7 +1,9 @@
 from typing import Any, Dict, List
 
+from pandas.core.frame import DataFrame
+
 from ..error.client_only_endpoint import client_only_endpoint
-from ..query_runner.query_runner import QueryResult, QueryRunner
+from ..query_runner.query_runner import QueryRunner
 from .util_proc_runner import UtilProcRunner
 
 
@@ -43,15 +45,15 @@ class UtilEndpoints:
         if len(node_match) != 1:
             raise ValueError(f"Filter did not match with exactly one node: {node_match}")
 
-        return node_match[0]["id"]  # type: ignore
+        return node_match["id"][0].item()  # type: ignore
 
     def version(self) -> str:
         namespace = self._namespace + ".version"
-        result = self._query_runner.run_query(f"RETURN {namespace}() as version")
+        result = self._query_runner.run_query(f"RETURN {namespace}() as version").squeeze()
 
-        return result[0]["version"]  # type: ignore
+        return result  # type: ignore
 
-    def list(self) -> QueryResult:
+    def list(self) -> DataFrame:
         namespace = self._namespace + ".list"
         return self._query_runner.run_query(f"CALL {namespace}()")
 
@@ -65,4 +67,4 @@ class UtilEndpoints:
         }
         result = self._query_runner.run_query(query, params)
 
-        return result[0]["embedding"]  # type: ignore
+        return result["embedding"].squeeze()  # type: ignore

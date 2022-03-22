@@ -1,9 +1,12 @@
 from typing import Optional
 
+from pandas.core.frame import DataFrame
+from pandas.core.series import Series
+
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
-from ..query_runner.query_runner import QueryResult, QueryRunner, Row
+from ..query_runner.query_runner import QueryRunner
 from .lp_pipeline_create_runner import LPPipelineCreateRunner
 from .lp_training_pipeline import LPTrainingPipeline
 from .nc_pipeline_create_runner import NCPipelineCreateRunner
@@ -24,7 +27,7 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
     def nodeClassification(self) -> NCPipelineCreateRunner:
         return NCPipelineCreateRunner(self._query_runner, f"{self._namespace}.nodeClassification")
 
-    def list(self, pipeline: Optional[TrainingPipeline] = None) -> QueryResult:
+    def list(self, pipeline: Optional[TrainingPipeline] = None) -> DataFrame:
         self._namespace += ".list"
 
         if pipeline:
@@ -36,21 +39,21 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params)
 
-    def exists(self, pipeline_name: str) -> Row:
+    def exists(self, pipeline_name: str) -> Series:
         self._namespace += ".exists"
 
         query = f"CALL {self._namespace}($pipeline_name)"
         params = {"pipeline_name": pipeline_name}
 
-        return self._query_runner.run_query(query, params)[0]
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    def drop(self, pipeline: TrainingPipeline) -> Row:
+    def drop(self, pipeline: TrainingPipeline) -> Series:
         self._namespace += ".drop"
 
         query = f"CALL {self._namespace}($pipeline_name)"
         params = {"pipeline_name": pipeline.name()}
 
-        return self._query_runner.run_query(query, params)[0]
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     @client_only_endpoint("gds.pipeline")
     def get(self, pipeline_name: str) -> TrainingPipeline:
@@ -61,7 +64,7 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
         if len(result) == 0:
             raise ValueError(f"No pipeline named '{pipeline_name}' exists")
 
-        pipeline_type = result[0]["pipelineType"]
+        pipeline_type = result["pipelineType"][0]
         return self._resolve_pipeline(pipeline_type, pipeline_name)
 
     def _resolve_pipeline(self, pipeline_type: str, pipeline_name: str) -> TrainingPipeline:

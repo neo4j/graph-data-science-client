@@ -36,14 +36,14 @@ def test_pipeline_list(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> No
     result = gds.beta.pipeline.list()
 
     assert len(result) == 1
-    assert result[0]["pipelineName"] == lp_pipe.name()
+    assert result["pipelineName"][0] == lp_pipe.name()
 
 
-def test_model_exists(gds: GraphDataScience) -> None:
+def test_pipeline_exists(gds: GraphDataScience) -> None:
     assert not gds.beta.pipeline.exists("NOTHING")["exists"]
 
 
-def test_model_drop(gds: GraphDataScience) -> None:
+def test_pipeline_drop(gds: GraphDataScience) -> None:
     pipe, _ = gds.beta.pipeline.linkPrediction.create(PIPE_NAME)
     assert gds.beta.pipeline.exists(pipe.name())["exists"]
 
@@ -51,17 +51,17 @@ def test_model_drop(gds: GraphDataScience) -> None:
     assert not gds.beta.pipeline.exists(pipe.name())["exists"]
 
 
-def test_model_get_lp(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> None:
+def test_pipeline_get_lp(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> None:
     pipe = gds.pipeline.get(lp_pipe.name())
 
     assert pipe.name() == lp_pipe.name()
     assert isinstance(pipe, LPTrainingPipeline)
-    assert pipe.feature_steps() == lp_pipe.feature_steps()
+    assert pipe.feature_steps().empty
 
 
-def test_model_get_nc(gds: GraphDataScience, nc_pipe: NCTrainingPipeline) -> None:
+def test_pipeline_get_nc(gds: GraphDataScience, nc_pipe: NCTrainingPipeline) -> None:
     pipe = gds.pipeline.get(nc_pipe.name())
 
     assert pipe.name() == nc_pipe.name()
     assert isinstance(pipe, NCTrainingPipeline)
-    assert pipe.feature_properties() == nc_pipe.feature_properties()
+    assert pipe.feature_properties().empty

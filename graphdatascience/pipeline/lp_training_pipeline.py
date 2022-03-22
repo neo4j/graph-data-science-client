@@ -1,12 +1,16 @@
-from typing import Any, Dict, List
+from typing import Any
+
+import pandas
+from pandas.core.frame import DataFrame
+from pandas.core.series import Series
 
 from ..model.link_prediction_model import LPModel
-from ..query_runner.query_runner import QueryRunner, Row
+from ..query_runner.query_runner import QueryRunner
 from .training_pipeline import TrainingPipeline
 
 
 class LPTrainingPipeline(TrainingPipeline):
-    def addFeature(self, feature_type: str, **config: Any) -> Row:
+    def addFeature(self, feature_type: str, **config: Any) -> Series:
         query = f"{self._query_prefix()}addFeature($pipeline_name, $feature_type, $config)"
         params = {
             "pipeline_name": self.name(),
@@ -14,10 +18,11 @@ class LPTrainingPipeline(TrainingPipeline):
             "config": config,
         }
 
-        return self._query_runner.run_query(query, params)[0]
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    def feature_steps(self) -> List[Dict[str, Any]]:
-        return self._list_info()["pipelineInfo"]["featurePipeline"]["featureSteps"]  # type: ignore
+    def feature_steps(self) -> DataFrame:
+        pipeline_info = self._list_info()["pipelineInfo"][0]
+        return pandas.DataFrame(pipeline_info["featurePipeline"]["featureSteps"])
 
     def _query_prefix(self) -> str:
         return "CALL gds.beta.pipeline.linkPrediction."

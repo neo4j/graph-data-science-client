@@ -1,12 +1,13 @@
 from typing import Any, Dict, Type, TypeVar, Union
 
 from neo4j import Driver, GraphDatabase
+from pandas.core.frame import DataFrame
 
 from .call_builder import CallBuilder
 from .direct_endpoints import DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
-from .query_runner.query_runner import QueryResult, QueryRunner
+from .query_runner.query_runner import QueryRunner
 from .version import __version__
 
 GDS = TypeVar("GDS", bound="GraphDataScience")
@@ -44,7 +45,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def set_database(self, db: str) -> None:
         self._query_runner.set_database(db)
 
-    def run_cypher(self, query: str, params: Dict[str, Any] = {}) -> QueryResult:
+    def run_cypher(self, query: str, params: Dict[str, Any] = {}) -> DataFrame:
         return self._query_runner.run_query(query, params)
 
     def driver_config(self) -> Dict[str, Any]:

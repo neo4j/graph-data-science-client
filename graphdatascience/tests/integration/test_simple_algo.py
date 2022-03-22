@@ -42,7 +42,7 @@ def test_pageRank_mutate(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Non
         YIELD schema
         RETURN schema.nodes as properties
         """
-    )[0]["properties"]["__ALL__"].keys()
+    )["properties"][0]["__ALL__"].keys()
     assert list(props) == ["rank"]
 
 
@@ -76,7 +76,7 @@ def test_nodeSimilarity_stream(gds: GraphDataScience) -> None:
     result = gds.nodeSimilarity.stream(G, similarityCutoff=0)
 
     assert len(result) == 2
-    assert result[0]["similarity"] == 0.5
+    assert result["similarity"][0] == 0.5
 
 
 def test_nodeSimilarity_stream_estimate(gds: GraphDataScience) -> None:
@@ -100,9 +100,9 @@ def test_fastRP_write(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
         """
     )
     assert len(embeddings) == 3
-    assert len(embeddings[0]["embedding"]) == 4
-    assert len(embeddings[1]["embedding"]) == 4
-    assert len(embeddings[2]["embedding"]) == 4
+    assert len(embeddings["embedding"][0]) == 4
+    assert len(embeddings["embedding"][1]) == 4
+    assert len(embeddings["embedding"][2]) == 4
 
 
 def test_fastRP_write_estimate(gds: GraphDataScience) -> None:

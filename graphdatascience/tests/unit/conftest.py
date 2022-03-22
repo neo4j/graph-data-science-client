@@ -1,10 +1,11 @@
 from typing import Any, Dict, List
 
+import pandas
 import pytest
+from pandas.core.frame import DataFrame
 
 from graphdatascience import QueryRunner
 from graphdatascience.graph_data_science import GraphDataScience
-from graphdatascience.query_runner.query_runner import QueryResult
 
 
 class CollectingQueryRunner(QueryRunner):
@@ -12,10 +13,11 @@ class CollectingQueryRunner(QueryRunner):
         self.queries: List[str] = []
         self.params: List[Dict[str, Any]] = []
 
-    def run_query(self, query: str, params: Dict[str, Any] = {}) -> QueryResult:
+    def run_query(self, query: str, params: Dict[str, Any] = {}) -> DataFrame:
         self.queries.append(query)
         self.params.append(params)
-        return [{"version": "X.Y.Z"}]
+
+        return pandas.DataFrame([{"version": "X.Y.Z"}])
 
     def last_query(self) -> str:
         return self.queries[-1]

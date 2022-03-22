@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, List
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
@@ -11,17 +11,17 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
         self._query_runner = query_runner
         self._namespace = namespace
 
-    def asNode(self, node_id: int) -> Dict[str, Any]:
+    def asNode(self, node_id: int) -> Any:
         self._namespace += ".asNode"
         result = self._query_runner.run_query(f"RETURN {self._namespace}({node_id}) AS node")
 
-        return result[0]["node"]  # type: ignore
+        return result["node"].squeeze()
 
-    def asNodes(self, node_ids: List[int]) -> List[Dict[str, Any]]:
+    def asNodes(self, node_ids: List[int]) -> List[Any]:
         self._namespace += ".asNodes"
         result = self._query_runner.run_query(f"RETURN {self._namespace}({node_ids}) AS nodes")
 
-        return result[0]["nodes"]  # type: ignore
+        return result["nodes"].squeeze()  # type: ignore
 
     def nodeProperty(self, G: Graph, node_id: int, property_key: str, node_label: str = "*") -> Any:
         self._namespace += ".nodeProperty"
@@ -35,4 +35,4 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
         }
         result = self._query_runner.run_query(query, params)
 
-        return result[0]["property"]
+        return result["property"].squeeze()

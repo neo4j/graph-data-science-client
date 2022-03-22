@@ -1,11 +1,14 @@
 from typing import Optional, Tuple
 
+from pandas.core.frame import DataFrame
+from pandas.core.series import Series
+
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..model.link_prediction_model import LPModel
 from ..model.node_classification_model import NCModel
-from ..query_runner.query_runner import QueryResult, QueryRunner, Row
+from ..query_runner.query_runner import QueryRunner
 from .graphsage_model import GraphSageModel
 from .model import Model
 
@@ -15,7 +18,7 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
         self._query_runner = query_runner
         self._namespace = namespace
 
-    def store(self, model: Model, failIfUnsupportedType: bool = True) -> Row:
+    def store(self, model: Model, failIfUnsupportedType: bool = True) -> Series:
         self._namespace += ".store"
 
         query = f"CALL {self._namespace}($model_name, $fail_flag)"
@@ -24,9 +27,9 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
             "fail_flag": failIfUnsupportedType,
         }
 
-        return self._query_runner.run_query(query, params)[0]
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    def list(self, model: Optional[Model] = None) -> QueryResult:
+    def list(self, model: Optional[Model] = None) -> DataFrame:
         self._namespace += ".list"
 
         if model:
@@ -38,13 +41,13 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params)
 
-    def exists(self, model_name: str) -> Row:
+    def exists(self, model_name: str) -> Series:
         self._namespace += ".exists"
 
         query = f"CALL {self._namespace}($model_name)"
         params = {"model_name": model_name}
 
-        return self._query_runner.run_query(query, params)[0]
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def publish(self, model: Model) -> Model:
         self._namespace += ".publish"
@@ -54,36 +57,37 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         result = self._query_runner.run_query(query, params)
 
-        model_name = result[0]["modelInfo"]["modelName"]
-        model_type = result[0]["modelInfo"]["modelType"]
+        model_name = result["modelInfo"][0]["modelName"]
+        model_type = result["modelInfo"][0]["modelType"]
+
         return self._resolve_model(model_type, model_name)
 
-    def drop(self, model: Model) -> Row:
+    def drop(self, model: Model) -> Series:
         self._namespace += ".drop"
 
         query = f"CALL {self._namespace}($model_name)"
         params = {"model_name": model.name()}
 
-        return self._query_runner.run_query(query, params)[0]
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    def load(self, model_name: str) -> Tuple[Model, Row]:
+    def load(self, model_name: str) -> Tuple[Model, Series]:
         self._namespace += ".load"
 
         query = f"CALL {self._namespace}($model_name)"
         params = {"model_name": model_name}
 
-        result = self._query_runner.run_query(query, params)[0]
+        result = self._query_runner.run_query(query, params).squeeze()
 
         self._namespace = "gds.model"
         return self.get(result["modelName"]), result
 
-    def delete(self, model: Model) -> Row:
+    def delete(self, model: Model) -> Series:
         self._namespace += ".delete"
 
         query = f"CALL {self._namespace}($model_name)"
         params = {"model_name": model.name()}
 
-        return self._query_runner.run_query(query, params)[0]
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     @client_only_endpoint("gds.model")
     def get(self, model_name: str) -> Model:
@@ -94,7 +98,7 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
         if len(result) == 0:
             raise ValueError(f"No loaded model named '{model_name}' exists")
 
-        model_type = result[0]["modelInfo"]["modelType"]
+        model_type = result["modelInfo"][0]["modelType"]
         return self._resolve_model(model_type, model_name)
 
     def _resolve_model(self, model_type: str, model_name: str) -> Model:

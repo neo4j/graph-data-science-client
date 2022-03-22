@@ -103,15 +103,15 @@ These calls take one positional argument and a number of keyword arguments depen
 The first (positional) argument is a `Graph`, and the keyword arguments map directly to the algorithm's [configuration map](https://neo4j.com/docs/graph-data-science/2.0-preview/common-usage/running-algos/#algorithms-syntax-configuration-parameters).
 
 The other [algorithm execution modes](https://neo4j.com/docs/graph-data-science/2.0-preview/common-usage/running-algos/) - stats, stream and write - are also supported via analogous calls.
-The stream mode call returns a list of dictionaries (with contents depending on the algorithm of course) - which we can think of as a table - as is also the case when using the Neo4j Python driver directly.
-The mutate, stats and write mode calls however return a dictionary with metadata about the algorithm execution.
+The stream mode call returns a pandas DataFrame (with contents depending on the algorithm of course).
+The mutate, stats and write mode calls however return a pandas Series with metadata about the algorithm execution.
 
 
 #### Topological link prediction
 
 The methods for doing [topological link prediction](https://neo4j.com/docs/graph-data-science/2.0-preview/algorithms/linkprediction/) are a bit different.
 Just like in the GDS procedure API they do not take a graph as an argument, but rather two node references as positional arguments.
-And they simply return the similarity score of the prediction just made as a float - not a list of dictionaries.
+And they simply return the similarity score of the prediction just made as a float - not any kind of pandas data structure.
 
 
 ### The Graph object
@@ -259,7 +259,7 @@ source_id = gds.find_node_id(["City"], {"name": "New York"})
 target_id = gds.find_node_id(["City"], {"name": "Philadelphia"})
 
 res = gds.shortestPath.dijkstra.stream(G, sourceNode=source_id, targetNode=target_id)
-assert res[0]["totalCost"] == 100
+assert res["totalCost"][0] == 100
 ```
 
 The nodes found by `gds.find_node_id` are those that have all labels specified and fully match all property key-value pairs given.

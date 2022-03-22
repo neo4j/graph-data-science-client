@@ -54,11 +54,11 @@ def test_graphsage_write(G: Graph, model: GraphSageModel, runner: Neo4jQueryRunn
 
     result = runner.run_query("MATCH (n:Node) RETURN size(n.gs) AS embeddingDim")
     assert len(result) == G.node_count()
-    assert result[0]["embeddingDim"] == 20
+    assert result["embeddingDim"][0] == 20
 
 
-def test_graphsage_stream(G: Graph, model: GraphSageModel, runner: Neo4jQueryRunner) -> None:
+def test_graphsage_stream(G: Graph, model: GraphSageModel) -> None:
     stream = model.predict_stream(G)
 
     assert len(stream) == G.node_count()
-    assert len(stream[0]["embedding"]) == 20
+    assert len(stream["embedding"][0]) == 20
