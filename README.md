@@ -103,7 +103,7 @@ These calls take one positional argument and a number of keyword arguments depen
 The first (positional) argument is a `Graph`, and the keyword arguments map directly to the algorithm's [configuration map](https://neo4j.com/docs/graph-data-science/2.0-preview/common-usage/running-algos/#algorithms-syntax-configuration-parameters).
 
 The other [algorithm execution modes](https://neo4j.com/docs/graph-data-science/2.0-preview/common-usage/running-algos/) - stats, stream and write - are also supported via analogous calls.
-The stream mode call returns a pandas DataFrame (with contents depending on the algorithm of course) - which we can think of as a table.
+The stream mode call returns a pandas DataFrame (with contents depending on the algorithm of course).
 The mutate, stats and write mode calls however return a pandas Series with metadata about the algorithm execution.
 
 
