@@ -4,11 +4,7 @@ This document describes how to run tests for `graphdatascience` as well as how t
 
 Tests can be found in `graphdatascience/tests`. In each of the folders there, `unit` and `integration`, the tests of that respective type reside.
 
-To install all Python requirements for testing and code style checking, simply run:
-
-```bash
-pip install -r requirements/dev.txt
-```
+Please see the section [Specifically for this project](CONTRIBUTING.md#specifically-for-this-project) of our [contribution guidelines](CONTRIBUTING.md) for how to set up an environment for testing and style checking.
 
 
 ## Unit testing
