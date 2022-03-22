@@ -33,7 +33,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
             driver = GraphDatabase.driver(endpoint, auth=auth, **self._config)
 
-            self._query_runner = self.create_neo4j_query_runner(driver)
+            self._query_runner = self.create_neo4j_query_runner(driver, auto_close=True)
         else:
             self._query_runner = endpoint
 
@@ -56,5 +56,5 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         return cls(cls.create_neo4j_query_runner(driver))
 
     @staticmethod
-    def create_neo4j_query_runner(driver: Driver) -> Neo4jQueryRunner:
-        return Neo4jQueryRunner(driver)
+    def create_neo4j_query_runner(driver: Driver, auto_close: bool = False) -> Neo4jQueryRunner:
+        return Neo4jQueryRunner(driver, auto_close=auto_close)
