@@ -41,7 +41,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     package_data={"graphdatascience": ["py.typed"]},
     project_urls=project_urls,
-    python_requires=">=3.7",
+    python_requires=">=3.6",
     install_requires=reqs,
     zip_safe=False,
 )

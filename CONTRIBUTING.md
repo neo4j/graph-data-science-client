@@ -55,7 +55,7 @@ Remember that many community members have become regular contributors and some a
 
 Setting up the development environment:
 
- * Install Python 3.7+
+ * Install Python 3.6+
  * [Install pip](https://pip.pypa.io/en/stable/installation/)
  * Install the project's Python dependencies:
    ```bash
