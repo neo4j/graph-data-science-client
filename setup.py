@@ -10,6 +10,7 @@ with open("graphdatascience/version.py") as f:
     version = f.readline().strip().split()[-1][1:-1]
 
 classifiers = [
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
