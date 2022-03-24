@@ -10,6 +10,7 @@ with open("graphdatascience/version.py") as f:
     version = f.readline().strip().split()[-1][1:-1]
 
 classifiers = [
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
@@ -22,7 +23,7 @@ classifiers = [
 ]
 
 project_urls = {
-    "Documentation": "https://neo4j.com/docs/graph-data-science/2.0-preview/python-client/",
+    "Documentation": "https://neo4j.com/docs/graph-data-science/current/python-client/",
     "Source": "https://github.com/neo4j/graph-data-science-client",
     "Bug Tracker": "https://github.com/neo4j/graph-data-science-client/issues",
 }
