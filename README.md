@@ -6,14 +6,10 @@ It enables users to write pure Python code to project graphs, run algorithms, as
 The API is designed to mimic the GDS Cypher procedure API in Python code.
 It abstracts the necessary operations of the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) to offer a simpler surface.
 
+`graphdatascience` is only guaranteed to work with GDS versions 2.0+.
+
 Please leave any feedback as issues on [the source repository](https://github.com/neo4j/graph-data-science-client).
 Happy coding!
-
-
-## NOTE
-
-This is a work in progress and some GDS features are known to be missing or not working properly (see [Known limitations](#known-limitations) below).
-Further, this library targets GDS versions 2.0+ (not yet released) and as such may not work with older versions.
 
 
 ## Installation
