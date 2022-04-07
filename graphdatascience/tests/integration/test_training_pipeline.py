@@ -193,6 +193,12 @@ def test_parameter_space_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     assert "penalty" in parameter_space["LogisticRegression"][0]
 
 
+def test_configure_auto_tuning_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    maxTrials = 1337
+    result = lp_pipe.configureAutoTuning(maxTrials=maxTrials)
+    assert result["autoTuningConfig"]["maxTrials"] == maxTrials
+
+
 def test_select_features_nc_pipeline(runner: Neo4jQueryRunner, nc_pipe: NCTrainingPipeline) -> None:
     nc_pipe.addNodeProperty("degree", mutateProperty="rank")
 

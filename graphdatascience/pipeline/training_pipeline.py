@@ -38,12 +38,21 @@ class TrainingPipeline(ABC):
     def addLogisticRegression(self, **config: Any) -> Series:
         query = f"{self._query_prefix()}addLogisticRegression($pipeline_name, $config)"
         params = {"pipeline_name": self.name(), "config": config}
+
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def addRandomForest(self, **config: Any) -> Series:
         query_prefix = self._query_prefix().replace("beta", "alpha")
         query = f"{query_prefix}addRandomForest($pipeline_name, $config)"
         params = {"pipeline_name": self.name(), "config": config}
+
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+
+    def configureAutoTuning(self, **config: Any) -> Series:
+        query_prefix = self._query_prefix().replace("beta", "alpha")
+        query = f"{query_prefix}configureAutoTuning($pipeline_name, $config)"
+        params = {"pipeline_name": self.name(), "config": config}
+
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def train(self, G: Graph, **config: Any) -> Tuple[Model, Series]:

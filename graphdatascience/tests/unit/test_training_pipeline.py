@@ -82,13 +82,23 @@ def test_add_logistic_regression_nc_pipeline(runner: CollectingQueryRunner, nc_p
     }
 
 
-def test_add_random_forest_nc_pipeline(runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
+def test_add_random_forest_lp_pipeline(runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
     lp_pipe.addRandomForest(penalty=1)
 
     assert runner.last_query() == "CALL gds.alpha.pipeline.linkPrediction.addRandomForest($pipeline_name, $config)"
     assert runner.last_params() == {
         "pipeline_name": lp_pipe.name(),
         "config": {"penalty": 1},
+    }
+
+
+def test_configure_auto_tuning_lp_pipeline(runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
+    lp_pipe.configureAutoTuning(maxTrials=42)
+
+    assert runner.last_query() == "CALL gds.alpha.pipeline.linkPrediction.configureAutoTuning($pipeline_name, $config)"
+    assert runner.last_params() == {
+        "pipeline_name": lp_pipe.name(),
+        "config": {"maxTrials": 42},
     }
 
 
