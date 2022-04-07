@@ -175,12 +175,18 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         self,
         G: Graph,
         node_properties: List[str],
-        node_labels: Strings = ["*"],
         **config: Any,
     ) -> Series:
         self._namespace += ".removeNodeProperties"
 
-        return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
+        query = f"CALL {self._namespace}($graph_name, $properties, $config)"
+        params = {
+            "graph_name": G.name(),
+            "properties": node_properties,
+            "config": config,
+        }
+
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def deleteRelationships(self, G: Graph, relationship_type: str) -> Series:
         self._namespace += ".deleteRelationships"
