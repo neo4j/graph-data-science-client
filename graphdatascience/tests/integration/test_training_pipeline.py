@@ -180,6 +180,17 @@ def test_add_logistic_regression_lp_pipeline(lp_pipe: LPTrainingPipeline) -> Non
     assert lr_parameter_space[0]["penalty"] == 42
 
 
+def test_add_logistic_regression_with_range_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    res = lp_pipe.addLogisticRegression(penalty=(42, 1337))
+    lr_parameter_space = res["parameterSpace"]["LogisticRegression"]
+    assert lr_parameter_space[0]["penalty"] == {"range": [42, 1337]}
+
+
+def test_add_logistic_regression_with_bad_range_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    with pytest.raises(Exception):
+        lp_pipe.addLogisticRegression(penalty=(42, 1, 1337))
+
+
 def test_add_random_forest_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     res = lp_pipe.addRandomForest(maxDepth=1337)
     rf_parameter_space = res["parameterSpace"]["RandomForest"]
