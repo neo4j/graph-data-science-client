@@ -204,6 +204,11 @@ def test_parameter_space_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     assert "penalty" in parameter_space["LogisticRegression"][0]
 
 
+def test_auto_tuning_config_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    tuning_config = lp_pipe.auto_tuning_config()
+    assert "maxTrials" in tuning_config
+
+
 def test_configure_auto_tuning_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     maxTrials = 1337
     result = lp_pipe.configureAutoTuning(maxTrials=maxTrials)

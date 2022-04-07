@@ -105,6 +105,10 @@ class TrainingPipeline(ABC):
         pipeline_info = self._list_info()["pipelineInfo"][0]
         return pandas.Series(pipeline_info["trainingParameterSpace"])
 
+    def auto_tuning_config(self) -> Series:
+        pipeline_info = self._list_info()["pipelineInfo"][0]
+        return pandas.Series(pipeline_info["autoTuningConfig"])
+
     def _list_info(self) -> DataFrame:
         query = "CALL gds.beta.pipeline.list($name)"
         params = {"name": self.name()}
