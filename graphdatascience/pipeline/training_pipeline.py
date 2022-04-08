@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Tuple
+from typing import Any, Dict, Tuple
 
 import pandas
 from pandas.core.frame import DataFrame
@@ -37,13 +37,29 @@ class TrainingPipeline(ABC):
 
     def addLogisticRegression(self, **config: Any) -> Series:
         query = f"{self._query_prefix()}addLogisticRegression($pipeline_name, $config)"
-        params = {"pipeline_name": self.name(), "config": config}
+        params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
+
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def addRandomForest(self, **config: Any) -> Series:
         query_prefix = self._query_prefix().replace("beta", "alpha")
         query = f"{query_prefix}addRandomForest($pipeline_name, $config)"
+        params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
+
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+
+    @staticmethod
+    def _expand_ranges(config: Dict[str, Any]) -> Dict[str, Any]:
+        def _maybe_expand_tuple(value: Any) -> Any:
+            return {"range": list(value)} if isinstance(value, tuple) else value
+
+        return {key: _maybe_expand_tuple(val) for (key, val) in config.items()}
+
+    def configureAutoTuning(self, **config: Any) -> Series:
+        query_prefix = self._query_prefix().replace("beta", "alpha")
+        query = f"{query_prefix}configureAutoTuning($pipeline_name, $config)"
         params = {"pipeline_name": self.name(), "config": config}
+
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def train(self, G: Graph, **config: Any) -> Tuple[Model, Series]:
@@ -88,6 +104,10 @@ class TrainingPipeline(ABC):
     def parameter_space(self) -> Series:
         pipeline_info = self._list_info()["pipelineInfo"][0]
         return pandas.Series(pipeline_info["trainingParameterSpace"])
+
+    def auto_tuning_config(self) -> Series:
+        pipeline_info = self._list_info()["pipelineInfo"][0]
+        return pandas.Series(pipeline_info["autoTuningConfig"])
 
     def _list_info(self) -> DataFrame:
         query = "CALL gds.beta.pipeline.list($name)"

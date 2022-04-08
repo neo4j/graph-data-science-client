@@ -180,6 +180,17 @@ def test_add_logistic_regression_lp_pipeline(lp_pipe: LPTrainingPipeline) -> Non
     assert lr_parameter_space[0]["penalty"] == 42
 
 
+def test_add_logistic_regression_with_range_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    res = lp_pipe.addLogisticRegression(penalty=(42, 1337))
+    lr_parameter_space = res["parameterSpace"]["LogisticRegression"]
+    assert lr_parameter_space[0]["penalty"] == {"range": [42, 1337]}
+
+
+def test_add_logistic_regression_with_bad_range_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    with pytest.raises(Exception):
+        lp_pipe.addLogisticRegression(penalty=(42, 1, 1337))
+
+
 def test_add_random_forest_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     res = lp_pipe.addRandomForest(maxDepth=1337)
     rf_parameter_space = res["parameterSpace"]["RandomForest"]
@@ -191,6 +202,17 @@ def test_parameter_space_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     parameter_space = lp_pipe.parameter_space()
     assert len(parameter_space.keys()) == 2
     assert "penalty" in parameter_space["LogisticRegression"][0]
+
+
+def test_auto_tuning_config_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    tuning_config = lp_pipe.auto_tuning_config()
+    assert "maxTrials" in tuning_config
+
+
+def test_configure_auto_tuning_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    maxTrials = 1337
+    result = lp_pipe.configureAutoTuning(maxTrials=maxTrials)
+    assert result["autoTuningConfig"]["maxTrials"] == maxTrials
 
 
 def test_select_features_nc_pipeline(runner: Neo4jQueryRunner, nc_pipe: NCTrainingPipeline) -> None:
