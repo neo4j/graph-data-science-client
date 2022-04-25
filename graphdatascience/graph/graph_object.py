@@ -4,7 +4,7 @@ import pandas
 from pandas.core.series import Series
 
 from ..query_runner.query_runner import QueryRunner
-from ..server_version import ServerVersion
+from ..server_version.server_version import ServerVersion
 
 
 class Graph:

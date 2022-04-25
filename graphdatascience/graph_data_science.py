@@ -8,7 +8,7 @@ from .direct_endpoints import DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
-from .server_version import ServerVersion
+from .server_version.server_version import ServerVersion
 from .version import __version__
 
 GDS = TypeVar("GDS", bound="GraphDataScience")

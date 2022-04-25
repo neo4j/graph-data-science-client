@@ -1,7 +1,7 @@
 from abc import ABC
 
 from .query_runner.query_runner import QueryRunner
-from .server_version import ServerVersion
+from .server_version.server_version import ServerVersion
 
 
 class CallerBase(ABC):

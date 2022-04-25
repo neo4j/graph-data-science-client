@@ -7,7 +7,7 @@ from pandas.core.series import Series
 
 from ..graph.graph_object import Graph
 from ..query_runner.query_runner import QueryRunner
-from ..server_version import ServerVersion
+from ..server_version.server_version import ServerVersion
 
 
 class Model(ABC):
