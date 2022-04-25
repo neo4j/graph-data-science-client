@@ -1,4 +1,7 @@
+import pytest
+
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.server_version.server_version import ServerVersion
 
 from .conftest import CollectingQueryRunner
 
@@ -260,16 +263,23 @@ def test_graph_writeRelationship(runner: CollectingQueryRunner, gds: GraphDataSc
     }
 
 
-def test_graph_removeNodeProperties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 0, 0)])
+def test_graph_removeNodeProperties_20(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    gds.graph.removeNodeProperties(G, ["dummyProp"], concurrency=2)
-    assert runner.last_query() == "CALL gds.graph.removeNodeProperties($graph_name, $properties, $config)"
+    gds.graph.removeNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
+    assert runner.last_query() == "CALL gds.graph.removeNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "properties": ["dummyProp"],
+        "entities": "dummyLabel",
         "config": {"concurrency": 2},
     }
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
+def test_graph_removeNodeProperties_21(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.removeNodeProperties(G, ["dummyProp"], concurrency=2)
     assert runner.last_query() == "CALL gds.graph.removeNodeProperties($graph_name, $properties, $config)"

@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+from multimethod import multimethod
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
 
@@ -7,6 +8,8 @@ from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
+from ..server_version.compatible_with import compatible_with
+from ..server_version.server_version import ServerVersion
 from .graph_export_runner import GraphExportRunner
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
@@ -167,7 +170,12 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    def removeNodeProperties(
+    @multimethod
+    def removeNodeProperties(self) -> None:
+        ...
+
+    @removeNodeProperties.register
+    def _(
         self,
         G: Graph,
         node_properties: List[str],
@@ -183,6 +191,19 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         }
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+
+    @removeNodeProperties.register
+    @compatible_with("removeNodeProperties", max_exclusive=ServerVersion(2, 1, 0))
+    def _(
+        self,
+        G: Graph,
+        node_properties: List[str],
+        node_labels: Strings,
+        **config: Any,
+    ) -> Series:
+        self._namespace += ".removeNodeProperties"
+
+        return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
     def deleteRelationships(self, G: Graph, relationship_type: str) -> Series:
         self._namespace += ".deleteRelationships"

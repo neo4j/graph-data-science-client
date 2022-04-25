@@ -6,6 +6,7 @@ from neo4j import DEFAULT_DATABASE
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 GRAPH_NAME = "g"
 
@@ -191,10 +192,19 @@ def test_graph_writeRelationship(gds: GraphDataScience) -> None:
     assert result["propertiesWritten"] == 2
 
 
-def test_graph_removeNodeProperties(gds: GraphDataScience) -> None:
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+def test_graph_removeNodeProperties_21(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     result = gds.graph.removeNodeProperties(G, ["x"], concurrency=2)
+    assert result["propertiesRemoved"] == 3
+
+
+@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 1, 0))
+def test_graph_removeNodeProperties_20(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds.graph.removeNodeProperties(G, ["x"], ["*"], concurrency=2)
     assert result["propertiesRemoved"] == 3
 
 
