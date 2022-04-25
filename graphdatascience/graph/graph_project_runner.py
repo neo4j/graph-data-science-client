@@ -2,16 +2,12 @@ from typing import Any, Tuple
 
 from pandas.core.series import Series
 
+from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
-from ..query_runner.query_runner import QueryRunner
 from .graph_object import Graph
 
 
-class GraphProjectRunner(IllegalAttrChecker):
-    def __init__(self, query_runner: QueryRunner, namespace: str):
-        self._query_runner = query_runner
-        self._namespace = namespace
-
+class GraphProjectRunner(CallerBase, IllegalAttrChecker):
     def __call__(self, graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> Tuple[Graph, Series]:
         result = self._query_runner.run_query(
             f"CALL {self._namespace}($graph_name, $node_spec, $relationship_spec, $config)",
@@ -23,7 +19,7 @@ class GraphProjectRunner(IllegalAttrChecker):
             },
         ).squeeze()
 
-        return Graph(graph_name, self._query_runner), result
+        return Graph(graph_name, self._query_runner, self._server_version), result
 
     def estimate(self, node_spec: Any, relationship_spec: Any, **config: Any) -> Series:
         self._namespace += ".estimate"
@@ -40,7 +36,7 @@ class GraphProjectRunner(IllegalAttrChecker):
 
     @property
     def cypher(self) -> "GraphProjectRunner":
-        return GraphProjectRunner(self._query_runner, self._namespace + ".cypher")
+        return GraphProjectRunner(self._query_runner, self._namespace + ".cypher", self._server_version)
 
     def subgraph(
         self,
@@ -62,4 +58,4 @@ class GraphProjectRunner(IllegalAttrChecker):
             },
         ).squeeze()
 
-        return Graph(graph_name, self._query_runner), result
+        return Graph(graph_name, self._query_runner, self._server_version), result

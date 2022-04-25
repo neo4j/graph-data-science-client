@@ -3,6 +3,7 @@ import pytest
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.model.graphsage_model import GraphSageModel
 from graphdatascience.model.model import Model
+from graphdatascience.server_version import ServerVersion
 
 from .conftest import CollectingQueryRunner
 
@@ -11,7 +12,7 @@ MODEL_NAME = "dummy"
 
 @pytest.fixture
 def model(runner: CollectingQueryRunner) -> Model:
-    return GraphSageModel(MODEL_NAME, runner)
+    return GraphSageModel(MODEL_NAME, runner, ServerVersion(2, 0, 0))
 
 
 def test_store_model(runner: CollectingQueryRunner, gds: GraphDataScience, model: Model) -> None:

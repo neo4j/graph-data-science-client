@@ -3,21 +3,17 @@ from typing import Optional, Tuple
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
 
+from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..model.link_prediction_model import LPModel
 from ..model.node_classification_model import NCModel
-from ..query_runner.query_runner import QueryRunner
 from .graphsage_model import GraphSageModel
 from .model import Model
 
 
-class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
-    def __init__(self, query_runner: QueryRunner, namespace: str):
-        self._query_runner = query_runner
-        self._namespace = namespace
-
+class ModelProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     def store(self, model: Model, failIfUnsupportedType: bool = True) -> Series:
         self._namespace += ".store"
 
@@ -103,10 +99,10 @@ class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     def _resolve_model(self, model_type: str, model_name: str) -> Model:
         if model_type == "NodeClassification":
-            return NCModel(model_name, self._query_runner)
+            return NCModel(model_name, self._query_runner, self._server_version)
         elif model_type == "LinkPrediction":
-            return LPModel(model_name, self._query_runner)
+            return LPModel(model_name, self._query_runner, self._server_version)
         elif model_type == "graphSage":
-            return GraphSageModel(model_name, self._query_runner)
+            return GraphSageModel(model_name, self._query_runner, self._server_version)
 
         raise ValueError(f"Unknown model type encountered: '{model_type}'")

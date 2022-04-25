@@ -1,7 +1,7 @@
 import pytest
 from neo4j import DEFAULT_DATABASE, Driver
 
-from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.graph_data_science import GraphDataScience, UnableToConnectError
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.tests.integration.conftest import AUTH, URI
 from graphdatascience.version import __version__
@@ -63,14 +63,19 @@ def test_aurads_rejects_neo4j_ssc() -> None:
 
 
 def test_aurads_accepts_neo4j_s() -> None:
-    gds = GraphDataScience("neo4j+s://localhost:7687", auth=AUTH, aura_ds=True)
-
-    assert gds.driver_config()["keep_alive"]
-    assert gds.driver_config()["max_connection_lifetime"] == 60 * 8
-    assert gds.driver_config()["max_connection_pool_size"] == 50
-    assert gds.driver_config()["user_agent"] == f"neo4j-graphdatascience-v{__version__}"
+    with pytest.raises(UnableToConnectError):
+        GraphDataScience("neo4j+s://localhost:7687", auth=AUTH, aura_ds=True)
 
 
 def test_run_cypher(gds: GraphDataScience) -> None:
     result = gds.run_cypher("CALL gds.list()")
     assert len(result) > 10
+
+
+def test_server_version(gds: GraphDataScience) -> None:
+    cached_server_version = gds._server_version
+    server_version = gds.version()[:5].split(".")
+
+    assert cached_server_version.major == int(server_version[0])
+    assert cached_server_version.minor == int(server_version[1])
+    assert cached_server_version.patch == int(server_version[2])

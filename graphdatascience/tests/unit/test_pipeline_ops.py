@@ -3,6 +3,7 @@ import pytest
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.pipeline.lp_training_pipeline import LPTrainingPipeline
 from graphdatascience.pipeline.training_pipeline import TrainingPipeline
+from graphdatascience.server_version import ServerVersion
 
 from .conftest import CollectingQueryRunner
 
@@ -11,7 +12,7 @@ PIPELINE_NAME = "dummy"
 
 @pytest.fixture(scope="module")
 def pipeline(runner: CollectingQueryRunner) -> TrainingPipeline:
-    return LPTrainingPipeline(PIPELINE_NAME, runner)
+    return LPTrainingPipeline(PIPELINE_NAME, runner, ServerVersion(2, 0, 0))
 
 
 def test_list_pipelines(runner: CollectingQueryRunner, gds: GraphDataScience, pipeline: TrainingPipeline) -> None:

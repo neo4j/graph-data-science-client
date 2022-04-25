@@ -23,4 +23,4 @@ class NCTrainingPipeline(TrainingPipeline):
         return "CALL gds.beta.pipeline.nodeClassification."
 
     def _create_trained_model(self, name: str, query_runner: QueryRunner) -> NCModel:
-        return NCModel(name, query_runner)
+        return NCModel(name, query_runner, self._server_version)

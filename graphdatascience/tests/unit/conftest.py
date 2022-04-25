@@ -17,7 +17,7 @@ class CollectingQueryRunner(QueryRunner):
         self.queries.append(query)
         self.params.append(params)
 
-        return pandas.DataFrame([{"version": "X.Y.Z"}])
+        return pandas.DataFrame([{"version": "2.0.0"}])
 
     def last_query(self) -> str:
         return self.queries[-1]

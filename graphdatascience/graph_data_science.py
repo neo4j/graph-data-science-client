@@ -8,9 +8,14 @@ from .direct_endpoints import DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
+from .server_version import ServerVersion
 from .version import __version__
 
 GDS = TypeVar("GDS", bound="GraphDataScience")
+
+
+class UnableToConnectError(Exception):
+    pass
 
 
 class GraphDataScience(DirectEndpoints, UncallableNamespace):
@@ -37,10 +42,18 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         else:
             self._query_runner = endpoint
 
-        super().__init__(self._query_runner, "gds")
+        try:
+            server_version_string = self._query_runner.run_query("RETURN gds.version()").squeeze()
+        except Exception as e:
+            raise UnableToConnectError(e)
+
+        server_version_numbers = map(int, server_version_string[:5].split("."))
+        self._server_version = ServerVersion(*server_version_numbers)
+
+        super().__init__(self._query_runner, "gds", self._server_version)
 
     def __getattr__(self, attr: str) -> CallBuilder:
-        return CallBuilder(self._query_runner, f"gds.{attr}")
+        return CallBuilder(self._query_runner, f"gds.{attr}", self._server_version)
 
     def set_database(self, db: str) -> None:
         self._query_runner.set_database(db)

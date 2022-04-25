@@ -1,28 +1,24 @@
-from ..query_runner.query_runner import QueryRunner
+from ..caller_base import CallerBase
 from .algo_proc_runner import GraphSageRunner, StandardModeRunner, StreamModeRunner
 
 
-class AlgoEndpoints:
-    def __init__(self, query_runner: QueryRunner, namespace: str):
-        self._query_runner = query_runner
-        self._namespace = namespace
-
+class AlgoEndpoints(CallerBase):
     @property
     def train(self) -> GraphSageRunner:
-        return GraphSageRunner(self._query_runner, f"{self._namespace}.train")
+        return GraphSageRunner(self._query_runner, f"{self._namespace}.train", self._server_version)
 
     @property
     def stream(self) -> StreamModeRunner:
-        return StreamModeRunner(self._query_runner, f"{self._namespace}.stream")
+        return StreamModeRunner(self._query_runner, f"{self._namespace}.stream", self._server_version)
 
     @property
     def mutate(self) -> StandardModeRunner:
-        return StandardModeRunner(self._query_runner, f"{self._namespace}.mutate")
+        return StandardModeRunner(self._query_runner, f"{self._namespace}.mutate", self._server_version)
 
     @property
     def stats(self) -> StandardModeRunner:
-        return StandardModeRunner(self._query_runner, f"{self._namespace}.stats")
+        return StandardModeRunner(self._query_runner, f"{self._namespace}.stats", self._server_version)
 
     @property
     def write(self) -> StandardModeRunner:
-        return StandardModeRunner(self._query_runner, f"{self._namespace}.write")
+        return StandardModeRunner(self._query_runner, f"{self._namespace}.write", self._server_version)

@@ -3,10 +3,10 @@ from typing import Optional
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
 
+from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
-from ..query_runner.query_runner import QueryRunner
 from .lp_pipeline_create_runner import LPPipelineCreateRunner
 from .lp_training_pipeline import LPTrainingPipeline
 from .nc_pipeline_create_runner import NCPipelineCreateRunner
@@ -14,18 +14,14 @@ from .nc_training_pipeline import NCTrainingPipeline
 from .training_pipeline import TrainingPipeline
 
 
-class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
-    def __init__(self, query_runner: QueryRunner, namespace: str):
-        self._query_runner = query_runner
-        self._namespace = namespace
-
+class PipelineProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     @property
     def linkPrediction(self) -> LPPipelineCreateRunner:
-        return LPPipelineCreateRunner(self._query_runner, f"{self._namespace}.linkPrediction")
+        return LPPipelineCreateRunner(self._query_runner, f"{self._namespace}.linkPrediction", self._server_version)
 
     @property
     def nodeClassification(self) -> NCPipelineCreateRunner:
-        return NCPipelineCreateRunner(self._query_runner, f"{self._namespace}.nodeClassification")
+        return NCPipelineCreateRunner(self._query_runner, f"{self._namespace}.nodeClassification", self._server_version)
 
     def list(self, pipeline: Optional[TrainingPipeline] = None) -> DataFrame:
         self._namespace += ".list"
@@ -69,8 +65,8 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     def _resolve_pipeline(self, pipeline_type: str, pipeline_name: str) -> TrainingPipeline:
         if pipeline_type == "Node classification training pipeline":
-            return NCTrainingPipeline(pipeline_name, self._query_runner)
+            return NCTrainingPipeline(pipeline_name, self._query_runner, self._server_version)
         elif pipeline_type == "Link prediction training pipeline":
-            return LPTrainingPipeline(pipeline_name, self._query_runner)
+            return LPTrainingPipeline(pipeline_name, self._query_runner, self._server_version)
 
         raise ValueError(f"Unknown model type encountered: '{pipeline_type}'")

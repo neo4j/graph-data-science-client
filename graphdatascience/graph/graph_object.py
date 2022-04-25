@@ -4,12 +4,14 @@ import pandas
 from pandas.core.series import Series
 
 from ..query_runner.query_runner import QueryRunner
+from ..server_version import ServerVersion
 
 
 class Graph:
-    def __init__(self, name: str, query_runner: QueryRunner):
+    def __init__(self, name: str, query_runner: QueryRunner, server_version: ServerVersion):
         self._name = name
         self._query_runner = query_runner
+        self._server_version = server_version
 
     def name(self) -> str:
         return self._name

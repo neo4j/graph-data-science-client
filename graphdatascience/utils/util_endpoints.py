@@ -2,19 +2,15 @@ from typing import Any, Dict, List
 
 from pandas.core.frame import DataFrame
 
+from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
-from ..query_runner.query_runner import QueryRunner
 from .util_proc_runner import UtilProcRunner
 
 
-class UtilEndpoints:
-    def __init__(self, query_runner: QueryRunner, namespace: str):
-        self._query_runner = query_runner
-        self._namespace = namespace
-
+class UtilEndpoints(CallerBase):
     @property
     def util(self) -> UtilProcRunner:
-        return UtilProcRunner(self._query_runner, f"{self._namespace}.util")
+        return UtilProcRunner(self._query_runner, f"{self._namespace}.util", self._server_version)
 
     @client_only_endpoint("gds")
     def find_node_id(self, labels: List[str] = [], properties: Dict[str, Any] = {}) -> int:

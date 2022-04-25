@@ -3,16 +3,12 @@ from typing import Optional
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
 
+from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
-from ..query_runner.query_runner import QueryRunner
 
 
-class DebugProcRunner(UncallableNamespace, IllegalAttrChecker):
-    def __init__(self, query_runner: QueryRunner, namespace: str):
-        self._query_runner = query_runner
-        self._namespace = namespace
-
+class DebugProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     def sysInfo(self) -> Series:
         self._namespace += ".sysInfo"
         query = f"CALL {self._namespace}()"
@@ -20,11 +16,7 @@ class DebugProcRunner(UncallableNamespace, IllegalAttrChecker):
         return self._query_runner.run_query(query).squeeze()  # type: ignore
 
 
-class SystemEndpoints:
-    def __init__(self, query_runner: QueryRunner, namespace: str):
-        self._query_runner = query_runner
-        self._namespace = namespace
-
+class SystemEndpoints(CallerBase):
     def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
         self._namespace += ".listProgress"
 
@@ -45,4 +37,4 @@ class SystemEndpoints:
 
     @property
     def debug(self) -> DebugProcRunner:
-        return DebugProcRunner(self._query_runner, f"{self._namespace}.debug")
+        return DebugProcRunner(self._query_runner, f"{self._namespace}.debug", self._server_version)
