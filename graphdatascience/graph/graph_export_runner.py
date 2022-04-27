@@ -2,16 +2,12 @@ from typing import Any, Dict
 
 from pandas.core.series import Series
 
+from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
-from ..query_runner.query_runner import QueryRunner
 from .graph_object import Graph
 
 
-class GraphExportRunner(IllegalAttrChecker):
-    def __init__(self, query_runner: QueryRunner, namespace: str):
-        self._query_runner = query_runner
-        self._namespace = namespace
-
+class GraphExportRunner(CallerBase, IllegalAttrChecker):
     def __call__(self, G: Graph, **config: Any) -> Series:
         return self._export_call(G, config)
 

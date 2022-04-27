@@ -28,4 +28,4 @@ class LPTrainingPipeline(TrainingPipeline):
         return "CALL gds.beta.pipeline.linkPrediction."
 
     def _create_trained_model(self, name: str, query_runner: QueryRunner) -> LPModel:
-        return LPModel(name, query_runner)
+        return LPModel(name, query_runner, self._server_version)

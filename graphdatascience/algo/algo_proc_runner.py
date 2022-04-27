@@ -4,19 +4,15 @@ from typing import Any, Dict, Tuple
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
 
+from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..graph.graph_object import Graph
 from ..model.graphsage_model import GraphSageModel
-from ..query_runner.query_runner import QueryRunner
 
 
-class AlgoProcRunner(IllegalAttrChecker, ABC):
-    def __init__(self, query_runner: QueryRunner, proc_name: str):
-        self._query_runner = query_runner
-        self._proc_name = proc_name
-
+class AlgoProcRunner(CallerBase, IllegalAttrChecker, ABC):
     def _run_procedure(self, G: Graph, config: Dict[str, Any]) -> DataFrame:
-        query = f"CALL {self._proc_name}($graph_name, $config)"
+        query = f"CALL {self._namespace}($graph_name, $config)"
 
         params: Dict[str, Any] = {}
         params["graph_name"] = G.name()
@@ -25,7 +21,7 @@ class AlgoProcRunner(IllegalAttrChecker, ABC):
         return self._query_runner.run_query(query, params)
 
     def estimate(self, G: Graph, **config: Any) -> Series:
-        self._proc_name += "." + "estimate"
+        self._namespace += "." + "estimate"
         return self._run_procedure(G, config).squeeze()  # type: ignore
 
 
@@ -44,4 +40,4 @@ class GraphSageRunner(AlgoProcRunner):
         result = self._run_procedure(G, config).squeeze()
         model_name = result["modelInfo"]["modelName"]
 
-        return GraphSageModel(model_name, self._query_runner), result
+        return GraphSageModel(model_name, self._query_runner, self._server_version), result

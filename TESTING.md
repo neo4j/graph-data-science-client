@@ -10,7 +10,8 @@ Please see the section [Specifically for this project](CONTRIBUTING.md#specifica
 ## Unit testing
 
 The unit tests are run without a connection a database. Typically the `CollectingQueryRunner` is used to mock running queries.
-To run the unit tests, simply call:
+
+To run the unit tests (with default options), simply call:
 
 ```bash
 pytest graphdatascience/tests/unit
@@ -20,6 +21,9 @@ pytest graphdatascience/tests/unit
 ## Integration testing
 
 In order to run the integration tests one must have a [Neo4j DBMS](https://neo4j.com/docs/getting-started/current/) with the Neo4j Graph Data Science library installed running.
+
+
+### Configuring
 
 The tests will through the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) connect to a Neo4j DBMS based on the environment variables:
 
@@ -31,14 +35,27 @@ However, if `NEO4J_USER` is not set the tests will try to connect without authen
 
 Once the driver connects successfully to the Neo4j DBMS the tests will go on to execute against the DBMS's default database.
 
-The command for running the integration tests is the following:
+
+### Running
+
+To run the integration tests (with default options), simply call:
 
 ```bash
 pytest graphdatascience/tests/integration
 ```
 
-To include tests that require the Enterprise Edition of the Neo4j Graph Data Science library, you can specify the option `--include-enterprise`.
+To include tests that require the Enterprise Edition of the Neo4j Graph Data Science library, you must specify the option `--include-enterprise`.
 Naturally, this requires access to a valid Neo4j GDS license key, which can be acquired via the [Neo4j GDS product website](https://neo4j.com/product/graph-data-science/).
+
+To include tests that exercise storing and loading models, you must specify the option `--include-model-store-location`.
+Note however that this also requires you to have specified a valid path for the `gds.model.store_location` configuration key of your database.
+
+
+### GDS library versions
+
+There are integration tests that are only compatible with certain versions of the GDS library.
+For example, a procedure (which does not follow the standard algorithm procedure pattern) introduced in version 2.1.0 of the library will not exist in version 2.0.3, and so any client side integration tests that call this procedure should not run when testing against server library version 2.0.3.
+For this reason only tests compatible with the GDS library server version you are running against will run.
 
 
 ## Style guide
@@ -69,7 +86,7 @@ black can be run to format the entire repository by calling:
 black .
 ```
 
-from the root.
+from the root. See the `[tool.black]` section of `pyproject.toml` for our custom black settings.
 
 Additionally [isort](https://pycqa.github.io/isort/) is used for consistent import sorting.
 It can similarly be run to format all source code by calling:

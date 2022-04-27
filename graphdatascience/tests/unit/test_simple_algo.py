@@ -7,7 +7,7 @@ from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 GRAPH_NAME = "g"
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def G(gds: GraphDataScience) -> Graph:
     G_, _ = gds.graph.project(GRAPH_NAME, "Node", "REL")
     return G_

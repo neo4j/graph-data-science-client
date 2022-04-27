@@ -11,7 +11,7 @@ from .conftest import CollectingQueryRunner
 PIPE_NAME = "pipe"
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def G(gds: GraphDataScience) -> Graph:
     G_, _ = gds.graph.project("g", "Node", "REL")
     return G_
