@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
 import pandas
 import pytest
@@ -13,7 +13,7 @@ DEFAULT_SERVER_VERSION = ServerVersion(2, 1, 0)
 
 
 class CollectingQueryRunner(QueryRunner):
-    def __init__(self, server_version: ServerVersion) -> None:
+    def __init__(self, server_version: Union[str, ServerVersion]) -> None:
         self.queries: List[str] = []
         self.params: List[Dict[str, Any]] = []
         self.server_version = server_version

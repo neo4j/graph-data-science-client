@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from neo4j import DEFAULT_DATABASE, Driver
 
@@ -74,7 +76,12 @@ def test_run_cypher(gds: GraphDataScience) -> None:
 
 def test_server_version(gds: GraphDataScience) -> None:
     cached_server_version = gds._server_version
-    server_version = gds.version()[:5].split(".")
+    server_version_string = gds.version()
+
+    server_version_match = re.search(r"^(\d+)\.(\d+)\.(\d+)", server_version_string)
+    assert server_version_match
+
+    server_version = server_version_match.groups()
 
     assert cached_server_version.major == int(server_version[0])
     assert cached_server_version.minor == int(server_version[1])

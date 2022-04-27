@@ -130,10 +130,9 @@ def test_wrong_client_only_prefix(gds: GraphDataScience) -> None:
         gds.beta.model.get("model")
 
 
-def test_incompatible_server_version(runner: QueryRunner) -> None:
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])  # Something later than 2.1.0
+def test_incompatible_server_version(runner: QueryRunner, gds: GraphDataScience) -> None:
     G = Graph("dummy", runner, ServerVersion(0, 0, 0))  # This version object is not relevant for the test
-    gds = GraphDataScience(runner)
-    gds._server_version = ServerVersion(2, 2, 0)  # Something later than 2.1.0
     with pytest.raises(
         IncompatibleServerVersionError,
         match=re.escape(
