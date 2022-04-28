@@ -152,6 +152,13 @@ def test_graph_streamNodeProperty(gds: GraphDataScience) -> None:
     assert {e for e in result["propertyValue"]} == {1, 2, 3}
 
 
+def test_graph_streamNodeProperty_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds_without_arrow.graph.streamNodeProperty(G, "x", concurrency=2)
+    assert {e for e in result["propertyValue"]} == {1, 2, 3}
+
+
 def test_graph_streamNodeProperties(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
