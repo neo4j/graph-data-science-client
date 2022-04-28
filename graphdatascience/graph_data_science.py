@@ -1,5 +1,6 @@
 import re
-from typing import Any, Dict, Type, TypeVar, Union
+import warnings
+from typing import Any, Dict, Optional, Tuple, Type, TypeVar, Union
 
 from neo4j import Driver, GraphDatabase
 from pandas import Series
@@ -28,7 +29,13 @@ class InvalidServerVersionError(Exception):
 class GraphDataScience(DirectEndpoints, UncallableNamespace):
     _AURA_DS_PROTOCOL = "neo4j+s"
 
-    def __init__(self, endpoint: Union[str, QueryRunner], auth: Any = None, aura_ds: bool = False, arrow: bool = True):
+    def __init__(
+        self,
+        endpoint: Union[str, QueryRunner],
+        auth: Optional[Tuple[str, str]] = None,
+        aura_ds: bool = False,
+        arrow: bool = True,
+    ):
         if isinstance(endpoint, str):
             self._config: Dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
 
@@ -45,17 +52,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
             driver = GraphDatabase.driver(endpoint, auth=auth, **self._config)
 
-            neo4j_query_runner = Neo4jQueryRunner(driver, auto_close=True)
-
-            # TODO: Decide what to do if arrow is requested but not present
-            try:
-                if arrow:
-                    arrow_info: Series = neo4j_query_runner.run_query("CALL gds.debug.arrow()").squeeze()
-                    if arrow_info["running"]:
-                        self._query_runner = ArrowQueryRunner(arrow_info["listenAddress"], neo4j_query_runner, auth)
-            finally:
-                if not self._query_runner:
-                    self._query_runner = neo4j_query_runner
+            self._query_runner = Neo4jQueryRunner(driver, auto_close=True)
 
         else:
             self._query_runner = endpoint
@@ -69,6 +66,14 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         if not server_version_match:
             raise InvalidServerVersionError(f"{server_version_string} is not a valid GDS library version")
         self._server_version = ServerVersion(*map(int, server_version_match.groups()))
+
+        if arrow and self._server_version >= ServerVersion(2, 1, 0):
+            try:
+                arrow_info: Series = self._query_runner.run_query("CALL gds.debug.arrow()").squeeze()
+                if arrow_info["running"]:
+                    self._query_runner = ArrowQueryRunner(arrow_info["listenAddress"], self._query_runner, auth)
+            except Exception as e:
+                warnings.warn(f"Could not initialize GDS Flight Server client: {e}")
 
         super().__init__(self._query_runner, "gds", self._server_version)
 
@@ -85,6 +90,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         return self._config
 
     @classmethod
-    def from_neo4j_driver(cls: Type[GDS], driver: Driver) -> "GraphDataScience":
+    def from_neo4j_driver(
+        cls: Type[GDS], driver: Driver, auth: Optional[Tuple[str, str]] = None, arrow: bool = True
+    ) -> "GraphDataScience":
         query_runner = Neo4jQueryRunner(driver, auto_close=False)
-        return cls(query_runner)
+        return cls(query_runner, auth=auth, arrow=arrow)

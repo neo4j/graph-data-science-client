@@ -42,7 +42,7 @@ def runner(server_version: ServerVersion) -> CollectingQueryRunner:
 
 @pytest.fixture
 def gds(runner: CollectingQueryRunner) -> GraphDataScience:
-    return GraphDataScience(runner)
+    return GraphDataScience(runner, arrow=False)
 
 
 @pytest.fixture(scope="package")

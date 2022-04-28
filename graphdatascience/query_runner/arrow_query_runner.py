@@ -4,13 +4,12 @@ from typing import Any, Dict, Optional, Tuple
 import pyarrow.flight as flight
 from pandas.core.frame import DataFrame
 
-from .neo4j_query_runner import Neo4jQueryRunner
 from .query_runner import QueryRunner
 
 
 class ArrowQueryRunner(QueryRunner):
-    def __init__(self, uri: str, neo4j_query_runner: Neo4jQueryRunner, auth: Optional[Tuple[str, str]] = None):
-        self._neo4j_query_runner = neo4j_query_runner
+    def __init__(self, uri: str, fallback_query_runner: QueryRunner, auth: Optional[Tuple[str, str]] = None):
+        self.fallback_query_runner = fallback_query_runner
 
         host, port_string = uri.split(":")
 
@@ -31,10 +30,10 @@ class ArrowQueryRunner(QueryRunner):
             property_name = params["properties"]
             return self._run_arrow_property_get(graph_name, "NODE", property_name)
 
-        return self._neo4j_query_runner.run_query(query, params)
+        return self.fallback_query_runner.run_query(query, params)
 
     def set_database(self, db: str) -> None:
-        self._neo4j_query_runner.set_database(db)
+        self.fallback_query_runner.set_database(db)
 
     def _run_arrow_property_get(self, graph_name: str, entity_type: str, property_name: str) -> DataFrame:
         payload = {
