@@ -2,11 +2,13 @@ import re
 from typing import Any, Dict, Type, TypeVar, Union
 
 from neo4j import Driver, GraphDatabase
+from pandas import Series
 from pandas.core.frame import DataFrame
 
 from .call_builder import CallBuilder
 from .direct_endpoints import DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
+from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
@@ -26,7 +28,7 @@ class InvalidServerVersionError(Exception):
 class GraphDataScience(DirectEndpoints, UncallableNamespace):
     _AURA_DS_PROTOCOL = "neo4j+s"
 
-    def __init__(self, endpoint: Union[str, QueryRunner], auth: Any = None, aura_ds: bool = False):
+    def __init__(self, endpoint: Union[str, QueryRunner], auth: Any = None, aura_ds: bool = False, arrow: bool = True):
         if isinstance(endpoint, str):
             self._config: Dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
 
@@ -43,7 +45,18 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
             driver = GraphDatabase.driver(endpoint, auth=auth, **self._config)
 
-            self._query_runner = self.create_neo4j_query_runner(driver, auto_close=True)
+            neo4j_query_runner = Neo4jQueryRunner(driver, auto_close=True)
+
+            # TODO: Decide what to do if arrow is requested but not present
+            try:
+                if arrow:
+                    arrow_info: Series = neo4j_query_runner.run_query("CALL gds.debug.arrow()").squeeze()
+                    if arrow_info["running"]:
+                        self._query_runner = ArrowQueryRunner(arrow_info["listenAddress"], neo4j_query_runner, auth)
+            finally:
+                if not self._query_runner:
+                    self._query_runner = neo4j_query_runner
+
         else:
             self._query_runner = endpoint
 
@@ -73,8 +86,5 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
     @classmethod
     def from_neo4j_driver(cls: Type[GDS], driver: Driver) -> "GraphDataScience":
-        return cls(cls.create_neo4j_query_runner(driver))
-
-    @staticmethod
-    def create_neo4j_query_runner(driver: Driver, auto_close: bool = False) -> Neo4jQueryRunner:
-        return Neo4jQueryRunner(driver, auto_close=auto_close)
+        query_runner = Neo4jQueryRunner(driver, auto_close=False)
+        return cls(query_runner)

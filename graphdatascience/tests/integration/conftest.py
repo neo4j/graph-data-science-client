@@ -28,12 +28,12 @@ def neo4j_driver() -> Generator[Driver, None, None]:
 
 @pytest.fixture(scope="package")
 def runner(neo4j_driver: Driver) -> Neo4jQueryRunner:
-    return GraphDataScience.create_neo4j_query_runner(neo4j_driver)
+    return Neo4jQueryRunner(neo4j_driver)
 
 
 @pytest.fixture(scope="package")
-def gds(runner: Neo4jQueryRunner) -> GraphDataScience:
-    return GraphDataScience(runner)
+def gds() -> GraphDataScience:
+    return GraphDataScience(URI, auth=AUTH)
 
 
 def pytest_collection_modifyitems(config: Any, items: Any) -> None:
