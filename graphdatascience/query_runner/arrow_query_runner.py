@@ -25,10 +25,14 @@ class ArrowQueryRunner(QueryRunner):
                 self._flight_options = flight.FlightCallOptions(headers=[(header, token)])
 
     def run_query(self, query: str, params: Dict[str, Any] = {}) -> DataFrame:
-        if query.find("gds.graph.streamNodeProperty") >= 0:
+        if "gds.graph.streamNodeProperty" in query:
             graph_name = params["graph_name"]
             property_name = params["properties"]
             return self._run_arrow_property_get(graph_name, "NODE", property_name)
+        elif "gds.graph.streamRelationshipProperty" in query:
+            graph_name = params["graph_name"]
+            property_name = params["properties"]
+            return self._run_arrow_property_get(graph_name, "RELATIONSHIP", property_name)
 
         return self.fallback_query_runner.run_query(query, params)
 
