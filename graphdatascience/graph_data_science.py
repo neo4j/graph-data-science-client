@@ -11,7 +11,6 @@ from .direct_endpoints import DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
 from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
-from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
 from .version import __version__
 
@@ -31,7 +30,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def __init__(
         self,
-        endpoint: Union[str, QueryRunner],
+        endpoint: Union[str, Driver],
         auth: Optional[Tuple[str, str]] = None,
         aura_ds: bool = False,
         arrow: bool = True,
@@ -55,7 +54,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             self._query_runner = Neo4jQueryRunner(driver, auto_close=True)
 
         else:
-            self._query_runner = endpoint
+            driver = endpoint
+            self._query_runner = Neo4jQueryRunner(driver, auto_close=False)
 
         try:
             server_version_string = self._query_runner.run_query("RETURN gds.version()").squeeze()
@@ -71,7 +71,14 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             try:
                 arrow_info: Series = self._query_runner.run_query("CALL gds.debug.arrow()").squeeze()
                 if arrow_info["running"]:
-                    self._query_runner = ArrowQueryRunner(arrow_info["listenAddress"], self._query_runner, auth)
+                    disable_server_verification = driver._pool.pool_config.trust == "TRUST_ALL_CERTIFICATES"
+                    self._query_runner = ArrowQueryRunner(
+                        arrow_info["listenAddress"],
+                        self._query_runner,
+                        auth,
+                        driver.encrypted,
+                        disable_server_verification,
+                    )
             except Exception as e:
                 warnings.warn(f"Could not initialize GDS Flight Server client: {e}")
 
@@ -93,5 +100,4 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def from_neo4j_driver(
         cls: Type[GDS], driver: Driver, auth: Optional[Tuple[str, str]] = None, arrow: bool = True
     ) -> "GraphDataScience":
-        query_runner = Neo4jQueryRunner(driver, auto_close=False)
-        return cls(query_runner, auth=auth, arrow=arrow)
+        return cls(driver, auth=auth, arrow=arrow)

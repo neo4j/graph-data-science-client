@@ -8,14 +8,25 @@ from .query_runner import QueryRunner
 
 
 class ArrowQueryRunner(QueryRunner):
-    def __init__(self, uri: str, fallback_query_runner: QueryRunner, auth: Optional[Tuple[str, str]] = None):
+    def __init__(
+        self,
+        uri: str,
+        fallback_query_runner: QueryRunner,
+        auth: Optional[Tuple[str, str]] = None,
+        encrypted: bool = False,
+        disable_server_verification: bool = False,
+    ):
         self.fallback_query_runner = fallback_query_runner
 
         host, port_string = uri.split(":")
 
-        location = flight.Location.for_grpc_tcp(host, int(port_string))
+        location = (
+            flight.Location.for_grpc_tls(host, int(port_string))
+            if encrypted
+            else flight.Location.for_grpc_tls(host, int(port_string))
+        )
 
-        self._flight_client = flight.FlightClient(location)
+        self._flight_client = flight.FlightClient(location, disable_server_verification=disable_server_verification)
         self._flight_options = flight.FlightCallOptions()
 
         if auth:
