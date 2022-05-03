@@ -11,6 +11,7 @@ from .direct_endpoints import DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
 from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
+from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
 from .version import __version__
 
@@ -30,7 +31,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def __init__(
         self,
-        endpoint: Union[str, Driver],
+        endpoint: Union[str, Driver, QueryRunner],
         auth: Optional[Tuple[str, str]] = None,
         aura_ds: bool = False,
         arrow: bool = True,
@@ -52,6 +53,12 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             driver = GraphDatabase.driver(endpoint, auth=auth, **self._config)
 
             self._query_runner = Neo4jQueryRunner(driver, auto_close=True)
+
+        elif isinstance(endpoint, QueryRunner):
+            if arrow:
+                raise ValueError("Arrow cannot be used if the QueryRunner is provided directly")
+
+            self._query_runner = endpoint
 
         else:
             driver = endpoint

@@ -23,7 +23,7 @@ class ArrowQueryRunner(QueryRunner):
         location = (
             flight.Location.for_grpc_tls(host, int(port_string))
             if encrypted
-            else flight.Location.for_grpc_tls(host, int(port_string))
+            else flight.Location.for_grpc_tcp(host, int(port_string))
         )
 
         self._flight_client = flight.FlightClient(location, disable_server_verification=disable_server_verification)
