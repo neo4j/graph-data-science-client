@@ -3,7 +3,8 @@ import re
 import pytest
 from neo4j import DEFAULT_DATABASE, Driver
 
-from graphdatascience.graph_data_science import GraphDataScience, UnableToConnectError
+from graphdatascience.error.unable_to_connect import UnableToConnectError
+from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.tests.integration.conftest import AUTH, URI
 from graphdatascience.version import __version__
