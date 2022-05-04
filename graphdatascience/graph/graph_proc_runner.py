@@ -1,3 +1,4 @@
+import multiprocessing
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from multimethod import multimethod
@@ -238,8 +239,9 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         graph_name: str,
         nodes: Union[DataFrame, List[DataFrame]],
         relationships: Union[DataFrame, List[DataFrame]],
+        concurrency: int = multiprocessing.cpu_count(),
     ) -> Graph:
-        constructor = self._query_runner.create_graph_constructor(graph_name)
+        constructor = self._query_runner.create_graph_constructor(graph_name, concurrency)
 
         nodes = nodes if isinstance(nodes, List) else [nodes]
         relationships = relationships if isinstance(relationships, List) else [relationships]

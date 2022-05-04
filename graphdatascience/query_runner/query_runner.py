@@ -19,7 +19,7 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
-    def create_graph_constructor(self, graph_name: str) -> GraphConstructor:
+    def create_graph_constructor(self, graph_name: str, concurrency: int) -> GraphConstructor:
         pass
 
     @abstractmethod

@@ -1,4 +1,6 @@
 import json
+import math
+from concurrent.futures import ThreadPoolExecutor, wait
 from typing import Any, Dict, List, Optional, Tuple
 
 import pyarrow.flight as flight
@@ -16,13 +18,16 @@ class ArrowGraphConstructor(GraphConstructor):
         graph_name: str,
         flight_client: flight.FlightClient,
         flight_options: flight.FlightCallOptions,
+        concurrency: int,
         chunk_size: int = 10_000,
     ):
         self._query_runner = query_runner
+        self._concurrency = concurrency
         self._graph_name = graph_name
         self._client = flight_client
         self._flight_options = flight_options
         self._chunk_size = chunk_size
+        self._min_batch_size = chunk_size * 10
 
     def run(self, node_dfs: List[DataFrame], relationship_dfs: List[DataFrame]) -> None:
         try:
@@ -30,18 +35,53 @@ class ArrowGraphConstructor(GraphConstructor):
                 "CREATE_GRAPH", {"name": self._graph_name, "database_name": self._query_runner.database()}
             )
 
-            for node_df in node_dfs:
-                self._send_df(node_df, "node")
+            partitioned_node_dfs = self._partition_dfs(node_dfs)
+            with ThreadPoolExecutor(self._concurrency) as executor:
+                futures = [executor.submit(self._send_df, df, "node") for df in partitioned_node_dfs]
+
+                wait(futures)
+
+                for future in futures:
+                    if not future.exception():
+                        continue
+                    raise future.exception()  # type: ignore
 
             self._send_action("NODE_LOAD_DONE", {"name": self._graph_name})
 
-            for rel_df in relationship_dfs:
-                self._send_df(rel_df, "relationship")
+            partitioned_rel_dfs = self._partition_dfs(relationship_dfs)
+            with ThreadPoolExecutor(self._concurrency) as executor:
+                futures = [executor.submit(self._send_df, df, "relationship") for df in partitioned_rel_dfs]
+
+                wait(futures)
+
+                for future in futures:
+                    if not future.exception():
+                        continue
+                    raise future.exception()  # type: ignore
 
             self._send_action("RELATIONSHIP_LOAD_DONE", {"name": self._graph_name})
         except Exception as e:
             self._send_action("ABORT", {"name": self._graph_name})
             raise e
+
+    def _partition_dfs(self, dfs: List[DataFrame]) -> List[DataFrame]:
+        partitioned_dfs = []
+
+        for df in dfs:
+            num_rows = df.shape[0]
+
+            if num_rows <= self._min_batch_size:
+                partitioned_dfs.append(df)
+                continue
+
+            num_batches = math.ceil(num_rows / self._min_batch_size)
+            for i in range(num_batches):
+                row_offset = i * self._min_batch_size
+                partitioned_dfs.append(
+                    df.iloc[row_offset : min(num_rows, row_offset + self._min_batch_size), :]  # noqa: E203
+                )
+
+        return partitioned_dfs
 
     def _send_action(self, action_type: str, meta_data: Dict[str, str]) -> None:
         result = self._client.do_action(
@@ -127,5 +167,5 @@ class ArrowQueryRunner(QueryRunner):
 
         return result
 
-    def create_graph_constructor(self, graph_name: str) -> GraphConstructor:
-        return ArrowGraphConstructor(self, graph_name, self._flight_client, self._flight_options)
+    def create_graph_constructor(self, graph_name: str, concurrency: int) -> GraphConstructor:
+        return ArrowGraphConstructor(self, graph_name, self._flight_client, self._flight_options, concurrency)

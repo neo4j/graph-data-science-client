@@ -38,7 +38,7 @@ class CollectingQueryRunner(QueryRunner):
     def database(self) -> str:
         return "dummy"
 
-    def create_graph_constructor(self, _: str) -> GraphConstructor:
+    def create_graph_constructor(self, _: str, __: int) -> GraphConstructor:
         raise NotImplementedError
 
 
