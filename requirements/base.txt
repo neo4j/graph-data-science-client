@@ -1,4 +1,4 @@
 multimethod >= 1.0, < 2.0
 neo4j >= 4.4.2, < 5.0
 pandas >= 1.0, < 2.0
-pyarrow
+pyarrow >= 7.0, < 8.0
