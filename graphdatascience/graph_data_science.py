@@ -78,13 +78,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             try:
                 arrow_info: Series = self._query_runner.run_query("CALL gds.debug.arrow()").squeeze()
                 if arrow_info["running"]:
-                    disable_server_verification = driver._pool.pool_config.trust == "TRUST_ALL_CERTIFICATES"
                     self._query_runner = ArrowQueryRunner(
-                        arrow_info["listenAddress"],
-                        self._query_runner,
-                        auth,
-                        driver.encrypted,
-                        disable_server_verification,
+                        arrow_info["listenAddress"], self._query_runner, auth, driver.encrypted, True
                     )
             except Exception as e:
                 warnings.warn(f"Could not initialize GDS Flight Server client: {e}")
