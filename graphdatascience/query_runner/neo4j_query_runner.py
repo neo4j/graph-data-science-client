@@ -51,5 +51,5 @@ class Neo4jQueryRunner(QueryRunner):
         if self._auto_close:
             self._driver.close()
 
-    def create_graph_constructor(self, graph_name: str) -> GraphConstructor:
-        raise NotImplementedError
+    def create_graph_constructor(self, _: str) -> GraphConstructor:
+        raise ValueError("This feature requires the GDS Flight server to be enabled.")

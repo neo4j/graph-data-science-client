@@ -249,3 +249,44 @@ def test_graph_construct(gds: GraphDataScience) -> None:
     assert G.relationship_count() == 4
 
     G.drop()
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+def test_graph_construct_multiple_dfs(gds: GraphDataScience) -> None:
+    nodes = [pandas.DataFrame({"node_id": [0, 1]}), pandas.DataFrame({"node_id": [2, 3]})]
+    relationships = pandas.DataFrame({"source_id": [0, 1, 2, 3], "destination_id": [1, 2, 3, 0]})
+
+    G = gds.alpha.graph.construct("hello", nodes, relationships)
+
+    assert G.name() == "hello"
+    assert G.node_count() == 4
+    assert G.relationship_count() == 4
+
+    G.drop()
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+def test_graph_construct_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    nodes = pandas.DataFrame({"node_id": [0, 1, 2, 3]})
+    relationships = pandas.DataFrame({"source_id": [0, 1, 2, 3], "destination_id": [1, 2, 3, 0]})
+
+    with pytest.raises(ValueError):
+        gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+def test_graph_construct_abort(gds: GraphDataScience) -> None:
+    bad_nodes = pandas.DataFrame({"bogus": [0, 1, 2, 3]})
+    relationships = pandas.DataFrame({"source_id": [0, 1, 2, 3], "destination_id": [1, 2, 3, 0]})
+
+    with pytest.raises(Exception):
+        gds.alpha.graph.construct("hello", bad_nodes, relationships)
+
+    good_nodes = pandas.DataFrame({"node_id": [0, 1, 2, 3]})
+    G = gds.alpha.graph.construct("hello", good_nodes, relationships)
+
+    assert G.name() == "hello"
+    assert G.node_count() == 4
+    assert G.relationship_count() == 4
+
+    G.drop()
