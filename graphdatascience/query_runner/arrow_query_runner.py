@@ -31,7 +31,7 @@ class ArrowQueryRunner(QueryRunner):
 
         if auth:
             username, password = auth
-            (header, token) = self._flight_client.authenticate_basic_token(username, password)
+            header, token = self._flight_client.authenticate_basic_token(username, password)
             if header:
                 self._flight_options = flight.FlightCallOptions(headers=[(header, token)])
 
