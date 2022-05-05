@@ -29,6 +29,9 @@ class Neo4jQueryRunner(QueryRunner):
     def set_database(self, db: str) -> None:
         self._db = db
 
+    def close(self) -> None:
+        self._driver.close()
+
     def __del__(self) -> None:
         if self._auto_close:
             self._driver.close()
