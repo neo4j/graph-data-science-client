@@ -12,7 +12,7 @@ URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
 AUTH = None
 if os.environ.get("NEO4J_USER") is not None:
     AUTH = (
-        os.environ.get("NEO4J_USER"),
+        os.environ.get("NEO4J_USER", "DUMMY"),
         os.environ.get("NEO4J_PASSWORD", "neo4j"),
     )
 
@@ -28,12 +28,17 @@ def neo4j_driver() -> Generator[Driver, None, None]:
 
 @pytest.fixture(scope="package")
 def runner(neo4j_driver: Driver) -> Neo4jQueryRunner:
-    return GraphDataScience.create_neo4j_query_runner(neo4j_driver)
+    return Neo4jQueryRunner(neo4j_driver)
 
 
 @pytest.fixture(scope="package")
-def gds(runner: Neo4jQueryRunner) -> GraphDataScience:
-    return GraphDataScience(runner)
+def gds() -> GraphDataScience:
+    return GraphDataScience(URI, auth=AUTH)
+
+
+@pytest.fixture(scope="package")
+def gds_without_arrow() -> GraphDataScience:
+    return GraphDataScience(URI, auth=AUTH, arrow=False)
 
 
 def pytest_collection_modifyitems(config: Any, items: Any) -> None:
