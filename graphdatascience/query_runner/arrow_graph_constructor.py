@@ -35,29 +35,11 @@ class ArrowGraphConstructor(GraphConstructor):
                 "CREATE_GRAPH", {"name": self._graph_name, "database_name": self._query_runner.database()}
             )
 
-            partitioned_node_dfs = self._partition_dfs(node_dfs)
-            with ThreadPoolExecutor(self._concurrency) as executor:
-                futures = [executor.submit(self._send_df, df, "node") for df in partitioned_node_dfs]
-
-                wait(futures)
-
-                for future in futures:
-                    if not future.exception():
-                        continue
-                    raise future.exception()  # type: ignore
+            self._send_dfs(node_dfs, "node")
 
             self._send_action("NODE_LOAD_DONE", {"name": self._graph_name})
 
-            partitioned_rel_dfs = self._partition_dfs(relationship_dfs)
-            with ThreadPoolExecutor(self._concurrency) as executor:
-                futures = [executor.submit(self._send_df, df, "relationship") for df in partitioned_rel_dfs]
-
-                wait(futures)
-
-                for future in futures:
-                    if not future.exception():
-                        continue
-                    raise future.exception()  # type: ignore
+            self._send_dfs(relationship_dfs, "relationship")
 
             self._send_action("RELATIONSHIP_LOAD_DONE", {"name": self._graph_name})
         except Exception as e:
@@ -102,3 +84,16 @@ class ArrowGraphConstructor(GraphConstructor):
         with writer:
             # Write table in chunks
             writer.write_table(table, max_chunksize=self._chunk_size)
+
+    def _send_dfs(self, dfs: List[DataFrame], entity_type: str) -> None:
+        partitioned_dfs = self._partition_dfs(dfs)
+
+        with ThreadPoolExecutor(self._concurrency) as executor:
+            futures = [executor.submit(self._send_df, df, entity_type) for df in partitioned_dfs]
+
+            wait(futures)
+
+            for future in futures:
+                if not future.exception():
+                    continue
+                raise future.exception()  # type: ignore
