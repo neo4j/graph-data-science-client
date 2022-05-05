@@ -39,23 +39,27 @@ class ArrowQueryRunner(QueryRunner):
         if "gds.graph.streamNodeProperty" in query:
             graph_name = params["graph_name"]
             property_name = params["properties"]
-            return self._run_arrow_property_get(graph_name, "NODE", property_name)
+            return self._run_arrow_property_get(
+                graph_name, "gds.graph.streamNodeProperty", {"nodeProperty": property_name}
+            )
         elif "gds.graph.streamRelationshipProperty" in query:
             graph_name = params["graph_name"]
             property_name = params["properties"]
-            return self._run_arrow_property_get(graph_name, "RELATIONSHIP", property_name)
+            return self._run_arrow_property_get(
+                graph_name, "gds.graph.streamRelationshipProperty", {"relationshipProperty": property_name}
+            )
 
         return self.fallback_query_runner.run_query(query, params)
 
     def set_database(self, db: str) -> None:
         self.fallback_query_runner.set_database(db)
 
-    def _run_arrow_property_get(self, graph_name: str, entity_type: str, property_name: str) -> DataFrame:
+    def _run_arrow_property_get(self, graph_name: str, procedure_name: str, configuration: Dict[str, Any]) -> DataFrame:
         payload = {
             "database_name": "neo4j",
             "graph_name": graph_name,
-            "entity_type": entity_type,
-            "property_name": property_name,
+            "procedure_name": procedure_name,
+            "configuration": configuration,
         }
         ticket = flight.Ticket(json.dumps(payload).encode("utf-8"))
 
