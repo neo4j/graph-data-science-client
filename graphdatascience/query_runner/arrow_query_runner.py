@@ -61,7 +61,7 @@ class ArrowQueryRunner(QueryRunner):
 
     def _run_arrow_property_get(self, graph_name: str, procedure_name: str, configuration: Dict[str, Any]) -> DataFrame:
         payload = {
-            "database_name": "neo4j",
+            "database_name": self.database(),
             "graph_name": graph_name,
             "procedure_name": procedure_name,
             "configuration": configuration,
