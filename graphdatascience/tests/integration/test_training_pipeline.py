@@ -7,6 +7,7 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.pipeline.lp_training_pipeline import LPTrainingPipeline
 from graphdatascience.pipeline.nc_training_pipeline import NCTrainingPipeline
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 PIPE_NAME = "pipe"
 
@@ -180,6 +181,7 @@ def test_add_logistic_regression_lp_pipeline(lp_pipe: LPTrainingPipeline) -> Non
     assert lr_parameter_space[0]["penalty"] == 42
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_add_logistic_regression_with_range_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     res = lp_pipe.addLogisticRegression(penalty=(42, 1337))
     lr_parameter_space = res["parameterSpace"]["LogisticRegression"]
@@ -204,11 +206,13 @@ def test_parameter_space_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     assert "penalty" in parameter_space["LogisticRegression"][0]
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_auto_tuning_config_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     tuning_config = lp_pipe.auto_tuning_config()
     assert "maxTrials" in tuning_config
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_configure_auto_tuning_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     maxTrials = 1337
     result = lp_pipe.configureAutoTuning(maxTrials=maxTrials)
