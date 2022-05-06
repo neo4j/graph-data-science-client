@@ -142,7 +142,10 @@ def test_graph_get(gds: GraphDataScience) -> None:
     G = gds.graph.get(GRAPH_NAME)
     assert G.name() == GRAPH_NAME
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match=f"No projected graph named 'bogusName' exists in current database '{gds.database()}'",
+    ):
         gds.graph.get("bogusName")
 
 
