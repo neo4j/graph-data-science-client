@@ -3,6 +3,7 @@ import math
 from concurrent.futures import ThreadPoolExecutor, wait
 from typing import Dict, List
 
+import numpy
 import pyarrow.flight as flight
 from pandas.core.frame import DataFrame
 from pyarrow import Table
@@ -51,17 +52,8 @@ class ArrowGraphConstructor(GraphConstructor):
 
         for df in dfs:
             num_rows = df.shape[0]
-
-            if num_rows <= self._min_batch_size:
-                partitioned_dfs.append(df)
-                continue
-
             num_batches = math.ceil(num_rows / self._min_batch_size)
-            for i in range(num_batches):
-                row_offset = i * self._min_batch_size
-                partitioned_dfs.append(
-                    df.iloc[row_offset : min(num_rows, row_offset + self._min_batch_size), :]  # noqa: E203
-                )
+            partitioned_dfs += numpy.array_split(df, num_batches)
 
         return partitioned_dfs
 
