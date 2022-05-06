@@ -48,12 +48,12 @@ class ArrowGraphConstructor(GraphConstructor):
             raise e
 
     def _partition_dfs(self, dfs: List[DataFrame]) -> List[DataFrame]:
-        partitioned_dfs = []
+        partitioned_dfs: List[DataFrame] = []
 
         for df in dfs:
             num_rows = df.shape[0]
             num_batches = math.ceil(num_rows / self._min_batch_size)
-            partitioned_dfs += numpy.array_split(df, num_batches)
+            partitioned_dfs += numpy.array_split(df, num_batches)  # type: ignore
 
         return partitioned_dfs
 
