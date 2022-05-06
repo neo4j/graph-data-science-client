@@ -1,9 +1,10 @@
 import re
 
 import pytest
-from neo4j import DEFAULT_DATABASE, Driver
+from neo4j import Driver
 
-from graphdatascience.graph_data_science import GraphDataScience, UnableToConnectError
+from graphdatascience.error.unable_to_connect import UnableToConnectError
+from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.tests.integration.conftest import AUTH, URI
 from graphdatascience.version import __version__
@@ -12,6 +13,7 @@ GRAPH_NAME = "g"
 
 
 def test_switching_db(runner: Neo4jQueryRunner) -> None:
+    default_database = runner.database()
     runner.run_query("CREATE (a: Node)")
 
     pre_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
@@ -24,7 +26,7 @@ def test_switching_db(runner: Neo4jQueryRunner) -> None:
     post_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
     assert post_count == 0
 
-    runner.set_database(DEFAULT_DATABASE)
+    runner.set_database(default_database)
     runner.run_query("MATCH (n) DETACH DELETE n")
     runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
 

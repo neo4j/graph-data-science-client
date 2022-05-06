@@ -4,6 +4,8 @@ from typing import Any, Dict, Optional, Tuple
 import pyarrow.flight as flight
 from pandas.core.frame import DataFrame
 
+from .arrow_graph_constructor import ArrowGraphConstructor
+from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
 
 
@@ -39,14 +41,18 @@ class ArrowQueryRunner(QueryRunner):
         if "gds.graph.streamNodeProperty" in query:
             graph_name = params["graph_name"]
             property_name = params["properties"]
+            node_labels = params["entities"]
             return self._run_arrow_property_get(
-                graph_name, "gds.graph.streamNodeProperty", {"nodeProperty": property_name}
+                graph_name, "gds.graph.streamNodeProperty", {"node_property": property_name, "node_labels": node_labels}
             )
         elif "gds.graph.streamRelationshipProperty" in query:
             graph_name = params["graph_name"]
             property_name = params["properties"]
+            relationship_types = params["entities"]
             return self._run_arrow_property_get(
-                graph_name, "gds.graph.streamRelationshipProperty", {"relationshipProperty": property_name}
+                graph_name,
+                "gds.graph.streamRelationshipProperty",
+                {"relationship_property": property_name, "relationship_types": relationship_types},
             )
 
         return self.fallback_query_runner.run_query(query, params)
@@ -54,9 +60,12 @@ class ArrowQueryRunner(QueryRunner):
     def set_database(self, db: str) -> None:
         self.fallback_query_runner.set_database(db)
 
+    def database(self) -> str:
+        return self.fallback_query_runner.database()
+
     def _run_arrow_property_get(self, graph_name: str, procedure_name: str, configuration: Dict[str, Any]) -> DataFrame:
         payload = {
-            "database_name": "neo4j",
+            "database_name": self.database(),
             "graph_name": graph_name,
             "procedure_name": procedure_name,
             "configuration": configuration,
@@ -66,3 +75,6 @@ class ArrowQueryRunner(QueryRunner):
         result: DataFrame = self._flight_client.do_get(ticket, self._flight_options).read_pandas()
 
         return result
+
+    def create_graph_constructor(self, graph_name: str, concurrency: int) -> GraphConstructor:
+        return ArrowGraphConstructor(self, graph_name, self._flight_client, self._flight_options, concurrency)

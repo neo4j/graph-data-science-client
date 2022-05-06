@@ -8,6 +8,7 @@ from pandas.core.frame import DataFrame
 
 from .call_builder import CallBuilder
 from .direct_endpoints import DirectEndpoints
+from .error.unable_to_connect import UnableToConnectError
 from .error.uncallable_namespace import UncallableNamespace
 from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
@@ -16,10 +17,6 @@ from .server_version.server_version import ServerVersion
 from .version import __version__
 
 GDS = TypeVar("GDS", bound="GraphDataScience")
-
-
-class UnableToConnectError(Exception):
-    pass
 
 
 class InvalidServerVersionError(Exception):

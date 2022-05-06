@@ -6,6 +6,7 @@ from pandas.core.frame import DataFrame
 
 from graphdatascience import QueryRunner
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.server_version.server_version import ServerVersion
 
 # Should mirror the latest GDS server version under development.
@@ -33,6 +34,12 @@ class CollectingQueryRunner(QueryRunner):
 
     def set_database(self, _: str) -> None:
         pass
+
+    def database(self) -> str:
+        return "dummy"
+
+    def create_graph_constructor(self, _: str, __: int) -> GraphConstructor:
+        raise NotImplementedError
 
 
 @pytest.fixture
