@@ -12,3 +12,6 @@ class QueryRunner(ABC):
     @abstractmethod
     def set_database(self, db: str) -> None:
         pass
+
+    def close(self) -> None:
+        pass

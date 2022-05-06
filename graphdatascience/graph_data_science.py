@@ -103,3 +103,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         cls: Type[GDS], driver: Driver, auth: Optional[Tuple[str, str]] = None, arrow: bool = True
     ) -> "GraphDataScience":
         return cls(driver, auth=auth, arrow=arrow)
+
+    def close(self) -> None:
+        self._query_runner.close()
