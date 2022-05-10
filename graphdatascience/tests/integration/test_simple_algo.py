@@ -79,10 +79,20 @@ def test_nodeSimilarity_stream(gds: GraphDataScience) -> None:
     assert result["similarity"][0] == 0.5
 
 
+# TODO: Only temporary for testing logging, remove!
+def test_fastRP_stream(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
+
+    gds.fastRP.stream(G, iterationWeights=list(range(10_000)), embeddingDimension=100)
+
+
 def test_nodeSimilarity_stream_estimate(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    result = gds.nodeSimilarity.stream.estimate(G, similarityCutoff=0)
+    result = gds.nodeSimilarity.stream.estimate(
+        G,
+        similarityCutoff=0,
+    )
 
     assert result["requiredMemory"]
 

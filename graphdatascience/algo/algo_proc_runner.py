@@ -18,7 +18,7 @@ class AlgoProcRunner(CallerBase, IllegalAttrChecker, ABC):
         params["graph_name"] = G.name()
         params["config"] = config
 
-        return self._query_runner.run_query(query, params)
+        return self._query_runner.run_query_with_logging(query, params)
 
     def estimate(self, G: Graph, **config: Any) -> Series:
         self._namespace += "." + "estimate"

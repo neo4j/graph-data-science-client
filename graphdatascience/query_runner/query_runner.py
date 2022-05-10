@@ -11,6 +11,9 @@ class QueryRunner(ABC):
     def run_query(self, query: str, params: Dict[str, Any] = {}) -> DataFrame:
         pass
 
+    def run_query_with_logging(self, query: str, params: Dict[str, Any] = {}) -> DataFrame:
+        return self.run_query(query, params)
+
     @abstractmethod
     def set_database(self, db: str) -> None:
         pass
