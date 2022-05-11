@@ -59,7 +59,7 @@ class TrainingPipeline(ABC):
             "config": config,
         }
 
-        result = self._query_runner.run_query(query, params).squeeze()
+        result = self._query_runner.run_query_with_logging(query, params).squeeze()
 
         return (
             self._create_trained_model(config["modelName"], self._query_runner),
