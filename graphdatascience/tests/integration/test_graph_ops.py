@@ -240,6 +240,7 @@ def test_graph_generate(gds: GraphDataScience) -> None:
     assert result["generateMillis"] >= 0
 
 
+@pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct(gds: GraphDataScience) -> None:
     nodes = pandas.DataFrame({"nodeId": [0, 1, 2, 3]})
@@ -254,6 +255,7 @@ def test_graph_construct(gds: GraphDataScience) -> None:
     G.drop()
 
 
+@pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_multiple_dfs(gds: GraphDataScience) -> None:
     nodes = [pandas.DataFrame({"nodeId": [0, 1]}), pandas.DataFrame({"nodeId": [2, 3]})]
@@ -268,6 +270,7 @@ def test_graph_construct_multiple_dfs(gds: GraphDataScience) -> None:
     G.drop()
 
 
+@pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     nodes = pandas.DataFrame({"nodeId": [0, 1, 2, 3]})
@@ -277,6 +280,7 @@ def test_graph_construct_without_arrow(gds_without_arrow: GraphDataScience) -> N
         gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
 
 
+@pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_abort(gds: GraphDataScience) -> None:
     bad_nodes = pandas.DataFrame({"bogus": [0, 1, 2, 3]})
