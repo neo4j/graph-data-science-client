@@ -69,24 +69,31 @@ class Neo4jQueryRunner(QueryRunner):
                 return future.result()
 
     def _log(self, job_id: str, future: "Future[Any]") -> None:
-        with tqdm(total=100, unit="%") as pbar:
-            while wait([future], timeout=self._LOG_POLLING_INTERVAL).not_done:
-                try:
-                    progress = self.run_query(f"CALL gds.beta.listProgress('{job_id}') YIELD taskName, progress")
+        pbar = None
 
-                    parsed_name = progress["taskName"][0].split("|--")[-1][1:]
-                    pbar.set_description(parsed_name)
+        while wait([future], timeout=self._LOG_POLLING_INTERVAL).not_done:
+            try:
+                progress = self.run_query(f"CALL gds.beta.listProgress('{job_id}') YIELD taskName, progress")
+            except Exception as e:
+                # Do nothing if the procedure either:
+                # * has not started yet,
+                # * has already completed.
+                if f"No task with job id `{job_id}` was found" in str(e):
+                    continue
+                else:
+                    raise e
 
-                    progress_num = float(progress["progress"][0][:-1])
-                    pbar.update(progress_num - pbar.n)
-                except Exception as e:
-                    # Do nothing if the procedure either:
-                    # * has not started yet,
-                    # * has already completed,
-                    # * or it simply does not support progress logging.
-                    if f"No task with job id `{job_id}` was found" not in str(e):
-                        raise e
+            progress_percent = progress["progress"][0]
+            if not progress_percent == "n/a":
+                task_name = progress["taskName"][0].split("|--")[-1][1:]
+                pbar = pbar or tqdm(total=100, unit="%", desc=task_name)
+            else:
+                return
 
+            parsed_progress = float(progress_percent[:-1])
+            pbar.update(parsed_progress - pbar.n)
+
+        if pbar:
             pbar.update(100 - pbar.n)
 
     def set_database(self, db: str) -> None:
