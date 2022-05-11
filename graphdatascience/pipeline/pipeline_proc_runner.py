@@ -12,7 +12,6 @@ from .lp_training_pipeline import LPTrainingPipeline
 from .nc_pipeline_create_runner import NCPipelineCreateRunner
 from .nc_training_pipeline import NCTrainingPipeline
 from .nr_pipeline_create_runner import NRPipelineCreateRunner
-from .nr_training_pipeline import NRTrainingPipeline
 from .training_pipeline import TrainingPipeline
 
 

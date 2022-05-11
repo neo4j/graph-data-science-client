@@ -8,7 +8,6 @@ from graphdatascience.pipeline.regression_training_pipeline import (
 )
 
 from ..model.node_regression_model import NRModel
-from ..pipeline.training_pipeline import TrainingPipeline
 from ..query_runner.query_runner import QueryRunner
 
 
