@@ -8,6 +8,7 @@ from pandas.core.frame import DataFrame
 from tqdm.auto import tqdm
 
 from ..error.unable_to_connect import UnableToConnectError
+from ..server_version.server_version import ServerVersion
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
 
@@ -44,6 +45,9 @@ class Neo4jQueryRunner(QueryRunner):
             return result.to_df()  # type: ignore
 
     def run_query_with_logging(self, query: str, params: Dict[str, Any] = {}) -> DataFrame:
+        if self._server_version < ServerVersion(2, 1, 0):
+            return self.run_query(query, params)
+
         if "config" in params:
             if "jobId" in params["config"]:
                 job_id = params["config"]["jobId"]
@@ -65,26 +69,25 @@ class Neo4jQueryRunner(QueryRunner):
                 return future.result()
 
     def _log(self, job_id: str, future: "Future[Any]") -> None:
-        pbar = tqdm(total=100, unit="%")
+        with tqdm(total=100, unit="%") as pbar:
+            while wait([future], timeout=self._LOG_POLLING_INTERVAL).not_done:
+                try:
+                    progress = self.run_query(f"CALL gds.beta.listProgress('{job_id}') YIELD taskName, progress")
 
-        while wait([future], timeout=self._LOG_POLLING_INTERVAL).not_done:
-            try:
-                progress = self.run_query(f"CALL gds.beta.listProgress('{job_id}') YIELD taskName, progress")
+                    parsed_name = progress["taskName"][0].split("|--")[-1][1:]
+                    pbar.set_description(parsed_name)
 
-                parsed_name = progress["taskName"][0].split("|--")[-1][1:]
-                pbar.set_description(parsed_name)
+                    progress_num = float(progress["progress"][0][:-1])
+                    pbar.update(progress_num - pbar.n)
+                except Exception as e:
+                    # Do nothing if the procedure either:
+                    # * has not started yet,
+                    # * has already completed,
+                    # * or it simply does not support progress logging.
+                    if f"No task with job id `{job_id}` was found" not in str(e):
+                        raise e
 
-                progress_num = float(progress["progress"][0][:-1])
-                pbar.update(progress_num - pbar.n)
-            except Exception as e:
-                # Do nothing if the procedure either:
-                # * has not started yet,
-                # * has already completed,
-                # * or it simply does not support progress logging.
-                if f"No task with job id `{job_id}` was found" not in str(e):
-                    raise e
-
-        pbar.update(100 - pbar.n)
+            pbar.update(100 - pbar.n)
 
     def set_database(self, db: str) -> None:
         self._db = db
@@ -101,3 +104,6 @@ class Neo4jQueryRunner(QueryRunner):
 
     def create_graph_constructor(self, _: str, __: int) -> GraphConstructor:
         raise ValueError("This feature requires the GDS Flight server to be enabled.")
+
+    def set_server_version(self, server_version: ServerVersion) -> None:
+        self._server_version = server_version

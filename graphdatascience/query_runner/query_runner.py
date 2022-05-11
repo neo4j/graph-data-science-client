@@ -3,6 +3,7 @@ from typing import Any, Dict
 
 from pandas.core.frame import DataFrame
 
+from ..server_version.server_version import ServerVersion
 from .graph_constructor import GraphConstructor
 
 
@@ -27,4 +28,7 @@ class QueryRunner(ABC):
 
     @abstractmethod
     def database(self) -> str:
+        pass
+
+    def set_server_version(self, _: ServerVersion) -> None:
         pass

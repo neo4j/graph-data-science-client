@@ -79,10 +79,10 @@ def test_nodeSimilarity_stream(gds: GraphDataScience) -> None:
     assert result["similarity"][0] == 0.5
 
 
-# TODO: Only temporary for testing logging, remove!
-def test_fastRP_stream(gds: GraphDataScience) -> None:
+def test_fastRP_stream_exercise_logging(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
+    # Run for long enough that logging code is exercised.
     gds.fastRP.stream(G, iterationWeights=list(range(10_000)), embeddingDimension=100)
 
 
