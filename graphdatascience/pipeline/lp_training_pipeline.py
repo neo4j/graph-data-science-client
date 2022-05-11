@@ -6,10 +6,10 @@ from pandas.core.series import Series
 
 from ..model.link_prediction_model import LPModel
 from ..query_runner.query_runner import QueryRunner
-from .training_pipeline import TrainingPipeline
+from .classification_training_pipeline import ClassificationTrainingPipeline
 
 
-class LPTrainingPipeline(TrainingPipeline):
+class LPTrainingPipeline(ClassificationTrainingPipeline):
     def addFeature(self, feature_type: str, **config: Any) -> Series:
         query = f"{self._query_prefix()}addFeature($pipeline_name, $feature_type, $config)"
         params = {

@@ -5,6 +5,7 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.model.link_prediction_model import LPModel
 from graphdatascience.model.model import Model
 from graphdatascience.model.node_classification_model import NCModel
+from graphdatascience.model.node_regression_model import NRModel
 
 from .conftest import CollectingQueryRunner
 
@@ -27,6 +28,13 @@ def lp_model(gds: GraphDataScience, G: Graph) -> Model:
 @pytest.fixture
 def nc_model(gds: GraphDataScience, G: Graph) -> Model:
     pipe, _ = gds.beta.pipeline.nodeClassification.create("pipe")
+    trainedPipe, _ = pipe.train(G, modelName="m", concurrency=2)
+    return trainedPipe
+
+
+@pytest.fixture
+def nr_model(gds: GraphDataScience, G: Graph) -> Model:
+    pipe, _ = gds.alpha.pipeline.nodeRegression.create("pipe")
     trainedPipe, _ = pipe.train(G, modelName="m", concurrency=2)
     return trainedPipe
 
@@ -119,4 +127,13 @@ def test_predict_write_nc_model(runner: CollectingQueryRunner, nc_model: NCModel
             "modelName": nc_model.name(),
             "writeProperty": "helo",
         },
+    }
+
+
+def test_predict_stream_nr_model(runner: CollectingQueryRunner, nr_model: NRModel, G: Graph) -> None:
+    nr_model.predict_stream(G)
+    assert runner.last_query() == "CALL gds.alpha.pipeline.nodeRegression.predict.stream($graph_name, $config)"
+    assert runner.last_params() == {
+        "graph_name": G.name(),
+        "config": {"modelName": nr_model.name()},
     }

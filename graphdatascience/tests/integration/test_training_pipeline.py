@@ -6,6 +6,7 @@ from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.pipeline.lp_training_pipeline import LPTrainingPipeline
 from graphdatascience.pipeline.nc_training_pipeline import NCTrainingPipeline
+from graphdatascience.pipeline.nr_training_pipeline import NRTrainingPipeline
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -66,6 +67,17 @@ def lp_pipe(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[LPTrai
 @pytest.fixture
 def nc_pipe(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[NCTrainingPipeline, None, None]:
     pipe, _ = gds.beta.pipeline.nodeClassification.create(PIPE_NAME)
+
+    yield pipe
+
+    query = "CALL gds.beta.pipeline.drop($name)"
+    params = {"name": pipe.name()}
+    runner.run_query(query, params)
+
+
+@pytest.fixture
+def nr_pipe(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[NRTrainingPipeline, None, None]:
+    pipe, _ = gds.alpha.pipeline.nodeRegression.create(PIPE_NAME)
 
     yield pipe
 
@@ -243,3 +255,15 @@ def test_feature_properties_nc_pipeline(nc_pipe: NCTrainingPipeline) -> None:
     steps = nc_pipe.feature_properties()
     assert len(steps) == 1
     assert steps[0]["feature"] == "rank"
+
+
+def test_add_random_forest_nr_pipeline(nr_pipe: NRTrainingPipeline) -> None:
+    res = nr_pipe.addRandomForest(maxDepth=1337)
+    rf_parameter_space = res["parameterSpace"]["RandomForest"]
+    assert rf_parameter_space[0]["maxDepth"] == 1337
+
+
+def test_add_linear_regression_nr_pipeline(nr_pipe: NRTrainingPipeline) -> None:
+    res = nr_pipe.addLinearRegression(penalty=42)
+    nr_parameter_space = res["parameterSpace"]["LinearRegression"]
+    assert nr_parameter_space[0]["penalty"] == 42
