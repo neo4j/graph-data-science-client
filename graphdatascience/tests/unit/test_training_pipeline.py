@@ -3,6 +3,7 @@ import pytest
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.pipeline.lp_training_pipeline import LPTrainingPipeline
 from graphdatascience.pipeline.nc_training_pipeline import NCTrainingPipeline
+from graphdatascience.pipeline.nr_training_pipeline import NRTrainingPipeline
 
 from .conftest import CollectingQueryRunner
 
@@ -18,6 +19,12 @@ def lp_pipe(gds: GraphDataScience) -> LPTrainingPipeline:
 @pytest.fixture
 def nc_pipe(gds: GraphDataScience) -> NCTrainingPipeline:
     pipe, _ = gds.beta.pipeline.nodeClassification.create(PIPE_NAME)
+    return pipe
+
+
+@pytest.fixture
+def nr_pipe(gds: GraphDataScience) -> NRTrainingPipeline:
+    pipe, _ = gds.alpha.pipeline.nodeRegression.create(PIPE_NAME)
     return pipe
 
 
@@ -78,6 +85,16 @@ def test_add_logistic_regression_nc_pipeline(runner: CollectingQueryRunner, nc_p
     )
     assert runner.last_params() == {
         "pipeline_name": nc_pipe.name(),
+        "config": {"penalty": 1},
+    }
+
+
+def test_add_linear_regression_nr_pipeline(runner: CollectingQueryRunner, nr_pipe: NRTrainingPipeline) -> None:
+    nr_pipe.addLinearRegression(penalty=1)
+
+    assert runner.last_query() == "CALL gds.alpha.pipeline.nodeRegression.addLinearRegression($pipeline_name, $config)"
+    assert runner.last_params() == {
+        "pipeline_name": nr_pipe.name(),
         "config": {"penalty": 1},
     }
 

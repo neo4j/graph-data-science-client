@@ -140,7 +140,7 @@ This includes support for models trained using pipelines (for Link Prediction an
 
 #### Pipelines
 
-There's native support for [Link prediction pipelines](https://neo4j.com/docs/graph-data-science/current/algorithms/ml-models/linkprediction-pipelines/) and [Node classification pipelines](https://neo4j.com/docs/graph-data-science/current/algorithms/ml-models/nodeclassification-pipelines/).
+There's native support for [Link prediction pipelines](https://neo4j.com/docs/graph-data-science/current/algorithms/ml-models/linkprediction-pipelines/), [Node classification pipelines](https://neo4j.com/docs/graph-data-science/current/algorithms/ml-models/nodeclassification-pipelines/), and [Node regression pipeline](https://neo4j.com/docs/graph-data-science/2.1-preview/machine-learning/node-property-prediction/noderegression-pipelines/).
 Apart from the call to create a pipeline, the GDS native pipelines calls are represented by methods on pipeline Python objects.
 Additionally to the standard GDS calls, there are several methods to query the pipeline for information about it.
 
@@ -166,7 +166,7 @@ res = model.predict_stream(G)
 assert len(res) == G.node_count()
 ```
 
-Link prediction works the same way, just with different method names for calls specific to that pipeline.
+Link prediction and Node regression works the same way, just with different method names for calls specific to that pipeline.
 Please see the GDS documentation for more on the pipelines' procedure APIs.
 
 

@@ -11,6 +11,7 @@ from .lp_pipeline_create_runner import LPPipelineCreateRunner
 from .lp_training_pipeline import LPTrainingPipeline
 from .nc_pipeline_create_runner import NCPipelineCreateRunner
 from .nc_training_pipeline import NCTrainingPipeline
+from .nr_pipeline_create_runner import NRPipelineCreateRunner
 from .training_pipeline import TrainingPipeline
 
 
@@ -22,6 +23,10 @@ class PipelineProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     @property
     def nodeClassification(self) -> NCPipelineCreateRunner:
         return NCPipelineCreateRunner(self._query_runner, f"{self._namespace}.nodeClassification", self._server_version)
+
+    @property
+    def nodeRegression(self) -> NRPipelineCreateRunner:
+        return NRPipelineCreateRunner(self._query_runner, f"{self._namespace}.nodeRegression", self._server_version)
 
     def list(self, pipeline: Optional[TrainingPipeline] = None) -> DataFrame:
         self._namespace += ".list"

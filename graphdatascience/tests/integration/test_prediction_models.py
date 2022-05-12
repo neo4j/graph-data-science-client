@@ -7,6 +7,7 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.model.link_prediction_model import LPModel
 from graphdatascience.model.model import Model
 from graphdatascience.model.node_classification_model import NCModel
+from graphdatascience.model.node_regression_model import NRModel
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
@@ -80,6 +81,28 @@ def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     runner.run_query(query, params)
 
 
+@pytest.fixture(scope="module")
+def nr_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
+    pipe, _ = gds.alpha.pipeline.nodeRegression.create("pipe")
+
+    try:
+        pipe.addNodeProperty("degree", mutateProperty="rank")
+        pipe.selectFeatures("rank")
+        pipe.configureSplit(testFraction=0.3)
+        pipe.addLinearRegression(penalty=1)
+        nr_model, _ = pipe.train(G, modelName="nr-model", targetProperty="age", metrics=["MEAN_SQUARED_ERROR"])
+    finally:
+        query = "CALL gds.beta.pipeline.drop($name)"
+        params = {"name": "pipe"}
+        runner.run_query(query, params)
+
+    yield nr_model
+
+    query = "CALL gds.beta.model.drop($name)"
+    params = {"name": nr_model.name()}
+    runner.run_query(query, params)
+
+
 def test_predict_stream_lp_model(lp_model: LPModel, G: Graph) -> None:
     result = lp_model.predict_stream(G, topN=2)
     assert len(result) == 2
@@ -108,6 +131,11 @@ def test_predict_mutate_nc_model(nc_model: NCModel, G: Graph) -> None:
 def test_predict_write_nc_model(nc_model: NCModel, G: Graph) -> None:
     result = nc_model.predict_write(G, writeProperty="whoa")
     assert result["nodePropertiesWritten"] == G.node_count()
+
+
+def test_predict_stream_nr_model(nr_model: NRModel, G: Graph) -> None:
+    result = nr_model.predict_stream(G)
+    assert len(result) == G.node_count()
 
 
 def test_type_nc_model(nc_model: NCModel) -> None:
