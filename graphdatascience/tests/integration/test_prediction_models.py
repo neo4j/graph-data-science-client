@@ -9,6 +9,7 @@ from graphdatascience.model.model import Model
 from graphdatascience.model.node_classification_model import NCModel
 from graphdatascience.model.node_regression_model import NRModel
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 @pytest.fixture(scope="module")
@@ -133,6 +134,7 @@ def test_predict_write_nc_model(nc_model: NCModel, G: Graph) -> None:
     assert result["nodePropertiesWritten"] == G.node_count()
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_predict_stream_nr_model(nr_model: NRModel, G: Graph) -> None:
     result = nr_model.predict_stream(G)
     assert len(result) == G.node_count()

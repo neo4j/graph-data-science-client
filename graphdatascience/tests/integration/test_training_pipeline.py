@@ -257,12 +257,14 @@ def test_feature_properties_nc_pipeline(nc_pipe: NCTrainingPipeline) -> None:
     assert steps[0]["feature"] == "rank"
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_add_random_forest_nr_pipeline(nr_pipe: NRTrainingPipeline) -> None:
     res = nr_pipe.addRandomForest(maxDepth=1337)
     rf_parameter_space = res["parameterSpace"]["RandomForest"]
     assert rf_parameter_space[0]["maxDepth"] == 1337
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_add_linear_regression_nr_pipeline(nr_pipe: NRTrainingPipeline) -> None:
     res = nr_pipe.addLinearRegression(penalty=42)
     nr_parameter_space = res["parameterSpace"]["LinearRegression"]
