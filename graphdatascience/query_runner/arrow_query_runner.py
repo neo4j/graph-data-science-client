@@ -18,7 +18,7 @@ class ArrowQueryRunner(QueryRunner):
         encrypted: bool = False,
         disable_server_verification: bool = False,
     ):
-        self.fallback_query_runner = fallback_query_runner
+        self._fallback_query_runner = fallback_query_runner
 
         host, port_string = uri.split(":")
 
@@ -55,16 +55,20 @@ class ArrowQueryRunner(QueryRunner):
                 {"relationship_property": property_name, "relationship_types": relationship_types},
             )
 
-        return self.fallback_query_runner.run_query(query, params)
+        return self._fallback_query_runner.run_query(query, params)
+
+    def run_query_with_logging(self, query: str, params: Dict[str, Any] = {}) -> DataFrame:
+        # For now there's no logging support with Arrow queries.
+        return self._fallback_query_runner.run_query_with_logging(query, params)
 
     def set_database(self, db: str) -> None:
-        self.fallback_query_runner.set_database(db)
+        self._fallback_query_runner.set_database(db)
 
     def database(self) -> str:
-        return self.fallback_query_runner.database()
+        return self._fallback_query_runner.database()
 
     def close(self) -> None:
-        self.fallback_query_runner.close()
+        self._fallback_query_runner.close()
 
     def _run_arrow_property_get(self, graph_name: str, procedure_name: str, configuration: Dict[str, Any]) -> DataFrame:
         payload = {
