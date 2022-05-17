@@ -70,6 +70,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         if not server_version_match:
             raise InvalidServerVersionError(f"{server_version_string} is not a valid GDS library version")
         self._server_version = ServerVersion(*map(int, server_version_match.groups()))
+        self._query_runner.set_server_version(self._server_version)
 
         if arrow and self._server_version >= ServerVersion(2, 1, 0):
             try:

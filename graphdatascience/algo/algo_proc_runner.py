@@ -11,18 +11,21 @@ from ..model.graphsage_model import GraphSageModel
 
 
 class AlgoProcRunner(CallerBase, IllegalAttrChecker, ABC):
-    def _run_procedure(self, G: Graph, config: Dict[str, Any]) -> DataFrame:
+    def _run_procedure(self, G: Graph, config: Dict[str, Any], with_logging: bool = True) -> DataFrame:
         query = f"CALL {self._namespace}($graph_name, $config)"
 
         params: Dict[str, Any] = {}
         params["graph_name"] = G.name()
         params["config"] = config
 
-        return self._query_runner.run_query(query, params)
+        if with_logging:
+            return self._query_runner.run_query_with_logging(query, params)
+        else:
+            return self._query_runner.run_query(query, params)
 
     def estimate(self, G: Graph, **config: Any) -> Series:
         self._namespace += "." + "estimate"
-        return self._run_procedure(G, config).squeeze()  # type: ignore
+        return self._run_procedure(G, config, with_logging=False).squeeze()  # type: ignore
 
 
 class StreamModeRunner(AlgoProcRunner):

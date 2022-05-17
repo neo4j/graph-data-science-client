@@ -9,7 +9,7 @@ from .graph_object import Graph
 
 class GraphProjectRunner(CallerBase, IllegalAttrChecker):
     def __call__(self, graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> Tuple[Graph, Series]:
-        result = self._query_runner.run_query(
+        result = self._query_runner.run_query_with_logging(
             f"CALL {self._namespace}($graph_name, $node_spec, $relationship_spec, $config)",
             {
                 "graph_name": graph_name,
@@ -47,7 +47,7 @@ class GraphProjectRunner(CallerBase, IllegalAttrChecker):
         **config: Any,
     ) -> Tuple[Graph, Series]:
         self._namespace += ".subgraph"
-        result = self._query_runner.run_query(
+        result = self._query_runner.run_query_with_logging(
             f"CALL {self._namespace}($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)",
             {
                 "graph_name": graph_name,

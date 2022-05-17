@@ -83,7 +83,7 @@ class Model(ABC):
         config["modelName"] = self.name()
         params = {"graph_name": G.name(), "config": config}
 
-        return self._query_runner.run_query(query, params)
+        return self._query_runner.run_query_with_logging(query, params)
 
     def predict_stream_estimate(self, G: Graph, **config: Any) -> Series:
         return self._estimate_predict("stream", G.name(), config)
@@ -93,7 +93,7 @@ class Model(ABC):
         config["modelName"] = self.name()
         params = {"graph_name": G.name(), "config": config}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.run_query_with_logging(query, params).squeeze()  # type: ignore
 
     def predict_mutate_estimate(self, G: Graph, **config: Any) -> Series:
         return self._estimate_predict("mutate", G.name(), config)
