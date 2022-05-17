@@ -138,11 +138,25 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         G: Graph,
         relationship_properties: List[str],
         relationship_types: Strings = ["*"],
+        old_format: bool = False,
         **config: Any,
     ) -> DataFrame:
         self._namespace += ".streamRelationshipProperties"
 
-        return self._handle_properties(G, relationship_properties, relationship_types, config)
+        result = self._handle_properties(G, relationship_properties, relationship_types, config)
+
+        # new format was requested, but the query was run via Cypher
+        if not old_format and "propertyValue" in result.keys():
+            return result.pivot_table(
+                "propertyValue", ["sourceNodeId", "targetNodeId", "relationshipType"], columns="relationshipProperty"
+            )
+        # old format was requested but the query was run via Arrow
+        elif old_format and "propertyValue" not in result.keys():
+            return result.melt(id_vars=["sourceNodeId", "targetNodeId", "relationshipType"]).rename(
+                columns={"variable": "relationshipProperty", "value": "propertyValue"}
+            )
+
+        return result
 
     def streamRelationshipProperty(
         self,

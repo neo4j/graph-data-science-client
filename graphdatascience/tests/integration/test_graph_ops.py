@@ -217,10 +217,43 @@ def test_graph_streamRelationshipProperty_without_arrow(gds_without_arrow: Graph
 
 
 def test_graph_streamRelationshipProperties(gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
+    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
-    result = gds.graph.streamRelationshipProperties(G, ["relX"], concurrency=2)
-    assert {e for e in result["propertyValue"]} == {4, 5, 6}
+    result = gds.graph.streamRelationshipProperties(G, ["relX", "relY"], concurrency=2)
+    assert {e for e in result["relationshipType"]} == {"REL", "REL", "REL"}
+    assert {e for e in result["relX"]} == {4, 5, 6}
+    assert {e for e in result["relY"]} == {5, 6, 7}
+
+
+def test_graph_streamRelationshipProperties_old_format(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
+
+    result = gds.graph.streamRelationshipProperties(G, ["relX", "relY"], old_format=True, concurrency=2)
+
+    x_values = result[result.relationshipProperty == "relX"]
+    assert {e for e in x_values["propertyValue"]} == {4, 5, 6}
+    y_values = result[result.relationshipProperty == "relY"]
+    assert {e for e in y_values["propertyValue"]} == {5, 6, 7}
+
+
+def test_graph_streamRelationshipProperties_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
+
+    result = gds_without_arrow.graph.streamRelationshipProperties(G, ["relX", "relY"], concurrency=2)
+    print(result.to_markdown())
+    assert {e for e in result["relX"]} == {4, 5, 6}
+    assert {e for e in result["relY"]} == {5, 6, 7}
+
+
+def test_graph_streamRelationshipProperties_without_arrow_old_format(gds_without_arrow: GraphDataScience) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
+
+    result = gds_without_arrow.graph.streamRelationshipProperties(G, ["relX", "relY"], old_format=True, concurrency=2)
+
+    x_values = result[result.relationshipProperty == "relX"]
+    assert {e for e in x_values["propertyValue"]} == {4, 5, 6}
+    y_values = result[result.relationshipProperty == "relY"]
+    assert {e for e in y_values["propertyValue"]} == {5, 6, 7}
 
 
 def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
