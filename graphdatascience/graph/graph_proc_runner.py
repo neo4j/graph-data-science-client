@@ -104,11 +104,23 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         G: Graph,
         node_properties: List[str],
         node_labels: Strings = ["*"],
+        old_format: bool = False,
         **config: Any,
     ) -> DataFrame:
         self._namespace += ".streamNodeProperties"
 
-        return self._handle_properties(G, node_properties, node_labels, config)
+        result = self._handle_properties(G, node_properties, node_labels, config)
+
+        # new format was requested, but the query was run via Cypher
+        if not old_format and "propertyValue" in result.keys():
+            return result.pivot_table("propertyValue", "nodeId", columns="nodeProperty")
+        # old format was requested but the query was run via Arrow
+        elif old_format and "propertyValue" not in result.keys():
+            return result.melt(id_vars=["nodeId"]).rename(
+                columns={"variable": "nodeProperty", "value": "propertyValue"}
+            )
+
+        return result
 
     def streamNodeProperty(
         self,
