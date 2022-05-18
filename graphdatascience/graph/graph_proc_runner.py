@@ -104,7 +104,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         G: Graph,
         node_properties: List[str],
         node_labels: Strings = ["*"],
-        merge_property_columns: bool = False,
+        separate_property_columns: bool = False,
         **config: Any,
     ) -> DataFrame:
         self._namespace += ".streamNodeProperties"
@@ -112,10 +112,10 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         result = self._handle_properties(G, node_properties, node_labels, config)
 
         # new format was requested, but the query was run via Cypher
-        if merge_property_columns and "propertyValue" in result.keys():
+        if separate_property_columns and "propertyValue" in result.keys():
             return result.pivot_table("propertyValue", "nodeId", columns="nodeProperty")
         # old format was requested but the query was run via Arrow
-        elif not merge_property_columns and "propertyValue" not in result.keys():
+        elif not separate_property_columns and "propertyValue" not in result.keys():
             return result.melt(id_vars=["nodeId"]).rename(
                 columns={"variable": "nodeProperty", "value": "propertyValue"}
             )
@@ -138,7 +138,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         G: Graph,
         relationship_properties: List[str],
         relationship_types: Strings = ["*"],
-        merge_property_columns: bool = False,
+        separate_property_columns: bool = False,
         **config: Any,
     ) -> DataFrame:
         self._namespace += ".streamRelationshipProperties"
@@ -146,12 +146,12 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         result = self._handle_properties(G, relationship_properties, relationship_types, config)
 
         # new format was requested, but the query was run via Cypher
-        if merge_property_columns and "propertyValue" in result.keys():
+        if separate_property_columns and "propertyValue" in result.keys():
             return result.pivot_table(
                 "propertyValue", ["sourceNodeId", "targetNodeId", "relationshipType"], columns="relationshipProperty"
             )
         # old format was requested but the query was run via Arrow
-        elif not merge_property_columns and "propertyValue" not in result.keys():
+        elif not separate_property_columns and "propertyValue" not in result.keys():
             return result.melt(id_vars=["sourceNodeId", "targetNodeId", "relationshipType"]).rename(
                 columns={"variable": "relationshipProperty", "value": "propertyValue"}
             )
