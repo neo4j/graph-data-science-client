@@ -1,11 +1,10 @@
 import pytest
 
+from .conftest import CollectingQueryRunner
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.pipeline.lp_training_pipeline import LPTrainingPipeline
 from graphdatascience.pipeline.training_pipeline import TrainingPipeline
 from graphdatascience.server_version.server_version import ServerVersion
-
-from .conftest import CollectingQueryRunner
 
 PIPELINE_NAME = "dummy"
 

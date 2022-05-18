@@ -1,11 +1,10 @@
 import pytest
 
+from .conftest import CollectingQueryRunner
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.model.graphsage_model import GraphSageModel
 from graphdatascience.model.model import Model
 from graphdatascience.server_version.server_version import ServerVersion
-
-from .conftest import CollectingQueryRunner
 
 MODEL_NAME = "dummy"
 
