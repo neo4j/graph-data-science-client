@@ -1,6 +1,5 @@
-from graphdatascience.graph_data_science import GraphDataScience
-
 from .conftest import CollectingQueryRunner
+from graphdatascience.graph_data_science import GraphDataScience
 
 
 def test_listProgress(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:

@@ -3,12 +3,11 @@ from typing import List, Union
 import pandas
 from pandas.core.series import Series
 
+from ..model.node_regression_model import NRModel
+from ..query_runner.query_runner import QueryRunner
 from graphdatascience.pipeline.regression_training_pipeline import (
     RegressionTrainingPipeline,
 )
-
-from ..model.node_regression_model import NRModel
-from ..query_runner.query_runner import QueryRunner
 
 
 class NRTrainingPipeline(RegressionTrainingPipeline):
