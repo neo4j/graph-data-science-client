@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 import pandas
 import pytest
@@ -19,7 +19,10 @@ class CollectingQueryRunner(QueryRunner):
         self.params: List[Dict[str, Any]] = []
         self.server_version = server_version
 
-    def run_query(self, query: str, params: Dict[str, Any] = {}) -> DataFrame:
+    def run_query(self, query: str, params: Optional[Dict[str, Any]] = None) -> DataFrame:
+        if params is None:
+            params = {}
+
         self.queries.append(query)
         self.params.append(params)
 
