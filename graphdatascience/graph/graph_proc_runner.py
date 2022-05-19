@@ -113,7 +113,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         # new format was requested, but the query was run via Cypher
         if separate_property_columns and "propertyValue" in result.keys():
-            return result.pivot_table("propertyValue", "nodeId", columns="nodeProperty")
+            return result.pivot_table("propertyValue", "nodeId", columns="nodeProperty").reset_index()
         # old format was requested but the query was run via Arrow
         elif not separate_property_columns and "propertyValue" not in result.keys():
             return result.melt(id_vars=["nodeId"]).rename(
@@ -149,7 +149,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         if separate_property_columns and "propertyValue" in result.keys():
             return result.pivot_table(
                 "propertyValue", ["sourceNodeId", "targetNodeId", "relationshipType"], columns="relationshipProperty"
-            )
+            ).reset_index()
         # old format was requested but the query was run via Arrow
         elif not separate_property_columns and "propertyValue" not in result.keys():
             return result.melt(id_vars=["sourceNodeId", "targetNodeId", "relationshipType"]).rename(
