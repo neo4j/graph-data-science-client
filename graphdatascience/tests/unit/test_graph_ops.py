@@ -1,3 +1,4 @@
+import pandas
 import pytest
 
 from graphdatascience.graph_data_science import GraphDataScience
@@ -140,6 +141,8 @@ def test_graph_streamNodeProperty(runner: CollectingQueryRunner, gds: GraphDataS
 def test_graph_streamNodeProperties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
+    runner.set__mock_result(pandas.DataFrame([{"nodeId": 0, "dummyProp": 2}]))
+
     gds.graph.streamNodeProperties(G, ["dummyProp"], concurrency=2)
     assert runner.last_query() == "CALL gds.graph.streamNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
@@ -187,6 +190,20 @@ def test_graph_streamRelationshipProperty(runner: CollectingQueryRunner, gds: Gr
 
 def test_graph_streamRelationshipProperties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
+
+    result_df = pandas.DataFrame(
+        [
+            {
+                "sourceNodeId": 0,
+                "targetNodeId": 1,
+                "relationshipType": "REL",
+                "relationshipProperty": "dummyProp",
+                "propertyValue": 2,
+            }
+        ]
+    )
+
+    runner.set__mock_result(result_df)
 
     gds.graph.streamRelationshipProperties(G, ["dummyProp"], concurrency=2)
     assert (

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 import pandas
 import pytest
@@ -15,6 +15,7 @@ DEFAULT_SERVER_VERSION = ServerVersion(2, 1, 0)
 
 class CollectingQueryRunner(QueryRunner):
     def __init__(self, server_version: Union[str, ServerVersion]) -> None:
+        self._mock_result: Optional[DataFrame] = None
         self.queries: List[str] = []
         self.params: List[Dict[str, Any]] = []
         self.server_version = server_version
@@ -24,7 +25,11 @@ class CollectingQueryRunner(QueryRunner):
         self.params.append(params)
 
         # This "mock" lets us initialize the GDS object without issues.
-        return pandas.DataFrame([{"version": str(self.server_version)}])
+        return (
+            self._mock_result
+            if self._mock_result is not None
+            else pandas.DataFrame([{"version": str(self.server_version)}])
+        )
 
     def last_query(self) -> str:
         return self.queries[-1]
@@ -40,6 +45,9 @@ class CollectingQueryRunner(QueryRunner):
 
     def create_graph_constructor(self, _: str, __: int) -> GraphConstructor:
         raise NotImplementedError
+
+    def set__mock_result(self, result: DataFrame) -> None:
+        self._mock_result = result
 
 
 @pytest.fixture
