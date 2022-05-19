@@ -47,6 +47,15 @@ class ArrowQueryRunner(QueryRunner):
             return self._run_arrow_property_get(
                 graph_name, "gds.graph.streamNodeProperty", {"node_property": property_name, "node_labels": node_labels}
             )
+        elif "gds.graph.streamNodeProperties" in query:
+            graph_name = params["graph_name"]
+            property_names = params["properties"]
+            node_labels = params["entities"]
+            return self._run_arrow_property_get(
+                graph_name,
+                "gds.graph.streamNodeProperties",
+                {"node_properties": property_names, "node_labels": node_labels},
+            )
         elif "gds.graph.streamRelationshipProperty" in query:
             graph_name = params["graph_name"]
             property_name = params["properties"]
@@ -55,6 +64,15 @@ class ArrowQueryRunner(QueryRunner):
                 graph_name,
                 "gds.graph.streamRelationshipProperty",
                 {"relationship_property": property_name, "relationship_types": relationship_types},
+            )
+        elif "gds.graph.streamRelationshipProperties" in query:
+            graph_name = params["graph_name"]
+            property_names = params["properties"]
+            relationship_types = params["entities"]
+            return self._run_arrow_property_get(
+                graph_name,
+                "gds.graph.streamRelationshipProperties",
+                {"relationship_properties": property_names, "relationship_types": relationship_types},
             )
 
         return self._fallback_query_runner.run_query(query, params)

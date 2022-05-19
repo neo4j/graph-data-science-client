@@ -9,7 +9,7 @@ from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
 
-AUTH = None
+AUTH = ("neo4j", "password")
 if os.environ.get("NEO4J_USER") is not None:
     AUTH = (
         os.environ.get("NEO4J_USER", "DUMMY"),

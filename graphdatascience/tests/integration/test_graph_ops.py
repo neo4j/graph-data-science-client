@@ -18,12 +18,12 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     runner.run_query(
         """
         CREATE
-        (a: Node {x: 1}),
-        (b: Node {x: 2}),
-        (c: Node {x: 3}),
-        (a)-[:REL {relX: 4}]->(b),
-        (a)-[:REL {relX: 5}]->(c),
-        (b)-[:REL {relX: 6}]->(c),
+        (a: Node {x: 1, y: 2}),
+        (b: Node {x: 2, y: 3}),
+        (c: Node {x: 3, y: 4}),
+        (a)-[:REL {relX: 4, relY: 5}]->(b),
+        (a)-[:REL {relX: 5, relY: 6}]->(c),
+        (b)-[:REL {relX: 6, relY: 7}]->(c),
         (b)-[:REL2]->(c)
         """
     )
@@ -164,10 +164,52 @@ def test_graph_streamNodeProperty_without_arrow(gds_without_arrow: GraphDataScie
 
 
 def test_graph_streamNodeProperties(gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
-    result = gds.graph.streamNodeProperties(G, ["x"], concurrency=2)
-    assert {e for e in result["propertyValue"]} == {1, 2, 3}
+    result = gds.graph.streamNodeProperties(G, ["x", "y"], concurrency=2)
+
+    assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
+
+    x_values = result[result.nodeProperty == "x"]
+    assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
+
+    y_values = result[result.nodeProperty == "y"]
+    assert {e for e in y_values["propertyValue"]} == {2, 3, 4}
+
+
+def test_graph_streamNodeProperties_separate_property_columns(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
+
+    result = gds.graph.streamNodeProperties(G, ["x", "y"], separate_property_columns=True, concurrency=2)
+    assert list(result.keys()) == ["nodeId", "x", "y"]
+    assert {e for e in result["x"]} == {1, 2, 3}
+    assert {e for e in result["y"]} == {2, 3, 4}
+
+
+def test_graph_streamNodeProperties_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
+
+    result = gds_without_arrow.graph.streamNodeProperties(G, ["x", "y"], concurrency=2)
+
+    assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
+
+    x_values = result[result.nodeProperty == "x"]
+    assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
+
+    y_values = result[result.nodeProperty == "y"]
+    assert {e for e in y_values["propertyValue"]} == {2, 3, 4}
+
+
+def test_graph_streamNodeProperties_without_arrow_separate_property_columns(
+    gds_without_arrow: GraphDataScience,
+) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
+
+    result = gds_without_arrow.graph.streamNodeProperties(G, ["x", "y"], separate_property_columns=True, concurrency=2)
+
+    assert list(result.keys()) == ["nodeId", "x", "y"]
+    assert {e for e in result["x"]} == {1, 2, 3}
+    assert {e for e in result["y"]} == {2, 3, 4}
 
 
 def test_graph_streamRelationshipProperty(gds: GraphDataScience) -> None:
@@ -185,10 +227,65 @@ def test_graph_streamRelationshipProperty_without_arrow(gds_without_arrow: Graph
 
 
 def test_graph_streamRelationshipProperties(gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
+    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
-    result = gds.graph.streamRelationshipProperties(G, ["relX"], concurrency=2)
-    assert {e for e in result["propertyValue"]} == {4, 5, 6}
+    result = gds.graph.streamRelationshipProperties(G, ["relX", "relY"], concurrency=2)
+
+    assert list(result.keys()) == [
+        "sourceNodeId",
+        "targetNodeId",
+        "relationshipType",
+        "relationshipProperty",
+        "propertyValue",
+    ]
+
+    x_values = result[result.relationshipProperty == "relX"]
+    assert {e for e in x_values["propertyValue"]} == {4, 5, 6}
+    y_values = result[result.relationshipProperty == "relY"]
+    assert {e for e in y_values["propertyValue"]} == {5, 6, 7}
+
+
+def test_graph_streamRelationshipProperties_separate_property_columns(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
+
+    result = gds.graph.streamRelationshipProperties(G, ["relX", "relY"], separate_property_columns=True, concurrency=2)
+
+    assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType", "relX", "relY"]
+    assert {e for e in result["relX"]} == {4, 5, 6}
+    assert {e for e in result["relY"]} == {5, 6, 7}
+
+
+def test_graph_streamRelationshipProperties_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
+
+    result = gds_without_arrow.graph.streamRelationshipProperties(G, ["relX", "relY"], concurrency=2)
+
+    assert list(result.keys()) == [
+        "sourceNodeId",
+        "targetNodeId",
+        "relationshipType",
+        "relationshipProperty",
+        "propertyValue",
+    ]
+
+    x_values = result[result.relationshipProperty == "relX"]
+    assert {e for e in x_values["propertyValue"]} == {4, 5, 6}
+    y_values = result[result.relationshipProperty == "relY"]
+    assert {e for e in y_values["propertyValue"]} == {5, 6, 7}
+
+
+def test_graph_streamRelationshipProperties_without_arrow_separate_property_columns(
+    gds_without_arrow: GraphDataScience,
+) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
+
+    result = gds_without_arrow.graph.streamRelationshipProperties(
+        G, ["relX", "relY"], separate_property_columns=True, concurrency=2
+    )
+
+    assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType", "relX", "relY"]
+    assert {e for e in result["relX"]} == {4, 5, 6}
+    assert {e for e in result["relY"]} == {5, 6, 7}
 
 
 def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
