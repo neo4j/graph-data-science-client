@@ -31,7 +31,10 @@ class Neo4jQueryRunner(QueryRunner):
         except Exception as e:
             raise UnableToConnectError(e)
 
-    def run_query(self, query: str, params: Dict[str, Any] = {}) -> DataFrame:
+    def run_query(self, query: str, params: Optional[Dict[str, str]] = None) -> DataFrame:
+        if params is None:
+            params = {}
+
         with self._driver.session(database=self._db) as session:
             result = session.run(query, params)
 
@@ -44,7 +47,10 @@ class Neo4jQueryRunner(QueryRunner):
 
             return result.to_df()  # type: ignore
 
-    def run_query_with_logging(self, query: str, params: Dict[str, Any] = {}) -> DataFrame:
+    def run_query_with_logging(self, query: str, params: Optional[Dict[str, Any]] = None) -> DataFrame:
+        if params is None:
+            params = {}
+
         if self._server_version < ServerVersion(2, 1, 0):
             return self.run_query(query, params)
 

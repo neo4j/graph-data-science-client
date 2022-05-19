@@ -18,7 +18,6 @@ class ArrowGraphConstructor(GraphConstructor):
         query_runner: QueryRunner,
         graph_name: str,
         flight_client: flight.FlightClient,
-        flight_options: flight.FlightCallOptions,
         concurrency: int,
         chunk_size: int = 10_000,
     ):
@@ -26,7 +25,6 @@ class ArrowGraphConstructor(GraphConstructor):
         self._concurrency = concurrency
         self._graph_name = graph_name
         self._client = flight_client
-        self._flight_options = flight_options
         self._chunk_size = chunk_size
         self._min_batch_size = chunk_size * 10
 
@@ -58,9 +56,7 @@ class ArrowGraphConstructor(GraphConstructor):
         return partitioned_dfs
 
     def _send_action(self, action_type: str, meta_data: Dict[str, str]) -> None:
-        result = self._client.do_action(
-            flight.Action(action_type, json.dumps(meta_data).encode("utf-8")), self._flight_options
-        )
+        result = self._client.do_action(flight.Action(action_type, json.dumps(meta_data).encode("utf-8")))
 
         json.loads(next(result).body.to_pybytes().decode())
 
@@ -71,7 +67,7 @@ class ArrowGraphConstructor(GraphConstructor):
         # Write schema
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
 
-        writer, _ = self._client.do_put(upload_descriptor, table.schema, self._flight_options)
+        writer, _ = self._client.do_put(upload_descriptor, table.schema)
 
         with writer:
             # Write table in chunks
