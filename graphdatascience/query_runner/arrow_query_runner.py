@@ -125,19 +125,19 @@ class AuthMiddleware(ClientMiddleware):  # type: ignore
 
     def received_headers(self, headers: Dict[str, Any]) -> None:
         auth_header: str = headers.get("Authorization", None)
-        if auth_header is not None:
-            [auth_type, token] = auth_header.split(" ", 1)
-            if auth_type == "Bearer":
-                self._factory.set_token(token)
+        if not auth_header:
+            return
+        [auth_type, token] = auth_header.split(" ", 1)
+        if auth_type == "Bearer":
+            self._factory.set_token(token)
 
     def sending_headers(self) -> Dict[str, str]:
         token = self._factory.token()
-        if token is None:
+        if not token:
             username, password = self._factory.auth
-            auth_token = "{0}:{1}".format(username, password)
+            auth_token = f"{username}:{password}"
             auth_token = "Basic " + base64.b64encode(auth_token.encode("utf-8")).decode("ASCII")
             # There seems to be a bug, `authorization` must be lower key
             return {"authorization": auth_token}
         else:
-            # # There seems to be a bug, `authorization` must be lower key
             return {"authorization": "Bearer " + token}
