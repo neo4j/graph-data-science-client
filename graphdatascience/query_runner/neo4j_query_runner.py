@@ -9,6 +9,7 @@ from tqdm.auto import tqdm
 
 from ..error.unable_to_connect import UnableToConnectError
 from ..server_version.server_version import ServerVersion
+from .cypher_graph_constructor import CypherGraphConstructor
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
 
@@ -115,8 +116,8 @@ class Neo4jQueryRunner(QueryRunner):
         if self._auto_close:
             self._driver.close()
 
-    def create_graph_constructor(self, _: str, __: int) -> GraphConstructor:
-        raise ValueError("This feature requires the GDS Flight server to be enabled.")
+    def create_graph_constructor(self, graph_name: str, concurrency: int) -> GraphConstructor:
+        return CypherGraphConstructor(self, graph_name, concurrency)
 
     def set_server_version(self, server_version: ServerVersion) -> None:
         self._server_version = server_version

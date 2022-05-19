@@ -337,6 +337,36 @@ def test_graph_generate(gds: GraphDataScience) -> None:
     assert result["generateMillis"] >= 0
 
 
+def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    nodes = pandas.DataFrame(
+        {
+            "nodeId": [0, 1, 2, 3],
+            "labels": [["A"], ["B"], ["C"], ["D"]],
+            "propA": [1337, 42, 8, 133742],
+            "propB": [1338, 43, 9, 133743],
+        }
+    )
+    relationships = pandas.DataFrame(
+        {
+            "sourceNodeId": [0, 1, 2, 3],
+            "targetNodeId": [1, 2, 3, 0],
+            "relationshipType": ["REL", "REL", "REL", "REL2"],
+            "relPropA": [1337, 42, 8, 133742],
+            "relPropB": [1338, 43, 9, 133743],
+        }
+    )
+
+    G = gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
+
+    assert G.name() == "hello"
+    assert G.node_count() == 4
+    assert G.relationship_count() == 4
+    assert set(G.node_properties("A")) == {"propA", "propB"}
+    assert set(G.relationship_properties("REL")) == {"relPropA", "relPropB"}
+
+    G.drop()
+
+
 @pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct(gds: GraphDataScience) -> None:
