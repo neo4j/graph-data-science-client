@@ -68,11 +68,11 @@ class Model(ABC):
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    def drop(self) -> None:
+    def drop(self) -> Series:
         query = "CALL gds.beta.model.drop($model_name)"
         params = {"model_name": self._name}
 
-        self._query_runner.run_query(query, params)
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def metrics(self) -> Series:
         model_info = self._list_info()["modelInfo"][0]

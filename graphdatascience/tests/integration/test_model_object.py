@@ -54,7 +54,8 @@ def test_model_exists(gs_model: GraphSageModel) -> None:
 def test_model_drop(gds: GraphDataScience, G: Graph) -> None:
     model, _ = gds.beta.graphSage.train(G, modelName="gs-model", featureProperties=["age"])
 
-    model.drop()
+    assert model.drop()["modelInfo"]["modelName"] == model.name()
+
     assert not model.exists()
 
 
