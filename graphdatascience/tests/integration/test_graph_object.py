@@ -31,6 +31,7 @@ def setup_module(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 @pytest.fixture
 def G(gds: GraphDataScience) -> Generator[Graph, None, None]:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, {"REL": {"properties": ["y", "z"]}})
+
     yield G
 
     gds.graph.drop(G, False)
@@ -42,6 +43,10 @@ def test_graph_node_count(G: Graph) -> None:
 
 def test_graph_relationship_count(G: Graph) -> None:
     assert G.relationship_count() == 3
+
+
+def test_graph_node_labels(G: Graph) -> None:
+    assert G.node_labels() == ["Node"]
 
 
 def test_graph_node_properties(G: Graph) -> None:
