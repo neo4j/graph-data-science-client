@@ -49,6 +49,10 @@ def test_graph_node_labels(G: Graph) -> None:
     assert G.node_labels() == ["Node"]
 
 
+def test_graph_relationship_types(G: Graph) -> None:
+    assert G.relationship_types() == ["REL"]
+
+
 def test_graph_node_properties(G: Graph) -> None:
     assert G.node_properties("Node") == ["x"]
 

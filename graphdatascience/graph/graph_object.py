@@ -37,6 +37,9 @@ class Graph:
     def node_labels(self) -> List[str]:
         return list(self._graph_info(["schema"])["nodes"].keys())
 
+    def relationship_types(self) -> List[str]:
+        return list(self._graph_info(["schema"])["relationships"].keys())
+
     def node_properties(self, label: str) -> List[str]:
         labels_to_props = self._graph_info(["schema"])["nodes"]
         if label not in labels_to_props.keys():
