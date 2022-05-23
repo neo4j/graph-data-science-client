@@ -121,8 +121,8 @@ class TrainingPipeline(ABC):
 
         return self._query_runner.run_query(query, params)["exists"].squeeze()  # type: ignore
 
-    def drop(self) -> None:
+    def drop(self) -> Series:
         query = "CALL gds.beta.pipeline.drop($pipeline_name)"
         params = {"pipeline_name": self._name}
 
-        self._query_runner.run_query(query, params)
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
