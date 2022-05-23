@@ -94,3 +94,9 @@ def test_graph_drop(G: Graph) -> None:
 
     with pytest.raises(ValueError):
         G.node_count()
+
+    # Should not raise error
+    G.drop(failIfMissing=False)
+
+    with pytest.raises(Exception):
+        G.drop(failIfMissing=True)
