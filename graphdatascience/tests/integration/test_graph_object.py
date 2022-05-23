@@ -88,7 +88,7 @@ def test_graph_exists(gds: GraphDataScience, G: Graph) -> None:
 def test_graph_drop(G: Graph) -> None:
     assert G.exists()
 
-    G.drop()
+    assert G.drop()["graphName"] == G.name()
 
     assert not G.exists()
 
