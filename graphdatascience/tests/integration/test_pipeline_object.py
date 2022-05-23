@@ -42,3 +42,9 @@ def test_pipeline_drop(gds: GraphDataScience) -> None:
     assert pipe.drop()["pipelineName"] == pipe.name()
 
     assert not pipe.exists()
+
+    # Should not raise error.
+    pipe.drop(failIfMissing=False)
+
+    with pytest.raises(Exception):
+        pipe.drop(failIfMissing=True)
