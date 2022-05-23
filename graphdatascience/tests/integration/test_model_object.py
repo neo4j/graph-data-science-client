@@ -58,6 +58,12 @@ def test_model_drop(gds: GraphDataScience, G: Graph) -> None:
 
     assert not model.exists()
 
+    # Should not raise error.
+    model.drop(failIfMissing=False)
+
+    with pytest.raises(Exception):
+        model.drop(failIfMissing=True)
+
 
 def test_model_name(gs_model: GraphSageModel) -> None:
     assert gs_model.name() == MODEL_NAME

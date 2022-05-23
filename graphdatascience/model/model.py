@@ -68,9 +68,9 @@ class Model(ABC):
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    def drop(self) -> Series:
-        query = "CALL gds.beta.model.drop($model_name)"
-        params = {"model_name": self._name}
+    def drop(self, failIfMissing: bool = False) -> Series:
+        query = "CALL gds.beta.model.drop($model_name, $fail_if_missing)"
+        params = {"model_name": self._name, "fail_if_missing": failIfMissing}
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
