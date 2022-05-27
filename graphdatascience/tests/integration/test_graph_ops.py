@@ -337,6 +337,7 @@ def test_graph_generate(gds: GraphDataScience) -> None:
     assert result["generateMillis"] >= 0
 
 
+@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     nodes = pandas.DataFrame(
@@ -409,6 +410,7 @@ def test_graph_construct_without_arrow_enterprise_warning(gds_without_arrow: Gra
         G.drop()
 
 
+@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_without_arrow_multi_dfs(gds_without_arrow: GraphDataScience) -> None:
     nodes = pandas.DataFrame({"nodeId": [0, 1, 2, 3]})
