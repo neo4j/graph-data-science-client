@@ -6,6 +6,9 @@ from pandas.core.frame import DataFrame
 
 from graphdatascience import QueryRunner
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.query_runner.cypher_graph_constructor import (
+    CypherGraphConstructor,
+)
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -46,8 +49,8 @@ class CollectingQueryRunner(QueryRunner):
     def database(self) -> str:
         return "dummy"
 
-    def create_graph_constructor(self, _: str, __: int) -> GraphConstructor:
-        raise NotImplementedError
+    def create_graph_constructor(self, graph_name: str, concurrency: int) -> GraphConstructor:
+        return CypherGraphConstructor(self, graph_name, concurrency)
 
     def set__mock_result(self, result: DataFrame) -> None:
         self._mock_result = result

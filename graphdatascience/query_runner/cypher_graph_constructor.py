@@ -1,5 +1,5 @@
-from typing import List, Set
 import warnings
+from typing import List, Set
 
 from pandas.core.frame import DataFrame
 
@@ -33,24 +33,31 @@ class CypherGraphConstructor(GraphConstructor):
             raise ValueError("The GDS Community edition graph construction supports at most one relationship dataframe")
 
         query = (
-            f"CALL gds.graph.project.cypher(\n"
-            f"'{self._graph_name}',\n"
-            f"'{self._node_query(node_dfs[0])}',\n"
-            f"'{self._relationship_query(relationship_dfs[0])}',\n"
-            f"{{readConcurrency: {self._concurrency}, parameters: {{ nodes: $nodes, relationships: $relationships }}}})"
+            "CALL gds.graph.project.cypher("
+            "$graph_name, "
+            "$node_query, "
+            "$relationship_query, "
+            "{readConcurrency: $read_concurrency, parameters: { nodes: $nodes, relationships: $relationships }})"
         )
 
         self._query_runner.run_query(
-            query, {"nodes": node_dfs[0].values.tolist(), "relationships": relationship_dfs[0].values.tolist()}
+            query,
+            {
+                "graph_name": self._graph_name,
+                "node_query": self._node_query(node_dfs[0]),
+                "relationship_query": self._relationship_query(relationship_dfs[0]),
+                "read_concurrency": self._concurrency,
+                "nodes": node_dfs[0].values.tolist(),
+                "relationships": relationship_dfs[0].values.tolist(),
+            },
         )
 
-    def _is_enterprise(self):
-        return (
-            self._query_runner.run_query(
-                "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value"
-            ).squeeze()
-            != "Unlicensed"
-        )
+    def _is_enterprise(self) -> bool:
+        license: str = self._query_runner.run_query(
+            "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value"
+        ).squeeze()
+
+        return license == "Licensed"
 
     def _node_query(self, node_df: DataFrame) -> str:
         node_id_index = node_df.columns.get_loc("nodeId")
