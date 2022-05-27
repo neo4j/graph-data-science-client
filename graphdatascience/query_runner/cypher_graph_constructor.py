@@ -1,4 +1,5 @@
 from typing import List, Set
+import warnings
 
 from pandas.core.frame import DataFrame
 
@@ -18,11 +19,18 @@ class CypherGraphConstructor(GraphConstructor):
         self._graph_name = graph_name
 
     def run(self, node_dfs: List[DataFrame], relationship_dfs: List[DataFrame]) -> None:
+        if self._is_enterprise():
+            warnings.warn(
+                "For GDS Enterprise it's possible to enable a GDS Apache Arrow server for faster data transfer, "
+                "please consult the GDS docs for how to do that. "
+                "Falling back to use GDS Community edition graph construction (slower)."
+            )
+
         if len(node_dfs) > 1:
-            raise ValueError("The community edition of GDS supports only a single node dataframe")
+            raise ValueError("The GDS Community edition graph construction supports only a single node dataframe")
 
         if len(relationship_dfs) > 1:
-            raise ValueError("The community edition of GDS supports only a single relationship dataframe")
+            raise ValueError("The GDS Community edition graph construction supports at most one relationship dataframe")
 
         query = (
             f"CALL gds.graph.project.cypher(\n"
@@ -34,6 +42,14 @@ class CypherGraphConstructor(GraphConstructor):
 
         self._query_runner.run_query(
             query, {"nodes": node_dfs[0].values.tolist(), "relationships": relationship_dfs[0].values.tolist()}
+        )
+
+    def _is_enterprise(self):
+        return (
+            self._query_runner.run_query(
+                "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value"
+            ).squeeze()
+            != "Unlicensed"
         )
 
     def _node_query(self, node_df: DataFrame) -> str:

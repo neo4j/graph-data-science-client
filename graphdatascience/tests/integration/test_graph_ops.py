@@ -399,12 +399,24 @@ def test_graph_construct_multiple_dfs(gds: GraphDataScience) -> None:
 
 @pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
-def test_graph_construct_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+def test_graph_construct_without_arrow_enterprise_warning(gds_without_arrow: GraphDataScience) -> None:
+    nodes = pandas.DataFrame({"nodeId": [0, 1, 2, 3]})
+    relationships = pandas.DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
+
+    with pytest.warns(UserWarning):
+        gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+def test_graph_construct_without_arrow_multi_dfs(gds_without_arrow: GraphDataScience) -> None:
     nodes = pandas.DataFrame({"nodeId": [0, 1, 2, 3]})
     relationships = pandas.DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
     with pytest.raises(ValueError):
-        gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
+        gds_without_arrow.alpha.graph.construct("hello", [nodes, nodes], relationships)
+
+    with pytest.raises(ValueError):
+        gds_without_arrow.alpha.graph.construct("hello", nodes, [relationships, relationships])
 
 
 @pytest.mark.enterprise
