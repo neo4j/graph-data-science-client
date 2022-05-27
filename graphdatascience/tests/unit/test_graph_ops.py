@@ -326,6 +326,7 @@ def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) ->
     }
 
 
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
 def test_graph_alpha_construct_without_arrow(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     nodes = pandas.DataFrame(
         {

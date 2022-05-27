@@ -337,6 +337,7 @@ def test_graph_generate(gds: GraphDataScience) -> None:
     assert result["generateMillis"] >= 0
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     nodes = pandas.DataFrame(
         {
