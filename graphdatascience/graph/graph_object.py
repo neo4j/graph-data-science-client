@@ -31,6 +31,9 @@ class Graph:
     def database(self) -> str:
         return self._graph_info(["database"])  # type: ignore
 
+    def configuration(self) -> Series:
+        return pandas.Series(self._graph_info(["configuration"]))
+
     def node_count(self) -> int:
         return self._graph_info(["nodeCount"])  # type: ignore
 
