@@ -70,7 +70,7 @@ class CypherGraphConstructor(GraphConstructor):
         property_query = ""
         property_columns: Set[str] = set(node_df.keys()) - {"nodeId", "labels"}
         if len(property_columns) > 0:
-            property_queries = map(lambda col: f", node[{node_df.columns.get_loc(col)}] as {col}", property_columns)
+            property_queries = (f", node[{node_df.columns.get_loc(col)}] as {col}" for col in property_columns)
             property_query = "".join(property_queries)
 
         return f"UNWIND $nodes as node RETURN node[{node_id_index}] as id{label_query}{property_query}"
@@ -87,9 +87,7 @@ class CypherGraphConstructor(GraphConstructor):
         property_query = ""
         property_columns: Set[str] = set(rel_df.keys()) - {"sourceNodeId", "targetNodeId", "relationshipType"}
         if len(property_columns) > 0:
-            property_queries = map(
-                lambda col: f", relationship[{rel_df.columns.get_loc(col)}] as {col}", property_columns
-            )
+            property_queries = (f", relationship[{rel_df.columns.get_loc(col)}] as {col}" for col in property_columns)
             property_query = "".join(property_queries)
 
         return (
