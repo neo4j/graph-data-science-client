@@ -50,7 +50,7 @@ class CypherGraphConstructor(GraphConstructor):
             property_queries = map(lambda col: f", node[{node_df.columns.get_loc(col)}] as {col}", property_columns)
             property_query = "".join(property_queries)
 
-        return "UNWIND $nodes as node " f"RETURN node[{node_id_index}] as id{label_query}{property_query}"
+        return f"UNWIND $nodes as node RETURN node[{node_id_index}] as id{label_query}{property_query}"
 
     def _relationship_query(self, rel_df: DataFrame) -> str:
         source_id_index = rel_df.columns.get_loc("sourceNodeId")
