@@ -21,9 +21,9 @@ class CypherGraphConstructor(GraphConstructor):
     def run(self, node_dfs: List[DataFrame], relationship_dfs: List[DataFrame]) -> None:
         if self._is_enterprise():
             warnings.warn(
-                "For GDS Enterprise it's possible to enable a GDS Apache Arrow server for faster data transfer, "
-                "please consult the GDS docs for how to do that. "
-                "Falling back to use GDS Community edition graph construction (slower)."
+                "GDS Enterprise users can use Apache Arrow for fast graph construction; please see the documentation "
+                "for instructions on how to enable it. Without Arrow enabled, this installation will use community "
+                "edition graph construction (slower)"
             )
 
         if len(node_dfs) > 1:
