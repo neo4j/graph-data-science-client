@@ -405,7 +405,8 @@ def test_graph_construct_without_arrow_enterprise_warning(gds_without_arrow: Gra
     relationships = pandas.DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
     with pytest.warns(UserWarning):
-        gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
+        G = gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
+        G.drop()
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
