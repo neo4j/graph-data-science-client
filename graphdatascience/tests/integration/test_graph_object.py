@@ -37,6 +37,10 @@ def G(gds: GraphDataScience) -> Generator[Graph, None, None]:
     gds.graph.drop(G, False)
 
 
+def test_graph_database(gds: GraphDataScience, G: Graph) -> None:
+    assert G.database() == gds.database()
+
+
 def test_graph_node_count(G: Graph) -> None:
     assert G.node_count() == 3
 

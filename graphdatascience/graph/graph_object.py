@@ -28,6 +28,9 @@ class Graph:
 
         return info.squeeze()  # type: ignore
 
+    def database(self) -> str:
+        return self._graph_info(["database"])  # type: ignore
+
     def node_count(self) -> int:
         return self._graph_info(["nodeCount"])  # type: ignore
 
