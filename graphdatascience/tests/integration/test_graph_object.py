@@ -112,3 +112,7 @@ def test_graph_drop(G: Graph) -> None:
 
 def test_graph_creation_time(G: Graph) -> None:
     assert G.creation_time().year > 2000
+
+
+def test_graph_modification_time(G: Graph) -> None:
+    assert G.modification_time().year > 2000
