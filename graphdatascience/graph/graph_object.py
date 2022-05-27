@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List
 
 import pandas
 from pandas.core.series import Series
@@ -86,3 +86,6 @@ class Graph:
         )
 
         return result.squeeze()  # type: ignore
+
+    def creation_time(self) -> Any:  # neo4j.time.DateTime not exported
+        return self._graph_info()["creationTime"]

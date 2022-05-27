@@ -108,3 +108,7 @@ def test_graph_drop(G: Graph) -> None:
 
     with pytest.raises(Exception):
         G.drop(failIfMissing=True)
+
+
+def test_graph_creation_time(G: Graph) -> None:
+    assert G.creation_time().year > 2000
