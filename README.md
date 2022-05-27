@@ -64,7 +64,7 @@ gds = GraphDataScience("neo4j+s://my-aura-ds.databases.neo4j.io:7687", auth=("ne
 ```
 
 
-### Projecting a graph
+### Projecting a graph from Neo4j
 
 Supposing that we have some graph data in our Neo4j database, we can [project the graph into memory](https://neo4j.com/docs/graph-data-science/current/graph-project/).
 
@@ -80,6 +80,36 @@ assert res["projectMillis"] >= 0
 The `G` that is returned here is a `Graph` which on the client side represents the projection on the server side.
 
 The analogous calls `gds.graph.project.cypher{,.estimate}` for [Cypher based projection](https://neo4j.com/docs/graph-data-science/current/graph-project-cypher/) are also supported.
+
+
+### Constructing a graph from data frames
+
+We can also construct a GDS graph from client side pandas `DataFrame`s.
+To do this we provide the `gds.alpha.graph.construct` method with node data frames (see schema [here](https://neo4j.com/docs/graph-data-science/current/graph-project-apache-arrow/#arrow-send-nodes)) and relationship data frames (see schema [here](https://neo4j.com/docs/graph-data-science/current/graph-project-apache-arrow/#arrow-send-relationships)).
+
+```python
+nodes = pandas.DataFrame(
+    "nodeId": [0, 1, 2, 3],
+    "labels":  ["A", "B", "C", "A"],
+    "prop1": [42, 1337, 8, 0],
+    "otherProperty": [0.1, 0.2, 0.3, 0.4]
+)
+
+relationships = pandas.DataFrame(
+    "sourceId": [0, 1, 2, 3],
+    "targetId": [1, 2, 3, 0],
+    "relationshipType": ["REL", "REL", "REL", "REL"],
+    "weight": [0.0, 0.0, 0.1, 42.0]
+)
+
+G = gds.alpha.graph.construct(
+    "my-graph",      # Graph name
+    nodes,           # One or more dataframes containing node data
+    relationships    # One or more dataframes containing relationship data
+)
+```
+
+If your server uses GDS Enterprise edition and you have [enabled its Arrow Apache server](https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/), the construction will be a lot faster.
 
 
 ### Running algorithms
