@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Optional, Union
 
 import pandas
 from pandas.core.series import Series
@@ -46,12 +46,16 @@ class Graph:
     def relationship_types(self) -> List[str]:
         return list(self._graph_info(["schema"])["relationships"].keys())
 
-    def node_properties(self, label: str) -> List[str]:
+    def node_properties(self, label: Optional[str] = None) -> Union[Series, List[str]]:
         labels_to_props = self._graph_info(["schema"])["nodes"]
+
+        if not label:
+            return pandas.Series({key: list(val.keys()) for key, val in labels_to_props.items()})
+
         if label not in labels_to_props.keys():
             raise ValueError(f"There is no node label '{label}' projected onto '{self.name()}'")
-
-        return list(labels_to_props[label].keys())
+        else:
+            return list(labels_to_props[label].keys())
 
     def relationship_properties(self, type: str) -> List[str]:
         types_to_props = self._graph_info(["schema"])["relationships"]

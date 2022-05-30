@@ -1,6 +1,7 @@
 from typing import Generator
 
 import pytest
+from pandas.core.series import Series
 
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
@@ -17,6 +18,7 @@ def setup_module(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
         (a: Node {x: 1}),
         (b: Node {x: 2}),
         (c: Node {x: 3}),
+        (d: Node2 {s: 4}),
         (a)-[:REL {y: 42.0}]->(b),
         (a)-[:REL {y: 13.37}]->(c),
         (b)-[:REL {z: 7.9}]->(c)
@@ -30,7 +32,9 @@ def setup_module(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 
 @pytest.fixture
 def G(gds: GraphDataScience) -> Generator[Graph, None, None]:
-    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, {"REL": {"properties": ["y", "z"]}})
+    G, _ = gds.graph.project(
+        GRAPH_NAME, {"Node": {"properties": "x"}, "Node2": {"properties": "s"}}, {"REL": {"properties": ["y", "z"]}}
+    )
 
     yield G
 
@@ -46,7 +50,7 @@ def test_graph_configuration(G: Graph) -> None:
 
 
 def test_graph_node_count(G: Graph) -> None:
-    assert G.node_count() == 3
+    assert G.node_count() == 4
 
 
 def test_graph_relationship_count(G: Graph) -> None:
@@ -54,7 +58,7 @@ def test_graph_relationship_count(G: Graph) -> None:
 
 
 def test_graph_node_labels(G: Graph) -> None:
-    assert G.node_labels() == ["Node"]
+    assert set(G.node_labels()) == {"Node", "Node2"}
 
 
 def test_graph_relationship_types(G: Graph) -> None:
@@ -63,6 +67,13 @@ def test_graph_relationship_types(G: Graph) -> None:
 
 def test_graph_node_properties(G: Graph) -> None:
     assert G.node_properties("Node") == ["x"]
+    assert G.node_properties("Node2") == ["s"]
+
+    node_properties = G.node_properties()
+    assert isinstance(node_properties, Series)
+    assert node_properties.size == 2
+    assert node_properties["Node"] == ["x"]
+    assert node_properties["Node2"] == ["s"]
 
 
 def test_graph_relationship_properties(G: Graph) -> None:
@@ -70,11 +81,11 @@ def test_graph_relationship_properties(G: Graph) -> None:
 
 
 def test_graph_degree_distribution(G: Graph) -> None:
-    assert G.degree_distribution()["mean"] == 2.0
+    assert G.degree_distribution()["mean"] == 1.5
 
 
 def test_graph_density(G: Graph) -> None:
-    assert G.density() == 0.5
+    assert G.density() == 0.25
 
 
 def test_graph_memory_usage(G: Graph) -> None:
