@@ -73,8 +73,10 @@ class Graph:
         )
         return result.squeeze()["exists"]  # type: ignore
 
-    def drop(self) -> None:
-        self._query_runner.run_query(
-            "CALL gds.graph.drop($graph_name, false)",
-            {"graph_name": self._name},
+    def drop(self, failIfMissing: bool = False) -> Series:
+        result = self._query_runner.run_query(
+            "CALL gds.graph.drop($graph_name, $fail_if_missing)",
+            {"graph_name": self._name, "fail_if_missing": failIfMissing},
         )
+
+        return result.squeeze()  # type: ignore

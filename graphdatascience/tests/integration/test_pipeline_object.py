@@ -39,5 +39,12 @@ def test_pipeline_exists(pipe: TrainingPipeline) -> None:
 def test_pipeline_drop(gds: GraphDataScience) -> None:
     pipe, _ = gds.beta.pipeline.linkPrediction.create(PIPE_NAME)
 
-    pipe.drop()
+    assert pipe.drop()["pipelineName"] == pipe.name()
+
     assert not pipe.exists()
+
+    # Should not raise error.
+    pipe.drop(failIfMissing=False)
+
+    with pytest.raises(Exception):
+        pipe.drop(failIfMissing=True)
