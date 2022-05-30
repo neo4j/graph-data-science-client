@@ -324,3 +324,48 @@ def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) ->
         "average_degree": 42,
         "config": {"orientation": "NATURAL"},
     }
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
+def test_graph_alpha_construct_without_arrow(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    nodes = pandas.DataFrame(
+        {
+            "nodeId": [0, 1],
+            "labels": [["A"], ["B"]],
+            "propA": [1337, 42.1],
+        }
+    )
+    relationships = pandas.DataFrame(
+        {
+            "sourceNodeId": [0, 1],
+            "targetNodeId": [1, 0],
+            "relationshipType": ["REL", "REL2"],
+            "relPropA": [1337.2, 42],
+        }
+    )
+
+    gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2)
+
+    expected_node_query = "UNWIND $nodes as node RETURN node[0] as id, node[1] as labels, node[2] as propA"
+    expected_relationship_query = (
+        "UNWIND $relationships as relationship RETURN "
+        "relationship[0] as source, relationship[1] as target, "
+        "relationship[2] as type, relationship[3] as relPropA"
+    )
+    expected_proc_query = (
+        "CALL gds.graph.project.cypher("
+        "$graph_name, "
+        "$node_query, "
+        "$relationship_query, "
+        "{readConcurrency: $read_concurrency, parameters: { nodes: $nodes, relationships: $relationships }})"
+    )
+
+    assert runner.last_query() == expected_proc_query
+    assert runner.last_params() == {
+        "nodes": nodes.values.tolist(),
+        "relationships": relationships.values.tolist(),
+        "read_concurrency": 2,
+        "graph_name": "hello",
+        "node_query": expected_node_query,
+        "relationship_query": expected_relationship_query,
+    }
