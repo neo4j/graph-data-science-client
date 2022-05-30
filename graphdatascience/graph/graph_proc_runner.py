@@ -283,7 +283,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
                     errors.append(f"Relationship dataframe at index {idx} needs to contain a '{expected_col}' column.")
 
         if len(errors) > 0:
-            raise ValueError(f"{os.linesep}".join(errors))
+            raise ValueError(os.linesep.join(errors))
 
         constructor = self._query_runner.create_graph_constructor(graph_name, concurrency)
         constructor.run(nodes, relationships)
