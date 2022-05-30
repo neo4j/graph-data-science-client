@@ -109,7 +109,7 @@ G = gds.alpha.graph.construct(
 )
 ```
 
-If your server uses GDS Enterprise edition and you have [enabled its Arrow Apache server](https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/), the construction will be a lot faster.
+If your server uses GDS Enterprise edition and you have [enabled its Arrow Apache server](https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/), the construction will be a lot faster. In this case you must also make sure that you have explicitly specified which database to use via `GraphDataScience.set_database`.
 
 
 ### Running algorithms
