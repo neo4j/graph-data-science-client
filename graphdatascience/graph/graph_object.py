@@ -54,11 +54,15 @@ class Graph:
 
         if label not in labels_to_props.keys():
             raise ValueError(f"There is no node label '{label}' projected onto '{self.name()}'")
-        else:
-            return list(labels_to_props[label].keys())
 
-    def relationship_properties(self, type: str) -> List[str]:
+        return list(labels_to_props[label].keys())
+
+    def relationship_properties(self, type: Optional[str] = None) -> Union[Series, List[str]]:
         types_to_props = self._graph_info(["schema"])["relationships"]
+
+        if not type:
+            return pandas.Series({key: list(val.keys()) for key, val in types_to_props.items()})
+
         if type not in types_to_props.keys():
             raise ValueError(f"There is no relationship type '{type}' projected onto '{self.name()}'")
 

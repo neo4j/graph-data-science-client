@@ -21,7 +21,8 @@ def setup_module(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
         (d: Node2 {s: 4}),
         (a)-[:REL {y: 42.0}]->(b),
         (a)-[:REL {y: 13.37}]->(c),
-        (b)-[:REL {z: 7.9}]->(c)
+        (b)-[:REL {z: 7.9}]->(c),
+        (b)-[:REL2 {q: 7.9}]->(d)
         """
     )
 
@@ -33,7 +34,9 @@ def setup_module(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 @pytest.fixture
 def G(gds: GraphDataScience) -> Generator[Graph, None, None]:
     G, _ = gds.graph.project(
-        GRAPH_NAME, {"Node": {"properties": "x"}, "Node2": {"properties": "s"}}, {"REL": {"properties": ["y", "z"]}}
+        GRAPH_NAME,
+        {"Node": {"properties": "x"}, "Node2": {"properties": "s"}},
+        {"REL": {"properties": ["y", "z"]}, "REL2": {"properties": "q"}},
     )
 
     yield G
@@ -54,7 +57,7 @@ def test_graph_node_count(G: Graph) -> None:
 
 
 def test_graph_relationship_count(G: Graph) -> None:
-    assert G.relationship_count() == 3
+    assert G.relationship_count() == 4
 
 
 def test_graph_node_labels(G: Graph) -> None:
@@ -62,7 +65,7 @@ def test_graph_node_labels(G: Graph) -> None:
 
 
 def test_graph_relationship_types(G: Graph) -> None:
-    assert G.relationship_types() == ["REL"]
+    assert set(G.relationship_types()) == {"REL", "REL2"}
 
 
 def test_graph_node_properties(G: Graph) -> None:
@@ -77,15 +80,22 @@ def test_graph_node_properties(G: Graph) -> None:
 
 
 def test_graph_relationship_properties(G: Graph) -> None:
-    assert G.relationship_properties("REL") == ["y", "z"]
+    assert set(G.relationship_properties("REL")) == {"y", "z"}
+    assert G.relationship_properties("REL2") == ["q"]
+
+    rel_properties = G.relationship_properties()
+    assert isinstance(rel_properties, Series)
+    assert rel_properties.size == 2
+    assert set(rel_properties["REL"]) == {"y", "z"}
+    assert rel_properties["REL2"] == ["q"]
 
 
 def test_graph_degree_distribution(G: Graph) -> None:
-    assert G.degree_distribution()["mean"] == 1.5
+    assert G.degree_distribution()["mean"] == 1.75
 
 
 def test_graph_density(G: Graph) -> None:
-    assert G.density() == 0.25
+    assert G.density() == pytest.approx(0.333, 0.01)
 
 
 def test_graph_memory_usage(G: Graph) -> None:
