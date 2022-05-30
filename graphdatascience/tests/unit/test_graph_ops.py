@@ -369,3 +369,12 @@ def test_graph_alpha_construct_without_arrow(runner: CollectingQueryRunner, gds:
         "node_query": expected_node_query,
         "relationship_query": expected_relationship_query,
     }
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
+def test_graph_alpha_construct_validate_df_columns(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    nodes = pandas.DataFrame({"nodeIds": [0, 1]})
+    relationships = pandas.DataFrame({"sourceNodeId": [0, 1], "TargetNodeIds": [1, 0]})
+
+    with pytest.raises(ValueError, match=r"(.*'nodeId'.*\s.*'targetNodeId'.*)|(.*'targetNodeId'.*\s.*'nodeId'.*)"):
+        gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2)

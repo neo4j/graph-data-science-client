@@ -1,3 +1,4 @@
+import os
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from multimethod import multimethod
@@ -268,11 +269,23 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         relationships: Union[DataFrame, List[DataFrame]],
         concurrency: int = 4,
     ) -> Graph:
-        constructor = self._query_runner.create_graph_constructor(graph_name, concurrency)
-
         nodes = nodes if isinstance(nodes, List) else [nodes]
         relationships = relationships if isinstance(relationships, List) else [relationships]
 
+        errors = []
+        for idx, node_df in enumerate(nodes):
+            if "nodeId" not in node_df.columns.values:
+                errors.append(f"Node dataframe at index {idx} needs to contain a 'nodeId' column.")
+
+        for idx, rel_df in enumerate(relationships):
+            for expected_col in ["sourceNodeId", "targetNodeId"]:
+                if expected_col not in rel_df.columns.values:
+                    errors.append(f"Relationship dataframe at index {idx} needs to contain a '{expected_col}' column.")
+
+        if len(errors) > 0:
+            raise ValueError(os.linesep.join(errors))
+
+        constructor = self._query_runner.create_graph_constructor(graph_name, concurrency)
         constructor.run(nodes, relationships)
 
         return Graph(graph_name, self._query_runner, self._server_version)
