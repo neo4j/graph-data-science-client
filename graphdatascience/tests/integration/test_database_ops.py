@@ -88,3 +88,9 @@ def test_server_version(gds: GraphDataScience) -> None:
     assert cached_server_version.major == int(server_version[0])
     assert cached_server_version.minor == int(server_version[1])
     assert cached_server_version.patch == int(server_version[2])
+
+
+def test_no_db_explicitly_set() -> None:
+    gds = GraphDataScience(URI, AUTH)
+    result = gds.run_cypher("CALL gds.list()")
+    assert len(result) > 10
