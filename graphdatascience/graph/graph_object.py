@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List
 
 import pandas
 from pandas.core.series import Series
@@ -27,6 +27,12 @@ class Graph:
             raise ValueError(f"There is no projected graph named '{self.name()}'")
 
         return info.squeeze()  # type: ignore
+
+    def database(self) -> str:
+        return self._graph_info(["database"])  # type: ignore
+
+    def configuration(self) -> Series:
+        return pandas.Series(self._graph_info(["configuration"]))
 
     def node_count(self) -> int:
         return self._graph_info(["nodeCount"])  # type: ignore
@@ -80,3 +86,9 @@ class Graph:
         )
 
         return result.squeeze()  # type: ignore
+
+    def creation_time(self) -> Any:  # neo4j.time.DateTime not exported
+        return self._graph_info()["creationTime"]
+
+    def modification_time(self) -> Any:  # neo4j.time.DateTime not exported
+        return self._graph_info()["modificationTime"]

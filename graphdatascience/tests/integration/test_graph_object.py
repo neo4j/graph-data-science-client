@@ -37,6 +37,14 @@ def G(gds: GraphDataScience) -> Generator[Graph, None, None]:
     gds.graph.drop(G, False)
 
 
+def test_graph_database(gds: GraphDataScience, G: Graph) -> None:
+    assert G.database() == gds.database()
+
+
+def test_graph_configuration(G: Graph) -> None:
+    assert "Node" in G.configuration()["nodeProjection"].keys()
+
+
 def test_graph_node_count(G: Graph) -> None:
     assert G.node_count() == 3
 
@@ -100,3 +108,11 @@ def test_graph_drop(G: Graph) -> None:
 
     with pytest.raises(Exception):
         G.drop(failIfMissing=True)
+
+
+def test_graph_creation_time(G: Graph) -> None:
+    assert G.creation_time().year > 2000
+
+
+def test_graph_modification_time(G: Graph) -> None:
+    assert G.modification_time().year > 2000
