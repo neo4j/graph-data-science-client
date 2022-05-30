@@ -40,10 +40,12 @@ class ArrowQueryRunner(QueryRunner):
     def run_query(self, query: str, params: Optional[Dict[str, Any]] = None) -> DataFrame:
         if params is None:
             params = {}
+
         if "gds.graph.streamNodeProperty" in query:
             graph_name = params["graph_name"]
             property_name = params["properties"]
             node_labels = params["entities"]
+
             return self._run_arrow_property_get(
                 graph_name, "gds.graph.streamNodeProperty", {"node_property": property_name, "node_labels": node_labels}
             )
@@ -51,6 +53,7 @@ class ArrowQueryRunner(QueryRunner):
             graph_name = params["graph_name"]
             property_names = params["properties"]
             node_labels = params["entities"]
+
             return self._run_arrow_property_get(
                 graph_name,
                 "gds.graph.streamNodeProperties",
@@ -60,6 +63,7 @@ class ArrowQueryRunner(QueryRunner):
             graph_name = params["graph_name"]
             property_name = params["properties"]
             relationship_types = params["entities"]
+
             return self._run_arrow_property_get(
                 graph_name,
                 "gds.graph.streamRelationshipProperty",
@@ -69,6 +73,7 @@ class ArrowQueryRunner(QueryRunner):
             graph_name = params["graph_name"]
             property_names = params["properties"]
             relationship_types = params["entities"]
+
             return self._run_arrow_property_get(
                 graph_name,
                 "gds.graph.streamRelationshipProperties",
@@ -81,18 +86,25 @@ class ArrowQueryRunner(QueryRunner):
         # For now there's no logging support with Arrow queries.
         if params is None:
             params = {}
+
         return self._fallback_query_runner.run_query_with_logging(query, params)
 
     def set_database(self, db: str) -> None:
         self._fallback_query_runner.set_database(db)
 
-    def database(self) -> str:
+    def database(self) -> Optional[str]:
         return self._fallback_query_runner.database()
 
     def close(self) -> None:
         self._fallback_query_runner.close()
 
     def _run_arrow_property_get(self, graph_name: str, procedure_name: str, configuration: Dict[str, Any]) -> DataFrame:
+        if not self.database():
+            raise ValueError(
+                "For this call you must have explicitly specified a valid Neo4j database to target, "
+                "using `GraphDataScience.set_database`."
+            )
+
         payload = {
             "database_name": self.database(),
             "graph_name": graph_name,
@@ -107,7 +119,14 @@ class ArrowQueryRunner(QueryRunner):
         return result
 
     def create_graph_constructor(self, graph_name: str, concurrency: int) -> GraphConstructor:
-        return ArrowGraphConstructor(self, graph_name, self._flight_client, concurrency)
+        database = self.database()
+        if not database:
+            raise ValueError(
+                "For this call you must have explicitly specified a valid Neo4j database to target, "
+                "using `GraphDataScience.set_database`."
+            )
+
+        return ArrowGraphConstructor(database, graph_name, self._flight_client, concurrency)
 
 
 class AuthFactory(ClientMiddlewareFactory):  # type: ignore

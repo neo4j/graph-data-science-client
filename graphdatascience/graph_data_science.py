@@ -90,7 +90,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def set_database(self, db: str) -> None:
         self._query_runner.set_database(db)
 
-    def database(self) -> str:
+    def database(self) -> Optional[str]:
         return self._query_runner.database()
 
     def run_cypher(self, query: str, params: Dict[str, Any] = {}) -> DataFrame:
