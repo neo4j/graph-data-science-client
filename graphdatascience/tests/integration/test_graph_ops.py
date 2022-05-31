@@ -5,9 +5,11 @@ import pytest
 from neo4j import DEFAULT_DATABASE
 
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.tests.integration.conftest import AUTH, URI
 
 GRAPH_NAME = "g"
 
@@ -156,6 +158,18 @@ def test_graph_streamNodeProperty(gds: GraphDataScience) -> None:
     assert {e for e in result["propertyValue"]} == {1, 2, 3}
 
 
+def test_graph_streamNodeProperty_with_arrow_no_db(gds: GraphDataScience) -> None:
+    gds = GraphDataScience(URI, auth=AUTH)
+    if not isinstance(gds._query_runner, ArrowQueryRunner):
+        pytest.skip("Arrow server not enabled")
+
+    assert not gds.database()
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    with pytest.raises(ValueError):
+        gds.graph.streamNodeProperty(G, "x", concurrency=2)
+
+
 def test_graph_streamNodeProperty_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
@@ -163,7 +177,7 @@ def test_graph_streamNodeProperty_without_arrow(gds_without_arrow: GraphDataScie
     assert {e for e in result["propertyValue"]} == {1, 2, 3}
 
 
-def test_graph_streamNodeProperties(gds: GraphDataScience) -> None:
+def test_graph_streamNodeProperties_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
     result = gds.graph.streamNodeProperties(G, ["x", "y"], concurrency=2)
@@ -177,7 +191,7 @@ def test_graph_streamNodeProperties(gds: GraphDataScience) -> None:
     assert {e for e in y_values["propertyValue"]} == {2, 3, 4}
 
 
-def test_graph_streamNodeProperties_separate_property_columns(gds: GraphDataScience) -> None:
+def test_graph_streamNodeProperties_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
     result = gds.graph.streamNodeProperties(G, ["x", "y"], separate_property_columns=True, concurrency=2)
@@ -212,7 +226,7 @@ def test_graph_streamNodeProperties_without_arrow_separate_property_columns(
     assert {e for e in result["y"]} == {2, 3, 4}
 
 
-def test_graph_streamRelationshipProperty(gds: GraphDataScience) -> None:
+def test_graph_streamRelationshipProperty_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 
     result = gds.graph.streamRelationshipProperty(G, "relX", concurrency=2)
@@ -226,7 +240,7 @@ def test_graph_streamRelationshipProperty_without_arrow(gds_without_arrow: Graph
     assert {e for e in result["propertyValue"]} == {4, 5, 6}
 
 
-def test_graph_streamRelationshipProperties(gds: GraphDataScience) -> None:
+def test_graph_streamRelationshipProperties_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
     result = gds.graph.streamRelationshipProperties(G, ["relX", "relY"], concurrency=2)
@@ -245,7 +259,7 @@ def test_graph_streamRelationshipProperties(gds: GraphDataScience) -> None:
     assert {e for e in y_values["propertyValue"]} == {5, 6, 7}
 
 
-def test_graph_streamRelationshipProperties_separate_property_columns(gds: GraphDataScience) -> None:
+def test_graph_streamRelationshipProperties_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
     result = gds.graph.streamRelationshipProperties(G, ["relX", "relY"], separate_property_columns=True, concurrency=2)
@@ -371,7 +385,7 @@ def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience
 
 @pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
-def test_graph_construct(gds: GraphDataScience) -> None:
+def test_graph_construct_with_arrow(gds: GraphDataScience) -> None:
     nodes = pandas.DataFrame({"nodeId": [0, 1, 2, 3]})
     relationships = pandas.DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
@@ -386,7 +400,7 @@ def test_graph_construct(gds: GraphDataScience) -> None:
 
 @pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
-def test_graph_construct_multiple_dfs(gds: GraphDataScience) -> None:
+def test_graph_construct_with_arrow_multiple_dfs(gds: GraphDataScience) -> None:
     nodes = [pandas.DataFrame({"nodeId": [0, 1]}), pandas.DataFrame({"nodeId": [2, 3]})]
     relationships = pandas.DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
@@ -425,7 +439,7 @@ def test_graph_construct_without_arrow_multi_dfs(gds_without_arrow: GraphDataSci
 
 @pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
-def test_graph_construct_abort(gds: GraphDataScience) -> None:
+def test_graph_construct_with_arrow_abort(gds: GraphDataScience) -> None:
     bad_nodes = pandas.DataFrame({"bogus": [0, 1, 2, 3]})
     relationships = pandas.DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
@@ -440,3 +454,19 @@ def test_graph_construct_abort(gds: GraphDataScience) -> None:
     assert G.relationship_count() == 4
 
     G.drop()
+
+
+@pytest.mark.enterprise
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+def test_graph_construct_with_arrow_no_db() -> None:
+    gds = GraphDataScience(URI, auth=AUTH)
+    if not isinstance(gds._query_runner, ArrowQueryRunner):
+        pytest.skip("Arrow server not enabled")
+
+    assert not gds.database()
+
+    nodes = pandas.DataFrame({"nodeId": [0, 1, 2, 3]})
+    relationships = pandas.DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
+
+    with pytest.raises(ValueError):
+        gds.alpha.graph.construct("hello", nodes, relationships)

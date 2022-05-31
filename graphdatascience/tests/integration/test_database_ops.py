@@ -26,7 +26,7 @@ def test_switching_db(runner: Neo4jQueryRunner) -> None:
     post_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
     assert post_count == 0
 
-    runner.set_database(default_database)
+    runner.set_database(default_database)  # type: ignore
     runner.run_query("MATCH (n) DETACH DELETE n")
     runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
 
@@ -88,3 +88,9 @@ def test_server_version(gds: GraphDataScience) -> None:
     assert cached_server_version.major == int(server_version[0])
     assert cached_server_version.minor == int(server_version[1])
     assert cached_server_version.patch == int(server_version[2])
+
+
+def test_no_db_explicitly_set() -> None:
+    gds = GraphDataScience(URI, AUTH)
+    result = gds.run_cypher("CALL gds.list()")
+    assert len(result) > 10

@@ -27,7 +27,7 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
-    def database(self) -> str:
+    def database(self) -> Optional[str]:
         pass
 
     def set_server_version(self, _: ServerVersion) -> None:

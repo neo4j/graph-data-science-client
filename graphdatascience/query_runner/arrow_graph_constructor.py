@@ -9,19 +9,18 @@ from pandas.core.frame import DataFrame
 from pyarrow import Table
 
 from .graph_constructor import GraphConstructor
-from .query_runner import QueryRunner
 
 
 class ArrowGraphConstructor(GraphConstructor):
     def __init__(
         self,
-        query_runner: QueryRunner,
+        database: str,
         graph_name: str,
         flight_client: flight.FlightClient,
         concurrency: int,
         chunk_size: int = 10_000,
     ):
-        self._query_runner = query_runner
+        self._database = database
         self._concurrency = concurrency
         self._graph_name = graph_name
         self._client = flight_client
@@ -30,9 +29,7 @@ class ArrowGraphConstructor(GraphConstructor):
 
     def run(self, node_dfs: List[DataFrame], relationship_dfs: List[DataFrame]) -> None:
         try:
-            self._send_action(
-                "CREATE_GRAPH", {"name": self._graph_name, "database_name": self._query_runner.database()}
-            )
+            self._send_action("CREATE_GRAPH", {"name": self._graph_name, "database_name": self._database})
 
             self._send_dfs(node_dfs, "node")
 
@@ -43,6 +40,7 @@ class ArrowGraphConstructor(GraphConstructor):
             self._send_action("RELATIONSHIP_LOAD_DONE", {"name": self._graph_name})
         except Exception as e:
             self._send_action("ABORT", {"name": self._graph_name})
+
             raise e
 
     def _partition_dfs(self, dfs: List[DataFrame]) -> List[DataFrame]:

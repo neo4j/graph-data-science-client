@@ -7,7 +7,6 @@ import neo4j
 from pandas.core.frame import DataFrame
 from tqdm.auto import tqdm
 
-from ..error.unable_to_connect import UnableToConnectError
 from ..server_version.server_version import ServerVersion
 from .cypher_graph_constructor import CypherGraphConstructor
 from .graph_constructor import GraphConstructor
@@ -20,17 +19,7 @@ class Neo4jQueryRunner(QueryRunner):
     def __init__(self, driver: neo4j.Driver, db: Optional[str] = neo4j.DEFAULT_DATABASE, auto_close: bool = False):
         self._driver = driver
         self._auto_close = auto_close
-
-        if db:
-            self._db = db
-            return
-
-        try:
-            with self._driver.session() as session:
-                result = session.run("SHOW DATABASES YIELD name, default WHERE default = TRUE RETURN name")
-                self._db = result.data()[0]["name"]
-        except Exception as e:
-            raise UnableToConnectError(e)
+        self._db = db
 
     def run_query(self, query: str, params: Optional[Dict[str, str]] = None) -> DataFrame:
         if params is None:
@@ -109,7 +98,7 @@ class Neo4jQueryRunner(QueryRunner):
     def close(self) -> None:
         self._driver.close()
 
-    def database(self) -> str:
+    def database(self) -> Optional[str]:
         return self._db
 
     def __del__(self) -> None:

@@ -10,11 +10,13 @@ from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
 
 AUTH = ("neo4j", "password")
-if os.environ.get("NEO4J_USER") is not None:
+if os.environ.get("NEO4J_USER"):
     AUTH = (
         os.environ.get("NEO4J_USER", "DUMMY"),
         os.environ.get("NEO4J_PASSWORD", "neo4j"),
     )
+
+DB = os.environ.get("NEO4J_DB", "neo4j")
 
 
 @pytest.fixture(scope="package")
@@ -28,17 +30,26 @@ def neo4j_driver() -> Generator[Driver, None, None]:
 
 @pytest.fixture(scope="package")
 def runner(neo4j_driver: Driver) -> Neo4jQueryRunner:
-    return Neo4jQueryRunner(neo4j_driver)
+    _runner = Neo4jQueryRunner(neo4j_driver)
+    _runner.set_database(DB)
+
+    return _runner
 
 
 @pytest.fixture(scope="package")
 def gds() -> GraphDataScience:
-    return GraphDataScience(URI, auth=AUTH)
+    _gds = GraphDataScience(URI, auth=AUTH)
+    _gds.set_database(DB)
+
+    return _gds
 
 
 @pytest.fixture(scope="package")
 def gds_without_arrow() -> GraphDataScience:
-    return GraphDataScience(URI, auth=AUTH, arrow=False)
+    _gds = GraphDataScience(URI, auth=AUTH, arrow=False)
+    _gds.set_database(DB)
+
+    return _gds
 
 
 def pytest_collection_modifyitems(config: Any, items: Any) -> None:
