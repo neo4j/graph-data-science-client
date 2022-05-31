@@ -101,7 +101,7 @@ class ArrowQueryRunner(QueryRunner):
     def _run_arrow_property_get(self, graph_name: str, procedure_name: str, configuration: Dict[str, Any]) -> DataFrame:
         if not self.database():
             raise ValueError(
-                "For this call you must have explicitly specified a valid Neo4j database to target, "
+                "For this call you must have explicitly specified a valid Neo4j database to execute on, "
                 "using `GraphDataScience.set_database`."
             )
 
