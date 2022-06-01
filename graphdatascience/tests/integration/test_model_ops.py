@@ -46,7 +46,7 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     try:
         pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.addFeature("l2", nodeProperties=["rank"])
-        pipe.configureSplit(trainFraction=0.4, testFraction=0.2)
+        pipe.configureSplit(trainFraction=0.4, testFraction=0.2, validationFolds=2)
         pipe.addLogisticRegression(penalty=1)
         lp_model, _ = pipe.train(G, modelName="lp-model", concurrency=2)
     finally:
@@ -66,7 +66,7 @@ def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     try:
         pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.selectFeatures("rank")
-        pipe.configureSplit(testFraction=0.3)
+        pipe.configureSplit(testFraction=0.3, validationFolds=2)
         pipe.addLogisticRegression(penalty=1)
         nc_model, _ = pipe.train(G, modelName="nc-model", targetProperty="age", metrics=["ACCURACY"])
     finally:
