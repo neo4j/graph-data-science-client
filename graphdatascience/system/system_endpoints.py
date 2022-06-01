@@ -4,6 +4,7 @@ from pandas.core.frame import DataFrame
 from pandas.core.series import Series
 
 from ..caller_base import CallerBase
+from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 
@@ -38,3 +39,11 @@ class SystemEndpoints(CallerBase):
     @property
     def debug(self) -> DebugProcRunner:
         return DebugProcRunner(self._query_runner, f"{self._namespace}.debug", self._server_version)
+
+    @client_only_endpoint("gds")
+    def is_licensed(self) -> bool:
+        license: str = self._query_runner.run_query(
+            "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value"
+        ).squeeze()
+
+        return license == "Licensed"
