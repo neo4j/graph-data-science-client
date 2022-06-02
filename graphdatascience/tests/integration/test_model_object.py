@@ -99,3 +99,7 @@ def test_model_shared(gs_model: GraphSageModel) -> None:
 
 def test_model_metrics(gs_model: GraphSageModel) -> None:
     assert isinstance(gs_model.metrics()["didConverge"], bool)
+
+
+def test_model_info(gs_model: GraphSageModel) -> None:
+    assert gs_model.model_info()["modelName"] == "gs-model"
