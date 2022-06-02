@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List
 
 from pandas import Series
 
@@ -22,3 +22,6 @@ class NCModel(Model):
     @graph_type_check
     def predict_write_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
         return self._estimate_predict("write", G.name(), config)
+
+    def classes(self) -> List[int]:
+        return self._list_info()["modelInfo"][0]["classes"]  # type: ignore
