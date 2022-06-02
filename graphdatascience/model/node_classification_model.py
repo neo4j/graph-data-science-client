@@ -4,10 +4,10 @@ from pandas import Series
 
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
-from .model import Model
+from .pipeline_model import PipelineModel
 
 
-class NCModel(Model):
+class NCModel(PipelineModel):
     def _query_prefix(self) -> str:
         return "CALL gds.beta.pipeline.nodeClassification.predict."
 
