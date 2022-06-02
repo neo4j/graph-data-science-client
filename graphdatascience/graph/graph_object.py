@@ -88,7 +88,7 @@ class Graph:
         return result.squeeze()  # type: ignore
 
     def creation_time(self) -> Any:  # neo4j.time.DateTime not exported
-        return self._graph_info()["creationTime"]
+        return self._graph_info(["creationTime"])
 
     def modification_time(self) -> Any:  # neo4j.time.DateTime not exported
-        return self._graph_info()["modificationTime"]
+        return self._graph_info(["modificationTime"])
