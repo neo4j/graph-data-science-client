@@ -177,3 +177,11 @@ def test_shared_nc_model(nc_model: NCModel) -> None:
 
 def test_metrics_nc_model(nc_model: NCModel) -> None:
     assert "ACCURACY" in nc_model.metrics().keys()
+
+
+def test_best_parameters_nc_model(nc_model: NCModel) -> None:
+    assert nc_model.best_parameters()["methodName"] == "LogisticRegression"
+
+
+def test_pipeline_nc_model(nc_model: NCModel) -> None:
+    assert len(nc_model.pipeline()["nodePropertySteps"]) > 0

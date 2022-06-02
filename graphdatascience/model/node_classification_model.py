@@ -1,12 +1,12 @@
-from typing import Any
+from typing import Any, List
 
 from pandas.core.series import Series
 
 from ..graph.graph_object import Graph
-from .model import Model
+from .pipeline_model import PipelineModel
 
 
-class NCModel(Model):
+class NCModel(PipelineModel):
     def _query_prefix(self) -> str:
         return "CALL gds.beta.pipeline.nodeClassification.predict."
 
@@ -19,3 +19,6 @@ class NCModel(Model):
 
     def predict_write_estimate(self, G: Graph, **config: Any) -> Series:
         return self._estimate_predict("write", G.name(), config)
+
+    def classes(self) -> List[int]:
+        return self._list_info()["modelInfo"][0]["classes"]  # type: ignore
