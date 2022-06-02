@@ -1,6 +1,7 @@
 from typing import Generator
 
 import pytest
+from pandas.core.series import Series
 
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
@@ -17,9 +18,11 @@ def setup_module(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
         (a: Node {x: 1}),
         (b: Node {x: 2}),
         (c: Node {x: 3}),
+        (d: Node2 {s: 4}),
         (a)-[:REL {y: 42.0}]->(b),
         (a)-[:REL {y: 13.37}]->(c),
-        (b)-[:REL {z: 7.9}]->(c)
+        (b)-[:REL {z: 7.9}]->(c),
+        (b)-[:REL2 {q: 7.9}]->(d)
         """
     )
 
@@ -30,7 +33,11 @@ def setup_module(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 
 @pytest.fixture
 def G(gds: GraphDataScience) -> Generator[Graph, None, None]:
-    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, {"REL": {"properties": ["y", "z"]}})
+    G, _ = gds.graph.project(
+        GRAPH_NAME,
+        {"Node": {"properties": "x"}, "Node2": {"properties": "s"}},
+        {"REL": {"properties": ["y", "z"]}, "REL2": {"properties": "q"}},
+    )
 
     yield G
 
@@ -46,35 +53,49 @@ def test_graph_configuration(G: Graph) -> None:
 
 
 def test_graph_node_count(G: Graph) -> None:
-    assert G.node_count() == 3
+    assert G.node_count() == 4
 
 
 def test_graph_relationship_count(G: Graph) -> None:
-    assert G.relationship_count() == 3
+    assert G.relationship_count() == 4
 
 
 def test_graph_node_labels(G: Graph) -> None:
-    assert G.node_labels() == ["Node"]
+    assert set(G.node_labels()) == {"Node", "Node2"}
 
 
 def test_graph_relationship_types(G: Graph) -> None:
-    assert G.relationship_types() == ["REL"]
+    assert set(G.relationship_types()) == {"REL", "REL2"}
 
 
 def test_graph_node_properties(G: Graph) -> None:
     assert G.node_properties("Node") == ["x"]
+    assert G.node_properties("Node2") == ["s"]
+
+    node_properties = G.node_properties()
+    assert isinstance(node_properties, Series)
+    assert node_properties.size == 2
+    assert node_properties["Node"] == ["x"]
+    assert node_properties["Node2"] == ["s"]
 
 
 def test_graph_relationship_properties(G: Graph) -> None:
-    assert G.relationship_properties("REL") == ["y", "z"]
+    assert set(G.relationship_properties("REL")) == {"y", "z"}
+    assert G.relationship_properties("REL2") == ["q"]
+
+    rel_properties = G.relationship_properties()
+    assert isinstance(rel_properties, Series)
+    assert rel_properties.size == 2
+    assert set(rel_properties["REL"]) == {"y", "z"}
+    assert rel_properties["REL2"] == ["q"]
 
 
 def test_graph_degree_distribution(G: Graph) -> None:
-    assert G.degree_distribution()["mean"] == 2.0
+    assert G.degree_distribution()["mean"] == 1.75
 
 
 def test_graph_density(G: Graph) -> None:
-    assert G.density() == 0.5
+    assert G.density() == pytest.approx(0.333, 0.01)
 
 
 def test_graph_memory_usage(G: Graph) -> None:
