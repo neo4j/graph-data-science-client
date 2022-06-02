@@ -21,3 +21,8 @@ def test_sysInfo(gds: GraphDataScience) -> None:
     result = gds.debug.sysInfo()
 
     assert "gdsVersion" in (list(result["key"]))
+
+
+@pytest.mark.enterprise
+def test_is_licensed(gds: GraphDataScience) -> None:
+    assert gds.is_licensed()
