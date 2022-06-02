@@ -3,10 +3,10 @@ from typing import Any, List
 from pandas.core.series import Series
 
 from ..graph.graph_object import Graph
-from .model import Model
+from .pipeline_model import PipelineModel
 
 
-class NCModel(Model):
+class NCModel(PipelineModel):
     def _query_prefix(self) -> str:
         return "CALL gds.beta.pipeline.nodeClassification.predict."
 
