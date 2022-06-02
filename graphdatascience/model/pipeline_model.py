@@ -9,3 +9,6 @@ from .model import Model
 class PipelineModel(Model, ABC):
     def best_parameters(self) -> Series:
         return pandas.Series(self._list_info()["modelInfo"][0]["bestParameters"])
+
+    def pipeline(self) -> Series:
+        return pandas.Series(self._list_info()["modelInfo"][0]["pipeline"])
