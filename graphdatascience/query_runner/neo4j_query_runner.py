@@ -21,7 +21,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._auto_close = auto_close
         self._db = db
 
-    def run_query(self, query: str, params: Optional[Dict[str, str]] = None) -> DataFrame:
+    def run_query(self, query: str, params: Optional[Dict[str, Any]] = None) -> DataFrame:
         if params is None:
             params = {}
 
