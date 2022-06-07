@@ -470,3 +470,33 @@ def test_graph_construct_with_arrow_no_db() -> None:
 
     with pytest.raises(ValueError):
         gds.alpha.graph.construct("hello", nodes, relationships)
+
+
+@pytest.mark.enterprise
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+def test_doc(gds: GraphDataScience) -> None:
+    nodes = pandas.DataFrame(
+        {
+            "nodeId": [0, 1, 2, 3],
+            "labels": ["A", "B", "C", "A"],
+            "prop1": [42, 1337, 8, 0],
+            "otherProperty": [0.1, 0.2, 0.3, 0.4],
+        }
+    )
+
+    relationships = pandas.DataFrame(
+        {
+            "sourceNodeId": [0, 1, 2, 3],
+            "targetNodeId": [1, 2, 3, 0],
+            "relationshipType": ["REL", "REL", "REL", "REL"],
+            "weight": [0.0, 0.0, 0.1, 42.0],
+        }
+    )
+
+    G = gds.alpha.graph.construct(
+        "my-graph",  # Graph name
+        nodes,  # One or more dataframes containing node data
+        relationships,  # One or more dataframes containing relationship data
+    )
+
+    G.drop()
