@@ -1,5 +1,5 @@
 import warnings
-from typing import List, Set
+from typing import Any, List, Set, Tuple
 
 from pandas.core.frame import DataFrame
 
@@ -40,15 +40,18 @@ class CypherGraphConstructor(GraphConstructor):
             "{readConcurrency: $read_concurrency, parameters: { nodes: $nodes, relationships: $relationships }})"
         )
 
+        node_query, nodes = self._node_query(node_dfs[0])
+        relationship_query, relationships = self._relationship_query(relationship_dfs[0])
+
         self._query_runner.run_query(
             query,
             {
                 "graph_name": self._graph_name,
-                "node_query": self._node_query(node_dfs[0]),
-                "relationship_query": self._relationship_query(relationship_dfs[0]),
+                "node_query": node_query,
+                "relationship_query": relationship_query,
                 "read_concurrency": self._concurrency,
-                "nodes": node_dfs[0].values.tolist(),
-                "relationships": relationship_dfs[0].values.tolist(),
+                "nodes": nodes,
+                "relationships": relationships,
             },
         )
 
@@ -59,7 +62,8 @@ class CypherGraphConstructor(GraphConstructor):
 
         return license == "Licensed"
 
-    def _node_query(self, node_df: DataFrame) -> str:
+    def _node_query(self, node_df: DataFrame) -> Tuple[str, List[List[Any]]]:
+        node_list = node_df.values.tolist()
         node_id_index = node_df.columns.get_loc("nodeId")
 
         label_query = ""
@@ -67,15 +71,23 @@ class CypherGraphConstructor(GraphConstructor):
             label_index = node_df.columns.get_loc("labels")
             label_query = f", node[{label_index}] as labels"
 
+            # Make sure every node has a list of labels
+            for node in node_list:
+                labels = node[label_index]
+                if isinstance(labels, List):
+                    continue
+                node[label_index] = [labels]
+
         property_query = ""
         property_columns: Set[str] = set(node_df.keys()) - {"nodeId", "labels"}
         if len(property_columns) > 0:
             property_queries = (f", node[{node_df.columns.get_loc(col)}] as {col}" for col in property_columns)
             property_query = "".join(property_queries)
 
-        return f"UNWIND $nodes as node RETURN node[{node_id_index}] as id{label_query}{property_query}"
+        return f"UNWIND $nodes as node RETURN node[{node_id_index}] as id{label_query}{property_query}", node_list
 
-    def _relationship_query(self, rel_df: DataFrame) -> str:
+    def _relationship_query(self, rel_df: DataFrame) -> Tuple[str, List[List[Any]]]:
+        rel_list = rel_df.values.tolist()
         source_id_index = rel_df.columns.get_loc("sourceNodeId")
         target_id_index = rel_df.columns.get_loc("targetNodeId")
 
@@ -93,5 +105,6 @@ class CypherGraphConstructor(GraphConstructor):
         return (
             "UNWIND $relationships as relationship "
             f"RETURN relationship[{source_id_index}] as source, relationship[{target_id_index}] as target"
-            f"{type_query}{property_query}"
+            f"{type_query}{property_query}",
+            rel_list,
         )
