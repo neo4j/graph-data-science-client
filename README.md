@@ -89,17 +89,21 @@ To do this we provide the `gds.alpha.graph.construct` method with node data fram
 
 ```python
 nodes = pandas.DataFrame(
-    "nodeId": [0, 1, 2, 3],
-    "labels":  ["A", "B", "C", "A"],
-    "prop1": [42, 1337, 8, 0],
-    "otherProperty": [0.1, 0.2, 0.3, 0.4]
+    {
+        "nodeId": [0, 1, 2, 3],
+        "labels":  ["A", "B", "C", "A"],
+        "prop1": [42, 1337, 8, 0],
+        "otherProperty": [0.1, 0.2, 0.3, 0.4]
+    }
 )
 
 relationships = pandas.DataFrame(
-    "sourceId": [0, 1, 2, 3],
-    "targetId": [1, 2, 3, 0],
-    "relationshipType": ["REL", "REL", "REL", "REL"],
-    "weight": [0.0, 0.0, 0.1, 42.0]
+    {
+        "sourceNodeId": [0, 1, 2, 3],
+        "targetNodeId": [1, 2, 3, 0],
+        "relationshipType": ["REL", "REL", "REL", "REL"],
+        "weight": [0.0, 0.0, 0.1, 42.0]
+    }
 )
 
 G = gds.alpha.graph.construct(
