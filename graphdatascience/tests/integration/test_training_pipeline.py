@@ -214,7 +214,7 @@ def test_add_random_forest_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
 def test_parameter_space_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     lp_pipe.addLogisticRegression()
     parameter_space = lp_pipe.parameter_space()
-    assert len(parameter_space.keys()) == 2
+    assert len(parameter_space.keys()) >= 2
     assert "penalty" in parameter_space["LogisticRegression"][0]
 
 
