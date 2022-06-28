@@ -20,9 +20,9 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     runner.run_query(
         """
         CREATE
-        (a: Node {x: 1, y: 2}),
-        (b: Node {x: 2, y: 3}),
-        (c: Node {x: 3, y: 4}),
+        (a: Node {x: 1, y: 2, z: [42]}),
+        (b: Node {x: 2, y: 3, z: [1337]}),
+        (c: Node {x: 3, y: 4, z: [9]}),
         (a)-[:REL {relX: 4, relY: 5}]->(b),
         (a)-[:REL {relX: 5, relY: 6}]->(c),
         (b)-[:REL {relX: 6, relY: 7}]->(c),
@@ -217,13 +217,17 @@ def test_graph_streamNodeProperties_without_arrow(gds_without_arrow: GraphDataSc
 def test_graph_streamNodeProperties_without_arrow_separate_property_columns(
     gds_without_arrow: GraphDataScience,
 ) -> None:
-    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "z"]}}, "*")
 
-    result = gds_without_arrow.graph.streamNodeProperties(G, ["x", "y"], separate_property_columns=True, concurrency=2)
+    result = gds_without_arrow.graph.streamNodeProperties(G, ["x", "z"], separate_property_columns=True, concurrency=2)
 
-    assert list(result.keys()) == ["nodeId", "x", "y"]
+    assert list(result.keys()) == ["nodeId", "x", "z"]
+
     assert {e for e in result["x"]} == {1, 2, 3}
-    assert {e for e in result["y"]} == {2, 3, 4}
+
+    assert len(result["z"]) == 3
+    for e in result["z"]:
+        assert e in [[9], [42], [1337]]
 
 
 def test_graph_streamRelationshipProperty_with_arrow(gds: GraphDataScience) -> None:
