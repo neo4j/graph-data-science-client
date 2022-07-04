@@ -113,10 +113,12 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         # new format was requested, but the query was run via Cypher
         if separate_property_columns and "propertyValue" in result.keys():
-            return result.pivot_table("propertyValue", "nodeId", columns="nodeProperty").reset_index()
+            result = result.pivot(index="nodeId", columns="nodeProperty", values="propertyValue")
+            result = result.reset_index()
+            result.columns.name = None
         # old format was requested but the query was run via Arrow
         elif not separate_property_columns and "propertyValue" not in result.keys():
-            return result.melt(id_vars=["nodeId"]).rename(
+            result = result.melt(id_vars=["nodeId"]).rename(
                 columns={"variable": "nodeProperty", "value": "propertyValue"}
             )
 
@@ -147,12 +149,16 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         # new format was requested, but the query was run via Cypher
         if separate_property_columns and "propertyValue" in result.keys():
-            return result.pivot_table(
-                "propertyValue", ["sourceNodeId", "targetNodeId", "relationshipType"], columns="relationshipProperty"
-            ).reset_index()
+            result = result.pivot(
+                index=["sourceNodeId", "targetNodeId", "relationshipType"],
+                columns="relationshipProperty",
+                values="propertyValue",
+            )
+            result = result.reset_index()
+            result.columns.name = None
         # old format was requested but the query was run via Arrow
         elif not separate_property_columns and "propertyValue" not in result.keys():
-            return result.melt(id_vars=["sourceNodeId", "targetNodeId", "relationshipType"]).rename(
+            result = result.melt(id_vars=["sourceNodeId", "targetNodeId", "relationshipType"]).rename(
                 columns={"variable": "relationshipProperty", "value": "propertyValue"}
             )
 
