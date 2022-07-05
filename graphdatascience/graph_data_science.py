@@ -80,7 +80,13 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                         arrow_info["listenAddress"], self._query_runner, auth, driver.encrypted, True
                     )
             except Exception as e:
-                warnings.warn(f"Could not initialize GDS Flight Server client: {e}")
+                # AuraDS does not have arrow support at this time, so we should not warn about it.
+                # TODO: Remove this check when AuraDS gets arrow support.
+                if (
+                    "There is no procedure with the name `gds.debug.arrow` "
+                    "registered for this database instance." not in str(e)
+                ):
+                    warnings.warn(f"Could not initialize GDS Flight Server client: {e}")
 
         super().__init__(self._query_runner, "gds", self._server_version)
 

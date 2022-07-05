@@ -19,7 +19,7 @@ class CypherGraphConstructor(GraphConstructor):
         self._graph_name = graph_name
 
     def run(self, node_dfs: List[DataFrame], relationship_dfs: List[DataFrame]) -> None:
-        if self._is_enterprise():
+        if self._should_warn_about_arrow_missing():
             warnings.warn(
                 "GDS Enterprise users can use Apache Arrow for fast graph construction; please see the documentation "
                 "for instructions on how to enable it. Without Arrow enabled, this installation will use community "
@@ -55,12 +55,23 @@ class CypherGraphConstructor(GraphConstructor):
             },
         )
 
-    def _is_enterprise(self) -> bool:
-        license: str = self._query_runner.run_query(
-            "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value"
-        ).squeeze()
+    def _should_warn_about_arrow_missing(self) -> bool:
+        try:
+            license: str = self._query_runner.run_query(
+                "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value"
+            ).squeeze()
+            should_warn = license == "Licensed"
+        except Exception as e:
+            # It's not a user's concern whether Arrow is set up or not in AuraDS.
+            if (
+                "There is no procedure with the name `gds.debug.sysInfo` "
+                "registered for this database instance." in str(e)
+            ):
+                should_warn = False
+            else:
+                raise e
 
-        return license == "Licensed"
+        return should_warn
 
     def _node_query(self, node_df: DataFrame) -> Tuple[str, List[List[Any]]]:
         node_list = node_df.values.tolist()

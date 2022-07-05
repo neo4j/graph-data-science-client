@@ -42,8 +42,18 @@ class SystemEndpoints(CallerBase):
 
     @client_only_endpoint("gds")
     def is_licensed(self) -> bool:
-        license: str = self._query_runner.run_query(
-            "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value"
-        ).squeeze()
+        try:
+            license: str = self._query_runner.run_query(
+                "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value"
+            ).squeeze()
+        except Exception as e:
+            # AuraDS does not have `gds.debug.sysInfo`, but is always GDS EE.
+            if (
+                "There is no procedure with the name `gds.debug.sysInfo` "
+                "registered for this database instance." in str(e)
+            ):
+                license = "Licensed"
+            else:
+                raise e
 
         return license == "Licensed"
