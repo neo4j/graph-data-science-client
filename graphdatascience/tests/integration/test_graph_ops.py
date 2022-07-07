@@ -237,6 +237,21 @@ def test_graph_streamRelationshipProperty_with_arrow(gds: GraphDataScience) -> N
     assert {e for e in result["propertyValue"]} == {4, 5, 6}
 
 
+def test_roundtrip_with_arrow(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
+
+    relDF = gds.graph.streamRelationshipProperty(G, "relX")
+    nodeDF = gds.graph.streamNodeProperty(G, "x")
+
+    G_2 = gds.alpha.graph.construct("arrowGraph", nodeDF, relDF)
+
+    try:
+        assert G.node_count() == G_2.node_count()
+        assert G.relationship_count() == G_2.relationship_count()
+    finally:
+        G_2.drop()
+
+
 def test_graph_streamRelationshipProperty_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 
