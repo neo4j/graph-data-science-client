@@ -211,6 +211,18 @@ def test_add_random_forest_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     assert rf_parameter_space[0]["maxDepth"] == 1337
 
 
+def test_add_mlp_with_wrong_config_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    with pytest.raises(Exception):
+        lp_pipe.addMLP(hiddenLayerSizes=64)
+
+
+def test_add_mlp_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
+    res = lp_pipe.addMLP(hiddenLayerSizes=[64, 16, 4], penalty=0.1)
+    mlp_parameter_space = res["parameterSpace"]["MultilayerPerceptron"]
+    assert mlp_parameter_space[0]["hiddenLayerSizes"] == [64, 16, 4]
+    assert mlp_parameter_space[0]["penalty"] == 0.1
+
+
 def test_parameter_space_lp_pipeline(lp_pipe: LPTrainingPipeline) -> None:
     lp_pipe.addLogisticRegression()
     parameter_space = lp_pipe.parameter_space()
