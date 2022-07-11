@@ -18,3 +18,10 @@ class ClassificationTrainingPipeline(TrainingPipeline):
         params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+
+    def addMLP(self, **config: Any) -> Series:
+        query_prefix = self._query_prefix().replace("beta", "alpha")
+        query = f"{query_prefix}addMLP($pipeline_name, $config)"
+        params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
+
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore

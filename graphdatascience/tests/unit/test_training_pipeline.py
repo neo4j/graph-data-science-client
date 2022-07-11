@@ -118,6 +118,26 @@ def test_add_random_forest_with_range_lp_pipeline(runner: CollectingQueryRunner,
     }
 
 
+def test_add_mlp_lp_pipeline(runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
+    lp_pipe.addMLP(hiddenLayerSizes=[64, 16, 4], penalty=0.1)
+
+    assert runner.last_query() == "CALL gds.alpha.pipeline.linkPrediction.addMLP($pipeline_name, $config)"
+    assert runner.last_params() == {
+        "pipeline_name": lp_pipe.name(),
+        "config": {"hiddenLayerSizes": [64, 16, 4], "penalty": 0.1},
+    }
+
+
+def test_add_mlp_nc_pipeline(runner: CollectingQueryRunner, nc_pipe: NCTrainingPipeline) -> None:
+    nc_pipe.addMLP(hiddenLayerSizes=[64, 16, 4], penalty=0.1)
+
+    assert runner.last_query() == "CALL gds.alpha.pipeline.nodeClassification.addMLP($pipeline_name, $config)"
+    assert runner.last_params() == {
+        "pipeline_name": nc_pipe.name(),
+        "config": {"hiddenLayerSizes": [64, 16, 4], "penalty": 0.1},
+    }
+
+
 def test_configure_auto_tuning_lp_pipeline(runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
     lp_pipe.configureAutoTuning(maxTrials=42)
 
