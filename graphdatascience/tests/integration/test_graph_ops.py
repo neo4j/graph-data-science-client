@@ -239,9 +239,13 @@ def test_graph_streamNodeProperties_without_arrow_separate_property_columns(
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "z"]}}, "*")
 
     if gds_without_arrow._server_version < ServerVersion(2, 2, 0):
-        result = gds_without_arrow.graph.streamNodeProperties(G, ["x", "z"], separate_property_columns=True, concurrency=2)
+        result = gds_without_arrow.graph.streamNodeProperties(
+            G, ["x", "z"], separate_property_columns=True, concurrency=2
+        )
     else:
-        result = gds_without_arrow.graph.nodeProperties.stream(G, ["x", "z"], separate_property_columns=True, concurrency=2)
+        result = gds_without_arrow.graph.nodeProperties.stream(
+            G, ["x", "z"], separate_property_columns=True, concurrency=2
+        )
 
     assert list(result.keys()) == ["nodeId", "x", "z"]
 
@@ -268,7 +272,7 @@ def test_roundtrip_with_arrow(gds: GraphDataScience) -> None:
     if gds._server_version < ServerVersion(2, 2, 0):
         relDF = gds.graph.streamRelationshipProperty(G, "relX")
         nodeDF = gds.graph.streamNodeProperty(G, "x")
-    else: 
+    else:
         relDF = gds.graph.relationshipProperty.stream(G, "relX")
         nodeDF = gds.graph.nodeProperty.stream(G, "x")
 
@@ -317,9 +321,13 @@ def test_graph_streamRelationshipProperties_with_arrow_separate_property_columns
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
     if gds._server_version < ServerVersion(2, 2, 0):
-        result = gds.graph.streamRelationshipProperties(G, ["relX", "relY"], separate_property_columns=True, concurrency=2)
+        result = gds.graph.streamRelationshipProperties(
+            G, ["relX", "relY"], separate_property_columns=True, concurrency=2
+        )
     else:
-        result = gds.graph.relationshipProperties.stream(G, ["relX", "relY"], separate_property_columns=True, concurrency=2)
+        result = gds.graph.relationshipProperties.stream(
+            G, ["relX", "relY"], separate_property_columns=True, concurrency=2
+        )
 
     assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType", "relX", "relY"]
     assert {e for e in result["relX"]} == {4, 5, 6}
@@ -383,7 +391,7 @@ def test_graph_writeRelationship(gds: GraphDataScience) -> None:
 
     if gds._server_version < ServerVersion(2, 2, 0):
         result = gds.graph.writeRelationship(G, "SIMILAR", "score", concurrency=2)
-    else: 
+    else:
         result = gds.graph.relationship.write(G, "SIMILAR", "score", concurrency=2)
     assert result["relationshipsWritten"] == 2
     assert result["propertiesWritten"] == 2

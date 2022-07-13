@@ -2,7 +2,6 @@ import base64
 import json
 import time
 from typing import Any, Dict, Optional, Tuple
-from graphdatascience.server_version.server_version import ServerVersion
 
 import pyarrow.flight as flight
 from pandas.core.frame import DataFrame
@@ -11,6 +10,7 @@ from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 class ArrowQueryRunner(QueryRunner):
@@ -52,7 +52,11 @@ class ArrowQueryRunner(QueryRunner):
             property_name = params["properties"]
             node_labels = params["entities"]
 
-            endpoint = "gds.graph.nodeProperty.stream" if self._server_version < new_endpoint_server_version else "gds.graph.nodeProperty.stream"
+            endpoint = (
+                "gds.graph.nodeProperty.stream"
+                if self._server_version < new_endpoint_server_version
+                else "gds.graph.nodeProperty.stream"
+            )
             return self._run_arrow_property_get(
                 graph_name, endpoint, {"node_property": property_name, "node_labels": node_labels}
             )
@@ -61,7 +65,11 @@ class ArrowQueryRunner(QueryRunner):
             property_names = params["properties"]
             node_labels = params["entities"]
 
-            endpoint = "gds.graph.streamNodeProperties" if self._server_version < new_endpoint_server_version else "gds.graph.nodeProperties.stream"
+            endpoint = (
+                "gds.graph.streamNodeProperties"
+                if self._server_version < new_endpoint_server_version
+                else "gds.graph.nodeProperties.stream"
+            )
             return self._run_arrow_property_get(
                 graph_name,
                 endpoint,
@@ -72,7 +80,11 @@ class ArrowQueryRunner(QueryRunner):
             property_name = params["properties"]
             relationship_types = params["entities"]
 
-            endpoint = "gds.graph.streamRelationshipProperty" if self._server_version < new_endpoint_server_version else "gds.graph.relationshipProperty.stream"
+            endpoint = (
+                "gds.graph.streamRelationshipProperty"
+                if self._server_version < new_endpoint_server_version
+                else "gds.graph.relationshipProperty.stream"
+            )
             return self._run_arrow_property_get(
                 graph_name,
                 endpoint,
@@ -83,7 +95,11 @@ class ArrowQueryRunner(QueryRunner):
             property_names = params["properties"]
             relationship_types = params["entities"]
 
-            endpoint = "gds.graph.streamRelationshipProperties" if self._server_version < new_endpoint_server_version else "gds.graph.relationshipProperties.stream"
+            endpoint = (
+                "gds.graph.streamRelationshipProperties"
+                if self._server_version < new_endpoint_server_version
+                else "gds.graph.relationshipProperties.stream"
+            )
             return self._run_arrow_property_get(
                 graph_name,
                 endpoint,

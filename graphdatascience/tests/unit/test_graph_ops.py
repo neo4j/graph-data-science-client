@@ -241,7 +241,8 @@ def test_graph_relationshipProperty_stream(runner: CollectingQueryRunner, gds: G
 
     gds.graph.relationshipProperty.stream(G, "dummyProp", concurrency=2)
     assert (
-        runner.last_query() == "CALL gds.graph.relationshipProperty.stream($graph_name, $properties, $entities, $config)"
+        runner.last_query()
+        == "CALL gds.graph.relationshipProperty.stream($graph_name, $properties, $entities, $config)"
     )
     assert runner.last_params() == {
         "graph_name": "g",
@@ -252,7 +253,8 @@ def test_graph_relationshipProperty_stream(runner: CollectingQueryRunner, gds: G
 
     gds.graph.relationshipProperty.stream(G, "dummyProp", "dummyType", concurrency=2)
     assert (
-        runner.last_query() == "CALL gds.graph.relationshipProperty.stream($graph_name, $properties, $entities, $config)"
+        runner.last_query()
+        == "CALL gds.graph.relationshipProperty.stream($graph_name, $properties, $entities, $config)"
     )
     assert runner.last_params() == {
         "graph_name": "g",

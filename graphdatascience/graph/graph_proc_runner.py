@@ -1,7 +1,5 @@
 import os
 from typing import Any, Dict, List, Optional, Tuple, Union
-from graphdatascience.graph.graph_ops_runner import GraphNodePropertiesRunner, GraphPropertyRunner, GraphRelationshipPropertiesRunner, GraphRelationshipRunner, GraphRelationshipsRunner
-from graphdatascience.query_runner.query_runner import QueryRunner
 
 from multimethod import multimethod
 from pandas.core.frame import DataFrame
@@ -16,6 +14,13 @@ from ..server_version.server_version import ServerVersion
 from .graph_export_runner import GraphExportRunner
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
+from graphdatascience.graph.graph_ops_runner import (
+    GraphNodePropertiesRunner,
+    GraphPropertyRunner,
+    GraphRelationshipPropertiesRunner,
+    GraphRelationshipRunner,
+    GraphRelationshipsRunner,
+)
 
 Strings = Union[str, List[str]]
 
