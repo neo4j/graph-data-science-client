@@ -137,6 +137,29 @@ def test_graph_streamNodeProperty(runner: CollectingQueryRunner, gds: GraphDataS
     }
 
 
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
+def test_graph_nodeProperty_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    gds.graph.nodeProperty.stream(G, "dummyProp", concurrency=2)
+    assert runner.last_query() == "CALL gds.graph.nodeProperty.stream($graph_name, $properties, $entities, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": "dummyProp",
+        "entities": ["*"],
+        "config": {"concurrency": 2},
+    }
+
+    gds.graph.nodeProperty.stream(G, "dummyProp", "dummyLabel", concurrency=2)
+    assert runner.last_query() == "CALL gds.graph.nodeProperty.stream($graph_name, $properties, $entities, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": "dummyProp",
+        "entities": "dummyLabel",
+        "config": {"concurrency": 2},
+    }
+
+
 def test_graph_streamNodeProperties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -153,6 +176,31 @@ def test_graph_streamNodeProperties(runner: CollectingQueryRunner, gds: GraphDat
 
     gds.graph.streamNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
     assert runner.last_query() == "CALL gds.graph.streamNodeProperties($graph_name, $properties, $entities, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": ["dummyProp"],
+        "entities": "dummyLabel",
+        "config": {"concurrency": 2},
+    }
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
+def test_graph_nodeProperties_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    runner.set__mock_result(pandas.DataFrame([{"nodeId": 0, "dummyProp": 2}]))
+
+    gds.graph.nodeProperties.stream(G, ["dummyProp"], concurrency=2)
+    assert runner.last_query() == "CALL gds.graph.nodeProperties.stream($graph_name, $properties, $entities, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": ["dummyProp"],
+        "entities": ["*"],
+        "config": {"concurrency": 2},
+    }
+
+    gds.graph.nodeProperties.stream(G, ["dummyProp"], "dummyLabel", concurrency=2)
+    assert runner.last_query() == "CALL gds.graph.nodeProperties.stream($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "properties": ["dummyProp"],
@@ -178,6 +226,33 @@ def test_graph_streamRelationshipProperty(runner: CollectingQueryRunner, gds: Gr
     gds.graph.streamRelationshipProperty(G, "dummyProp", "dummyType", concurrency=2)
     assert (
         runner.last_query() == "CALL gds.graph.streamRelationshipProperty($graph_name, $properties, $entities, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": "dummyProp",
+        "entities": "dummyType",
+        "config": {"concurrency": 2},
+    }
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
+def test_graph_relationshipProperty_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    gds.graph.relationshipProperty.stream(G, "dummyProp", concurrency=2)
+    assert (
+        runner.last_query() == "CALL gds.graph.relationshipProperty.stream($graph_name, $properties, $entities, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": "dummyProp",
+        "entities": ["*"],
+        "config": {"concurrency": 2},
+    }
+
+    gds.graph.relationshipProperty.stream(G, "dummyProp", "dummyType", concurrency=2)
+    assert (
+        runner.last_query() == "CALL gds.graph.relationshipProperty.stream($graph_name, $properties, $entities, $config)"
     )
     assert runner.last_params() == {
         "graph_name": "g",
@@ -229,6 +304,49 @@ def test_graph_streamRelationshipProperties(runner: CollectingQueryRunner, gds: 
     }
 
 
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
+def test_graph_relationshipProperties_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    result_df = pandas.DataFrame(
+        [
+            {
+                "sourceNodeId": 0,
+                "targetNodeId": 1,
+                "relationshipType": "REL",
+                "relationshipProperty": "dummyProp",
+                "propertyValue": 2,
+            }
+        ]
+    )
+
+    runner.set__mock_result(result_df)
+
+    gds.graph.relationshipProperties.stream(G, ["dummyProp"], concurrency=2)
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.relationshipProperties.stream($graph_name, $properties, $entities, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": ["dummyProp"],
+        "entities": ["*"],
+        "config": {"concurrency": 2},
+    }
+
+    gds.graph.relationshipProperties.stream(G, ["dummyProp"], "dummyType", concurrency=2)
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.relationshipProperties.stream($graph_name, $properties, $entities, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": ["dummyProp"],
+        "entities": "dummyType",
+        "config": {"concurrency": 2},
+    }
+
+
 def test_graph_writeNodeProperties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -243,6 +361,29 @@ def test_graph_writeNodeProperties(runner: CollectingQueryRunner, gds: GraphData
 
     gds.graph.writeNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
     assert runner.last_query() == "CALL gds.graph.writeNodeProperties($graph_name, $properties, $entities, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": ["dummyProp"],
+        "entities": "dummyLabel",
+        "config": {"concurrency": 2},
+    }
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
+def test_graph_nodeProperties_write(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    gds.graph.nodeProperties.write(G, ["dummyProp"], concurrency=2)
+    assert runner.last_query() == "CALL gds.graph.nodeProperties.write($graph_name, $properties, $entities, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": ["dummyProp"],
+        "entities": ["*"],
+        "config": {"concurrency": 2},
+    }
+
+    gds.graph.nodeProperties.write(G, ["dummyProp"], "dummyLabel", concurrency=2)
+    assert runner.last_query() == "CALL gds.graph.nodeProperties.write($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "properties": ["dummyProp"],
@@ -279,6 +420,35 @@ def test_graph_writeRelationship(runner: CollectingQueryRunner, gds: GraphDataSc
     }
 
 
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
+def test_graph_relationship_write(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    gds.graph.relationship.write(G, "dummyType", "dummyProp", concurrency=2)
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.relationship.write($graph_name, $relationship_type, $relationship_property, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "relationship_type": "dummyType",
+        "relationship_property": "dummyProp",
+        "config": {"concurrency": 2},
+    }
+
+    gds.graph.relationship.write(G, "dummyType", concurrency=2)
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.relationship.write($graph_name, $relationship_type, $relationship_property, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "relationship_type": "dummyType",
+        "relationship_property": "",
+        "config": {"concurrency": 2},
+    }
+
+
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 0, 0)])
 def test_graph_removeNodeProperties_20(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
@@ -306,11 +476,33 @@ def test_graph_removeNodeProperties_21(runner: CollectingQueryRunner, gds: Graph
     }
 
 
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
+def test_graph_nodeProperties_remove_drop(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    gds.graph.nodeProperties.drop(G, ["dummyProp"], concurrency=2)
+    assert runner.last_query() == "CALL gds.graph.nodeProperties.drop($graph_name, $properties, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": ["dummyProp"],
+        "config": {"concurrency": 2},
+    }
+
+
 def test_graph_deleteRelationships(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
     gds.graph.deleteRelationships(G, "REL_A")
     assert runner.last_query() == "CALL gds.graph.deleteRelationships($graph_name, $relationship_type)"
+    assert runner.last_params() == {"graph_name": "g", "relationship_type": "REL_A"}
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
+def test_graph_relationships_drop(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    gds.graph.relationships.drop(G, "REL_A")
+    assert runner.last_query() == "CALL gds.graph.relationships.drop($graph_name, $relationship_type)"
     assert runner.last_params() == {"graph_name": "g", "relationship_type": "REL_A"}
 
 
