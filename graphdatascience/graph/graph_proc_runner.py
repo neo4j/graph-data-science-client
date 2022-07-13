@@ -1,5 +1,7 @@
 import os
 from typing import Any, Dict, List, Optional, Tuple, Union
+from graphdatascience.graph.graph_ops_runner import GraphNodePropertiesRunner, GraphPropertiesRunner, GraphPropertyRunner, GraphRelationshipRunner
+from graphdatascience.query_runner.query_runner import QueryRunner
 
 from multimethod import multimethod
 from pandas.core.frame import DataFrame
@@ -99,6 +101,31 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params)
 
+    @property
+    def nodeProperty(self) -> GraphPropertyRunner:
+        self._namespace += "nodeProperty"
+        return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def nodeProperties(self) -> GraphNodePropertiesRunner:
+        self._namespace += "nodeProperties"
+        return GraphNodePropertiesRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def relationshipProperty(self) -> GraphPropertyRunner:
+        self._namespace += "relationshipProperty"
+        return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def relationshipProperties(self) -> GraphPropertiesRunner:
+        self._namespace += "relationshipProperties"
+        return GraphPropertiesRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def relationship(self) -> GraphRelationshipRunner:
+        self._namespace += "relationship"
+        return GraphRelationshipRunner(self._query_runner, self._namespace, self._server_version)
+
     def streamNodeProperties(
         self,
         G: Graph,
@@ -133,7 +160,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     ) -> DataFrame:
         self._namespace += ".streamNodeProperty"
 
-        return self._handle_properties(G, node_properties, node_labels, config)
+        return self.handle_properties(G, node_properties, node_labels, config)
 
     def streamRelationshipProperties(
         self,
@@ -145,7 +172,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     ) -> DataFrame:
         self._namespace += ".streamRelationshipProperties"
 
-        result = self._handle_properties(G, relationship_properties, relationship_types, config)
+        result = self.handle_properties(G, relationship_properties, relationship_types, config)
 
         # new format was requested, but the query was run via Cypher
         if separate_property_columns and "propertyValue" in result.keys():
@@ -173,7 +200,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     ) -> DataFrame:
         self._namespace += ".streamRelationshipProperty"
 
-        return self._handle_properties(G, relationship_properties, relationship_types, config)
+        return self.handle_properties(G, relationship_properties, relationship_types, config)
 
     def writeNodeProperties(
         self,
@@ -184,7 +211,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     ) -> Series:
         self._namespace += ".writeNodeProperties"
 
-        return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
+        return self.handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
     def writeRelationship(
         self,
@@ -238,7 +265,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     ) -> Series:
         self._namespace += ".removeNodeProperties"
 
-        return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
+        return self.handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
     def deleteRelationships(self, G: Graph, relationship_type: str) -> Series:
         self._namespace += ".deleteRelationships"
