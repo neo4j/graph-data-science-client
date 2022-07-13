@@ -75,7 +75,7 @@ class GraphNodePropertiesRunner(GraphOpsBaseRunner):
         self._namespace += ".write"
         return self._handle_properties(G, node_properties, node_labels, config)
 
-    @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
+    @compatible_with("drop", min_inclusive=ServerVersion(2, 2, 0))
     def drop(
         self, 
         G: Graph, 
@@ -136,7 +136,7 @@ class GraphRelationshipRunner(GraphOpsBaseRunner):
         return self._handle_properties(G, relationship_property, relationship_type, config)
 
 class GraphRelationshipsRunner(GraphOpsBaseRunner):
-    @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
+    @compatible_with("drop", min_inclusive=ServerVersion(2, 2, 0))
     def drop(
         self, 
         G: Graph, 
