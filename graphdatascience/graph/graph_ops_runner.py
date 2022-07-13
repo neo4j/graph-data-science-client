@@ -37,19 +37,33 @@ class GraphPropertyRunner(GraphOpsBaseRunner):
         self._namespace += ".stream"
         return self._handle_properties(G, property, element_identifiers, config)
 
-class GraphPropertiesRunner(GraphOpsBaseRunner):
+class GraphNodePropertiesRunner(GraphOpsBaseRunner):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
     def stream(
         self, 
         G: Graph, 
-        properties: List[str], 
-        element_identifiers: List[str], 
+        node_properties: List[str], 
+        node_labels: Strings = ['*'], 
+        separate_property_columns: bool = False,
         **config: Any
     ) -> DataFrame:
         self._namespace += ".stream"
-        return self._handle_properties(G, properties, element_identifiers, config)
 
-class GraphNodePropertiesRunner(GraphPropertiesRunner):
+        result = self._handle_properties(G, node_properties, node_labels, config)
+
+        # new format was requested, but the query was run via Cypher
+        if separate_property_columns and "propertyValue" in result.keys():
+            result = result.pivot(index="nodeId", columns="nodeProperty", values="propertyValue")
+            result = result.reset_index()
+            result.columns.name = None
+        # old format was requested but the query was run via Arrow
+        elif not separate_property_columns and "propertyValue" not in result.keys():
+            result = result.melt(id_vars=["nodeId"]).rename(
+                columns={"variable": "nodeProperty", "value": "propertyValue"}
+            )
+
+        return result
+
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
     def write(
         self, 
@@ -77,6 +91,37 @@ class GraphNodePropertiesRunner(GraphPropertiesRunner):
         }
 
         return self._query_runner.run_query(query, params)
+
+class GraphRelationshipPropertiesRunner(GraphOpsBaseRunner):
+    @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
+    def stream(
+        self, 
+        G: Graph, 
+        relationship_properties: List[str], 
+        relationship_types: Strings = ['*'], 
+        separate_property_columns: bool = False,
+        **config: Any
+    ) -> DataFrame:
+        self._namespace += ".stream"
+
+        result = self._handle_properties(G, relationship_properties, relationship_types, config)
+
+        # new format was requested, but the query was run via Cypher
+        if separate_property_columns and "propertyValue" in result.keys():
+            result = result.pivot(
+                index=["sourceNodeId", "targetNodeId", "relationshipType"],
+                columns="relationshipProperty",
+                values="propertyValue",
+            )
+            result = result.reset_index()
+            result.columns.name = None
+        # old format was requested but the query was run via Arrow
+        elif not separate_property_columns and "propertyValue" not in result.keys():
+            result = result.melt(id_vars=["sourceNodeId", "targetNodeId", "relationshipType"]).rename(
+                columns={"variable": "relationshipProperty", "value": "propertyValue"}
+            )
+
+        return result
 
 class GraphRelationshipRunner(GraphOpsBaseRunner):
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))

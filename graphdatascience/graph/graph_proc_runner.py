@@ -1,6 +1,6 @@
 import os
 from typing import Any, Dict, List, Optional, Tuple, Union
-from graphdatascience.graph.graph_ops_runner import GraphNodePropertiesRunner, GraphPropertiesRunner, GraphPropertyRunner, GraphRelationshipRunner
+from graphdatascience.graph.graph_ops_runner import GraphNodePropertiesRunner, GraphPropertyRunner, GraphRelationshipPropertiesRunner, GraphRelationshipRunner
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 from multimethod import multimethod
@@ -117,9 +117,9 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
-    def relationshipProperties(self) -> GraphPropertiesRunner:
+    def relationshipProperties(self) -> GraphRelationshipPropertiesRunner:
         self._namespace += "relationshipProperties"
-        return GraphPropertiesRunner(self._query_runner, self._namespace, self._server_version)
+        return GraphRelationshipPropertiesRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def relationship(self) -> GraphRelationshipRunner:
