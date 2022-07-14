@@ -14,7 +14,7 @@ from graphdatascience.server_version.server_version import ServerVersion
 Strings = Union[str, List[str]]
 
 
-class GraphOpsBaseRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class GraphEntityOpsBaseRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     def __init__(
         self,
         query_runner: QueryRunner,
@@ -26,14 +26,14 @@ class GraphOpsBaseRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         self._handle_properties = handle_properties
 
 
-class GraphPropertyRunner(GraphOpsBaseRunner):
+class GraphPropertyRunner(GraphEntityOpsBaseRunner):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
     def stream(self, G: Graph, property: str, element_identifiers: Strings = ["*"], **config: Any) -> DataFrame:
         self._namespace += ".stream"
         return self._handle_properties(G, property, element_identifiers, config)
 
 
-class GraphNodePropertiesRunner(GraphOpsBaseRunner):
+class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
     def stream(
         self,
@@ -78,7 +78,7 @@ class GraphNodePropertiesRunner(GraphOpsBaseRunner):
         return self._query_runner.run_query(query, params)
 
 
-class GraphRelationshipPropertiesRunner(GraphOpsBaseRunner):
+class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
     def stream(
         self,
@@ -110,14 +110,14 @@ class GraphRelationshipPropertiesRunner(GraphOpsBaseRunner):
         return result
 
 
-class GraphRelationshipRunner(GraphOpsBaseRunner):
+class GraphRelationshipRunner(GraphEntityOpsBaseRunner):
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
     def write(self, G: Graph, relationship_type: str, relationship_property: str = "", **config: Any) -> Series:
         self._namespace += ".write"
         return self._handle_properties(G, relationship_property, relationship_type, config).squeeze()
 
 
-class GraphRelationshipsRunner(GraphOpsBaseRunner):
+class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
     @compatible_with("drop", min_inclusive=ServerVersion(2, 2, 0))
     def drop(
         self,
