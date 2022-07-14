@@ -14,7 +14,7 @@ from ..server_version.server_version import ServerVersion
 from .graph_export_runner import GraphExportRunner
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
-from graphdatascience.graph.graph_ops_runner import (
+from graphdatascience.graph.graph_entity_ops_runner import (
     GraphNodePropertiesRunner,
     GraphPropertyRunner,
     GraphRelationshipPropertiesRunner,
@@ -108,19 +108,19 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
     @property
     def nodeProperty(self) -> GraphPropertyRunner:
-        self._namespace += "nodeProperty"
+        self._namespace += ".nodeProperty"
         return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version, self._handle_properties)
 
     @property
     def nodeProperties(self) -> GraphNodePropertiesRunner:
-        self._namespace += "nodeProperties"
+        self._namespace += ".nodeProperties"
         return GraphNodePropertiesRunner(
             self._query_runner, self._namespace, self._server_version, self._handle_properties
         )
 
     @property
     def relationshipProperty(self) -> GraphPropertyRunner:
-        self._namespace += "relationshipProperty"
+        self._namespace += ".relationshipProperty"
         return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version, self._handle_properties)
 
     @property
@@ -132,14 +132,14 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
     @property
     def relationship(self) -> GraphRelationshipRunner:
-        self._namespace += "relationship"
+        self._namespace += ".relationship"
         return GraphRelationshipRunner(
             self._query_runner, self._namespace, self._server_version, self._handle_properties
         )
 
     @property
     def relationships(self) -> GraphRelationshipsRunner:
-        self._namespace += "relationships"
+        self._namespace += ".relationships"
         return GraphRelationshipsRunner(
             self._query_runner, self._namespace, self._server_version, self._handle_properties
         )
