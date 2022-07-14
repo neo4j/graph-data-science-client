@@ -1,6 +1,7 @@
 from typing import Any, Callable, Dict, List, Union
 
 from pandas.core.frame import DataFrame
+from pandas.core.series import Series
 
 from .graph_object import Graph
 from graphdatascience.caller_base import CallerBase
@@ -27,7 +28,7 @@ class GraphOpsBaseRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
 class GraphPropertyRunner(GraphOpsBaseRunner):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
-    def stream(self, G: Graph, property: str, element_identifiers: List[str], **config: Any) -> DataFrame:
+    def stream(self, G: Graph, property: str, element_identifiers: Strings = ["*"], **config: Any) -> DataFrame:
         self._namespace += ".stream"
         return self._handle_properties(G, property, element_identifiers, config)
 
@@ -60,9 +61,9 @@ class GraphNodePropertiesRunner(GraphOpsBaseRunner):
         return result
 
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
-    def write(self, G: Graph, node_properties: List[str], node_labels: List[str], **config: Any) -> DataFrame:
+    def write(self, G: Graph, node_properties: List[str], node_labels: Strings = ["*"], **config: Any) -> Series:
         self._namespace += ".write"
-        return self._handle_properties(G, node_properties, node_labels, config)
+        return self._handle_properties(G, node_properties, node_labels, config).squeeze()
 
     @compatible_with("drop", min_inclusive=ServerVersion(2, 2, 0))
     def drop(self, G: Graph, node_properties: List[str], **config: Any) -> DataFrame:
@@ -111,9 +112,9 @@ class GraphRelationshipPropertiesRunner(GraphOpsBaseRunner):
 
 class GraphRelationshipRunner(GraphOpsBaseRunner):
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
-    def write(self, G: Graph, relationship_type: str, relationship_property: str, **config: Any) -> DataFrame:
+    def write(self, G: Graph, relationship_type: str, relationship_property: str = "", **config: Any) -> Series:
         self._namespace += ".write"
-        return self._handle_properties(G, relationship_property, relationship_type, config)
+        return self._handle_properties(G, relationship_property, relationship_type, config).squeeze()
 
 
 class GraphRelationshipsRunner(GraphOpsBaseRunner):
@@ -122,7 +123,7 @@ class GraphRelationshipsRunner(GraphOpsBaseRunner):
         self,
         G: Graph,
         relationship_type: str,
-    ) -> DataFrame:
+    ) -> Series:
         self._namespace += ".drop"
         query = f"CALL {self._namespace}($graph_name, $relationship_type)"
         params = {
@@ -130,4 +131,4 @@ class GraphRelationshipsRunner(GraphOpsBaseRunner):
             "relationship_type": relationship_type,
         }
 
-        return self._query_runner.run_query(query, params)
+        return self._query_runner.run_query(query, params).squeeze()
