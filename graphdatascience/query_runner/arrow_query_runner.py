@@ -98,7 +98,7 @@ class ArrowQueryRunner(QueryRunner):
                 endpoint = "gds.graph.streamRelationshipProperties"
             else:
                 endpoint = "gds.graph.relationshipProperties.stream"
-                
+
             return self._run_arrow_property_get(
                 graph_name,
                 endpoint,
