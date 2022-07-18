@@ -63,7 +63,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
     def write(self, G: Graph, node_properties: List[str], node_labels: Strings = ["*"], **config: Any) -> Series:
         self._namespace += ".write"
-        return self._handle_properties(G, node_properties, node_labels, config).squeeze()
+        return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
     @compatible_with("drop", min_inclusive=ServerVersion(2, 2, 0))
     def drop(self, G: Graph, node_properties: List[str], **config: Any) -> DataFrame:
@@ -114,7 +114,7 @@ class GraphRelationshipRunner(GraphEntityOpsBaseRunner):
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
     def write(self, G: Graph, relationship_type: str, relationship_property: str = "", **config: Any) -> Series:
         self._namespace += ".write"
-        return self._handle_properties(G, relationship_property, relationship_type, config).squeeze()
+        return self._handle_properties(G, relationship_property, relationship_type, config).squeeze()  # type: ignore
 
 
 class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
@@ -131,4 +131,4 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
             "relationship_type": relationship_type,
         }
 
-        return self._query_runner.run_query(query, params).squeeze()
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
