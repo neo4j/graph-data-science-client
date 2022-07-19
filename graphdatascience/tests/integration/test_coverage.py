@@ -6,6 +6,8 @@ from graphdatascience.graph_data_science import GraphDataScience
 # new endpoint has to be added to this list, as well as to the pipeline classes'
 # implementations.
 IGNORED_ENDPOINTS = {
+    "gds.alpha.graph.removeGraphProperty",  # Exists but undocumented for GDS 2.1
+    "gds.alpha.graph.streamGraphProperty",  # Exists but undocumented for GDS 2.1
     "gds.alpha.graph.graphProperty.drop",  # FIXME: Add support
     "gds.alpha.graph.graphProperty.stream",  # FIXME: Add support
     "gds.beta.graph.relationships.stream",  # FIXME: Add support
