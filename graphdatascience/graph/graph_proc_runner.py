@@ -14,6 +14,13 @@ from ..server_version.server_version import ServerVersion
 from .graph_export_runner import GraphExportRunner
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
+from graphdatascience.graph.graph_entity_ops_runner import (
+    GraphNodePropertiesRunner,
+    GraphPropertyRunner,
+    GraphRelationshipPropertiesRunner,
+    GraphRelationshipRunner,
+    GraphRelationshipsRunner,
+)
 
 Strings = Union[str, List[str]]
 
@@ -98,6 +105,36 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         }
 
         return self._query_runner.run_query(query, params)
+
+    @property
+    def nodeProperty(self) -> GraphPropertyRunner:
+        self._namespace += ".nodeProperty"
+        return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def nodeProperties(self) -> GraphNodePropertiesRunner:
+        self._namespace += ".nodeProperties"
+        return GraphNodePropertiesRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def relationshipProperty(self) -> GraphPropertyRunner:
+        self._namespace += ".relationshipProperty"
+        return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def relationshipProperties(self) -> GraphRelationshipPropertiesRunner:
+        self._namespace += ".relationshipProperties"
+        return GraphRelationshipPropertiesRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def relationship(self) -> GraphRelationshipRunner:
+        self._namespace += ".relationship"
+        return GraphRelationshipRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def relationships(self) -> GraphRelationshipsRunner:
+        self._namespace += ".relationships"
+        return GraphRelationshipsRunner(self._query_runner, self._namespace, self._server_version)
 
     def streamNodeProperties(
         self,

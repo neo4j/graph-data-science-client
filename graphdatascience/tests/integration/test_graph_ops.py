@@ -151,13 +151,22 @@ def test_graph_get(gds: GraphDataScience) -> None:
         gds.graph.get("bogusName")
 
 
-def test_graph_streamNodeProperty(gds: GraphDataScience) -> None:
+def test_graph_streamNodeProperty_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     result = gds.graph.streamNodeProperty(G, "x", concurrency=2)
     assert {e for e in result["propertyValue"]} == {1, 2, 3}
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_nodeProperty_stream(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds.graph.nodeProperty.stream(G, "x", concurrency=2)
+    assert {e for e in result["propertyValue"]} == {1, 2, 3}
+
+
+@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_streamNodeProperty_with_arrow_no_db(gds: GraphDataScience) -> None:
     gds = GraphDataScience(URI, auth=AUTH)
     if not isinstance(gds._query_runner, ArrowQueryRunner):
@@ -170,10 +179,33 @@ def test_graph_streamNodeProperty_with_arrow_no_db(gds: GraphDataScience) -> Non
         gds.graph.streamNodeProperty(G, "x", concurrency=2)
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_nodeProperty_stream_with_arrow_no_db(gds: GraphDataScience) -> None:
+    gds = GraphDataScience(URI, auth=AUTH)
+    if not isinstance(gds._query_runner, ArrowQueryRunner):
+        pytest.skip("Arrow server not enabled")
+
+    assert not gds.database()
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    with pytest.raises(ValueError):
+        gds.graph.nodeProperty.stream(G, "x", concurrency=2)
+
+
 def test_graph_streamNodeProperty_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     result = gds_without_arrow.graph.streamNodeProperty(G, "x", concurrency=2)
+
+    assert {e for e in result["propertyValue"]} == {1, 2, 3}
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_nodeProperty_stream_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds_without_arrow.graph.nodeProperty.stream(G, "x", concurrency=2)
+
     assert {e for e in result["propertyValue"]} == {1, 2, 3}
 
 
@@ -181,6 +213,21 @@ def test_graph_streamNodeProperties_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
     result = gds.graph.streamNodeProperties(G, ["x", "y"], concurrency=2)
+
+    assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
+
+    x_values = result[result.nodeProperty == "x"]
+    assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
+
+    y_values = result[result.nodeProperty == "y"]
+    assert {e for e in y_values["propertyValue"]} == {2, 3, 4}
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_nodeProperties_stream_with_arrow(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
+
+    result = gds.graph.nodeProperties.stream(G, ["x", "y"], concurrency=2)
 
     assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
 
@@ -200,10 +247,35 @@ def test_graph_streamNodeProperties_with_arrow_separate_property_columns(gds: Gr
     assert {e for e in result["y"]} == {2, 3, 4}
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_nodeProperties_stream_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
+
+    result = gds.graph.nodeProperties.stream(G, ["x", "y"], separate_property_columns=True, concurrency=2)
+    assert list(result.keys()) == ["nodeId", "x", "y"]
+    assert {e for e in result["x"]} == {1, 2, 3}
+    assert {e for e in result["y"]} == {2, 3, 4}
+
+
 def test_graph_streamNodeProperties_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
     result = gds_without_arrow.graph.streamNodeProperties(G, ["x", "y"], concurrency=2)
+
+    assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
+
+    x_values = result[result.nodeProperty == "x"]
+    assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
+
+    y_values = result[result.nodeProperty == "y"]
+    assert {e for e in y_values["propertyValue"]} == {2, 3, 4}
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_nodeProperties_stream_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
+
+    result = gds_without_arrow.graph.nodeProperties.stream(G, ["x", "y"], concurrency=2)
 
     assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
 
@@ -230,6 +302,23 @@ def test_graph_streamNodeProperties_without_arrow_separate_property_columns(
         assert e in [[9], [42], [1337]]
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_nodeProperties_stream_without_arrow_separate_property_columns(
+    gds_without_arrow: GraphDataScience,
+) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "z"]}}, "*")
+
+    result = gds_without_arrow.graph.nodeProperties.stream(G, ["x", "z"], separate_property_columns=True, concurrency=2)
+
+    assert list(result.keys()) == ["nodeId", "x", "z"]
+
+    assert {e for e in result["x"]} == {1, 2, 3}
+
+    assert len(result["z"]) == 3
+    for e in result["z"]:
+        assert e in [[9], [42], [1337]]
+
+
 def test_graph_streamRelationshipProperty_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 
@@ -237,13 +326,38 @@ def test_graph_streamRelationshipProperty_with_arrow(gds: GraphDataScience) -> N
     assert {e for e in result["propertyValue"]} == {4, 5, 6}
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_relationshipProperty_stream_with_arrow(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
+
+    result = gds.graph.relationshipProperty.stream(G, "relX", concurrency=2)
+    assert {e for e in result["propertyValue"]} == {4, 5, 6}
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_roundtrip_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
 
-    relDF = gds.graph.streamRelationshipProperty(G, "relX")
-    nodeDF = gds.graph.streamNodeProperty(G, "x")
+    rel_df = gds.graph.streamRelationshipProperty(G, "relX")
+    node_df = gds.graph.streamNodeProperty(G, "x")
 
-    G_2 = gds.alpha.graph.construct("arrowGraph", nodeDF, relDF)
+    G_2 = gds.alpha.graph.construct("arrowGraph", node_df, rel_df)
+
+    try:
+        assert G.node_count() == G_2.node_count()
+        assert G.relationship_count() == G_2.relationship_count()
+    finally:
+        G_2.drop()
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_roundtrip_with_arrow_22(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
+
+    rel_df = gds.graph.relationshipProperty.stream(G, "relX")
+    node_df = gds.graph.nodeProperty.stream(G, "x")
+
+    G_2 = gds.alpha.graph.construct("arrowGraph", node_df, rel_df)
 
     try:
         assert G.node_count() == G_2.node_count()
@@ -259,10 +373,38 @@ def test_graph_streamRelationshipProperty_without_arrow(gds_without_arrow: Graph
     assert {e for e in result["propertyValue"]} == {4, 5, 6}
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_relationshipProperty_stream_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
+
+    result = gds_without_arrow.graph.relationshipProperty.stream(G, "relX", concurrency=2)
+    assert {e for e in result["propertyValue"]} == {4, 5, 6}
+
+
 def test_graph_streamRelationshipProperties_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
     result = gds.graph.streamRelationshipProperties(G, ["relX", "relY"], concurrency=2)
+
+    assert list(result.keys()) == [
+        "sourceNodeId",
+        "targetNodeId",
+        "relationshipType",
+        "relationshipProperty",
+        "propertyValue",
+    ]
+
+    x_values = result[result.relationshipProperty == "relX"]
+    assert {e for e in x_values["propertyValue"]} == {4, 5, 6}
+    y_values = result[result.relationshipProperty == "relY"]
+    assert {e for e in y_values["propertyValue"]} == {5, 6, 7}
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_relationshipProperties_stream_with_arrow(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
+
+    result = gds.graph.relationshipProperties.stream(G, ["relX", "relY"], concurrency=2)
 
     assert list(result.keys()) == [
         "sourceNodeId",
@@ -288,10 +430,41 @@ def test_graph_streamRelationshipProperties_with_arrow_separate_property_columns
     assert {e for e in result["relY"]} == {5, 6, 7}
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_relationshipProperties_stream_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
+
+    result = gds.graph.relationshipProperties.stream(G, ["relX", "relY"], separate_property_columns=True, concurrency=2)
+
+    assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType", "relX", "relY"]
+    assert {e for e in result["relX"]} == {4, 5, 6}
+    assert {e for e in result["relY"]} == {5, 6, 7}
+
+
 def test_graph_streamRelationshipProperties_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
     result = gds_without_arrow.graph.streamRelationshipProperties(G, ["relX", "relY"], concurrency=2)
+
+    assert list(result.keys()) == [
+        "sourceNodeId",
+        "targetNodeId",
+        "relationshipType",
+        "relationshipProperty",
+        "propertyValue",
+    ]
+
+    x_values = result[result.relationshipProperty == "relX"]
+    assert {e for e in x_values["propertyValue"]} == {4, 5, 6}
+    y_values = result[result.relationshipProperty == "relY"]
+    assert {e for e in y_values["propertyValue"]} == {5, 6, 7}
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_relationshipProperties_stream_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
+
+    result = gds_without_arrow.graph.relationshipProperties.stream(G, ["relX", "relY"], concurrency=2)
 
     assert list(result.keys()) == [
         "sourceNodeId",
@@ -321,6 +494,21 @@ def test_graph_streamRelationshipProperties_without_arrow_separate_property_colu
     assert {e for e in result["relY"]} == {5, 6, 7}
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_relationshipProperties_stream_without_arrow_separate_property_columns(
+    gds_without_arrow: GraphDataScience,
+) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
+
+    result = gds_without_arrow.graph.relationshipProperties.stream(
+        G, ["relX", "relY"], separate_property_columns=True, concurrency=2
+    )
+
+    assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType", "relX", "relY"]
+    assert {e for e in result["relX"]} == {4, 5, 6}
+    assert {e for e in result["relY"]} == {5, 6, 7}
+
+
 def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
@@ -340,11 +528,29 @@ def test_graph_writeRelationship(gds: GraphDataScience) -> None:
     assert result["propertiesWritten"] == 2
 
 
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_relationship_write(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
+
+    gds.nodeSimilarity.mutate(G, mutateRelationshipType="SIMILAR", mutateProperty="score", similarityCutoff=0)
+
+    result = gds.graph.relationship.write(G, "SIMILAR", "score", concurrency=2)
+    assert result["relationshipsWritten"] == 2
+    assert result["propertiesWritten"] == 2
+
+
 def test_graph_removeNodeProperties_21(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     result = gds.graph.removeNodeProperties(G, ["x"], concurrency=2)
+    assert result["propertiesRemoved"] == 3
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_removeNodeProperties_22(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds.graph.nodeProperties.drop(G, ["x"], concurrency=2)
     assert result["propertiesRemoved"] == 3
 
 
@@ -360,6 +566,14 @@ def test_graph_deleteRelationships(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
 
     result = gds.graph.deleteRelationships(G, "REL")
+    assert result["deletedRelationships"] == 3
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_relationships_drop(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
+
+    result = gds.graph.relationships.drop(G, "REL")
     assert result["deletedRelationships"] == 3
 
 

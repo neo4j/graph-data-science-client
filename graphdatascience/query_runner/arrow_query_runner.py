@@ -10,6 +10,7 @@ from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 class ArrowQueryRunner(QueryRunner):
@@ -17,11 +18,13 @@ class ArrowQueryRunner(QueryRunner):
         self,
         uri: str,
         fallback_query_runner: QueryRunner,
+        server_version: ServerVersion,
         auth: Optional[Tuple[str, str]] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
     ):
         self._fallback_query_runner = fallback_query_runner
+        self._server_version = server_version
 
         host, port_string = uri.split(":")
 
@@ -41,42 +44,64 @@ class ArrowQueryRunner(QueryRunner):
         if params is None:
             params = {}
 
-        if "gds.graph.streamNodeProperty" in query:
+        new_endpoint_server_version = ServerVersion(2, 2, 0)
+
+        # We need to support the deprecated endpoints until they get removed on the server side
+        if "gds.graph.streamNodeProperty" in query or "gds.graph.nodeProperty.stream" in query:
             graph_name = params["graph_name"]
             property_name = params["properties"]
             node_labels = params["entities"]
 
+            if self._server_version < new_endpoint_server_version:
+                endpoint = "gds.graph.streamNodeProperty"
+            else:
+                endpoint = "gds.graph.nodeProperty.stream"
+
             return self._run_arrow_property_get(
-                graph_name, "gds.graph.streamNodeProperty", {"node_property": property_name, "node_labels": node_labels}
+                graph_name, endpoint, {"node_property": property_name, "node_labels": node_labels}
             )
-        elif "gds.graph.streamNodeProperties" in query:
+        elif "gds.graph.streamNodeProperties" in query or "gds.graph.nodeProperties.stream" in query:
             graph_name = params["graph_name"]
             property_names = params["properties"]
             node_labels = params["entities"]
 
+            if self._server_version < new_endpoint_server_version:
+                endpoint = "gds.graph.streamNodeProperties"
+            else:
+                endpoint = "gds.graph.nodeProperties.stream"
             return self._run_arrow_property_get(
                 graph_name,
-                "gds.graph.streamNodeProperties",
+                endpoint,
                 {"node_properties": property_names, "node_labels": node_labels},
             )
-        elif "gds.graph.streamRelationshipProperty" in query:
+        elif "gds.graph.streamRelationshipProperty" in query or "gds.graph.relationshipProperty.stream" in query:
             graph_name = params["graph_name"]
             property_name = params["properties"]
             relationship_types = params["entities"]
 
+            if self._server_version < new_endpoint_server_version:
+                endpoint = "gds.graph.streamRelationshipProperty"
+            else:
+                endpoint = "gds.graph.relationshipProperty.stream"
+
             return self._run_arrow_property_get(
                 graph_name,
-                "gds.graph.streamRelationshipProperty",
+                endpoint,
                 {"relationship_property": property_name, "relationship_types": relationship_types},
             )
-        elif "gds.graph.streamRelationshipProperties" in query:
+        elif "gds.graph.streamRelationshipProperties" in query or "gds.graph.relationshipProperties.stream" in query:
             graph_name = params["graph_name"]
             property_names = params["properties"]
             relationship_types = params["entities"]
 
+            if self._server_version < new_endpoint_server_version:
+                endpoint = "gds.graph.streamRelationshipProperties"
+            else:
+                endpoint = "gds.graph.relationshipProperties.stream"
+
             return self._run_arrow_property_get(
                 graph_name,
-                "gds.graph.streamRelationshipProperties",
+                endpoint,
                 {"relationship_properties": property_names, "relationship_types": relationship_types},
             )
 
