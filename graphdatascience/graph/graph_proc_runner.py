@@ -109,40 +109,32 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     @property
     def nodeProperty(self) -> GraphPropertyRunner:
         self._namespace += ".nodeProperty"
-        return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version, self._handle_properties)
+        return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def nodeProperties(self) -> GraphNodePropertiesRunner:
         self._namespace += ".nodeProperties"
-        return GraphNodePropertiesRunner(
-            self._query_runner, self._namespace, self._server_version, self._handle_properties
-        )
+        return GraphNodePropertiesRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def relationshipProperty(self) -> GraphPropertyRunner:
         self._namespace += ".relationshipProperty"
-        return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version, self._handle_properties)
+        return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def relationshipProperties(self) -> GraphRelationshipPropertiesRunner:
-        self._namespace += "relationshipProperties"
-        return GraphRelationshipPropertiesRunner(
-            self._query_runner, self._namespace, self._server_version, self._handle_properties
-        )
+        self._namespace += ".relationshipProperties"
+        return GraphRelationshipPropertiesRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def relationship(self) -> GraphRelationshipRunner:
         self._namespace += ".relationship"
-        return GraphRelationshipRunner(
-            self._query_runner, self._namespace, self._server_version, self._handle_properties
-        )
+        return GraphRelationshipRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def relationships(self) -> GraphRelationshipsRunner:
         self._namespace += ".relationships"
-        return GraphRelationshipsRunner(
-            self._query_runner, self._namespace, self._server_version, self._handle_properties
-        )
+        return GraphRelationshipsRunner(self._query_runner, self._namespace, self._server_version)
 
     def streamNodeProperties(
         self,

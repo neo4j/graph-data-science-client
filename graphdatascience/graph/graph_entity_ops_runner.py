@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Union
+from typing import Any, Dict, List, Union
 
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
@@ -15,15 +15,25 @@ Strings = Union[str, List[str]]
 
 
 class GraphEntityOpsBaseRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
-    def __init__(
-        self,
-        query_runner: QueryRunner,
-        namespace: str,
-        server_version: ServerVersion,
-        handle_properties: Callable[[Graph, Strings, Strings, Dict[str, Any]], DataFrame],
-    ):
+    def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
         super().__init__(query_runner, namespace, server_version)
-        self._handle_properties = handle_properties
+
+    def _handle_properties(
+        self,
+        G: Graph,
+        properties: Strings,
+        entities: Strings,
+        config: Dict[str, Any],
+    ) -> DataFrame:
+        query = f"CALL {self._namespace}($graph_name, $properties, $entities, $config)"
+        params = {
+            "graph_name": G.name(),
+            "properties": properties,
+            "entities": entities,
+            "config": config,
+        }
+
+        return self._query_runner.run_query(query, params)
 
 
 class GraphPropertyRunner(GraphEntityOpsBaseRunner):
@@ -114,7 +124,15 @@ class GraphRelationshipRunner(GraphEntityOpsBaseRunner):
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
     def write(self, G: Graph, relationship_type: str, relationship_property: str = "", **config: Any) -> Series:
         self._namespace += ".write"
-        return self._handle_properties(G, relationship_property, relationship_type, config).squeeze()  # type: ignore
+        query = f"CALL {self._namespace}($graph_name, $relationship_type, $relationship_property, $config)"
+        params = {
+            "graph_name": G.name(),
+            "relationship_type": relationship_type,
+            "relationship_property": relationship_property,
+            "config": config,
+        }
+
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
 
 class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
