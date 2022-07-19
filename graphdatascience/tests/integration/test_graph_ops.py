@@ -151,8 +151,7 @@ def test_graph_get(gds: GraphDataScience) -> None:
         gds.graph.get("bogusName")
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
-def test_graph_streamNodeProperty(gds: GraphDataScience) -> None:
+def test_graph_streamNodeProperty_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     result = gds.graph.streamNodeProperty(G, "x", concurrency=2)
@@ -193,7 +192,6 @@ def test_graph_nodeProperty_stream_with_arrow_no_db(gds: GraphDataScience) -> No
         gds.graph.nodeProperty.stream(G, "x", concurrency=2)
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_streamNodeProperty_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
@@ -211,7 +209,6 @@ def test_graph_nodeProperty_stream_without_arrow(gds_without_arrow: GraphDataSci
     assert {e for e in result["propertyValue"]} == {1, 2, 3}
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_streamNodeProperties_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
@@ -241,7 +238,6 @@ def test_graph_nodeProperties_stream_with_arrow(gds: GraphDataScience) -> None:
     assert {e for e in y_values["propertyValue"]} == {2, 3, 4}
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_streamNodeProperties_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
@@ -261,7 +257,6 @@ def test_graph_nodeProperties_stream_with_arrow_separate_property_columns(gds: G
     assert {e for e in result["y"]} == {2, 3, 4}
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_streamNodeProperties_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
@@ -291,7 +286,6 @@ def test_graph_nodeProperties_stream_without_arrow(gds_without_arrow: GraphDataS
     assert {e for e in y_values["propertyValue"]} == {2, 3, 4}
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_streamNodeProperties_without_arrow_separate_property_columns(
     gds_without_arrow: GraphDataScience,
 ) -> None:
@@ -325,7 +319,6 @@ def test_graph_nodeProperties_stream_without_arrow_separate_property_columns(
         assert e in [[9], [42], [1337]]
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_streamRelationshipProperty_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 
@@ -341,14 +334,14 @@ def test_graph_relationshipProperty_stream_with_arrow(gds: GraphDataScience) -> 
     assert {e for e in result["propertyValue"]} == {4, 5, 6}
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_roundtrip_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
 
-    relDF = gds.graph.streamRelationshipProperty(G, "relX")
-    nodeDF = gds.graph.streamNodeProperty(G, "x")
+    rel_df = gds.graph.streamRelationshipProperty(G, "relX")
+    node_df = gds.graph.streamNodeProperty(G, "x")
 
-    G_2 = gds.alpha.graph.construct("arrowGraph", nodeDF, relDF)
+    G_2 = gds.alpha.graph.construct("arrowGraph", node_df, rel_df)
 
     try:
         assert G.node_count() == G_2.node_count()
@@ -361,10 +354,10 @@ def test_roundtrip_with_arrow(gds: GraphDataScience) -> None:
 def test_roundtrip_with_arrow_22(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
 
-    relDF = gds.graph.relationshipProperty.stream(G, "relX")
-    nodeDF = gds.graph.nodeProperty.stream(G, "x")
+    rel_df = gds.graph.relationshipProperty.stream(G, "relX")
+    node_df = gds.graph.nodeProperty.stream(G, "x")
 
-    G_2 = gds.alpha.graph.construct("arrowGraph", nodeDF, relDF)
+    G_2 = gds.alpha.graph.construct("arrowGraph", node_df, rel_df)
 
     try:
         assert G.node_count() == G_2.node_count()
@@ -373,7 +366,6 @@ def test_roundtrip_with_arrow_22(gds: GraphDataScience) -> None:
         G_2.drop()
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_streamRelationshipProperty_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 
@@ -389,7 +381,6 @@ def test_graph_relationshipProperty_stream_without_arrow(gds_without_arrow: Grap
     assert {e for e in result["propertyValue"]} == {4, 5, 6}
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_streamRelationshipProperties_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
@@ -429,7 +420,6 @@ def test_graph_relationshipProperties_stream_with_arrow(gds: GraphDataScience) -
     assert {e for e in y_values["propertyValue"]} == {5, 6, 7}
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_streamRelationshipProperties_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
@@ -451,7 +441,6 @@ def test_graph_relationshipProperties_stream_with_arrow_separate_property_column
     assert {e for e in result["relY"]} == {5, 6, 7}
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_streamRelationshipProperties_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
@@ -491,7 +480,6 @@ def test_graph_relationshipProperties_stream_without_arrow(gds_without_arrow: Gr
     assert {e for e in y_values["propertyValue"]} == {5, 6, 7}
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_streamRelationshipProperties_without_arrow_separate_property_columns(
     gds_without_arrow: GraphDataScience,
 ) -> None:
@@ -530,7 +518,6 @@ def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
     assert result["propertiesWritten"] == 3
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_writeRelationship(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
@@ -552,7 +539,6 @@ def test_graph_relationship_write(gds: GraphDataScience) -> None:
     assert result["propertiesWritten"] == 2
 
 
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0), max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_removeNodeProperties_21(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
@@ -576,7 +562,6 @@ def test_graph_removeNodeProperties_20(gds: GraphDataScience) -> None:
     assert result["propertiesRemoved"] == 3
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_deleteRelationships(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
 

@@ -53,7 +53,7 @@ class ArrowQueryRunner(QueryRunner):
             node_labels = params["entities"]
 
             if self._server_version < new_endpoint_server_version:
-                endpoint = "gds.graph.nodeProperty.stream"
+                endpoint = "gds.graph.streamNodeProperty"
             else:
                 endpoint = "gds.graph.nodeProperty.stream"
 
