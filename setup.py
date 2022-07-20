@@ -17,7 +17,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -48,7 +47,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     package_data={"graphdatascience": ["py.typed"]},
     project_urls=project_urls,
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     install_requires=reqs,
     zip_safe=False,
 )
