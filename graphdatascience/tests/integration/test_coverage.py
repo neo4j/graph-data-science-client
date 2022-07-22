@@ -49,7 +49,6 @@ IGNORED_ENDPOINTS = {
     "gds.alpha.pipeline.nodeRegression.predict.stream",
     "gds.alpha.pipeline.nodeRegression.selectFeatures",
     "gds.alpha.pipeline.nodeRegression.train",
-    "gds.beta.graph.export.csv.estimate",  # FIXME: Add support
     "gds.util.NaN",
     "gds.util.infinity",
     "gds.util.isFinite",
