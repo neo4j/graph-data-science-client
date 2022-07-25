@@ -549,6 +549,16 @@ def test_graph_relationshipProperties_stream_without_arrow_separate_property_col
     assert {e for e in result["relY"]} == {5, 6, 7}
 
 
+def test_graph_relationships_stream_without_arrow(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "REL")
+
+    result = gds.beta.graph.relationships.stream(G, "REL")
+
+    assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType"]
+    assert {e for e in result["sourceNodeId"]} == {0, 1}
+    assert {e for e in result["targetNodeId"]} == {1, 2}
+
+
 def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
