@@ -533,6 +533,15 @@ def test_graph_property_drop(runner: CollectingQueryRunner, gds: GraphDataScienc
     assert runner.last_params() == {"graph_name": "g", "graph_property": "prop", "config": {}}
 
 
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
+def test_graphrelationships_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    gds.beta.graph.relationships.stream(G, "REL_A")
+    assert runner.last_query() == "CALL gds.graph.relationships.stream($graph_name, $relationship_types"
+    assert runner.last_params() == {"graph_name": "g", "relationship_types": "REL_A"}
+
+
 def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     gds.beta.graph.generate("g", 1337, 42, orientation="NATURAL")
 
