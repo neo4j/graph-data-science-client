@@ -534,7 +534,7 @@ def test_graph_property_drop(runner: CollectingQueryRunner, gds: GraphDataScienc
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
-def test_graphrelationships_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+def test_graph_relationships_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
     gds.beta.graph.relationships.stream(G, "REL_A")

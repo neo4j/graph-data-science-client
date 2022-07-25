@@ -549,7 +549,19 @@ def test_graph_relationshipProperties_stream_without_arrow_separate_property_col
     assert {e for e in result["relY"]} == {5, 6, 7}
 
 
-def test_graph_relationships_stream_without_arrow(gds: GraphDataScience) -> None:
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", "REL")
+
+    result = gds_without_arrow.beta.graph.relationships.stream(G, "REL")
+
+    assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType"]
+    assert {e for e in result["sourceNodeId"]} == {0, 1}
+    assert {e for e in result["targetNodeId"]} == {1, 2}
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graphrelationships_stream_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "REL")
 
     result = gds.beta.graph.relationships.stream(G, "REL")
