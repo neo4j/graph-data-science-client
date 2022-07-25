@@ -1,4 +1,3 @@
-import sys
 from typing import Generator
 
 import pytest
@@ -46,7 +45,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (c)-[:REL]->(g)
         """
     )
-    G, _ = gds.graph.project("g", "*", "*")
+    G, _ = gds.graph.project("g", "Node", {"REL": {"orientation": "UNDIRECTED"}})
 
     yield G
 
@@ -141,7 +140,7 @@ def test_configure_split_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTraini
     assert pipeline_info["splitConfig"]["trainFraction"] == 0.42
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 1, sys.maxsize))
+@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_train_unfiltered_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, G: Graph) -> None:
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
     lp_pipe.addFeature("l2", nodeProperties=["rank"])
@@ -157,62 +156,22 @@ def test_train_unfiltered_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrain
     runner.run_query(query, params)
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 1, sys.maxsize))
+@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_train_estimate_unfiltered_lp_pipeline(lp_pipe: LPTrainingPipeline, G: Graph) -> None:
     lp_pipe.addLogisticRegression()
     result = lp_pipe.train_estimate(G, modelName="m", concurrency=2)
     assert result["requiredMemory"]
 
 
-@pytest.fixture
-def UndirectedG(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None, None]:
-    runner.run_query(
-        """
-        CREATE
-        (a: Node),
-        (b: Node),
-        (c: Node),
-        (d: Node),
-        (e: Node),
-        (f: Node),
-        (g: Node),
-        (a)-[:REL]->(b),
-        (a)-[:REL]->(c),
-        (a)-[:REL]->(d),
-        (a)-[:REL]->(e),
-        (a)-[:REL]->(f),
-        (a)-[:REL]->(g),
-        (b)-[:REL]->(c),
-        (b)-[:REL]->(a),
-        (b)-[:REL]->(d),
-        (b)-[:REL]->(e),
-        (b)-[:REL]->(f),
-        (b)-[:REL]->(g),
-        (c)-[:REL]->(a),
-        (c)-[:REL]->(b),
-        (c)-[:REL]->(d),
-        (c)-[:REL]->(e),
-        (c)-[:REL]->(f),
-        (c)-[:REL]->(g)
-        """
-    )
-    UndirectedG, _ = gds.graph.project("g", "Node", {"REL": {"orientation": "UNDIRECTED"}})
-
-    yield UndirectedG
-
-    runner.run_query("MATCH (n) DETACH DELETE n")
-    UndirectedG.drop()
-
-
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
-def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, UndirectedG: Graph) -> None:
+def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, G: Graph) -> None:
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
     lp_pipe.addFeature("l2", nodeProperties=["rank"])
     lp_pipe.configureSplit(trainFraction=0.2, testFraction=0.2, validationFolds=2)
     lp_pipe.addLogisticRegression(penalty=1)
 
     lp_model, result = lp_pipe.train(
-        UndirectedG,
+        G,
         modelName="m",
         concurrency=2,
         sourceNodeLabel="Node",
@@ -228,10 +187,10 @@ def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
-def test_filtered_train_estimate_lp_pipeline(lp_pipe: LPTrainingPipeline, UndirectedG: Graph) -> None:
+def test_filtered_train_estimate_lp_pipeline(lp_pipe: LPTrainingPipeline, G: Graph) -> None:
     lp_pipe.addLogisticRegression()
     result = lp_pipe.train_estimate(
-        UndirectedG,
+        G,
         modelName="m",
         concurrency=2,
         sourceNodeLabel="Node",

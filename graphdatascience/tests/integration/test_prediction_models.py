@@ -1,4 +1,3 @@
-import sys
 from typing import Generator
 
 import pytest
@@ -39,29 +38,6 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
     G.drop()
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 1, sys.maxsize))
-@pytest.fixture(scope="module")
-def old_lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
-    pipe, _ = gds.beta.pipeline.linkPrediction.create("pipe")
-
-    try:
-        pipe.addNodeProperty("degree", mutateProperty="rank")
-        pipe.addFeature("l2", nodeProperties=["rank"])
-        pipe.configureSplit(trainFraction=0.4, testFraction=0.2, validationFolds=2)
-        pipe.addLogisticRegression(penalty=1)
-        lp_model, _ = pipe.train(G, modelName="lp-model", concurrency=2)
-    finally:
-        query = "CALL gds.beta.pipeline.drop($name)"
-        params = {"name": "pipe"}
-        runner.run_query(query, params)
-
-    yield lp_model
-
-    query = "CALL gds.beta.model.drop($name)"
-    params = {"name": lp_model.name()}
-    runner.run_query(query, params)
-
-
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 @pytest.fixture(scope="module")
 def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
@@ -72,14 +48,17 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
         pipe.addFeature("l2", nodeProperties=["rank"])
         pipe.configureSplit(trainFraction=0.4, testFraction=0.2, validationFolds=2)
         pipe.addLogisticRegression(penalty=1)
-        lp_model, _ = pipe.train(
-            G,
-            modelName="lp-model",
-            concurrency=2,
-            sourceNodeLabel="Node",
-            targetNodeLabel="Node",
-            targetRelationshipType="REL",
-        )
+        if gds._server_version >= ServerVersion(2, 2, 0):
+            lp_model, _ = pipe.train(
+                G,
+                modelName="lp-model",
+                concurrency=2,
+                sourceNodeLabel="Node",
+                targetNodeLabel="Node",
+                targetRelationshipType="REL",
+            )
+        else:
+            lp_model, _ = pipe.train(G, modelName="lp-model", concurrency=2)
     finally:
         query = "CALL gds.beta.pipeline.drop($name)"
         params = {"name": "pipe"}
