@@ -36,7 +36,7 @@ class GraphEntityOpsBaseRunner(CallerBase, UncallableNamespace, IllegalAttrCheck
         return self._query_runner.run_query(query, params)
 
 
-class GraphPropertyRunner(GraphEntityOpsBaseRunner):
+class GraphElementPropertyRunner(GraphEntityOpsBaseRunner):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
     def stream(self, G: Graph, node_properties: str, node_labels: Strings = ["*"], **config: Any) -> DataFrame:
         self._namespace += ".stream"
@@ -150,3 +150,31 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
         }
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+
+
+class GraphPropertyRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+    @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
+    def stream(
+        self,
+        G: Graph,
+        graph_property: str,
+        **config: Any,
+    ) -> DataFrame:
+        self._namespace += ".stream"
+        query = f"CALL {self._namespace}($graph_name, $graph_property, $config)"
+        params = {"graph_name": G.name(), "graph_property": graph_property, "config": config}
+
+        return self._query_runner.run_query(query, params)
+
+    @compatible_with("drop", min_inclusive=ServerVersion(2, 2, 0))
+    def drop(
+        self,
+        G: Graph,
+        graph_property: str,
+        **config: Any,
+    ) -> Series:
+        self._namespace += ".drop"
+        query = f"CALL {self._namespace}($graph_name, $graph_property, $config)"
+        params = {"graph_name": G.name(), "graph_property": graph_property, "config": config}
+
+        return self._query_runner.run_query(query, params)  # type: ignore

@@ -515,6 +515,24 @@ def test_graph_relationships_drop(runner: CollectingQueryRunner, gds: GraphDataS
     assert runner.last_params() == {"graph_name": "g", "relationship_type": "REL_A"}
 
 
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
+def test_graph_property_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    gds.alpha.graph.graphProperty.stream(G, "prop")
+    assert runner.last_query() == "CALL gds.alpha.graph.graphProperty.stream($graph_name, $graph_property)"
+    assert runner.last_params() == {"graph_name": "g", "graph_property": "prop"}
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
+def test_graph_property_drop(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    gds.alpha.graph.graphProperty.stream(G, "prop")
+    assert runner.last_query() == "CALL gds.alpha.graph.graphProperty.drop($graph_name, $graph_property)"
+    assert runner.last_params() == {"graph_name": "g", "graph_property": "prop"}
+
+
 def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     gds.beta.graph.generate("g", 1337, 42, orientation="NATURAL")
 
