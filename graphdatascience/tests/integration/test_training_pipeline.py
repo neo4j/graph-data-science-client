@@ -140,6 +140,7 @@ def test_configure_split_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTraini
 
     assert pipeline_info["splitConfig"]["trainFraction"] == 0.42
 
+
 @pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 1, sys.maxsize))
 def test_train_unfiltered_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, G: Graph) -> None:
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
@@ -154,6 +155,7 @@ def test_train_unfiltered_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrain
     query = "CALL gds.beta.model.drop($name)"
     params = {"name": lp_model.name()}
     runner.run_query(query, params)
+
 
 @pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 1, sys.maxsize))
 def test_train_estimate_unfiltered_lp_pipeline(lp_pipe: LPTrainingPipeline, G: Graph) -> None:
@@ -201,6 +203,7 @@ def UndirectedG(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Gr
     runner.run_query("MATCH (n) DETACH DELETE n")
     UndirectedG.drop()
 
+
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, UndirectedG: Graph) -> None:
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
@@ -208,7 +211,14 @@ def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
     lp_pipe.configureSplit(trainFraction=0.2, testFraction=0.2, validationFolds=2)
     lp_pipe.addLogisticRegression(penalty=1)
 
-    lp_model, result = lp_pipe.train(UndirectedG, modelName="m", concurrency=2, sourceNodeLabel="Node", targetNodeLabel="Node", targetRelationshipType="REL")
+    lp_model, result = lp_pipe.train(
+        UndirectedG,
+        modelName="m",
+        concurrency=2,
+        sourceNodeLabel="Node",
+        targetNodeLabel="Node",
+        targetRelationshipType="REL",
+    )
     assert lp_model.name() == "m"
     assert result["configuration"]["modelName"] == "m"
 
@@ -216,10 +226,18 @@ def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
     params = {"name": lp_model.name()}
     runner.run_query(query, params)
 
+
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_filtered_train_estimate_lp_pipeline(lp_pipe: LPTrainingPipeline, UndirectedG: Graph) -> None:
     lp_pipe.addLogisticRegression()
-    result = lp_pipe.train_estimate(UndirectedG, modelName="m", concurrency=2,  sourceNodeLabel="Node", targetNodeLabel="Node", targetRelationshipType="REL")
+    result = lp_pipe.train_estimate(
+        UndirectedG,
+        modelName="m",
+        concurrency=2,
+        sourceNodeLabel="Node",
+        targetNodeLabel="Node",
+        targetRelationshipType="REL",
+    )
     assert result["requiredMemory"]
 
 

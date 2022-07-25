@@ -72,7 +72,14 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
         pipe.addFeature("l2", nodeProperties=["rank"])
         pipe.configureSplit(trainFraction=0.4, testFraction=0.2, validationFolds=2)
         pipe.addLogisticRegression(penalty=1)
-        lp_model, _ = pipe.train(G, modelName="lp-model", concurrency=2, sourceNodeLabel="Node", targetNodeLabel="Node", targetRelationshipType="REL")
+        lp_model, _ = pipe.train(
+            G,
+            modelName="lp-model",
+            concurrency=2,
+            sourceNodeLabel="Node",
+            targetNodeLabel="Node",
+            targetRelationshipType="REL",
+        )
     finally:
         query = "CALL gds.beta.pipeline.drop($name)"
         params = {"name": "pipe"}
