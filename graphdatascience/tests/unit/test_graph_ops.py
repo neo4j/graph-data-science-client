@@ -114,6 +114,13 @@ def test_graph_export_csv(runner: CollectingQueryRunner, gds: GraphDataScience) 
         "config": {"exportName": "fileName"},
     }
 
+    gds.beta.graph.export.csv.estimate(G, exportName="fileName")
+    assert runner.last_query() == "CALL gds.beta.graph.export.csv.estimate($graph_name, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "config": {"exportName": "fileName"},
+    }
+
 
 def test_graph_streamNodeProperty(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")

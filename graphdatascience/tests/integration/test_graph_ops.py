@@ -138,6 +138,14 @@ def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     runner.set_database(DEFAULT_DATABASE)
 
 
+def test_graph_export_csv_estimate(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
+
+    result = gds.beta.graph.export.csv.estimate(G, exportName="dummy")
+
+    assert result["nodeCount"] == 3
+
+
 def test_graph_get(gds: GraphDataScience) -> None:
     gds.graph.project(GRAPH_NAME, "*", "*")
 
