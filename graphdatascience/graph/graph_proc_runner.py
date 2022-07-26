@@ -14,6 +14,7 @@ from ..server_version.server_version import ServerVersion
 from .graph_export_runner import GraphExportRunner
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
+from .graph_sample_runner import GraphSampleRunner
 from graphdatascience.graph.graph_entity_ops_runner import (
     GraphNodePropertiesRunner,
     GraphPropertyRunner,
@@ -35,6 +36,11 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     def export(self) -> GraphExportRunner:
         self._namespace += ".export"
         return GraphExportRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def sample(self) -> GraphSampleRunner:
+        self._namespace += ".sample"
+        return GraphSampleRunner(self._query_runner, self._namespace, self._server_version)
 
     def drop(
         self,

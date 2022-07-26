@@ -75,15 +75,30 @@ def test_project_graph_cypher_estimate(gds: GraphDataScience) -> None:
 def test_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    subG, result = gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
+    sub_G, result = gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
 
-    assert subG.name() == "s"
+    assert sub_G.name() == "s"
     assert result["graphName"] == "s"
 
-    result2 = gds.graph.list(subG)
+    result2 = gds.graph.list(sub_G)
     assert result2["nodeCount"][0] == 2
 
-    runner.run_query(f"CALL gds.graph.drop('{subG.name()}')")
+    runner.run_query(f"CALL gds.graph.drop('{sub_G.name()}')")
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_sample_rwr(runner: QueryRunner, gds: GraphDataScience) -> None:
+    from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    rwr_G, result = gds.alpha.graph.sample.rwr("s", from_G, samplingRatio=0.6, concurrency=1, randomSeed=42)
+
+    assert rwr_G.name() == "s"
+    assert result["graphName"] == "s"
+
+    result2 = gds.graph.list(rwr_G)
+    assert result2["nodeCount"][0] == 2
+
+    runner.run_query(f"CALL gds.graph.drop('{rwr_G.name()}')")
 
 
 def test_graph_list(gds: GraphDataScience) -> None:
