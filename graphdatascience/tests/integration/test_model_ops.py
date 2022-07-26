@@ -9,6 +9,7 @@ from graphdatascience.model.link_prediction_model import LPModel
 from graphdatascience.model.model import Model
 from graphdatascience.model.node_classification_model import NCModel
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 PIPE_NAME = "pipe"
 
@@ -39,6 +40,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
     G.drop()
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 @pytest.fixture(scope="module")
 def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
     pipe, _ = gds.beta.pipeline.linkPrediction.create("pipe")
@@ -48,7 +50,17 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
         pipe.addFeature("l2", nodeProperties=["rank"])
         pipe.configureSplit(trainFraction=0.4, testFraction=0.2, validationFolds=2)
         pipe.addLogisticRegression(penalty=1)
-        lp_model, _ = pipe.train(G, modelName="lp-model", concurrency=2)
+        if gds._server_version >= ServerVersion(2, 2, 0):
+            lp_model, _ = pipe.train(
+                G,
+                modelName="lp-model",
+                concurrency=2,
+                sourceNodeLabel="Node",
+                targetNodeLabel="Node",
+                targetRelationshipType="REL",
+            )
+        else:
+            lp_model, _ = pipe.train(G, modelName="lp-model", concurrency=2)
     finally:
         query = "CALL gds.beta.pipeline.drop($name)"
         params = {"name": "pipe"}

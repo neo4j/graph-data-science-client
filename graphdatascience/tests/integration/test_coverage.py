@@ -11,6 +11,7 @@ IGNORED_ENDPOINTS = {
     "gds.alpha.graph.graphProperty.drop",  # FIXME: Add support
     "gds.alpha.graph.graphProperty.stream",  # FIXME: Add support
     "gds.beta.graph.relationships.stream",  # FIXME: Add support
+    "gds.alpha.graph.sample.rwr",  # FIXME: Add support for GDS 2.2
     "gds.alpha.pipeline.linkPrediction.addMLP",
     "gds.alpha.pipeline.linkPrediction.addRandomForest",
     "gds.beta.pipeline.linkPrediction.addFeature",

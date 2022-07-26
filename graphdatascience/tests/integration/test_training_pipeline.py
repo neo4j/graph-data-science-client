@@ -45,7 +45,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (c)-[:REL]->(g)
         """
     )
-    G, _ = gds.graph.project("g", "*", "*")
+    G, _ = gds.graph.project("g", "Node", {"REL": {"orientation": "UNDIRECTED"}})
 
     yield G
 
@@ -140,7 +140,8 @@ def test_configure_split_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTraini
     assert pipeline_info["splitConfig"]["trainFraction"] == 0.42
 
 
-def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, G: Graph) -> None:
+@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
+def test_train_unfiltered_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, G: Graph) -> None:
     lp_pipe.addNodeProperty("degree", mutateProperty="rank")
     lp_pipe.addFeature("l2", nodeProperties=["rank"])
     lp_pipe.configureSplit(trainFraction=0.2, testFraction=0.2, validationFolds=2)
@@ -155,9 +156,47 @@ def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
     runner.run_query(query, params)
 
 
-def test_train_estimate_lp_pipeline(lp_pipe: LPTrainingPipeline, G: Graph) -> None:
+@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
+def test_train_estimate_unfiltered_lp_pipeline(lp_pipe: LPTrainingPipeline, G: Graph) -> None:
     lp_pipe.addLogisticRegression()
     result = lp_pipe.train_estimate(G, modelName="m", concurrency=2)
+    assert result["requiredMemory"]
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline, G: Graph) -> None:
+    lp_pipe.addNodeProperty("degree", mutateProperty="rank")
+    lp_pipe.addFeature("l2", nodeProperties=["rank"])
+    lp_pipe.configureSplit(trainFraction=0.2, testFraction=0.2, validationFolds=2)
+    lp_pipe.addLogisticRegression(penalty=1)
+
+    lp_model, result = lp_pipe.train(
+        G,
+        modelName="m",
+        concurrency=2,
+        sourceNodeLabel="Node",
+        targetNodeLabel="Node",
+        targetRelationshipType="REL",
+    )
+    assert lp_model.name() == "m"
+    assert result["configuration"]["modelName"] == "m"
+
+    query = "CALL gds.beta.model.drop($name)"
+    params = {"name": lp_model.name()}
+    runner.run_query(query, params)
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_filtered_train_estimate_lp_pipeline(lp_pipe: LPTrainingPipeline, G: Graph) -> None:
+    lp_pipe.addLogisticRegression()
+    result = lp_pipe.train_estimate(
+        G,
+        modelName="m",
+        concurrency=2,
+        sourceNodeLabel="Node",
+        targetNodeLabel="Node",
+        targetRelationshipType="REL",
+    )
     assert result["requiredMemory"]
 
 
