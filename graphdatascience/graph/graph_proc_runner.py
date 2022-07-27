@@ -16,6 +16,7 @@ from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
 from .graph_sample_runner import GraphSampleRunner
 from graphdatascience.graph.graph_entity_ops_runner import (
+    GraphElementPropertyRunner,
     GraphNodePropertiesRunner,
     GraphPropertyRunner,
     GraphRelationshipPropertiesRunner,
@@ -113,9 +114,9 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         return self._query_runner.run_query(query, params)
 
     @property
-    def nodeProperty(self) -> GraphPropertyRunner:
+    def nodeProperty(self) -> GraphElementPropertyRunner:
         self._namespace += ".nodeProperty"
-        return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version)
+        return GraphElementPropertyRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def nodeProperties(self) -> GraphNodePropertiesRunner:
@@ -123,9 +124,9 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         return GraphNodePropertiesRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
-    def relationshipProperty(self) -> GraphPropertyRunner:
+    def relationshipProperty(self) -> GraphElementPropertyRunner:
         self._namespace += ".relationshipProperty"
-        return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version)
+        return GraphElementPropertyRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def relationshipProperties(self) -> GraphRelationshipPropertiesRunner:
@@ -141,6 +142,11 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     def relationships(self) -> GraphRelationshipsRunner:
         self._namespace += ".relationships"
         return GraphRelationshipsRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def graphProperty(self) -> GraphPropertyRunner:
+        self._namespace += ".graphProperty"
+        return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version)
 
     def streamNodeProperties(
         self,
