@@ -520,17 +520,17 @@ def test_graph_property_stream(runner: CollectingQueryRunner, gds: GraphDataScie
     G, _ = gds.graph.project("g", "*", "*")
 
     gds.alpha.graph.graphProperty.stream(G, "prop")
-    assert runner.last_query() == "CALL gds.alpha.graph.graphProperty.stream($graph_name, $graph_property)"
-    assert runner.last_params() == {"graph_name": "g", "graph_property": "prop"}
+    assert runner.last_query() == "CALL gds.alpha.graph.graphProperty.stream($graph_name, $graph_property, $config)"
+    assert runner.last_params() == {"graph_name": "g", "graph_property": "prop", "config": {}}
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
 def test_graph_property_drop(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    gds.alpha.graph.graphProperty.stream(G, "prop")
-    assert runner.last_query() == "CALL gds.alpha.graph.graphProperty.drop($graph_name, $graph_property)"
-    assert runner.last_params() == {"graph_name": "g", "graph_property": "prop"}
+    gds.alpha.graph.graphProperty.drop(G, "prop")
+    assert runner.last_query() == "CALL gds.alpha.graph.graphProperty.drop($graph_name, $graph_property, $config)"
+    assert runner.last_params() == {"graph_name": "g", "graph_property": "prop", "config": {}}
 
 
 def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
