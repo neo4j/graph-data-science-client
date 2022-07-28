@@ -561,7 +561,7 @@ def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataSc
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
-def test_graphrelationships_stream_with_arrow(gds: GraphDataScience) -> None:
+def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "REL")
 
     result = gds.beta.graph.relationships.stream(G, "REL")
