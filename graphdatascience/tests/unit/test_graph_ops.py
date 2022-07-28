@@ -537,9 +537,9 @@ def test_graph_property_drop(runner: CollectingQueryRunner, gds: GraphDataScienc
 def test_graph_relationships_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    gds.beta.graph.relationships.stream(G, "REL_A")
+    gds.beta.graph.relationships.stream(G, ["REL_A"])
     assert runner.last_query() == "CALL gds.beta.graph.relationships.stream($graph_name, $relationship_types"
-    assert runner.last_params() == {"graph_name": "g", "relationship_types": "REL_A"}
+    assert runner.last_params() == {"graph_name": "g", "relationship_types": ["REL_A"]}
 
 
 def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
