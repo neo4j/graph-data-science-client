@@ -112,8 +112,7 @@ class ArrowQueryRunner(QueryRunner):
             )
         elif "gds.beta.graph.relationships.stream" in query:
             graph_name = params["graph_name"]
-            property_names = params["properties"]
-            relationship_types = params["entities"]
+            relationship_types = params["relationship_types"]
 
             if self._server_version < new_endpoint_server_version:
                 raise IncompatibleServerVersionError(
