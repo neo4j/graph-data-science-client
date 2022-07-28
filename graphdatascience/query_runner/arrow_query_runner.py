@@ -123,7 +123,7 @@ class ArrowQueryRunner(QueryRunner):
             else:
                 endpoint = "gds.beta.graph.relationships.stream"
 
-            return self._run_arrow_property_get(graph_name, endpoint, {"relationship_types", relationship_types})
+            return self._run_arrow_property_get(graph_name, endpoint, {"relationship_types": relationship_types})
 
         return self._fallback_query_runner.run_query(query, params)
 
