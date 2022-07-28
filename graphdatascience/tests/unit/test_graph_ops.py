@@ -538,7 +538,7 @@ def test_graph_relationships_stream(runner: CollectingQueryRunner, gds: GraphDat
     G, _ = gds.graph.project("g", "*", "*")
 
     gds.beta.graph.relationships.stream(G, "REL_A")
-    assert runner.last_query() == "CALL gds.graph.relationships.stream($graph_name, $relationship_types"
+    assert runner.last_query() == "CALL gds.beta.graph.relationships.stream($graph_name, $relationship_types"
     assert runner.last_params() == {"graph_name": "g", "relationship_types": "REL_A"}
 
 
