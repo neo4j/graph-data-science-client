@@ -8,6 +8,7 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
+URI_TLS = os.environ.get("NEO4J_URI", "bolt+ssc://localhost:7687")
 
 AUTH = ("neo4j", "password")
 if os.environ.get("NEO4J_USER"):
@@ -39,6 +40,26 @@ def runner(neo4j_driver: Driver) -> Neo4jQueryRunner:
 @pytest.fixture(scope="package")
 def gds() -> GraphDataScience:
     _gds = GraphDataScience(URI, auth=AUTH)
+    _gds.set_database(DB)
+
+    return _gds
+
+
+@pytest.fixture(scope="package")
+def gds_with_tls(request) -> GraphDataScience:
+    test_dir = os.path.dirname(request.fspath)
+    cert = os.path.join(test_dir, 'resources', 'arrow-flight-gds-test.crt')
+
+    with open(cert, "rb") as f:
+        root_ca = f.read()
+
+    _gds = GraphDataScience(
+        URI_TLS,
+        auth=AUTH,
+        arrow=True,
+        arrow_disable_server_verification=True,
+        arrow_tls_root_certs=root_ca
+    )
     _gds.set_database(DB)
 
     return _gds
