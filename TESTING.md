@@ -52,6 +52,30 @@ To include tests that exercise storing and loading models, you must specify the 
 Note however that this also requires you to have specified a valid path for the `gds.model.store_location` configuration key of your database.
 
 
+### Running tests that require encrypted connections
+
+In order to run integration tests that test encryption features, you must setup the Neo4j server accordingly:
+
+```
+# Enable the Arrow Flight Server (necessary if you run integration tests that require Arrow)
+gds.arrow.enabled=true
+
+# Allow bolt connections either encrypted or unencrypted
+dbms.connector.bolt.tls_level=OPTIONAL
+dbms.ssl.policy.bolt.enabled=true
+dbms.ssl.policy.bolt.base_directory=<absolute-path-to-graph-datascience-client>/graphdatascience/tests/integration/resources
+dbms.ssl.policy.bolt.public_certificate=arrow-flight-gds-test.crt
+dbms.ssl.policy.bolt.private_key=arrow-flight-gds-test.key
+dbms.ssl.policy.bolt.client_auth=NONE
+```
+
+To run only integration tests that are marked as `enterprise_ssl`, call:
+
+```bash
+pytest graphdatascience/tests/integration --include-enterprise
+````
+
+
 ### GDS library versions
 
 There are integration tests that are only compatible with certain versions of the GDS library.
