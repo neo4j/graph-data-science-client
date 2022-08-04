@@ -48,17 +48,13 @@ def gds() -> GraphDataScience:
 @pytest.fixture(scope="package")
 def gds_with_tls(request) -> GraphDataScience:
     test_dir = os.path.dirname(request.fspath)
-    cert = os.path.join(test_dir, 'resources', 'arrow-flight-gds-test.crt')
+    cert = os.path.join(test_dir, "resources", "arrow-flight-gds-test.crt")
 
     with open(cert, "rb") as f:
         root_ca = f.read()
 
     _gds = GraphDataScience(
-        URI_TLS,
-        auth=AUTH,
-        arrow=True,
-        arrow_disable_server_verification=True,
-        arrow_tls_root_certs=root_ca
+        URI_TLS, auth=AUTH, arrow=True, arrow_disable_server_verification=True, arrow_tls_root_certs=root_ca
     )
     _gds.set_database(DB)
 
