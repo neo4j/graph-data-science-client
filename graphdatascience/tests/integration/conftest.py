@@ -48,7 +48,7 @@ def gds() -> GraphDataScience:
 
 @pytest.fixture(scope="package")
 def gds_with_tls(request: FixtureRequest) -> GraphDataScience:
-    test_dir = os.path.dirname(request.fspath)
+    test_dir = os.path.dirname(request.path)
     cert = os.path.join(test_dir, "resources", "arrow-flight-gds-test.crt")
 
     with open(cert, "rb") as f:
