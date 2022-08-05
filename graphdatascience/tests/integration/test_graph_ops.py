@@ -566,9 +566,11 @@ def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
 
     result = gds.beta.graph.relationships.stream(G, ["REL"])
 
+    expected = gds.run_cypher("MATCH (n)-[REL]->(m) RETURN id(n) AS src_id, id(m) AS trg_id")
+
     assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType"]
-    assert {e for e in result["sourceNodeId"]} == {0, 1}
-    assert {e for e in result["targetNodeId"]} == {1, 2}
+    assert {e for e in result["sourceNodeId"]} == {i for i in expected["src_id"]}
+    assert {e for e in result["targetNodeId"]} == {i for i in expected["trg_id"]}
 
 
 def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
