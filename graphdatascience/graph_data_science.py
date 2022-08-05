@@ -32,7 +32,31 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         auth: Optional[Tuple[str, str]] = None,
         aura_ds: bool = False,
         arrow: bool = True,
+        arrow_disable_server_verification: bool = True,
+        arrow_tls_root_certs: Optional[bytes] = None,
     ):
+        """
+        Parameters
+        ----------
+        endpoint : Union[str, Driver, QueryRunner]
+            The Neo4j endpoint to connect to
+        auth : Optional[Tuple[str, str]], default None
+            A username, password pair for database authentication.
+        aura_ds : bool, default False
+            A flag that indicates that that the client is used to connect
+            to a Neo4j Aura instance.
+        arrow : bool, default True
+            A flag that indicates that the client should use Apache Arrow
+            for data streaming if it is available on the server.
+        arrow_disable_server_verification : bool, default True
+            A flag that indicates that, if the flight client is connecting with
+            TLS, that it skips server verification. If this is enabled, all
+            other TLS settings are overridden.
+        arrow_tls_root_certs : Optional[bytes], default None
+            PEM-encoded certificates that are used for the connecting to the
+            Arrow Flight server.
+        """
+
         if isinstance(endpoint, str):
             self._config: Dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
 
@@ -82,7 +106,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                         self._server_version,
                         auth,
                         driver.encrypted,
-                        True,
+                        arrow_disable_server_verification,
+                        arrow_tls_root_certs,
                     )
             except Exception as e:
                 # AuraDS does not have arrow support at this time, so we should not warn about it.

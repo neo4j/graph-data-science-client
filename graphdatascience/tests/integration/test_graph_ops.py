@@ -389,6 +389,23 @@ def test_roundtrip_with_arrow_22(gds: GraphDataScience) -> None:
         G_2.drop()
 
 
+@pytest.mark.encrypted
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+def test_roundtrip_with_arrow_encrypted(gds_with_tls: GraphDataScience) -> None:
+    G, _ = gds_with_tls.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
+
+    rel_df = gds_with_tls.graph.streamRelationshipProperty(G, "relX")
+    node_df = gds_with_tls.graph.streamNodeProperty(G, "x")
+
+    G_2 = gds_with_tls.alpha.graph.construct("arrowGraph", node_df, rel_df)
+
+    try:
+        assert G.node_count() == G_2.node_count()
+        assert G.relationship_count() == G_2.relationship_count()
+    finally:
+        G_2.drop()
+
+
 def test_graph_streamRelationshipProperty_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 

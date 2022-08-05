@@ -2,12 +2,14 @@ import os
 from typing import Any, Generator
 
 import pytest
+from _pytest.fixtures import FixtureRequest
 from neo4j import Driver, GraphDatabase
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
+URI_TLS = os.environ.get("NEO4J_URI", "bolt+ssc://localhost:7687")
 
 AUTH = ("neo4j", "password")
 if os.environ.get("NEO4J_USER"):
@@ -45,6 +47,22 @@ def gds() -> GraphDataScience:
 
 
 @pytest.fixture(scope="package")
+def gds_with_tls(request: FixtureRequest) -> GraphDataScience:
+    test_dir = os.path.dirname(request.path)
+    cert = os.path.join(test_dir, "resources", "arrow-flight-gds-test.crt")
+
+    with open(cert, "rb") as f:
+        root_ca = f.read()
+
+    _gds = GraphDataScience(
+        URI_TLS, auth=AUTH, arrow=True, arrow_disable_server_verification=True, arrow_tls_root_certs=root_ca
+    )
+    _gds.set_database(DB)
+
+    return _gds
+
+
+@pytest.fixture(scope="package")
 def gds_without_arrow() -> GraphDataScience:
     _gds = GraphDataScience(URI, auth=AUTH, arrow=False)
     _gds.set_database(DB)
@@ -58,6 +76,18 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
         for item in items:
             if "enterprise" in item.keywords:
                 item.add_marker(skip_enterprise)
+
+    # `encrypted` includes marked tests and excludes everything else
+    if config.getoption("--encrypted"):
+        skip_encrypted = pytest.mark.skip(reason="not marked as `encrypted`")
+        for item in items:
+            if "encrypted" not in item.keywords:
+                item.add_marker(skip_encrypted)
+    else:
+        skip_encrypted = pytest.mark.skip(reason="need --encrypted option to run")
+        for item in items:
+            if "encrypted" in item.keywords:
+                item.add_marker(skip_encrypted)
 
     if not config.getoption("--include-model-store-location"):
         skip_stored_models = pytest.mark.skip(reason="need --include-model-store-location option to run")

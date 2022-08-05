@@ -22,6 +22,7 @@ class ArrowQueryRunner(QueryRunner):
         auth: Optional[Tuple[str, str]] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
+        tls_root_certs: Optional[bytes] = None,
     ):
         self._fallback_query_runner = fallback_query_runner
         self._server_version = server_version
@@ -37,6 +38,8 @@ class ArrowQueryRunner(QueryRunner):
         client_options: Dict[str, Any] = {"disable_server_verification": disable_server_verification}
         if auth:
             client_options["middleware"] = [AuthFactory(auth)]
+        if tls_root_certs:
+            client_options["tls_root_certs"] = tls_root_certs
 
         self._flight_client = flight.FlightClient(location, **client_options)
 
