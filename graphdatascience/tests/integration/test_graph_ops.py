@@ -389,7 +389,7 @@ def test_roundtrip_with_arrow_22(gds: GraphDataScience) -> None:
         G_2.drop()
 
 
-@pytest.mark.encrypted
+@pytest.mark.encrypted_only
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_roundtrip_with_arrow_encrypted(gds_with_tls: GraphDataScience) -> None:
     G, _ = gds_with_tls.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
