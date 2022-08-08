@@ -99,9 +99,10 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         if arrow and self._server_version >= ServerVersion(2, 1, 0):
             try:
                 arrow_info: Series = self._query_runner.run_query("CALL gds.debug.arrow()").squeeze()
+                listen_address = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])
                 if arrow_info["running"]:
                     self._query_runner = ArrowQueryRunner(
-                        arrow_info["listenAddress"],
+                        listen_address,
                         self._query_runner,
                         self._server_version,
                         auth,
