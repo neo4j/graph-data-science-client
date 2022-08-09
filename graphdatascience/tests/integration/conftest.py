@@ -78,16 +78,16 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
                 item.add_marker(skip_enterprise)
 
     # `encrypted` includes marked tests and excludes everything else
-    if config.getoption("--encrypted"):
-        skip_encrypted = pytest.mark.skip(reason="not marked as `encrypted`")
+    if config.getoption("--encrypted-only"):
+        skip_encrypted_only = pytest.mark.skip(reason="not marked as `encrypted_only`")
         for item in items:
-            if "encrypted" not in item.keywords:
-                item.add_marker(skip_encrypted)
+            if "encrypted_only" not in item.keywords:
+                item.add_marker(skip_encrypted_only)
     else:
-        skip_encrypted = pytest.mark.skip(reason="need --encrypted option to run")
+        skip_encrypted_only = pytest.mark.skip(reason="need --encrypted-only option to run")
         for item in items:
-            if "encrypted" in item.keywords:
-                item.add_marker(skip_encrypted)
+            if "encrypted_only" in item.keywords:
+                item.add_marker(skip_encrypted_only)
 
     if not config.getoption("--include-model-store-location"):
         skip_stored_models = pytest.mark.skip(reason="need --include-model-store-location option to run")

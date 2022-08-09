@@ -69,10 +69,10 @@ dbms.ssl.policy.bolt.private_key=arrow-flight-gds-test.key
 dbms.ssl.policy.bolt.client_auth=NONE
 ```
 
-To run only integration tests that are marked as `enterprise_ssl`, call:
+To run only integration tests that are marked as `encrypted_only`, call:
 
 ```bash
-pytest graphdatascience/tests/integration --include-enterprise
+pytest graphdatascience/tests/integration --encrypted-only
 ````
 
 
