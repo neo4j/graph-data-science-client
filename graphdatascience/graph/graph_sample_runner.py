@@ -23,6 +23,6 @@ class GraphSampleRunner(CallerBase, IllegalAttrChecker):
             "config": config,
         }
 
-        result = self._query_runner.run_query(query, params).squeeze()
+        result = self._query_runner.run_query_with_logging(query, params).squeeze()
 
         return Graph(graph_name, self._query_runner, self._server_version), result
