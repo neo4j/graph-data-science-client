@@ -1,8 +1,8 @@
 import os
+from pathlib import Path
 from typing import Any, Generator
 
 import pytest
-from _pytest.fixtures import FixtureRequest
 from neo4j import Driver, GraphDatabase
 
 from graphdatascience.graph_data_science import GraphDataScience
@@ -47,9 +47,9 @@ def gds() -> GraphDataScience:
 
 
 @pytest.fixture(scope="package")
-def gds_with_tls(request: FixtureRequest) -> GraphDataScience:
-    test_dir = os.path.dirname(request.path)
-    cert = os.path.join(test_dir, "resources", "arrow-flight-gds-test.crt")
+def gds_with_tls() -> GraphDataScience:
+    integration_test_dir = Path(__file__).resolve().parent
+    cert = os.path.join(integration_test_dir, "resources", "arrow-flight-gds-test.crt")
 
     with open(cert, "rb") as f:
         root_ca = f.read()
