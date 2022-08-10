@@ -48,7 +48,7 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     try:
         pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.addFeature("l2", nodeProperties=["rank"])
-        pipe.configureSplit(trainFraction=0.4, testFraction=0.2, validationFolds=2)
+        pipe.configureSplit(trainFraction=0.7, testFraction=0.2, validationFolds=2)
         pipe.addLogisticRegression(penalty=1)
         if gds._server_version >= ServerVersion(2, 2, 0):
             lp_model, _ = pipe.train(
