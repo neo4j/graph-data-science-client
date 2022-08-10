@@ -17,10 +17,16 @@ def test_systemMonitor(gds: GraphDataScience) -> None:
     assert len(result["ongoingGdsProcedures"]) >= 0
 
 
-def test_sysInfo(gds: GraphDataScience) -> None:
+def test_debug_sysInfo(gds: GraphDataScience) -> None:
     result = gds.debug.sysInfo()
 
     assert "gdsVersion" in (list(result["key"]))
+
+
+def test_debug_arrow(gds: GraphDataScience) -> None:
+    result = gds.debug.arrow()
+
+    assert "listenAddress" in result
 
 
 @pytest.mark.enterprise

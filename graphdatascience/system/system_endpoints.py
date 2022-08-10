@@ -16,6 +16,12 @@ class DebugProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query).squeeze()  # type: ignore
 
+    def arrow(self) -> Series:
+        self._namespace += ".arrow"
+        query = f"CALL {self._namespace}()"
+
+        return self._query_runner.run_query(query).squeeze()  # type: ignore
+
 
 class SystemEndpoints(CallerBase):
     def listProgress(self, job_id: Optional[str] = None) -> DataFrame:

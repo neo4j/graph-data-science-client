@@ -21,8 +21,15 @@ def test_systemMonitor(runner: CollectingQueryRunner, gds: GraphDataScience) -> 
     assert runner.last_params() == {}
 
 
-def test_sysInfo(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+def test_debug_sysInfo(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     gds.debug.sysInfo()
 
     assert runner.last_query() == "CALL gds.debug.sysInfo()"
+    assert runner.last_params() == {}
+
+
+def test_debug_arrow(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    gds.debug.arrow()
+
+    assert runner.last_query() == "CALL gds.debug.arrow()"
     assert runner.last_params() == {}
