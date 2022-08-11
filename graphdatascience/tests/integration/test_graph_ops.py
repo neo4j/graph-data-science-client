@@ -555,9 +555,11 @@ def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataSc
 
     result = gds_without_arrow.beta.graph.relationships.stream(G, ["REL"])
 
+    expected = gds_without_arrow.run_cypher("MATCH (n)-[REL]->(m) RETURN id(n) AS src_id, id(m) AS trg_id")
+
     assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType"]
-    assert {e for e in result["sourceNodeId"]} == {0, 1}
-    assert {e for e in result["targetNodeId"]} == {1, 2}
+    assert {e for e in result["sourceNodeId"]} == {i for i in expected["src_id"]}
+    assert {e for e in result["targetNodeId"]} == {i for i in expected["trg_id"]}
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
