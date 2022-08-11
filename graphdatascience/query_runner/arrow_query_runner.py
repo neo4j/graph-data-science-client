@@ -10,6 +10,9 @@ from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
+from graphdatascience.server_version.compatible_with import (
+    IncompatibleServerVersionError,
+)
 from graphdatascience.server_version.server_version import ServerVersion
 
 
@@ -107,6 +110,19 @@ class ArrowQueryRunner(QueryRunner):
                 endpoint,
                 {"relationship_properties": property_names, "relationship_types": relationship_types},
             )
+        elif "gds.beta.graph.relationships.stream" in query:
+            graph_name = params["graph_name"]
+            relationship_types = params["relationship_types"]
+
+            if self._server_version < new_endpoint_server_version:
+                raise IncompatibleServerVersionError(
+                    f"The call gds.beta.graph.relationships.stream with parameters {params} via Arrow requires GDS "
+                    f"server version >= 2.2.0. The current version is {self._server_version}"
+                )
+            else:
+                endpoint = "gds.beta.graph.relationships.stream"
+
+            return self._run_arrow_property_get(graph_name, endpoint, {"relationship_types": relationship_types})
 
         return self._fallback_query_runner.run_query(query, params)
 

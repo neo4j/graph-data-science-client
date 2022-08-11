@@ -151,6 +151,15 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
+    @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
+    def stream(self, G: Graph, relationship_types: List[str] = ["*"], **config: Any) -> DataFrame:
+        self._namespace += ".stream"
+        query = f"CALL {self._namespace}($graph_name, $relationship_types, $config)"
+
+        params = {"graph_name": G.name(), "relationship_types": relationship_types, "config": config}
+
+        return self._query_runner.run_query(query, params)
+
 
 class GraphPropertyRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
