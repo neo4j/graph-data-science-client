@@ -1,0 +1,6 @@
+= Known limitations
+
+Operations known to not work with the Python client are:
+
+* https://neo4j.com/docs/graph-data-science/current/management-ops/utility-functions/#utility-functions-numeric[Numeric utility functions] (will never be supported)
+* https://neo4j.com/docs/graph-data-science/current/management-ops/create-cypher-db/[Cypher on GDS] (might be supported in the future)
