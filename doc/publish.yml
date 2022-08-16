@@ -1,14 +1,14 @@
 site:
-  title: Neo4j Graph Data Science
+  title: Neo4j Graph Data Science Client
   url: https://neo4j.com/docs
-  start_page: graph-data-science:ROOT:index.adoc
+  start_page: graph-data-science-client:ROOT:index.adoc
 
 content:
   sources:
-  - url: ../../
-    start_path: public/doc
-    branches: ['1.8', '2.0', '2.1', 'master']
-    include: public/doc/
+  - url: ../
+    start_path: doc
+    branches: ['1.2', 'main']
+    include: doc/
     exclude:
     - '!**/_includes/*'
     - '!**/readme.adoc'
@@ -25,7 +25,7 @@ urls:
 antora:
   extensions:
   - require: "@neo4j-antora/antora-modify-sitemaps"
-    sitemap_version: '2.1'
+    sitemap_version: '1.2'
     sitemap_loc_version: current
     move_sitemaps_to_components: 'true'
 

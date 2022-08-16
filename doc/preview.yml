@@ -1,7 +1,7 @@
 site:
-  title: Neo4j Graph Data Science
+  title: Neo4j Graph Data Science Client
   url: https://neo4j.com/docs
-  start_page: graph-data-science:ROOT:index.adoc
+  start_page: graph-data-science-client:ROOT:index.adoc
 
 content:
   sources:
