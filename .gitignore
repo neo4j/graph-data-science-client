@@ -131,3 +131,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Documentation-generated build files from node
+node_modules/
+package-lock.json
