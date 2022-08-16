@@ -1,4 +1,3 @@
-[[python-client-installation]]
 = Installation
 
 To install the latest deployed version of the Python client, run:

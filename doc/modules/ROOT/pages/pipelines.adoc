@@ -1,4 +1,3 @@
-[[python-client-pipelines]]
 = Machine learning pipelines
 
 The Python client has special support for https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/link-prediction/[Link prediction pipelines] and https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/[pipelines for node property prediction].
@@ -9,7 +8,7 @@ However, the rest of the pipeline functionality is deferred to methods on the pi
 Once created, the `TrainingPipeline` can be passed as arguments to methods in the Python client, such as the https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/[pipeline catalog operations].
 Additionally, the `TrainingPipeline` has convenience methods allowing for inspection of the pipeline represented without explicitly involving the pipeline catalog.
 
-include::partial$/python-client-gds-object.adoc[]
+include::partial$/gds-object.adoc[]
 
 
 == Node classification
@@ -74,7 +73,7 @@ Another difference is that the `train` Python call takes a xref:graph-object.ado
 Please consult the https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/node-classification/[node classification Cypher documentation] for information about what kind of input the methods expect.
 
 
-[[python-client-pipelines-nodeclassification-pipe-example]]
+[[pipelines-nodeclassification-pipe-example]]
 ==== Example
 
 Below is a small example of how one could configure and train a very basic node classification pipeline.
@@ -144,7 +143,7 @@ The three main differences are that:
 
 ==== Example (continued)
 
-We now continue the xref:pipelines.adoc#python-client-pipelines-nodeclassification-pipe-example[example above] using the node classification model `trained_pipe_model` we trained there.
+We now continue the xref:pipelines.adoc#pipelines-nodeclassification-pipe-example[example above] using the node classification model `trained_pipe_model` we trained there.
 Suppose that we have a new graph `H` that we want to run predictions on.
 
 [source,python]
@@ -222,7 +221,7 @@ Another difference is that the `train` Python call takes a xref:graph-object.ado
 Please consult the https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/link-prediction/[link prediction Cypher documentation] for information about what kind of input the methods expect.
 
 
-[[python-client-pipelines-linkprediction-pipe-example]]
+[[pipelines-linkprediction-pipe-example]]
 ==== Example
 
 Below is a small example of how one could configure and train a very basic link prediction pipeline.
@@ -289,7 +288,7 @@ The three main differences are that:
 
 ==== Example (continued)
 
-We now continue the xref:pipelines.adoc#python-client-pipelines-linkprediction-pipe-example[example above] using the link prediction model `trained_pipe_model` we trained there.
+We now continue the xref:pipelines.adoc#pipelines-linkprediction-pipe-example[example above] using the link prediction model `trained_pipe_model` we trained there.
 Suppose that we have a new graph `H` that we want to run predictions on.
 
 [source,python]
@@ -363,7 +362,7 @@ Another difference is that the `train` Python call takes a xref:graph-object.ado
 Please consult the https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/node-regression/[node regression Cypher documentation] for information about what kind of input the methods expect.
 
 
-[[python-client-pipelines-noderegression-pipe-example]]
+[[pipelines-noderegression-pipe-example]]
 ==== Example
 
 Below is a small example of how one could configure and train a very basic node regression pipeline.
@@ -424,7 +423,7 @@ The three main differences are that:
 
 ==== Example (continued)
 
-We now continue the xref:pipelines.adoc#python-client-pipelines-noderegression-pipe-example[example above] using the node regression model `trained_pipe_model` we trained there.
+We now continue the xref:pipelines.adoc#pipelines-noderegression-pipe-example[example above] using the node regression model `trained_pipe_model` we trained there.
 Suppose that we have a new graph `H` that we want to run predictions on.
 
 [source,python]

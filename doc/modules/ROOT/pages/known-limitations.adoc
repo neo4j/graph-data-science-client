@@ -1,4 +1,3 @@
-[[python-client-known-limitations]]
 = Known limitations
 
 Operations known to not work with the Python client are:

@@ -1,16 +1,15 @@
-[[python-client-model-object]]
 = The model object
 
 Models of the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog] are represented as `Model` objects in the Python client, similar to how there are xref:graph-object.adoc[graph objects].
-`Model` objects are typically constructed from training a xref:pipelines.adoc[pipeline] or a xref:model-object.adoc#python-client-model-object-graphsage[GraphSAGE model], in which case a reference to the trained model in the form of a `Model` object is returned.
+`Model` objects are typically constructed from training a xref:pipelines.adoc[pipeline] or a xref:model-object.adoc#model-object-graphsage[GraphSAGE model], in which case a reference to the trained model in the form of a `Model` object is returned.
 
 Once created, the `Model` objects can be passed as arguments to methods in the Python client, such as the https://neo4j.com/docs/graph-data-science/current/model-catalog/[model catalog operations].
 Additionally, the `Model` objects have convenience methods allowing for inspection of the models represented without explicitly involving the model catalog.
 
-include::partial$/python-client-gds-object.adoc[]
+include::partial$/gds-object.adoc[]
 
 
-[[python-client-model-object-constructing]]
+[[model-object-constructing]]
 == Constructing a model object
 
 There are several ways of constructing a model object.
@@ -39,7 +38,7 @@ The `get` method does not use any tier prefix because it is not associated to an
 ====
 
 
-[[python-client-model-object-inspecting]]
+[[model-object-inspecting]]
 == Inspecting a model object
 
 There are convenience methods on all model objects that let us extract information about the represented model.
@@ -71,7 +70,7 @@ train_config = model.train_config()
 == Using a model object
 
 The primary way to use model objects is for prediction.
-How to do so for GraphSAGE is xref:model-object.adoc#python-client-model-object-graphsage[described below], and on the xref:pipelines.adoc[Machine learning pipelines] page for pipelines.
+How to do so for GraphSAGE is xref:model-object.adoc#model-object-graphsage[described below], and on the xref:pipelines.adoc[Machine learning pipelines] page for pipelines.
 
 Additionally, model objects can be used as input to https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog operations].
 For instance, supposing we have a model object `model`, we could:
@@ -85,12 +84,12 @@ gds.beta.model.drop(model)  # same as model.drop()
 ----
 
 
-[[python-client-model-object-graphsage]]
+[[model-object-graphsage]]
 === GraphSAGE
 
-As exemplified above in xref:model-object.adoc#python-client-model-object-constructing[Constructing a model object], training a GraphSAGE model with the Python client is analogous to https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/[its Cypher counterpart].
+As exemplified above in xref:model-object.adoc#model-object-constructing[Constructing a model object], training a GraphSAGE model with the Python client is analogous to https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/[its Cypher counterpart].
 
-Once trained, in addition to the xref:model-object.adoc#python-client-model-object-inspecting[methods above], the GraphSAGE model object will have the following methods.
+Once trained, in addition to the xref:model-object.adoc#model-object-inspecting[methods above], the GraphSAGE model object will have the following methods.
 
 .GraphSAGE model methods
 [opts="header",cols="5m,5m,6m,11"]

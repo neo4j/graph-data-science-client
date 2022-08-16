@@ -1,21 +1,20 @@
-[[python-client-algorithms]]
 = Running algorithms
 
-include::partial$/python-client-gds-object.adoc[]
+include::partial$/gds-object.adoc[]
 
 
 == Introduction
 
 Running most algorithms with the Python client is structurally similar to using the Cypher API:
 
-include::partial$/python-client-syntax.adoc[]
+include::partial$/algorithm-syntax.adoc[]
 
 Here we can note a few key differences:
 
 * Instead of a graph name string as first argument, we have a xref:graph-object.adoc[graph object] as first positional argument.
 * Instead of a configuration map, we have named keyword arguments.
 
-The result of running a procedure is returned as either a pandas `DataFrame` or a pandas `Series` depending on the xref:algorithms.adoc#python-client-algorithms-execution-mode[execution mode].
+The result of running a procedure is returned as either a pandas `DataFrame` or a pandas `Series` depending on the xref:algorithms.adoc#algorithms-execution-mode[execution mode].
 
 For example, to run the WCC and FastRP algorithms on a graph `G`, we could do the following:
 
@@ -44,7 +43,7 @@ Some algorithms deviate from the standard syntactic structure.
 We describe how to use them in the Python client in the sections below.
 
 
-[[python-client-algorithms-execution-mode]]
+[[algorithms-execution-mode]]
 == Execution modes
 
 Algorithms return results in a format that is controlled by its execution mode.

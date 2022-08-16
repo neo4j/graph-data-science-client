@@ -1,4 +1,3 @@
-[[python-client]]
 = Python client
 :description: This chapter documents how to use the dedicated Python Client for Neo4j Graph Data Science.
 
@@ -10,7 +9,7 @@ To avoid naming confusion with the server-side GDS library, we will here refer t
 The Python client API is designed to mimic the GDS Cypher procedure API in Python code.
 It wraps and abstracts the necessary operations of the https://neo4j.com/docs/python-manual/current/[Neo4j Python driver] to offer a simpler surface.
 Except for those listed in xref:known-limitations.adoc[Known limitations], every operation of the GDS Cypher API should be represented in the Python client API.
-For a high level explanation of how the Cypher API maps to the Python client API please see xref:getting-started.adoc#python-client-getting-started-mapping[Mapping between Cypher and Python].
+For a high level explanation of how the Cypher API maps to the Python client API please see xref:getting-started.adoc#getting-started-mapping[Mapping between Cypher and Python].
 
 This chapter is divided into the following sections:
 

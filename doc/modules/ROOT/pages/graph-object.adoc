@@ -1,4 +1,3 @@
-[[python-client-graph-object]]
 = The graph object
 
 In order to utilize most the functionality in GDS, you must first project a graph into the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/[GDS Graph Catalog].
@@ -8,7 +7,7 @@ We call these references `Graph` objects.
 Once created, the `Graph` objects can be passed as arguments to other methods in the Python client, for example for running algorithms or training machine learning models.
 Additionally, the `Graph` objects have convenience methods allowing for inspection of the projected graph represented without explicitly involving the graph catalog.
 
-include::partial$/python-client-gds-object.adoc[]
+include::partial$/gds-object.adoc[]
 
 
 == Projecting a graph object
@@ -161,7 +160,7 @@ The primary use case for a graph object is to pass it to algorithms, but it's al
 
 The Python client syntax for using a `Graph` as input to an algorithm follows the GDS Cypher procedure API, where the graph is the first parameter passed to the algorithm.
 
-include::partial$/python-client-syntax.adoc[]
+include::partial$/algorithm-syntax.adoc[]
 
 
 === The graph catalog
