@@ -5,11 +5,11 @@ site:
 
 content:
   sources:
-  - url: ../../
-    start_path: public/doc
+  - url: ../
+    start_path: doc
     branches: 
     - HEAD
-    include: public/doc/
+    include: doc/
     exclude:
     - '!**/_includes/*'
     - '!**/readme.adoc'
@@ -40,7 +40,7 @@ asciidoc:
     page-canonical-root: /docs
     page-pagination: true
     page-no-canonical: true
-    page-origin-private: true
+    page-origin-private: false
     page-hide-toc: false
     page-mixpanel: 4bfb2414ab973c741b6f067bf06d5575
     # page-cdn: /static/assets
