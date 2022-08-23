@@ -7,7 +7,7 @@ content:
   sources:
   - url: ../
     start_path: doc
-    branches: ['1.2', 'main']
+    branches: ['1.2', '1.3', 'main']
     include: doc/
     exclude:
     - '!**/_includes/*'
