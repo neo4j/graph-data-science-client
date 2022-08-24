@@ -1,5 +1,16 @@
 # Neo4j Graph Data Science Client
 
+<<<<<<< HEAD
+=======
+[![Latest version](https://img.shields.io/pypi/v/graphdatascience)](https://pypi.org/project/graphdatascience/)
+[![PyPI downloads month](https://img.shields.io/pypi/dm/graphdatascience)](https://pypi.org/project/graphdatascience/)
+![Python versions](https://img.shields.io/pypi/pyversions/graphdatascience)
+[![Documentation](https://img.shields.io/badge/Documentation-latest-blue)](https://neo4j.com/docs/graph-data-science-client/current/)
+[![Discord](https://img.shields.io/discord/787399249741479977?label=Chat&logo=discord)](https://discord.gg/neo4j)
+[![Community forum](https://img.shields.io/website?down_color=lightgrey&down_message=offline&label=Forums&logo=discourse&up_color=green&up_message=online&url=https%3A%2F%2Fcommunity.neo4j.com%2F)](https://community.neo4j.com)
+[![License](https://img.shields.io/pypi/l/graphdatascience)](https://www.apache.org/licenses/LICENSE-2.0)
+
+>>>>>>> 8a53504... Point documentation links to new client manual
 `graphdatascience` is a Python client for operating and working with the [Neo4j Graph Data Science (GDS) library](https://github.com/neo4j/graph-data-science).
 It enables users to write pure Python code to project graphs, run algorithms, as well as define and use machine learning pipelines in GDS.
 
@@ -24,7 +35,7 @@ pip install graphdatascience
 ## Usage
 
 What follows is a high level description of some of the operations supported by `graphdatascience`.
-For extensive documentation of all capabilities, please refer to the [Python client chapter of the GDS Manual](https://neo4j.com/docs/graph-data-science/current/python-client/).
+For extensive documentation of all capabilities, please refer to the [GDS Python Client Manual](https://neo4j.com/docs/graph-data-science-client/current/).
 
 Extensive end-to-end examples in Jupyter ready-to-run notebooks can be found in the [`examples` source directory](https://github.com/neo4j/graph-data-science-client/tree/main/examples):
 

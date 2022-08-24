@@ -29,7 +29,7 @@ classifiers = [
 ]
 
 project_urls = {
-    "Documentation": "https://neo4j.com/docs/graph-data-science/current/python-client/",
+    "Documentation": "https://neo4j.com/docs/graph-data-science-client/current/",
     "Source": "https://github.com/neo4j/graph-data-science-client",
     "Bug Tracker": "https://github.com/neo4j/graph-data-science-client/issues",
 }
