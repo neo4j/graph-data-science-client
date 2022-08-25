@@ -134,6 +134,7 @@ def test_graph_drop(gds: GraphDataScience) -> None:
         gds.graph.drop(G, True)
 
 
+@pytest.mark.skip_on_aura
 def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
@@ -153,6 +154,7 @@ def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     runner.set_database(DEFAULT_DATABASE)
 
 
+@pytest.mark.skip_on_aura
 def test_graph_export_csv_estimate(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
@@ -700,6 +702,7 @@ def test_graph_construct_with_arrow(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.enterprise
+@pytest.mark.skip_on_aura  # AuraDS does not currently support Arrow
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_with_arrow_multiple_dfs(gds: GraphDataScience) -> None:
     nodes = [pandas.DataFrame({"nodeId": [0, 1]}), pandas.DataFrame({"nodeId": [2, 3]})]
@@ -715,6 +718,7 @@ def test_graph_construct_with_arrow_multiple_dfs(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.enterprise
+@pytest.mark.skip_on_aura  # Should not warn when targeting AuraDS
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_without_arrow_enterprise_warning(gds_without_arrow: GraphDataScience) -> None:
     nodes = pandas.DataFrame({"nodeId": [0, 1, 2, 3]})

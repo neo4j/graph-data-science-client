@@ -51,6 +51,8 @@ Naturally, this requires access to a valid Neo4j GDS license key, which can be a
 To include tests that exercise storing and loading models, you must specify the option `--include-model-store-location`.
 Note however that this also requires you to have specified a valid path for the `gds.model.store_location` configuration key of your database.
 
+If the database you are targeting is an AuraDS instance, you should use the option `--target-aura` which makes sure that tests of operations not supported on AuraDS are skipped.
+
 
 ### Running tests that require encrypted connections
 

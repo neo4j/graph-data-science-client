@@ -17,6 +17,7 @@ def test_systemMonitor(gds: GraphDataScience) -> None:
     assert len(result["ongoingGdsProcedures"]) >= 0
 
 
+@pytest.mark.skip_on_aura
 def test_sysInfo(gds: GraphDataScience) -> None:
     result = gds.debug.sysInfo()
 

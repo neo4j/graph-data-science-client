@@ -11,3 +11,4 @@ def pytest_addoption(parser: Any) -> None:
         action="store_true",
         help="include tests for stored models",
     )
+    parser.addoption("--target-aura", action="store_true", help="the database targeted is an AuraDS instance")
