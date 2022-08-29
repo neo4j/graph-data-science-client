@@ -55,7 +55,11 @@ def gds_with_tls(request: FixtureRequest) -> GraphDataScience:
         root_ca = f.read()
 
     _gds = GraphDataScience(
-        URI_TLS, auth=AUTH, arrow=True, arrow_disable_server_verification=True, arrow_tls_root_certs=root_ca
+        URI_TLS,
+        auth=AUTH,
+        arrow=True,
+        arrow_disable_server_verification=True,
+        arrow_tls_root_certs=root_ca,
     )
     _gds.set_database(DB)
 
@@ -71,6 +75,12 @@ def gds_without_arrow() -> GraphDataScience:
 
 
 def pytest_collection_modifyitems(config: Any, items: Any) -> None:
+    if config.getoption("--target-aura"):
+        skip_on_aura = pytest.mark.skip(reason="skipping since targeting AuraDS")
+        for item in items:
+            if "skip_on_aura" in item.keywords:
+                item.add_marker(skip_on_aura)
+
     if not config.getoption("--include-enterprise"):
         skip_enterprise = pytest.mark.skip(reason="need --include-enterprise option to run")
         for item in items:
