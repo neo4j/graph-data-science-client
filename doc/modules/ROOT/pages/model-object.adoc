@@ -6,7 +6,7 @@ Models of the https://neo4j.com/docs/graph-data-science/current/model-catalog/[G
 Once created, the `Model` objects can be passed as arguments to methods in the Python client, such as the https://neo4j.com/docs/graph-data-science/current/model-catalog/[model catalog operations].
 Additionally, the `Model` objects have convenience methods allowing for inspection of the models represented without explicitly involving the model catalog.
 
-include::partial$/gds-object.adoc[]
+include::ROOT:partial$/gds-object.adoc[]
 
 
 [[model-object-constructing]]

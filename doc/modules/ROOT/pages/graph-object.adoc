@@ -7,7 +7,7 @@ We call these references `Graph` objects.
 Once created, the `Graph` objects can be passed as arguments to other methods in the Python client, for example for running algorithms or training machine learning models.
 Additionally, the `Graph` objects have convenience methods allowing for inspection of the projected graph represented without explicitly involving the graph catalog.
 
-include::partial$/gds-object.adoc[]
+include::ROOT:partial$/gds-object.adoc[]
 
 
 == Projecting a graph object
@@ -53,7 +53,7 @@ Their Cypher signatures map to Python in much the same way as `gds.graph.project
 [.alpha]
 == Constructing a graph
 
-include::partial$/alpha-note.adoc[]
+include::ROOT:partial$/alpha-note.adoc[]
 
 Instead of projecting a graph from the Neo4j database it is also possible to construct new graphs using pandas `DataFrames` from the client.
 
@@ -160,7 +160,7 @@ The primary use case for a graph object is to pass it to algorithms, but it's al
 
 The Python client syntax for using a `Graph` as input to an algorithm follows the GDS Cypher procedure API, where the graph is the first parameter passed to the algorithm.
 
-include::partial$/algorithm-syntax.adoc[]
+include::ROOT:partial$/algorithm-syntax.adoc[]
 
 
 === The graph catalog

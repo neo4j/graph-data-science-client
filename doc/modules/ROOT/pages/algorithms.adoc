@@ -1,13 +1,13 @@
 = Running algorithms
 
-include::partial$/gds-object.adoc[]
+include::ROOT:partial$/gds-object.adoc[]
 
 
 == Introduction
 
 Running most algorithms with the Python client is structurally similar to using the Cypher API:
 
-include::partial$/algorithm-syntax.adoc[]
+include::ROOT:partial$/algorithm-syntax.adoc[]
 
 Here we can note a few key differences:
 

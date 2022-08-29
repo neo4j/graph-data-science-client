@@ -8,7 +8,7 @@ However, the rest of the pipeline functionality is deferred to methods on the pi
 Once created, the `TrainingPipeline` can be passed as arguments to methods in the Python client, such as the https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/[pipeline catalog operations].
 Additionally, the `TrainingPipeline` has convenience methods allowing for inspection of the pipeline represented without explicitly involving the pipeline catalog.
 
-include::partial$/gds-object.adoc[]
+include::ROOT:partial$/gds-object.adoc[]
 
 
 == Node classification
