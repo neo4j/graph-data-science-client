@@ -16,24 +16,53 @@ Here we can note a few key differences:
 
 The result of running a procedure is returned as either a pandas `DataFrame` or a pandas `Series` depending on the xref:algorithms.adoc#algorithms-execution-mode[execution mode].
 
-For example, to run the WCC and FastRP algorithms on a graph `G`, we could do the following:
+To exemplify this, we introduce a small road-network graph:
 
-[source,python]
+[source,python,role=test,group=algo]
 ----
-G, _ = gds.graph.project(...)
-
-wcc_res = gds.wcc.mutate(
-    G,                          #  Graph object
-    threshold=0.8,              #  Configuration parameters
-    mutateProperty="wcc"
+gds.run_cypher(
+  """
+  CREATE 
+  (a:City {name: "New York City", settled: 1624}),
+  (b:City {name: "Philadelphia", settled: 1682}),
+  (c:City:Capital {name: "Washington D.C.", settled: 1790}),
+  (d:City {name: "Baltimore"}),
+  (e:City {name: "Atlantic City"}),
+  (f:City {name: "Boston"}),
+  (a)-[:ROAD {cost: 50}]->(b),
+  (a)-[:ROAD {cost: 50}]->(c),
+  (a)-[:ROAD {cost: 100}]->(d),
+  (b)-[:ROAD {cost: 40}]->(d),
+  (c)-[:ROAD {cost: 40}]->(d),
+  (c)-[:ROAD {cost: 80}]->(e),
+  (d)-[:ROAD {cost: 30}]->(e),
+  (d)-[:ROAD {cost: 80}]->(f),
+  (e)-[:ROAD {cost: 40}]->(f);
+  """
 )
-assert wcc_res["componentCount"] > 0
+G, project_result = gds.graph.project("road_graph", "City", {"ROAD": {"properties": ["cost"]}})
+
+assert G.relationship_count() == 9
+----
+
+
+Now we can run the Louvain and FastRP algorithms on our graph `G`:
+
+[source,python,role=test,group=algo]
+----
+louvain_res = gds.louvain.mutate(
+    G,                            #  Graph object
+    maxIterations=5,              #  Configuration parameters
+    mutateProperty="community"
+)
+assert louvain_res["communityCount"] > 0
 
 fastrp_res = gds.fastRP.write(
-    G,                          #  Graph object
-    featureProperties=["wcc"],  #  Configuration parameters
+    G,                                #  Graph object
+    featureProperties=["community"],  #  Configuration parameters
     embeddingDimension=256,
     propertyRatio=0.3,
+    relationshipWeightProperty="cost",
     writeProperty="embedding"
 )
 assert fastrp_res["nodePropertiesWritten"] == G.node_count()
@@ -77,13 +106,18 @@ In the Python client there is a convenience method `gds.find_node_id` to retriev
 
 For example, to find a source and target node of a graph `G` with cities to run https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/[Dijkstra Source-Target Shortest Path] on, we could do the following:
 
-[source,python]
+[source,python,role=test,group=algo]
 ----
-source_id = gds.find_node_id(["City"], {"name": "New York"})
-target_id = gds.find_node_id(["City"], {"name": "Philadelphia"})
+source_id = gds.find_node_id(["City"], {"name": "New York City"})
+target_id = gds.find_node_id(["City"], {"name": "Boston"})
 
-res = gds.shortestPath.dijkstra.stream(G, sourceNode=source_id, targetNode=target_id)
-assert res["totalCost"][0] == 100
+res = gds.shortestPath.dijkstra.stream(
+    G, 
+    sourceNode=source_id, 
+    targetNode=target_id, 
+    relationshipWeightProperty="cost"
+)
+assert res["totalCost"][0] == 160
 ----
 
 `gds.find_node_id` takes a list of node labels and a dictionary of node property key-value pairs.
@@ -95,16 +129,16 @@ Note that exactly one node per method call must be matched, otherwise an error w
 
 The Python call:
 
-[source,python]
+[source,python,role=test,group=algo]
 ----
-gds.find_node_id(["A", "B"], {"p1": 1, "p2": "foo"})
+gds.find_node_id(["City", "Capital"], {"settled": 1790, "name": "Washington D.C."})
 ----
 
 is exactly equivalent to the Cypher statement:
 
 [source,cypher]
 ----
-MATCH (n:A:B {p1: 1, p2: 'foo'})
+MATCH (n:City:Capital {settled: 1790, name: 'Washington D.C.'})
 RETURN id(n) AS id
 ----
 
@@ -119,11 +153,11 @@ And they simply return the similarity score of the prediction just made as a flo
 
 For example, to run the Adamic Adar algorithm, we can use the following:
 
-[source,python]
+[source,python,role=test,group=algo]
 ----
-node1 = gds.find_node_id(["User"], {"name": "Mats"})
-node2 = gds.find_node_id(["User"], {"name": "Adam"})
+node1 = gds.find_node_id(["City"], {"name": "Boston"})
+node2 = gds.find_node_id(["City"], {"name": "Atlantic City"})
 
 score = gds.alpha.linkprediction.adamicAdar(node1, node2)
-assert score >= 0
+assert round(score, 2) == 0.62
 ----
