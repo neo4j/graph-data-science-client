@@ -94,3 +94,13 @@ Additionally, before a code snippet from the documentation is run, it is:
 * Extended with some clean up code, such as dropping all projected graphs and reseting the database.
 
 Please inspect the test script `tests/test_docs.rb` for more details.
+
+
+### Code style
+
+To enforce Ruby code style of the testing source we use [RuboCop](https://github.com/rubocop/rubocop).
+It should be installed by the command `bundler install tests` [above](#installation).
+
+To use RuboCop for linting simply call `rubocop tests`, and for enforcing rules (formatting) one can call it with the `-A` option.
+
+Our custom RuboCop configuration can be found in `tests/.rubocop.yml`.
