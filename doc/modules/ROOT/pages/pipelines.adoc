@@ -121,9 +121,9 @@ pipe.addNodeProperty("degree", mutateProperty="rank")
 pipe.selectFeatures("rank")
 
 # Verify that the features to be used in model training are what we expect
-steps = pipe.feature_properties()
-assert len(steps) == 1
-assert steps[0]["feature"] == "rank"
+feature_properties = pipe.feature_properties()
+assert len(feature_properties) == 1
+assert feature_properties[0]["feature"] == "rank"
 
 # Configure the model training to do cross-validation over logistic regression
 pipe.addLogisticRegression(tolerance=(0.01, 0.1))
@@ -301,7 +301,7 @@ assert G.relationship_types() == ["KNOWS"]
 pipe, _ = gds.beta.pipeline.linkPrediction.create("lp-pipe")
 
 # Add FastRP as a property step producing "embedding" node properties
-pipe.addNodeProperty("fastRP", embeddingDimension=128, mutateProperty="embedding")
+pipe.addNodeProperty("fastRP", embeddingDimension=128, mutateProperty="embedding", randomSeed=1337)
 
 # Combine our "embedding" node properties with Hadamard to create link features for training
 pipe.addFeature("hadamard", nodeProperties=["embedding"])
@@ -317,8 +317,13 @@ pipe.configureSplit(trainFraction=0.2, testFraction=0.2, validationFolds=2)
 # Add a random forest model with tuning over `maxDepth`
 pipe.addRandomForest(maxDepth=(2, 20))
 
-# Train the pipeline and produce a model named "my-model"
-friend_recommender, train_result = pipe.train(G, modelName="friend-recommender", targetRelationshipType="KNOWS", randomSeed=42)
+# Train the pipeline and produce a model named "friend-recommender"
+friend_recommender, train_result = pipe.train(
+    G,
+    modelName="friend-recommender",
+    targetRelationshipType="KNOWS",
+    randomSeed=42
+)
 assert train_result["trainMillis"] >= 0
 ----
 
@@ -434,11 +439,39 @@ Please consult the https://neo4j.com/docs/graph-data-science/current/machine-lea
 
 Below is a small example of how one could configure and train a very basic node regression pipeline.
 Note that we don't configure splits explicitly, but rather use the default.
-We suppose that the graph `G` we train on has a node property "my-target" which will be the target of our regression training.
 
-[source,python]
+To exemplify this, we introduce a small person graph:
+
+[source,python,role=test,group=nr-pipe]
 ----
-pipe, _ = gds.alpha.pipeline.nodeRegression.create("my-pipe")
+gds.run_cypher(
+  """
+  CREATE 
+  (a:Person {name: "Bob", age: 22}),
+  (b:Person {name: "Alice", age: 5}),
+  (c:Person {name: "Eve", age: 53}),
+  (d:Person {name: "Chad", age: 44}),
+  (e:Person {name: "Dan", age: 60}),
+  (f:UnknownPerson {name: "Judy"}),
+  (a)-[:KNOWS]->(b),
+  (a)-[:KNOWS]->(c),
+  (a)-[:KNOWS]->(d),
+  (b)-[:KNOWS]->(d),
+  (c)-[:KNOWS]->(d),
+  (c)-[:KNOWS]->(e),
+  (d)-[:KNOWS]->(e),
+  (d)-[:KNOWS]->(f),
+  (e)-[:KNOWS]->(f)
+  """
+)
+G, project_result = gds.graph.project("person_graph", {"Person": {"properties": ["age"]}}, "KNOWS")
+
+assert G.relationship_types() == ["KNOWS"]
+----
+
+[source,python,role=test,group=nr-pipe]
+----
+pipe, _ = gds.alpha.pipeline.nodeRegression.create("nr-pipe")
 
 # Add Degree centrality as a property step producing "rank" node properties
 pipe.addNodeProperty("degree", mutateProperty="rank")
@@ -447,17 +480,23 @@ pipe.addNodeProperty("degree", mutateProperty="rank")
 pipe.selectFeatures("rank")
 
 # Verify that the features to be used in model training are what we expect
-steps = pipe.feature_properties()
-assert len(steps) == 1
-assert steps[0]["feature"] == "rank"
+feature_properties = pipe.feature_properties()
+assert len(feature_properties) == 1
+assert feature_properties[0]["feature"] == "rank"
 
 # Configure the model training to do cross-validation over linear regression
-pipe.addLinearRegression(tolerance=(0.01, 0.001))
+pipe.addLinearRegression(tolerance=(0.01, 0.1))
 pipe.addLinearRegression(penalty=1.0)
 
-# Train the pipeline targeting node property "my-target" as label and "MEAN_SQUARED_ERROR" as only metric
-trained_pipe_model, res = pipe.train(G, modelName="my-model", targetProperty="my-target", metrics=["MEAN_SQUARED_ERROR"])
-assert res["trainMillis"] >= 0
+# Train the pipeline targeting node property "age" as label and "MEAN_SQUARED_ERROR" as only metric
+age_predictor, train_result = pipe.train(
+    G,
+    modelName="age-predictor",
+    targetProperty="age",
+    metrics=["MEAN_SQUARED_ERROR"],
+    randomSeed=42
+)
+assert train_result["trainMillis"] >= 0
 ----
 
 A model referred to as "my-model" in the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog] is produced.
@@ -490,18 +529,20 @@ The three main differences are that:
 
 ==== Example (continued)
 
-We now continue the xref:pipelines.adoc#pipelines-noderegression-pipe-example[example above] using the node regression model `trained_pipe_model` we trained there.
+We now continue the xref:pipelines.adoc#pipelines-noderegression-pipe-example[example above] using the node regression model `age_predictor` we trained there.
 Suppose that we have a new graph `H` that we want to run predictions on.
 
-[source,python]
+[source,python,role=test,group=nr-pipe]
 ----
 # Make sure our model performed well enough on the test set
-metrics = trained_pipe_model.metrics()
-assert metrics["MEAN_SQUARED_ERROR"]["test"] <= 20.0
+metrics = age_predictor.metrics()
+assert round(metrics["MEAN_SQUARED_ERROR"]["test"], 2) <= 254.30, metrics["MEAN_SQUARED_ERROR"]["test"]
+
+H, project_result = gds.graph.project("full_person_graph", ["Person", "UnknownPerson"], "KNOWS")
 
 # Predict on `H` and stream the results with a specific concurrency of 8
-result = trained_pipe_model.predict_stream(H, concurrency=8)
-assert len(results) == H.node_count()
+predictions = age_predictor.predict_stream(H, concurrency=8)
+assert len(predictions) == H.node_count()
 ----
 
 
