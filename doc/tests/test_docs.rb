@@ -30,7 +30,13 @@ CLEAN_UP = '
 finally:
     res = gds.graph.list()
     for graph_name in res["graphName"]:
-        gds.graph.drop(gds.graph.get(graph_name), failIfMissing=True)
+        gds.graph.get(graph_name).drop(failIfMissing=True)
+    res = gds.beta.pipeline.list()
+    for pipeline_name in res["pipelineName"]:
+        gds.pipeline.get(pipeline_name).drop(failIfMissing=True)
+    res = gds.beta.model.list()
+    for model_info in res["modelInfo"]:
+        gds.model.get(model_info["modelName"]).drop(failIfMissing=True)
     gds.run_cypher("MATCH (n) DETACH DELETE (n)")
 '
 
