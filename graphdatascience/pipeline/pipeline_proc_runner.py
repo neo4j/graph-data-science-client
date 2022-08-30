@@ -11,6 +11,7 @@ from .lp_training_pipeline import LPTrainingPipeline
 from .nc_pipeline_create_runner import NCPipelineCreateRunner
 from .nc_training_pipeline import NCTrainingPipeline
 from .nr_pipeline_create_runner import NRPipelineCreateRunner
+from .nr_training_pipeline import NRTrainingPipeline
 from .training_pipeline import TrainingPipeline
 
 
@@ -72,5 +73,7 @@ class PipelineProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
             return NCTrainingPipeline(pipeline_name, self._query_runner, self._server_version)
         elif pipeline_type == "Link prediction training pipeline":
             return LPTrainingPipeline(pipeline_name, self._query_runner, self._server_version)
+        elif pipeline_type == "Node regression training pipeline":
+            return NRTrainingPipeline(pipeline_name, self._query_runner, self._server_version)
 
         raise ValueError(f"Unknown model type encountered: '{pipeline_type}'")
