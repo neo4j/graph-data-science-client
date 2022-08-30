@@ -23,6 +23,7 @@ if os.environ.get("NEO4J_USER"):
     )
 
 gds = GraphDataScience(URI, auth=AUTH)
+gds.set_database("neo4j")
 '
 
 CLEAN_UP = '
