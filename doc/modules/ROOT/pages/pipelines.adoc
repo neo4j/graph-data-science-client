@@ -21,7 +21,7 @@ This section outlines how to use the Python client to build, configure and train
 The creation of the node classification pipeline is very similar to https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/config/#nodeclassification-creating-a-pipeline[how it's done in Cypher].
 To create a new node classification pipeline one would make the following call:
 
-[source,python]
+[source,python,role=test]
 ----
 pipe, res = gds.beta.pipeline.nodeClassification.create("my-pipe")
 ----
@@ -80,9 +80,37 @@ Please consult the https://neo4j.com/docs/graph-data-science/current/machine-lea
 
 Below is a small example of how one could configure and train a very basic node classification pipeline.
 Note that we don't configure splits explicitly, but rather use the default.
-We suppose that the graph `G` we train on has a node property "my-class" which will be the target of our classification training.
 
-[source,python]
+To exemplify this, we introduce a small person graph:
+
+[source,python,role=test,group=nc-pipe]
+----
+gds.run_cypher(
+  """
+  CREATE 
+  (a:Person {name: "Bob", fraudster: 0}),
+  (b:Person {name: "Alice", fraudster: 0}),
+  (c:Person {name: "Eve", fraudster: 1}),
+  (d:Person {name: "Chad", fraudster: 1}),
+  (e:Person {name: "Dan", fraudster: 0}),
+  (f:UnknownPerson {name: "Judy"}),
+  (a)-[:KNOWS]->(b),
+  (a)-[:KNOWS]->(c),
+  (a)-[:KNOWS]->(d),
+  (b)-[:KNOWS]->(d),
+  (c)-[:KNOWS]->(d),
+  (c)-[:KNOWS]->(e),
+  (d)-[:KNOWS]->(e),
+  (d)-[:KNOWS]->(f),
+  (e)-[:KNOWS]->(f)
+  """
+)
+G, project_result = gds.graph.project("person_graph", {"Person": {"properties": ["fraudster"]}}, "KNOWS")
+
+assert G.node_labels() == ["Person"]
+----
+
+[source,python,role=test,group=nc-pipe]
 ----
 pipe, _ = gds.beta.pipeline.nodeClassification.create("my-pipe")
 
@@ -98,15 +126,21 @@ assert len(steps) == 1
 assert steps[0]["feature"] == "rank"
 
 # Configure the model training to do cross-validation over logistic regression
-pipe.addLogisticRegression(tolerance=(0.01, 0.001))
+pipe.addLogisticRegression(tolerance=(0.01, 0.1))
 pipe.addLogisticRegression(penalty=1.0)
 
-# Train the pipeline targeting node property "my-class" as label and "ACCURACY" as only metric
-trained_pipe_model, res = pipe.train(G, modelName="my-model", targetProperty="my-class", metrics=["ACCURACY"])
-assert res["trainMillis"] >= 0
+# Train the pipeline targeting node property "class" as label and "ACCURACY" as only metric
+fraud_model, train_result = pipe.train(
+    G,
+    modelName="fraud-model",
+    targetProperty="fraudster",
+    metrics=["ACCURACY"],
+    randomSeed=111
+)
+assert train_result["trainMillis"] >= 0
 ----
 
-A model referred to as "my-model" in the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog] is produced.
+A model referred to as "fraud-model" in the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog] is produced.
 In the next section we will go over how to use that model to make predictions.
 
 
@@ -146,17 +180,18 @@ The three main differences are that:
 ==== Example (continued)
 
 We now continue the xref:pipelines.adoc#pipelines-nodeclassification-pipe-example[example above] using the node classification model `trained_pipe_model` we trained there.
-Suppose that we have a new graph `H` that we want to run predictions on.
 
-[source,python]
+[source,python,role=test,group=nc-pipe]
 ----
 # Make sure our model performed well enough on the test set
-metrics = trained_pipe_model.metrics()
-assert metrics["ACCURACY"]["test"] >= 0.85
+metrics = fraud_model.metrics()
+assert metrics["ACCURACY"]["test"] >= 0.5
+
+H, project_result = gds.graph.project("full_person_graph", ["Person", "UnknownPerson"], "KNOWS")
 
 # Predict on `H` and stream the results with a specific concurrency of 8
-result = trained_pipe_model.predict_stream(H, concurrency=8)
-assert len(results) == H.node_count()
+predictions = fraud_model.predict_stream(H, concurrency=8)
+assert len(predictions) == H.node_count()
 ----
 
 
@@ -171,7 +206,7 @@ The creation of the link prediction pipeline is very similar to https://neo4j.co
 To create a new link prediction pipeline one would make the following call:
 
 
-[source,python]
+[source,python,role=test]
 ----
 pipe, res = gds.beta.pipeline.linkPrediction.create("my-pipe")
 ----
@@ -230,11 +265,40 @@ Please consult the https://neo4j.com/docs/graph-data-science/current/machine-lea
 
 Below is a small example of how one could configure and train a very basic link prediction pipeline.
 Note that we don't configure training parameters explicitly, but rather use the default.
-Suppose we have a graph `G` that we want to train our pipeline on.
 
-[source,python]
+To exemplify this, we introduce a small person graph:
+
+[source,python,role=test,group=lp-pipe]
 ----
-pipe, _ = gds.beta.pipeline.linkPrediction.create("my-pipe")
+gds.run_cypher(
+  """
+  CREATE 
+  (a:Person {name: "Bob"}),
+  (b:Person {name: "Alice"}),
+  (c:Person {name: "Eve"}),
+  (d:Person {name: "Chad"}),
+  (e:Person {name: "Dan"}),
+  (f:Person {name: "Judy"}),
+  (a)-[:KNOWS]->(b),
+  (a)-[:KNOWS]->(c),
+  (a)-[:KNOWS]->(d),
+  (b)-[:KNOWS]->(d),
+  (c)-[:KNOWS]->(d),
+  (c)-[:KNOWS]->(e),
+  (d)-[:KNOWS]->(e),
+  (d)-[:KNOWS]->(f),
+  (e)-[:KNOWS]->(f)
+  """
+)
+G, project_result = gds.graph.project("person_graph", "Person", {"KNOWS": {"orientation":"UNDIRECTED"}})
+
+assert G.relationship_types() == ["KNOWS"]
+----
+
+
+[source,python,role=test,group=lp-pipe]
+----
+pipe, _ = gds.beta.pipeline.linkPrediction.create("lp-pipe")
 
 # Add FastRP as a property step producing "embedding" node properties
 pipe.addNodeProperty("fastRP", embeddingDimension=128, mutateProperty="embedding")
@@ -245,17 +309,17 @@ pipe.addFeature("hadamard", nodeProperties=["embedding"])
 # Verify that the features to be used in model training are what we expect
 steps = pipe.feature_steps()
 assert len(steps) == 1
-assert steps[0]["name"] == "HADAMARD"
+assert steps["name"][0] == "HADAMARD"
 
 # Specify the fractions we want for our dataset split
-pipe.configureSplit(trainFraction=0.2, testFraction=0.1)
+pipe.configureSplit(trainFraction=0.2, testFraction=0.2, validationFolds=2)
 
 # Add a random forest model with tuning over `maxDepth`
 pipe.addRandomForest(maxDepth=(2, 20))
 
 # Train the pipeline and produce a model named "my-model"
-trained_pipe_model, res = pipe.train(G, modelName="my-model")
-assert res["trainMillis"] >= 0
+friend_recommender, train_result = pipe.train(G, modelName="friend-recommender", targetRelationshipType="KNOWS", randomSeed=42)
+assert train_result["trainMillis"] >= 0
 ----
 
 A model referred to as "my-model" in the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog] is produced.
@@ -293,17 +357,16 @@ The three main differences are that:
 ==== Example (continued)
 
 We now continue the xref:pipelines.adoc#pipelines-linkprediction-pipe-example[example above] using the link prediction model `trained_pipe_model` we trained there.
-Suppose that we have a new graph `H` that we want to run predictions on.
 
-[source,python]
+[source,python,role=test,group=lp-pipe]
 ----
 # Make sure our model performed well enough on the test set
-metrics = trained_pipe_model.metrics()
+metrics = friend_recommender.metrics()
 assert metrics["AUCPR"]["test"] >= 0.85
 
-# Predict on `H` and mutate it with the relationship predictions
-results = trained_pipe_model.predict_mutate(H, topN=5, mutateRelationshipType="PRED_REL")
-assert result["relationshipsWritten"] == 5 * 2  # Undirected relationships
+# Predict on `G` and mutate it with the relationship predictions
+mutate_result = friend_recommender.predict_mutate(G, topN=5, mutateRelationshipType="PRED_REL")
+assert mutate_result["relationshipsWritten"] == 5 * 2  # Undirected relationships
 ----
 
 
