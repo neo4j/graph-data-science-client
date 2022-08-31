@@ -16,6 +16,7 @@ include::ROOT:partial$/gds-object.adoc[]
 This section outlines how to use the Python client to build, configure and train a https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/node-classification/[node classification pipeline], as well as how to use the model that training produces for predictions.
 
 
+[[pipelines-nc-create-example]]
 === Pipeline
 
 The creation of the node classification pipeline is very similar to https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/config/#nodeclassification-creating-a-pipeline[how it's done in Cypher].
@@ -448,7 +449,7 @@ To exemplify this, we introduce a small person graph:
 ----
 gds.run_cypher(
   """
-  CREATE 
+  CREATE
   (a:Person {name: "Bob", age: 22}),
   (b:Person {name: "Alice", age: 5}),
   (c:Person {name: "Eve", age: 53}),
@@ -554,18 +555,21 @@ The primary way to use pipeline objects is for training models.
 Additionally, pipeline objects can be used as input to https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/[GDS Pipeline Catalog operations].
 For instance, supposing we have a pipeline object `pipe`, we could:
 
-[source,python,role=no-test]
+[source,python,group=nr-pipe]
 ----
-catalog_contains_pipe = gds.beta.pipeline.exists(pipe)
+exists_result = gds.beta.pipeline.exists(pipe.name())
 
-gds.beta.model.drop(pipe)  # same as pipe.drop()
+if exists_result["exists"]:
+	gds.beta.pipeline.drop(pipe)  # same as pipe.drop()
 ----
 
-A pipeline object that has already been created and is present in the pipeline catalog can be retrieved calling the `get` method with its name:
+A pipeline object that has already been created and is present in the pipeline catalog can be retrieved calling the `get` method with its name.
+For example, we can retrieve a pipeline object representing our node classification pipeline named "my-pipe" from the <<pipelines-nc-create-example, example above>>:
 
-[source,python,role=no-test]
+[source,python,group=nc-pipe]
 ----
-pipeline = gds.pipeline.get("node_pipeline")
+pipe = gds.pipeline.get("my-pipe")
+assert pipe.name() == "my-pipe"
 ----
 
 [NOTE]
