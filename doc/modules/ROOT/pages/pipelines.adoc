@@ -363,7 +363,8 @@ The three main differences are that:
 
 We now continue the xref:pipelines.adoc#pipelines-linkprediction-pipe-example[example above] using the link prediction model `trained_pipe_model` we trained there.
 
-[source,python,role=test,group=lp-pipe]
+// FIXME enable this test again when not flaky anymore
+[source,python,group=lp-pipe]
 ----
 # Make sure our model performed well enough on the test set
 metrics = friend_recommender.metrics()
