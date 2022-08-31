@@ -21,14 +21,14 @@ G, res = gds.graph.project(
     "my-graph",                 #  Graph name
     ["MyLabel", "YourLabel"],   #  Node projection
     "MY_REL_TYPE",              #  Relationship projection
-    readConcurrency=4               #  Configuration parameters
+    readConcurrency=4           #  Configuration parameters
 )
 ----
 
 where `G` is a `Graph` object, and `res` is a pandas `Series` containing metadata from the underlying procedure call.
 
 Note that all projection syntax variants are supported by way of specifying a Python `dict` or `list` for the node and relationship projection arguments.
-To specify configuration parameters corresponding to the keys of the procedure's `configuration` map, we give named keyword arguments, like for `concurrency=4` above.
+To specify configuration parameters corresponding to the keys of the procedure's `configuration` map, we give named keyword arguments, like for `readConcurrency=4` above.
 Read more about this in https://neo4j.com/docs/graph-data-science/current/graph-project/#graph-project-native-syntax[Syntax].
 
 Similarly to Cypher there's also a corresponding `gds.graph.project.estimate` method that can be called in an analogous way.
@@ -172,9 +172,9 @@ Below are some examples of how the GDS Graph Catalog can be used via the client:
 
 [source,python]
 ----
-G, _ = gds.graph.project(...)
+G, project_result = gds.graph.project(...)
 
-res = gds.graph.streamNodeProperty(G, ...)
+stream_result = gds.graph.streamNodeProperty(G, ...)
 
 gds.graph.drop(G)  # same as G.drop()
 ----
