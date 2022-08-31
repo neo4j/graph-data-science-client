@@ -91,12 +91,12 @@ pipe.addNodeProperty("degree", mutateProperty="rank")
 pipe.selectFeatures("rank")
 
 # Verify that the features to be used in model training are what we expect
-steps = pipe.feature_properties()
-assert len(steps) == 1
-assert steps[0]["feature"] == "rank"
+feature_properties = pipe.feature_properties()
+assert len(feature_properties) == 1
+assert feature_properties[0]["feature"] == "rank"
 
 # Configure the model training to do cross-validation over logistic regression
-pipe.addLogisticRegression(tolerance=(0.01, 0.001))
+pipe.addLogisticRegression(tolerance=(0.01, 0.1))
 pipe.addLogisticRegression(penalty=1.0)
 
 # Train the pipeline targeting node property "my-class" as label and "ACCURACY" as only metric
@@ -152,8 +152,8 @@ Suppose that we have a new graph `H` that we want to run predictions on.
 metrics = trained_pipe_model.metrics()
 assert metrics["ACCURACY"]["test"] >= 0.85
 
-# Predict on `H` and stream the results with a specific concurrency of 8
-result = trained_pipe_model.predict_stream(H, concurrency=8)
+# Predict on `H` and stream the results with a specific concurrency of 2
+result = trained_pipe_model.predict_stream(H, concurrency=2)
 assert len(results) == H.node_count()
 ----
 
@@ -241,7 +241,7 @@ pipe.addFeature("hadamard", nodeProperties=["embedding"])
 # Verify that the features to be used in model training are what we expect
 steps = pipe.feature_steps()
 assert len(steps) == 1
-assert steps[0]["name"] == "HADAMARD"
+assert steps["name"][0] == "HADAMARD"
 
 # Specify the fractions we want for our dataset split
 pipe.configureSplit(trainFraction=0.2, testFraction=0.1)
@@ -380,15 +380,15 @@ pipe.addNodeProperty("degree", mutateProperty="rank")
 pipe.selectFeatures("rank")
 
 # Verify that the features to be used in model training are what we expect
-steps = pipe.feature_properties()
-assert len(steps) == 1
-assert steps[0]["feature"] == "rank"
+feature_properties = pipe.feature_properties()
+assert len(feature_properties) == 1
+assert feature_properties[0]["feature"] == "rank"
 
 # Configure the model training to do cross-validation over linear regression
-pipe.addLinearRegression(tolerance=(0.01, 0.001))
+pipe.addLinearRegression(tolerance=(0.01, 0.1))
 pipe.addLinearRegression(penalty=1.0)
 
-# Train the pipeline targeting node property "my-target" as label and "MEAN_SQUARED_ERROR" as only metric
+# Train the pipeline targeting node property "my-target" and "MEAN_SQUARED_ERROR" as only metric
 trained_pipe_model, res = pipe.train(G, modelName="my-model", targetProperty="my-target", metrics=["MEAN_SQUARED_ERROR"])
 assert res["trainMillis"] >= 0
 ----
@@ -446,9 +446,9 @@ For instance, supposing we have a pipeline object `pipe`, we could:
 
 [source,python]
 ----
-catalog_contains_pipe = gds.beta.pipeline.exists(pipe)
+exists_result = gds.beta.pipeline.exists(pipe)
 
-gds.beta.model.drop(pipe)  # same as pipe.drop()
+gds.beta.pipeline.drop(pipe)  # same as pipe.drop()
 ----
 
 A pipeline object that has already been created and is present in the pipeline catalog can be retrieved calling the `get` method with its name:
