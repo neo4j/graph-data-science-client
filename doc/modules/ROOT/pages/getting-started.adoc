@@ -31,7 +31,7 @@ print(gds.version())
 .Results:
 [source]
 ----
-"2.0.0-alpha01"
+"2.1.9"
 ----
 
 Alternatively, for use cases where direct access and control of the Neo4j driver is required, one can use the method `GraphDataScience.from_neo4j_driver` for instantiating the gds object.
@@ -104,10 +104,10 @@ gds.run_cypher(
 
 # Project the graph into the GDS Graph Catalog
 # We call the object representing the projected graph `G_office`
-G_office, _ = gds.graph.project("neo4j-offices", "City", "FLY_TO")
+G_office, project_result = gds.graph.project("neo4j-offices", "City", "FLY_TO")
 
 # Run the mutate mode of the PageRank algorithm
-_ = gds.pageRank.mutate(G_office, tolerance=0.5, mutateProperty="rank")
+mutate_result = gds.pageRank.mutate(G_office, tolerance=0.5, mutateProperty="rank")
 
 # We can inspect the node properties of our projected graph directly
 # via the graph object and see that indeed the new property exists
