@@ -4,7 +4,7 @@ import time
 from typing import Any, Dict, Optional, Tuple
 
 import pyarrow.flight as flight
-from pandas.core.frame import DataFrame
+from pandas import DataFrame
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 
 from .arrow_graph_constructor import ArrowGraphConstructor

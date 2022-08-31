@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 from uuid import uuid4
 
 import neo4j
-from pandas.core.frame import DataFrame
+from pandas import DataFrame
 from tqdm.auto import tqdm
 
 from ..server_version.server_version import ServerVersion

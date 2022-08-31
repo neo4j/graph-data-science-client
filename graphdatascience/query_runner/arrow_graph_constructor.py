@@ -5,7 +5,7 @@ from typing import Dict, List
 
 import numpy
 import pyarrow.flight as flight
-from pandas.core.frame import DataFrame
+from pandas import DataFrame
 from pyarrow import Table
 
 from .graph_constructor import GraphConstructor

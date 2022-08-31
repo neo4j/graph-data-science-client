@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from pandas.core.frame import DataFrame
+from pandas import DataFrame
 
 
 class GraphConstructor(ABC):

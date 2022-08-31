@@ -1,6 +1,6 @@
 from typing import Any, Tuple
 
-from pandas.core.series import Series
+from pandas import Series
 
 from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
@@ -8,7 +8,9 @@ from .graph_object import Graph
 
 
 class GraphProjectRunner(CallerBase, IllegalAttrChecker):
-    def __call__(self, graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> Tuple[Graph, Series]:
+    def __call__(
+        self, graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any
+    ) -> Tuple[Graph, "Series[Any]"]:
         result = self._query_runner.run_query_with_logging(
             f"CALL {self._namespace}($graph_name, $node_spec, $relationship_spec, $config)",
             {
@@ -21,7 +23,7 @@ class GraphProjectRunner(CallerBase, IllegalAttrChecker):
 
         return Graph(graph_name, self._query_runner, self._server_version), result
 
-    def estimate(self, node_spec: Any, relationship_spec: Any, **config: Any) -> Series:
+    def estimate(self, node_spec: Any, relationship_spec: Any, **config: Any) -> "Series[Any]":
         self._namespace += ".estimate"
         result = self._query_runner.run_query(
             f"CALL {self._namespace}($node_spec, $relationship_spec, $config)",
@@ -45,7 +47,7 @@ class GraphProjectRunner(CallerBase, IllegalAttrChecker):
         node_filter: str,
         relationship_filter: str,
         **config: Any,
-    ) -> Tuple[Graph, Series]:
+    ) -> Tuple[Graph, "Series[Any]"]:
         self._namespace += ".subgraph"
         result = self._query_runner.run_query_with_logging(
             f"CALL {self._namespace}($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)",

@@ -1,8 +1,8 @@
 from typing import Generator
 
-import pandas
 import pytest
 from neo4j import DEFAULT_DATABASE
+from pandas import DataFrame
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
@@ -655,7 +655,7 @@ def test_graph_generate(gds: GraphDataScience) -> None:
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience) -> None:
-    nodes = pandas.DataFrame(
+    nodes = DataFrame(
         {
             "nodeId": [0, 1, 2, 3],
             "labels": [["A"], "B", ["C", "A"], ["D"]],
@@ -663,7 +663,7 @@ def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience
             "propB": [1338, 43, 9, 133743],
         }
     )
-    relationships = pandas.DataFrame(
+    relationships = DataFrame(
         {
             "sourceNodeId": [0, 1, 2, 3],
             "targetNodeId": [1, 2, 3, 0],
@@ -689,8 +689,8 @@ def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience
 @pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_with_arrow(gds: GraphDataScience) -> None:
-    nodes = pandas.DataFrame({"nodeId": [0, 1, 2, 3]})
-    relationships = pandas.DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
+    nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
+    relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
     G = gds.alpha.graph.construct("hello", nodes, relationships)
 
@@ -705,8 +705,8 @@ def test_graph_construct_with_arrow(gds: GraphDataScience) -> None:
 @pytest.mark.skip_on_aura  # AuraDS does not currently support Arrow
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_with_arrow_multiple_dfs(gds: GraphDataScience) -> None:
-    nodes = [pandas.DataFrame({"nodeId": [0, 1]}), pandas.DataFrame({"nodeId": [2, 3]})]
-    relationships = pandas.DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
+    nodes = [DataFrame({"nodeId": [0, 1]}), DataFrame({"nodeId": [2, 3]})]
+    relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
     G = gds.alpha.graph.construct("hello", nodes, relationships)
 
@@ -721,8 +721,8 @@ def test_graph_construct_with_arrow_multiple_dfs(gds: GraphDataScience) -> None:
 @pytest.mark.skip_on_aura  # Should not warn when targeting AuraDS
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_without_arrow_enterprise_warning(gds_without_arrow: GraphDataScience) -> None:
-    nodes = pandas.DataFrame({"nodeId": [0, 1, 2, 3]})
-    relationships = pandas.DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
+    nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
+    relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
     with pytest.warns(UserWarning):
         G = gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
@@ -732,8 +732,8 @@ def test_graph_construct_without_arrow_enterprise_warning(gds_without_arrow: Gra
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_without_arrow_multi_dfs(gds_without_arrow: GraphDataScience) -> None:
-    nodes = pandas.DataFrame({"nodeId": [0, 1, 2, 3]})
-    relationships = pandas.DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
+    nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
+    relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
     with pytest.raises(ValueError):
         gds_without_arrow.alpha.graph.construct("hello", [nodes, nodes], relationships)
@@ -745,13 +745,13 @@ def test_graph_construct_without_arrow_multi_dfs(gds_without_arrow: GraphDataSci
 @pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_with_arrow_abort(gds: GraphDataScience) -> None:
-    bad_nodes = pandas.DataFrame({"bogus": [0, 1, 2, 3]})
-    relationships = pandas.DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
+    bad_nodes = DataFrame({"bogus": [0, 1, 2, 3]})
+    relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
     with pytest.raises(Exception):
         gds.alpha.graph.construct("hello", bad_nodes, relationships)
 
-    good_nodes = pandas.DataFrame({"nodeId": [0, 1, 2, 3]})
+    good_nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
     G = gds.alpha.graph.construct("hello", good_nodes, relationships)
 
     assert G.name() == "hello"
@@ -770,8 +770,8 @@ def test_graph_construct_with_arrow_no_db() -> None:
 
     assert not gds.database()
 
-    nodes = pandas.DataFrame({"nodeId": [0, 1, 2, 3]})
-    relationships = pandas.DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
+    nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
+    relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
     with pytest.raises(ValueError):
         gds.alpha.graph.construct("hello", nodes, relationships)

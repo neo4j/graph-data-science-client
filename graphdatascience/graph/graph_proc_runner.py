@@ -2,8 +2,7 @@ import os
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from multimethod import multimethod
-from pandas.core.frame import DataFrame
-from pandas.core.series import Series
+from pandas import DataFrame, Series
 
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
@@ -49,7 +48,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         failIfMissing: bool = False,
         dbName: str = "",
         username: Optional[str] = None,
-    ) -> Optional[Series]:
+    ) -> Optional["Series[Any]"]:
         self._namespace += ".drop"
 
         params = {
@@ -69,7 +68,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return None
 
-    def exists(self, graph_name: str) -> Series:
+    def exists(self, graph_name: str) -> "Series[Any]":
         self._namespace += ".exists"
         result = self._query_runner.run_query(f"CALL {self._namespace}($graph_name)", {"graph_name": graph_name})
 
@@ -230,7 +229,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         node_properties: List[str],
         node_labels: Strings = ["*"],
         **config: Any,
-    ) -> Series:
+    ) -> "Series[Any]":
         self._namespace += ".writeNodeProperties"
 
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
@@ -241,7 +240,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         relationship_type: str,
         relationship_property: str = "",
         **config: Any,
-    ) -> Series:
+    ) -> "Series[Any]":
         self._namespace += ".writeRelationship"
 
         query = f"CALL {self._namespace}($graph_name, $relationship_type, $relationship_property, $config)"
@@ -264,7 +263,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         G: Graph,
         node_properties: List[str],
         **config: Any,
-    ) -> Series:
+    ) -> Series:  # type: ignore
         self._namespace += ".removeNodeProperties"
 
         query = f"CALL {self._namespace}($graph_name, $properties, $config)"
@@ -284,12 +283,12 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         node_properties: List[str],
         node_labels: Strings,
         **config: Any,
-    ) -> Series:
+    ) -> Series:  # type: ignore
         self._namespace += ".removeNodeProperties"
 
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
-    def deleteRelationships(self, G: Graph, relationship_type: str) -> Series:
+    def deleteRelationships(self, G: Graph, relationship_type: str) -> "Series[Any]":
         self._namespace += ".deleteRelationships"
 
         query = f"CALL {self._namespace}($graph_name, $relationship_type)"
@@ -300,7 +299,9 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    def generate(self, graph_name: str, node_count: int, average_degree: int, **config: Any) -> Tuple[Graph, Series]:
+    def generate(
+        self, graph_name: str, node_count: int, average_degree: int, **config: Any
+    ) -> Tuple[Graph, "Series[Any]"]:
         self._namespace += ".generate"
 
         query = f"CALL {self._namespace}($graph_name, $node_count, $average_degree, $config)"

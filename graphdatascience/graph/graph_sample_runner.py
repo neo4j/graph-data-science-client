@@ -1,6 +1,6 @@
 from typing import Any, Tuple
 
-from pandas.core.series import Series
+from pandas import Series
 
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
@@ -13,7 +13,7 @@ from .graph_object import Graph
 class GraphSampleRunner(CallerBase, IllegalAttrChecker):
     @client_only_endpoint("gds.alpha.graph.sample")
     @compatible_with("construct", min_inclusive=ServerVersion(2, 2, 0))
-    def rwr(self, graph_name: str, from_G: Graph, **config: Any) -> Tuple[Graph, Series]:
+    def rwr(self, graph_name: str, from_G: Graph, **config: Any) -> Tuple[Graph, "Series[Any]"]:
         self._namespace += ".rwr"
 
         query = f"CALL {self._namespace}($graph_name, $from_graph_name, $config)"

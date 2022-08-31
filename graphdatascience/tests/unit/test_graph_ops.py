@@ -1,5 +1,5 @@
-import pandas
 import pytest
+from pandas import DataFrame
 
 from .conftest import CollectingQueryRunner
 from graphdatascience.graph_data_science import GraphDataScience
@@ -170,7 +170,7 @@ def test_graph_nodeProperty_stream(runner: CollectingQueryRunner, gds: GraphData
 def test_graph_streamNodeProperties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    runner.set__mock_result(pandas.DataFrame([{"nodeId": 0, "dummyProp": 2}]))
+    runner.set__mock_result(DataFrame([{"nodeId": 0, "dummyProp": 2}]))
 
     gds.graph.streamNodeProperties(G, ["dummyProp"], concurrency=2)
     assert runner.last_query() == "CALL gds.graph.streamNodeProperties($graph_name, $properties, $entities, $config)"
@@ -195,7 +195,7 @@ def test_graph_streamNodeProperties(runner: CollectingQueryRunner, gds: GraphDat
 def test_graph_nodeProperties_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    runner.set__mock_result(pandas.DataFrame([{"nodeId": 0, "dummyProp": 2}]))
+    runner.set__mock_result(DataFrame([{"nodeId": 0, "dummyProp": 2}]))
 
     gds.graph.nodeProperties.stream(G, ["dummyProp"], concurrency=2)
     assert runner.last_query() == "CALL gds.graph.nodeProperties.stream($graph_name, $properties, $entities, $config)"
@@ -274,7 +274,7 @@ def test_graph_relationshipProperty_stream(runner: CollectingQueryRunner, gds: G
 def test_graph_streamRelationshipProperties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    result_df = pandas.DataFrame(
+    result_df = DataFrame(
         [
             {
                 "sourceNodeId": 0,
@@ -317,7 +317,7 @@ def test_graph_streamRelationshipProperties(runner: CollectingQueryRunner, gds: 
 def test_graph_relationshipProperties_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    result_df = pandas.DataFrame(
+    result_df = DataFrame(
         [
             {
                 "sourceNodeId": 0,
@@ -568,14 +568,14 @@ def test_graph_sample_rwr(runner: CollectingQueryRunner, gds: GraphDataScience) 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
 def test_graph_alpha_construct_without_arrow(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    nodes = pandas.DataFrame(
+    nodes = DataFrame(
         {
             "nodeId": [0, 1],
             "labels": [["A"], ["B"]],
             "propA": [1337, 42.1],
         }
     )
-    relationships = pandas.DataFrame(
+    relationships = DataFrame(
         {
             "sourceNodeId": [0, 1],
             "targetNodeId": [1, 0],
@@ -613,8 +613,8 @@ def test_graph_alpha_construct_without_arrow(runner: CollectingQueryRunner, gds:
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
 def test_graph_alpha_construct_validate_df_columns(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    nodes = pandas.DataFrame({"nodeIds": [0, 1]})
-    relationships = pandas.DataFrame({"sourceNodeId": [0, 1], "TargetNodeIds": [1, 0]})
+    nodes = DataFrame({"nodeIds": [0, 1]})
+    relationships = DataFrame({"sourceNodeId": [0, 1], "TargetNodeIds": [1, 0]})
 
     with pytest.raises(ValueError, match=r"(.*'nodeId'.*\s.*'targetNodeId'.*)|(.*'targetNodeId'.*\s.*'nodeId'.*)"):
         gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2)

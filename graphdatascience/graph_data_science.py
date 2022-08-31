@@ -3,8 +3,7 @@ import warnings
 from typing import Any, Dict, Optional, Tuple, Type, TypeVar, Union
 
 from neo4j import Driver, GraphDatabase
-from pandas import Series
-from pandas.core.frame import DataFrame
+from pandas import DataFrame, Series
 
 from .call_builder import CallBuilder
 from .direct_endpoints import DirectEndpoints
@@ -98,8 +97,10 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
         if arrow and self._server_version >= ServerVersion(2, 1, 0):
             try:
-                arrow_info: Series = self._query_runner.run_query("CALL gds.debug.arrow()").squeeze()
-                listen_address = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])
+                arrow_info: "Series[Any]" = self._query_runner.run_query("CALL gds.debug.arrow()").squeeze()
+                listen_address: str = arrow_info.get(
+                    "advertisedListenAddress", arrow_info["listenAddress"]
+                )  # type: ignore
                 if arrow_info["running"]:
                     self._query_runner = ArrowQueryRunner(
                         listen_address,

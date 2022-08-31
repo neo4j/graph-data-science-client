@@ -1,7 +1,6 @@
-from typing import Optional
+from typing import Any, Optional
 
-from pandas.core.frame import DataFrame
-from pandas.core.series import Series
+from pandas import DataFrame, Series
 
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
@@ -40,7 +39,7 @@ class PipelineProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params)
 
-    def exists(self, pipeline_name: str) -> Series:
+    def exists(self, pipeline_name: str) -> "Series[Any]":
         self._namespace += ".exists"
 
         query = f"CALL {self._namespace}($pipeline_name)"
@@ -48,7 +47,7 @@ class PipelineProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    def drop(self, pipeline: TrainingPipeline) -> Series:
+    def drop(self, pipeline: TrainingPipeline) -> "Series[Any]":
         self._namespace += ".drop"
 
         query = f"CALL {self._namespace}($pipeline_name)"

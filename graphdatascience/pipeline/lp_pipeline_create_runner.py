@@ -1,6 +1,6 @@
-from typing import Tuple
+from typing import Any, Tuple
 
-from pandas.core.series import Series
+from pandas import Series
 
 from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
@@ -9,7 +9,7 @@ from .lp_training_pipeline import LPTrainingPipeline
 
 
 class LPPipelineCreateRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
-    def create(self, name: str) -> Tuple[LPTrainingPipeline, Series]:
+    def create(self, name: str) -> Tuple[LPTrainingPipeline, "Series[Any]"]:
         self._namespace += ".create"
 
         query = f"CALL {self._namespace}($name)"

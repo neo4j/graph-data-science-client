@@ -1,7 +1,6 @@
-from typing import Optional
+from typing import Any, Optional
 
-from pandas.core.frame import DataFrame
-from pandas.core.series import Series
+from pandas import DataFrame, Series
 
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
@@ -10,7 +9,7 @@ from ..error.uncallable_namespace import UncallableNamespace
 
 
 class DebugProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
-    def sysInfo(self) -> Series:
+    def sysInfo(self) -> "Series[Any]":
         self._namespace += ".sysInfo"
         query = f"CALL {self._namespace}()"
 
@@ -30,7 +29,7 @@ class SystemEndpoints(CallerBase):
 
         return self._query_runner.run_query(query, params)
 
-    def systemMonitor(self) -> Series:
+    def systemMonitor(self) -> "Series[Any]":
         self._namespace += ".systemMonitor"
         query = f"CALL {self._namespace}()"
 
