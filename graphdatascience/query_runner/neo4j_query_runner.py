@@ -26,6 +26,12 @@ class Neo4jQueryRunner(QueryRunner):
             params = {}
 
         with self._driver.session(database=self._db) as session:
+            # Since neo4j-driver 4.4.6 we get an unexpected warning
+            warnings.filterwarnings(
+                "ignore",
+                message=r"^The 'update_routing_table_timeout' config key is deprecated$",
+            )
+
             result = session.run(query, params)
 
             # Though pandas support may be experimental in the `neo4j` package, it should always
