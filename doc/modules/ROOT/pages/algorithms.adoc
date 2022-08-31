@@ -22,7 +22,7 @@ To exemplify this, we introduce a small road-network graph:
 ----
 gds.run_cypher(
   """
-  CREATE 
+  CREATE
   (a:City {name: "New York City", settled: 1624}),
   (b:City {name: "Philadelphia", settled: 1682}),
   (c:City:Capital {name: "Washington D.C.", settled: 1790}),
@@ -112,9 +112,9 @@ source_id = gds.find_node_id(["City"], {"name": "New York City"})
 target_id = gds.find_node_id(["City"], {"name": "Boston"})
 
 res = gds.shortestPath.dijkstra.stream(
-    G, 
-    sourceNode=source_id, 
-    targetNode=target_id, 
+    G,
+    sourceNode=source_id,
+    targetNode=target_id,
     relationshipWeightProperty="cost"
 )
 assert res["totalCost"][0] == 160

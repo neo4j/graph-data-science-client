@@ -76,17 +76,19 @@ However, if `NEO4J_USER` is not set the tests will try to connect without authen
 Supposing that the targeted Neo4j database have been set up, running the documentation tests is a simple call (from the `doc` directory):
 
 ```bash
-ruby tests/test_docs.rb python
+./tests/test_docs.rb python
 ```
 
 where `python` here refers to the Python interpreter that will be used to run example code.
 Depending on your system, a different reference to an interpreter such as `python3` might be the right choice.
+Additionally, there's a boolean `--include-enterprise` option which enable running of documentation tests that rely on GDS EE features. By default no snippets requiring GDS EE will be run.
 
 
 ### Adding new tests
 
 The example code snippets of the documentation that will be tested are those AsciiDoc blocks with style `source` and role `test`.
 Further, if a block has a group attribute, then it will be concatenated with all other snippets of the same group into one script.
+If a block has the enterprise attribute, it will only be run when the option `--include-enterprise` option is given on the command line.
 
 Additionally, before a code snippet from the documentation is run, it is:
 

@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'open3'
+require 'optparse'
 require 'asciidoctor'
 require 'minitest/autorun'
 
@@ -36,9 +37,22 @@ finally:
         gds.pipeline.get(pipeline_name).drop(failIfMissing=True)
     res = gds.beta.model.list()
     for model_info in res["modelInfo"]:
-        gds.model.get(model_info["modelName"]).drop(failIfMissing=True)
+        model = gds.model.get(model_info["modelName"])
+        if (model.stored()):
+            gds.alpha.model.delete(model)
+        if (model.exists()):
+            model.drop(failIfMissing=True)
     gds.run_cypher("MATCH (n) DETACH DELETE (n)")
 '
+
+$options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: ./test_docs.rb PYTHON_INTERPRETER [options]"
+
+  opts.on("-e", "--include-enterprise", "Include testing of GDS enterprise features") do |e|
+    $options[:enterprise] = e
+  end
+end.parse!
 
 def doc_files
   Dir["#{__dir__}/../modules/ROOT/pages/**/*.adoc"]
@@ -59,6 +73,11 @@ def scripts_of_file(path)
 
   source_blocks = doc.find_by style: 'source'
   testable_source_blocks = source_blocks.select { |b| b.has_role? 'test' }
+
+  if !$options[:enterprise]
+    puts path
+    testable_source_blocks = testable_source_blocks.select { |b| !b.attr? 'enterprise' }
+  end
 
   raw_scripts = []
   raw_scripts_by_group = {}
