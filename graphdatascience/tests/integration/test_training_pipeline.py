@@ -18,13 +18,13 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
     runner.run_query(
         """
         CREATE
-        (a: Node),
-        (b: Node),
-        (c: Node),
-        (d: Node),
-        (e: Node),
-        (f: Node),
-        (g: Node),
+        (a: Node {age: 12, fraudster: 0}),
+        (b: Node {age: 01, fraudster: 1}),
+        (c: Node {age: 07, fraudster: 0}),
+        (d: Node {age: 54, fraudster: 1}),
+        (e: Node {age: 18, fraudster: 0}),
+        (f: Node {age: 23, fraudster: 1}),
+        (g: Node {age: 49, fraudster: 0}),
         (a)-[:REL]->(b),
         (a)-[:REL]->(c),
         (a)-[:REL]->(d),
@@ -45,7 +45,9 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (c)-[:REL]->(g)
         """
     )
-    G, _ = gds.graph.project("g", "Node", {"REL": {"orientation": "UNDIRECTED"}})
+    G, _ = gds.graph.project(
+        "g", {"Node": {"properties": ["age", "fraudster"]}}, {"REL": {"orientation": "UNDIRECTED"}}
+    )
 
     yield G
 
@@ -308,6 +310,39 @@ def test_feature_properties_nc_pipeline(nc_pipe: NCTrainingPipeline) -> None:
     steps = nc_pipe.feature_properties()
     assert len(steps) == 1
     assert steps[0]["feature"] == "rank"
+
+
+def test_train_nc_pipeline(runner: Neo4jQueryRunner, nc_pipe: NCTrainingPipeline, G: Graph) -> None:
+    nc_pipe.addNodeProperty("degree", mutateProperty="rank")
+    nc_pipe.selectFeatures(["rank"])
+    nc_pipe.configureSplit(testFraction=0.2, validationFolds=2)
+    nc_pipe.addLogisticRegression(penalty=1)
+
+    nc_model, result = nc_pipe.train(G, modelName="m", concurrency=2, targetProperty="fraudster", metrics=["ACCURACY"])
+    assert nc_model.name() == "m"
+    assert result["configuration"]["modelName"] == "m"
+
+    query = "CALL gds.beta.model.drop($name)"
+    params = {"name": nc_model.name()}
+    runner.run_query(query, params)
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+def test_train_nr_pipeline(runner: Neo4jQueryRunner, nr_pipe: NRTrainingPipeline, G: Graph) -> None:
+    nr_pipe.addNodeProperty("degree", mutateProperty="rank")
+    nr_pipe.selectFeatures(["rank"])
+    nr_pipe.configureSplit(testFraction=0.2, validationFolds=2)
+    nr_pipe.addLinearRegression(penalty=1)
+
+    nr_model, result = nr_pipe.train(
+        G, modelName="m", concurrency=2, targetProperty="age", metrics=["MEAN_SQUARED_ERROR"]
+    )
+    assert nr_model.name() == "m"
+    assert result["configuration"]["modelName"] == "m"
+
+    query = "CALL gds.beta.model.drop($name)"
+    params = {"name": nr_model.name()}
+    runner.run_query(query, params)
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
