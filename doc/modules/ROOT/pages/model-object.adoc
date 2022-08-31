@@ -17,7 +17,7 @@ One of the simplest is to train a https://neo4j.com/docs/graph-data-science/curr
 
 To exemplify this, we introduce a small road-network graph:
 
-[source,python,role=test,group=gs-model]
+[source,python,group=gs-model]
 ----
 gds.run_cypher(
   """
@@ -50,7 +50,7 @@ assert G.relationship_count() == 9
 
 Now we can use the graph `G` to train a GraphSage model.
 
-[source,python,role=test,group=gs-model]
+[source,python,group=gs-model]
 ----
 model, train_result = gds.beta.graphSage.train(G, modelName="city-representation", featureProperties=["settled"], randomSeed=42)
 
@@ -63,7 +63,7 @@ Similarly, we can also get model objects from training xref:pipelines.adoc[machi
 
 To get a model object that represents a model that has already been trained and is present in the model catalog, one can call the client-side only `get` method and passing it a name:
 
-[source,python,role=test,group=gs-model]
+[source,python,group=gs-model]
 ----
 model = gds.model.get("city-representation")
 
@@ -99,7 +99,7 @@ There are convenience methods on all model objects that let us extract informati
 
 For example, to get the train configuration of our model object `model` created above, we would do the following:
 
-[source,python,role=test,group=gs-model]
+[source,python,group=gs-model]
 ----
 train_config = model.train_config()
 
@@ -115,7 +115,7 @@ How to do so for GraphSAGE is xref:model-object.adoc#model-object-graphsage[desc
 Additionally, model objects can be used as input to https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog operations].
 For instance, supposing we have our model object `model` created above, we could:
 
-[source,python,role=test,group=gs-model,enterprise=true]
+[source,python,group=gs-model,enterprise=true]
 ----
 # Store the model on disk (GDS Enterprise Edition)
 _ = gds.alpha.model.store(model)
@@ -146,7 +146,7 @@ Once trained, in addition to the xref:model-object.adoc#model-object-inspecting[
 
 So given the GraphSAGE model `model` we trained above, we could do the following:
 
-[source,python,role=test,group=gs-model]
+[source,python,group=gs-model]
 ----
 # Make sure our training actually converged
 metrics = model.metrics()

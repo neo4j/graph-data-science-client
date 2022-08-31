@@ -18,7 +18,7 @@ As a convention we recommend always calling the instantiated `GraphDataScience` 
 
 The simplest way to instantiate the `GraphDataScience` object is from a Neo4j server URI and corresponding credentials:
 
-[source,python]
+[source,python,role=no-test]
 ----
 from graphdatascience import GraphDataScience
 
@@ -28,7 +28,7 @@ gds = GraphDataScience("bolt://my-server.neo4j.io:7687", auth=("neo4j", "my-pass
 print(gds.version())
 ----
 
-[source,python]
+[source,python,role=no-test]
 .Results:
 [source]
 ----
@@ -39,14 +39,14 @@ Alternatively, for use cases where direct access and control of the Neo4j driver
 
 If we don't want to use the default database of our DBMS, we can specify which one to use:
 
-[source,python]
+[source,python,role=no-test]
 ----
 gds.set_database("my-db")
 ----
 
 To check if the GDS server library we're running against is licensed we can make the following call:
 
-[source,python,role=test]
+[source,python]
 ----
 using_enterprise = gds.is_licensed()
 ----
@@ -65,7 +65,7 @@ Rest assured however that despite the lack of this type of discoverability the i
 If you are connecting the client to an https://neo4j.com/cloud/graph-data-science/[AuraDS instance], you can get recommended non-default configuration settings of the Python Driver applied automatically.
 To achieve this, set the constructor argument `aura_ds=True`:
 
-[source, python]
+[source,python,role=no-test]
 ----
 from graphdatascience import GraphDataScience
 
@@ -83,7 +83,7 @@ gds = GraphDataScience(
 In the following example we illustrate the Python client to run a Cypher query, project a graph into GDS, run an algorithm and inspect the result via the client-side graph object.
 We suppose that we have already created a `GraphDataScience` object stored in the variable `gds`.
 
-[source,python,role=test]
+[source,python]
 ----
 # Create a minimal example graph
 gds.run_cypher(
@@ -116,7 +116,7 @@ assert G_office.node_properties("City") == ["rank"]
 
 Similarly to how the Neo4j Python driver supports closing all open connections to the DBMS, you can call `close` on the `GraphDataScience` object to the same effect:
 
-[source,python]
+[source,python,role=no-test]
 ----
 # Close any open connections in the underlying Neo4j driver's connection pool
 gds.close()

@@ -21,7 +21,7 @@ This section outlines how to use the Python client to build, configure and train
 The creation of the node classification pipeline is very similar to https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/config/#nodeclassification-creating-a-pipeline[how it's done in Cypher].
 To create a new node classification pipeline one would make the following call:
 
-[source,python,role=test]
+[source,python]
 ----
 pipe, res = gds.beta.pipeline.nodeClassification.create("my-pipe")
 ----
@@ -83,11 +83,11 @@ Note that we don't configure splits explicitly, but rather use the default.
 
 To exemplify this, we introduce a small person graph:
 
-[source,python,role=test,group=nc-pipe]
+[source,python,group=nc-pipe]
 ----
 gds.run_cypher(
   """
-  CREATE 
+  CREATE
   (a:Person {name: "Bob", fraudster: 0}),
   (b:Person {name: "Alice", fraudster: 0}),
   (c:Person {name: "Eve", fraudster: 1}),
@@ -110,7 +110,7 @@ G, project_result = gds.graph.project("person_graph", {"Person": {"properties": 
 assert G.node_labels() == ["Person"]
 ----
 
-[source,python,role=test,group=nc-pipe]
+[source,python,group=nc-pipe]
 ----
 pipe, _ = gds.beta.pipeline.nodeClassification.create("my-pipe")
 
@@ -181,7 +181,7 @@ The three main differences are that:
 
 We now continue the xref:pipelines.adoc#pipelines-nodeclassification-pipe-example[example above] using the node classification model `trained_pipe_model` we trained there.
 
-[source,python,role=test,group=nc-pipe]
+[source,python,group=nc-pipe]
 ----
 # Make sure we indeed obtained an accuracy score
 metrics = fraud_model.metrics()
@@ -268,7 +268,7 @@ Note that we don't configure training parameters explicitly, but rather use the 
 
 To exemplify this, we introduce a small person graph:
 
-[source,python,role=test,group=lp-pipe]
+[source,python,group=lp-pipe]
 ----
 gds.run_cypher(
   """
@@ -297,7 +297,7 @@ assert G.relationship_types() == ["KNOWS"]
 
 
 // FIXME: Enable when determinism of LP fixed
-[source,python,group=lp-pipe]
+[source,python,role=no-test,group=lp-pipe]
 ----
 pipe, _ = gds.beta.pipeline.linkPrediction.create("lp-pipe")
 
@@ -365,7 +365,7 @@ The three main differences are that:
 We now continue the xref:pipelines.adoc#pipelines-linkprediction-pipe-example[example above] using the link prediction model `trained_pipe_model` we trained there.
 
 // FIXME: Enable when determinism of LP fixed
-[source,python,group=lp-pipe]
+[source,python,role=no-test,group=lp-pipe]
 ----
 # Make sure we indeed obtained an AUCPR score
 metrics = friend_recommender.metrics()
@@ -444,7 +444,7 @@ Note that we don't configure splits explicitly, but rather use the default.
 
 To exemplify this, we introduce a small person graph:
 
-[source,python,role=test,group=nr-pipe]
+[source,python,group=nr-pipe]
 ----
 gds.run_cypher(
   """
@@ -471,7 +471,7 @@ G, project_result = gds.graph.project("person_graph", {"Person": {"properties": 
 assert G.relationship_types() == ["KNOWS"]
 ----
 
-[source,python,role=test,group=nr-pipe]
+[source,python,group=nr-pipe]
 ----
 pipe, _ = gds.alpha.pipeline.nodeRegression.create("nr-pipe")
 
@@ -534,7 +534,7 @@ The three main differences are that:
 We now continue the xref:pipelines.adoc#pipelines-noderegression-pipe-example[example above] using the node regression model `age_predictor` we trained there.
 Suppose that we have a new graph `H` that we want to run predictions on.
 
-[source,python,role=test,group=nr-pipe]
+[source,python,group=nr-pipe]
 ----
 # Make sure we indeed obtained an MEAN_SQUARED_ERROR score
 metrics = age_predictor.metrics()
@@ -554,7 +554,7 @@ The primary way to use pipeline objects is for training models.
 Additionally, pipeline objects can be used as input to https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/[GDS Pipeline Catalog operations].
 For instance, supposing we have a pipeline object `pipe`, we could:
 
-[source,python]
+[source,python,role=no-test]
 ----
 catalog_contains_pipe = gds.beta.pipeline.exists(pipe)
 
@@ -563,7 +563,7 @@ gds.beta.model.drop(pipe)  # same as pipe.drop()
 
 A pipeline object that has already been created and is present in the pipeline catalog can be retrieved calling the `get` method with its name:
 
-[source,python]
+[source,python,role=no-test]
 ----
 pipeline = gds.pipeline.get("node_pipeline")
 ----

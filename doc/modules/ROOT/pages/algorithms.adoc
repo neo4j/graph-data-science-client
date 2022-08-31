@@ -18,7 +18,7 @@ The result of running a procedure is returned as either a pandas `DataFrame` or 
 
 To exemplify this, we introduce a small road-network graph:
 
-[source,python,role=test,group=algo]
+[source,python,group=algo]
 ----
 gds.run_cypher(
   """
@@ -48,7 +48,7 @@ assert G.relationship_count() == 9
 
 Now we can run the Louvain and FastRP algorithms on our graph `G`:
 
-[source,python,role=test,group=algo]
+[source,python,group=algo]
 ----
 louvain_res = gds.louvain.mutate(
     G,                            #  Graph object
@@ -106,7 +106,7 @@ In the Python client there is a convenience method `gds.find_node_id` to retriev
 
 For example, to find a source and target node of a graph `G` with cities to run https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/[Dijkstra Source-Target Shortest Path] on, we could do the following:
 
-[source,python,role=test,group=algo]
+[source,python,group=algo]
 ----
 source_id = gds.find_node_id(["City"], {"name": "New York City"})
 target_id = gds.find_node_id(["City"], {"name": "Boston"})
@@ -129,7 +129,7 @@ Note that exactly one node per method call must be matched, otherwise an error w
 
 The Python call:
 
-[source,python,role=test,group=algo]
+[source,python,group=algo]
 ----
 gds.find_node_id(["City", "Capital"], {"settled": 1790, "name": "Washington D.C."})
 ----
@@ -153,7 +153,7 @@ And they simply return the similarity score of the prediction just made as a flo
 
 For example, to run the Adamic Adar algorithm, we can use the following:
 
-[source,python,role=test,group=algo]
+[source,python,group=algo]
 ----
 node1 = gds.find_node_id(["City"], {"name": "Boston"})
 node2 = gds.find_node_id(["City"], {"name": "Atlantic City"})

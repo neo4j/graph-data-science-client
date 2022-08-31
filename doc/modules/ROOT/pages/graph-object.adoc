@@ -15,7 +15,7 @@ include::ROOT:partial$/gds-object.adoc[]
 There are several ways of projecting a graph object.
 The simplest way is to do a https://neo4j.com/docs/graph-data-science/current/graph-project/[native projection]:
 
-[source,python,role=test,group=graph-project]
+[source,python,group=graph-project]
 ----
 # Suppose we have this simple graph in our database
 gds.run_cypher(
@@ -51,7 +51,7 @@ Similarly to Cypher there's also a corresponding `gds.graph.project.estimate` me
 
 To get a graph object that represents a graph that has already been projected into the graph catalog, one can call the client-side only `get` method and passing it a name:
 
-[source,python,role=test,group=graph-project]
+[source,python,group=graph-project]
 ----
 G = gds.graph.get("offices")
 ----
@@ -73,7 +73,7 @@ include::ROOT:partial$/alpha-note.adoc[]
 
 Instead of projecting a graph from the Neo4j database it is also possible to construct new graphs using pandas `DataFrames` from the client.
 
-[source,python,role=test]
+[source,python]
 ----
 nodes = pandas.DataFrame(
     {
@@ -105,7 +105,7 @@ assert "REL" in G.relationship_types()
 The above example creates a simple graph using one node and one relationship `DataFrame`.
 The created graph is equivalent to a graph created by the following Cypher query:
 
-[source, cypher]
+[source,cypher]
 ----
 CREATE
     (a:A {prop1: 42,    otherProperty: 0.1),
@@ -162,7 +162,7 @@ There are convenience methods on the graph object that let us extract informatio
 
 For example, to get the node count and node properties of a graph `G`, we would do the following:
 
-[source,python,role=test,group=graph-project]
+[source,python,group=graph-project]
 ----
 n = G.node_count()
 props = G.node_properties("City")
@@ -183,7 +183,7 @@ include::ROOT:partial$/algorithm-syntax.adoc[]
 In this example we run the degree centrality algorithm on a graph `G`:
 
 [[graph-object-degree-example]]
-[source,python,role=test,group=graph-project]
+[source,python,group=graph-project]
 ----
 res = gds.degree.mutate(G, mutateProperty="degree")
 assert "centralityDistribution" in res
@@ -197,7 +197,7 @@ Of those catalog procedures that take a graph name string as input, their Python
 
 Below are some examples of how the GDS Graph Catalog can be used via the client, assuming we inspect the graph `G` from the <<graph-object-degree-example, example above>>:
 
-[source,python,role=test,group=graph-project]
+[source,python,group=graph-project]
 ----
 res = gds.graph.streamNodeProperty(G, node_properties="degree")
 

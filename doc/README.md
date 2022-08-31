@@ -86,7 +86,7 @@ By adding the `-n test_community` option one can make sure that only tests that 
 
 ### Adding new tests
 
-The example code snippets of the documentation that will be tested are those AsciiDoc blocks with style `source` and role `test`.
+The example code snippets of the documentation that will be tested are those AsciiDoc blocks with style `source`, language `python` and without role `no-test`.
 Further, if a block has a group attribute, then it will be concatenated with all other snippets of the same group into one script.
 If a block has the enterprise attribute, it will only be run when the test `test_enterprise` is not filtered out.
 

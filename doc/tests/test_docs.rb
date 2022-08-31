@@ -72,8 +72,7 @@ def scripts_of_file(path, enterprise)
   doc = Asciidoctor.load_file path, safe: :safe
 
   source_blocks = doc.find_by style: 'source'
-  testable_source_blocks = source_blocks.select { |b| b.has_role? 'test' }
-
+  testable_source_blocks = source_blocks.select { |b| !b.has_role?('no-test') && b.attr('language') == 'python' }
   testable_source_blocks = testable_source_blocks.reject { |b| b.attr? 'enterprise' } unless enterprise
 
   raw_scripts = []
