@@ -1,8 +1,6 @@
 from typing import Any
 
-import pandas
-from pandas.core.frame import DataFrame
-from pandas.core.series import Series
+from pandas import DataFrame, Series
 
 from ..model.link_prediction_model import LPModel
 from ..query_runner.query_runner import QueryRunner
@@ -10,7 +8,7 @@ from .classification_training_pipeline import ClassificationTrainingPipeline
 
 
 class LPTrainingPipeline(ClassificationTrainingPipeline):
-    def addFeature(self, feature_type: str, **config: Any) -> Series:
+    def addFeature(self, feature_type: str, **config: Any) -> "Series[Any]":
         query = f"{self._query_prefix()}addFeature($pipeline_name, $feature_type, $config)"
         params = {
             "pipeline_name": self.name(),
@@ -22,7 +20,7 @@ class LPTrainingPipeline(ClassificationTrainingPipeline):
 
     def feature_steps(self) -> DataFrame:
         pipeline_info = self._list_info()["pipelineInfo"][0]
-        return pandas.DataFrame(pipeline_info["featurePipeline"]["featureSteps"])
+        return DataFrame(pipeline_info["featurePipeline"]["featureSteps"])
 
     def _query_prefix(self) -> str:
         return "CALL gds.beta.pipeline.linkPrediction."

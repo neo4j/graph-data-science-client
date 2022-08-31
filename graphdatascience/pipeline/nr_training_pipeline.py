@@ -1,7 +1,6 @@
-from typing import List, Union
+from typing import Any, List, Union
 
-import pandas
-from pandas.core.series import Series
+from pandas import Series
 
 from ..model.node_regression_model import NRModel
 from ..query_runner.query_runner import QueryRunner
@@ -11,15 +10,16 @@ from graphdatascience.pipeline.regression_training_pipeline import (
 
 
 class NRTrainingPipeline(RegressionTrainingPipeline):
-    def selectFeatures(self, node_properties: Union[str, List[str]]) -> Series:
+    def selectFeatures(self, node_properties: Union[str, List[str]]) -> "Series[Any]":
         query = f"{self._query_prefix()}selectFeatures($pipeline_name, $node_properties)"
         params = {"pipeline_name": self.name(), "node_properties": node_properties}
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    def feature_properties(self) -> Series:
+    def feature_properties(self) -> "Series[Any]":
         pipeline_info = self._list_info()["pipelineInfo"][0]
-        return pandas.Series(pipeline_info["featurePipeline"]["featureProperties"], dtype=object)
+        feature_properties: "Series[Any]" = Series(pipeline_info["featurePipeline"]["featureProperties"], dtype=object)
+        return feature_properties
 
     def _query_prefix(self) -> str:
         return "CALL gds.alpha.pipeline.nodeRegression."

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
-from pandas.core.frame import DataFrame
+from pandas import DataFrame
 
 from ..server_version.server_version import ServerVersion
 from .graph_constructor import GraphConstructor

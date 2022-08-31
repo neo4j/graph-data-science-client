@@ -1,7 +1,7 @@
 import warnings
 from typing import Any, List, Set, Tuple
 
-from pandas.core.frame import DataFrame
+from pandas import DataFrame
 
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
@@ -75,11 +75,12 @@ class CypherGraphConstructor(GraphConstructor):
 
     def _node_query(self, node_df: DataFrame) -> Tuple[str, List[List[Any]]]:
         node_list = node_df.values.tolist()
-        node_id_index = node_df.columns.get_loc("nodeId")
+        node_columns = list(node_df.columns)
+        node_id_index = node_columns.index("nodeId")
 
         label_query = ""
         if "labels" in node_df.keys():
-            label_index = node_df.columns.get_loc("labels")
+            label_index = node_columns.index("labels")
             label_query = f", node[{label_index}] as labels"
 
             # Make sure every node has a list of labels
@@ -92,25 +93,26 @@ class CypherGraphConstructor(GraphConstructor):
         property_query = ""
         property_columns: Set[str] = set(node_df.keys()) - {"nodeId", "labels"}
         if len(property_columns) > 0:
-            property_queries = (f", node[{node_df.columns.get_loc(col)}] as {col}" for col in property_columns)
+            property_queries = (f", node[{node_columns.index(col)}] as {col}" for col in property_columns)
             property_query = "".join(property_queries)
 
         return f"UNWIND $nodes as node RETURN node[{node_id_index}] as id{label_query}{property_query}", node_list
 
     def _relationship_query(self, rel_df: DataFrame) -> Tuple[str, List[List[Any]]]:
         rel_list = rel_df.values.tolist()
-        source_id_index = rel_df.columns.get_loc("sourceNodeId")
-        target_id_index = rel_df.columns.get_loc("targetNodeId")
+        rel_columns = list(rel_df.columns)
+        source_id_index = rel_columns.index("sourceNodeId")
+        target_id_index = rel_columns.index("targetNodeId")
 
         type_query = ""
         if "relationshipType" in rel_df.keys():
-            type_index = rel_df.columns.get_loc("relationshipType")
+            type_index = rel_columns.index("relationshipType")
             type_query = f", relationship[{type_index}] as type"
 
         property_query = ""
         property_columns: Set[str] = set(rel_df.keys()) - {"sourceNodeId", "targetNodeId", "relationshipType"}
         if len(property_columns) > 0:
-            property_queries = (f", relationship[{rel_df.columns.get_loc(col)}] as {col}" for col in property_columns)
+            property_queries = (f", relationship[{rel_columns.index(col)}] as {col}" for col in property_columns)
             property_query = "".join(property_queries)
 
         return (

@@ -1,7 +1,7 @@
 from typing import Generator
 
 import pytest
-from pandas.core.series import Series
+from pandas import Series
 
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience

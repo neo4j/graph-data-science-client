@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Tuple
 
-import pandas
-from pandas.core.frame import DataFrame
-from pandas.core.series import Series
+from pandas import DataFrame, Series
 
 from ..graph.graph_object import Graph
 from ..model.model import Model
@@ -28,7 +26,7 @@ class TrainingPipeline(ABC):
     def _create_trained_model(self, name: str, query_runner: QueryRunner) -> Model:
         pass
 
-    def addNodeProperty(self, procedure_name: str, **config: Any) -> Series:
+    def addNodeProperty(self, procedure_name: str, **config: Any) -> "Series[Any]":
         query = f"{self._query_prefix()}addNodeProperty($pipeline_name, $procedure_name, $config)"
         params = {
             "pipeline_name": self.name(),
@@ -44,14 +42,14 @@ class TrainingPipeline(ABC):
 
         return {key: _maybe_expand_tuple(val) for (key, val) in config.items()}
 
-    def configureAutoTuning(self, **config: Any) -> Series:
+    def configureAutoTuning(self, **config: Any) -> "Series[Any]":
         query_prefix = self._query_prefix().replace("beta", "alpha")
         query = f"{query_prefix}configureAutoTuning($pipeline_name, $config)"
         params = {"pipeline_name": self.name(), "config": config}
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    def train(self, G: Graph, **config: Any) -> Tuple[Model, Series]:
+    def train(self, G: Graph, **config: Any) -> Tuple[Model, "Series[Any]"]:
         query = f"{self._query_prefix()}train($graph_name, $config)"
         config["pipeline"] = self.name()
         params = {
@@ -66,7 +64,7 @@ class TrainingPipeline(ABC):
             result,
         )
 
-    def train_estimate(self, G: Graph, **config: Any) -> Series:
+    def train_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
         query = f"{self._query_prefix()}train.estimate($graph_name, $config)"
         config["pipeline"] = self.name()
         params = {
@@ -76,7 +74,7 @@ class TrainingPipeline(ABC):
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    def configureSplit(self, **config: Any) -> Series:
+    def configureSplit(self, **config: Any) -> "Series[Any]":
         query = f"{self._query_prefix()}configureSplit($pipeline_name, $config)"
         params = {"pipeline_name": self.name(), "config": config}
 
@@ -84,19 +82,22 @@ class TrainingPipeline(ABC):
 
     def node_property_steps(self) -> DataFrame:
         pipeline_info = self._list_info()["pipelineInfo"][0]
-        return pandas.DataFrame(pipeline_info["featurePipeline"]["nodePropertySteps"])
+        return DataFrame(pipeline_info["featurePipeline"]["nodePropertySteps"])
 
-    def split_config(self) -> Series:
+    def split_config(self) -> "Series[float]":
         pipeline_info = self._list_info()["pipelineInfo"][0]
-        return pandas.Series(pipeline_info["splitConfig"])
+        split_config: "Series[float]" = Series(pipeline_info["splitConfig"])
+        return split_config
 
-    def parameter_space(self) -> Series:
+    def parameter_space(self) -> "Series[Any]":
         pipeline_info = self._list_info()["pipelineInfo"][0]
-        return pandas.Series(pipeline_info["trainingParameterSpace"])
+        parameter_space: "Series[Any]" = Series(pipeline_info["trainingParameterSpace"])
+        return parameter_space
 
-    def auto_tuning_config(self) -> Series:
+    def auto_tuning_config(self) -> "Series[Any]":
         pipeline_info = self._list_info()["pipelineInfo"][0]
-        return pandas.Series(pipeline_info["autoTuningConfig"])
+        auto_tuning_config: "Series[Any]" = Series(pipeline_info["autoTuningConfig"])
+        return auto_tuning_config
 
     def _list_info(self) -> DataFrame:
         query = "CALL gds.beta.pipeline.list($name)"
@@ -121,7 +122,7 @@ class TrainingPipeline(ABC):
 
         return self._query_runner.run_query(query, params)["exists"].squeeze()  # type: ignore
 
-    def drop(self, failIfMissing: bool = False) -> Series:
+    def drop(self, failIfMissing: bool = False) -> "Series[Any]":
         query = "CALL gds.beta.pipeline.drop($pipeline_name, $fail_if_missing)"
         params = {"pipeline_name": self._name, "fail_if_missing": failIfMissing}
 

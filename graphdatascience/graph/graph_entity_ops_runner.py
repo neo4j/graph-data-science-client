@@ -1,7 +1,6 @@
 from typing import Any, Dict, List, Union
 
-from pandas.core.frame import DataFrame
-from pandas.core.series import Series
+from pandas import DataFrame, Series
 
 from .graph_object import Graph
 from graphdatascience.caller_base import CallerBase
@@ -71,12 +70,12 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         return result
 
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
-    def write(self, G: Graph, node_properties: List[str], node_labels: Strings = ["*"], **config: Any) -> Series:
+    def write(self, G: Graph, node_properties: List[str], node_labels: Strings = ["*"], **config: Any) -> "Series[Any]":
         self._namespace += ".write"
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
     @compatible_with("drop", min_inclusive=ServerVersion(2, 2, 0))
-    def drop(self, G: Graph, node_properties: List[str], **config: Any) -> Series:
+    def drop(self, G: Graph, node_properties: List[str], **config: Any) -> "Series[Any]":
         self._namespace += ".drop"
         query = f"CALL {self._namespace}($graph_name, $properties, $config)"
         params = {
@@ -122,7 +121,7 @@ class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
 
 class GraphRelationshipRunner(GraphEntityOpsBaseRunner):
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
-    def write(self, G: Graph, relationship_type: str, relationship_property: str = "", **config: Any) -> Series:
+    def write(self, G: Graph, relationship_type: str, relationship_property: str = "", **config: Any) -> "Series[Any]":
         self._namespace += ".write"
         query = f"CALL {self._namespace}($graph_name, $relationship_type, $relationship_property, $config)"
         params = {
@@ -141,7 +140,7 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
         self,
         G: Graph,
         relationship_type: str,
-    ) -> Series:
+    ) -> "Series[Any]":
         self._namespace += ".drop"
         query = f"CALL {self._namespace}($graph_name, $relationship_type)"
         params = {
@@ -181,7 +180,7 @@ class GraphPropertyRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         G: Graph,
         graph_property: str,
         **config: Any,
-    ) -> Series:
+    ) -> "Series[Any]":
         self._namespace += ".drop"
         query = f"CALL {self._namespace}($graph_name, $graph_property, $config)"
         params = {"graph_name": G.name(), "graph_property": graph_property, "config": config}

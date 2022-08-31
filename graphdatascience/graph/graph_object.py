@@ -1,7 +1,6 @@
 from typing import Any, List, Optional, Union
 
-import pandas
-from pandas.core.series import Series
+from pandas import Series
 
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
@@ -16,7 +15,7 @@ class Graph:
     def name(self) -> str:
         return self._name
 
-    def _graph_info(self, yields: List[str] = []) -> Series:
+    def _graph_info(self, yields: List[str] = []) -> "Series[Any]":
         yield_suffix = "" if len(yields) == 0 else " YIELD " + ", ".join(yields)
         info = self._query_runner.run_query(
             f"CALL gds.graph.list($graph_name){yield_suffix}",
@@ -31,8 +30,8 @@ class Graph:
     def database(self) -> str:
         return self._graph_info(["database"])  # type: ignore
 
-    def configuration(self) -> Series:
-        return pandas.Series(self._graph_info(["configuration"]))
+    def configuration(self) -> "Series[Any]":
+        return Series(self._graph_info(["configuration"]))
 
     def node_count(self) -> int:
         return self._graph_info(["nodeCount"])  # type: ignore
@@ -46,30 +45,30 @@ class Graph:
     def relationship_types(self) -> List[str]:
         return list(self._graph_info(["schema"])["relationships"].keys())
 
-    def node_properties(self, label: Optional[str] = None) -> Union[Series, List[str]]:
+    def node_properties(self, label: Optional[str] = None) -> Union["Series[str]", List[str]]:
         labels_to_props = self._graph_info(["schema"])["nodes"]
 
         if not label:
-            return pandas.Series({key: list(val.keys()) for key, val in labels_to_props.items()})
+            return Series({key: list(val.keys()) for key, val in labels_to_props.items()})
 
         if label not in labels_to_props.keys():
             raise ValueError(f"There is no node label '{label}' projected onto '{self.name()}'")
 
         return list(labels_to_props[label].keys())
 
-    def relationship_properties(self, type: Optional[str] = None) -> Union[Series, List[str]]:
+    def relationship_properties(self, type: Optional[str] = None) -> Union["Series[str]", List[str]]:
         types_to_props = self._graph_info(["schema"])["relationships"]
 
         if not type:
-            return pandas.Series({key: list(val.keys()) for key, val in types_to_props.items()})
+            return Series({key: list(val.keys()) for key, val in types_to_props.items()})
 
         if type not in types_to_props.keys():
             raise ValueError(f"There is no relationship type '{type}' projected onto '{self.name()}'")
 
         return list(types_to_props[type].keys())
 
-    def degree_distribution(self) -> Series:
-        return pandas.Series(self._graph_info(["degreeDistribution"]))
+    def degree_distribution(self) -> "Series[float]":
+        return Series(self._graph_info(["degreeDistribution"]))
 
     def density(self) -> float:
         return self._graph_info(["density"])  # type: ignore
@@ -87,7 +86,7 @@ class Graph:
         )
         return result.squeeze()["exists"]  # type: ignore
 
-    def drop(self, failIfMissing: bool = False) -> Series:
+    def drop(self, failIfMissing: bool = False) -> "Series[str]":
         result = self._query_runner.run_query(
             "CALL gds.graph.drop($graph_name, $fail_if_missing)",
             {"graph_name": self._name, "fail_if_missing": failIfMissing},

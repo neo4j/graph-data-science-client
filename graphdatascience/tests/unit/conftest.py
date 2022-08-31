@@ -1,8 +1,7 @@
 from typing import Any, Dict, List, Optional, Union
 
-import pandas
 import pytest
-from pandas.core.frame import DataFrame
+from pandas import DataFrame
 
 from graphdatascience import QueryRunner
 from graphdatascience.graph_data_science import GraphDataScience
@@ -32,9 +31,7 @@ class CollectingQueryRunner(QueryRunner):
 
         # This "mock" lets us initialize the GDS object without issues.
         return (
-            self._mock_result
-            if self._mock_result is not None
-            else pandas.DataFrame([{"version": str(self.server_version)}])
+            self._mock_result if self._mock_result is not None else DataFrame([{"version": str(self.server_version)}])
         )
 
     def last_query(self) -> str:

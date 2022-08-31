@@ -1,8 +1,7 @@
 from abc import ABC
 from typing import Any, Dict, Tuple
 
-from pandas.core.frame import DataFrame
-from pandas.core.series import Series
+from pandas import DataFrame, Series
 
 from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
@@ -23,7 +22,7 @@ class AlgoProcRunner(CallerBase, IllegalAttrChecker, ABC):
         else:
             return self._query_runner.run_query(query, params)
 
-    def estimate(self, G: Graph, **config: Any) -> Series:
+    def estimate(self, G: Graph, **config: Any) -> "Series[Any]":
         self._namespace += "." + "estimate"
         return self._run_procedure(G, config, with_logging=False).squeeze()  # type: ignore
 
@@ -34,12 +33,12 @@ class StreamModeRunner(AlgoProcRunner):
 
 
 class StandardModeRunner(AlgoProcRunner):
-    def __call__(self, G: Graph, **config: Any) -> Series:
+    def __call__(self, G: Graph, **config: Any) -> "Series[Any]":
         return self._run_procedure(G, config).squeeze()  # type: ignore
 
 
 class GraphSageRunner(AlgoProcRunner):
-    def __call__(self, G: Graph, **config: Any) -> Tuple[GraphSageModel, Series]:
+    def __call__(self, G: Graph, **config: Any) -> Tuple[GraphSageModel, "Series[Any]"]:
         result = self._run_procedure(G, config).squeeze()
         model_name = result["modelInfo"]["modelName"]
 

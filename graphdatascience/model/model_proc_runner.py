@@ -1,7 +1,6 @@
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 
-from pandas.core.frame import DataFrame
-from pandas.core.series import Series
+from pandas import DataFrame, Series
 
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
@@ -14,7 +13,7 @@ from .model import Model
 
 
 class ModelProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
-    def store(self, model: Model, failIfUnsupportedType: bool = True) -> Series:
+    def store(self, model: Model, failIfUnsupportedType: bool = True) -> "Series[Any]":
         self._namespace += ".store"
 
         query = f"CALL {self._namespace}($model_name, $fail_flag)"
@@ -37,7 +36,7 @@ class ModelProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params)
 
-    def exists(self, model_name: str) -> Series:
+    def exists(self, model_name: str) -> "Series[Any]":
         self._namespace += ".exists"
 
         query = f"CALL {self._namespace}($model_name)"
@@ -58,7 +57,7 @@ class ModelProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self._resolve_model(model_type, model_name)
 
-    def drop(self, model: Model) -> Series:
+    def drop(self, model: Model) -> "Series[Any]":
         self._namespace += ".drop"
 
         query = f"CALL {self._namespace}($model_name)"
@@ -66,7 +65,7 @@ class ModelProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    def load(self, model_name: str) -> Tuple[Model, Series]:
+    def load(self, model_name: str) -> Tuple[Model, "Series[Any]"]:
         self._namespace += ".load"
 
         query = f"CALL {self._namespace}($model_name)"
@@ -77,7 +76,7 @@ class ModelProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         self._namespace = "gds.model"
         return self.get(result["modelName"]), result
 
-    def delete(self, model: Model) -> Series:
+    def delete(self, model: Model) -> "Series[Any]":
         self._namespace += ".delete"
 
         query = f"CALL {self._namespace}($model_name)"

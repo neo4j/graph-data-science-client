@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 
-from pandas.core.frame import DataFrame
+from pandas import DataFrame
 
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
