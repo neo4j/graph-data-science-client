@@ -21,11 +21,14 @@ class Neo4jQueryRunner(QueryRunner):
         self._auto_close = auto_close
         self._db = db
 
-    def run_query(self, query: str, params: Optional[Dict[str, Any]] = None) -> DataFrame:
+    def run_query(self, query: str, params: Optional[Dict[str, Any]] = None, db: Optional[str] = None) -> DataFrame:
         if params is None:
             params = {}
 
-        with self._driver.session(database=self._db) as session:
+        if db is None:
+            db = self._db
+
+        with self._driver.session(database=db) as session:
             # Since neo4j-driver 4.4.6 we get an unexpected warning
             warnings.filterwarnings(
                 "ignore",
@@ -43,12 +46,14 @@ class Neo4jQueryRunner(QueryRunner):
 
             return result.to_df()  # type: ignore
 
-    def run_query_with_logging(self, query: str, params: Optional[Dict[str, Any]] = None) -> DataFrame:
+    def run_query_with_logging(
+        self, query: str, params: Optional[Dict[str, Any]] = None, db: Optional[str] = None
+    ) -> DataFrame:
         if params is None:
             params = {}
 
         if self._server_version < ServerVersion(2, 1, 0):
-            return self.run_query(query, params)
+            return self.run_query(query, params, db)
 
         if "config" in params:
             if "jobId" in params["config"]:
@@ -61,21 +66,21 @@ class Neo4jQueryRunner(QueryRunner):
             params["config"] = {"jobId": job_id}
 
         with ThreadPoolExecutor() as executor:
-            future = executor.submit(self.run_query, query, params)
+            future = executor.submit(self.run_query, query, params, db)
 
-            self._log(job_id, future)
+            self._log(job_id, future, db)
 
             if future.exception():
                 raise future.exception()  # type: ignore
             else:
                 return future.result()
 
-    def _log(self, job_id: str, future: "Future[Any]") -> None:
+    def _log(self, job_id: str, future: "Future[Any]", db: Optional[str] = None) -> None:
         pbar = None
 
         while wait([future], timeout=self._LOG_POLLING_INTERVAL).not_done:
             try:
-                progress = self.run_query(f"CALL gds.beta.listProgress('{job_id}') YIELD taskName, progress")
+                progress = self.run_query(f"CALL gds.beta.listProgress('{job_id}') YIELD taskName, progress", db=db)
             except Exception as e:
                 # Do nothing if the procedure either:
                 # * has not started yet,

@@ -131,8 +131,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def database(self) -> Optional[str]:
         return self._query_runner.database()
 
-    def run_cypher(self, query: str, params: Optional[Dict[str, Any]] = None) -> DataFrame:
-        return self._query_runner.run_query(query, params)
+    def run_cypher(self, query: str, params: Optional[Dict[str, Any]] = None, db: Optional[str] = None) -> DataFrame:
+        return self._query_runner.run_query(query, params, db)
 
     def driver_config(self) -> Dict[str, Any]:
         return self._config
