@@ -563,6 +563,11 @@ def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataSc
     assert {e for e in result["sourceNodeId"]} == {i for i in expected["src_id"]}
     assert {e for e in result["targetNodeId"]} == {i for i in expected["trg_id"]}
 
+    by_rel_type = result.by_rel_type()
+    assert list(by_rel_type.keys()) == ["REL"]
+    assert by_rel_type["REL"][0] == list(result["sourceNodeId"])
+    assert by_rel_type["REL"][1] == list(result["targetNodeId"])
+
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
@@ -575,6 +580,11 @@ def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
     assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType"]
     assert {e for e in result["sourceNodeId"]} == {i for i in expected["src_id"]}
     assert {e for e in result["targetNodeId"]} == {i for i in expected["trg_id"]}
+
+    by_rel_type = result.by_rel_type()
+    assert list(by_rel_type.keys()) == ["REL"]
+    assert by_rel_type["REL"][0] == list(result["sourceNodeId"])
+    assert by_rel_type["REL"][1] == list(result["targetNodeId"])
 
 
 def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:

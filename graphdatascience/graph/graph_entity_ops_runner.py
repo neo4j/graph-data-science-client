@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Type, Union
 
 from pandas import DataFrame, Series
 
@@ -11,6 +11,20 @@ from graphdatascience.server_version.compatible_with import compatible_with
 from graphdatascience.server_version.server_version import ServerVersion
 
 Strings = Union[str, List[str]]
+
+
+class TopologyDataFrame(DataFrame):
+    @property
+    def _constructor(self) -> "Type[TopologyDataFrame]":
+        return TopologyDataFrame
+
+    def by_rel_type(self) -> Dict[str, List[List[int]]]:
+        output = {}
+        for rel_type in self.relationshipType.unique():
+            one_rel_df = self[self["relationshipType"].isin([rel_type])]
+            output[rel_type] = [list(one_rel_df["sourceNodeId"]), list(one_rel_df["targetNodeId"])]
+
+        return output
 
 
 class GraphEntityOpsBaseRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
@@ -151,13 +165,13 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
-    def stream(self, G: Graph, relationship_types: List[str] = ["*"], **config: Any) -> DataFrame:
+    def stream(self, G: Graph, relationship_types: List[str] = ["*"], **config: Any) -> TopologyDataFrame:
         self._namespace += ".stream"
         query = f"CALL {self._namespace}($graph_name, $relationship_types, $config)"
 
         params = {"graph_name": G.name(), "relationship_types": relationship_types, "config": config}
 
-        return self._query_runner.run_query(query, params)
+        return TopologyDataFrame(self._query_runner.run_query(query, params))
 
 
 class GraphPropertyRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
