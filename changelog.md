@@ -6,6 +6,8 @@
 
 ## New features
 
+* The `DataFrame` returned by `gds.beta.graph.relationships.stream` now has a convenience method called `by_rel_type`.
+This method converts the topology result to a map from relationship types to matrices describing the topology of the type.
 * Added a new optional string parameter `database` to `GraphDataScience.run_cypher` for overriding which database to target.
 
 
