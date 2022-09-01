@@ -125,14 +125,16 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def __getattr__(self, attr: str) -> CallBuilder:
         return CallBuilder(self._query_runner, f"gds.{attr}", self._server_version)
 
-    def set_database(self, db: str) -> None:
-        self._query_runner.set_database(db)
+    def set_database(self, database: str) -> None:
+        self._query_runner.set_database(database)
 
     def database(self) -> Optional[str]:
         return self._query_runner.database()
 
-    def run_cypher(self, query: str, params: Optional[Dict[str, Any]] = None, db: Optional[str] = None) -> DataFrame:
-        return self._query_runner.run_query(query, params, db)
+    def run_cypher(
+        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
+    ) -> DataFrame:
+        return self._query_runner.run_query(query, params, database)
 
     def driver_config(self) -> Dict[str, Any]:
         return self._config

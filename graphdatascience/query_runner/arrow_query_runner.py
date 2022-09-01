@@ -46,7 +46,9 @@ class ArrowQueryRunner(QueryRunner):
 
         self._flight_client = flight.FlightClient(location, **client_options)
 
-    def run_query(self, query: str, params: Optional[Dict[str, Any]] = None, db: Optional[str] = None) -> DataFrame:
+    def run_query(
+        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
+    ) -> DataFrame:
         if params is None:
             params = {}
 
@@ -124,16 +126,16 @@ class ArrowQueryRunner(QueryRunner):
 
             return self._run_arrow_property_get(graph_name, endpoint, {"relationship_types": relationship_types})
 
-        return self._fallback_query_runner.run_query(query, params, db)
+        return self._fallback_query_runner.run_query(query, params, database)
 
     def run_query_with_logging(
-        self, query: str, params: Optional[Dict[str, Any]] = None, db: Optional[str] = None
+        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
     ) -> DataFrame:
         # For now there's no logging support with Arrow queries.
-        return self._fallback_query_runner.run_query_with_logging(query, params, db)
+        return self._fallback_query_runner.run_query_with_logging(query, params, database)
 
-    def set_database(self, db: str) -> None:
-        self._fallback_query_runner.set_database(db)
+    def set_database(self, database: str) -> None:
+        self._fallback_query_runner.set_database(database)
 
     def database(self) -> Optional[str]:
         return self._fallback_query_runner.database()

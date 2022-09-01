@@ -6,7 +6,7 @@
 
 ## New features
 
-* Added a new optional string parameter `db` to `GraphDataScience.run_cypher` for overriding which database to target.
+* Added a new optional string parameter `database` to `GraphDataScience.run_cypher` for overriding which database to target.
 
 
 ## Bug fixes
