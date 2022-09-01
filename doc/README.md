@@ -55,7 +55,7 @@ In addition to having followed the setup steps in [the contribution guidelines](
    ```
  * Install the project's Ruby dependencies (from the `doc` directory):
    ```bash
-   bundler install tests
+   bundler install --gemfile tests/Gemfile
    ```
  * Install the version of the `graphdatascience` library that you want to test the docs against 
 
