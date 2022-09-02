@@ -89,21 +89,22 @@ To exemplify this, we introduce a small person graph:
 gds.run_cypher(
   """
   CREATE
-  (a:Person {name: "Bob", fraudster: 0}),
-  (b:Person {name: "Alice", fraudster: 0}),
-  (c:Person {name: "Eve", fraudster: 1}),
-  (d:Person {name: "Chad", fraudster: 1}),
-  (e:Person {name: "Dan", fraudster: 0}),
-  (f:UnknownPerson {name: "Judy"}),
-  (a)-[:KNOWS]->(b),
-  (a)-[:KNOWS]->(c),
-  (a)-[:KNOWS]->(d),
-  (b)-[:KNOWS]->(d),
-  (c)-[:KNOWS]->(d),
-  (c)-[:KNOWS]->(e),
-  (d)-[:KNOWS]->(e),
-  (d)-[:KNOWS]->(f),
-  (e)-[:KNOWS]->(f)
+    (a:Person {name: "Bob", fraudster: 0}),
+    (b:Person {name: "Alice", fraudster: 0}),
+    (c:Person {name: "Eve", fraudster: 1}),
+    (d:Person {name: "Chad", fraudster: 1}),
+    (e:Person {name: "Dan", fraudster: 0}),
+    (f:UnknownPerson {name: "Judy"}),
+  
+    (a)-[:KNOWS]->(b),
+    (a)-[:KNOWS]->(c),
+    (a)-[:KNOWS]->(d),
+    (b)-[:KNOWS]->(d),
+    (c)-[:KNOWS]->(d),
+    (c)-[:KNOWS]->(e),
+    (d)-[:KNOWS]->(e),
+    (d)-[:KNOWS]->(f),
+    (e)-[:KNOWS]->(f)
   """
 )
 G, project_result = gds.graph.project("person_graph", {"Person": {"properties": ["fraudster"]}}, "KNOWS")
@@ -274,21 +275,22 @@ To exemplify this, we introduce a small person graph:
 gds.run_cypher(
   """
   CREATE
-  (a:Person {name: "Bob"}),
-  (b:Person {name: "Alice"}),
-  (c:Person {name: "Eve"}),
-  (d:Person {name: "Chad"}),
-  (e:Person {name: "Dan"}),
-  (f:Person {name: "Judy"}),
-  (a)-[:KNOWS]->(b),
-  (a)-[:KNOWS]->(c),
-  (a)-[:KNOWS]->(d),
-  (b)-[:KNOWS]->(d),
-  (c)-[:KNOWS]->(d),
-  (c)-[:KNOWS]->(e),
-  (d)-[:KNOWS]->(e),
-  (d)-[:KNOWS]->(f),
-  (e)-[:KNOWS]->(f)
+    (a:Person {name: "Bob"}),
+    (b:Person {name: "Alice"}),
+    (c:Person {name: "Eve"}),
+    (d:Person {name: "Chad"}),
+    (e:Person {name: "Dan"}),
+    (f:Person {name: "Judy"}),
+  
+    (a)-[:KNOWS]->(b),
+    (a)-[:KNOWS]->(c),
+    (a)-[:KNOWS]->(d),
+    (b)-[:KNOWS]->(d),
+    (c)-[:KNOWS]->(d),
+    (c)-[:KNOWS]->(e),
+    (d)-[:KNOWS]->(e),
+    (d)-[:KNOWS]->(f),
+    (e)-[:KNOWS]->(f)
   """
 )
 G, project_result = gds.graph.project("person_graph", "Person", {"KNOWS": {"orientation":"UNDIRECTED"}})
@@ -450,21 +452,22 @@ To exemplify this, we introduce a small person graph:
 gds.run_cypher(
   """
   CREATE
-  (a:Person {name: "Bob", age: 22}),
-  (b:Person {name: "Alice", age: 5}),
-  (c:Person {name: "Eve", age: 53}),
-  (d:Person {name: "Chad", age: 44}),
-  (e:Person {name: "Dan", age: 60}),
-  (f:UnknownPerson {name: "Judy"}),
-  (a)-[:KNOWS]->(b),
-  (a)-[:KNOWS]->(c),
-  (a)-[:KNOWS]->(d),
-  (b)-[:KNOWS]->(d),
-  (c)-[:KNOWS]->(d),
-  (c)-[:KNOWS]->(e),
-  (d)-[:KNOWS]->(e),
-  (d)-[:KNOWS]->(f),
-  (e)-[:KNOWS]->(f)
+    (a:Person {name: "Bob", age: 22}),
+    (b:Person {name: "Alice", age: 5}),
+    (c:Person {name: "Eve", age: 53}),
+    (d:Person {name: "Chad", age: 44}),
+    (e:Person {name: "Dan", age: 60}),
+    (f:UnknownPerson {name: "Judy"}),
+  
+    (a)-[:KNOWS]->(b),
+    (a)-[:KNOWS]->(c),
+    (a)-[:KNOWS]->(d),
+    (b)-[:KNOWS]->(d),
+    (c)-[:KNOWS]->(d),
+    (c)-[:KNOWS]->(e),
+    (d)-[:KNOWS]->(e),
+    (d)-[:KNOWS]->(f),
+    (e)-[:KNOWS]->(f)
   """
 )
 G, project_result = gds.graph.project("person_graph", {"Person": {"properties": ["age"]}}, "KNOWS")

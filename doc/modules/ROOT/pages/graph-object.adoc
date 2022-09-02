@@ -21,27 +21,28 @@ The simplest way is to do a https://neo4j.com/docs/graph-data-science/current/gr
 gds.run_cypher(
   """
   CREATE
-  (m: City {name: "Malmö"}),
-  (l: City {name: "London"}),
-  (s: City {name: "San Mateo"}),
-  (m)-[:FLY_TO]->(l),
-  (l)-[:FLY_TO]->(m),
-  (l)-[:FLY_TO]->(s),
-  (s)-[:FLY_TO]->(l)
+    (m: City {name: "Malmö"}),
+    (l: City {name: "London"}),
+    (s: City {name: "San Mateo"}),
+
+    (m)-[:FLY_TO]->(l),
+    (l)-[:FLY_TO]->(m),
+    (l)-[:FLY_TO]->(s),
+    (s)-[:FLY_TO]->(l)
   """
 )
 
-G, res = gds.graph.project(
+G, result = gds.graph.project(
     "offices",                  #  Graph name
     ["City"],                   #  Node projection
     "FLY_TO",                   #  Relationship projection
     readConcurrency=4           #  Configuration parameters
 )
 
-assert G.node_count() == res["nodeCount"]
+assert G.node_count() == result["nodeCount"]
 ----
 
-where `G` is a `Graph` object, and `res` is a pandas `Series` containing metadata from the underlying procedure call.
+where `G` is a `Graph` object, and `result` is a pandas `Series` containing metadata from the underlying procedure call.
 
 Note that all projection syntax variants are supported by way of specifying a Python `dict` or `list` for the node and relationship projection arguments.
 To specify configuration parameters corresponding to the keys of the procedure's `configuration` map, we give named keyword arguments, like for `readConcurrency=4` above.
@@ -112,6 +113,7 @@ CREATE
     (b:B {prop1: 1337,  otherProperty: 0.2),
     (c:C {prop1: 8,     otherProperty: 0.3),
     (d:A {prop1: 0,     otherProperty: 0.4),
+
     (a)-[:REL {weight: 0.0}]->(b),
     (b)-[:REL {weight: 0.0}]->(c),
     (c)-[:REL {weight: 0.1}]->(d),
@@ -185,8 +187,8 @@ In this example we run the degree centrality algorithm on a graph `G`:
 [[graph-object-degree-example]]
 [source,python,group=graph-project]
 ----
-res = gds.degree.mutate(G, mutateProperty="degree")
-assert "centralityDistribution" in res
+result = gds.degree.mutate(G, mutateProperty="degree")
+assert "centralityDistribution" in result
 ----
 
 
@@ -199,7 +201,7 @@ Below are some examples of how the GDS Graph Catalog can be used via the client,
 
 [source,python,group=graph-project]
 ----
-res = gds.graph.streamNodeProperty(G, node_properties="degree")
+result = gds.graph.streamNodeProperty(G, node_properties="degree")
 
 gds.graph.drop(G)  # same as G.drop()
 ----

@@ -23,21 +23,22 @@ To exemplify this, we introduce a small road-network graph:
 gds.run_cypher(
   """
   CREATE
-  (a:City {name: "New York City", settled: 1624}),
-  (b:City {name: "Philadelphia", settled: 1682}),
-  (c:City:Capital {name: "Washington D.C.", settled: 1790}),
-  (d:City {name: "Baltimore"}),
-  (e:City {name: "Atlantic City"}),
-  (f:City {name: "Boston"}),
-  (a)-[:ROAD {cost: 50}]->(b),
-  (a)-[:ROAD {cost: 50}]->(c),
-  (a)-[:ROAD {cost: 100}]->(d),
-  (b)-[:ROAD {cost: 40}]->(d),
-  (c)-[:ROAD {cost: 40}]->(d),
-  (c)-[:ROAD {cost: 80}]->(e),
-  (d)-[:ROAD {cost: 30}]->(e),
-  (d)-[:ROAD {cost: 80}]->(f),
-  (e)-[:ROAD {cost: 40}]->(f);
+    (a:City {name: "New York City", settled: 1624}),
+    (b:City {name: "Philadelphia", settled: 1682}),
+    (c:City:Capital {name: "Washington D.C.", settled: 1790}),
+    (d:City {name: "Baltimore"}),
+    (e:City {name: "Atlantic City"}),
+    (f:City {name: "Boston"}),
+  
+    (a)-[:ROAD {cost: 50}]->(b),
+    (a)-[:ROAD {cost: 50}]->(c),
+    (a)-[:ROAD {cost: 100}]->(d),
+    (b)-[:ROAD {cost: 40}]->(d),
+    (c)-[:ROAD {cost: 40}]->(d),
+    (c)-[:ROAD {cost: 80}]->(e),
+    (d)-[:ROAD {cost: 30}]->(e),
+    (d)-[:ROAD {cost: 80}]->(f),
+    (e)-[:ROAD {cost: 40}]->(f);
   """
 )
 G, project_result = gds.graph.project("road_graph", "City", {"ROAD": {"properties": ["cost"]}})
@@ -46,18 +47,18 @@ assert G.relationship_count() == 9
 ----
 
 
-Now we can run the Louvain and FastRP algorithms on our graph `G`:
+Now we are ready to run algorithms on our graph `G`.
 
 [source,python,group=algo]
 ----
-louvain_res = gds.louvain.mutate(
+louvain_result = gds.louvain.mutate(
     G,                            #  Graph object
     maxIterations=5,              #  Configuration parameters
     mutateProperty="community"
 )
-assert louvain_res["communityCount"] > 0
+assert louvain_result["communityCount"] > 0
 
-fastrp_res = gds.fastRP.write(
+fastrp_result = gds.fastRP.write(
     G,                                #  Graph object
     featureProperties=["community"],  #  Configuration parameters
     embeddingDimension=256,
@@ -65,7 +66,7 @@ fastrp_res = gds.fastRP.write(
     relationshipWeightProperty="cost",
     writeProperty="embedding"
 )
-assert fastrp_res["nodePropertiesWritten"] == G.node_count()
+assert fastrp_result["nodePropertiesWritten"] == G.node_count()
 ----
 
 Some algorithms deviate from the standard syntactic structure.
@@ -111,13 +112,13 @@ For example, to find a source and target node of a graph `G` with cities to run 
 source_id = gds.find_node_id(["City"], {"name": "New York City"})
 target_id = gds.find_node_id(["City"], {"name": "Boston"})
 
-res = gds.shortestPath.dijkstra.stream(
+result = gds.shortestPath.dijkstra.stream(
     G,
     sourceNode=source_id,
     targetNode=target_id,
     relationshipWeightProperty="cost"
 )
-assert res["totalCost"][0] == 160
+assert result["totalCost"][0] == 160
 ----
 
 `gds.find_node_id` takes a list of node labels and a dictionary of node property key-value pairs.

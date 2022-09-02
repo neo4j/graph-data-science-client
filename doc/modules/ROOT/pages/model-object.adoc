@@ -22,21 +22,22 @@ To exemplify this, we introduce a small road-network graph:
 gds.run_cypher(
   """
   CREATE
-  (a:City {name: "New York City", settled: 1624}),
-  (b:City {name: "Philadelphia", settled: 1682}),
-  (c:City:Capital {name: "Washington D.C.", settled: 1790}),
-  (d:City {name: "Baltimore", settled: 1729}),
-  (e:City {name: "Atlantic City", settled: 1854}),
-  (f:City {name: "Boston", settled: 1822}),
-  (a)-[:ROAD {cost: 50}]->(b),
-  (a)-[:ROAD {cost: 50}]->(c),
-  (a)-[:ROAD {cost: 100}]->(d),
-  (b)-[:ROAD {cost: 40}]->(d),
-  (c)-[:ROAD {cost: 40}]->(d),
-  (c)-[:ROAD {cost: 80}]->(e),
-  (d)-[:ROAD {cost: 30}]->(e),
-  (d)-[:ROAD {cost: 80}]->(f),
-  (e)-[:ROAD {cost: 40}]->(f);
+    (a:City {name: "New York City", settled: 1624}),
+    (b:City {name: "Philadelphia", settled: 1682}),
+    (c:City:Capital {name: "Washington D.C.", settled: 1790}),
+    (d:City {name: "Baltimore", settled: 1729}),
+    (e:City {name: "Atlantic City", settled: 1854}),
+    (f:City {name: "Boston", settled: 1822}),
+
+    (a)-[:ROAD {cost: 50}]->(b),
+    (a)-[:ROAD {cost: 50}]->(c),
+    (a)-[:ROAD {cost: 100}]->(d),
+    (b)-[:ROAD {cost: 40}]->(d),
+    (c)-[:ROAD {cost: 40}]->(d),
+    (c)-[:ROAD {cost: 80}]->(e),
+    (d)-[:ROAD {cost: 30}]->(e),
+    (d)-[:ROAD {cost: 80}]->(f),
+    (e)-[:ROAD {cost: 40}]->(f);
   """
 )
 G, project_result = gds.graph.project(
