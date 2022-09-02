@@ -41,7 +41,6 @@ def test_run_query_with_db(runner: Neo4jQueryRunner) -> None:
 
     MY_DB_NAME = "my-db"
     runner.run_query("CREATE DATABASE $dbName", {"dbName": MY_DB_NAME})
-    # runner.set_database(MY_DB_NAME)
 
     specified_db_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)["c"][0]
     assert specified_db_count == 0
