@@ -12,17 +12,16 @@ import pandas
 
 from graphdatascience import GraphDataScience
 
-URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
+NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
 URI_TLS = os.environ.get("NEO4J_URI", "bolt+ssc://localhost:7687")
 
-AUTH = ("neo4j", "password")
+NEO4J_USER = "neo4j"
+NEO4J_PASSWORD = "password"
 if os.environ.get("NEO4J_USER"):
-    AUTH = (
-        os.environ.get("NEO4J_USER", "DUMMY"),
-        os.environ.get("NEO4J_PASSWORD", "neo4j"),
-    )
+    NEO4J_USER = os.environ.get("NEO4J_USER", "DUMMY")
+    NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD", "neo4j")
 
-gds = GraphDataScience(URI, auth=AUTH)
+gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
 gds.set_database("neo4j")
 '
 

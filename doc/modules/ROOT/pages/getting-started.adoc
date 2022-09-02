@@ -18,14 +18,17 @@ As a convention we recommend always calling the instantiated `GraphDataScience` 
 
 The simplest way to instantiate the `GraphDataScience` object is from a Neo4j server URI and corresponding credentials:
 
-[source,python,role=no-test]
+[source,python]
 ----
 from graphdatascience import GraphDataScience
 
 # Use Neo4j URI and credentials according to your setup
-gds = GraphDataScience("bolt://my-server.neo4j.io:7687", auth=("neo4j", "my-password"))
+# NEO4J_URI could look similar to "bolt://my-server.neo4j.io:7687"
+gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
 
+# Check the installed GDS version on the server
 print(gds.version())
+assert gds.version()
 ----
 
 [source,python,role=no-test]
