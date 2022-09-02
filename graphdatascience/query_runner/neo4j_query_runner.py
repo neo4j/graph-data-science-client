@@ -16,16 +16,23 @@ from .query_runner import QueryRunner
 class Neo4jQueryRunner(QueryRunner):
     _LOG_POLLING_INTERVAL = 0.5
 
-    def __init__(self, driver: neo4j.Driver, db: Optional[str] = neo4j.DEFAULT_DATABASE, auto_close: bool = False):
+    def __init__(
+        self, driver: neo4j.Driver, database: Optional[str] = neo4j.DEFAULT_DATABASE, auto_close: bool = False
+    ):
         self._driver = driver
         self._auto_close = auto_close
-        self._db = db
+        self._database = database
 
-    def run_query(self, query: str, params: Optional[Dict[str, Any]] = None) -> DataFrame:
+    def run_query(
+        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
+    ) -> DataFrame:
         if params is None:
             params = {}
 
-        with self._driver.session(database=self._db) as session:
+        if database is None:
+            database = self._database
+
+        with self._driver.session(database=database) as session:
             # Since neo4j-driver 4.4.6 we get an unexpected warning
             warnings.filterwarnings(
                 "ignore",
@@ -43,12 +50,14 @@ class Neo4jQueryRunner(QueryRunner):
 
             return result.to_df()  # type: ignore
 
-    def run_query_with_logging(self, query: str, params: Optional[Dict[str, Any]] = None) -> DataFrame:
+    def run_query_with_logging(
+        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
+    ) -> DataFrame:
         if params is None:
             params = {}
 
         if self._server_version < ServerVersion(2, 1, 0):
-            return self.run_query(query, params)
+            return self.run_query(query, params, database)
 
         if "config" in params:
             if "jobId" in params["config"]:
@@ -61,21 +70,23 @@ class Neo4jQueryRunner(QueryRunner):
             params["config"] = {"jobId": job_id}
 
         with ThreadPoolExecutor() as executor:
-            future = executor.submit(self.run_query, query, params)
+            future = executor.submit(self.run_query, query, params, database)
 
-            self._log(job_id, future)
+            self._log(job_id, future, database)
 
             if future.exception():
                 raise future.exception()  # type: ignore
             else:
                 return future.result()
 
-    def _log(self, job_id: str, future: "Future[Any]") -> None:
+    def _log(self, job_id: str, future: "Future[Any]", database: Optional[str] = None) -> None:
         pbar = None
 
         while wait([future], timeout=self._LOG_POLLING_INTERVAL).not_done:
             try:
-                progress = self.run_query(f"CALL gds.beta.listProgress('{job_id}') YIELD taskName, progress")
+                progress = self.run_query(
+                    f"CALL gds.beta.listProgress('{job_id}') YIELD taskName, progress", database=database
+                )
             except Exception as e:
                 # Do nothing if the procedure either:
                 # * has not started yet,
@@ -98,14 +109,14 @@ class Neo4jQueryRunner(QueryRunner):
         if pbar:
             pbar.update(100 - pbar.n)
 
-    def set_database(self, db: str) -> None:
-        self._db = db
+    def set_database(self, database: str) -> None:
+        self._database = database
 
     def close(self) -> None:
         self._driver.close()
 
     def database(self) -> Optional[str]:
-        return self._db
+        return self._database
 
     def __del__(self) -> None:
         if self._auto_close:

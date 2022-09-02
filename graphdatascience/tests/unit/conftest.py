@@ -22,7 +22,7 @@ class CollectingQueryRunner(QueryRunner):
         self.params: List[Dict[str, Any]] = []
         self.server_version = server_version
 
-    def run_query(self, query: str, params: Optional[Dict[str, Any]] = None) -> DataFrame:
+    def run_query(self, query: str, params: Optional[Dict[str, Any]] = None, db: Optional[str] = None) -> DataFrame:
         if params is None:
             params = {}
 

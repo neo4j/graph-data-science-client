@@ -77,6 +77,7 @@ gds = GraphDataScience(
 ----
 
 
+[[getting-started-minimal-example]]
 == Minimal example
 
 In the following example we illustrate the Python client to run a Cypher query, project a graph into GDS, run an algorithm and inspect the result via the client-side graph object.
@@ -119,6 +120,13 @@ print(G_office.node_properties("City"))
 ----
 ["rank"]
 ----
+
+
+== Running Cypher
+
+As we saw in the <<getting-started-minimal-example, example above>>, the `GraphDataScience` object has a method `run_cypher` for conveniently running Cypher queries.
+This method takes as parameters a query string `query: str`, an optional Cypher parameters dictionary `params: Optional[Dict[str, Any]]]` as well as an optional string `database: Optional[str]` to override which database to target.
+It returns the result of the query in the format of a pandas `DataFrame`.
 
 
 == Close open connections

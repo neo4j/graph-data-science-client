@@ -9,14 +9,18 @@ from .graph_constructor import GraphConstructor
 
 class QueryRunner(ABC):
     @abstractmethod
-    def run_query(self, query: str, params: Optional[Dict[str, Any]] = None) -> DataFrame:
+    def run_query(
+        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
+    ) -> DataFrame:
         pass
 
-    def run_query_with_logging(self, query: str, params: Optional[Dict[str, Any]] = None) -> DataFrame:
-        return self.run_query(query, params)
+    def run_query_with_logging(
+        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
+    ) -> DataFrame:
+        return self.run_query(query, params, database)
 
     @abstractmethod
-    def set_database(self, db: str) -> None:
+    def set_database(self, database: str) -> None:
         pass
 
     def close(self) -> None:

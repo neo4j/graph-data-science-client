@@ -32,6 +32,23 @@ def test_switching_db(runner: Neo4jQueryRunner) -> None:
     runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
 
 
+@pytest.mark.skip_on_aura
+def test_run_query_with_db(runner: Neo4jQueryRunner) -> None:
+    runner.run_query("CREATE (a: Node)")
+
+    default_db_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
+    assert default_db_count == 1
+
+    MY_DB_NAME = "my-db"
+    runner.run_query("CREATE DATABASE $dbName", {"dbName": MY_DB_NAME})
+
+    specified_db_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)["c"][0]
+    assert specified_db_count == 0
+
+    runner.run_query("MATCH (n) DETACH DELETE n")
+    runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
+
+
 def test_from_neo4j_driver(neo4j_driver: Driver) -> None:
     gds = GraphDataScience.from_neo4j_driver(neo4j_driver)
     assert len(gds.list()) > 10
