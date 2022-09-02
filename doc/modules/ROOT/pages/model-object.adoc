@@ -6,7 +6,7 @@ Models of the https://neo4j.com/docs/graph-data-science/current/model-catalog/[G
 Once created, the `Model` objects can be passed as arguments to methods in the Python client, such as the https://neo4j.com/docs/graph-data-science/current/model-catalog/[model catalog operations].
 Additionally, the `Model` objects have convenience methods allowing for inspection of the models represented without explicitly involving the model catalog.
 
-include::partial$/gds-object.adoc[]
+include::ROOT:partial$/gds-object.adoc[]
 
 
 [[model-object-constructing]]
@@ -14,11 +14,48 @@ include::partial$/gds-object.adoc[]
 
 There are several ways of constructing a model object.
 One of the simplest is to train a https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/[GraphSAGE] model.
-Supposing we have a graph `G` that have an integer node property "price", we could do the following:
 
-[source,python]
+To exemplify this, we introduce a small road-network graph:
+
+[source,python,group=gs-model]
 ----
-model, res = gds.beta.graphSage.train(G, modelName="my-model", featureProperties=["price"])
+gds.run_cypher(
+  """
+  CREATE
+    (a:City {name: "New York City", settled: 1624}),
+    (b:City {name: "Philadelphia", settled: 1682}),
+    (c:City:Capital {name: "Washington D.C.", settled: 1790}),
+    (d:City {name: "Baltimore", settled: 1729}),
+    (e:City {name: "Atlantic City", settled: 1854}),
+    (f:City {name: "Boston", settled: 1822}),
+
+    (a)-[:ROAD {cost: 50}]->(b),
+    (a)-[:ROAD {cost: 50}]->(c),
+    (a)-[:ROAD {cost: 100}]->(d),
+    (b)-[:ROAD {cost: 40}]->(d),
+    (c)-[:ROAD {cost: 40}]->(d),
+    (c)-[:ROAD {cost: 80}]->(e),
+    (d)-[:ROAD {cost: 30}]->(e),
+    (d)-[:ROAD {cost: 80}]->(f),
+    (e)-[:ROAD {cost: 40}]->(f);
+  """
+)
+G, project_result = gds.graph.project(
+    "road_graph",
+    {"City": {"properties": ["settled"]}},
+    {"ROAD": {"properties": ["cost"]}}
+)
+
+assert G.relationship_count() == 9
+----
+
+Now we can use the graph `G` to train a GraphSage model.
+
+[source,python,group=gs-model]
+----
+model, train_result = gds.beta.graphSage.train(G, modelName="city-representation", featureProperties=["settled"], randomSeed=42)
+
+assert train_result["modelInfo"]["metrics"]["ranEpochs"] == 1
 ----
 
 where `model` is the model object, and `res` is a pandas `Series` containing metadata from the underlying procedure call.
@@ -27,9 +64,11 @@ Similarly, we can also get model objects from training xref:pipelines.adoc[machi
 
 To get a model object that represents a model that has already been trained and is present in the model catalog, one can call the client-side only `get` method and passing it a name:
 
-[source,python]
+[source,python,group=gs-model]
 ----
-model = gds.model.get("my-model")
+model = gds.model.get("city-representation")
+
+assert model.name() == "city-representation"
 ----
 
 [NOTE]
@@ -59,11 +98,13 @@ There are convenience methods on all model objects that let us extract informati
 | drop          | failIfMissing: Optional[bool] | Series              | https://neo4j.com/docs/graph-data-science/current/model-catalog/drop/[Removes the model] from the GDS Model Catalog.
 |===
 
-For example, to get the train configuration of a model object `model`, we would do the following:
+For example, to get the train configuration of our model object `model` created above, we would do the following:
 
-[source,python]
+[source,python,group=gs-model]
 ----
 train_config = model.train_config()
+
+assert train_config["concurrency"] == 4
 ----
 
 
@@ -73,14 +114,17 @@ The primary way to use model objects is for prediction.
 How to do so for GraphSAGE is xref:model-object.adoc#model-object-graphsage[described below], and on the xref:pipelines.adoc[Machine learning pipelines] page for pipelines.
 
 Additionally, model objects can be used as input to https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog operations].
-For instance, supposing we have a model object `model`, we could:
+For instance, supposing we have our model object `model` created above, we could:
 
-[source,python]
+[source,python,group=gs-model,enterprise=true]
 ----
 # Store the model on disk (GDS Enterprise Edition)
 _ = gds.alpha.model.store(model)
 
 gds.beta.model.drop(model)  # same as model.drop()
+
+# Load the model again for further use
+gds.alpha.model.load(model.name())
 ----
 
 
@@ -104,15 +148,15 @@ Once trained, in addition to the xref:model-object.adoc#model-object-inspecting[
 | metrics        | -                | Series      | Returns values for the metrics computed when training.
 |===
 
-Suppose then that we have a trained GraphSAGE model `gs_model` and a graph `H` for which we would like to derive node embeddings. Then we could do the following:
+So given the GraphSAGE model `model` we trained above, we could do the following:
 
-[source,python]
+[source,python,group=gs-model]
 ----
 # Make sure our training actually converged
-metrics = gs_model.metrics()
+metrics = model.metrics()
 assert metrics["didConverge"]
 
-# Predict on `H` and write embedding node properties back to the database
-results = gs_model.predict_write(H, writeProperty="embedding")
-assert result["nodePropertiesWritten"] == H.node_count()
+# Predict on `G` and write embedding node properties back to the database
+predict_result = model.predict_write(G, writeProperty="embedding")
+assert predict_result["nodePropertiesWritten"] == G.node_count()
 ----

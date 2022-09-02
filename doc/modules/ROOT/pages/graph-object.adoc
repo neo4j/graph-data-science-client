@@ -7,7 +7,7 @@ We call these references `Graph` objects.
 Once created, the `Graph` objects can be passed as arguments to other methods in the Python client, for example for running algorithms or training machine learning models.
 Additionally, the `Graph` objects have convenience methods allowing for inspection of the projected graph represented without explicitly involving the graph catalog.
 
-include::partial$/gds-object.adoc[]
+include::ROOT:partial$/gds-object.adoc[]
 
 
 == Projecting a graph object
@@ -15,29 +15,46 @@ include::partial$/gds-object.adoc[]
 There are several ways of projecting a graph object.
 The simplest way is to do a https://neo4j.com/docs/graph-data-science/current/graph-project/[native projection]:
 
-[source,python]
+[source,python,group=graph-project]
 ----
-G, res = gds.graph.project(
-    "my-graph",                 #  Graph name
-    ["MyLabel", "YourLabel"],   #  Node projection
-    "MY_REL_TYPE",              #  Relationship projection
-    readConcurrency=4               #  Configuration parameters
+# Suppose we have this simple graph in our database
+gds.run_cypher(
+  """
+  CREATE
+    (m: City {name: "Malmö"}),
+    (l: City {name: "London"}),
+    (s: City {name: "San Mateo"}),
+
+    (m)-[:FLY_TO]->(l),
+    (l)-[:FLY_TO]->(m),
+    (l)-[:FLY_TO]->(s),
+    (s)-[:FLY_TO]->(l)
+  """
 )
+
+G, result = gds.graph.project(
+    "offices",                  #  Graph name
+    ["City"],                   #  Node projection
+    "FLY_TO",                   #  Relationship projection
+    readConcurrency=4           #  Configuration parameters
+)
+
+assert G.node_count() == result["nodeCount"]
 ----
 
-where `G` is a `Graph` object, and `res` is a pandas `Series` containing metadata from the underlying procedure call.
+where `G` is a `Graph` object, and `result` is a pandas `Series` containing metadata from the underlying procedure call.
 
 Note that all projection syntax variants are supported by way of specifying a Python `dict` or `list` for the node and relationship projection arguments.
-To specify configuration parameters corresponding to the keys of the procedure's `configuration` map, we give named keyword arguments, like for `concurrency=4` above.
+To specify configuration parameters corresponding to the keys of the procedure's `configuration` map, we give named keyword arguments, like for `readConcurrency=4` above.
 Read more about this in https://neo4j.com/docs/graph-data-science/current/graph-project/#graph-project-native-syntax[Syntax].
 
 Similarly to Cypher there's also a corresponding `gds.graph.project.estimate` method that can be called in an analogous way.
 
 To get a graph object that represents a graph that has already been projected into the graph catalog, one can call the client-side only `get` method and passing it a name:
 
-[source,python]
+[source,python,group=graph-project]
 ----
-G = gds.graph.get("my-graph")
+G = gds.graph.get("offices")
 ----
 
 In addition to those aforementioned there are four more methods that create graph objects:
@@ -53,7 +70,7 @@ Their Cypher signatures map to Python in much the same way as `gds.graph.project
 [.alpha]
 == Constructing a graph
 
-include::partial$/alpha-note.adoc[]
+include::ROOT:partial$/alpha-note.adoc[]
 
 Instead of projecting a graph from the Neo4j database it is also possible to construct new graphs using pandas `DataFrames` from the client.
 
@@ -82,18 +99,21 @@ G = gds.alpha.graph.construct(
     nodes,           # One or more dataframes containing node data
     relationships    # One or more dataframes containing relationship data
 )
+
+assert "REL" in G.relationship_types()
 ----
 
 The above example creates a simple graph using one node and one relationship `DataFrame`.
 The created graph is equivalent to a graph created by the following Cypher query:
 
-[source, cypher]
+[source,cypher]
 ----
 CREATE
     (a:A {prop1: 42,    otherProperty: 0.1),
     (b:B {prop1: 1337,  otherProperty: 0.2),
     (c:C {prop1: 8,     otherProperty: 0.3),
     (d:A {prop1: 0,     otherProperty: 0.4),
+
     (a)-[:REL {weight: 0.0}]->(b),
     (b)-[:REL {weight: 0.0}]->(c),
     (c)-[:REL {weight: 0.1}]->(d),
@@ -144,10 +164,10 @@ There are convenience methods on the graph object that let us extract informatio
 
 For example, to get the node count and node properties of a graph `G`, we would do the following:
 
-[source,python]
+[source,python,group=graph-project]
 ----
 n = G.node_count()
-props = G.node_properties("MyLabel")
+props = G.node_properties("City")
 ----
 
 
@@ -160,7 +180,16 @@ The primary use case for a graph object is to pass it to algorithms, but it's al
 
 The Python client syntax for using a `Graph` as input to an algorithm follows the GDS Cypher procedure API, where the graph is the first parameter passed to the algorithm.
 
-include::partial$/algorithm-syntax.adoc[]
+include::ROOT:partial$/algorithm-syntax.adoc[]
+
+In this example we run the degree centrality algorithm on a graph `G`:
+
+[[graph-object-degree-example]]
+[source,python,group=graph-project]
+----
+result = gds.degree.mutate(G, mutateProperty="degree")
+assert "centralityDistribution" in result
+----
 
 
 === The graph catalog
@@ -168,13 +197,11 @@ include::partial$/algorithm-syntax.adoc[]
 All procedures of the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/[GDS Graph Catalog] have corresponding Python methods in the client.
 Of those catalog procedures that take a graph name string as input, their Python client equivalents instead take a `Graph` object, with the exception of `gds.graph.exists` which still takes a graph name string.
 
-Below are some examples of how the GDS Graph Catalog can be used via the client:
+Below are some examples of how the GDS Graph Catalog can be used via the client, assuming we inspect the graph `G` from the <<graph-object-degree-example, example above>>:
 
-[source,python]
+[source,python,group=graph-project]
 ----
-G, _ = gds.graph.project(...)
-
-res = gds.graph.streamNodeProperty(G, ...)
+result = gds.graph.streamNodeProperty(G, node_properties="degree")
 
 gds.graph.drop(G)  # same as G.drop()
 ----

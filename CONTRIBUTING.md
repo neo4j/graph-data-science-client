@@ -53,7 +53,7 @@ Remember that many community members have become regular contributors and some a
 
 ## Specifically for this project
 
-Setting up the development environment:
+Setting up the Python development environment:
 
  * Install Python 3.7+
  * [Install pip](https://pip.pypa.io/en/stable/installation/)
@@ -63,7 +63,7 @@ Setting up the development environment:
    ```
  * (Optional) To run integration tests locally, set up a [Neo4j DBMS](https://neo4j.com/docs/getting-started/current/) with [GDS](https://neo4j.com/docs/graph-data-science/current/) installed
 
-See [TESTING.md](TESTING.md) for instructions on how to run tests and check that code style is maintained.
+See [TESTING.md](TESTING.md) for instructions on how to run tests and check that code style is maintained, and the [documentation README](doc/README.md) for how to get started with documentation.
 
 
 ## Got an idea for a new project?

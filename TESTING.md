@@ -1,10 +1,13 @@
 # graphdatascience testing
 
-This document describes how to run tests for `graphdatascience` as well as how to check that the code style is maintained.
+This document describes how to test the implementation of `graphdatascience` as well as how to check that its code style is maintained.
 
 Tests can be found in `graphdatascience/tests`. In each of the folders there, `unit` and `integration`, the tests of that respective type reside.
 
 Please see the section [Specifically for this project](CONTRIBUTING.md#specifically-for-this-project) of our [contribution guidelines](CONTRIBUTING.md) for how to set up an environment for testing and style checking.
+
+> **_NOTE:_** This document does not cover documentation testing.
+Please see the [documentation README](doc/README.md#testing) for that.
 
 
 ## Unit testing
