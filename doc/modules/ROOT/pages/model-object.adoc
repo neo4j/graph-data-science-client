@@ -121,6 +121,9 @@ For instance, supposing we have our model object `model` created above, we could
 _ = gds.alpha.model.store(model)
 
 gds.beta.model.drop(model)  # same as model.drop()
+
+# Load the model again for further use
+gds.alpha.model.load(model.name())
 ----
 
 
