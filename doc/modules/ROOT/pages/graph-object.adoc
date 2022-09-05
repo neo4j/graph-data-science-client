@@ -75,7 +75,7 @@ include::ROOT:partial$/alpha-note.adoc[]
 Instead of projecting a graph from the Neo4j database it is also possible to construct new graphs using pandas `DataFrames` from the client.
 
 [[graph-object-construct-example]]
-[source,python]
+[source,python,group=graph-roundtrip]
 ----
 nodes = pandas.DataFrame(
     {
@@ -232,7 +232,7 @@ The first row of each such matrix are the source node ids of the relationships, 
 
 We can illustrate this transformation with an example using our graph `G` from the <<graph-object-construct-example, contruct example above>>:
 
-[source,python]
+[source,python, group=graph-roundtrip]
 ----
 topology_by_rel_type = gds.beta.graph.relationships.stream(G).by_rel_type()
 
