@@ -5,7 +5,7 @@ Layout/LineLength:
   Max: 120
 
 Metrics/AbcSize:
-  Max: 25
+  Max: 30
 
 Metrics/CyclomaticComplexity:
   Max: 10

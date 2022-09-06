@@ -1,8 +1,9 @@
 from typing import Generator
 
+import numpy as np
 import pytest
 from neo4j import DEFAULT_DATABASE
-from pandas import DataFrame
+from pandas import DataFrame, Series
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
@@ -553,28 +554,56 @@ def test_graph_relationshipProperties_stream_without_arrow_separate_property_col
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataScience) -> None:
-    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", "REL")
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
 
-    result = gds_without_arrow.beta.graph.relationships.stream(G, ["REL"])
+    result = gds_without_arrow.beta.graph.relationships.stream(G, ["REL", "REL2"])
 
-    expected = gds_without_arrow.run_cypher("MATCH (n)-[REL]->(m) RETURN id(n) AS src_id, id(m) AS trg_id")
+    expected = gds_without_arrow.run_cypher(
+        "MATCH (n)-[r]->(m) RETURN id(n) AS src_id, id(m) AS trg_id, type(r) AS rel_type"
+    )
 
     assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType"]
-    assert {e for e in result["sourceNodeId"]} == {i for i in expected["src_id"]}
-    assert {e for e in result["targetNodeId"]} == {i for i in expected["trg_id"]}
+
+    assert result.shape[0] == expected.shape[0]
+    for _, row in expected.iterrows():
+        assert (result == np.array(row)).all(1).any()
+
+    by_rel_type = result.by_rel_type()
+
+    num_rels = 0
+    for rel_type, matrix in by_rel_type.items():
+        num_rels += len(matrix[0])
+        for i in range(len(matrix[0])):
+            row = Series([by_rel_type[rel_type][0][i], by_rel_type[rel_type][1][i], rel_type])
+            assert (result == np.array(row)).all(1).any()
+
+    assert num_rels == result.shape[0]
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project(GRAPH_NAME, "*", "REL")
+    G, _ = gds.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
 
-    result = gds.beta.graph.relationships.stream(G, ["REL"])
+    result = gds.beta.graph.relationships.stream(G, ["REL", "REL2"])
 
-    expected = gds.run_cypher("MATCH (n)-[REL]->(m) RETURN id(n) AS src_id, id(m) AS trg_id")
+    expected = gds.run_cypher("MATCH (n)-[r]->(m) RETURN id(n) AS src_id, id(m) AS trg_id, type(r) AS rel_type")
 
     assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType"]
-    assert {e for e in result["sourceNodeId"]} == {i for i in expected["src_id"]}
-    assert {e for e in result["targetNodeId"]} == {i for i in expected["trg_id"]}
+
+    assert result.shape[0] == expected.shape[0]
+    for _, row in expected.iterrows():
+        assert (result == np.array(row)).all(1).any()
+
+    by_rel_type = result.by_rel_type()
+
+    num_rels = 0
+    for rel_type, matrix in by_rel_type.items():
+        num_rels += len(matrix[0])
+        for i in range(len(matrix[0])):
+            row = Series([by_rel_type[rel_type][0][i], by_rel_type[rel_type][1][i], rel_type])
+            assert (result == np.array(row)).all(1).any()
+
+    assert num_rels == result.shape[0]
 
 
 def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:

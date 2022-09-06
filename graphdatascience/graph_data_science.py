@@ -1,4 +1,3 @@
-import re
 import warnings
 from typing import Any, Dict, Optional, Tuple, Type, TypeVar, Union
 
@@ -16,10 +15,6 @@ from .server_version.server_version import ServerVersion
 from .version import __version__
 
 GDS = TypeVar("GDS", bound="GraphDataScience")
-
-
-class InvalidServerVersionError(Exception):
-    pass
 
 
 class GraphDataScience(DirectEndpoints, UncallableNamespace):
@@ -89,10 +84,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         except Exception as e:
             raise UnableToConnectError(e)
 
-        server_version_match = re.search(r"^(\d+)\.(\d+)\.(\d+)", server_version_string)
-        if not server_version_match:
-            raise InvalidServerVersionError(f"{server_version_string} is not a valid GDS library version")
-        self._server_version = ServerVersion(*map(int, server_version_match.groups()))
+        self._server_version = ServerVersion.from_string(server_version_string)
         self._query_runner.set_server_version(self._server_version)
 
         if arrow and self._server_version >= ServerVersion(2, 1, 0):

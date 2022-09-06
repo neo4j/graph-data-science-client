@@ -74,7 +74,8 @@ include::ROOT:partial$/alpha-note.adoc[]
 
 Instead of projecting a graph from the Neo4j database it is also possible to construct new graphs using pandas `DataFrames` from the client.
 
-[source,python]
+[[graph-object-construct-example]]
+[source,python,group=graph-roundtrip]
 ----
 nodes = pandas.DataFrame(
     {
@@ -220,3 +221,22 @@ are greatly sped up if https://neo4j.com/docs/graph-data-science/current/install
 
 Additionally, setting the client only optional keyword parameter `separate_property_columns=True` (it defaults to `False`) for `gds.graph.streamNodeProperties` and `gds.graph.streamRelationshipProperties` returns a pandas `DataFrame` in which each property requested has its own column.
 Note that this is different from the default behavior for which there would only be one column called `propertyValue` that contains all properties requested interleaved for each node or relationship.
+
+
+==== Streaming topology by relationship type
+
+The type returned from the Python client method corresponding to https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/#_stream[`gds.beta.graph.relationships.stream`] is called `TopologyDataFrame` and inherits from the standard pandas `DataFrame`.
+`TopologyDataFrame` comes with an additional convenience method named `by_rel_type` which takes no arguments, and returns a dictionary of the form `Dict[str, List[List[int]]]`.
+This dictionary maps relationship types as strings to `2 x m` matrices where `m` here represents the number of relationhips of the given type.
+The first row of each such matrix are the source node ids of the relationships, and the second row are the corresponding target node ids.
+
+We can illustrate this transformation with an example using our graph `G` from the <<graph-object-construct-example, contruct example above>>:
+
+[source,python, group=graph-roundtrip, min-server-version=2.2.0]
+----
+topology_by_rel_type = gds.beta.graph.relationships.stream(G).by_rel_type()
+
+assert list(topology_by_rel_type.keys()) == ["REL"]
+assert topology_by_rel_type["REL"][0] == [0, 1, 2, 3]
+assert topology_by_rel_type["REL"][1] == [1, 2, 3, 0]
+----
