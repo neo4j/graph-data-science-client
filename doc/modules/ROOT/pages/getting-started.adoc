@@ -115,11 +115,13 @@ mutate_result = gds.pageRank.mutate(G_office, tolerance=0.5, mutateProperty="ran
 assert G_office.node_properties("City") == ["rank"]
 ----
 
+NOTE: You can also use `gds.graph.load_cora` to get started with a real dataset. See xref:graph-object.adoc#graph-object-load-cora[this segment] for more details.
+
 
 == Running Cypher
 
 As we saw in the <<getting-started-minimal-example, example above>>, the `GraphDataScience` object has a method `run_cypher` for conveniently running Cypher queries.
-This method takes as parameters a query string `query: str`, an optional Cypher parameters dictionary `params: Optional[Dict[str, Any]]]` as well as an optional string `database: Optional[str]` to override which database to target.
+This method takes as parameters a query string `query: str`, an optional Cypher parameters dictionary `params: Optional[Dict[str, Any]]` as well as an optional string `database: Optional[str]` to override which database to target.
 It returns the result of the query in the format of a pandas `DataFrame`.
 
 
