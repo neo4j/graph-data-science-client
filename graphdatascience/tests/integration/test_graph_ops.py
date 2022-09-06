@@ -552,6 +552,28 @@ def test_graph_relationshipProperties_stream_without_arrow_separate_property_col
     assert {e for e in result["relY"]} == {5, 6, 7}
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+def test_cora_graph_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    G = gds_without_arrow.graph.load_cora()
+
+    try:
+        assert G.node_count() == 2708
+        assert G.relationship_count() == 5429
+    finally:
+        G.drop()
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+def test_cora_graph_with_arrow(gds: GraphDataScience) -> None:
+    G = gds.graph.load_cora()
+
+    try:
+        assert G.node_count() == 2708
+        assert G.relationship_count() == 5429
+    finally:
+        G.drop()
+
+
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
