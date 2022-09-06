@@ -89,6 +89,7 @@ By adding the `-n test_community` option one can make sure that only tests that 
 The example code snippets of the documentation that will be tested are those AsciiDoc blocks with style `source`, language `python` and without role `no-test`.
 Further, if a block has a group attribute, then it will be concatenated with all other snippets of the same group into one script.
 If a block has the enterprise attribute, it will only be run when the test `test_enterprise` is not filtered out.
+If a block has the min-server-version attribute, it will only be run when the docs are tested against a GDS version >= min-server-version.
 
 Additionally, before a code snippet from the documentation is run, it is:
 
@@ -101,7 +102,7 @@ Please inspect the test script `tests/test_docs.rb` for more details.
 ### Code style
 
 To enforce Ruby code style of the testing source we use [RuboCop](https://github.com/rubocop/rubocop).
-It should be installed by the command `bundler install tests` [above](#installation).
+It should be installed by the command `bundler install --gemfile tests/Gemfile` [above](#installation).
 
 To use RuboCop for linting simply call `rubocop tests`, and for enforcing rules (formatting) one can call it with the `-A` option.
 

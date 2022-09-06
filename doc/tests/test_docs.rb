@@ -11,6 +11,7 @@ import os
 import pandas
 
 from graphdatascience import GraphDataScience
+from graphdatascience.server_version.server_version import ServerVersion
 
 NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
 URI_TLS = os.environ.get("NEO4J_URI", "bolt+ssc://localhost:7687")
@@ -67,6 +68,17 @@ def complete_raw_scripts(raw_scripts)
   end
 end
 
+def block_to_raw_code(block)
+  if block.attr?('min-server-version')
+    min_gds_version = block.attr('min-server-version')
+    raw_code = "if ServerVersion.from_string(\"#{min_gds_version}\") <= ServerVersion.from_string(gds.version()):\n"
+    block.source.each_line { |line| raw_code += "    #{line}" }
+    raw_code
+  else
+    block.source
+  end
+end
+
 def scripts_of_file(path, enterprise)
   doc = Asciidoctor.load_file path, safe: :safe
 
@@ -75,13 +87,14 @@ def scripts_of_file(path, enterprise)
   testable_source_blocks = testable_source_blocks.reject { |b| b.attr? 'enterprise' } unless enterprise
 
   raw_scripts = []
-  raw_scripts_by_group = {}
+  raw_scripts_by_group = Hash.new { |h, k| h[k] = "# #{k}" }
 
   testable_source_blocks.each do |b|
     if b.attr? 'group'
-      add_to_group(raw_scripts_by_group, b)
+      group = b.attr 'group'
+      raw_scripts_by_group[group] += "\n#{block_to_raw_code(b)}"
     else
-      raw_scripts.push(b.source)
+      raw_scripts.push(block_to_raw_code(b))
     end
   end
 

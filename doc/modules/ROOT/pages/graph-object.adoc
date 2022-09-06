@@ -232,7 +232,7 @@ The first row of each such matrix are the source node ids of the relationships, 
 
 We can illustrate this transformation with an example using our graph `G` from the <<graph-object-construct-example, contruct example above>>:
 
-[source,python, group=graph-roundtrip]
+[source,python, group=graph-roundtrip, min-server-version=2.2.0]
 ----
 topology_by_rel_type = gds.beta.graph.relationships.stream(G).by_rel_type()
 
