@@ -99,3 +99,12 @@ class Graph:
 
     def modification_time(self) -> Any:  # neo4j.time.DateTime not exported
         return self._graph_info(["modificationTime"])
+
+    def __str__(self) -> str:
+        return "{}({})".format(
+            self.__class__.__name__,
+            {"name": self.name(), "node_count": self.node_count(), "relationship_count": self.relationship_count()},
+        )
+
+    def __repr__(self) -> str:
+        return "{}({})".format(self.__class__.__name__, self._graph_info().to_dict())

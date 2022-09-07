@@ -48,3 +48,11 @@ def test_pipeline_drop(gds: GraphDataScience) -> None:
 
     with pytest.raises(Exception):
         pipe.drop(failIfMissing=True)
+
+
+def test_pipeline_str(pipe: TrainingPipeline) -> None:
+    assert str(pipe) == "LPTrainingPipeline({'name': 'pipe', 'type': 'Link prediction training pipeline'})"
+
+
+def test_pipeline_repr(pipe: TrainingPipeline) -> None:
+    assert "'featureSteps'" in repr(pipe)
