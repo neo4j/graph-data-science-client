@@ -1,7 +1,7 @@
 import os
+from importlib.resources import path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from importlib_resources import files
 from multimethod import multimethod
 from pandas import DataFrame, Series, read_pickle
 
@@ -29,10 +29,11 @@ Strings = Union[str, List[str]]
 
 class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     def load_cora(self, graph_name: str = "cora") -> Graph:
-        resource_files = files("graphdatascience.resources")
+        with path("graphdatascience.resources", "cora_nodes_gzip.pkl") as nodes_resource:
+            nodes = read_pickle(nodes_resource, compression="gzip")
 
-        rels = read_pickle(resource_files.joinpath("cora_rels_gzip.pkl"), compression="gzip")
-        nodes = read_pickle(resource_files.joinpath("cora_nodes_gzip.pkl"), compression="gzip")
+        with path("graphdatascience.resources", "cora_rels_gzip.pkl") as rels_resource:
+            rels = read_pickle(rels_resource, compression="gzip")
 
         self._namespace = "gds.alpha.graph"
 
