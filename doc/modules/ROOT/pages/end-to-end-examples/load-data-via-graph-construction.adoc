@@ -22,7 +22,7 @@ the `graphdatascience` package and create the `gds` object.
 
 [source, python, role=no-test]
 ----
-!pip install graphdatascience==1.4
+!pip install graphdatascience=={docs-version}
 ----
 
 [source, python, role=no-test]
