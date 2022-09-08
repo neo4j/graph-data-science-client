@@ -36,11 +36,7 @@ AURA_USERNAME = "neo4j"
 AURA_PASSWORD = ""
 
 # Configure the client with AuraDS-recommended settings if using AuraDS
-gds = GraphDataScience(
-    AURA_CONNECTION_URI,
-    auth=(AURA_USERNAME, AURA_PASSWORD),
-    aura_ds=True
-)
+gds = GraphDataScience(AURA_CONNECTION_URI, auth=(AURA_USERNAME, AURA_PASSWORD), aura_ds=True)
 ----
 
 We also import `pandas` to create a Pandas DataFrame from the original
@@ -56,9 +52,12 @@ import pandas as pd
 
 [source, python, role=no-test]
 ----
-# TODO: use URLs within the client repo when the notebook is added there
-CORA_CONTENT = "https://raw.githubusercontent.com/neo4j/graph-data-science/master/test-utils/src/main/resources/cora.content"
-CORA_CITES = "https://raw.githubusercontent.com/neo4j/graph-data-science/master/test-utils/src/main/resources/cora.cites"
+CORA_CONTENT = (
+    "https://raw.githubusercontent.com/neo4j/graph-data-science/master/test-utils/src/main/resources/cora.content"
+)
+CORA_CITES = (
+    "https://raw.githubusercontent.com/neo4j/graph-data-science/master/test-utils/src/main/resources/cora.cites"
+)
 ----
 
 We need to perform an additional preprocessing step to convert the
@@ -68,8 +67,6 @@ into a graph.
 
 [source, python, role=no-test]
 ----
-# Using non-consecutive values to show class ordering later on
-
 SUBJECT_TO_ID = {
     "Neural_Networks": 0,
     "Rule_Learning": 1,
@@ -96,7 +93,7 @@ nodes = pd.DataFrame().assign(
     nodeId=content[0], 
     labels="Paper", 
     subject=content[1].replace(SUBJECT_TO_ID), 
-    features=content.iloc[:, 2:].apply(list, axis=1)
+    features=content.iloc[:, 2:].apply(list, axis=1),
 )
 ----
 
@@ -111,17 +108,8 @@ nodes.head()
 # Create a new DataFrame containing the relationships between the nodes.
 # To create the equivalent of an undirected graph, we need to add direct
 # and inverse relationships.
-dir_relationships = pd.DataFrame().assign(
-    sourceNodeId=cites[0],
-    targetNodeId=cites[1],
-    relationshipType="CITES"
-)
-
-inv_relationships = pd.DataFrame().assign(
-    sourceNodeId=cites[1],
-    targetNodeId=cites[0],
-    relationshipType="CITES"
-)
+dir_relationships = pd.DataFrame().assign(sourceNodeId=cites[0], targetNodeId=cites[1], relationshipType="CITES")
+inv_relationships = pd.DataFrame().assign(sourceNodeId=cites[1], targetNodeId=cites[0], relationshipType="CITES")
 
 relationships = pd.concat([dir_relationships, inv_relationships]).drop_duplicates()
 ----
@@ -135,11 +123,7 @@ relationships.head(5)
 [source, python, role=no-test]
 ----
 # Finally, create the in-memory graph
-G = gds.alpha.graph.construct(
-    "cora-graph",
-    nodes,
-    relationships
-)
+G = gds.alpha.graph.construct("cora-graph", nodes, relationships)
 ----
 
 [source, python, role=no-test]
