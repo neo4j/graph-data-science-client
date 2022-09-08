@@ -50,6 +50,8 @@ import pandas as pd
 
 == Load the Cora dataset
 
+The Cora dataset can be downloaded from the following links (for node and edge information respectively):
+
 [source, python, role=no-test]
 ----
 CORA_CONTENT = (
@@ -60,10 +62,18 @@ CORA_CITES = (
 )
 ----
 
+We can load each CSV locally as a Pandas `DataFrame`.
+
+[source, python, role=no-test]
+----
+content = pd.read_csv(CORA_CONTENT, header=None)
+cites = pd.read_csv(CORA_CITES, header=None)
+----
+
 We need to perform an additional preprocessing step to convert the
 `subject` field (which is a string in the dataset) into an integer,
 because node properties have to be numerical in order to be projected
-into a graph.
+into a graph. We can use a map for this.
 
 [source, python, role=no-test]
 ----
@@ -78,17 +88,13 @@ SUBJECT_TO_ID = {
 }
 ----
 
-[source, python, role=no-test]
-----
-# Read each CSV locally as a Pandas DataFrame
-content = pd.read_csv(CORA_CONTENT, header=None)
-cites = pd.read_csv(CORA_CITES, header=None)
-----
+We can now reate a new `DataFrame` with a `nodeId` field, a list of node labels,
+and the additional node properties `subject` (using the `SUBJECT_TO_ID` 
+mapping) and `features` (converting all the feature columns to a single
+array column).
 
 [source, python, role=no-test]
 ----
-# Create a new DataFrame with a `nodeId` field, a list of node labels,
-# and the additional node properties `subject` and `features`
 nodes = pd.DataFrame().assign(
     nodeId=content[0], 
     labels="Paper", 
@@ -97,52 +103,59 @@ nodes = pd.DataFrame().assign(
 )
 ----
 
-[source, python, role=no-test]
-----
-# Show the first 5 rows of the new DataFrame
-nodes.head()
-----
+Let's check the first 5 rows of the new `DataFrame`:
 
 [source, python, role=no-test]
 ----
-# Create a new DataFrame containing the relationships between the nodes.
-# To create the equivalent of an undirected graph, we need to add direct
-# and inverse relationships.
+nodes.head()
+----
+
+Now we create a new `DataFrame` containing the relationships between the nodes.
+To create the equivalent of an undirected graph, we need to add direct
+and inverse relationships explicitly.
+
+[source, python, role=no-test]
+----
 dir_relationships = pd.DataFrame().assign(sourceNodeId=cites[0], targetNodeId=cites[1], relationshipType="CITES")
 inv_relationships = pd.DataFrame().assign(sourceNodeId=cites[1], targetNodeId=cites[0], relationshipType="CITES")
 
 relationships = pd.concat([dir_relationships, inv_relationships]).drop_duplicates()
 ----
 
+Again, let's check the first 20 rows of the new `DataFrame`:
+
 [source, python, role=no-test]
 ----
-# Show the first 20 rows of the new DataFrame
 relationships.head(5)
 ----
 
+Finally, we can create the in-memory graph.
+
 [source, python, role=no-test]
 ----
-# Finally, create the in-memory graph
 G = gds.alpha.graph.construct("cora-graph", nodes, relationships)
 ----
 
+Let's check that the new graph has been created:
+
 [source, python, role=no-test]
 ----
-# Check that the new graph has been created
 gds.graph.list()
 ----
 
-[source, python, role=no-test]
-----
-# Count the nodes in the graph
-G.node_count()
-----
+Let's also count the nodes in the graph:
 
 [source, python, role=no-test]
 ----
-# Get the value of the "subject" node property for
-# each node in the graph, printing only the first 5
-gds.graph.streamNodeProperties(G, ["subject"]).head()
+G.node_count()
+----
+
+We can stream the value of the "subject" node property for
+each node in the graph, printing only the first 10.
+
+[source, python, role=no-test]
+----
+gds.graph.streamNodeProperties(G, ["subject"]).head(10)
 ----
 
 
