@@ -2,7 +2,7 @@
 
 [TIP]
 ====
-Jupyter Notebook available on https://github.com/neo4j/graph-data-science-client/blob/main/examples/load-data-via-graph-construction.ipynb[Github^]
+Jupyter Notebook available on https://github.com/neo4j/graph-data-science-client/blob/{docs-version}/examples/load-data-via-graph-construction.ipynb[Github^]
 ====
 
 This notebook shows the usage of the `gds.alpha.graph.construct` method
@@ -10,6 +10,7 @@ This notebook shows the usage of the `gds.alpha.graph.construct` method
 
 *NOTE:* If you are using AuraDS, it is currently not possible to write
 the projected graph back to Neo4j.
+
 
 == Setup
 
@@ -19,12 +20,12 @@ AuraDS (which comes with GDS preinstalled) or Neo4j Desktop.
 Once the credentials to this environment are available, we can install
 the `graphdatascience` package and create the `gds` object.
 
-[source, python]
+[source, python, role=no-test]
 ----
 !pip install graphdatascience==1.4
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Import the client
 from graphdatascience import GraphDataScience
@@ -45,14 +46,15 @@ gds = GraphDataScience(
 We also import `pandas` to create a Pandas DataFrame from the original
 data source.
 
-[source, python]
+[source, python, role=no-test]
 ----
 import pandas as pd
 ----
 
+
 == Load the Cora dataset
 
-[source, python]
+[source, python, role=no-test]
 ----
 # TODO: use URLs within the client repo when the notebook is added there
 CORA_CONTENT = "https://raw.githubusercontent.com/neo4j/graph-data-science/master/test-utils/src/main/resources/cora.content"
@@ -64,7 +66,7 @@ We need to perform an additional preprocessing step to convert the
 because node properties have to be numerical in order to be projected
 into a graph.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Using non-consecutive values to show class ordering later on
 
@@ -79,14 +81,14 @@ SUBJECT_TO_ID = {
 }
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Read each CSV locally as a Pandas DataFrame
 content = pd.read_csv(CORA_CONTENT, header=None)
 cites = pd.read_csv(CORA_CITES, header=None)
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Create a new DataFrame with a `nodeId` field, a list of node labels,
 # and the additional node properties `subject` and `features`
@@ -98,13 +100,13 @@ nodes = pd.DataFrame().assign(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Show the first 5 rows of the new DataFrame
 nodes.head()
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Create a new DataFrame containing the relationships between the nodes.
 # To create the equivalent of an undirected graph, we need to add direct
@@ -124,13 +126,13 @@ inv_relationships = pd.DataFrame().assign(
 relationships = pd.concat([dir_relationships, inv_relationships]).drop_duplicates()
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Show the first 20 rows of the new DataFrame
 relationships.head(5)
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Finally, create the in-memory graph
 G = gds.alpha.graph.construct(
@@ -140,28 +142,29 @@ G = gds.alpha.graph.construct(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Check that the new graph has been created
 gds.graph.list()
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Count the nodes in the graph
 G.node_count()
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Get the value of the "subject" node property for
 # each node in the graph, printing only the first 5
 gds.graph.streamNodeProperties(G, ["subject"]).head()
 ----
 
+
 == Cleanup
 
-[source, python]
+[source, python, role=no-test]
 ----
 G.drop()
 ----
