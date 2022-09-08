@@ -127,3 +127,9 @@ class TrainingPipeline(ABC):
         params = {"pipeline_name": self._name, "fail_if_missing": failIfMissing}
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__}(name={self.name()}, type={self.type()})"
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self._list_info().to_dict()})"
