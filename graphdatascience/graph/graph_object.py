@@ -101,10 +101,19 @@ class Graph:
         return self._graph_info(["modificationTime"])
 
     def __str__(self) -> str:
-        return "{}({})".format(
-            self.__class__.__name__,
-            {"name": self.name(), "node_count": self.node_count(), "relationship_count": self.relationship_count()},
+        return (
+            f"{self.__class__.__name__}(name={self.name()}, "
+            f"node_count={self.node_count()}, relationship_count={self.relationship_count()})"
         )
 
     def __repr__(self) -> str:
-        return "{}({})".format(self.__class__.__name__, self._graph_info().to_dict())
+        yield_fields = [
+            "graphName",
+            "nodeCount",
+            "relationshipCount",
+            "database",
+            "configuration",
+            "schema",
+            "memoryUsage",
+        ]
+        return f"{self.__class__.__name__}({self._graph_info(yields=yield_fields).to_dict()})"

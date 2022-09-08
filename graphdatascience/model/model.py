@@ -100,7 +100,7 @@ class Model(ABC):
         return self._estimate_predict("mutate", G.name(), config)
 
     def __str__(self) -> str:
-        return "{}({})".format(self.__class__.__name__, {"name": self.name(), "type": self.type()})
+        return f"{self.__class__.__name__}(name={self.name()}, type={self.type()})"
 
     def __repr__(self) -> str:
-        return "{}({})".format(self.__class__.__name__, self._list_info().to_dict())
+        return f"{self.__class__.__name__}({self._list_info().to_dict()})"
