@@ -136,6 +136,9 @@ Finally, we can create the in-memory graph.
 G = gds.alpha.graph.construct("cora-graph", nodes, relationships)
 ----
 
+
+== Use the graph
+
 Let's check that the new graph has been created:
 
 [source, python, role=no-test]
