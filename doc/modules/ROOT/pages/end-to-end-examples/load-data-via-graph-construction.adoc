@@ -39,7 +39,7 @@ AURA_PASSWORD = ""
 gds = GraphDataScience(AURA_CONNECTION_URI, auth=(AURA_USERNAME, AURA_PASSWORD), aura_ds=True)
 ----
 
-We also import `pandas` to create a Pandas DataFrame from the original
+We also import `pandas` to create a Pandas `DataFrame` from the original
 data source.
 
 [source, python, role=no-test]
@@ -153,7 +153,7 @@ Let's also count the nodes in the graph:
 G.node_count()
 ----
 
-We can stream the value of the "subject" node property for
+We can stream the value of the `subject` node property for
 each node in the graph, printing only the first 10.
 
 [source, python, role=no-test]
