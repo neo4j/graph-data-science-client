@@ -122,11 +122,11 @@ inv_relationships = pd.DataFrame().assign(sourceNodeId=cites[1], targetNodeId=ci
 relationships = pd.concat([dir_relationships, inv_relationships]).drop_duplicates()
 ----
 
-Again, let's check the first 20 rows of the new `DataFrame`:
+Again, let's check the first 5 rows of the new `DataFrame`:
 
 [source, python, role=no-test]
 ----
-relationships.head(5)
+relationships.head()
 ----
 
 Finally, we can create the in-memory graph.
