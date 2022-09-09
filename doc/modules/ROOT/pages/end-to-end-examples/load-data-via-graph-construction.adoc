@@ -20,7 +20,7 @@ AuraDS (which comes with GDS preinstalled) or Neo4j Desktop.
 Once the credentials to this environment are available, we can install
 the `graphdatascience` package and create the `gds` object.
 
-[source, python, role=no-test]
+[source, python, subs=attributes+, role=no-test]
 ----
 !pip install graphdatascience=={docs-version}
 ----
@@ -88,7 +88,7 @@ SUBJECT_TO_ID = {
 }
 ----
 
-We can now reate a new `DataFrame` with a `nodeId` field, a list of node labels,
+We can now create a new `DataFrame` with a `nodeId` field, a list of node labels,
 and the additional node properties `subject` (using the `SUBJECT_TO_ID` 
 mapping) and `features` (converting all the feature columns to a single
 array column).
