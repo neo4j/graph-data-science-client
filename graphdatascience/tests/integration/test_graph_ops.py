@@ -552,6 +552,7 @@ def test_graph_relationshipProperties_stream_without_arrow_separate_property_col
     assert {e for e in result["relY"]} == {5, 6, 7}
 
 
+@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_cora_graph_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G = gds_without_arrow.graph.load_cora()
