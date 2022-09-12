@@ -8,6 +8,7 @@ from graphdatascience.model.graphsage_model import GraphSageModel
 from graphdatascience.model.link_prediction_model import LPModel
 from graphdatascience.model.model import Model
 from graphdatascience.model.node_classification_model import NCModel
+from graphdatascience.model.node_regression_model import NRModel
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -24,15 +25,22 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (c: Node {age: 2}),
         (d: Node {age: 1}),
         (e: Node {age: 2}),
+        (i1: CONTEXT {age: 4}),
+        (i2: CONTEXT {age: 4}),
         (a)-[:REL]->(b),
         (a)-[:REL]->(c),
         (b)-[:REL]->(c),
         (b)-[:REL]->(a),
         (c)-[:REL]->(a),
-        (c)-[:REL]->(b)
+        (c)-[:REL]->(b),
+        (a)-[:CONTEXTREL]->(i1),
+        (b)-[:CONTEXTREL]->(i1),
+        (c)-[:CONTEXTREL]->(i1),
+        (d)-[:CONTEXTREL]->(i1),
+        (e)-[:CONTEXTREL]->(i2)
         """
     )
-    G, _ = gds.graph.project("g", {"Node": {"properties": ["age"]}}, {"REL": {"orientation": "UNDIRECTED"}})
+    G, _ = gds.graph.project("g", {"Node": {"properties": ["age"]}, "CONTEXT": {"properties": ["age"]}}, {"REL": {"orientation": "UNDIRECTED"}, "CONTEXTREL": {"orientation": "UNDIRECTED"}})
 
     yield G
 
@@ -46,7 +54,7 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     pipe, _ = gds.beta.pipeline.linkPrediction.create("pipe")
 
     try:
-        pipe.addNodeProperty("degree", mutateProperty="rank")
+        pipe.addNodeProperty("degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"])
         pipe.addFeature("l2", nodeProperties=["rank"])
         pipe.configureSplit(trainFraction=0.7, testFraction=0.2, validationFolds=2)
         pipe.addLogisticRegression(penalty=1)
@@ -76,11 +84,14 @@ def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     pipe, _ = gds.beta.pipeline.nodeClassification.create("pipe")
 
     try:
-        pipe.addNodeProperty("degree", mutateProperty="rank")
+        pipe.addNodeProperty("degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"])
         pipe.selectFeatures("rank")
         pipe.configureSplit(testFraction=0.3, validationFolds=2)
         pipe.addLogisticRegression(penalty=1)
-        nc_model, _ = pipe.train(G, modelName="nc-model", targetProperty="age", metrics=["ACCURACY"])
+        if gds._server_version >= ServerVersion(2, 2, 0):
+            nc_model, _ = pipe.train(G, modelName="nc-model", targetNodeLabels=["Node"], relationshipTypes=["REL"], targetProperty="age", metrics=["ACCURACY"])
+        else:
+            nc_model, _ = pipe.train(G, modelName="nc-model", targetProperty="age", metrics=["ACCURACY"])
     finally:
         query = "CALL gds.beta.pipeline.drop($name)"
         params = {"name": "pipe"}
@@ -89,6 +100,29 @@ def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     yield nc_model
 
     nc_model.drop()
+
+
+@pytest.fixture(scope="module")
+def nr_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
+    pipe, _ = gds.alpha.pipeline.nodeRegression.create("pipe")
+
+    try:
+        pipe.addNodeProperty("degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"])
+        pipe.selectFeatures("rank")
+        pipe.configureSplit(testFraction=0.3, validationFolds=2)
+        pipe.addLinearRegression(penalty=1)
+        if gds._server_version >= ServerVersion(2, 2, 0):
+            nr_model, _ = pipe.train(G, modelName="nr_model", targetNodeLabels=["Node"], relationshipTypes=["REL"], targetProperty="age", metrics=["MEAN_SQUARED_ERROR"])
+        else:
+            nr_model, _ = pipe.train(G, modelName="nr_model", targetProperty="age", metrics=["MEAN_SQUARED_ERROR"])
+    finally:
+        query = "CALL gds.beta.pipeline.drop($name)"
+        params = {"name": "pipe"}
+        runner.run_query(query, params)
+
+    yield nr_model
+
+    nr_model.drop()
 
 
 @pytest.fixture
@@ -184,6 +218,14 @@ def test_model_get_nc_trained(gds: GraphDataScience, nc_model: NCModel) -> None:
     assert new_model.type() == nc_model.type()
     assert new_model.name() == nc_model.name()
     assert isinstance(new_model, NCModel)
+
+
+def test_model_get_nr_trained(gds: GraphDataScience, nr_model: NRModel) -> None:
+    new_model = gds.model.get(nr_model.name())
+
+    assert new_model.type() == nr_model.type()
+    assert new_model.name() == nr_model.name()
+    assert isinstance(new_model, NRModel)
 
 
 def test_model_get_graphsage(gds: GraphDataScience, gs_model: GraphSageModel) -> None:
