@@ -1,8 +1,9 @@
 import os
+from importlib.resources import path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from multimethod import multimethod
-from pandas import DataFrame, Series
+from pandas import DataFrame, Series, read_pickle
 
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
@@ -27,6 +28,17 @@ Strings = Union[str, List[str]]
 
 
 class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+    def load_cora(self, graph_name: str = "cora") -> Graph:
+        with path("graphdatascience.resources", "cora_nodes_gzip.pkl") as nodes_resource:
+            nodes = read_pickle(nodes_resource, compression="gzip")
+
+        with path("graphdatascience.resources", "cora_rels_gzip.pkl") as rels_resource:
+            rels = read_pickle(rels_resource, compression="gzip")
+
+        self._namespace = "gds.alpha.graph"
+
+        return self.construct(graph_name, nodes, rels)
+
     @property
     def project(self) -> GraphProjectRunner:
         self._namespace += ".project"

@@ -135,6 +135,20 @@ This in particular means that:
 If multiple node dataframes are used, they need to contain distinct node ids across all node data frames.
 * Prior to the `construct` call, a call to `GraphDataScience.set_database` must have been made to explicitly specify which Neo4j database should be targeted.
 
+[[graph-object-load-cora]]
+=== Loading the CORA dataset
+
+For convenience, the library is shipped with the https://paperswithcode.com/dataset/cora[CORA dataset].
+We can easily load it into GDS and get a graph object representing the dataset:
+
+[source, python]
+----
+G = gds.graph.load_cora(graph_name="cora")
+
+assert G.node_count() == 2708
+assert G.node_labels() == ["Paper"] 
+----
+
 
 == Inspecting a graph object
 
