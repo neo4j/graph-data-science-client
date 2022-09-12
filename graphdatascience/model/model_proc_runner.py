@@ -11,7 +11,6 @@ from ..model.node_classification_model import NCModel
 from ..model.node_regression_model import NRModel
 from .graphsage_model import GraphSageModel
 from .model import Model
-from .node_regression_model import NRModel
 
 
 class ModelProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
