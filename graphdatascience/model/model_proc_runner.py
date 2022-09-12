@@ -2,7 +2,6 @@ from typing import Any, Optional, Tuple
 
 from pandas import DataFrame, Series
 
-from .node_regression_model import NRModel
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
@@ -12,6 +11,7 @@ from ..model.node_classification_model import NCModel
 from ..model.node_regression_model import NRModel
 from .graphsage_model import GraphSageModel
 from .model import Model
+from .node_regression_model import NRModel
 
 
 class ModelProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):

@@ -40,7 +40,11 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (e)-[:CONTEXTREL]->(i2)
         """
     )
-    G, _ = gds.graph.project("g", {"Node": {"properties": ["age"]}, "CONTEXT": {"properties": ["age"]}}, {"REL": {"orientation": "UNDIRECTED"}, "CONTEXTREL": {"orientation": "UNDIRECTED"}})
+    G, _ = gds.graph.project(
+        "g",
+        {"Node": {"properties": ["age"]}, "CONTEXT": {"properties": ["age"]}},
+        {"REL": {"orientation": "UNDIRECTED"}, "CONTEXTREL": {"orientation": "UNDIRECTED"}},
+    )
 
     yield G
 
@@ -54,7 +58,9 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     pipe, _ = gds.beta.pipeline.linkPrediction.create("pipe")
 
     try:
-        pipe.addNodeProperty("degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"])
+        pipe.addNodeProperty(
+            "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
+        )
         pipe.addFeature("l2", nodeProperties=["rank"])
         pipe.configureSplit(trainFraction=0.7, testFraction=0.2, validationFolds=2)
         pipe.addLogisticRegression(penalty=1)
@@ -84,12 +90,21 @@ def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     pipe, _ = gds.beta.pipeline.nodeClassification.create("pipe")
 
     try:
-        pipe.addNodeProperty("degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"])
+        pipe.addNodeProperty(
+            "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
+        )
         pipe.selectFeatures("rank")
         pipe.configureSplit(testFraction=0.3, validationFolds=2)
         pipe.addLogisticRegression(penalty=1)
         if gds._server_version >= ServerVersion(2, 2, 0):
-            nc_model, _ = pipe.train(G, modelName="nc-model", targetNodeLabels=["Node"], relationshipTypes=["REL"], targetProperty="age", metrics=["ACCURACY"])
+            nc_model, _ = pipe.train(
+                G,
+                modelName="nc-model",
+                targetNodeLabels=["Node"],
+                relationshipTypes=["REL"],
+                targetProperty="age",
+                metrics=["ACCURACY"],
+            )
         else:
             nc_model, _ = pipe.train(G, modelName="nc-model", targetProperty="age", metrics=["ACCURACY"])
     finally:
@@ -107,12 +122,21 @@ def nr_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     pipe, _ = gds.alpha.pipeline.nodeRegression.create("pipe")
 
     try:
-        pipe.addNodeProperty("degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"])
+        pipe.addNodeProperty(
+            "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
+        )
         pipe.selectFeatures("rank")
         pipe.configureSplit(testFraction=0.3, validationFolds=2)
         pipe.addLinearRegression(penalty=1)
         if gds._server_version >= ServerVersion(2, 2, 0):
-            nr_model, _ = pipe.train(G, modelName="nr_model", targetNodeLabels=["Node"], relationshipTypes=["REL"], targetProperty="age", metrics=["MEAN_SQUARED_ERROR"])
+            nr_model, _ = pipe.train(
+                G,
+                modelName="nr_model",
+                targetNodeLabels=["Node"],
+                relationshipTypes=["REL"],
+                targetProperty="age",
+                metrics=["MEAN_SQUARED_ERROR"],
+            )
         else:
             nr_model, _ = pipe.train(G, modelName="nr_model", targetProperty="age", metrics=["MEAN_SQUARED_ERROR"])
     finally:
