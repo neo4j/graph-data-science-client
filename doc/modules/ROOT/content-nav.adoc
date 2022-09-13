@@ -6,3 +6,6 @@
 ** xref:pipelines.adoc[]
 ** xref:model-object.adoc[]
 ** xref:known-limitations.adoc[]
+
+** Tutorials
+*** xref:tutorials/load-data-via-graph-construction.adoc[]

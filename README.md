@@ -38,6 +38,7 @@ Extensive end-to-end examples in Jupyter ready-to-run notebooks can be found in 
 
 * [Computing similarities with kNN based on FastRP embeddings](https://github.com/neo4j/graph-data-science-client/tree/main/examples/fastrp-and-knn.ipynb)
 * [Exporting from GDS and running GCN with PyG](https://github.com/neo4j/graph-data-science-client/tree/main/examples/import-sample-export-gnn.ipynb)
+* [Load data to a projected graph via graph construction](https://github.com/neo4j/graph-data-science-client/tree/main/examples/load-data-via-graph-construction.ipynb)
 
 
 ### Imports and setup
