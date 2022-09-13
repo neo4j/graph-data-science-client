@@ -22,7 +22,7 @@ the `graphdatascience` package and import the client class.
 
 [source, python, subs=attributes+, role=no-test]
 ----
-!pip install graphdatascience=={docs-version}
+!pip install graphdatascience
 ----
 
 [source, python, subs=attributes+, role=no-test]
