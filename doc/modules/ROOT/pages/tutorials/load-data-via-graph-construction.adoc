@@ -18,25 +18,40 @@ We need an environment where Neo4j and GDS are available, for example
 AuraDS (which comes with GDS preinstalled) or Neo4j Desktop.
 
 Once the credentials to this environment are available, we can install
-the `graphdatascience` package and create the `gds` object.
+the `graphdatascience` package and import the client class.
 
 [source, python, subs=attributes+, role=no-test]
 ----
 !pip install graphdatascience=={docs-version}
 ----
 
-[source, python, role=no-test]
+[source, python, subs=attributes+, role=no-test]
 ----
-# Import the client
 from graphdatascience import GraphDataScience
+----
 
-# Replace with the actual credentials
-AURA_CONNECTION_URI = "neo4j+s://xxxxxxxx.databases.neo4j.io"
-AURA_USERNAME = "neo4j"
-AURA_PASSWORD = ""
+When using a local Neo4j setup, the default connection URI is `bolt://localhost:7687`:
 
-# Configure the client with AuraDS-recommended settings if using AuraDS
-gds = GraphDataScience(AURA_CONNECTION_URI, auth=(AURA_USERNAME, AURA_PASSWORD), aura_ds=True)
+[source, python, subs=attributes+, role=no-test]
+----
+# Replace with the actual connection URI and credentials
+NEO4J_CONNECTION_URI = "bolt://localhost:7687"
+NEO4J_USERNAME = "neo4j"
+NEO4J_PASSWORD = ""
+
+gds = GraphDataScience(NEO4J_CONNECTION_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
+----
+
+When using AuraDS, the connection URI is slightly different as it uses the `neo4j+s` protocol. The client should also include the `aura_ds=True` flag to enable AuraDS-recommended settings.
+
+[source, python, subs=attributes+, role=no-test]
+----
+# Replace with the actual connection URI and credentials
+NEO4J_CONNECTION_URI = "neo4j+s://xxxxxxxx.databases.neo4j.io"
+NEO4J_USERNAME = "neo4j"
+NEO4J_PASSWORD = ""
+
+gds = GraphDataScience(NEO4J_CONNECTION_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD), aura_ds=True)
 ----
 
 We also import `pandas` to create a Pandas `DataFrame` from the original
@@ -110,6 +125,15 @@ Let's check the first 5 rows of the new `DataFrame`:
 nodes.head()
 ----
 
+----
+    nodeId labels  subject                                           features
+0    31336  Paper        0  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+1  1061127  Paper        1  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, ...
+2  1106406  Paper        2  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+3    13195  Paper        2  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+4    37879  Paper        3  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+----
+
 Now we create a new `DataFrame` containing the relationships between the nodes.
 To create the equivalent of an undirected graph, we need to add direct
 and inverse relationships explicitly.
@@ -127,6 +151,15 @@ Again, let's check the first 5 rows of the new `DataFrame`:
 [source, python, role=no-test]
 ----
 relationships.head()
+----
+
+----
+   sourceNodeId  targetNodeId relationshipType
+0            35          1033            CITES
+1            35        103482            CITES
+2            35        103515            CITES
+3            35       1050679            CITES
+4            35       1103960            CITES
 ----
 
 Finally, we can create the in-memory graph.
@@ -153,6 +186,21 @@ Let's also count the nodes in the graph:
 G.node_count()
 ----
 
+----
+2708
+----
+
+The count matches with the number of rows in the Pandas dataset:
+
+[source, python, role=no-test]
+----
+len(content)
+----
+
+----
+2708
+----
+
 We can stream the value of the `subject` node property for
 each node in the graph, printing only the first 10.
 
@@ -161,8 +209,24 @@ each node in the graph, printing only the first 10.
 gds.graph.streamNodeProperties(G, ["subject"]).head(10)
 ----
 
+----
+    nodeId nodeProperty  propertyValue
+0    31336      subject              0
+1  1061127      subject              1
+2  1106406      subject              2
+3    13195      subject              2
+4    37879      subject              3
+5  1126012      subject              3
+6  1107140      subject              4
+7  1102850      subject              0
+8    31349      subject              0
+9  1106418      subject              4
+----
+
 
 == Cleanup
+
+When the graph is no longer needed, it should be dropped to free up memory:
 
 [source, python, role=no-test]
 ----
