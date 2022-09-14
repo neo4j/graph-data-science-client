@@ -3,7 +3,8 @@
 This notebook shows the usage of GDS machine learning pipelines with the
 Python client and the well-known Cora dataset.
 
-### Setup
+
+== Setup
 
 We need an environment where Neo4j and GDS are available, for example
 AuraDS (which comes with GDS preinstalled) or Neo4j Desktop.
@@ -164,6 +165,7 @@ G, _ = gds.graph.project(
 )
 ----
 
+
 == Pipeline catalog basics
 
 Once the dataset has been loaded, we can define a node classification
@@ -175,65 +177,17 @@ machine learning pipeline.
 node_pipeline, _ = gds.beta.pipeline.nodeClassification.create("cora-pipeline")
 ----
 
+We can check that the pipeline has actually been created with the `list` method:
+
 [source, python]
 ----
-# List all pipelines
+# List all pipelines
 gds.beta.pipeline.list()
-----
 
-
-++++
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>pipelineInfo</th>
-      <th>pipelineName</th>
-      <th>pipelineType</th>
-      <th>creationTime</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>{'featurePipeline': {'nodePropertySteps': [], ...</td>
-      <td>cora-pipeline</td>
-      <td>Node classification training pipeline</td>
-      <td>2022-09-14T13:49:23.124284000+01:00</td>
-    </tr>
-  </tbody>
-</table>
-++++
-
-[source, python]
-----
 # List a specific pipeline object
 gds.beta.pipeline.list(node_pipeline)
 ----
 
-
-++++
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>pipelineInfo</th>
-      <th>pipelineName</th>
-      <th>pipelineType</th>
-      <th>creationTime</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>{'featurePipeline': {'nodePropertySteps': [], ...</td>
-      <td>cora-pipeline</td>
-      <td>Node classification training pipeline</td>
-      <td>2022-09-14T13:49:23.124284000+01:00</td>
-    </tr>
-  </tbody>
-</table>
-++++
 
 == Configure the pipeline
 
@@ -732,6 +686,7 @@ print(stats_fastrp["modelInfo"]["metrics"]["F1_WEIGHTED"]["test"])
 0.8652542239963541
 ----
 
+
 == Use the model for prediction
 
 Here we are *not* using the `nodeLabels=["UnclassifiedPaper"]`
@@ -998,6 +953,8 @@ Name: 0, dtype: object
 ----
 
 ### Cleanup
+
+When the graph, the model and the pipeline are no longer needed, they should be dropped to free up memory:
 
 [source, python]
 ----
