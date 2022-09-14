@@ -202,42 +202,18 @@ _(optional)_
 
 [source, python]
 ----
-# "Mark" some node properties that will be used as features
-node_pipeline.selectFeatures(
-    ["features"]
-)
-----
-
-
-----
-name                                                  cora-pipeline
-nodePropertySteps                                                []
-featureProperties                                        [features]
-splitConfig             {'testFraction': 0.3, 'validationFolds': 3}
-autoTuningConfig                                  {'maxTrials': 10}
-parameterSpace       {'RandomForest': [], 'LogisticRegression': []}
-Name: 0, dtype: object
+# "Mark" some node properties that will be used as features
+node_pipeline.selectFeatures(["features"])
 ----
 
 [source, python]
 ----
-# If needed, change the train/test split ratio and the number of folds
+# If needed, change the train/test split ratio and the number of folds
 # for k-fold cross-validation
 node_pipeline.configureSplit(
     testFraction=0.2,
     validationFolds=5
 )
-----
-
-
-----
-name                                                  cora-pipeline
-nodePropertySteps                                                []
-featureProperties                                        [features]
-splitConfig             {'testFraction': 0.2, 'validationFolds': 5}
-autoTuningConfig                                  {'maxTrials': 10}
-parameterSpace       {'RandomForest': [], 'LogisticRegression': []}
-Name: 0, dtype: object
 ----
 
 Here we use Logistic Regression as an example for the training, but
@@ -249,26 +225,13 @@ best value.
 
 [source, python]
 ----
-# Add a model candidate to train
+# Add a model candidate to train
 # Note: penalty can be a single value like 0.0004 or a range
-node_pipeline.addLogisticRegression(
-    maxEpochs=1000,
-    penalty=(0.00038, 0.00042)
-)
+node_pipeline.addLogisticRegression(maxEpochs=1000, penalty=(0.00038, 0.00042))
 ----
 
 
-----
-name                                                     cora-pipeline
-nodePropertySteps                                                   []
-featureProperties                                           [features]
-splitConfig                {'testFraction': 0.2, 'validationFolds': 5}
-autoTuningConfig                                     {'maxTrials': 10}
-parameterSpace       {'RandomForest': [], 'LogisticRegression': [{'...
-Name: 0, dtype: object
-----
-
-### Run the training
+== Run the training
 
 It is now possible to train the configured models. We also run a
 training estimate, to make sure there are enough resources to run the
@@ -295,23 +258,9 @@ node_pipeline.train_estimate(
 )
 ----
 
-
-----
-requiredMemory                                     [64 MiB ... 64 MiB]
-treeView             Memory Estimation: [64 MiB ... 64 MiB]\n|-- al...
-mapView              {'components': [{'components': [{'components':...
-bytesMin                                                      67641248
-bytesMax                                                      67673208
-nodeCount                                                         2698
-relationshipCount                                                10502
-heapPercentageMin                                                  0.1
-heapPercentageMax                                                  0.1
-Name: 0, dtype: object
-----
-
 [source, python]
 ----
-# Perform the actual training
+# Perform the actual training
 model, stats = node_pipeline.train(
     G,
     nodeLabels=["Paper"],
@@ -323,30 +272,23 @@ model, stats = node_pipeline.train(
 )
 ----
 
-
-----
-Node Classification Train Pipeline: 100%|██████████| 100.0/100 [12:03<00:00,
- > 7.24s/%]
-----
-
 We can inspect the result of the training, for example to print the
 evaluation metrics of the trained model.
 
 [source, python]
 ----
-# Uncomment to print all stats
-# print(stats.to_json(indent=2))
+# Uncomment to print all stats
+# print(stats.to_json(indent=2))
 
-# Print F1_WEIGHTED metric
+# Print F1_WEIGHTED metric
 print(stats["modelInfo"]["metrics"]["F1_WEIGHTED"]["test"])
 ----
-
 
 ----
 0.7131261628836523
 ----
 
-### Use the model for prediction
+== Use the model for prediction
 
 After the model has been trained, it is possible to use it to classify
 unclassified data.
