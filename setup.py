@@ -44,7 +44,7 @@ setuptools.setup(
     url="https://neo4j.com/product/graph-data-science/",
     classifiers=classifiers,
     packages=setuptools.find_packages(),
-    package_data={"graphdatascience": ["py.typed"]},
+    package_data={"graphdatascience": ["py.typed", "resources/**/*.pkl"]},
     project_urls=project_urls,
     python_requires=">=3.7",
     install_requires=reqs,
