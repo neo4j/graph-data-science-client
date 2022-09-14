@@ -9,3 +9,4 @@
 
 ** Tutorials
 *** xref:tutorials/load-data-via-graph-construction.adoc[]
+*** xref:tutorials/ml-pipelines-node-classification.adoc[]
