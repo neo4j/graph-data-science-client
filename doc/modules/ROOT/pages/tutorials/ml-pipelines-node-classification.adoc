@@ -12,12 +12,12 @@ AuraDS (which comes with GDS preinstalled) or Neo4j Desktop.
 Once the credentials to this environment are available, we can install
 the `graphdatascience` package and import the client class.
 
-[source, python]
+[source, python, role=no-test]
 ----
 !pip install graphdatascience
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 from graphdatascience import GraphDataScience
 ----
@@ -25,7 +25,7 @@ from graphdatascience import GraphDataScience
 When using a local Neo4j setup, the default connection URI is
 `bolt://localhost:7687`:
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Replace with the actual connection URI and credentials
 NEO4J_CONNECTION_URI = "bolt://localhost:7687"
@@ -39,7 +39,7 @@ When using AuraDS, the connection URI is slightly different as it uses
 the `neo4j+s` protocol. The client should also include the
 `aura_ds=True` flag to enable AuraDS-recommended settings.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Replace with the actual connection URI and credentials
 NEO4J_CONNECTION_URI = "neo4j+s://xxxxxxxx.databases.neo4j.io"
@@ -52,7 +52,7 @@ gds = GraphDataScience(NEO4J_CONNECTION_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWOR
 We import `json` to help in writing the Cypher queries used to load the
 data, and `numpy` and `pandas` for further data processing.
 
-[source, python]
+[source, python, role=no-test]
 ----
 import json
 
@@ -65,7 +65,7 @@ import pandas as pd
 First of all, we need to load the Cora dataset on Neo4j. The CSV files
 can be found at the following URIs:
 
-[source, python]
+[source, python, role=no-test]
 ----
 CORA_CONTENT = (
     "https://raw.githubusercontent.com/neo4j/graph-data-science/master/test-utils/src/main/resources/cora.content"
@@ -86,7 +86,7 @@ We also select a number of nodes to be held out to test the model after
 it has been trained. *NOTE:* This is not related to the algorithm
 test/split ratio.
 
-[source, python]
+[source, python, role=no-test]
 ----
 SUBJECT_TO_ID = {
     "Neural_Networks": 100,
@@ -104,7 +104,7 @@ HOLDOUT_NODES = 10
 We can now load the CSV files using the `LOAD CSV` statement and some
 basic data transformation:
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Define a string representation of the SUBJECT_TO_ID map using backticks
 subject_map = json.dumps(SUBJECT_TO_ID).replace('"', '`')
@@ -143,7 +143,7 @@ the nodes and the `CITES` relationship as undirected (and with `SINGLE`
 aggregation, to skip repeated relationships as a result of adding the
 inverse direction).
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Create the projected graph containing both classified and unclassified nodes
 G, _ = gds.graph.project(
@@ -159,7 +159,7 @@ G, _ = gds.graph.project(
 Once the dataset has been loaded, we can define a node classification
 machine learning pipeline.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Create the pipeline
 node_pipeline, _ = gds.beta.pipeline.nodeClassification.create("cora-pipeline")
@@ -167,7 +167,7 @@ node_pipeline, _ = gds.beta.pipeline.nodeClassification.create("cora-pipeline")
 
 We can check that the pipeline has actually been created with the `list` method:
 
-[source, python]
+[source, python, role=no-test]
 ----
 # List all pipelines
 gds.beta.pipeline.list()
@@ -188,13 +188,13 @@ split and the number of folds for k-fold cross-validation
 _(optional)_
 . Configure the candidate models for training
 
-[source, python]
+[source, python, role=no-test]
 ----
 # "Mark" some node properties that will be used as features
 node_pipeline.selectFeatures(["features"])
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # If needed, change the train/test split ratio and the number of folds
 # for k-fold cross-validation
@@ -208,7 +208,7 @@ Some hyperparameters such as `penalty` can be single values or ranges.
 If they are expressed as ranges, auto-tuning is used to search their
 best value.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Add a model candidate to train
 node_pipeline.addLogisticRegression(maxEpochs=1000, penalty=(0.00038, 0.00042))
@@ -228,7 +228,7 @@ we use the global metric `F1_WEIGHTED`.
 value) for demonstration purposes. The maximum concurrency in the
 library is limited to 4 for Neo4j Community Edition.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Estimate the resources needed for training the model
 node_pipeline.train_estimate(
@@ -242,7 +242,7 @@ node_pipeline.train_estimate(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Perform the actual training
 model, stats = node_pipeline.train(
@@ -259,7 +259,7 @@ model, stats = node_pipeline.train(
 We can inspect the result of the training, for example to print the
 evaluation metrics of the trained model.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Uncomment to print all stats
 # print(stats.to_json(indent=2))
@@ -289,7 +289,7 @@ algorithms like PageRank), the `nodeLabels` filter should not be used
 because it would "cut out" all the linked nodes that have a different
 label. We will see an example of this in the following section.
 
-[source, python]
+[source, python, role=no-test]
 ----
 predicted = model.predict_stream(
     G, modelName="cora-pipeline-model", includePredictedProbabilities=True, nodeLabels=["UnclassifiedPaper"]
@@ -299,7 +299,7 @@ predicted = model.predict_stream(
 The result of the prediction is a DataFrame containing the predicted
 class and the predicted probabilities for all the classes for each node.
 
-[source, python]
+[source, python, role=no-test]
 ----
 predicted
 ----
@@ -322,7 +322,7 @@ The order of the classes in the `predictedProbabilities` field is given
 in the model information, and can be used to retrieve the predicted
 probability for the predicted class.
 
-[source, python]
+[source, python, role=no-test]
 ----
 classes = stats["modelInfo"]["classes"]
 print(classes)
@@ -333,7 +333,7 @@ print(classes)
 [1, 2, 3, 4, 5, 6, 100]
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Calculate the confidence percentage for the predicted class
 predicted["confidence"] = predicted.apply(
@@ -342,7 +342,7 @@ predicted["confidence"] = predicted.apply(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 predicted
 ----
@@ -363,7 +363,7 @@ features. One of such models is FastRP, which can be added via the
 More embedding methods are available in GDS, as well as other
 pre-processing algorithms.
 
-[source, python]
+[source, python, role=no-test]
 ----
 node_pipeline_fastrp, _ = gds.beta.pipeline.nodeClassification.create("cora-pipeline-fastrp")
 
@@ -392,7 +392,7 @@ Name: 0, dtype: object
 With the node embeddings available as features, we no longer use the
 original raw `features`.
 
-[source, python]
+[source, python, role=no-test]
 ----
 node_pipeline_fastrp.selectFeatures(
     ["embedding"]
@@ -410,7 +410,7 @@ parameterSpace          {'RandomForest': [], 'LogisticRegression': []}
 Name: 0, dtype: object
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Configure the pipeline as before
 node_pipeline_fastrp.configureSplit(
@@ -435,7 +435,7 @@ parameterSpace       {'RandomForest': [], 'LogisticRegression': [{'...
 Name: 0, dtype: object
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Perform the actual training
 model_fastrp, stats_fastrp = node_pipeline_fastrp.train(
@@ -455,7 +455,7 @@ Node Classification Train Pipeline: 100%|██████████| 100.0/1
  > 1.03s/%]
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 print(stats_fastrp["modelInfo"]["metrics"]["F1_WEIGHTED"]["test"])
 ----
@@ -475,7 +475,7 @@ other models that create embeddings, but also algorithms like PageRank),
 the `nodeLabels` filter should not be used because it would "cut out"
 all the linked nodes that have a different label.
 
-[source, python]
+[source, python, role=no-test]
 ----
 predicted_fastrp = model_fastrp.predict_stream(
     G,
@@ -490,7 +490,7 @@ Node Classification Predict Pipeline: 100%|██████████| 100.0
  > 201.78%/s]
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 predicted_fastrp.count()
 ----
@@ -512,7 +512,7 @@ Instead of streaming the results, the prediction can be run in `mutate`
 mode to be more performant. The predicted nodes can be retrieved using
 the `streamNodeProperty` method with the `UnclassifiedPaper` class.
 
-[source, python]
+[source, python, role=no-test]
 ----
 model_fastrp.predict_mutate(
     G,
@@ -535,7 +535,7 @@ configuration            {'graphName': 'cora-graph', 'jobId': '0d291288...
 Name: 0, dtype: object
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 predicted_fastrp = gds.graph.streamNodeProperty(
     G,
@@ -611,7 +611,7 @@ predicted_fastrp
 </table>
 ++++
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Retrieve node information from Neo4j using the node IDs from the prediction result
 nodes = gds.util.asNodes(predicted_fastrp.nodeId.to_list())
@@ -709,7 +709,7 @@ As we can see, the prediction for all the holdout nodes is accurate.
 
 == Write result back to Neo4j
 
-[source, python]
+[source, python, role=no-test]
 ----
 model_fastrp.predict_write(
     G,
@@ -724,7 +724,7 @@ model_fastrp.predict_write(
 
 When the graph, the model and the pipeline are no longer needed, they should be dropped to free up memory:
 
-[source, python]
+[source, python, role=no-test]
 ----
 model.drop()
 model_fastrp.drop()
@@ -737,7 +737,7 @@ gds.run_cypher("MATCH (n) DETACH DELETE n")
 
 It is good practice to close the client as well:
 
-[source, python]
+[source, python, role=no-test]
 ----
 gds.close()
 ----
