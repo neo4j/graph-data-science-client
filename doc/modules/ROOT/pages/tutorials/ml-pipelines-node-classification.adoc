@@ -734,3 +734,10 @@ node_pipeline_fastrp.drop()
 G.drop()
 gds.run_cypher("MATCH (n) DETACH DELETE n")
 ----
+
+It is good practice to close the client as well:
+
+[source, python]
+----
+gds.close()
+----
