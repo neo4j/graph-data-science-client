@@ -55,9 +55,12 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     pipe, _ = gds.beta.pipeline.linkPrediction.create("pipe")
 
     try:
-        pipe.addNodeProperty(
-            "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
-        )
+        if gds._server_version >= ServerVersion(2, 2, 0):
+            pipe.addNodeProperty(
+                "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
+            )
+        else:
+            pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.addFeature("l2", nodeProperties=["rank"])
         pipe.configureSplit(trainFraction=0.7, testFraction=0.2, validationFolds=2)
         pipe.addLogisticRegression(penalty=1)
@@ -89,9 +92,12 @@ def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     pipe, _ = gds.beta.pipeline.nodeClassification.create("pipe")
 
     try:
-        pipe.addNodeProperty(
-            "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
-        )
+        if gds._server_version >= ServerVersion(2, 2, 0):
+            pipe.addNodeProperty(
+                "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
+            )
+        else:
+            pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.selectFeatures("rank")
         pipe.configureSplit(testFraction=0.3, validationFolds=2)
         pipe.addLogisticRegression(penalty=1)
@@ -123,9 +129,12 @@ def nr_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     pipe, _ = gds.alpha.pipeline.nodeRegression.create("pipe")
 
     try:
-        pipe.addNodeProperty(
-            "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
-        )
+        if gds._server_version >= ServerVersion(2, 2, 0):
+            pipe.addNodeProperty(
+                "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
+            )
+        else:
+            pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.selectFeatures("rank")
         pipe.configureSplit(testFraction=0.3, validationFolds=2)
         pipe.addLinearRegression(penalty=1)
@@ -166,7 +175,7 @@ def test_estimate_predict_stream_nc_model(gds: GraphDataScience, nc_model: NCMod
     if gds._server_version >= ServerVersion(2, 2, 0):
         result = nc_model.predict_stream_estimate(G, targetNodeLabels=["CONTEXT"])
     else:
-        result = nc_model.predict_stream_estimate(G)
+        result = nc_model.predict_stream_estimate(G, nodeLabels=["CONTEXT"])
     assert result["requiredMemory"]
 
 
@@ -174,7 +183,7 @@ def test_predict_stream_nc_model(gds: GraphDataScience, nc_model: NCModel, G: Gr
     if gds._server_version >= ServerVersion(2, 2, 0):
         result = nc_model.predict_stream(G, targetNodeLabels=["CONTEXT"])
     else:
-        result = nc_model.predict_stream(G)
+        result = nc_model.predict_stream(G, nodeLabels=["CONTEXT"])
     assert len(result) == 2
 
 
@@ -182,7 +191,7 @@ def test_predict_mutate_nc_model(gds: GraphDataScience, nc_model: NCModel, G: Gr
     if gds._server_version >= ServerVersion(2, 2, 0):
         result = nc_model.predict_mutate(G, mutateProperty="nc_mutate", targetNodeLabels=["CONTEXT"])
     else:
-        result = nc_model.predict_mutate(G, mutateProperty="nc_mutate")
+        result = nc_model.predict_mutate(G, mutateProperty="nc_mutate", nodeLabels=["CONTEXT"])
     assert result["nodePropertiesWritten"] == 2
 
 
@@ -190,7 +199,7 @@ def test_predict_write_nc_model(gds: GraphDataScience, nc_model: NCModel, G: Gra
     if gds._server_version >= ServerVersion(2, 2, 0):
         result = nc_model.predict_write(G, writeProperty="nc_mutate", targetNodeLabels=["CONTEXT"])
     else:
-        result = nc_model.predict_write(G, writeProperty="nc_mutate")
+        result = nc_model.predict_write(G, writeProperty="nc_mutate", nodeLabels=["CONTEXT"])
     assert result["nodePropertiesWritten"] == 2
 
 
@@ -199,7 +208,7 @@ def test_predict_stream_nr_model(gds: GraphDataScience, nr_model: NRModel, G: Gr
     if gds._server_version >= ServerVersion(2, 2, 0):
         result = nr_model.predict_stream(G, targetNodeLabels=["CONTEXT"])
     else:
-        result = nr_model.predict_stream(G)
+        result = nr_model.predict_stream(G, nodeLabels=["CONTEXT"])
     assert len(result) == 2
 
 
@@ -208,7 +217,7 @@ def test_predict_mutate_nr_model(gds: GraphDataScience, nr_model: NRModel, G: Gr
     if gds._server_version >= ServerVersion(2, 2, 0):
         result = nr_model.predict_mutate(G, mutateProperty="nr_mutate", targetNodeLabels=["CONTEXT"])
     else:
-        result = nr_model.predict_mutate(G, mutateProperty="nr_mutate")
+        result = nr_model.predict_mutate(G, mutateProperty="nr_mutate", nodeLabels=["CONTEXT"])
 
     assert result["nodePropertiesWritten"] == 2
 

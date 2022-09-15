@@ -55,12 +55,15 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 @pytest.fixture(scope="module")
 def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
-    pipe, _ = gds.beta.pipeline.linkPrediction.create("pipe")
+    pipe, _ = gds.beta.pipeline.linkPrediction.create("pipelp")
 
     try:
-        pipe.addNodeProperty(
-            "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
-        )
+        if gds._server_version >= ServerVersion(2, 2, 0):
+            pipe.addNodeProperty(
+                "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
+            )
+        else:
+            pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.addFeature("l2", nodeProperties=["rank"])
         pipe.configureSplit(trainFraction=0.7, testFraction=0.2, validationFolds=2)
         pipe.addLogisticRegression(penalty=1)
@@ -77,7 +80,7 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
             lp_model, _ = pipe.train(G, modelName="lp-model", concurrency=2)
     finally:
         query = "CALL gds.beta.pipeline.drop($name)"
-        params = {"name": "pipe"}
+        params = {"name": "pipelp"}
         runner.run_query(query, params)
 
     yield lp_model
@@ -87,12 +90,15 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
 
 @pytest.fixture(scope="module")
 def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
-    pipe, _ = gds.beta.pipeline.nodeClassification.create("pipe")
+    pipe, _ = gds.beta.pipeline.nodeClassification.create("pipenc")
 
     try:
-        pipe.addNodeProperty(
-            "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
-        )
+        if gds._server_version >= ServerVersion(2, 2, 0):
+            pipe.addNodeProperty(
+                "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
+            )
+        else:
+            pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.selectFeatures("rank")
         pipe.configureSplit(testFraction=0.3, validationFolds=2)
         pipe.addLogisticRegression(penalty=1)
@@ -109,7 +115,7 @@ def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
             nc_model, _ = pipe.train(G, modelName="nc-model", targetProperty="age", metrics=["ACCURACY"])
     finally:
         query = "CALL gds.beta.pipeline.drop($name)"
-        params = {"name": "pipe"}
+        params = {"name": "pipenc"}
         runner.run_query(query, params)
 
     yield nc_model
@@ -119,12 +125,15 @@ def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
 
 @pytest.fixture(scope="module")
 def nr_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
-    pipe, _ = gds.alpha.pipeline.nodeRegression.create("pipe")
+    pipe, _ = gds.alpha.pipeline.nodeRegression.create("pipenr")
 
     try:
-        pipe.addNodeProperty(
-            "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
-        )
+        if gds._server_version >= ServerVersion(2, 2, 0):
+            pipe.addNodeProperty(
+                "degree", mutateProperty="rank", contextNodeLabels=["CONTEXT"], contextRelationshipTypes=["CONTEXTREL"]
+            )
+        else:
+            pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.selectFeatures("rank")
         pipe.configureSplit(testFraction=0.3, validationFolds=2)
         pipe.addLinearRegression(penalty=1)
@@ -141,7 +150,7 @@ def nr_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
             nr_model, _ = pipe.train(G, modelName="nr_model", targetProperty="age", metrics=["MEAN_SQUARED_ERROR"])
     finally:
         query = "CALL gds.beta.pipeline.drop($name)"
-        params = {"name": "pipe"}
+        params = {"name": "pipenr"}
         runner.run_query(query, params)
 
     yield nr_model
