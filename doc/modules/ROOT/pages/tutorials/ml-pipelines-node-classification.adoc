@@ -148,20 +148,8 @@ inverse direction).
 # Create the projected graph containing both classified and unclassified nodes
 G, _ = gds.graph.project(
     "cora-graph",
-    {
-        "Paper": {
-            "properties": ["features", "subject"]
-        },
-        "UnclassifiedPaper": {
-            "properties": ["features"]
-        }
-    },
-    {
-        "CITES": {
-            "orientation": "UNDIRECTED",
-            "aggregation": "SINGLE"
-        }
-    }
+    {"Paper": {"properties": ["features", "subject"]}, "UnclassifiedPaper": {"properties": ["features"]}},
+    {"CITES": {"orientation": "UNDIRECTED", "aggregation": "SINGLE"}},
 )
 ----
 
@@ -210,10 +198,7 @@ node_pipeline.selectFeatures(["features"])
 ----
 # If needed, change the train/test split ratio and the number of folds
 # for k-fold cross-validation
-node_pipeline.configureSplit(
-    testFraction=0.2,
-    validationFolds=5
-)
+node_pipeline.configureSplit(testFraction=0.2, validationFolds=5)
 ----
 
 Here we use Logistic Regression as an example for the training, but
@@ -226,7 +211,6 @@ best value.
 [source, python]
 ----
 # Add a model candidate to train
-# Note: penalty can be a single value like 0.0004 or a range
 node_pipeline.addLogisticRegression(maxEpochs=1000, penalty=(0.00038, 0.00042))
 ----
 
@@ -308,10 +292,7 @@ label. We will see an example of this in the following section.
 [source, python]
 ----
 predicted = model.predict_stream(
-    G,
-    modelName="cora-pipeline-model",
-    includePredictedProbabilities=True,
-    nodeLabels=["UnclassifiedPaper"]
+    G, modelName="cora-pipeline-model", includePredictedProbabilities=True, nodeLabels=["UnclassifiedPaper"]
 )
 ----
 
@@ -323,81 +304,19 @@ class and the predicted probabilities for all the classes for each node.
 predicted
 ----
 
-
-++++
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>nodeId</th>
-      <th>predictedClass</th>
-      <th>predictedProbabilities</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0</td>
-      <td>100</td>
-      <td>[0.013587384554264954, 0.0008230294746663745, ...</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1</td>
-      <td>1</td>
-      <td>[0.31971159107614594, 0.026001528889622913, 0....</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2</td>
-      <td>2</td>
-      <td>[0.007708093923402734, 0.7666212201367119, 0.0...</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>3</td>
-      <td>2</td>
-      <td>[0.003479178144017121, 0.9767983363730761, 0.0...</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>4</td>
-      <td>3</td>
-      <td>[0.030846315380417325, 0.001354127826499681, 0...</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>5</td>
-      <td>1</td>
-      <td>[0.2743067591955607, 0.2663689411219601, 0.096...</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>6</td>
-      <td>6</td>
-      <td>[0.017862637875544377, 0.06103214395299976, 0....</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>7</td>
-      <td>100</td>
-      <td>[0.002830559497270952, 0.0042512814913452145, ...</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>8</td>
-      <td>100</td>
-      <td>[0.018424478556861662, 0.026205387730423427, 0...</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>9</td>
-      <td>4</td>
-      <td>[0.011532183476826153, 0.33190400269516807, 0....</td>
-    </tr>
-  </tbody>
-</table>
-++++
+----
+   nodeId  predictedClass                             predictedProbabilities
+0       0             100  [0.013587384554264954, 0.0008230294746663745, ...
+1       1               1  [0.31971159107614594, 0.026001528889622913, 0....
+2       2               2  [0.007708093923402734, 0.7666212201367119, 0.0...
+3       3               2  [0.003479178144017121, 0.9767983363730761, 0.0...
+4       4               3  [0.030846315380417325, 0.001354127826499681, 0...
+5       5               1  [0.2743067591955607, 0.2663689411219601, 0.096...
+6       6               6  [0.017862637875544377, 0.06103214395299976, 0....
+7       7             100  [0.002830559497270952, 0.0042512814913452145, ...
+8       8             100  [0.018424478556861662, 0.026205387730423427, 0...
+9       9               4  [0.011532183476826153, 0.33190400269516807, 0....
+----
 
 The order of the classes in the `predictedProbabilities` field is given
 in the model information, and can be used to retrieve the predicted
@@ -428,94 +347,12 @@ predicted["confidence"] = predicted.apply(
 predicted
 ----
 
+----
 
-++++
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>nodeId</th>
-      <th>predictedClass</th>
-      <th>predictedProbabilities</th>
-      <th>confidence</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0</td>
-      <td>100</td>
-      <td>[0.013587384554264954, 0.0008230294746663745, ...</td>
-      <td>73.0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1</td>
-      <td>1</td>
-      <td>[0.31971159107614594, 0.026001528889622913, 0....</td>
-      <td>31.0</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2</td>
-      <td>2</td>
-      <td>[0.007708093923402734, 0.7666212201367119, 0.0...</td>
-      <td>76.0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>3</td>
-      <td>2</td>
-      <td>[0.003479178144017121, 0.9767983363730761, 0.0...</td>
-      <td>97.0</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>4</td>
-      <td>3</td>
-      <td>[0.030846315380417325, 0.001354127826499681, 0...</td>
-      <td>87.0</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>5</td>
-      <td>1</td>
-      <td>[0.2743067591955607, 0.2663689411219601, 0.096...</td>
-      <td>27.0</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>6</td>
-      <td>6</td>
-      <td>[0.017862637875544377, 0.06103214395299976, 0....</td>
-      <td>82.0</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>7</td>
-      <td>100</td>
-      <td>[0.002830559497270952, 0.0042512814913452145, ...</td>
-      <td>89.0</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>8</td>
-      <td>100</td>
-      <td>[0.018424478556861662, 0.026205387730423427, 0...</td>
-      <td>54.0</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>9</td>
-      <td>4</td>
-      <td>[0.011532183476826153, 0.33190400269516807, 0....</td>
-      <td>46.0</td>
-    </tr>
-  </tbody>
-</table>
-++++
+----
 
-### Adding a data preprocessing step
+
+== Adding a data preprocessing step
 
 The performance of the model can potentially be increased by adding more
 features or by using different features altogether. One way is to use
@@ -575,7 +412,7 @@ Name: 0, dtype: object
 
 [source, python]
 ----
-# Configure the pipeline as before
+# Configure the pipeline as before
 node_pipeline_fastrp.configureSplit(
     testFraction=0.2,
     validationFolds=5
@@ -600,7 +437,7 @@ Name: 0, dtype: object
 
 [source, python]
 ----
-# Perform the actual training
+# Perform the actual training
 model_fastrp, stats_fastrp = node_pipeline_fastrp.train(
     G,
     nodeLabels=["Paper"],
@@ -629,7 +466,7 @@ print(stats_fastrp["modelInfo"]["metrics"]["F1_WEIGHTED"]["test"])
 ----
 
 
-== Use the model for prediction
+== Use the new model for prediction
 
 Here we are *not* using the `nodeLabels=["UnclassifiedPaper"]`
 parameter, because FastRP depends on neighbour nodes. When using models
@@ -783,11 +620,11 @@ nodes = gds.util.asNodes(predicted_fastrp.nodeId.to_list())
 nodes_df = pd.DataFrame([(node.id, node["subject"]) for node in nodes], columns=["nodeId", "subject"])
 
 # Merge with the prediction result on node IDs, to check the predicted value
-# against the original subject
+# against the original subject
 #
-# NOTE: This could also be replaced by just appending `node["subject"]` as a 
-# Series since the node order would not change, but a proper merge (or join) 
-# is clearer and less prone to errors.
+# NOTE: This could also be replaced by just appending `node["subject"]` as a 
+# Series since the node order would not change, but a proper merge (or join) 
+#is clearer and less prone to errors.
 predicted_fastrp.merge(nodes_df, on="nodeId")
 ----
 
@@ -869,7 +706,8 @@ predicted_fastrp.merge(nodes_df, on="nodeId")
 
 As we can see, the prediction for all the holdout nodes is accurate.
 
-### Write result back to Neo4j
+
+== Write result back to Neo4j
 
 [source, python]
 ----
@@ -882,19 +720,7 @@ model_fastrp.predict_write(
 ----
 
 
-----
-Node Classification Predict Pipeline: 100%|██████████| 100.0/100 [00:00<00:00,
- > 129.80%/s]
-nodePropertiesWritten                                                 5416
-writeMillis                                                            270
-postProcessingMillis                                                     0
-preProcessingMillis                                                      4
-computeMillis                                                          938
-configuration            {'graphName': 'cora-graph', 'jobId': '9c3a512a...
-Name: 0, dtype: object
-----
-
-### Cleanup
+== Cleanup
 
 When the graph, the model and the pipeline are no longer needed, they should be dropped to free up memory:
 
@@ -908,16 +734,3 @@ node_pipeline_fastrp.drop()
 G.drop()
 gds.run_cypher("MATCH (n) DETACH DELETE n")
 ----
-
-
-++++
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
-++++
