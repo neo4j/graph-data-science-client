@@ -83,6 +83,9 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             server_version_string = self._query_runner.run_query("RETURN gds.version()").squeeze()
         except Exception as e:
             raise UnableToConnectError(e)
+        finally:
+            if isinstance(endpoint, str):
+                driver.close()
 
         self._server_version = ServerVersion.from_string(server_version_string)
         self._query_runner.set_server_version(self._server_version)

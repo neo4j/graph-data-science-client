@@ -194,7 +194,6 @@ def test_graph_nodeProperty_stream(gds: GraphDataScience) -> None:
 
 @pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_streamNodeProperty_with_arrow_no_db(gds: GraphDataScience) -> None:
-    gds = GraphDataScience(URI, auth=AUTH)
     if not isinstance(gds._query_runner, ArrowQueryRunner):
         pytest.skip("Arrow server not enabled")
 
@@ -207,7 +206,6 @@ def test_graph_streamNodeProperty_with_arrow_no_db(gds: GraphDataScience) -> Non
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_graph_nodeProperty_stream_with_arrow_no_db(gds: GraphDataScience) -> None:
-    gds = GraphDataScience(URI, auth=AUTH)
     if not isinstance(gds._query_runner, ArrowQueryRunner):
         pytest.skip("Arrow server not enabled")
 
