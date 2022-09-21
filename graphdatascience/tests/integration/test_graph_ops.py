@@ -191,6 +191,14 @@ def test_graph_nodeProperty_stream(gds: GraphDataScience) -> None:
     result = gds.graph.nodeProperty.stream(G, "x", concurrency=2)
     assert {e for e in result["propertyValue"]} == {1, 2, 3}
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_nodeProperty_stream_via_run_query(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds.run_cypher(f"CALL gds.graph.streamNodeProperty({G.name()}, 'x', {{concurrency: 2}}) YIELD nodeId AS id, propertyValue AS degree RETURN id, degree LIMIT 10")
+    assert {e for e in result["propertyValue"]} == {1, 2, 3}
+
+
 
 @pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
 def test_graph_streamNodeProperty_with_arrow_no_db(gds: GraphDataScience) -> None:
