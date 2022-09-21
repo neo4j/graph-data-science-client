@@ -143,6 +143,9 @@ class ArrowQueryRunner(QueryRunner):
     def close(self) -> None:
         self._fallback_query_runner.close()
 
+    def fallback_query_runner(self) -> QueryRunner:
+        return self._fallback_query_runner
+
     def _run_arrow_property_get(self, graph_name: str, procedure_name: str, configuration: Dict[str, Any]) -> DataFrame:
         if not self.database():
             raise ValueError(

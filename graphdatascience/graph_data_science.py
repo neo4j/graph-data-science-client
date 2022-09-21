@@ -126,7 +126,13 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def run_cypher(
         self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
     ) -> DataFrame:
-        return self._query_runner.run_query(query, params, database)
+        qr = self._query_runner
+
+        # The Arrow query runner should not be used to execute arbitary Cypher.
+        if isinstance(self._query_runner, ArrowQueryRunner):
+            qr = self._query_runner.fallback_query_runner()
+
+        return qr.run_query(query, params, database)
 
     def driver_config(self) -> Dict[str, Any]:
         return self._config

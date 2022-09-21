@@ -827,3 +827,17 @@ def test_graph_construct_with_arrow_no_db() -> None:
 
     with pytest.raises(ValueError):
         gds.alpha.graph.construct("hello", nodes, relationships)
+
+
+@pytest.mark.enterprise
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_nodeProperty_stream_via_run_query(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds.run_cypher(
+        (
+            f"CALL gds.graph.nodeProperty.stream('{G.name()}', 'x') "
+            "YIELD nodeId AS id, propertyValue AS degree RETURN id, degree LIMIT 10"
+        )
+    )
+    assert {e for e in result["degree"]} == {1, 2, 3}
