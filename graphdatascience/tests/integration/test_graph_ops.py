@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, final
 
 import numpy as np
 import pytest
@@ -24,6 +24,8 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
         (a: Node {x: 1, y: 2, z: [42]}),
         (b: Node {x: 2, y: 3, z: [1337]}),
         (c: Node {x: 3, y: 4, z: [9]}),
+        (d: Node2 {x: 4, y: 6, z: [89]}),
+        (e: Node2 {x: 5, y: 7, z: [99]}),
         (a)-[:REL {relX: 4, relY: 5}]->(b),
         (a)-[:REL {relX: 5, relY: 6}]->(c),
         (b)-[:REL {relX: 6, relY: 7}]->(c),
@@ -31,11 +33,12 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
         """
     )
 
-    yield  # Test runs here
-
-    # Runs after each test
-    runner.run_query("MATCH (n) DETACH DELETE n")
-    runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
+    try:
+        yield  # Test runs here
+    finally:
+        # Runs after each test
+        runner.run_query("MATCH (n) DETACH DELETE n")
+        runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
 
 
 def test_project_graph_native(gds: GraphDataScience) -> None:
@@ -137,7 +140,7 @@ def test_graph_drop(gds: GraphDataScience) -> None:
 
 @pytest.mark.skip_on_aura
 def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "Node", "*")
 
     MY_DB_NAME = "testdatabase"
     result = gds.graph.export(G, dbName=MY_DB_NAME, batchSize=10000)
@@ -157,7 +160,7 @@ def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
 
 @pytest.mark.skip_on_aura
 def test_graph_export_csv_estimate(gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "Node", "*")
 
     result = gds.beta.graph.export.csv.estimate(G, exportName="dummy")
 
@@ -178,10 +181,14 @@ def test_graph_get(gds: GraphDataScience) -> None:
 
 
 def test_graph_streamNodeProperty_with_arrow(gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}, "Node2": {"properties": "x"}}, "*")
 
-    result = gds.graph.streamNodeProperty(G, "x", concurrency=2)
-    assert {e for e in result["propertyValue"]} == {1, 2, 3}
+    result = gds.graph.streamNodeProperty(G, "x", "Node2", concurrency=2)
+
+    expectedNodeIds = gds.run_cypher("MATCH (n:Node2) RETURN id(n) as nodeIds")
+
+    assert {id for id in result["nodeId"]} == set(expectedNodeIds.nodeIds.to_list())
+    assert {e for e in result["propertyValue"]} == {4, 5}
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
@@ -630,7 +637,7 @@ def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
 
 
 def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
+    G, _ = gds.graph.project(GRAPH_NAME, "Node", "*")
 
     gds.pageRank.mutate(G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
 
