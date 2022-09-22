@@ -15,6 +15,7 @@ from .query_runner import QueryRunner
 
 class Neo4jQueryRunner(QueryRunner):
     _LOG_POLLING_INTERVAL = 0.5
+    _NEO4J_DRIVER_VERSION = ServerVersion.from_string(neo4j.__version__)
 
     def __init__(
         self, driver: neo4j.Driver, database: Optional[str] = neo4j.DEFAULT_DATABASE, auto_close: bool = False
@@ -33,11 +34,17 @@ class Neo4jQueryRunner(QueryRunner):
             database = self._database
 
         with self._driver.session(database=database) as session:
-            # Since neo4j-driver 4.4.6 we get an unexpected warning
-            warnings.filterwarnings(
-                "ignore",
-                message=r"^The 'update_routing_table_timeout' config key is deprecated$",
-            )
+            if self._NEO4J_DRIVER_VERSION == ServerVersion(4, 4, 6):
+                warnings.filterwarnings(
+                    "ignore",
+                    message=r"^The 'update_routing_table_timeout' config key is deprecated$",
+                )
+
+            if self._NEO4J_DRIVER_VERSION >= ServerVersion(5, 0, 0):
+                warnings.filterwarnings(
+                    "ignore",
+                    message=r"^ssl.OP_NO_SSL\*/ssl.OP_NO_TLS\* options are deprecated$",
+                )
 
             result = session.run(query, params)
 
