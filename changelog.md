@@ -16,6 +16,7 @@ This method converts the topology result to a map from relationship types to mat
 
 * Fix resolving Node regression pipelines created via `gds.alpha.pipeline.nodeRegression.create`.
 * Fix resolving Node regression models created via `gds.alpha.pipeline.nodeRegression.train`.
+* Fix an issue where `run_cypher` did not execute Cypher correctly in some edge cases.
 
 
 ## Improvements
