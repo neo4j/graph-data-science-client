@@ -23,6 +23,10 @@ from graphdatascience.graph.graph_entity_ops_runner import (
     GraphRelationshipRunner,
     GraphRelationshipsRunner,
 )
+from graphdatascience.graph.graph_type_check import (
+    graph_type_check,
+    graph_type_check_optional,
+)
 
 Strings = Union[str, List[str]]
 
@@ -54,6 +58,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".sample"
         return GraphSampleRunner(self._query_runner, self._namespace, self._server_version)
 
+    @graph_type_check
     def drop(
         self,
         G: Graph,
@@ -86,6 +91,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return result.squeeze()  # type: ignore
 
+    @graph_type_check_optional
     def list(self, G: Optional[Graph] = None) -> DataFrame:
         self._namespace += ".list"
 
@@ -107,6 +113,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return Graph(graph_name, self._query_runner, self._server_version)
 
+    @graph_type_check
     def _handle_properties(
         self,
         G: Graph,
@@ -270,6 +277,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         ...
 
     @removeNodeProperties.register
+    @graph_type_check
     def _(
         self,
         G: Graph,
@@ -289,6 +297,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
     @removeNodeProperties.register
     @compatible_with("removeNodeProperties", max_exclusive=ServerVersion(2, 1, 0))
+    @graph_type_check
     def _(
         self,
         G: Graph,
@@ -300,6 +309,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
+    @graph_type_check
     def deleteRelationships(self, G: Graph, relationship_type: str) -> "Series[Any]":
         self._namespace += ".deleteRelationships"
 

@@ -5,6 +5,7 @@ from pandas import Series
 from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from .graph_object import Graph
+from .graph_type_check import from_graph_type_check
 
 
 class GraphProjectRunner(CallerBase, IllegalAttrChecker):
@@ -40,6 +41,7 @@ class GraphProjectRunner(CallerBase, IllegalAttrChecker):
     def cypher(self) -> "GraphProjectRunner":
         return GraphProjectRunner(self._query_runner, self._namespace + ".cypher", self._server_version)
 
+    @from_graph_type_check
     def subgraph(
         self,
         graph_name: str,
