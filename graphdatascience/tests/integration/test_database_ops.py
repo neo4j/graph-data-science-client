@@ -25,11 +25,13 @@ def test_switching_db(runner: Neo4jQueryRunner) -> None:
     runner.set_database(MY_DB_NAME)
 
     post_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
-    assert post_count == 0
 
-    runner.set_database(default_database)  # type: ignore
-    runner.run_query("MATCH (n) DETACH DELETE n")
-    runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
+    try:
+        assert post_count == 0
+    finally:
+        runner.set_database(default_database)  # type: ignore
+        runner.run_query("MATCH (n) DETACH DELETE n")
+        runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
 
 
 @pytest.mark.skip_on_aura
@@ -43,10 +45,12 @@ def test_run_query_with_db(runner: Neo4jQueryRunner) -> None:
     runner.run_query("CREATE DATABASE $dbName", {"dbName": MY_DB_NAME})
 
     specified_db_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)["c"][0]
-    assert specified_db_count == 0
 
-    runner.run_query("MATCH (n) DETACH DELETE n")
-    runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
+    try:
+        assert specified_db_count == 0
+    finally:
+        runner.run_query("MATCH (n) DETACH DELETE n")
+        runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
 
 
 @pytest.mark.skip_on_aura
@@ -64,10 +68,12 @@ def test_initialize_with_db(runner: Neo4jQueryRunner) -> None:
     specified_db_count = gds_with_specified_db.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)[
         "c"
     ][0]
-    assert specified_db_count == 0
 
-    runner.run_query("MATCH (n) DETACH DELETE n")
-    runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
+    try:
+        assert specified_db_count == 0
+    finally:
+        runner.run_query("MATCH (n) DETACH DELETE n")
+        runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
 
 
 def test_from_neo4j_driver(neo4j_driver: Driver) -> None:
