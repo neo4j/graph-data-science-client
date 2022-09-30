@@ -159,7 +159,7 @@ def test_graph_type_check(gds: GraphDataScience) -> None:
             "To resolve a graph name string into a `Graph` object, please use `gds.graph.get`"
         ),
     ):
-        gds.alpha.graph.sample.rwr("s", G.name(), samplingRatio=0.6)  # type: ignore
+        gds.beta.graph.project.subgraph("s", G.name(), "n.x > 1", "*", concurrency=2)  # type: ignore
 
     # Raise when first positional G `Graph` is string
     with pytest.raises(
