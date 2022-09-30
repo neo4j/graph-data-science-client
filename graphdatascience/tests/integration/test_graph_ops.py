@@ -135,6 +135,47 @@ def test_graph_drop(gds: GraphDataScience) -> None:
         gds.graph.drop(G, True)
 
 
+def test_graph_type_check(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
+
+    # Call without providing optional `Graph` without raising
+    gds.graph.list()
+
+    # Raise when optional `Graph` is string
+    with pytest.raises(
+        TypeError,
+        match=(
+            f"The parameter 'G' takes a `Graph` object, but received string '{G.name()}'. "
+            "To resolve a graph name string into a `Graph` object, please use `gds.graph.get`"
+        ),
+    ):
+        gds.graph.list(G.name())  # type: ignore
+
+    # Raise when second positional from_G `Graph` is string
+    with pytest.raises(
+        TypeError,
+        match=(
+            f"The parameter 'from_G' takes a `Graph` object, but received string '{G.name()}'. "
+            "To resolve a graph name string into a `Graph` object, please use `gds.graph.get`"
+        ),
+    ):
+        gds.alpha.graph.sample.rwr("s", G.name(), samplingRatio=0.6)  # type: ignore
+
+    # Raise when first positional G `Graph` is string
+    with pytest.raises(
+        TypeError,
+        match=(
+            f"The parameter 'G' takes a `Graph` object, but received string '{G.name()}'. "
+            "To resolve a graph name string into a `Graph` object, please use `gds.graph.get`"
+        ),
+    ):
+        gds.graph.drop(G.name(), True)  # type: ignore
+
+    result = gds.graph.drop(G, True)
+    assert result is not None
+    assert result["graphName"] == GRAPH_NAME
+
+
 @pytest.mark.skip_on_aura
 def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")

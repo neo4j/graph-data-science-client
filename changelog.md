@@ -22,6 +22,7 @@ This method converts the topology result to a map from relationship types to mat
 ## Improvements
 
 * Added custom implementation of `__str__` and `__repr__` for Graph, Model and Pipeline objects.
+* Added a more helpful custom exception message for when a `str` is provided to methods that take `Graph` objects.
 
 
 ## Other changes
