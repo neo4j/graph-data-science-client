@@ -25,6 +25,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         endpoint: Union[str, Driver, QueryRunner],
         auth: Optional[Tuple[str, str]] = None,
         aura_ds: bool = False,
+        database: Optional[str] = None,
         arrow: bool = True,
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
@@ -116,6 +117,9 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                     "registered for this database instance." not in str(e)
                 ):
                     warnings.warn(f"Could not initialize GDS Flight Server client: {e}")
+
+        if database:
+            self._query_runner.set_database(database)
 
         super().__init__(self._query_runner, "gds", self._server_version)
 

@@ -10,6 +10,7 @@
 This method converts the topology result to a map from relationship types to matrices describing the topology of the type.
 * Added a new optional string parameter `database` to `GraphDataScience.run_cypher` for overriding which database to target.
 * Added new method `gds.graph.load_cora` to load the CORA dataset into GDS.
+* Added a new optional string parameter `database` to the `GraphDataScience` constructor for specifying the targeted database.
 
 
 ## Bug fixes

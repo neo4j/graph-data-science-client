@@ -40,13 +40,6 @@ assert gds.version()
 
 Alternatively, for use cases where direct access and control of the Neo4j driver is required, one can use the method `GraphDataScience.from_neo4j_driver` for instantiating the gds object.
 
-If we don't want to use the default database of our DBMS, we can specify which one to use:
-
-[source,python,role=no-test]
-----
-gds.set_database("my-db")
-----
-
 To check if the GDS server library we're running against is licensed we can make the following call:
 
 [source,python]
@@ -61,6 +54,23 @@ Therefore most methods, such as `pageRank`, will not appear when calling `dir(gd
 Similarly, IDEs and language servers will not be able to detect these automatically inferred methods, meaning that the auto-completion support they provide will be limited.
 Rest assured however that despite the lack of this type of discoverability the inferred methods, such as `gds.pageRank.stream`, will still be called correctly.
 ====
+
+
+=== Specifying targeted database
+
+If we don't want to use the default database of our DBMS we can provide the `GraphDataScience` constructor with the keyword parameter `database`:
+
+[source,python,role=no-test]
+----
+gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD), database="my-db")
+----
+
+Or we could change the database we are targeting later:
+
+[source,python,role=no-test]
+----
+gds.set_database("my-db")
+----
 
 
 === AuraDS
