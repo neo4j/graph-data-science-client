@@ -24,8 +24,8 @@ class TopologyDataFrame(DataFrame):
 
         output = {}
         for rel_type, indices in gb.groups.items():
-            one_rel_df = self.take(indices)  # type: ignore
-            output[rel_type] = [list(one_rel_df["sourceNodeId"]), list(one_rel_df["targetNodeId"])]
+            one_rel_df = self.take(indices)
+            output[str(rel_type)] = [list(one_rel_df["sourceNodeId"]), list(one_rel_df["targetNodeId"])]
 
         return output
 
