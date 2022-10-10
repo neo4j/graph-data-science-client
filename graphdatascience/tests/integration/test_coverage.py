@@ -45,10 +45,23 @@ IGNORED_ENDPOINTS = {
     "gds.alpha.pipeline.nodeRegression.predict.stream",
     "gds.alpha.pipeline.nodeRegression.selectFeatures",
     "gds.alpha.pipeline.nodeRegression.train",
+    "gds.similarity.cosine",
+    "gds.similarity.euclidean",
+    "gds.similarity.euclideanDistance",
+    "gds.similarity.jaccard",
+    "gds.similarity.overlap",
+    "gds.similarity.pearson",
     "gds.util.NaN",
     "gds.util.infinity",
     "gds.util.isFinite",
     "gds.util.isInfinite",
+    "gds.alpha.create.cypherdb",
+    "gds.alpha.backup",  # TODO: Add support for this
+    "gds.alpha.restore",  # TODO: Add support for this
+    "gds.alpha.triangles",  # TODO: Add support for this
+    "gds.alpha.userLog",  # TODO: Add support for this
+    "gds.alpha.config.defaults.set",  # TODO: Add support for this
+    "gds.alpha.config.limits.set",  # TODO: Add support for this
 }
 
 
@@ -63,9 +76,24 @@ def test_coverage(gds: GraphDataScience) -> None:
 
         # Check that each step of the string building is a valid object
         base = gds
-        for attr in endpoint_components:
+        for idx, attr in enumerate(endpoint_components):
             try:
                 base = getattr(base, attr)
                 assert base
+
+                if idx < len(endpoint_components) - 1:
+                    continue
+
+                assert callable(base)
+
+                try:
+                    base()
+                except SyntaxError as e:
+                    if f"There is no '{server_endpoint}' to call" in str(e):
+                        raise AssertionError(
+                            f"Could not find a client endpoint for the {server_endpoint} server endpoint"
+                        )
+                except Exception:
+                    pass
             except Exception:
                 raise AssertionError(f"Could not find a client endpoint for the {server_endpoint} server endpoint")
