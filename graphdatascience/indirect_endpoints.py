@@ -4,9 +4,15 @@ from .model.model_endpoints import ModelEndpoints
 from .pipeline.pipeline_endpoints import PipelineEndpoints
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
-from .system.system_endpoints import SystemEndpoints
+from .system.system_endpoints import IndirectSystemEndpoints
 from .topological_lp.topological_lp_endpoints import TopologicalLPEndpoints
-from .utils.util_endpoints import UtilEndpoints
+from .utils.util_endpoints import IndirectUtilEndpoints
+
+"""
+This class should inherit endpoint classes that only contain endpoints that needs more of a prefix
+than `gds` for some calls. An example of such an endpoint is "graph" which sometimes needs `gds.alpha`
+as prefix, eg. for `gds.alpha.graph.construct`.
+"""
 
 
 class IndirectEndpoints(
@@ -14,9 +20,9 @@ class IndirectEndpoints(
     GraphEndpoints,
     ModelEndpoints,
     PipelineEndpoints,
-    SystemEndpoints,
+    IndirectSystemEndpoints,
     TopologicalLPEndpoints,
-    UtilEndpoints,
+    IndirectUtilEndpoints,
 ):
     def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
         super().__init__(query_runner, namespace, server_version)

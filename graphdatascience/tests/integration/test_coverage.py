@@ -1,3 +1,4 @@
+from graphdatascience.error.uncallable_namespace import UncallableNamespace
 from graphdatascience.graph_data_science import GraphDataScience
 
 # A list of the server endpoints that should not be reachable via the standard
@@ -61,7 +62,9 @@ IGNORED_ENDPOINTS = {
     "gds.alpha.triangles",  # TODO: Add support for this
     "gds.alpha.userLog",  # TODO: Add support for this
     "gds.alpha.config.defaults.set",  # TODO: Add support for this
+    "gds.alpha.config.defaults.list",  # TODO: Add support for this
     "gds.alpha.config.limits.set",  # TODO: Add support for this
+    "gds.alpha.config.limits.list",  # TODO: Add support for this
 }
 
 
@@ -86,14 +89,7 @@ def test_coverage(gds: GraphDataScience) -> None:
 
                 assert callable(base)
 
-                try:
-                    base()
-                except SyntaxError as e:
-                    if f"There is no '{server_endpoint}' to call" in str(e):
-                        raise AssertionError(
-                            f"Could not find a client endpoint for the {server_endpoint} server endpoint"
-                        )
-                except Exception:
-                    pass
+                if isinstance(base, UncallableNamespace):
+                    raise AssertionError()
             except Exception:
                 raise AssertionError(f"Could not find a client endpoint for the {server_endpoint} server endpoint")
