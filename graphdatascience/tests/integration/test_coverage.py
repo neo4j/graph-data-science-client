@@ -84,6 +84,8 @@ def test_coverage(gds: GraphDataScience) -> None:
                 base = getattr(base, attr)
                 assert base
 
+                # When we have constructed the full chain, we should make sure
+                # that the object is callable, and callable without errors.
                 if idx < len(endpoint_components) - 1:
                     continue
 
