@@ -57,6 +57,8 @@ To get a graph object that represents a graph that has already been projected in
 G = gds.graph.get("offices")
 ----
 
+For users who are https://neo4j.com/docs/graph-data-science/current/management-ops/administration/[GDS admins], `gds.graph.get` will resolve graph names into `Graph` objects also when the provided name refers to another user's graph projection.
+
 In addition to those aforementioned there are four more methods that create graph objects:
 
 * `gds.graph.project.cypher`
