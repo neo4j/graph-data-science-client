@@ -40,6 +40,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         aura_ds : bool, default False
             A flag that indicates that that the client is used to connect
             to a Neo4j Aura instance.
+        database: Optional[str], default None
+            The Neo4j database to query against.
         arrow : bool, default True
             A flag that indicates that the client should use Apache Arrow
             for data streaming if it is available on the server.
@@ -80,6 +82,9 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             driver = endpoint
             self._query_runner = Neo4jQueryRunner(driver, auto_close=False)
 
+        if database:
+            self._query_runner.set_database(database)
+
         try:
             server_version_string = self._query_runner.run_query("RETURN gds.version()").squeeze()
         except Exception as e:
@@ -117,9 +122,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                     "registered for this database instance." not in str(e)
                 ):
                     warnings.warn(f"Could not initialize GDS Flight Server client: {e}")
-
-        if database:
-            self._query_runner.set_database(database)
 
         super().__init__(self._query_runner, "gds", self._server_version)
 

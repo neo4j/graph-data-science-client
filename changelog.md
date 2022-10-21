@@ -9,6 +9,8 @@
 
 ## Bug fixes
 
+* Fixed a bug, where the client could not connect to the server when the default db was set in the `GraphDataScience` constructor.
+
 
 ## Improvements
 
