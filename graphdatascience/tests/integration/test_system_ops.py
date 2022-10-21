@@ -9,6 +9,12 @@ def test_listProgress(gds: GraphDataScience) -> None:
     assert len(result) >= 0
 
 
+def test_userLog(gds: GraphDataScience) -> None:
+    result = gds.alpha.userLog()
+
+    assert len(result) >= 0
+
+
 @pytest.mark.enterprise
 def test_systemMonitor(gds: GraphDataScience) -> None:
     result = gds.alpha.systemMonitor()

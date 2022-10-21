@@ -26,3 +26,10 @@ def test_sysInfo(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
 
     assert runner.last_query() == "CALL gds.debug.sysInfo()"
     assert runner.last_params() == {}
+
+
+def test_userLog(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    gds.alpha.userLog()
+
+    assert runner.last_query() == "CALL gds.alpha.userLog()"
+    assert runner.last_params() == {}
