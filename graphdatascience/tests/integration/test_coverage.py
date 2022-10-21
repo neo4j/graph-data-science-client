@@ -59,7 +59,6 @@ IGNORED_ENDPOINTS = {
     "gds.alpha.create.cypherdb",
     "gds.alpha.backup",  # TODO: Add support for this
     "gds.alpha.restore",  # TODO: Add support for this
-    "gds.alpha.userLog",  # TODO: Add support for this
     "gds.alpha.config.defaults.set",  # TODO: Add support for this
     "gds.alpha.config.defaults.list",  # TODO: Add support for this
     "gds.alpha.config.limits.set",  # TODO: Add support for this
