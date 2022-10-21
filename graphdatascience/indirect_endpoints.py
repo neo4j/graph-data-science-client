@@ -1,4 +1,5 @@
 from .algo.algo_endpoints import AlgoEndpoints
+from .algo.single_mode_algo_endpoints import SingleModeAlgoEndpoints
 from .graph.graph_endpoints import GraphEndpoints
 from .model.model_endpoints import ModelEndpoints
 from .pipeline.pipeline_endpoints import PipelineEndpoints
@@ -17,6 +18,7 @@ as prefix, eg. for `gds.alpha.graph.construct`.
 
 class IndirectEndpoints(
     AlgoEndpoints,
+    SingleModeAlgoEndpoints,
     GraphEndpoints,
     ModelEndpoints,
     PipelineEndpoints,
