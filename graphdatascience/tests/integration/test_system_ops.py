@@ -33,3 +33,16 @@ def test_sysInfo(gds: GraphDataScience) -> None:
 @pytest.mark.enterprise
 def test_is_licensed(gds: GraphDataScience) -> None:
     assert gds.is_licensed()
+
+
+def test_set_defaults(gds: GraphDataScience) -> None:
+    gds.alpha.config.defaults.set("concurrency", 2, "")
+    assert True
+
+
+def test_list_defaults(gds: GraphDataScience) -> None:
+    gds.alpha.config.defaults.set("concurrency", 2, "")
+    gds.alpha.config.defaults.set("iterations", 2, "")
+    result = gds.alpha.config.defaults.list(username="")
+
+    assert len(result) == 2
