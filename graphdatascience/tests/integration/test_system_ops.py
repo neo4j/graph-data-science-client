@@ -46,3 +46,15 @@ def test_list_defaults(gds: GraphDataScience) -> None:
     result = gds.alpha.config.defaults.list(username="")
 
     assert len(result) == 2
+
+def test_set_limits(gds: GraphDataScience) -> None:
+    gds.alpha.config.limits.set("concurrency", 2, "")
+    assert True
+
+
+def test_list_limits(gds: GraphDataScience) -> None:
+    gds.alpha.config.limits.set("concurrency", 2, "")
+    gds.alpha.config.limits.set("iterations", 2, "")
+    result = gds.alpha.config.limits.list(username="")
+
+    assert len(result) == 2
