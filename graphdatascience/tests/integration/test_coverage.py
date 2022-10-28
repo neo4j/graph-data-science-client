@@ -57,8 +57,6 @@ IGNORED_ENDPOINTS = {
     "gds.util.isFinite",
     "gds.util.isInfinite",
     "gds.alpha.create.cypherdb",
-    "gds.alpha.backup",  # TODO: Add support for this
-    "gds.alpha.restore",  # TODO: Add support for this
 }
 
 

@@ -46,3 +46,19 @@ def test_list_defaults(gds: GraphDataScience) -> None:
     result = gds.alpha.config.defaults.list(username="")
 
     assert len(result) == 2
+
+
+@pytest.mark.enterprise
+@pytest.mark.skip_on_aura
+def test_backup(gds: GraphDataScience) -> None:
+    result = gds.alpha.backup(concurrency=4)
+
+    assert len(result) == 0
+
+
+@pytest.mark.enterprise
+@pytest.mark.skip_on_aura
+def test_restore(gds: GraphDataScience) -> None:
+    result = gds.alpha.restore(concurrency=4)
+
+    assert len(result) == 0
