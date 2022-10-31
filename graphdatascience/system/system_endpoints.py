@@ -39,6 +39,10 @@ class DirectSystemEndpoints(CallerBase):
     def debug(self) -> DebugProcRunner:
         return DebugProcRunner(self._query_runner, f"{self._namespace}.debug", self._server_version)
 
+    @property
+    def config(self) -> DebugProcRunner:
+        return DebugProcRunner(self._query_runner, f"{self._namespace}.config", self._server_version)
+
 
 class IndirectSystemEndpoints(CallerBase):
     def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
