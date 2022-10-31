@@ -54,34 +54,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             Arrow Flight server.
         """
 
-        if isinstance(endpoint, str):
-            self._config: Dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
-
-            if aura_ds:
-                protocol = endpoint.split(":")[0]
-                if not protocol == self._AURA_DS_PROTOCOL:
-                    raise ValueError(
-                        f"AuraDS requires using the '{self._AURA_DS_PROTOCOL}' protocol ('{protocol}' was provided)"
-                    )
-
-                self._config["max_connection_lifetime"] = 60 * 8  # 8 minutes
-                self._config["keep_alive"] = True
-                self._config["max_connection_pool_size"] = 50
-
-            driver = GraphDatabase.driver(endpoint, auth=auth, **self._config)
-
-            self._query_runner = Neo4jQueryRunner(driver, auto_close=True)
-
-        elif isinstance(endpoint, QueryRunner):
-            if arrow:
-                raise ValueError("Arrow cannot be used if the QueryRunner is provided directly")
-
-            self._query_runner = endpoint
-
-        else:
-            driver = endpoint
-            self._query_runner = Neo4jQueryRunner(driver, auto_close=False)
-
         if database:
             self._query_runner.set_database(database)
 
