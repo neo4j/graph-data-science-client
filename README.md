@@ -28,7 +28,6 @@ To install the latest deployed version of `graphdatascience`, simply run:
 pip install graphdatascience
 ```
 
-
 ## Usage
 
 What follows is a high level description of some of the operations supported by `graphdatascience`.
