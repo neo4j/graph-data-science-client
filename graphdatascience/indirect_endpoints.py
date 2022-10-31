@@ -5,9 +5,10 @@ from .model.model_endpoints import ModelEndpoints
 from .pipeline.pipeline_endpoints import PipelineEndpoints
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
-from .system.system_endpoints import DefaultsAndLimitsEndPoints, IndirectSystemEndpoints
+from .system.system_endpoints import IndirectSystemEndpoints
 from .topological_lp.topological_lp_endpoints import TopologicalLPEndpoints
 from .utils.util_endpoints import IndirectUtilEndpoints
+from graphdatascience.system.config_endpoints import IndirectConfigEndpoints
 
 """
 This class should inherit endpoint classes that only contain endpoints that needs more of a prefix
@@ -23,7 +24,7 @@ class IndirectEndpoints(
     ModelEndpoints,
     PipelineEndpoints,
     IndirectSystemEndpoints,
-    DefaultsAndLimitsEndPoints,
+    IndirectConfigEndpoints,
     TopologicalLPEndpoints,
     IndirectUtilEndpoints,
 ):
