@@ -64,3 +64,15 @@ class IndirectSystemEndpoints(CallerBase):
         query = f"CALL {self._namespace}()"
 
         return self._query_runner.run_query(query).squeeze()  # type: ignore
+
+    def backup(self, **config: Any) -> DataFrame:
+        self._namespace += ".backup"
+        query = f"CALL {self._namespace}($config)"
+
+        return self._query_runner.run_query(query, {"config": config})
+
+    def restore(self, **config: Any) -> DataFrame:
+        self._namespace += ".restore"
+        query = f"CALL {self._namespace}($config)"
+
+        return self._query_runner.run_query(query, {"config": config})
