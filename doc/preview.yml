@@ -7,7 +7,7 @@ content:
   sources:
   - url: ../
     start_path: doc
-    branches: 
+    branches:
     - HEAD
     include: doc/
     exclude:
