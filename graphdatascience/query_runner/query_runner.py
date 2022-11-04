@@ -9,15 +9,21 @@ from .graph_constructor import GraphConstructor
 
 class QueryRunner(ABC):
     @abstractmethod
-    def run_query(
-        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
+    def run_procedure_endpoint(
+        self, endpoint: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
     ) -> DataFrame:
         pass
 
-    def run_query_with_logging(
-        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
+    def run_procedure_endpoint_with_logging(
+        self, endpoint: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
     ) -> DataFrame:
-        return self.run_query(query, params, database)
+        return self.run_procedure_endpoint(endpoint, params, database)
+
+    @abstractmethod
+    def run_function_endpoint(
+        self, endpoint: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
+    ) -> DataFrame:
+        pass
 
     @abstractmethod
     def set_database(self, database: str) -> None:
