@@ -257,3 +257,5 @@ assert list(topology_by_rel_type.keys()) == ["REL"]
 assert topology_by_rel_type["REL"][0] == [0, 1, 2, 3]
 assert topology_by_rel_type["REL"][1] == [1, 2, 3, 0]
 ----
+
+Like the <<graph-object-streaming-properties>> methods, the `gds.beta.graph.relationships.stream` is also accelerated if the GDS Arrow Flight Server is enabled.
