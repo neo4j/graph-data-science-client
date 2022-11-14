@@ -46,7 +46,7 @@ where `G` is a `Graph` object, and `result` is a pandas `Series` containing meta
 
 Note that all projection syntax variants are supported by way of specifying a Python `dict` or `list` for the node and relationship projection arguments.
 To specify configuration parameters corresponding to the keys of the procedure's `configuration` map, we give named keyword arguments, like for `readConcurrency=4` above.
-Read more about this in https://neo4j.com/docs/graph-data-science/current/graph-project/#graph-project-native-syntax[Syntax].
+Read more about the syntax in the https://neo4j.com/docs/graph-data-science/current/management-ops/projections/graph-project/#graph-project-native-syntax[GDS manual].
 
 Similarly to Cypher there's also a corresponding `gds.graph.project.estimate` method that can be called in an analogous way.
 
