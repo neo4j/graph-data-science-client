@@ -224,14 +224,15 @@ gds.graph.drop(G)  # same as G.drop()
 ----
 
 
+[[graph-object-streaming-properties]]
 ==== Streaming properties
 
 The client methods
 
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-node-ops/[`gds.graph.streamNodeProperty`]
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-node-ops/[`gds.graph.streamNodeProperties`]
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/[`gds.graph.streamRelationshipProperty`]
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/[`gds.graph.streamRelationshipProperties`]
+* https://neo4j.com/docs/graph-data-science/current/graph-catalog-node-ops/[`gds.graph.nodeProperty.stream`] (previously `gds.graph.streamNodeProperty`)
+* https://neo4j.com/docs/graph-data-science/current/graph-catalog-node-ops/[`gds.graph.nodeProperties.stream`] (previously `gds.graph.streamNodeProperties`)
+* https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/[`gds.graph.relationshipProperty.stream`] (previously `gds.graph.streamRelationshipProperty`)
+* https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/[`gds.graph.relationshipProperties.stream`] (previously `gds.graph.streamRelationshipProperties`)
 
 are greatly sped up if https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/[Arrow Flight Server] of GDS is enabled.
 
@@ -256,3 +257,5 @@ assert list(topology_by_rel_type.keys()) == ["REL"]
 assert topology_by_rel_type["REL"][0] == [0, 1, 2, 3]
 assert topology_by_rel_type["REL"][1] == [1, 2, 3, 0]
 ----
+
+Like the <<graph-object-streaming-properties>> methods, the `gds.beta.graph.relationships.stream` is also accelerated if the GDS Arrow Flight Server is enabled.
