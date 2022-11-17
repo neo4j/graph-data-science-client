@@ -60,7 +60,7 @@ class ArrowGraphConstructor(GraphConstructor):
 
         json.loads(next(result).body.to_pybytes().decode())
 
-    def _send_df(self, df: DataFrame, entity_type: str, pbar) -> None:
+    def _send_df(self, df: DataFrame, entity_type: str, pbar: tqdm) -> None:
         table = Table.from_pandas(df)
         partitions = table.to_batches(self._chunk_size)
         flight_descriptor = {"name": self._graph_name, "entity_type": entity_type}
