@@ -1,7 +1,9 @@
 import re
+import time
 
 import pytest
 from neo4j import Driver
+from neo4j.exceptions import DatabaseUnavailable
 
 from graphdatascience.error.unable_to_connect import UnableToConnectError
 from graphdatascience.graph_data_science import GraphDataScience
@@ -10,7 +12,8 @@ from graphdatascience.tests.integration.conftest import AUTH, URI
 from graphdatascience.version import __version__
 
 GRAPH_NAME = "g"
-
+RETRY_TRIALS = 10
+SLEEP_TIME = 0.5
 
 @pytest.mark.skip_on_aura
 def test_switching_db(runner: Neo4jQueryRunner) -> None:
@@ -24,7 +27,19 @@ def test_switching_db(runner: Neo4jQueryRunner) -> None:
     runner.run_query("CREATE DATABASE $dbName", {"dbName": MY_DB_NAME})
     runner.set_database(MY_DB_NAME)
 
-    post_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
+    trials = 0
+    while trials < RETRY_TRIALS:
+        try:
+            time.sleep(SLEEP_TIME)
+            post_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
+            break
+        except DatabaseUnavailable as e:
+            trials += 1
+
+    if trials == RETRY_TRIALS:
+        runner.run_query("MATCH (n) DETACH DELETE n")
+        runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
+        raise AssertionError("New db not created after 10 trials")
 
     try:
         assert post_count == 0
@@ -44,7 +59,19 @@ def test_run_query_with_db(runner: Neo4jQueryRunner) -> None:
     MY_DB_NAME = "my-db"
     runner.run_query("CREATE DATABASE $dbName", {"dbName": MY_DB_NAME})
 
-    specified_db_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)["c"][0]
+    trials = 0
+    while trials < RETRY_TRIALS:
+        try:
+            time.sleep(SLEEP_TIME)
+            specified_db_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)["c"][0]
+            break
+        except DatabaseUnavailable as e:
+            trials += 1
+
+    if trials == RETRY_TRIALS:
+        runner.run_query("MATCH (n) DETACH DELETE n")
+        runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
+        raise AssertionError("New db not created after 10 trials")
 
     try:
         assert specified_db_count == 0
@@ -62,12 +89,23 @@ def test_initialize_with_db(runner: Neo4jQueryRunner) -> None:
 
     MY_DB_NAME = "my-db"
     runner.run_query("CREATE DATABASE $dbName", {"dbName": MY_DB_NAME})
+    time.sleep(SLEEP_TIME)
 
     gds_with_specified_db = GraphDataScience(URI, AUTH, database=MY_DB_NAME)
 
-    specified_db_count = gds_with_specified_db.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)[
-        "c"
-    ][0]
+    trials = 0
+    while trials < RETRY_TRIALS:
+        try:
+            time.sleep(SLEEP_TIME)
+            specified_db_count = gds_with_specified_db.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)["c"][0]
+            break
+        except DatabaseUnavailable as e:
+            trials += 1
+
+    if trials == RETRY_TRIALS:
+        runner.run_query("MATCH (n) DETACH DELETE n")
+        runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
+        raise AssertionError("New db not created after 10 trials")
 
     try:
         assert specified_db_count == 0
