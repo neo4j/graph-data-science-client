@@ -10,7 +10,7 @@ from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 MODEL_NAME = "gs-model"
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None, None]:
     runner.run_query(
         """
