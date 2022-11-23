@@ -15,7 +15,7 @@ from graphdatascience.server_version.server_version import ServerVersion
 PIPE_NAME = "pipe"
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None, None]:
     runner.run_query(
         """
@@ -53,7 +53,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
-@pytest.fixture(scope="module")
+@pytest.fixture
 def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
     pipe, _ = gds.beta.pipeline.linkPrediction.create("pipelp")
 
@@ -88,7 +88,7 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     lp_model.drop()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
     pipe, _ = gds.beta.pipeline.nodeClassification.create("pipenc")
 
@@ -123,7 +123,7 @@ def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     nc_model.drop()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def nr_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
     pipe, _ = gds.alpha.pipeline.nodeRegression.create("pipenr")
 
