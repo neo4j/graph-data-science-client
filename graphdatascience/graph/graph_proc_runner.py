@@ -64,11 +64,9 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     def load_imdb(self, graph_name: str = "imdb") -> Graph:
         with path("graphdatascience.resources.imdb", "imdb_nodes_gzip.pkl") as nodes_resource:
             nodes = read_pickle(nodes_resource, compression="gzip")
-        print(nodes)
 
         with path("graphdatascience.resources.imdb", "imdb_rels_gzip.pkl") as rels_resource:
             rels = read_pickle(rels_resource, compression="gzip")
-        print(rels)
 
         self._namespace = "gds.alpha.graph"
 

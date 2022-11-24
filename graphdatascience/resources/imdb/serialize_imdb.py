@@ -3,13 +3,22 @@ from importlib.resources import path
 import pandas as pd
 from pandas import read_pickle
 
-with path("graphdatascience.resources.imdb", "labels.pkl") as labels_resource:
+"""
+This code included only for reproducibility.
+
+It is used to convert raw pickle data from edges.pkl, labels.pkl and node_features.pkl
+into consolidated imdb_nodes_gzip.pkl and imdb_rels_gzip.pkl.
+
+These pickles are then being read by load_imdb()
+"""
+
+with path("graphdatascience.resources.imdb", "raw/labels.pkl") as labels_resource:
     class_labels = read_pickle(labels_resource)
 movies = pd.DataFrame([item for sublist in class_labels for item in sublist])
 movies = movies.rename(columns={0: "nodeId", 1: "class"})
 movies["labels"] = "Movie"
 
-with path("graphdatascience.resources.imdb", "node_features.pkl") as features_resource:
+with path("graphdatascience.resources.imdb", "raw/node_features.pkl") as features_resource:
     raw_features = read_pickle(features_resource)
 nodes_features_df = pd.DataFrame(raw_features)
 nodes_features_df["feature"] = nodes_features_df.values.tolist()
@@ -22,9 +31,11 @@ person_nodes_with_features = (
     .drop(columns=["class", "_merge"])
 )
 person_nodes_with_features["labels"] = "Person"
+# Set 'Person' class as -1.0 since gds.graph.construct only allows one nodeDF for community,
+# and that setting NaN gives value is null error from Arrow flight RPC
 person_nodes_with_features["class"] = -1.0
 
-with path("graphdatascience.resources.imdb", "edges.pkl") as rels_resource:
+with path("graphdatascience.resources.imdb", "raw/edges.pkl") as rels_resource:
     spmatrices = read_pickle(rels_resource)
 
 edge_list = []
@@ -39,9 +50,10 @@ edge_list[2]["relationshipType"] = "MovieActor"
 edge_list[3]["relationshipType"] = "MovieActor"
 
 labeled_rels = pd.concat(edge_list)
+labeled_rels.reset_index(drop=True, inplace=True)
 
 all_nodes = pd.concat([movie_nodes_with_features, person_nodes_with_features])
-all_nodes.reset_index()
+all_nodes.reset_index(drop=True, inplace=True)
 
 all_nodes.to_pickle(
     "FILE_LOC",
