@@ -1,22 +1,19 @@
 import warnings
-from typing import Any, List, Set, Tuple
+from typing import Any, Dict, List, Set, Tuple
 
-from pandas import DataFrame
+from pandas import DataFrame, concat
 
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 class CypherGraphConstructor(GraphConstructor):
-    def __init__(
-        self,
-        query_runner: QueryRunner,
-        graph_name: str,
-        concurrency: int,
-    ):
+    def __init__(self, query_runner: QueryRunner, graph_name: str, concurrency: int, server_version: ServerVersion):
         self._query_runner = query_runner
         self._concurrency = concurrency
         self._graph_name = graph_name
+        self._server_version = server_version
 
     def run(self, node_dfs: List[DataFrame], relationship_dfs: List[DataFrame]) -> None:
         if self._should_warn_about_arrow_missing():
@@ -32,28 +29,16 @@ class CypherGraphConstructor(GraphConstructor):
         if len(relationship_dfs) > 1:
             raise ValueError("The GDS Community edition graph construction supports at most one relationship dataframe")
 
-        query = (
-            "CALL gds.graph.project.cypher("
-            "$graph_name, "
-            "$node_query, "
-            "$relationship_query, "
-            "{readConcurrency: $read_concurrency, parameters: { nodes: $nodes, relationships: $relationships }})"
-        )
+        node_df = node_dfs[0]
+        rel_df = relationship_dfs[0]
 
-        node_query, nodes = self._node_query(node_dfs[0])
-        relationship_query, relationships = self._relationship_query(relationship_dfs[0])
-
-        self._query_runner.run_query(
-            query,
-            {
-                "graph_name": self._graph_name,
-                "node_query": node_query,
-                "relationship_query": relationship_query,
-                "read_concurrency": self._concurrency,
-                "nodes": nodes,
-                "relationships": relationships,
-            },
-        )
+        # Cypher aggregation supports concurrency since 2.3.0
+        if self._server_version >= ServerVersion(2, 3, 0):
+            runner = self.CypherAggregationRunner(self._query_runner, self._graph_name, self._concurrency)
+            runner.run(node_df, rel_df)
+        else:
+            runner = self.CyperProjectionRunner(self._query_runner, self._graph_name, self._concurrency)
+            runner.run(node_df, rel_df)
 
     def _should_warn_about_arrow_missing(self) -> bool:
         try:
@@ -73,51 +58,157 @@ class CypherGraphConstructor(GraphConstructor):
 
         return should_warn
 
-    def _node_query(self, node_df: DataFrame) -> Tuple[str, List[List[Any]]]:
-        node_list = node_df.values.tolist()
-        node_columns = list(node_df.columns)
-        node_id_index = node_columns.index("nodeId")
+    class CypherAggregationRunner:
+        def __init__(self, query_runner: QueryRunner, graph_name: str, concurrency: int):
+            self._query_runner = query_runner
+            self._concurrency = concurrency
+            self._graph_name = graph_name
 
-        label_query = ""
-        if "labels" in node_df.keys():
-            label_index = node_columns.index("labels")
-            label_query = f", node[{label_index}] as labels"
+        def run(self, node_df: DataFrame, relationship_df: DataFrame) -> None:
+            rel_cols = set(relationship_df.columns)
+            node_cols = set(node_df.columns)
+            same_cols = rel_cols.intersection(node_cols)
 
-            # Make sure every node has a list of labels
-            for node in node_list:
-                labels = node[label_index]
-                if isinstance(labels, List):
-                    continue
-                node[label_index] = [labels]
+            # TODO: handle overlapping columns between nodes and rels_df (specify a prefix)
+            if same_cols:
+                raise ValueError(
+                    "Expected disjoint column names in node and relationship df "
+                    f"but the columns {same_cols} exist in both dfs. Please rename the column in one df."
+                )
 
-        property_query = ""
-        property_columns: Set[str] = set(node_df.keys()) - {"nodeId", "labels"}
-        if len(property_columns) > 0:
-            property_queries = (f", node[{node_columns.index(col)}] as {col}" for col in property_columns)
-            property_query = "".join(property_queries)
+            # concat instead of join as we want to first have all nodes and then the rels
+            # this way we dont duplicate the node property data and its cheaper
+            combined_df: DataFrame = concat([node_df, relationship_df], ignore_index=True)
+            combined_df["sourceNodeId"] = combined_df["nodeId"].combine_first(combined_df["sourceNodeId"])
+            combined_df.drop("nodeId", axis=1, inplace=True)
 
-        return f"UNWIND $nodes as node RETURN node[{node_id_index}] as id{label_query}{property_query}", node_list
+            # using a List and not a Set to preserve the order
+            combined_cols: List[str] = list(combined_df.columns)
 
-    def _relationship_query(self, rel_df: DataFrame) -> Tuple[str, List[List[Any]]]:
-        rel_list = rel_df.values.tolist()
-        rel_columns = list(rel_df.columns)
-        source_id_index = rel_columns.index("sourceNodeId")
-        target_id_index = rel_columns.index("targetNodeId")
+            query = (
+                "UNWIND $data AS data RETURN gds.alpha.graph.project("
+                "$graph_name, data[$sourceNodeIdx], data[$targetNodeIdx], $nodesConfig, $relationshipsConfig, $configuration)"
+            )
 
-        type_query = ""
-        if "relationshipType" in rel_df.keys():
-            type_index = rel_columns.index("relationshipType")
-            type_query = f", relationship[{type_index}] as type"
+            # TODO add orientation here once its supported in 2.3
+            configuration = {"readConcurrency": self._concurrency}
 
-        property_query = ""
-        property_columns: Set[str] = set(rel_df.keys()) - {"sourceNodeId", "targetNodeId", "relationshipType"}
-        if len(property_columns) > 0:
-            property_queries = (f", relationship[{rel_columns.index(col)}] as {col}" for col in property_columns)
-            property_query = "".join(property_queries)
+            self._query_runner.run_query(
+                query,
+                {
+                    "graph_name": self._graph_name,
+                    "sourceNodeIdx": combined_cols.index("sourceNodeId"),
+                    "targetNodeIdx": combined_cols.index("targetNodeId"),
+                    "nodesConfig": self.nodes_config(combined_cols, node_cols),
+                    "relationshipsConfig": self.rels_config(combined_cols, rel_cols),
+                    "configuration": configuration,
+                },
+            )
 
-        return (
-            "UNWIND $relationships as relationship "
-            f"RETURN relationship[{source_id_index}] as source, relationship[{target_id_index}] as target"
-            f"{type_query}{property_query}",
-            rel_list,
-        )
+        def nodes_config(self, combined_cols: List[str], node_cols: Set[str]) -> Dict[str, Any]:
+            nodes_config: Dict[str, Any] = {}
+
+            if "labels" in node_cols:
+                nodes_config["sourceNodeLabels"] = f"""data[{combined_cols.index("labels")}]"""
+
+            property_columns: Set[str] = set(node_cols) - {"nodeId", "labels"}
+
+            # as we first list all nodes at the top of the df, we dont need to lookup properties for the target node
+            if len(property_columns) > 0:
+                nodes_config["sourceNodeProperties"] = {
+                    col: f"data[{combined_cols.index(col)}]" for col in property_columns
+                }
+
+            return nodes_config
+
+        def rels_config(self, combined_cols: List[str], rel_cols: Set[str]) -> Dict[str, Any]:
+            rels_config: Dict[str, Any] = {}
+
+            if "relationshipType" in rel_cols:
+                rels_config["relationshipType"] = f"data[{combined_cols.index('relationshipType')}]"
+
+            property_columns: Set[str] = rel_cols - {"sourceNodeId", "targetNodeId", "relationshipType"}
+
+            if len(property_columns) > 0:
+                rels_config["properties"] = {col: f"data[{combined_cols.index(col)}]" for col in property_columns}
+
+            return rels_config
+
+    class CyperProjectionRunner:
+        def __init__(self, query_runner: QueryRunner, graph_name: str, concurrency: int):
+            self._query_runner = query_runner
+            self._concurrency = concurrency
+            self._graph_name = graph_name
+
+        def run(self, node_df: DataFrame, relationship_df: DataFrame) -> None:
+            query = (
+                "CALL gds.graph.project.cypher("
+                "$graph_name, "
+                "$node_query, "
+                "$relationship_query, "
+                "{readConcurrency: $read_concurrency, parameters: { nodes: $nodes, relationships: $relationships }})"
+            )
+
+            node_query, nodes = self._node_query(node_df)
+            relationship_query, relationships = self._relationship_query(relationship_df)
+
+            self._query_runner.run_query(
+                query,
+                {
+                    "graph_name": self._graph_name,
+                    "node_query": node_query,
+                    "relationship_query": relationship_query,
+                    "read_concurrency": self._concurrency,
+                    "nodes": nodes,
+                    "relationships": relationships,
+                },
+            )
+
+        def _node_query(self, node_df: DataFrame) -> Tuple[str, List[List[Any]]]:
+            node_list = node_df.values.tolist()
+            node_columns = list(node_df.columns)
+            node_id_index = node_columns.index("nodeId")
+
+            label_query = ""
+            if "labels" in node_df.keys():
+                label_index = node_columns.index("labels")
+                label_query = f", node[{label_index}] as labels"
+
+                # Make sure every node has a list of labels
+                for node in node_list:
+                    labels = node[label_index]
+                    if isinstance(labels, List):
+                        continue
+                    node[label_index] = [labels]
+
+            property_query = ""
+            property_columns: Set[str] = set(node_df.keys()) - {"nodeId", "labels"}
+            if len(property_columns) > 0:
+                property_queries = (f", node[{node_columns.index(col)}] as {col}" for col in property_columns)
+                property_query = "".join(property_queries)
+
+            return f"UNWIND $nodes as node RETURN node[{node_id_index}] as id{label_query}{property_query}", node_list
+
+        def _relationship_query(self, rel_df: DataFrame) -> Tuple[str, List[List[Any]]]:
+            rel_list = rel_df.values.tolist()
+            rel_columns = list(rel_df.columns)
+            source_id_index = rel_columns.index("sourceNodeId")
+            target_id_index = rel_columns.index("targetNodeId")
+
+            type_query = ""
+            if "relationshipType" in rel_df.keys():
+                type_index = rel_columns.index("relationshipType")
+                type_query = f", relationship[{type_index}] as type"
+
+            property_query = ""
+            property_columns: Set[str] = set(rel_df.keys()) - {"sourceNodeId", "targetNodeId", "relationshipType"}
+            if len(property_columns) > 0:
+                property_queries = (f", relationship[{rel_columns.index(col)}] as {col}" for col in property_columns)
+                property_query = "".join(property_queries)
+
+            return (
+                "UNWIND $relationships as relationship "
+                f"RETURN relationship[{source_id_index}] as source, relationship[{target_id_index}] as target"
+                f"{type_query}{property_query}",
+                rel_list,
+            )
