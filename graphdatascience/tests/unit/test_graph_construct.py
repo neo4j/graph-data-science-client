@@ -92,6 +92,45 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
     }
 
 
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 3, 0)])
+def test_graph_aggregation_based_alpha_construct_without_arrow_with_overlapping_property_columns(
+    runner: CollectingQueryRunner, gds: GraphDataScience
+) -> None:
+    nodes = DataFrame(
+        {
+            "nodeId": [0, 1],
+            "labels": [["A"], ["B"]],
+            "propA": [1337, 42.1],
+        }
+    )
+    relationships = DataFrame(
+        {
+            "sourceNodeId": [0, 1],
+            "targetNodeId": [1, 0],
+            "relationshipType": ["REL", "REL2"],
+            "propA": [1337.2, 42],
+        }
+    )
+
+    gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2)
+
+    expected_proc_query = (
+        "UNWIND $data AS data RETURN gds.alpha.graph.project("
+        "$graph_name, data[$sourceNodeIdx], data[$targetNodeIdx], $nodesConfig, $relationshipsConfig, $configuration)"
+    )
+
+    # indices are based off the combined df
+    assert runner.last_query() == expected_proc_query
+    assert runner.last_params() == {
+        "sourceNodeIdx": 2,
+        "targetNodeIdx": 3,
+        "nodesConfig": {"sourceNodeLabels": "data[0]", "sourceNodeProperties": {"propA": "data[1]"}},
+        "relationshipsConfig": {"relationshipType": "data[4]", "properties": {"propA": "data[5]"}},
+        "configuration": {"readConcurrency": 2},
+        "graph_name": "hello",
+    }
+
+
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
 def test_graph_alpha_construct_validate_df_columns(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     nodes = DataFrame({"nodeIds": [0, 1]})
