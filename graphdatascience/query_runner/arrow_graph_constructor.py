@@ -77,7 +77,7 @@ class ArrowGraphConstructor(GraphConstructor):
 
     def _send_dfs(self, dfs: List[DataFrame], entity_type: str) -> None:
         desc = "Uploading Nodes" if entity_type == "node" else "Uploading Relationships"
-        pbar = tqdm(total=sum([df.size for df in dfs]), unit="Records", desc=desc)
+        pbar = tqdm(total=sum([df.shape[0] for df in dfs]), unit="Records", desc=desc)
 
         for df in dfs:
             self._send_df(df, entity_type, pbar)
