@@ -61,6 +61,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
 
+    @client_only_endpoint("gds.graph")
     def load_imdb(self, graph_name: str = "imdb") -> Graph:
         with path("graphdatascience.resources.imdb", "imdb_nodes_gzip.pkl") as nodes_resource:
             nodes = read_pickle(nodes_resource, compression="gzip")

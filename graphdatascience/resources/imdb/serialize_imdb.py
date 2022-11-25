@@ -6,6 +6,7 @@ from pandas import read_pickle
 """
 This code included only for reproducibility.
 
+raw source: https://github.com/seongjunyun/Graph_Transformer_Networks/tree/master/prev_GTN
 It is used to convert raw pickle data from edges.pkl, labels.pkl and node_features.pkl
 into consolidated imdb_nodes_gzip.pkl and imdb_rels_gzip.pkl.
 
