@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import pytest
 from pandas import DataFrame
@@ -16,7 +16,7 @@ DEFAULT_SERVER_VERSION = ServerVersion(2, 2, 0)
 
 
 class CollectingQueryRunner(QueryRunner):
-    def __init__(self, server_version: Union[str, ServerVersion]) -> None:
+    def __init__(self, server_version: ServerVersion) -> None:
         self._mock_result: Optional[DataFrame] = None
         self.queries: List[str] = []
         self.params: List[Dict[str, Any]] = []

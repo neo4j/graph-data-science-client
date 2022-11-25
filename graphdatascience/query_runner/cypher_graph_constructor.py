@@ -34,11 +34,9 @@ class CypherGraphConstructor(GraphConstructor):
 
         # Cypher aggregation supports concurrency since 2.3.0
         if self._server_version >= ServerVersion(2, 3, 0):
-            runner = self.CypherAggregationRunner(self._query_runner, self._graph_name, self._concurrency)
-            runner.run(node_df, rel_df)
+            self.CypherAggregationRunner(self._query_runner, self._graph_name, self._concurrency).run(node_df, rel_df)
         else:
-            runner = self.CyperProjectionRunner(self._query_runner, self._graph_name, self._concurrency)
-            runner.run(node_df, rel_df)
+            self.CyperProjectionRunner(self._query_runner, self._graph_name, self._concurrency).run(node_df, rel_df)
 
     def _should_warn_about_arrow_missing(self) -> bool:
         try:
@@ -87,7 +85,8 @@ class CypherGraphConstructor(GraphConstructor):
 
             query = (
                 "UNWIND $data AS data RETURN gds.alpha.graph.project("
-                "$graph_name, data[$sourceNodeIdx], data[$targetNodeIdx], $nodesConfig, $relationshipsConfig, $configuration)"
+                "$graph_name, data[$sourceNodeIdx], data[$targetNodeIdx], "
+                "$nodesConfig, $relationshipsConfig, $configuration)"
             )
 
             # TODO add orientation here once its supported in 2.3
