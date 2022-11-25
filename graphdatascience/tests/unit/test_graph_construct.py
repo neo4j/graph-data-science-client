@@ -82,7 +82,11 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
 
     # indices are based off the combined df
     assert runner.last_query() == expected_proc_query
-    assert runner.last_params() == {
+
+    actual_params = runner.last_params()
+    actual_data_param = actual_params.pop("data")
+
+    assert actual_params == {
         "sourceNodeIdx": 2,
         "targetNodeIdx": 3,
         "nodesConfig": {"sourceNodeLabels": "data[0]", "sourceNodeProperties": {"propA": "data[1]"}},
@@ -90,6 +94,8 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
         "configuration": {"readConcurrency": 2},
         "graph_name": "hello",
     }
+
+    assert len(actual_data_param) == len(nodes) + len(relationships)
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 3, 0)])
@@ -121,6 +127,10 @@ def test_graph_aggregation_based_alpha_construct_without_arrow_with_overlapping_
 
     # indices are based off the combined df
     assert runner.last_query() == expected_proc_query
+
+    actual_params = runner.last_params()
+    actual_data_param = actual_params.pop("data")
+
     assert runner.last_params() == {
         "sourceNodeIdx": 2,
         "targetNodeIdx": 3,
@@ -129,6 +139,8 @@ def test_graph_aggregation_based_alpha_construct_without_arrow_with_overlapping_
         "configuration": {"readConcurrency": 2},
         "graph_name": "hello",
     }
+
+    assert len(actual_data_param) == len(nodes) + len(relationships)
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])

@@ -95,6 +95,7 @@ class CypherGraphConstructor(GraphConstructor):
             self._query_runner.run_query(
                 query,
                 {
+                    "data": combined_df.values.tolist(),
                     "graph_name": self._graph_name,
                     "sourceNodeIdx": combined_cols.index("sourceNodeId"),
                     "targetNodeIdx": combined_cols.index("targetNodeId"),
