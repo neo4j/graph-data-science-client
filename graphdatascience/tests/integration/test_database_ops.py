@@ -12,7 +12,6 @@ from graphdatascience.version import __version__
 GRAPH_NAME = "g"
 
 
-
 @pytest.mark.skip_on_aura
 def test_switching_db(runner: Neo4jQueryRunner) -> None:
     default_database = runner.database()

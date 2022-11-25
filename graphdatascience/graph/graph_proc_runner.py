@@ -34,6 +34,7 @@ Strings = Union[str, List[str]]
 
 
 class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+    @client_only_endpoint("gds.graph")
     def load_cora(self, graph_name: str = "cora", undirected: bool = False) -> Graph:
         with path("graphdatascience.resources.cora", "cora_nodes_gzip.pkl") as nodes_resource:
             nodes = read_pickle(nodes_resource, compression="gzip")
@@ -47,21 +48,18 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
 
-    def load_karate_club(self, graph_name: str = "karate_club") -> Graph:
-        nodes = pd.DataFrame(range(1, 35))
-        nodes.columns = pd.Index(["nodeId"])
+    @client_only_endpoint("gds.graph")
+    def load_karate_club(self, graph_name: str = "karate_club", undirected: bool = False) -> Graph:
+        nodes = pd.DataFrame({"nodeId": range(1, 35)})
 
         with path("graphdatascience.resources.karate", "karate_club_gzip.pkl") as rels_resource:
             rels = read_pickle(rels_resource, compression="gzip")
 
-        # load the graph undirected
-        opposite_rels = pd.DataFrame().assign(
-            sourceNodeId=rels["targetNodeId"], targetNodeId=rels["sourceNodeId"], relationshipType="KNOWS"
-        )
-
         self._namespace = "gds.alpha.graph"
 
-        return self.construct(graph_name, nodes, pd.concat([rels, opposite_rels]))
+        undirected_relationship_types = ["*"] if undirected else []
+
+        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
 
     @property
     def project(self) -> GraphProjectRunner:
