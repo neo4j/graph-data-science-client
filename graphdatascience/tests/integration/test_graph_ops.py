@@ -803,7 +803,6 @@ def test_graph_construct_with_arrow(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.enterprise
-@pytest.mark.skip_on_aura  # AuraDS does not currently support Arrow
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_with_arrow_multiple_dfs(gds: GraphDataScience) -> None:
     nodes = [DataFrame({"nodeId": [0, 1]}), DataFrame({"nodeId": [2, 3]})]
