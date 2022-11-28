@@ -458,6 +458,19 @@ def test_graph_relationship_write(runner: CollectingQueryRunner, gds: GraphDataS
     }
 
 
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 3, 0)])
+def test_graph_nodeLabel_write(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    gds.graph.nodeLabel.write(G, "TestLabel", nodeFilter="n.score > 1.0")
+    assert runner.last_query() == "CALL gds.alpha.graph.nodeLabel.write($graph_name, $node_label, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "node_label": "TestLabel",
+        "config": {"nodeFilter": "n.score > 1.0"},
+    }
+
+
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 0, 0)])
 def test_graph_removeNodeProperties_20(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
