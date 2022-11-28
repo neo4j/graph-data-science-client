@@ -803,6 +803,31 @@ def test_graph_construct_with_arrow(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.enterprise
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
+def test_graph_construct_with_nan_properties_with_arrow(gds: GraphDataScience) -> None:
+    # pyarrow converts NaN and None in Dataframes both to `null`
+    nodes = DataFrame(
+        {
+            "nodeId": [0, 1, 2, 3],
+            "scalarProp": [42.42, np.nan, float("NaN"), None],
+            "arrayProp": [[1.0, np.nan], [1.0, 2.0], [2.0, 2.0], [3.0, 3.0]],
+        }
+    )
+
+    relationships = DataFrame(
+        {"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0], "scalarProp": [42.42, np.nan, float("NaN"), None]}
+    )
+
+    G = gds.alpha.graph.construct("hello", nodes, relationships)
+
+    assert G.name() == "hello"
+    assert G.node_count() == 4
+    assert G.relationship_count() == 4
+
+    G.drop()
+
+
+@pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_with_arrow_multiple_dfs(gds: GraphDataScience) -> None:
     nodes = [DataFrame({"nodeId": [0, 1]}), DataFrame({"nodeId": [2, 3]})]
