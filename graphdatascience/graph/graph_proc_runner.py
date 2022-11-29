@@ -17,6 +17,7 @@ from .graph_project_runner import GraphProjectRunner
 from .graph_sample_runner import GraphSampleRunner
 from graphdatascience.graph.graph_entity_ops_runner import (
     GraphElementPropertyRunner,
+    GraphLabelRunner,
     GraphNodePropertiesRunner,
     GraphPropertyRunner,
     GraphRelationshipPropertiesRunner,
@@ -166,6 +167,11 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     def graphProperty(self) -> GraphPropertyRunner:
         self._namespace += ".graphProperty"
         return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def nodeLabel(self) -> GraphLabelRunner:
+        self._namespace += ".nodeLabel"
+        return GraphLabelRunner(self._query_runner, self._namespace, self._server_version)
 
     def streamNodeProperties(
         self,

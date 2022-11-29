@@ -6,6 +6,7 @@
 
 ## New features
 
+* Added new method `gds.alpha.graph.nodeLabel.write` to write back node labels to Neo4j database.
 
 ## Bug fixes
 
