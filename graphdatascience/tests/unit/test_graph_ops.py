@@ -462,7 +462,7 @@ def test_graph_relationship_write(runner: CollectingQueryRunner, gds: GraphDataS
 def test_graph_nodeLabel_write(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    gds.graph.nodeLabel.write(G, "TestLabel", nodeFilter="n.score > 1.0")
+    gds.alpha.graph.nodeLabel.write(G, "TestLabel", nodeFilter="n.score > 1.0")
     assert runner.last_query() == "CALL gds.alpha.graph.nodeLabel.write($graph_name, $node_label, $config)"
     assert runner.last_params() == {
         "graph_name": "g",

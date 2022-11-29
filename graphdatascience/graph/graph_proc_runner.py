@@ -170,7 +170,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
     @property
     def nodeLabel(self) -> GraphLabelRunner:
-        self._namespace = "gds.alpha.graph.nodeLabel"
+       self._namespace += ".nodeLabel"
         return GraphLabelRunner(self._query_runner, self._namespace, self._server_version)
 
     def streamNodeProperties(
