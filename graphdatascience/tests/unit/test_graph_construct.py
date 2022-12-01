@@ -77,7 +77,9 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
 
     expected_proc_query = (
         "UNWIND $data AS data RETURN gds.alpha.graph.project("
-        "$graph_name, data[$sourceNodeIdx], data[$targetNodeIdx], $nodesConfig, $relationshipsConfig, $configuration)"
+        "$graph_name, data[$sourceNodeIdx], data[$targetNodeIdx],"
+        " {sourceNodeLabels: data[0], sourceNodeProperties: {propA: data[1]}},"
+        " {relationshipType: data[4], properties: {relPropA: data[5]}}, $configuration)"
     )
 
     # indices are based off the combined df
@@ -89,8 +91,6 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
     assert actual_params == {
         "sourceNodeIdx": 2,
         "targetNodeIdx": 3,
-        "nodesConfig": {"sourceNodeLabels": "data[0]", "sourceNodeProperties": {"propA": "data[1]"}},
-        "relationshipsConfig": {"relationshipType": "data[4]", "properties": {"relPropA": "data[5]"}},
         "configuration": {"readConcurrency": 2},
         "graph_name": "hello",
     }

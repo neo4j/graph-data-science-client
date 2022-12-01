@@ -76,17 +76,32 @@ class CypherGraphConstructor(GraphConstructor):
 
             # concat instead of join as we want to first have all nodes and then the rels
             # this way we dont duplicate the node property data and its cheaper
-            combined_df: DataFrame = concat([node_df, relationship_df], ignore_index=True)
+            combined_df: DataFrame = concat([node_df, relationship_df], ignore_index=True, copy=False)
             combined_df["sourceNodeId"] = combined_df["nodeId"].combine_first(combined_df["sourceNodeId"])
+            combined_df["sourceNodeId"] = combined_df["sourceNodeId"].astype("int64", copy=False)
+            # TODO is this filling of -1 useful? (pandas does not allow to set Null here ...)
+            combined_df["targetNodeId"].fillna(-1, inplace=True)
+            combined_df["targetNodeId"] = combined_df["targetNodeId"].astype("int64", copy=False)
+
             combined_df.drop("nodeId", axis=1, inplace=True)
+
+            if "relationshipType" in rel_cols:
+                # FIXME this does not work as the rel type can never be empty
+                combined_df["relationshipType"] = combined_df["relationshipType"].fillna("")
+
+            if "labels" in rel_cols:
+                combined_df["labels"] = combined_df["labels"].fillna([])
 
             # using a List and not a Set to preserve the order
             combined_cols: List[str] = list(combined_df.columns)
 
+            nodes_config = self.nodes_config(combined_cols, node_cols)
+            rels_config = self.rels_config(combined_cols, rel_cols)
+
             query = (
                 "UNWIND $data AS data RETURN gds.alpha.graph.project("
                 "$graph_name, data[$sourceNodeIdx], data[$targetNodeIdx], "
-                "$nodesConfig, $relationshipsConfig, $configuration)"
+                f"{nodes_config}, {rels_config}, $configuration)"
             )
 
             # TODO add orientation here once its supported in 2.3
@@ -99,40 +114,40 @@ class CypherGraphConstructor(GraphConstructor):
                     "graph_name": self._graph_name,
                     "sourceNodeIdx": combined_cols.index("sourceNodeId"),
                     "targetNodeIdx": combined_cols.index("targetNodeId"),
-                    "nodesConfig": self.nodes_config(combined_cols, node_cols),
-                    "relationshipsConfig": self.rels_config(combined_cols, rel_cols),
                     "configuration": configuration,
                 },
             )
 
-        def nodes_config(self, combined_cols: List[str], node_cols: Set[str]) -> Dict[str, Any]:
-            nodes_config: Dict[str, Any] = {}
+        def nodes_config(self, combined_cols: List[str], node_cols: Set[str]) -> str:
+            # Cannot use a dictionary as we need to refer to the `data` variable in the cypher query.
+            # Otherwise we would just pass a string such as `data[0]`
+            nodes_config_fields: List[str] = []
 
             if "labels" in node_cols:
-                nodes_config["sourceNodeLabels"] = f"""data[{combined_cols.index("labels")}]"""
+                nodes_config_fields.append(f"sourceNodeLabels: data[{combined_cols.index('labels')}]")
 
             property_columns: Set[str] = set(node_cols) - {"nodeId", "labels"}
 
             # as we first list all nodes at the top of the df, we dont need to lookup properties for the target node
             if len(property_columns) > 0:
-                nodes_config["sourceNodeProperties"] = {
-                    col: f"data[{combined_cols.index(col)}]" for col in property_columns
-                }
+                node_properties_config = [f"{col}: data[{combined_cols.index(col)}]" for col in property_columns]
+                nodes_config_fields.append(f"sourceNodeProperties: {{{', '.join(node_properties_config)}}}")
 
-            return nodes_config
+            return f"{{{', '.join(nodes_config_fields)}}}"
 
-        def rels_config(self, combined_cols: List[str], rel_cols: Set[str]) -> Dict[str, Any]:
-            rels_config: Dict[str, Any] = {}
+        def rels_config(self, combined_cols: List[str], rel_cols: Set[str]) -> str:
+            rels_config_fields: List[str] = []
 
             if "relationshipType" in rel_cols:
-                rels_config["relationshipType"] = f"data[{combined_cols.index('relationshipType')}]"
+                rels_config_fields.append(f"relationshipType: data[{combined_cols.index('relationshipType')}]")
 
             property_columns: Set[str] = rel_cols - {"sourceNodeId", "targetNodeId", "relationshipType"}
 
             if len(property_columns) > 0:
-                rels_config["properties"] = {col: f"data[{combined_cols.index(col)}]" for col in property_columns}
+                rel_properties_config = [f"{col}: data[{combined_cols.index(col)}]" for col in property_columns]
+                rels_config_fields.append(f"properties: {{{', '.join(rel_properties_config)}}}")
 
-            return rels_config
+            return f"{{{', '.join(rels_config_fields)}}}"
 
     class CyperProjectionRunner:
         def __init__(self, query_runner: QueryRunner, graph_name: str, concurrency: int):
