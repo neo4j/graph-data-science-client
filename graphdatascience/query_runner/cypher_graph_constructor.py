@@ -1,7 +1,7 @@
 import warnings
 from typing import Any, Dict, List, Set, Tuple
 
-from pandas import DataFrame, concat
+from pandas import DataFrame, concat, notna
 
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
@@ -79,18 +79,23 @@ class CypherGraphConstructor(GraphConstructor):
             combined_df: DataFrame = concat([node_df, relationship_df], ignore_index=True, copy=False)
             combined_df["sourceNodeId"] = combined_df["nodeId"].combine_first(combined_df["sourceNodeId"])
             combined_df["sourceNodeId"] = combined_df["sourceNodeId"].astype("int64", copy=False)
-            # TODO is this filling of -1 useful? (pandas does not allow to set Null here ...)
+
+            # -1 is treated as null in cypher aggregation
             combined_df["targetNodeId"].fillna(-1, inplace=True)
             combined_df["targetNodeId"] = combined_df["targetNodeId"].astype("int64", copy=False)
 
             combined_df.drop("nodeId", axis=1, inplace=True)
 
             if "relationshipType" in rel_cols:
-                # FIXME this does not work as the rel type can never be empty
-                combined_df["relationshipType"] = combined_df["relationshipType"].fillna("")
+                # cannot use empty string as its not allowed as a label input in GDS
+                # cannot use inplace as the where condidtion depends on the df
+                combined_df["relationshipType"] = combined_df["relationshipType"].where(
+                    notna(combined_df["relationshipType"]), None, inplace=False
+                )
 
-            if "labels" in rel_cols:
-                combined_df["labels"] = combined_df["labels"].fillna([])
+            if "labels" in node_cols:
+                # transforming to lists as empty string is not allowed as a label input in GDS
+                combined_df["labels"] = combined_df["labels"].fillna("").apply(list)
 
             # using a List and not a Set to preserve the order
             combined_cols: List[str] = list(combined_df.columns)
