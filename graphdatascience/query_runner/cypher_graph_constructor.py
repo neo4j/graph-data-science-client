@@ -1,3 +1,5 @@
+from collections import OrderedDict
+import os
 import warnings
 from typing import Any, Dict, List, Set, Tuple
 
@@ -57,6 +59,8 @@ class CypherGraphConstructor(GraphConstructor):
         return should_warn
 
     class CypherAggregationRunner:
+        _BIT_COL_SUFFIX = "_is_present"
+
         def __init__(self, query_runner: QueryRunner, graph_name: str, concurrency: int):
             self._query_runner = query_runner
             self._concurrency = concurrency
@@ -67,45 +71,91 @@ class CypherGraphConstructor(GraphConstructor):
             node_cols = set(node_df.columns)
             same_cols = rel_cols.intersection(node_cols)
 
-            # TODO: handle overlapping columns between nodes and rels_df (specify a prefix)
             if same_cols:
                 raise ValueError(
                     "Expected disjoint column names in node and relationship df "
                     f"but the columns {same_cols} exist in both dfs. Please rename the column in one df."
                 )
 
-            # concat instead of join as we want to first have all nodes and then the rels
-            # this way we dont duplicate the node property data and its cheaper
-            combined_df: DataFrame = concat([node_df, relationship_df], ignore_index=True, copy=False)
-            combined_df["sourceNodeId"] = combined_df["nodeId"].combine_first(combined_df["sourceNodeId"])
-            combined_df["sourceNodeId"] = combined_df["sourceNodeId"].astype("int64", copy=False)
-
-            # -1 is treated as null in cypher aggregation
-            combined_df["targetNodeId"].fillna(-1, inplace=True)
-            combined_df["targetNodeId"] = combined_df["targetNodeId"].astype("int64", copy=False)
-
-            combined_df.drop("nodeId", axis=1, inplace=True)
-
-            if "relationshipType" in rel_cols:
-                # cannot use empty string as its not allowed as a label input in GDS
-                # cannot use inplace as the where condidtion depends on the df
-                combined_df["relationshipType"] = combined_df["relationshipType"].where(
-                    notna(combined_df["relationshipType"]), None, inplace=False
-                )
+            # adjust node df
+            node_dict = {
+                "sourceNodeId": node_df["nodeId"],
+                f"targetNodeId{self._BIT_COL_SUFFIX}": False,
+                "targetNodeId": -1,
+                "relationshipType": None,
+            }
 
             if "labels" in node_cols:
-                # transforming to lists as empty string is not allowed as a label input in GDS
-                combined_df["labels"] = combined_df["labels"].fillna("").apply(list)
+                node_dict["sourceNodeLabels"] = node_df["labels"]
+
+            node_property_columns: Set[str] = set(node_cols) - {"nodeId", "labels"}
+            rel_property_columns: Set[str] = rel_cols - {"sourceNodeId", "targetNodeId", "relationshipType"}
+
+            # as we first list all nodes at the top of the df, we dont need to lookup properties for the target node
+            for col in node_property_columns:
+                # TODO add some UUID here
+                node_dict[col + self._BIT_COL_SUFFIX] = True
+                node_dict[col] = node_df[col]
+
+            for col in rel_property_columns:
+                node_dict[col + self._BIT_COL_SUFFIX] = False
+                node_dict[col] = relationship_df[col][0]  # taking some dummy value which will be ignored in cypher
+
+            # adjust rel df
+            rel_dict = OrderedDict(
+                {
+                    "sourceNodeId": relationship_df["sourceNodeId"],
+                    "targetNodeId": relationship_df["targetNodeId"],
+                    f"targetNodeId{self._BIT_COL_SUFFIX}": True,
+                }
+            )
+
+            if "relationshipType" in rel_cols:
+                rel_dict["relationshipType"] = relationship_df["relationshipType"]
+
+            if "labels" in node_cols:
+                # TODO might need to use [] here
+                rel_dict["sourceNodeLabels"] = None
+
+            if col in rel_property_columns:
+                rel_dict[col + self._BIT_COL_SUFFIX] = True
+                rel_dict[col] = relationship_df[col]
+
+            for col in node_property_columns:
+                rel_dict[col + self._BIT_COL_SUFFIX] = False
+                rel_dict[col] = node_df[col][0]  # taking some dummy value which will be ignored in cypher
+
+            # concat instead of join as we want to first have all nodes and then the rels
+            # this way we dont duplicate the node property data and its cheaper
+            combined_df: DataFrame = concat([DataFrame(node_dict), DataFrame(rel_dict)], ignore_index=True, copy=False)
+            # make column order deterministic
+            combined_df = combined_df[sorted(combined_df)]
 
             # using a List and not a Set to preserve the order
             combined_cols: List[str] = list(combined_df.columns)
 
+            print(combined_cols)
+
             nodes_config = self.nodes_config(combined_cols, node_cols)
             rels_config = self.rels_config(combined_cols, rel_cols)
 
+            property_clauses: List[str] = []
+
+            all_prop_cols = sorted(list(rel_property_columns) + list(node_property_columns))
+
+            for prop_col in all_prop_cols:
+                property_clauses.append(self.check_value_clause(combined_cols, prop_col))
+
+            target_id_clause = self.check_value_clause(combined_cols, "targetNodeId")
+
+            property_clauses_str = f", {os.linesep}" if len(property_clauses) > 0 else ""
+            property_clauses_str += f", {os.linesep}".join(property_clauses)
+
             query = (
-                "UNWIND $data AS data RETURN gds.alpha.graph.project("
-                "$graph_name, data[$sourceNodeIdx], data[$targetNodeIdx], "
+                "UNWIND $data AS data"
+                f" WITH data, {target_id_clause}{property_clauses_str}"
+                " RETURN gds.alpha.graph.project("
+                f"$graph_name, data[{combined_cols.index('sourceNodeId')}], targetNodeId, "
                 f"{nodes_config}, {rels_config}, $configuration)"
             )
 
@@ -117,11 +167,12 @@ class CypherGraphConstructor(GraphConstructor):
                 {
                     "data": combined_df.values.tolist(),
                     "graph_name": self._graph_name,
-                    "sourceNodeIdx": combined_cols.index("sourceNodeId"),
-                    "targetNodeIdx": combined_cols.index("targetNodeId"),
                     "configuration": configuration,
                 },
             )
+
+        def check_value_clause(self, combined_cols: List[str], col: str) -> str:
+            return f"CASE data[{combined_cols.index(col + self._BIT_COL_SUFFIX)}] WHEN true THEN data[{combined_cols.index(col)}] ELSE null END AS {col}"
 
         def nodes_config(self, combined_cols: List[str], node_cols: Set[str]) -> str:
             # Cannot use a dictionary as we need to refer to the `data` variable in the cypher query.
@@ -129,13 +180,14 @@ class CypherGraphConstructor(GraphConstructor):
             nodes_config_fields: List[str] = []
 
             if "labels" in node_cols:
-                nodes_config_fields.append(f"sourceNodeLabels: data[{combined_cols.index('labels')}]")
+                nodes_config_fields.append(f"sourceNodeLabels: data[{combined_cols.index('sourceNodeLabels')}]")
 
-            property_columns: Set[str] = set(node_cols) - {"nodeId", "labels"}
+            property_columns: List[str] = list(set(node_cols) - {"nodeId", "labels"})
+            property_columns.sort()
 
             # as we first list all nodes at the top of the df, we dont need to lookup properties for the target node
             if len(property_columns) > 0:
-                node_properties_config = [f"{col}: data[{combined_cols.index(col)}]" for col in property_columns]
+                node_properties_config = [f"{col}: {col}" for col in property_columns]
                 nodes_config_fields.append(f"sourceNodeProperties: {{{', '.join(node_properties_config)}}}")
 
             return f"{{{', '.join(nodes_config_fields)}}}"
@@ -146,10 +198,11 @@ class CypherGraphConstructor(GraphConstructor):
             if "relationshipType" in rel_cols:
                 rels_config_fields.append(f"relationshipType: data[{combined_cols.index('relationshipType')}]")
 
-            property_columns: Set[str] = rel_cols - {"sourceNodeId", "targetNodeId", "relationshipType"}
+            property_columns: List[str] = list(rel_cols - {"sourceNodeId", "targetNodeId", "relationshipType"})
+            property_columns.sort()
 
             if len(property_columns) > 0:
-                rel_properties_config = [f"{col}: data[{combined_cols.index(col)}]" for col in property_columns]
+                rel_properties_config = [f"{col}: {col}" for col in property_columns]
                 rels_config_fields.append(f"properties: {{{', '.join(rel_properties_config)}}}")
 
             return f"{{{', '.join(rels_config_fields)}}}"

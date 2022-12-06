@@ -61,7 +61,9 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
         {
             "nodeId": [0, 1],
             "labels": [["A"], ["B"]],
-            "propA": [1337, 42.1],
+            "propF": [1337, 42.42],
+            "propI": [1337, 42],
+            "propList": [1337, 42.1],
         }
     )
     relationships = DataFrame(
@@ -76,26 +78,33 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
     gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2)
 
     expected_proc_query = (
-        "UNWIND $data AS data RETURN gds.alpha.graph.project("
-        "$graph_name, data[$sourceNodeIdx], data[$targetNodeIdx],"
-        " {sourceNodeLabels: data[0], sourceNodeProperties: {propA: data[1]}},"
-        " {relationshipType: data[4], properties: {relPropA: data[5]}}, $configuration)"
+        "UNWIND $data AS data"
+        " WITH data,"
+        " CASE data[12] WHEN true THEN data[11] ELSE null END AS targetNodeId,"
+        " CASE data[1] WHEN true THEN data[0] ELSE null END AS propF,"
+        " CASE data[3] WHEN true THEN data[2] ELSE null END AS propI,"
+        " CASE data[5] WHEN true THEN data[4] ELSE null END AS propList,"
+        " CASE data[7] WHEN true THEN data[6] ELSE null END AS relPropA"
+        " RETURN gds.alpha.graph.project("
+        "$graph_name, data[9], targetNodeId,"
+        " {sourceNodeLabels: data[10], sourceNodeProperties: {propF: propF, propI: propI, propList: propList}},"
+        " {relationshipType: data[8], properties: {relPropA: relPropA}}, $configuration)"
     )
 
     # indices are based off the combined df
-    assert runner.last_query() == expected_proc_query
+    assert runner.last_query().replace("\n", "") == expected_proc_query
 
     actual_params = runner.last_params()
-    actual_data_param = actual_params.pop("data")
+    print(actual_params["data"])
 
-    assert actual_params == {
-        "sourceNodeIdx": 2,
-        "targetNodeIdx": 3,
-        "configuration": {"readConcurrency": 2},
-        "graph_name": "hello",
-    }
+    expected_df = [
+        [1337.0, True, 1337, True, 1337.0, True, 1337.2, False, None, 0, ["A"], -1, False],
+        [42.42, True, 42, True, 42.1, True, 1337.2, False, None, 1, ["B"], -1, False],
+        [1337.0, False, 1337, False, 1337.0, False, 1337.2, True, "REL", 0, None, 1, True],
+        [1337.0, False, 1337, False, 1337.0, False, 42.0, True, "REL2", 1, None, 0, True],
+    ]
 
-    assert len(actual_data_param) == len(nodes) + len(relationships)
+    assert actual_params == {"configuration": {"readConcurrency": 2}, "graph_name": "hello", "data": expected_df}
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 3, 0)])
@@ -107,6 +116,7 @@ def test_graph_aggregation_based_alpha_construct_without_arrow_with_overlapping_
             "nodeId": [0, 1],
             "labels": [["A"], ["B"]],
             "propA": [1337, 42.1],
+            "propB": [1337, 42.1],
         }
     )
     relationships = DataFrame(
@@ -115,32 +125,12 @@ def test_graph_aggregation_based_alpha_construct_without_arrow_with_overlapping_
             "targetNodeId": [1, 0],
             "relationshipType": ["REL", "REL2"],
             "propA": [1337.2, 42],
+            "propB": [1337.2, 42],
         }
     )
 
-    gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2)
-
-    expected_proc_query = (
-        "UNWIND $data AS data RETURN gds.alpha.graph.project("
-        "$graph_name, data[$sourceNodeIdx], data[$targetNodeIdx], $nodesConfig, $relationshipsConfig, $configuration)"
-    )
-
-    # indices are based off the combined df
-    assert runner.last_query() == expected_proc_query
-
-    actual_params = runner.last_params()
-    actual_data_param = actual_params.pop("data")
-
-    assert runner.last_params() == {
-        "sourceNodeIdx": 2,
-        "targetNodeIdx": 3,
-        "nodesConfig": {"sourceNodeLabels": "data[0]", "sourceNodeProperties": {"propA": "data[1]"}},
-        "relationshipsConfig": {"relationshipType": "data[4]", "properties": {"propA": "data[5]"}},
-        "configuration": {"readConcurrency": 2},
-        "graph_name": "hello",
-    }
-
-    assert len(actual_data_param) == len(nodes) + len(relationships)
+    with pytest.raises(ValueError, match="Expected disjoint column names in node and relationship df but the columns"):
+        gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2)
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
