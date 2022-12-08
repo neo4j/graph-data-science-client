@@ -780,7 +780,8 @@ def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience
     assert G.node_count() == 4
     assert G.relationship_count() == 4
     assert set(G.node_labels()) == {"A", "B", "C", "D"}
-    assert set(G.relationship_types()) == {"REL", "REL2"}
+    # TODO use `==` again once CypherAggregation does not add `__ALL__` to the rel schema
+    assert {"REL", "REL2"} & set(G.relationship_types()) == {"REL", "REL2"}
     assert set(G.node_properties("A")) == {"propA", "propB"}
     assert set(G.relationship_properties("REL")) == {"relPropA", "relPropB"}
 
