@@ -1,13 +1,26 @@
-from collections import OrderedDict
 import os
 import warnings
+from dataclasses import dataclass
 from typing import Any, Dict, List, Set, Tuple
+from uuid import uuid4
 
-from pandas import DataFrame, concat, notna
+from pandas import DataFrame, concat
 
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
+
+
+@dataclass
+class EntityColumnSchema:
+    all: Set[str]
+    properties: Set[str]
+
+
+@dataclass
+class GraphColumnSchema:
+    nodes: EntityColumnSchema
+    relationships: EntityColumnSchema
 
 
 class CypherGraphConstructor(GraphConstructor):
@@ -59,7 +72,8 @@ class CypherGraphConstructor(GraphConstructor):
         return should_warn
 
     class CypherAggregationRunner:
-        _BIT_COL_SUFFIX = "_is_present"
+
+        _BIT_COL_SUFFIX = "_is_present" + str(uuid4())
 
         def __init__(self, query_runner: QueryRunner, graph_name: str, concurrency: int):
             self._query_runner = query_runner
@@ -67,9 +81,9 @@ class CypherGraphConstructor(GraphConstructor):
             self._graph_name = graph_name
 
         def run(self, node_df: DataFrame, relationship_df: DataFrame) -> None:
-            rel_cols = set(relationship_df.columns)
-            node_cols = set(node_df.columns)
-            same_cols = rel_cols.intersection(node_cols)
+            graph_schema = self.schema(node_df, relationship_df)
+
+            same_cols = graph_schema.relationships.all.intersection(graph_schema.nodes.all)
 
             if same_cols:
                 raise ValueError(
@@ -77,71 +91,24 @@ class CypherGraphConstructor(GraphConstructor):
                     f"but the columns {same_cols} exist in both dfs. Please rename the column in one df."
                 )
 
-            # adjust node df
-            node_dict = {
-                "sourceNodeId": node_df["nodeId"],
-                f"targetNodeId{self._BIT_COL_SUFFIX}": False,
-                "targetNodeId": -1,
-                "relationshipType": None,
-            }
-
-            if "labels" in node_cols:
-                node_dict["sourceNodeLabels"] = node_df["labels"]
-
-            node_property_columns: Set[str] = set(node_cols) - {"nodeId", "labels"}
-            rel_property_columns: Set[str] = rel_cols - {"sourceNodeId", "targetNodeId", "relationshipType"}
-
-            # as we first list all nodes at the top of the df, we dont need to lookup properties for the target node
-            for col in node_property_columns:
-                # TODO add some UUID here
-                node_dict[col + self._BIT_COL_SUFFIX] = True
-                node_dict[col] = node_df[col]
-
-            for col in rel_property_columns:
-                node_dict[col + self._BIT_COL_SUFFIX] = False
-                node_dict[col] = relationship_df[col][0]  # taking some dummy value which will be ignored in cypher
-
-            # adjust rel df
-            rel_dict = OrderedDict(
-                {
-                    "sourceNodeId": relationship_df["sourceNodeId"],
-                    "targetNodeId": relationship_df["targetNodeId"],
-                    f"targetNodeId{self._BIT_COL_SUFFIX}": True,
-                }
-            )
-
-            if "relationshipType" in rel_cols:
-                rel_dict["relationshipType"] = relationship_df["relationshipType"]
-
-            if "labels" in node_cols:
-                # TODO might need to use [] here
-                rel_dict["sourceNodeLabels"] = None
-
-            if col in rel_property_columns:
-                rel_dict[col + self._BIT_COL_SUFFIX] = True
-                rel_dict[col] = relationship_df[col]
-
-            for col in node_property_columns:
-                rel_dict[col + self._BIT_COL_SUFFIX] = False
-                rel_dict[col] = node_df[col][0]  # taking some dummy value which will be ignored in cypher
+            aligned_node_df = self.adjust_node_df(node_df, relationship_df, graph_schema)
+            aligned_rel_df = self.adjust_rel_df(relationship_df, node_df, graph_schema)
 
             # concat instead of join as we want to first have all nodes and then the rels
             # this way we dont duplicate the node property data and its cheaper
-            combined_df: DataFrame = concat([DataFrame(node_dict), DataFrame(rel_dict)], ignore_index=True, copy=False)
+            combined_df: DataFrame = concat([aligned_node_df, aligned_rel_df], ignore_index=True, copy=False)
             # make column order deterministic
             combined_df = combined_df[sorted(combined_df)]
 
             # using a List and not a Set to preserve the order
             combined_cols: List[str] = list(combined_df.columns)
 
-            print(combined_cols)
-
-            nodes_config = self.nodes_config(combined_cols, node_cols)
-            rels_config = self.rels_config(combined_cols, rel_cols)
+            nodes_config = self.nodes_config(combined_cols, graph_schema.nodes.all)
+            rels_config = self.rels_config(combined_cols, graph_schema.relationships.all)
 
             property_clauses: List[str] = []
 
-            all_prop_cols = sorted(list(rel_property_columns) + list(node_property_columns))
+            all_prop_cols = sorted(list(graph_schema.relationships.properties) + list(graph_schema.nodes.properties))
 
             for prop_col in all_prop_cols:
                 property_clauses.append(self.check_value_clause(combined_cols, prop_col))
@@ -172,7 +139,65 @@ class CypherGraphConstructor(GraphConstructor):
             )
 
         def check_value_clause(self, combined_cols: List[str], col: str) -> str:
-            return f"CASE data[{combined_cols.index(col + self._BIT_COL_SUFFIX)}] WHEN true THEN data[{combined_cols.index(col)}] ELSE null END AS {col}"
+            return (
+                f"CASE data[{combined_cols.index(col + self._BIT_COL_SUFFIX)}]"
+                f" WHEN true THEN data[{combined_cols.index(col)}] ELSE null END AS {col}"
+            )
+
+        def schema(self, node_df: DataFrame, rel_df: DataFrame) -> GraphColumnSchema:
+            rel_cols = set(rel_df.columns)
+            node_cols = set(node_df.columns)
+
+            node_schema = EntityColumnSchema(node_cols, node_cols - {"nodeId", "labels"})
+
+            rel_schema = EntityColumnSchema(rel_cols, rel_cols - {"sourceNodeId", "targetNodeId", "relationshipType"})
+
+            return GraphColumnSchema(node_schema, rel_schema)
+
+        def adjust_node_df(self, node_df: DataFrame, rel_df: DataFrame, schema: GraphColumnSchema) -> DataFrame:
+            node_dict: Dict[str, Any] = {
+                "sourceNodeId": node_df["nodeId"],
+                f"targetNodeId{self._BIT_COL_SUFFIX}": False,
+                "targetNodeId": -1,
+                "relationshipType": None,
+            }
+
+            if "labels" in schema.nodes.all:
+                node_dict["sourceNodeLabels"] = node_df["labels"]
+
+            # as we first list all nodes at the top of the df, we dont need to lookup properties for the target node
+            for col in schema.nodes.properties:
+                node_dict[col + self._BIT_COL_SUFFIX] = True
+                node_dict[col] = node_df[col]
+
+            for col in schema.relationships.properties:
+                node_dict[col + self._BIT_COL_SUFFIX] = False
+                node_dict[col] = rel_df[col][0]  # taking some dummy value which will be ignored in cypher
+
+            return DataFrame(node_dict)
+
+        def adjust_rel_df(self, rel_df: DataFrame, node_df: DataFrame, schema: GraphColumnSchema) -> DataFrame:
+            rel_dict = {
+                "sourceNodeId": rel_df["sourceNodeId"],
+                "targetNodeId": rel_df["targetNodeId"],
+                f"targetNodeId{self._BIT_COL_SUFFIX}": True,
+            }
+
+            if "relationshipType" in schema.relationships.all:
+                rel_dict["relationshipType"] = rel_df["relationshipType"]
+
+            if "labels" in schema.nodes.all:
+                rel_dict["sourceNodeLabels"] = None
+
+            for col in schema.relationships.properties:
+                rel_dict[col + self._BIT_COL_SUFFIX] = True
+                rel_dict[col] = rel_df[col]
+
+            for col in schema.nodes.properties:
+                rel_dict[col + self._BIT_COL_SUFFIX] = False
+                rel_dict[col] = node_df[col][0]  # taking some dummy value which will be ignored in cypher
+
+            return DataFrame(rel_dict)
 
         def nodes_config(self, combined_cols: List[str], node_cols: Set[str]) -> str:
             # Cannot use a dictionary as we need to refer to the `data` variable in the cypher query.
