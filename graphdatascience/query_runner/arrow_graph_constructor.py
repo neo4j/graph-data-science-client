@@ -1,6 +1,10 @@
+import concurrent
 import json
+import math
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional
 
+import numpy
 import pyarrow.flight as flight
 from pandas import DataFrame
 from pyarrow import Table
@@ -27,6 +31,7 @@ class ArrowGraphConstructor(GraphConstructor):
             [] if undirected_relationship_types is None else undirected_relationship_types
         )
         self._chunk_size = chunk_size
+        self._min_batch_size = chunk_size * 10
 
     def run(self, node_dfs: List[DataFrame], relationship_dfs: List[DataFrame]) -> None:
         try:
@@ -55,6 +60,16 @@ class ArrowGraphConstructor(GraphConstructor):
 
             raise e
 
+    def _partition_dfs(self, dfs: List[DataFrame]) -> List[DataFrame]:
+        partitioned_dfs: List[DataFrame] = []
+
+        for df in dfs:
+            num_rows = df.shape[0]
+            num_batches = math.ceil(num_rows / self._min_batch_size)
+            partitioned_dfs += numpy.array_split(df, num_batches)  # type: ignore
+
+        return partitioned_dfs
+
     def _send_action(self, action_type: str, meta_data: Dict[str, Any]) -> None:
         result = self._client.do_action(flight.Action(action_type, json.dumps(meta_data).encode("utf-8")))
 
@@ -62,7 +77,7 @@ class ArrowGraphConstructor(GraphConstructor):
 
     def _send_df(self, df: DataFrame, entity_type: str, pbar: tqdm) -> None:
         table = Table.from_pandas(df)
-        partitions = table.to_batches(self._chunk_size)
+        batches = table.to_batches(self._chunk_size)
         flight_descriptor = {"name": self._graph_name, "entity_type": entity_type}
 
         # Write schema
@@ -71,7 +86,7 @@ class ArrowGraphConstructor(GraphConstructor):
 
         with writer:
             # Write table in chunks
-            for partition in partitions:
+            for partition in batches:
                 writer.write_batch(partition)
                 pbar.update(partition.num_rows)
 
@@ -79,5 +94,12 @@ class ArrowGraphConstructor(GraphConstructor):
         desc = "Uploading Nodes" if entity_type == "node" else "Uploading Relationships"
         pbar = tqdm(total=sum([df.shape[0] for df in dfs]), unit="Records", desc=desc)
 
-        for df in dfs:
-            self._send_df(df, entity_type, pbar)
+        partitioned_dfs = self._partition_dfs(dfs)
+
+        with ThreadPoolExecutor(self._concurrency) as executor:
+            futures = [executor.submit(self._send_df, df, entity_type, pbar) for df in partitioned_dfs]
+
+            for future in concurrent.futures.as_completed(futures):
+                if not future.exception():
+                    continue
+                raise future.exception()  # type: ignore
