@@ -762,6 +762,7 @@ def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience
             "labels": [["A"], "B", ["C", "A"], ["D"]],
             "propA": [1337, 42, 8, 133742],
             "propB": [1338, 43, 9, 133743],
+            "propList": [[4, 5, 6, 7], [1, 2, 3], [8, 9], [10, 11]],
         }
     )
     relationships = DataFrame(
@@ -782,7 +783,7 @@ def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience
     assert set(G.node_labels()) == {"A", "B", "C", "D"}
     # TODO use `==` again once CypherAggregation does not add `__ALL__` to the rel schema
     assert {"REL", "REL2"} & set(G.relationship_types()) == {"REL", "REL2"}
-    assert set(G.node_properties("A")) == {"propA", "propB"}
+    assert set(G.node_properties("A")) == {"propA", "propB", "propList"}
     assert set(G.relationship_properties("REL")) == {"relPropA", "relPropB"}
 
     G.drop()

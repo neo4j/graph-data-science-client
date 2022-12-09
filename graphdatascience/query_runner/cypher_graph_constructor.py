@@ -172,7 +172,8 @@ class CypherGraphConstructor(GraphConstructor):
 
             for col in schema.relationships.properties:
                 node_dict[col + self._BIT_COL_SUFFIX] = False
-                node_dict[col] = rel_df[col][0]  # taking some dummy value which will be ignored in cypher
+                dummy_value = rel_df[col][0]
+                node_dict[col] = dummy_value if not type(dummy_value) is list else [[] for i in range(0, len(node_df))]
 
             return DataFrame(node_dict)
 
@@ -195,7 +196,8 @@ class CypherGraphConstructor(GraphConstructor):
 
             for col in schema.nodes.properties:
                 rel_dict[col + self._BIT_COL_SUFFIX] = False
-                rel_dict[col] = node_df[col][0]  # taking some dummy value which will be ignored in cypher
+                dummy_value = node_df[col][0]
+                rel_dict[col] = dummy_value if not type(dummy_value) is list else [[] for i in range(0, len(rel_df))]
 
             return DataFrame(rel_dict)
 

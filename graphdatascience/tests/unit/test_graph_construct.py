@@ -63,7 +63,7 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
             "labels": [["A"], ["B"]],
             "propF": [1337, 42.42],
             "propI": [1337, 42],
-            "propList": [1337, 42.1],
+            "propList": [[4, 5, 6, 7], [1, 2, 3]],
         }
     )
     relationships = DataFrame(
@@ -98,10 +98,10 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
     print(actual_params["data"])
 
     expected_df = [
-        [1337.0, True, 1337, True, 1337.0, True, 1337.2, False, None, 0, ["A"], -1, False],
-        [42.42, True, 42, True, 42.1, True, 1337.2, False, None, 1, ["B"], -1, False],
-        [1337.0, False, 1337, False, 1337.0, False, 1337.2, True, "REL", 0, None, 1, True],
-        [1337.0, False, 1337, False, 1337.0, False, 42.0, True, "REL2", 1, None, 0, True],
+        [1337.0, True, 1337, True, [4, 5, 6, 7], True, 1337.2, False, None, 0, ["A"], -1, False],
+        [42.42, True, 42, True, [1, 2, 3], True, 1337.2, False, None, 1, ["B"], -1, False],
+        [1337.0, False, 1337, False, [], False, 1337.2, True, "REL", 0, None, 1, True],
+        [1337.0, False, 1337, False, [], False, 42.0, True, "REL2", 1, None, 0, True],
     ]
 
     assert actual_params == {"configuration": {"readConcurrency": 2}, "graph_name": "hello", "data": expected_df}
