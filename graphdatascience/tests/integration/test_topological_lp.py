@@ -6,7 +6,7 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
-@pytest.fixture(autouse=True, scope="module")
+@pytest.fixture(autouse=True)
 def create_graph(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     runner.run_query(
         """
@@ -28,12 +28,12 @@ def create_graph(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     runner.run_query("MATCH (n) DETACH DELETE n")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def node1(gds: GraphDataScience) -> int:
     return gds.find_node_id(["Node"], {"x": 3})
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def node2(gds: GraphDataScience) -> int:
     return gds.find_node_id(["Node"], {"x": 7})
 

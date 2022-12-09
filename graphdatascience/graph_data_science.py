@@ -25,6 +25,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         endpoint: Union[str, Driver, QueryRunner],
         auth: Optional[Tuple[str, str]] = None,
         aura_ds: bool = False,
+        database: Optional[str] = None,
         arrow: bool = True,
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
@@ -39,6 +40,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         aura_ds : bool, default False
             A flag that indicates that that the client is used to connect
             to a Neo4j Aura instance.
+        database: Optional[str], default None
+            The Neo4j database to query against.
         arrow : bool, default True
             A flag that indicates that the client should use Apache Arrow
             for data streaming if it is available on the server.
@@ -79,10 +82,18 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             driver = endpoint
             self._query_runner = Neo4jQueryRunner(driver, auto_close=False)
 
+        if database:
+            self._query_runner.set_database(database)
+
         try:
             server_version_string = self._query_runner.run_query("RETURN gds.version()").squeeze()
         except Exception as e:
             raise UnableToConnectError(e)
+        finally:
+            # Some Python versions appear to not call __del__ of self._query_runner when an exception
+            # is raised, so we have to close the driver manually.
+            if isinstance(endpoint, str):
+                driver.close()
 
         self._server_version = ServerVersion.from_string(server_version_string)
         self._query_runner.set_server_version(self._server_version)
@@ -126,7 +137,13 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def run_cypher(
         self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
     ) -> DataFrame:
-        return self._query_runner.run_query(query, params, database)
+        qr = self._query_runner
+
+        # The Arrow query runner should not be used to execute arbitary Cypher.
+        if isinstance(self._query_runner, ArrowQueryRunner):
+            qr = self._query_runner.fallback_query_runner()
+
+        return qr.run_query(query, params, database)
 
     def driver_config(self) -> Dict[str, Any]:
         return self._config

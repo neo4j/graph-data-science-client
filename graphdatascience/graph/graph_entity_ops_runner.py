@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Type, Union
 from pandas import DataFrame, Series
 
 from .graph_object import Graph
+from .graph_type_check import graph_type_check
 from graphdatascience.caller_base import CallerBase
 from graphdatascience.error.illegal_attr_checker import IllegalAttrChecker
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
@@ -23,8 +24,8 @@ class TopologyDataFrame(DataFrame):
 
         output = {}
         for rel_type, indices in gb.groups.items():
-            one_rel_df = self.take(indices)  # type: ignore
-            output[rel_type] = [list(one_rel_df["sourceNodeId"]), list(one_rel_df["targetNodeId"])]
+            one_rel_df = self.take(indices)
+            output[str(rel_type)] = [list(one_rel_df["sourceNodeId"]), list(one_rel_df["targetNodeId"])]
 
         return output
 
@@ -33,6 +34,7 @@ class GraphEntityOpsBaseRunner(CallerBase, UncallableNamespace, IllegalAttrCheck
     def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
         super().__init__(query_runner, namespace, server_version)
 
+    @graph_type_check
     def _handle_properties(
         self,
         G: Graph,
@@ -91,6 +93,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
     @compatible_with("drop", min_inclusive=ServerVersion(2, 2, 0))
+    @graph_type_check
     def drop(self, G: Graph, node_properties: List[str], **config: Any) -> "Series[Any]":
         self._namespace += ".drop"
         query = f"CALL {self._namespace}($graph_name, $properties, $config)"
@@ -137,6 +140,7 @@ class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
 
 class GraphRelationshipRunner(GraphEntityOpsBaseRunner):
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
+    @graph_type_check
     def write(self, G: Graph, relationship_type: str, relationship_property: str = "", **config: Any) -> "Series[Any]":
         self._namespace += ".write"
         query = f"CALL {self._namespace}($graph_name, $relationship_type, $relationship_property, $config)"
@@ -152,6 +156,7 @@ class GraphRelationshipRunner(GraphEntityOpsBaseRunner):
 
 class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
     @compatible_with("drop", min_inclusive=ServerVersion(2, 2, 0))
+    @graph_type_check
     def drop(
         self,
         G: Graph,
@@ -167,6 +172,7 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
+    @graph_type_check
     def stream(self, G: Graph, relationship_types: List[str] = ["*"], **config: Any) -> TopologyDataFrame:
         self._namespace += ".stream"
         query = f"CALL {self._namespace}($graph_name, $relationship_types, $config)"
@@ -178,6 +184,7 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
 
 class GraphPropertyRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
+    @graph_type_check
     def stream(
         self,
         G: Graph,
@@ -191,6 +198,7 @@ class GraphPropertyRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         return self._query_runner.run_query(query, params)
 
     @compatible_with("drop", min_inclusive=ServerVersion(2, 2, 0))
+    @graph_type_check
     def drop(
         self,
         G: Graph,
@@ -202,3 +210,18 @@ class GraphPropertyRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         params = {"graph_name": G.name(), "graph_property": graph_property, "config": config}
 
         return self._query_runner.run_query(query, params)  # type: ignore
+
+
+class GraphLabelRunner(GraphEntityOpsBaseRunner):
+    @compatible_with("write", min_inclusive=ServerVersion(2, 3, 0))
+    @graph_type_check
+    def write(self, G: Graph, node_label: str, **config: Any) -> "Series[Any]":
+        self._namespace += ".write"
+        query = f"CALL {self._namespace}($graph_name, $node_label, $config)"
+        params = {
+            "graph_name": G.name(),
+            "node_label": node_label,
+            "config": config,
+        }
+
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore

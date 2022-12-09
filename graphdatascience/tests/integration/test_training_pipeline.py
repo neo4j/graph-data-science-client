@@ -19,8 +19,8 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         """
         CREATE
         (a: Node {age: 12, fraudster: 0}),
-        (b: Node {age: 01, fraudster: 1}),
-        (c: Node {age: 07, fraudster: 0}),
+        (b: Node {age:  1, fraudster: 1}),
+        (c: Node {age:  7, fraudster: 0}),
         (d: Node {age: 54, fraudster: 1}),
         (e: Node {age: 18, fraudster: 0}),
         (f: Node {age: 23, fraudster: 1}),

@@ -16,29 +16,7 @@ class DebugProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         return self._query_runner.run_query(query).squeeze()  # type: ignore
 
 
-class SystemEndpoints(CallerBase):
-    def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
-        self._namespace += ".listProgress"
-
-        if job_id:
-            query = f"CALL {self._namespace}($job_id)"
-            params = {"job_id": job_id}
-        else:
-            query = f"CALL {self._namespace}()"
-            params = {}
-
-        return self._query_runner.run_query(query, params)
-
-    def systemMonitor(self) -> "Series[Any]":
-        self._namespace += ".systemMonitor"
-        query = f"CALL {self._namespace}()"
-
-        return self._query_runner.run_query(query).squeeze()  # type: ignore
-
-    @property
-    def debug(self) -> DebugProcRunner:
-        return DebugProcRunner(self._query_runner, f"{self._namespace}.debug", self._server_version)
-
+class DirectSystemEndpoints(CallerBase):
     @client_only_endpoint("gds")
     def is_licensed(self) -> bool:
         try:
@@ -56,3 +34,45 @@ class SystemEndpoints(CallerBase):
                 raise e
 
         return license == "Licensed"
+
+    @property
+    def debug(self) -> DebugProcRunner:
+        return DebugProcRunner(self._query_runner, f"{self._namespace}.debug", self._server_version)
+
+
+class IndirectSystemEndpoints(CallerBase):
+    def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
+        self._namespace += ".listProgress"
+
+        if job_id:
+            query = f"CALL {self._namespace}($job_id)"
+            params = {"job_id": job_id}
+        else:
+            query = f"CALL {self._namespace}()"
+            params = {}
+
+        return self._query_runner.run_query(query, params)
+
+    def userLog(self) -> DataFrame:
+        self._namespace += ".userLog"
+        query = f"CALL {self._namespace}()"
+
+        return self._query_runner.run_query(query)
+
+    def systemMonitor(self) -> "Series[Any]":
+        self._namespace += ".systemMonitor"
+        query = f"CALL {self._namespace}()"
+
+        return self._query_runner.run_query(query).squeeze()  # type: ignore
+
+    def backup(self, **config: Any) -> DataFrame:
+        self._namespace += ".backup"
+        query = f"CALL {self._namespace}($config)"
+
+        return self._query_runner.run_query(query, {"config": config})
+
+    def restore(self, **config: Any) -> DataFrame:
+        self._namespace += ".restore"
+        query = f"CALL {self._namespace}($config)"
+
+        return self._query_runner.run_query(query, {"config": config})

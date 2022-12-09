@@ -7,11 +7,7 @@ from ..error.client_only_endpoint import client_only_endpoint
 from .util_proc_runner import UtilProcRunner
 
 
-class UtilEndpoints(CallerBase):
-    @property
-    def util(self) -> UtilProcRunner:
-        return UtilProcRunner(self._query_runner, f"{self._namespace}.util", self._server_version)
-
+class DirectUtilEndpoints(CallerBase):
     @client_only_endpoint("gds")
     def find_node_id(self, labels: List[str] = [], properties: Dict[str, Any] = {}) -> int:
         label_match = None
@@ -53,6 +49,12 @@ class UtilEndpoints(CallerBase):
         namespace = self._namespace + ".list"
         return self._query_runner.run_query(f"CALL {namespace}()")
 
+    @property
+    def util(self) -> UtilProcRunner:
+        return UtilProcRunner(self._query_runner, f"{self._namespace}.util", self._server_version)
+
+
+class IndirectUtilEndpoints(CallerBase):
     def oneHotEncoding(self, available_values: List[Any], selected_values: List[Any]) -> List[int]:
         namespace = self._namespace + ".oneHotEncoding"
 

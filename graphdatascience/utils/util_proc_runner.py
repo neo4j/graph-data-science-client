@@ -4,6 +4,7 @@ from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..graph.graph_object import Graph
+from ..graph.graph_type_check import graph_type_check
 
 
 class UtilProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
@@ -19,6 +20,7 @@ class UtilProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return result["nodes"].squeeze()  # type: ignore
 
+    @graph_type_check
     def nodeProperty(self, G: Graph, node_id: int, property_key: str, node_label: str = "*") -> Any:
         self._namespace += ".nodeProperty"
 

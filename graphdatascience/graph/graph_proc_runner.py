@@ -17,11 +17,16 @@ from .graph_project_runner import GraphProjectRunner
 from .graph_sample_runner import GraphSampleRunner
 from graphdatascience.graph.graph_entity_ops_runner import (
     GraphElementPropertyRunner,
+    GraphLabelRunner,
     GraphNodePropertiesRunner,
     GraphPropertyRunner,
     GraphRelationshipPropertiesRunner,
     GraphRelationshipRunner,
     GraphRelationshipsRunner,
+)
+from graphdatascience.graph.graph_type_check import (
+    graph_type_check,
+    graph_type_check_optional,
 )
 
 Strings = Union[str, List[str]]
@@ -54,6 +59,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".sample"
         return GraphSampleRunner(self._query_runner, self._namespace, self._server_version)
 
+    @graph_type_check
     def drop(
         self,
         G: Graph,
@@ -86,6 +92,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return result.squeeze()  # type: ignore
 
+    @graph_type_check_optional
     def list(self, G: Optional[Graph] = None) -> DataFrame:
         self._namespace += ".list"
 
@@ -100,13 +107,15 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
     @client_only_endpoint("gds.graph")
     def get(self, graph_name: str) -> Graph:
-        if not self.exists(graph_name)["exists"]:
+        result = self._query_runner.run_query(f"CALL gds.graph.list('{graph_name}') YIELD graphName")
+        if len(result["graphName"]) == 0:
             raise ValueError(
                 f"No projected graph named '{graph_name}' exists in current database '{self._query_runner.database()}'"
             )
 
         return Graph(graph_name, self._query_runner, self._server_version)
 
+    @graph_type_check
     def _handle_properties(
         self,
         G: Graph,
@@ -158,6 +167,11 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     def graphProperty(self) -> GraphPropertyRunner:
         self._namespace += ".graphProperty"
         return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def nodeLabel(self) -> GraphLabelRunner:
+        self._namespace += ".nodeLabel"
+        return GraphLabelRunner(self._query_runner, self._namespace, self._server_version)
 
     def streamNodeProperties(
         self,
@@ -270,6 +284,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         ...
 
     @removeNodeProperties.register
+    @graph_type_check
     def _(
         self,
         G: Graph,
@@ -289,6 +304,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
     @removeNodeProperties.register
     @compatible_with("removeNodeProperties", max_exclusive=ServerVersion(2, 1, 0))
+    @graph_type_check
     def _(
         self,
         G: Graph,
@@ -300,6 +316,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
+    @graph_type_check
     def deleteRelationships(self, G: Graph, relationship_type: str) -> "Series[Any]":
         self._namespace += ".deleteRelationships"
 

@@ -135,6 +135,47 @@ def test_graph_drop(gds: GraphDataScience) -> None:
         gds.graph.drop(G, True)
 
 
+def test_graph_type_check(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
+
+    # Call without providing optional `Graph` without raising
+    gds.graph.list()
+
+    # Raise when optional `Graph` is string
+    with pytest.raises(
+        TypeError,
+        match=(
+            f"The parameter 'G' takes a `Graph` object, but received string '{G.name()}'. "
+            "To resolve a graph name string into a `Graph` object, please use `gds.graph.get`"
+        ),
+    ):
+        gds.graph.list(G.name())  # type: ignore
+
+    # Raise when second positional from_G `Graph` is string
+    with pytest.raises(
+        TypeError,
+        match=(
+            f"The parameter 'from_G' takes a `Graph` object, but received string '{G.name()}'. "
+            "To resolve a graph name string into a `Graph` object, please use `gds.graph.get`"
+        ),
+    ):
+        gds.beta.graph.project.subgraph("s", G.name(), "n.x > 1", "*", concurrency=2)  # type: ignore
+
+    # Raise when first positional G `Graph` is string
+    with pytest.raises(
+        TypeError,
+        match=(
+            f"The parameter 'G' takes a `Graph` object, but received string '{G.name()}'. "
+            "To resolve a graph name string into a `Graph` object, please use `gds.graph.get`"
+        ),
+    ):
+        gds.graph.drop(G.name(), True)  # type: ignore
+
+    result = gds.graph.drop(G, True)
+    assert result is not None
+    assert result["graphName"] == GRAPH_NAME
+
+
 @pytest.mark.skip_on_aura
 def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
@@ -193,7 +234,7 @@ def test_graph_nodeProperty_stream(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
-def test_graph_streamNodeProperty_with_arrow_no_db(gds: GraphDataScience) -> None:
+def test_graph_streamNodeProperty_with_arrow_no_db() -> None:
     gds = GraphDataScience(URI, auth=AUTH)
     if not isinstance(gds._query_runner, ArrowQueryRunner):
         pytest.skip("Arrow server not enabled")
@@ -206,7 +247,7 @@ def test_graph_streamNodeProperty_with_arrow_no_db(gds: GraphDataScience) -> Non
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
-def test_graph_nodeProperty_stream_with_arrow_no_db(gds: GraphDataScience) -> None:
+def test_graph_nodeProperty_stream_with_arrow_no_db() -> None:
     gds = GraphDataScience(URI, auth=AUTH)
     if not isinstance(gds._query_runner, ArrowQueryRunner):
         pytest.skip("Arrow server not enabled")
@@ -659,6 +700,14 @@ def test_graph_relationship_write(gds: GraphDataScience) -> None:
     assert result["propertiesWritten"] == 2
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
+def test_graph_nodeLabel_write(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds.alpha.graph.nodeLabel.write(G, "FilteredNode", nodeFilter="n.x > 1.0", concurrency=2)
+    assert result["nodeLabelsWritten"] == 2
+
+
 def test_graph_removeNodeProperties_21(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
@@ -754,7 +803,31 @@ def test_graph_construct_with_arrow(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.enterprise
-@pytest.mark.skip_on_aura  # AuraDS does not currently support Arrow
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
+def test_graph_construct_with_nan_properties_with_arrow(gds: GraphDataScience) -> None:
+    # pyarrow converts NaN and None in Dataframes both to `null`
+    nodes = DataFrame(
+        {
+            "nodeId": [0, 1, 2, 3],
+            "scalarProp": [42.42, np.nan, float("NaN"), None],
+            "arrayProp": [[1.0, np.nan], [1.0, 2.0], [2.0, 2.0], [3.0, 3.0]],
+        }
+    )
+
+    relationships = DataFrame(
+        {"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0], "scalarProp": [42.42, np.nan, float("NaN"), None]}
+    )
+
+    G = gds.alpha.graph.construct("hello", nodes, relationships)
+
+    assert G.name() == "hello"
+    assert G.node_count() == 4
+    assert G.relationship_count() == 4
+
+    G.drop()
+
+
+@pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_with_arrow_multiple_dfs(gds: GraphDataScience) -> None:
     nodes = [DataFrame({"nodeId": [0, 1]}), DataFrame({"nodeId": [2, 3]})]
@@ -827,3 +900,17 @@ def test_graph_construct_with_arrow_no_db() -> None:
 
     with pytest.raises(ValueError):
         gds.alpha.graph.construct("hello", nodes, relationships)
+
+
+@pytest.mark.enterprise
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_nodeProperty_stream_via_run_query(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds.run_cypher(
+        (
+            f"CALL gds.graph.nodeProperty.stream('{G.name()}', 'x') "
+            "YIELD nodeId AS id, propertyValue AS degree RETURN id, degree LIMIT 10"
+        )
+    )
+    assert {e for e in result["degree"]} == {1, 2, 3}

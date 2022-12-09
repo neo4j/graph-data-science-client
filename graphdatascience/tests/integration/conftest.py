@@ -74,6 +74,29 @@ def gds_without_arrow() -> GraphDataScience:
     return _gds
 
 
+@pytest.fixture(autouse=True)
+def clean_up(gds: GraphDataScience) -> Generator[None, None, None]:
+    yield
+
+    res = gds.graph.list()
+    for graph_name in res["graphName"]:
+        gds.graph.get(graph_name).drop(failIfMissing=True)
+
+    res = gds.beta.pipeline.list()
+    for pipeline_name in res["pipelineName"]:
+        gds.pipeline.get(pipeline_name).drop(failIfMissing=True)
+
+    res = gds.beta.model.list()
+    for model_info in res["modelInfo"]:
+        model = gds.model.get(model_info["modelName"])
+        if model.stored():
+            gds.alpha.model.delete(model)
+        if model.exists():
+            model.drop(failIfMissing=True)
+
+    gds.run_cypher("MATCH (n) DETACH DELETE (n)")
+
+
 def pytest_collection_modifyitems(config: Any, items: Any) -> None:
     if config.getoption("--target-aura"):
         skip_on_aura = pytest.mark.skip(reason="skipping since targeting AuraDS")

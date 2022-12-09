@@ -4,6 +4,7 @@ from typing import Any, Dict
 from pandas import DataFrame, Series
 
 from ..graph.graph_object import Graph
+from ..graph.graph_type_check import graph_type_check
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
 
@@ -79,6 +80,7 @@ class Model(ABC):
         metrics: "Series[Any]" = Series(model_info["metrics"])
         return metrics
 
+    @graph_type_check
     def predict_stream(self, G: Graph, **config: Any) -> DataFrame:
         query = f"{self._query_prefix()}stream($graph_name, $config)"
         config["modelName"] = self.name()
@@ -86,9 +88,11 @@ class Model(ABC):
 
         return self._query_runner.run_query_with_logging(query, params)
 
+    @graph_type_check
     def predict_stream_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
         return self._estimate_predict("stream", G.name(), config)
 
+    @graph_type_check
     def predict_mutate(self, G: Graph, **config: Any) -> "Series[Any]":
         query = f"{self._query_prefix()}mutate($graph_name, $config)"
         config["modelName"] = self.name()
@@ -96,6 +100,7 @@ class Model(ABC):
 
         return self._query_runner.run_query_with_logging(query, params).squeeze()  # type: ignore
 
+    @graph_type_check
     def predict_mutate_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
         return self._estimate_predict("mutate", G.name(), config)
 

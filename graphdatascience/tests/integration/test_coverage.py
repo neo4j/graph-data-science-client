@@ -1,3 +1,4 @@
+from graphdatascience.error.uncallable_namespace import UncallableNamespace
 from graphdatascience.graph_data_science import GraphDataScience
 
 # A list of the server endpoints that should not be reachable via the standard
@@ -45,10 +46,17 @@ IGNORED_ENDPOINTS = {
     "gds.alpha.pipeline.nodeRegression.predict.stream",
     "gds.alpha.pipeline.nodeRegression.selectFeatures",
     "gds.alpha.pipeline.nodeRegression.train",
+    "gds.similarity.cosine",
+    "gds.similarity.euclidean",
+    "gds.similarity.euclideanDistance",
+    "gds.similarity.jaccard",
+    "gds.similarity.overlap",
+    "gds.similarity.pearson",
     "gds.util.NaN",
     "gds.util.infinity",
     "gds.util.isFinite",
     "gds.util.isInfinite",
+    "gds.alpha.create.cypherdb",
 }
 
 
@@ -63,9 +71,19 @@ def test_coverage(gds: GraphDataScience) -> None:
 
         # Check that each step of the string building is a valid object
         base = gds
-        for attr in endpoint_components:
+        for idx, attr in enumerate(endpoint_components):
             try:
                 base = getattr(base, attr)
                 assert base
+
+                # When we have constructed the full chain, we should make sure
+                # that the object is callable, and callable without errors.
+                if idx < len(endpoint_components) - 1:
+                    continue
+
+                assert callable(base)
+
+                if isinstance(base, UncallableNamespace):
+                    raise AssertionError()
             except Exception:
                 raise AssertionError(f"Could not find a client endpoint for the {server_endpoint} server endpoint")

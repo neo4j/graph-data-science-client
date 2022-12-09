@@ -1,5 +1,5 @@
 multimethod >= 1.0, < 2.0
-neo4j >= 4.4.2, < 5.0
+neo4j >= 4.4.2, < 6.0
 pandas >= 1.0, < 2.0
-pyarrow >= 4.0, < 10.0
+pyarrow >= 4.0, < 11.0
 tqdm >= 4.0, < 5.0

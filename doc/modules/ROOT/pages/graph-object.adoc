@@ -46,7 +46,7 @@ where `G` is a `Graph` object, and `result` is a pandas `Series` containing meta
 
 Note that all projection syntax variants are supported by way of specifying a Python `dict` or `list` for the node and relationship projection arguments.
 To specify configuration parameters corresponding to the keys of the procedure's `configuration` map, we give named keyword arguments, like for `readConcurrency=4` above.
-Read more about this in https://neo4j.com/docs/graph-data-science/current/graph-project/#graph-project-native-syntax[Syntax].
+Read more about the syntax in the https://neo4j.com/docs/graph-data-science/current/management-ops/projections/graph-project/#graph-project-native-syntax[GDS manual].
 
 Similarly to Cypher there's also a corresponding `gds.graph.project.estimate` method that can be called in an analogous way.
 
@@ -56,6 +56,8 @@ To get a graph object that represents a graph that has already been projected in
 ----
 G = gds.graph.get("offices")
 ----
+
+For users who are https://neo4j.com/docs/graph-data-science/current/management-ops/administration/[GDS admins], `gds.graph.get` will resolve graph names into `Graph` objects also when the provided name refers to another user's graph projection.
 
 In addition to those aforementioned there are four more methods that create graph objects:
 
@@ -222,14 +224,15 @@ gds.graph.drop(G)  # same as G.drop()
 ----
 
 
+[[graph-object-streaming-properties]]
 ==== Streaming properties
 
 The client methods
 
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-node-ops/[`gds.graph.streamNodeProperty`]
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-node-ops/[`gds.graph.streamNodeProperties`]
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/[`gds.graph.streamRelationshipProperty`]
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/[`gds.graph.streamRelationshipProperties`]
+* https://neo4j.com/docs/graph-data-science/current/graph-catalog-node-ops/[`gds.graph.nodeProperty.stream`] (previously `gds.graph.streamNodeProperty`)
+* https://neo4j.com/docs/graph-data-science/current/graph-catalog-node-ops/[`gds.graph.nodeProperties.stream`] (previously `gds.graph.streamNodeProperties`)
+* https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/[`gds.graph.relationshipProperty.stream`] (previously `gds.graph.streamRelationshipProperty`)
+* https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/[`gds.graph.relationshipProperties.stream`] (previously `gds.graph.streamRelationshipProperties`)
 
 are greatly sped up if https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/[Arrow Flight Server] of GDS is enabled.
 
@@ -254,3 +257,5 @@ assert list(topology_by_rel_type.keys()) == ["REL"]
 assert topology_by_rel_type["REL"][0] == [0, 1, 2, 3]
 assert topology_by_rel_type["REL"][1] == [1, 2, 3, 0]
 ----
+
+Like the <<graph-object-streaming-properties>> methods, the `gds.beta.graph.relationships.stream` is also accelerated if the GDS Arrow Flight Server is enabled.
