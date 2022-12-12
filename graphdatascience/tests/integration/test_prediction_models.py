@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, Dict
 
 import pytest
 
@@ -263,6 +263,7 @@ def test_metrics_nc_model(nc_model: NCModel) -> None:
 
     assert "ACCURACY" in metrics.keys()
     assert isinstance(metrics["ACCURACY"], MetricScores)
+    assert isinstance(metrics["ACCURACY"], Dict)
 
 
 def test_metrics_nr_model(nr_model: NRModel) -> None:
@@ -270,13 +271,15 @@ def test_metrics_nr_model(nr_model: NRModel) -> None:
 
     assert "MEAN_SQUARED_ERROR" in metrics.keys()
     assert isinstance(metrics["MEAN_SQUARED_ERROR"], MetricScores)
+    assert isinstance(metrics["MEAN_SQUARED_ERROR"], Dict)
 
 
 def test_metrics_lp_model(lp_model: LPModel) -> None:
-    metrics = nc_model.metrics()
+    metrics = lp_model.metrics()
 
     assert "AUCPR" in metrics.keys()
     assert isinstance(metrics["AUCPR"], MetricScores)
+    assert isinstance(metrics["AUCPR"], Dict)
 
 
 def test_best_parameters_nc_model(nc_model: NCModel) -> None:

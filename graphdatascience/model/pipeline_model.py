@@ -7,12 +7,16 @@ from pandas.core.series import Series
 from .model import Model
 
 
-@dataclass(frozen=True, repr=True)
-class EvaluationScores:
+@dataclass(repr=True)
+class EvaluationScores(Dict[str, float]):
 
     min: float
     avg: float
     max: float
+
+    def __init__(self, min: float, avg: float, max: float):
+        super(EvaluationScores, self).__init__({"min": min, "avg": avg, "max": max})
+        self.__dict__ = self
 
     @staticmethod
     def create(raw_metrics: Dict[str, float]) -> "EvaluationScores":
@@ -22,13 +26,17 @@ class EvaluationScores:
         return f"(min={self.min}, avg={self.avg}, max={self.max})"
 
 
-@dataclass(frozen=True, repr=True)
-class MetricScores:
+@dataclass(repr=True)
+class MetricScores(Dict[str, Any]):
 
     train: EvaluationScores
     validation: EvaluationScores
     outer_train: float
     test: float
+
+    def __init__(self, train: EvaluationScores, validation: EvaluationScores, outer_train: float, test: float):
+        super(MetricScores, self).__init__({"train": train, "validation": validation, "outer_train": outer_train, "test": test})
+        self.__dict__ = self
 
     @staticmethod
     def create(raw_metrics: Dict[str, Any]) -> "MetricScores":
