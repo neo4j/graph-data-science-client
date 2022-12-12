@@ -64,7 +64,7 @@ class Model(ABC):
         return self._list_info()["shared"].squeeze()  # type: ignore
 
     def model_info(self) -> Series:
-        return pandas.Series(self._list_info()["modelInfo"].squeeze())
+        return Series(self._list_info()["modelInfo"].squeeze())
 
     def exists(self) -> bool:
         query = "CALL gds.beta.model.exists($model_name) YIELD exists"
