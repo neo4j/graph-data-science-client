@@ -20,22 +20,22 @@ def G(gds: GraphDataScience) -> Graph:
 @pytest.fixture
 def lp_model(gds: GraphDataScience, G: Graph) -> Model:
     pipe, _ = gds.beta.pipeline.linkPrediction.create("pipe")
-    trainedPipe, _ = pipe.train(G, modelName="m", concurrency=2)
-    return trainedPipe
+    trained_pipe, _ = pipe.train(G, modelName="m", concurrency=2)
+    return trained_pipe
 
 
 @pytest.fixture
 def nc_model(gds: GraphDataScience, G: Graph) -> Model:
     pipe, _ = gds.beta.pipeline.nodeClassification.create("pipe")
-    trainedPipe, _ = pipe.train(G, modelName="m", concurrency=2)
-    return trainedPipe
+    trained_pipe, _ = pipe.train(G, modelName="m", concurrency=2)
+    return trained_pipe
 
 
 @pytest.fixture
 def nr_model(gds: GraphDataScience, G: Graph) -> Model:
     pipe, _ = gds.alpha.pipeline.nodeRegression.create("pipe")
-    trainedPipe, _ = pipe.train(G, modelName="m", concurrency=2)
-    return trainedPipe
+    trained_pipe, _ = pipe.train(G, modelName="m", concurrency=2)
+    return trained_pipe
 
 
 def test_predict_stream_lp_model(runner: CollectingQueryRunner, lp_model: LPModel, G: Graph) -> None:
