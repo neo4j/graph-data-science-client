@@ -11,13 +11,16 @@ class PipelineEndpoints(CallerBase):
         return PipelineProcRunner(self._query_runner, f"{self._namespace}.pipeline", self._server_version)
 
     def lp_pipe(self, name: str) -> LPTrainingPipeline:
-        p, _ = self.beta.pipeline.linkPrediction.create(name)
+        runner = PipelineProcRunner(self._query_runner, f"{self._namespace}.beta.pipeline", self._server_version)
+        p, _ = runner.linkPrediction.create(name)
         return p
 
     def nc_pipe(self, name: str) -> NCTrainingPipeline:
-        p, _ = self.beta.pipeline.nodeClassification.create(name)
+        runner = PipelineProcRunner(self._query_runner, f"{self._namespace}.beta.pipeline", self._server_version)
+        p, _ = runner.nodeClassification.create(name)
         return p
 
     def nr_pipe(self, name: str) -> NRTrainingPipeline:
-        p, _ = self.alpha.pipeline.nodeRegression.create(name)
+        runner = PipelineProcRunner(self._query_runner, f"{self._namespace}.alpha.pipeline", self._server_version)
+        p, _ = runner.nodeRegression.create(name)
         return p

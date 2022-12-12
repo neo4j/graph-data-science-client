@@ -5,7 +5,7 @@ from pandas import DataFrame, Series
 
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
-from ..model.model import Model
+from ..model.pipeline_model import PipelineModel
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
 
@@ -24,7 +24,7 @@ class TrainingPipeline(ABC):
         pass
 
     @abstractmethod
-    def _create_trained_model(self, name: str, query_runner: QueryRunner) -> Model:
+    def _create_trained_model(self, name: str, query_runner: QueryRunner) -> PipelineModel:
         pass
 
     def addNodeProperty(self, procedure_name: str, **config: Any) -> "Series[Any]":
@@ -51,7 +51,7 @@ class TrainingPipeline(ABC):
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     @graph_type_check
-    def train(self, G: Graph, **config: Any) -> Tuple[Model, "Series[Any]"]:
+    def train(self, G: Graph, **config: Any) -> Tuple[PipelineModel, "Series[Any]"]:
         query = f"{self._query_prefix()}train($graph_name, $config)"
         config["pipeline"] = self.name()
         params = {

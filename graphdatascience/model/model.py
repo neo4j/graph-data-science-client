@@ -63,7 +63,7 @@ class Model(ABC):
     def shared(self) -> bool:
         return self._list_info()["shared"].squeeze()  # type: ignore
 
-    def model_info(self) -> Series:
+    def model_info(self) -> "Series[Any]":
         return Series(self._list_info()["modelInfo"].squeeze())
 
     def exists(self) -> bool:

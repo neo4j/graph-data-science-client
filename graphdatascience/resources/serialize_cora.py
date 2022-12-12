@@ -30,7 +30,7 @@ nodes = pd.DataFrame().assign(
     nodeId=content[0],
     labels="Paper",
     subject=content[1].replace(SUBJECT_TO_ID),
-    features=content.iloc[:, 2:].apply(list, axis=1),
+    features=content.iloc[:, 2:].apply(list, axis=1),  # type: ignore
 )
 
 relationships = pd.DataFrame().assign(sourceNodeId=cites[0], targetNodeId=cites[1], relationshipType="CITES")

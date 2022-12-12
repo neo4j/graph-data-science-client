@@ -35,7 +35,9 @@ class MetricScores(Dict[str, Any]):
     test: float
 
     def __init__(self, train: EvaluationScores, validation: EvaluationScores, outer_train: float, test: float):
-        super(MetricScores, self).__init__({"train": train, "validation": validation, "outer_train": outer_train, "test": test})
+        super(MetricScores, self).__init__(
+            {"train": train, "validation": validation, "outer_train": outer_train, "test": test}
+        )
         self.__dict__ = self
 
     @staticmethod
