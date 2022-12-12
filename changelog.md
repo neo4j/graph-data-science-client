@@ -22,5 +22,7 @@
 
 ## Improvements
 
+* Improved `Model.metrics()` method for pipeline models (e.g. LP, NC, NR) to return custom type.
+
 
 ## Other changes

@@ -8,6 +8,7 @@ from graphdatascience.model.link_prediction_model import LPModel
 from graphdatascience.model.model import Model
 from graphdatascience.model.node_classification_model import NCModel
 from graphdatascience.model.node_regression_model import NRModel
+from graphdatascience.model.pipeline_model import MetricScores
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -258,7 +259,24 @@ def test_shared_nc_model(nc_model: NCModel) -> None:
 
 
 def test_metrics_nc_model(nc_model: NCModel) -> None:
-    assert "ACCURACY" in nc_model.metrics().keys()
+    metrics = nc_model.metrics()
+
+    assert "ACCURACY" in metrics.keys()
+    assert isinstance(metrics["ACCURACY"], MetricScores)
+
+
+def test_metrics_nr_model(nr_model: NRModel) -> None:
+    metrics = nr_model.metrics()
+
+    assert "MEAN_SQUARED_ERROR" in metrics.keys()
+    assert isinstance(metrics["MEAN_SQUARED_ERROR"], MetricScores)
+
+
+def test_metrics_lp_model(lp_model: LPModel) -> None:
+    metrics = nc_model.metrics()
+
+    assert "AUCPR" in metrics.keys()
+    assert isinstance(metrics["AUCPR"], MetricScores)
 
 
 def test_best_parameters_nc_model(nc_model: NCModel) -> None:
