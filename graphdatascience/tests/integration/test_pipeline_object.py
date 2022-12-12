@@ -3,6 +3,9 @@ from typing import Generator
 import pytest
 
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.pipeline.lp_training_pipeline import LPTrainingPipeline
+from graphdatascience.pipeline.nc_training_pipeline import NCTrainingPipeline
+from graphdatascience.pipeline.nr_training_pipeline import NRTrainingPipeline
 from graphdatascience.pipeline.training_pipeline import TrainingPipeline
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
@@ -56,3 +59,20 @@ def test_pipeline_str(pipe: TrainingPipeline) -> None:
 
 def test_pipeline_repr(pipe: TrainingPipeline) -> None:
     assert "'featureSteps'" in repr(pipe)
+
+
+def test_create_pipelines(gds: GraphDataScience) -> None:
+    lp = gds.lp_pipe("my-pipeline1")
+    nc = gds.nc_pipe("my-pipeline2")
+    nr = gds.nr_pipe("my-pipeline3")
+
+    assert isinstance(lp, LPTrainingPipeline)
+    assert isinstance(nc, NCTrainingPipeline)
+    assert isinstance(nr, NRTrainingPipeline)
+
+    assert gds.pipeline.get("my-pipeline1").exists()
+    assert gds.pipeline.get("my-pipeline2").exists()
+    assert gds.pipeline.get("my-pipeline3").exists()
+
+    for i in [lp, nc, nr]:
+        i.drop()
