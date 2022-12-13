@@ -33,7 +33,7 @@ Strings = Union[str, List[str]]
 
 
 class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
-    def load_cora(self, graph_name: str = "cora") -> Graph:
+    def load_cora(self, graph_name: str = "cora", undirected: bool = False) -> Graph:
         with path("graphdatascience.resources", "cora_nodes_gzip.pkl") as nodes_resource:
             nodes = read_pickle(nodes_resource, compression="gzip")
 
@@ -42,7 +42,9 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         self._namespace = "gds.alpha.graph"
 
-        return self.construct(graph_name, nodes, rels)
+        undirected_relationship_types = ["*"] if undirected else []
+
+        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
 
     @property
     def project(self) -> GraphProjectRunner:

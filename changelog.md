@@ -13,7 +13,8 @@
 
 ## Improvements
 
-* Added a new paramter `undirected_relationship_types` to `gds.alpha.graph.construct` which allows constructing undirected graphs, when using GDS >= 2.3.0. 
+* Added a new paramter `undirected_relationship_types` to `gds.alpha.graph.construct` which allows constructing undirected graphs, when using GDS >= 2.3.0.
+* Added a new paramter `undirected` to `gds.load_cora` to load the dataset undirected. 
 
 
 ## Other changes

@@ -48,6 +48,18 @@ def test_cora_graph_without_arrow(gds_without_arrow: GraphDataScience) -> None:
         G.drop()
 
 
+@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
+def test_cora_graph_undirected_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    G = gds_without_arrow.graph.load_cora(undirected=True)
+
+    try:
+        assert G.node_count() == 2708
+        assert G.relationship_count() == 5429 * 2
+    finally:
+        G.drop()
+
+
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_cora_graph_with_arrow(gds: GraphDataScience) -> None:
     G = gds.graph.load_cora()
