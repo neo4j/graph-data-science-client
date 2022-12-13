@@ -4,12 +4,22 @@ from pandas import Series
 
 from ..model.node_regression_model import NRModel
 from ..query_runner.query_runner import QueryRunner
-from graphdatascience.pipeline.regression_training_pipeline import (
-    RegressionTrainingPipeline,
-)
+from .training_pipeline import TrainingPipeline
 
 
-class NRTrainingPipeline(RegressionTrainingPipeline[NRModel]):
+class NRTrainingPipeline(TrainingPipeline[NRModel]):
+    def addLinearRegression(self, **config: Any) -> "Series[Any]":
+        query = f"{self._query_prefix()}addLinearRegression($pipeline_name, $config)"
+        params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
+
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+
+    def addRandomForest(self, **config: Any) -> "Series[Any]":
+        query = f"{self._query_prefix()}addRandomForest($pipeline_name, $config)"
+        params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
+
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+
     def selectFeatures(self, node_properties: Union[str, List[str]]) -> "Series[Any]":
         query = f"{self._query_prefix()}selectFeatures($pipeline_name, $node_properties)"
         params = {"pipeline_name": self.name(), "node_properties": node_properties}
