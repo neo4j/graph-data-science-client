@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import pytest
 from pandas import DataFrame
@@ -16,11 +16,11 @@ DEFAULT_SERVER_VERSION = ServerVersion(2, 2, 0)
 
 
 class CollectingQueryRunner(QueryRunner):
-    def __init__(self, server_version: Union[str, ServerVersion]) -> None:
+    def __init__(self, server_version: ServerVersion) -> None:
         self._mock_result: Optional[DataFrame] = None
         self.queries: List[str] = []
         self.params: List[Dict[str, Any]] = []
-        self.server_version = server_version
+        self._server_version = server_version
 
     def run_query(self, query: str, params: Optional[Dict[str, Any]] = None, db: Optional[str] = None) -> DataFrame:
         if params is None:
@@ -31,7 +31,7 @@ class CollectingQueryRunner(QueryRunner):
 
         # This "mock" lets us initialize the GDS object without issues.
         return (
-            self._mock_result if self._mock_result is not None else DataFrame([{"version": str(self.server_version)}])
+            self._mock_result if self._mock_result is not None else DataFrame([{"version": str(self._server_version)}])
         )
 
     def last_query(self) -> str:
@@ -47,7 +47,7 @@ class CollectingQueryRunner(QueryRunner):
         return "dummy"
 
     def create_graph_constructor(self, graph_name: str, concurrency: int) -> GraphConstructor:
-        return CypherGraphConstructor(self, graph_name, concurrency)
+        return CypherGraphConstructor(self, graph_name, concurrency, self._server_version)
 
     def set__mock_result(self, result: DataFrame) -> None:
         self._mock_result = result

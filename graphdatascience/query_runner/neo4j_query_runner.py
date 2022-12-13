@@ -130,7 +130,7 @@ class Neo4jQueryRunner(QueryRunner):
             self._driver.close()
 
     def create_graph_constructor(self, graph_name: str, concurrency: int) -> GraphConstructor:
-        return CypherGraphConstructor(self, graph_name, concurrency)
+        return CypherGraphConstructor(self, graph_name, concurrency, self._server_version)
 
     def set_server_version(self, server_version: ServerVersion) -> None:
         self._server_version = server_version
