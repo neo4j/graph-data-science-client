@@ -106,12 +106,10 @@ class CypherGraphConstructor(GraphConstructor):
             nodes_config = self.nodes_config(combined_cols, graph_schema.nodes.all)
             rels_config = self.rels_config(combined_cols, graph_schema.relationships.all)
 
-            property_clauses: List[str] = []
-
             all_prop_cols = sorted(list(graph_schema.relationships.properties) + list(graph_schema.nodes.properties))
-
-            for prop_col in all_prop_cols:
-                property_clauses.append(self.check_value_clause(combined_cols, prop_col))
+            property_clauses: List[str] = [
+                self.check_value_clause(combined_cols, prop_col) for prop_col in all_prop_cols
+            ]
 
             target_id_clause = self.check_value_clause(combined_cols, "targetNodeId")
 
@@ -213,7 +211,7 @@ class CypherGraphConstructor(GraphConstructor):
             property_columns.sort()
 
             # as we first list all nodes at the top of the df, we dont need to lookup properties for the target node
-            if len(property_columns) > 0:
+            if property_columns:
                 node_properties_config = [f"{col}: {col}" for col in property_columns]
                 nodes_config_fields.append(f"sourceNodeProperties: {{{', '.join(node_properties_config)}}}")
 
@@ -228,7 +226,7 @@ class CypherGraphConstructor(GraphConstructor):
             property_columns: List[str] = list(rel_cols - {"sourceNodeId", "targetNodeId", "relationshipType"})
             property_columns.sort()
 
-            if len(property_columns) > 0:
+            if property_columns:
                 rel_properties_config = [f"{col}: {col}" for col in property_columns]
                 rels_config_fields.append(f"properties: {{{', '.join(rel_properties_config)}}}")
 
