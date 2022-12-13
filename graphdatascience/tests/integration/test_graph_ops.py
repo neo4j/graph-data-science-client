@@ -2,7 +2,7 @@ from typing import Generator
 
 import numpy as np
 import pytest
-from pandas import DataFrame, Series
+from pandas import Series
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
@@ -399,6 +399,7 @@ def test_graph_relationshipProperty_stream_with_arrow(gds: GraphDataScience) -> 
     result = gds.graph.relationshipProperty.stream(G, "relX", concurrency=2)
     assert {e for e in result["propertyValue"]} == {4, 5, 6}
 
+
 def test_graph_streamRelationshipProperty_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 
@@ -677,6 +678,7 @@ def test_graph_generate(gds: GraphDataScience) -> None:
 
     assert G.node_count() == 12
     assert result["generateMillis"] >= 0
+
 
 @pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))

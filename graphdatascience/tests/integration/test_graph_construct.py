@@ -2,13 +2,11 @@ from typing import Generator
 
 import numpy as np
 import pytest
-from neo4j import DEFAULT_DATABASE
-from pandas import DataFrame, Series
+from pandas import DataFrame
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.tests.integration.conftest import AUTH, URI
 
@@ -109,6 +107,7 @@ def test_roundtrip_with_arrow_encrypted(gds_with_tls: GraphDataScience) -> None:
     finally:
         G_2.drop()
 
+
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience) -> None:
@@ -133,16 +132,64 @@ def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience
 
     G = gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
 
-    assert G.name() == "hello"
-    assert G.node_count() == 4
-    assert G.relationship_count() == 4
-    assert set(G.node_labels()) == {"A", "B", "C", "D"}
-    # TODO use `==` again once CypherAggregation does not add `__ALL__` to the rel schema
-    assert {"REL", "REL2"} & set(G.relationship_types()) == {"REL", "REL2"}
-    assert set(G.node_properties("A")) == {"propA", "propB", "propList"}
-    assert set(G.relationship_properties("REL")) == {"relPropA", "relPropB"}
+    try:
+        assert G.name() == "hello"
+        assert G.node_count() == 4
+        assert G.relationship_count() == 4
+        assert set(G.node_labels()) == {"A", "B", "C", "D"}
+        assert set(G.relationship_types()) == {"REL", "REL2"}
+        assert set(G.node_properties("A")) == {"propA", "propB", "propList"}
+        assert set(G.relationship_properties("REL")) == {"relPropA", "relPropB"}
+    finally:
+        G.drop()
 
-    G.drop()
+
+@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
+def test_graph_alpha_construct_undirected_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    nodes = DataFrame(
+        {
+            "nodeId": [0, 1, 2, 3],
+        }
+    )
+    relationships = DataFrame(
+        {
+            "sourceNodeId": [0, 1, 2, 3],
+            "targetNodeId": [1, 2, 3, 0],
+            "relationshipType": ["REL", "REL", "REL", "REL2"],
+            "relPropA": [1337, 42, 8, 133742],
+        }
+    )
+
+    G = gds_without_arrow.alpha.graph.construct("hello", nodes, relationships, undirected_relationship_types=["REL2"])
+
+    try:
+        assert G.name() == "hello"
+        assert G.node_count() == 4
+        assert G.relationship_count() == 5
+        assert set(G.relationship_types()) == {"REL", "REL2"}
+    finally:
+        G.drop()
+
+
+@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
+@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 3, 0))
+def warn_for_graph_alpha_construct_undirected_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    nodes = DataFrame(
+        {
+            "nodeId": [0, 1, 2, 3],
+        }
+    )
+    relationships = DataFrame(
+        {
+            "sourceNodeId": [0, 1, 2, 3],
+            "targetNodeId": [1, 2, 3, 0],
+            "relationshipType": ["REL", "REL", "REL", "REL2"],
+        }
+    )
+
+    with pytest.raises(ValueError):
+        gds_without_arrow.alpha.graph.construct("hello", nodes, relationships, undirected_relationship_types=["REL2"])
 
 
 @pytest.mark.enterprise
@@ -158,6 +205,48 @@ def test_graph_construct_with_arrow(gds: GraphDataScience) -> None:
     assert G.relationship_count() == 4
 
     G.drop()
+
+
+@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
+@pytest.mark.compatible_with(max_exlusive=ServerVersion(2, 3, 0))
+def warn_for_graph_alpha_construct_undirected_with_arrow(gds: GraphDataScience) -> None:
+    nodes = DataFrame(
+        {
+            "nodeId": [0, 1, 2, 3],
+        }
+    )
+    relationships = DataFrame(
+        {
+            "sourceNodeId": [0, 1, 2, 3],
+            "targetNodeId": [1, 2, 3, 0],
+            "relationshipType": ["REL", "REL", "REL", "REL2"],
+        }
+    )
+
+    with pytest.raises(ValueError):
+        gds.alpha.graph.construct("hello", nodes, relationships, undirected_relationship_types=["REL2"])
+
+
+@pytest.mark.enterprise
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
+def test_graph_construct_undirected_with_arrow(gds: GraphDataScience) -> None:
+    nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
+    relationships = DataFrame(
+        {
+            "sourceNodeId": [0, 1, 2, 3],
+            "targetNodeId": [1, 2, 3, 0],
+            "relPropA": [1337, 42, 8, 133742],
+        }
+    )
+
+    G = gds.alpha.graph.construct("hello", nodes, relationships, undirected_relationship_types=["*"])
+
+    try:
+        assert G.name() == "hello"
+        assert G.node_count() == 4
+        assert G.relationship_count() == 8
+    finally:
+        G.drop()
 
 
 @pytest.mark.enterprise

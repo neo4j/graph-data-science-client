@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from pandas import DataFrame
 
@@ -27,7 +27,9 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
-    def create_graph_constructor(self, graph_name: str, concurrency: int) -> GraphConstructor:
+    def create_graph_constructor(
+        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
+    ) -> GraphConstructor:
         pass
 
     @abstractmethod

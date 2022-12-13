@@ -1,7 +1,7 @@
 import base64
 import json
 import time
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import pyarrow.flight as flight
 from pandas import DataFrame
@@ -166,7 +166,9 @@ class ArrowQueryRunner(QueryRunner):
 
         return result
 
-    def create_graph_constructor(self, graph_name: str, concurrency: int) -> GraphConstructor:
+    def create_graph_constructor(
+        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
+    ) -> GraphConstructor:
         database = self.database()
         if not database:
             raise ValueError(
@@ -174,7 +176,9 @@ class ArrowQueryRunner(QueryRunner):
                 "using `GraphDataScience.set_database`."
             )
 
-        return ArrowGraphConstructor(database, graph_name, self._flight_client, concurrency)
+        return ArrowGraphConstructor(
+            database, graph_name, self._flight_client, concurrency, undirected_relationship_types
+        )
 
 
 class AuthFactory(ClientMiddlewareFactory):  # type: ignore

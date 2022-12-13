@@ -75,7 +75,7 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
         }
     )
 
-    gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2)
+    gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2, undirected_relationship_types=["REL"])
 
     expected_proc_query = (
         "UNWIND $data AS data"
@@ -104,7 +104,11 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
         [1337.0, False, 1337, False, [], False, 42.0, True, "REL2", 1, None, 0, True],
     ]
 
-    assert actual_params == {"configuration": {"readConcurrency": 2}, "graph_name": "hello", "data": expected_df}
+    assert actual_params == {
+        "configuration": {"readConcurrency": 2, "undirectedRelationshipTypes": ["REL"]},
+        "graph_name": "hello",
+        "data": expected_df,
+    }
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 3, 0)])

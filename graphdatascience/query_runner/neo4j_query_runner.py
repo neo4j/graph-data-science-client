@@ -1,6 +1,6 @@
 import warnings
 from concurrent.futures import Future, ThreadPoolExecutor, wait
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 import neo4j
@@ -129,8 +129,12 @@ class Neo4jQueryRunner(QueryRunner):
         if self._auto_close:
             self._driver.close()
 
-    def create_graph_constructor(self, graph_name: str, concurrency: int) -> GraphConstructor:
-        return CypherGraphConstructor(self, graph_name, concurrency, self._server_version)
+    def create_graph_constructor(
+        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
+    ) -> GraphConstructor:
+        return CypherGraphConstructor(
+            self, graph_name, concurrency, undirected_relationship_types, self._server_version
+        )
 
     def set_server_version(self, server_version: ServerVersion) -> None:
         self._server_version = server_version
