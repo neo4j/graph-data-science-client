@@ -1,11 +1,12 @@
+from abc import ABC
 from typing import Any
 
 from pandas import Series
 
-from .training_pipeline import TrainingPipeline
+from .training_pipeline import M, TrainingPipeline
 
 
-class ClassificationTrainingPipeline(TrainingPipeline):
+class ClassificationTrainingPipeline(TrainingPipeline[M], ABC):
     def addLogisticRegression(self, **config: Any) -> "Series[Any]":
         query = f"{self._query_prefix()}addLogisticRegression($pipeline_name, $config)"
         params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}

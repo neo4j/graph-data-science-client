@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Generic, Tuple, TypeVar
 
 from pandas import DataFrame, Series
 
@@ -9,8 +9,10 @@ from ..model.pipeline_model import PipelineModel
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
 
+M = TypeVar("M", bound=PipelineModel, covariant=True)
 
-class TrainingPipeline(ABC):
+
+class TrainingPipeline(ABC, Generic[M]):
     def __init__(self, name: str, query_runner: QueryRunner, server_version: ServerVersion):
         self._name = name
         self._query_runner = query_runner
@@ -24,7 +26,7 @@ class TrainingPipeline(ABC):
         pass
 
     @abstractmethod
-    def _create_trained_model(self, name: str, query_runner: QueryRunner) -> PipelineModel:
+    def _create_trained_model(self, name: str, query_runner: QueryRunner) -> M:
         pass
 
     def addNodeProperty(self, procedure_name: str, **config: Any) -> "Series[Any]":
@@ -51,7 +53,7 @@ class TrainingPipeline(ABC):
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     @graph_type_check
-    def train(self, G: Graph, **config: Any) -> Tuple[PipelineModel, "Series[Any]"]:
+    def train(self, G: Graph, **config: Any) -> Tuple[M, "Series[Any]"]:
         query = f"{self._query_prefix()}train($graph_name, $config)"
         config["pipeline"] = self.name()
         params = {

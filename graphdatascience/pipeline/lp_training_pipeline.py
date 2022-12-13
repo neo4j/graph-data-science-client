@@ -7,7 +7,7 @@ from ..query_runner.query_runner import QueryRunner
 from .classification_training_pipeline import ClassificationTrainingPipeline
 
 
-class LPTrainingPipeline(ClassificationTrainingPipeline):
+class LPTrainingPipeline(ClassificationTrainingPipeline[LPModel]):
     def addFeature(self, feature_type: str, **config: Any) -> "Series[Any]":
         query = f"{self._query_prefix()}addFeature($pipeline_name, $feature_type, $config)"
         params = {

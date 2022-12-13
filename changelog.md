@@ -13,7 +13,9 @@
   * `model_info` to get model metadata obtained during training.
   * `classes` to list all classes used during training (only for Node Classification models).
   * `best_parameters` which returns a pandas `Series` containing the parameters of the model winning the model selection training.
-  * `pipeline` which returns information about the pipeline steps that are part of running predictions with the model.
+  * `feature_properties` (only for Node Property models)
+  * `link_features` (only for LP models)
+  * `node_property_steps`
 * Added new convenience factory methods to create pipeline objects.
 
 

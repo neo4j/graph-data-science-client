@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, Dict, List
 
 from pandas import Series
 
@@ -25,3 +25,7 @@ class NCModel(PipelineModel):
 
     def classes(self) -> List[int]:
         return self._list_info()["modelInfo"][0]["classes"]  # type: ignore
+
+    def feature_properties(self) -> List[str]:
+        features: List[Dict[str, Any]] = self._list_info()["modelInfo"][0]["pipeline"]["featureProperties"]
+        return [f["feature"] for f in features]

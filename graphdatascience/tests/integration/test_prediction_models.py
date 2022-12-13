@@ -286,5 +286,27 @@ def test_best_parameters_nc_model(nc_model: NCModel) -> None:
     assert nc_model.best_parameters()["methodName"] == "LogisticRegression"
 
 
-def test_pipeline_nc_model(nc_model: NCModel) -> None:
-    assert len(nc_model.pipeline()["nodePropertySteps"]) > 0
+def test_node_property_steps(nc_model: NCModel) -> None:
+    steps = nc_model.node_property_steps()
+    assert len(steps) > 0
+    assert steps[0].proc == "gds.degree.mutate"
+    assert isinstance(steps[0].config, Dict)
+
+
+def test_link_features(lp_model: LPModel) -> None:
+    features = lp_model.link_features()
+    assert len(features) > 0
+    assert features[0].name == "L2"
+    assert isinstance(features[0].config, Dict)
+
+
+def test_feature_properties_nr(nr_model: NRModel) -> None:
+    features = nr_model.feature_properties()
+    assert len(features) > 0
+    assert features[0] == "rank"
+
+
+def test_feature_properties_nc(nc_model: NCModel) -> None:
+    features = nc_model.feature_properties()
+    assert len(features) > 0
+    assert features[0] == "rank"

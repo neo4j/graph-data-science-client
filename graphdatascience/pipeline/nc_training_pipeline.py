@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import Any, List, Union
 
 from pandas import Series
@@ -7,7 +8,7 @@ from ..pipeline.classification_training_pipeline import ClassificationTrainingPi
 from ..query_runner.query_runner import QueryRunner
 
 
-class NCTrainingPipeline(ClassificationTrainingPipeline):
+class NCTrainingPipeline(ClassificationTrainingPipeline[NCModel], ABC):
     def selectFeatures(self, node_properties: Union[str, List[str]]) -> "Series[Any]":
         query = f"{self._query_prefix()}selectFeatures($pipeline_name, $node_properties)"
         params = {"pipeline_name": self.name(), "node_properties": node_properties}

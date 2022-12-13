@@ -2,10 +2,10 @@ from typing import Any
 
 from pandas import Series
 
-from .training_pipeline import TrainingPipeline
+from .training_pipeline import M, TrainingPipeline
 
 
-class RegressionTrainingPipeline(TrainingPipeline):
+class RegressionTrainingPipeline(TrainingPipeline[M]):
     def addLinearRegression(self, **config: Any) -> "Series[Any]":
         query = f"{self._query_prefix()}addLinearRegression($pipeline_name, $config)"
         params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
