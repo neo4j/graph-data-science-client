@@ -33,13 +33,17 @@ class ArrowGraphConstructor(GraphConstructor):
 
     def run(self, node_dfs: List[DataFrame], relationship_dfs: List[DataFrame]) -> None:
         try:
+            config: Dict[str, Any] = {
+                "name": self._graph_name,
+                "database_name": self._database,
+            }
+
+            if self._undirected_relationship_types:
+                config["undirected_relationship_types"] = self._undirected_relationship_types
+
             self._send_action(
                 "CREATE_GRAPH",
-                {
-                    "name": self._graph_name,
-                    "database_name": self._database,
-                    "undirected_relationship_types": self._undirected_relationship_types,
-                },
+                config,
             )
 
             self._send_dfs(node_dfs, "node")
