@@ -33,7 +33,7 @@ Strings = Union[str, List[str]]
 
 
 class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
-    def load_cora(self, graph_name: str = "cora") -> Graph:
+    def load_cora(self, graph_name: str = "cora", undirected: bool = False) -> Graph:
         with path("graphdatascience.resources", "cora_nodes_gzip.pkl") as nodes_resource:
             nodes = read_pickle(nodes_resource, compression="gzip")
 
@@ -42,7 +42,9 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         self._namespace = "gds.alpha.graph"
 
-        return self.construct(graph_name, nodes, rels)
+        undirected_relationship_types = ["*"] if undirected else []
+
+        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
 
     @property
     def project(self) -> GraphProjectRunner:
@@ -353,6 +355,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         nodes: Union[DataFrame, List[DataFrame]],
         relationships: Union[DataFrame, List[DataFrame]],
         concurrency: int = 4,
+        undirected_relationship_types: Optional[List[str]] = None,
     ) -> Graph:
         nodes = nodes if isinstance(nodes, List) else [nodes]
         relationships = relationships if isinstance(relationships, List) else [relationships]
@@ -367,10 +370,15 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
                 if expected_col not in rel_df.columns.values:
                     errors.append(f"Relationship dataframe at index {idx} needs to contain a '{expected_col}' column.")
 
+        if self._server_version < ServerVersion(2, 3, 0) and undirected_relationship_types:
+            errors.append("The parameter 'undirected_relationship_types' is only supported since GDS 2.3.0.")
+
         if len(errors) > 0:
             raise ValueError(os.linesep.join(errors))
 
-        constructor = self._query_runner.create_graph_constructor(graph_name, concurrency)
+        constructor = self._query_runner.create_graph_constructor(
+            graph_name, concurrency, undirected_relationship_types
+        )
         constructor.run(nodes, relationships)
 
         return Graph(graph_name, self._query_runner, self._server_version)

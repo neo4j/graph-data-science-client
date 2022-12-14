@@ -1,7 +1,7 @@
 import json
 import math
 from concurrent.futures import ThreadPoolExecutor, wait
-from typing import Dict, List
+from typing import Any, Dict, List, Optional
 
 import numpy
 import pyarrow.flight as flight
@@ -18,18 +18,33 @@ class ArrowGraphConstructor(GraphConstructor):
         graph_name: str,
         flight_client: flight.FlightClient,
         concurrency: int,
+        undirected_relationship_types: Optional[List[str]],
         chunk_size: int = 10_000,
     ):
         self._database = database
         self._concurrency = concurrency
         self._graph_name = graph_name
         self._client = flight_client
+        self._undirected_relationship_types = (
+            [] if undirected_relationship_types is None else undirected_relationship_types
+        )
         self._chunk_size = chunk_size
         self._min_batch_size = chunk_size * 10
 
     def run(self, node_dfs: List[DataFrame], relationship_dfs: List[DataFrame]) -> None:
         try:
-            self._send_action("CREATE_GRAPH", {"name": self._graph_name, "database_name": self._database})
+            config: Dict[str, Any] = {
+                "name": self._graph_name,
+                "database_name": self._database,
+            }
+
+            if self._undirected_relationship_types:
+                config["undirected_relationship_types"] = self._undirected_relationship_types
+
+            self._send_action(
+                "CREATE_GRAPH",
+                config,
+            )
 
             self._send_dfs(node_dfs, "node")
 
@@ -53,7 +68,7 @@ class ArrowGraphConstructor(GraphConstructor):
 
         return partitioned_dfs
 
-    def _send_action(self, action_type: str, meta_data: Dict[str, str]) -> None:
+    def _send_action(self, action_type: str, meta_data: Dict[str, Any]) -> None:
         result = self._client.do_action(flight.Action(action_type, json.dumps(meta_data).encode("utf-8")))
 
         json.loads(next(result).body.to_pybytes().decode())

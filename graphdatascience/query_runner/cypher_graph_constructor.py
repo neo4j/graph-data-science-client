@@ -1,7 +1,7 @@
 import os
 import warnings
 from dataclasses import dataclass
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 from uuid import uuid4
 
 from pandas import DataFrame, concat
@@ -24,11 +24,19 @@ class GraphColumnSchema:
 
 
 class CypherGraphConstructor(GraphConstructor):
-    def __init__(self, query_runner: QueryRunner, graph_name: str, concurrency: int, server_version: ServerVersion):
+    def __init__(
+        self,
+        query_runner: QueryRunner,
+        graph_name: str,
+        concurrency: int,
+        undirected_relationship_types: Optional[List[str]],
+        server_version: ServerVersion,
+    ):
         self._query_runner = query_runner
         self._concurrency = concurrency
         self._graph_name = graph_name
         self._server_version = server_version
+        self._undirected_relationship_types = undirected_relationship_types
 
     def run(self, node_dfs: List[DataFrame], relationship_dfs: List[DataFrame]) -> None:
         if self._should_warn_about_arrow_missing():
@@ -49,8 +57,12 @@ class CypherGraphConstructor(GraphConstructor):
 
         # Cypher aggregation supports concurrency since 2.3.0
         if self._server_version >= ServerVersion(2, 3, 0):
-            self.CypherAggregationRunner(self._query_runner, self._graph_name, self._concurrency).run(node_df, rel_df)
+            self.CypherAggregationRunner(
+                self._query_runner, self._graph_name, self._concurrency, self._undirected_relationship_types
+            ).run(node_df, rel_df)
         else:
+            assert not self._undirected_relationship_types, "This should have been raised earlier."
+
             self.CyperProjectionRunner(self._query_runner, self._graph_name, self._concurrency).run(node_df, rel_df)
 
     def _should_warn_about_arrow_missing(self) -> bool:
@@ -75,10 +87,17 @@ class CypherGraphConstructor(GraphConstructor):
 
         _BIT_COL_SUFFIX = "_is_present" + str(uuid4())
 
-        def __init__(self, query_runner: QueryRunner, graph_name: str, concurrency: int):
+        def __init__(
+            self,
+            query_runner: QueryRunner,
+            graph_name: str,
+            concurrency: int,
+            undirected_relationship_types: Optional[List[str]],
+        ):
             self._query_runner = query_runner
             self._concurrency = concurrency
             self._graph_name = graph_name
+            self._undirected_relationship_types = undirected_relationship_types
 
         def run(self, node_df: DataFrame, relationship_df: DataFrame) -> None:
             graph_schema = self.schema(node_df, relationship_df)
@@ -124,8 +143,10 @@ class CypherGraphConstructor(GraphConstructor):
                 f"{nodes_config}, {rels_config}, $configuration)"
             )
 
-            # TODO add orientation here once its supported in 2.3
-            configuration = {"readConcurrency": self._concurrency}
+            configuration = {
+                "readConcurrency": self._concurrency,
+                "undirectedRelationshipTypes": self._undirected_relationship_types,
+            }
 
             self._query_runner.run_query(
                 query,

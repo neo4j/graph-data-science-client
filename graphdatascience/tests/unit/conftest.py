@@ -46,8 +46,12 @@ class CollectingQueryRunner(QueryRunner):
     def database(self) -> str:
         return "dummy"
 
-    def create_graph_constructor(self, graph_name: str, concurrency: int) -> GraphConstructor:
-        return CypherGraphConstructor(self, graph_name, concurrency, self._server_version)
+    def create_graph_constructor(
+        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
+    ) -> GraphConstructor:
+        return CypherGraphConstructor(
+            self, graph_name, concurrency, undirected_relationship_types, self._server_version
+        )
 
     def set__mock_result(self, result: DataFrame) -> None:
         self._mock_result = result
