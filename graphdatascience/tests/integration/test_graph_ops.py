@@ -2,7 +2,6 @@ from typing import Generator
 
 import numpy as np
 import pytest
-from neo4j import DEFAULT_DATABASE
 from pandas import DataFrame, Series
 
 from graphdatascience.graph_data_science import GraphDataScience
@@ -10,7 +9,7 @@ from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.tests.integration.conftest import AUTH, URI
+from graphdatascience.tests.integration.conftest import AUTH, DB, URI
 
 GRAPH_NAME = "g"
 
@@ -193,7 +192,7 @@ def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     assert node_count == 3
 
     runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
-    runner.set_database(DEFAULT_DATABASE)
+    runner.set_database(DB)
 
 
 @pytest.mark.skip_on_aura

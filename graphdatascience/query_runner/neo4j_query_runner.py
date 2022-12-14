@@ -55,7 +55,7 @@ class Neo4jQueryRunner(QueryRunner):
                 message=r"^pandas support is experimental and might be changed or removed in future versions$",
             )
 
-            return result.to_df()  # type: ignore
+            return result.to_df()
 
     def run_query_with_logging(
         self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
