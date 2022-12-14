@@ -101,7 +101,7 @@ class CypherGraphConstructor(GraphConstructor):
             combined_df = combined_df[sorted(combined_df)]
 
             # using a List and not a Set to preserve the order
-            combined_cols: List[str] = list(combined_df.columns)
+            combined_cols: List[str] = combined_df.columns.tolist()
 
             nodes_config = self.nodes_config(combined_cols, graph_schema.nodes.all)
             rels_config = self.rels_config(combined_cols, graph_schema.relationships.all)
@@ -143,8 +143,8 @@ class CypherGraphConstructor(GraphConstructor):
             )
 
         def schema(self, node_df: DataFrame, rel_df: DataFrame) -> GraphColumnSchema:
-            rel_cols = set(rel_df.columns)
-            node_cols = set(node_df.columns)
+            rel_cols = set(rel_df.columns.tolist())
+            node_cols = set(node_df.columns.tolist())
 
             node_schema = EntityColumnSchema(node_cols, node_cols - {"nodeId", "labels"})
 
@@ -280,7 +280,7 @@ class CypherGraphConstructor(GraphConstructor):
                     node[label_index] = [labels]
 
             property_query = ""
-            property_columns: Set[str] = set(node_df.keys()) - {"nodeId", "labels"}
+            property_columns: Set[str] = set(node_df.columns.tolist()) - {"nodeId", "labels"}
             if len(property_columns) > 0:
                 property_queries = (f", node[{node_columns.index(col)}] as {col}" for col in property_columns)
                 property_query = "".join(property_queries)
@@ -299,7 +299,11 @@ class CypherGraphConstructor(GraphConstructor):
                 type_query = f", relationship[{type_index}] as type"
 
             property_query = ""
-            property_columns: Set[str] = set(rel_df.keys()) - {"sourceNodeId", "targetNodeId", "relationshipType"}
+            property_columns: Set[str] = set(rel_df.columns.tolist()) - {
+                "sourceNodeId",
+                "targetNodeId",
+                "relationshipType",
+            }
             if len(property_columns) > 0:
                 property_queries = (f", relationship[{rel_columns.index(col)}] as {col}" for col in property_columns)
                 property_query = "".join(property_queries)
