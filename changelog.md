@@ -12,7 +12,7 @@
 * Added new convenience methods to the `Model` object:
   * `model_info` to get model metadata obtained during training.
   * `classes` to list all classes used during training (only for Node Classification models).
-  * `best_parameters` which returns a pandas `Series` containing the parameters of the model winning the model selection training.
+  * `best_parameters` which returns a pandas `Series` containing the parameters of the model candidate winning the model selection training.
   * `feature_properties` (only for Node Property models)
   * `link_features` (only for LP models)
   * `node_property_steps`
