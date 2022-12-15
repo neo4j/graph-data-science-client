@@ -21,7 +21,7 @@ def test_switching_db(runner: Neo4jQueryRunner) -> None:
     assert pre_count == 1
 
     MY_DB_NAME = "my-db"
-    runner.run_query("CREATE DATABASE $dbName", {"dbName": MY_DB_NAME})
+    runner.run_query("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
     runner.set_database(MY_DB_NAME)
 
     post_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
@@ -31,7 +31,7 @@ def test_switching_db(runner: Neo4jQueryRunner) -> None:
     finally:
         runner.set_database(default_database)  # type: ignore
         runner.run_query("MATCH (n) DETACH DELETE n")
-        runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
+        runner.run_query("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
 
 @pytest.mark.skip_on_aura
@@ -42,7 +42,7 @@ def test_run_query_with_db(runner: Neo4jQueryRunner) -> None:
     assert default_db_count == 1
 
     MY_DB_NAME = "my-db"
-    runner.run_query("CREATE DATABASE $dbName", {"dbName": MY_DB_NAME})
+    runner.run_query("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
     specified_db_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)["c"][0]
 
@@ -50,7 +50,7 @@ def test_run_query_with_db(runner: Neo4jQueryRunner) -> None:
         assert specified_db_count == 0
     finally:
         runner.run_query("MATCH (n) DETACH DELETE n")
-        runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
+        runner.run_query("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
 
 @pytest.mark.skip_on_aura
@@ -61,7 +61,7 @@ def test_initialize_with_db(runner: Neo4jQueryRunner) -> None:
     assert default_db_count == 1
 
     MY_DB_NAME = "my-db"
-    runner.run_query("CREATE DATABASE $dbName", {"dbName": MY_DB_NAME})
+    runner.run_query("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
     gds_with_specified_db = GraphDataScience(URI, AUTH, database=MY_DB_NAME)
 
@@ -73,7 +73,7 @@ def test_initialize_with_db(runner: Neo4jQueryRunner) -> None:
         assert specified_db_count == 0
     finally:
         runner.run_query("MATCH (n) DETACH DELETE n")
-        runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
+        runner.run_query("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
 
 def test_from_neo4j_driver(neo4j_driver: Driver) -> None:
