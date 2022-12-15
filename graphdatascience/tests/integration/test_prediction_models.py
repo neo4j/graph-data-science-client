@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Dict, Generator
 
 import pytest
 
@@ -8,6 +8,7 @@ from graphdatascience.model.link_prediction_model import LPModel
 from graphdatascience.model.model import Model
 from graphdatascience.model.node_classification_model import NCModel
 from graphdatascience.model.node_regression_model import NRModel
+from graphdatascience.model.pipeline_model import MetricScores
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -258,4 +259,54 @@ def test_shared_nc_model(nc_model: NCModel) -> None:
 
 
 def test_metrics_nc_model(nc_model: NCModel) -> None:
-    assert "ACCURACY" in nc_model.metrics().keys()
+    metrics = nc_model.metrics()
+
+    assert "ACCURACY" in metrics.keys()
+    assert isinstance(metrics["ACCURACY"], MetricScores)
+    assert isinstance(metrics["ACCURACY"], Dict)
+
+
+def test_metrics_nr_model(nr_model: NRModel) -> None:
+    metrics = nr_model.metrics()
+
+    assert "MEAN_SQUARED_ERROR" in metrics.keys()
+    assert isinstance(metrics["MEAN_SQUARED_ERROR"], MetricScores)
+    assert isinstance(metrics["MEAN_SQUARED_ERROR"], Dict)
+
+
+def test_metrics_lp_model(lp_model: LPModel) -> None:
+    metrics = lp_model.metrics()
+
+    assert "AUCPR" in metrics.keys()
+    assert isinstance(metrics["AUCPR"], MetricScores)
+    assert isinstance(metrics["AUCPR"], Dict)
+
+
+def test_best_parameters_nc_model(nc_model: NCModel) -> None:
+    assert nc_model.best_parameters()["methodName"] == "LogisticRegression"
+
+
+def test_node_property_steps(nc_model: NCModel) -> None:
+    steps = nc_model.node_property_steps()
+    assert len(steps) > 0
+    assert steps[0].proc == "gds.degree.mutate"
+    assert isinstance(steps[0].config, Dict)
+
+
+def test_link_features(lp_model: LPModel) -> None:
+    features = lp_model.link_features()
+    assert len(features) > 0
+    assert features[0].name == "L2"
+    assert isinstance(features[0].config, Dict)
+
+
+def test_feature_properties_nr(nr_model: NRModel) -> None:
+    features = nr_model.feature_properties()
+    assert len(features) > 0
+    assert features[0] == "rank"
+
+
+def test_feature_properties_nc(nc_model: NCModel) -> None:
+    features = nc_model.feature_properties()
+    assert len(features) > 0
+    assert features[0] == "rank"

@@ -6,6 +6,7 @@ from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
+from ..model.pipeline_model import PipelineModel
 from .lp_pipeline_create_runner import LPPipelineCreateRunner
 from .lp_training_pipeline import LPTrainingPipeline
 from .nc_pipeline_create_runner import NCPipelineCreateRunner
@@ -28,7 +29,7 @@ class PipelineProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     def nodeRegression(self) -> NRPipelineCreateRunner:
         return NRPipelineCreateRunner(self._query_runner, f"{self._namespace}.nodeRegression", self._server_version)
 
-    def list(self, pipeline: Optional[TrainingPipeline] = None) -> DataFrame:
+    def list(self, pipeline: Optional[TrainingPipeline[PipelineModel]] = None) -> DataFrame:
         self._namespace += ".list"
 
         if pipeline:
@@ -48,7 +49,7 @@ class PipelineProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    def drop(self, pipeline: TrainingPipeline) -> "Series[Any]":
+    def drop(self, pipeline: TrainingPipeline[PipelineModel]) -> "Series[Any]":
         self._namespace += ".drop"
 
         query = f"CALL {self._namespace}($pipeline_name)"
@@ -57,7 +58,7 @@ class PipelineProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     @client_only_endpoint("gds.pipeline")
-    def get(self, pipeline_name: str) -> TrainingPipeline:
+    def get(self, pipeline_name: str) -> TrainingPipeline[PipelineModel]:
         query = "CALL gds.beta.pipeline.list($pipeline_name)"
         params = {"pipeline_name": pipeline_name}
         result = self._query_runner.run_query(query, params)
@@ -68,7 +69,7 @@ class PipelineProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         pipeline_type = result["pipelineType"][0]
         return self._resolve_pipeline(pipeline_type, pipeline_name)
 
-    def _resolve_pipeline(self, pipeline_type: str, pipeline_name: str) -> TrainingPipeline:
+    def _resolve_pipeline(self, pipeline_type: str, pipeline_name: str) -> TrainingPipeline[PipelineModel]:
         if pipeline_type == "Node classification training pipeline":
             return NCTrainingPipeline(pipeline_name, self._query_runner, self._server_version)
         elif pipeline_type == "Link prediction training pipeline":

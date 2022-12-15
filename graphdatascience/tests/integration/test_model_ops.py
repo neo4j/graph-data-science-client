@@ -245,6 +245,10 @@ def test_model_get_lp_trained(gds: GraphDataScience, lp_model: LPModel) -> None:
     assert isinstance(new_model, LPModel)
 
 
+def test_model_classes_nc_trained(nc_model: NCModel) -> None:
+    assert nc_model.classes() == [1, 2, 3]
+
+
 def test_model_get_nc_trained(gds: GraphDataScience, nc_model: NCModel) -> None:
     new_model = gds.model.get(nc_model.name())
 

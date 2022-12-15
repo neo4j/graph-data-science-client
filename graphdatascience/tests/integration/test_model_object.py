@@ -107,3 +107,7 @@ def test_model_str(gs_model: GraphSageModel) -> None:
 
 def test_model_repr(gs_model: GraphSageModel) -> None:
     assert "'metrics'" in repr(gs_model)
+
+
+def test_model_info(gs_model: GraphSageModel) -> None:
+    assert gs_model.model_info()["modelName"] == "gs-model"

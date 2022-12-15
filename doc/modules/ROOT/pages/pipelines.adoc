@@ -19,15 +19,14 @@ This section outlines how to use the Python client to build, configure and train
 [[pipelines-nc-create-example]]
 === Pipeline
 
-The creation of the node classification pipeline is very similar to https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/config/#nodeclassification-creating-a-pipeline[how it's done in Cypher].
 To create a new node classification pipeline one would make the following call:
 
 [source,python]
 ----
-pipe, res = gds.beta.pipeline.nodeClassification.create("my-pipe")
+pipe = gds.nc_pipe("my-pipe")
 ----
 
-where `pipe` is a pipeline object, and `res` is a pandas `Series` containing metadata from the underlying procedure call.
+where `pipe` is a pipeline object.
 
 To then go on to build, configure and train the pipeline we would call methods directly on the node classification pipeline object.
 Below is a description of the methods on such objects:
@@ -204,16 +203,15 @@ This section outlines how to use the Python client to build, configure and train
 
 === Pipeline
 
-The creation of the link prediction pipeline is very similar to https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/config/#linkprediction-creating-a-pipeline[how it's done in Cypher].
 To create a new link prediction pipeline one would make the following call:
 
 
 [source,python,role=test]
 ----
-pipe, res = gds.beta.pipeline.linkPrediction.create("my-pipe")
+pipe = gds.lp_pipe("my-pipe")
 ----
 
-where `pipe` is a pipeline object, and `res` is a pandas `Series` containing metadata from the underlying procedure call.
+where `pipe` is a pipeline object.
 
 To then go on to build, configure and train the pipeline we would call methods directly on the link prediction pipeline object.
 Below is a description of the methods on such objects:
@@ -387,15 +385,14 @@ This section outlines how to use the Python client to build, configure and train
 
 === Pipeline
 
-The creation of the node regression pipeline is very similar to https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/config/#noderegression-creating-a-pipeline[how it's done in Cypher].
 To create a new node regression pipeline one would make the following call:
 
 [source,python]
 ----
-pipe, res = gds.alpha.pipeline.nodeRegression.create("my-pipe")
+pipe = gds.nr_pipe("my-pipe")
 ----
 
-where `pipe` is a pipeline object, and `res` is a pandas `Series` containing metadata from the underlying procedure call.
+where `pipe` is a pipeline object.
 
 To then go on to build, configure and train the pipeline we would call methods directly on the node regression pipeline object.
 Below is a description of the methods on such objects:

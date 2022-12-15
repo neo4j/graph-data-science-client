@@ -1,16 +1,18 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Generic, Tuple, TypeVar
 
 from pandas import DataFrame, Series
 
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
-from ..model.model import Model
+from ..model.pipeline_model import PipelineModel
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
 
+MODEL_TYPE = TypeVar("MODEL_TYPE", bound=PipelineModel, covariant=True)
 
-class TrainingPipeline(ABC):
+
+class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
     def __init__(self, name: str, query_runner: QueryRunner, server_version: ServerVersion):
         self._name = name
         self._query_runner = query_runner
@@ -24,7 +26,7 @@ class TrainingPipeline(ABC):
         pass
 
     @abstractmethod
-    def _create_trained_model(self, name: str, query_runner: QueryRunner) -> Model:
+    def _create_trained_model(self, name: str, query_runner: QueryRunner) -> MODEL_TYPE:
         pass
 
     def addNodeProperty(self, procedure_name: str, **config: Any) -> "Series[Any]":
@@ -51,7 +53,7 @@ class TrainingPipeline(ABC):
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     @graph_type_check
-    def train(self, G: Graph, **config: Any) -> Tuple[Model, "Series[Any]"]:
+    def train(self, G: Graph, **config: Any) -> Tuple[MODEL_TYPE, "Series[Any]"]:
         query = f"{self._query_prefix()}train($graph_name, $config)"
         config["pipeline"] = self.name()
         params = {
