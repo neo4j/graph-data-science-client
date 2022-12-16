@@ -2,6 +2,7 @@ import os
 from importlib.resources import path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+import pandas as pd
 from multimethod import multimethod
 from pandas import DataFrame, Series, read_pickle
 
@@ -33,11 +34,25 @@ Strings = Union[str, List[str]]
 
 
 class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+    @client_only_endpoint("gds.graph")
     def load_cora(self, graph_name: str = "cora", undirected: bool = False) -> Graph:
-        with path("graphdatascience.resources", "cora_nodes_gzip.pkl") as nodes_resource:
+        with path("graphdatascience.resources.cora", "cora_nodes_gzip.pkl") as nodes_resource:
             nodes = read_pickle(nodes_resource, compression="gzip")
 
-        with path("graphdatascience.resources", "cora_rels_gzip.pkl") as rels_resource:
+        with path("graphdatascience.resources.cora", "cora_rels_gzip.pkl") as rels_resource:
+            rels = read_pickle(rels_resource, compression="gzip")
+
+        self._namespace = "gds.alpha.graph"
+
+        undirected_relationship_types = ["*"] if undirected else []
+
+        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
+
+    @client_only_endpoint("gds.graph")
+    def load_karate_club(self, graph_name: str = "karate_club", undirected: bool = False) -> Graph:
+        nodes = pd.DataFrame({"nodeId": range(1, 35)})
+
+        with path("graphdatascience.resources.karate", "karate_club_gzip.pkl") as rels_resource:
             rels = read_pickle(rels_resource, compression="gzip")
 
         self._namespace = "gds.alpha.graph"

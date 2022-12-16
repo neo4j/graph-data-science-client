@@ -1,4 +1,4 @@
 include requirements/base.txt
 include LICENSE
 prune graphdatascience/tests
-prune graphdatascience/resources/serialize_cora.py
+prune graphdatascience/resources/cora/serialize_cora.py
