@@ -118,6 +118,7 @@ def test_karate_club_graph_with_arrow_undirected(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+@pytest.mark.enterprise
 def test_roundtrip_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
 
@@ -134,6 +135,7 @@ def test_roundtrip_with_arrow(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+@pytest.mark.enterprise
 def test_roundtrip_with_arrow_22(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
 
