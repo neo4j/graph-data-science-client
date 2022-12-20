@@ -16,25 +16,63 @@ These pickles are then being read by load_imdb()
 with path("graphdatascience.resources.imdb", "raw/labels.pkl") as labels_resource:
     class_labels = read_pickle(labels_resource)
 movies = pd.DataFrame([item for sublist in class_labels for item in sublist])
-movies = movies.rename(columns={0: "nodeId", 1: "class"})
+movies = movies.rename(columns={0: "nodeId", 1: "genre"})
 movies["labels"] = "Movie"
 
 with path("graphdatascience.resources.imdb", "raw/node_features.pkl") as features_resource:
     raw_features = read_pickle(features_resource)
 nodes_features_df = pd.DataFrame(raw_features)
-nodes_features_df["feature"] = nodes_features_df.values.tolist()
-nodes_features_df = nodes_features_df["feature"].reset_index().rename(columns={"index": "nodeId"})
+nodes_features_df["plot_keywords"] = nodes_features_df.values.tolist()
+nodes_features_df = nodes_features_df["plot_keywords"].reset_index().rename(columns={"index": "nodeId"})
 
 movie_nodes_with_features = movies.merge(nodes_features_df, on="nodeId", how="left")
-person_nodes_with_features = (
+movie_nodes_with_features.reset_index(drop=True, inplace=True)
+
+other_nodes_with_features = (
     pd.merge(nodes_features_df, movies, on=["nodeId"], how="left", indicator=True)
     .query('_merge=="left_only"')
-    .drop(columns=["class", "_merge"])
+    .drop(columns=["genre", "_merge"])
 )
-person_nodes_with_features["labels"] = "Person"
-# Set 'Person' class as -1.0 since gds.graph.construct only allows one nodeDF for community,
-# and that setting NaN gives value is null error from Arrow flight RPC
-person_nodes_with_features["class"] = -1.0
+
+unlabeled_movies = other_nodes_with_features["nodeId"] < 4661
+unlabeled_movies_df = other_nodes_with_features[unlabeled_movies]
+unlabeled_movies_df["labels"] = "Movie"
+unlabeled_movies_df.reset_index(drop=True, inplace=True)
+
+directors_df = other_nodes_with_features[
+    (other_nodes_with_features["nodeId"] >= 4661) & (other_nodes_with_features["nodeId"] <= 6930)
+]
+directors_df["labels"] = "Director"
+directors_df.reset_index(drop=True, inplace=True)
+
+actors_df = other_nodes_with_features[(other_nodes_with_features["nodeId"] >= 6931)]
+actors_df["labels"] = "Actor"
+actors_df.reset_index(drop=True, inplace=True)
+
+movie_nodes_with_features.to_pickle(
+    "/FILE_LOC/imdb_movies_with_genre_gzip.pkl",
+    protocol=4,
+    compression="gzip",
+)
+
+unlabeled_movies_df.to_pickle(
+    "/FILE_LOC/imdb_movies_without_genre_gzip.pkl",
+    protocol=4,
+    compression="gzip",
+)
+
+directors_df.to_pickle(
+    "/FILE_LOC/imdb_directors_gzip.pkl",
+    protocol=4,
+    compression="gzip",
+)
+
+actors_df.to_pickle(
+    "/FILE_LOC/imdb_actors_gzip.pkl",
+    protocol=4,
+    compression="gzip",
+)
+
 
 with path("graphdatascience.resources.imdb", "raw/edges.pkl") as rels_resource:
     spmatrices = read_pickle(rels_resource)
@@ -45,25 +83,22 @@ for spmatrix in spmatrices:
     adj_matrix = raw_adj_matrix[raw_adj_matrix[0] != 0]
     edge_list.append(adj_matrix.iloc[:, :-1].rename(columns={"level_0": "sourceNodeId", "level_1": "targetNodeId"}))
 
-edge_list[0]["relationshipType"] = "MovieDirector"
-edge_list[1]["relationshipType"] = "MovieDirector"
-edge_list[2]["relationshipType"] = "MovieActor"
-edge_list[3]["relationshipType"] = "MovieActor"
+edge_list[0]["relationshipType"] = "DIRECTED_IN"
+edge_list[1]["relationshipType"] = "DIRECTED_IN"
+edge_list[2]["relationshipType"] = "ACTED_IN"
+edge_list[3]["relationshipType"] = "ACTED_IN"
 
-labeled_rels = pd.concat(edge_list)
-labeled_rels.reset_index(drop=True, inplace=True)
+edge_list[1].reset_index(drop=True, inplace=True)
+edge_list[3].reset_index(drop=True, inplace=True)
 
-all_nodes = pd.concat([movie_nodes_with_features, person_nodes_with_features])
-all_nodes.reset_index(drop=True, inplace=True)
-
-all_nodes.to_pickle(
-    "FILE_LOC",
+edge_list[1].to_pickle(
+    "/FILE_LOC/imdb_directed_in_rels_gzip.pkl",
     protocol=4,
     compression="gzip",
 )
 
-labeled_rels.to_pickle(
-    "FILE_LOC_2",
+edge_list[3].to_pickle(
+    "/FILE_LOC/imdb_acted_in_rels_gzip.pkl",
     protocol=4,
     compression="gzip",
 )
