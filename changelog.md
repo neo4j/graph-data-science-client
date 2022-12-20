@@ -25,6 +25,6 @@
 ## Improvements
 
 * Improved `Model.metrics()` method for pipeline models (e.g. LP, NC, NR) to return custom type.
-
+* Improved `gds.graph.construct()` to support multiple dataframes for nodes and relationships without arrow.
 
 ## Other changes
