@@ -601,7 +601,7 @@ def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
 def test_graph_relationships_to_undirected(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "Node", ["REL", "REL2"])
 
-    result = gds.graph.relationships.to_undirected(G, "REL", "REL_UNDIRECTED")
+    result = gds.beta.graph.relationships.to_undirected(G, "REL", "REL_UNDIRECTED")
     assert result["relationshipsWritten"] == 6
     assert "REL_UNDIRECTED" in G.relationship_types()
 
