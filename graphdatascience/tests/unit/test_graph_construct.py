@@ -112,9 +112,9 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
         {
             "nodeId": [0, 1],
             "labels": [["A"], ["B"]],
-            "propF": [1337, 42.42],
-            "propI": [1337, 42],
-            "propList": [[4, 5, 6, 7], [1, 2, 3]],
+            "pF": [1337, 42.42],
+            "pI": [1337, 42],
+            "pList": [[4, 5, 6, 7], [1, 2, 3]],
         }
     )
     relationships = DataFrame(
@@ -148,32 +148,8 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
     actual_params = runner.last_params()
 
     expected_df = [
-        [
-            None,
-            False,
-            None,
-            False,
-            0,
-            ["A"],
-            True,
-            {"propF": 1337.0, "propI": 1337, "propList": [4, 5, 6, 7]},
-            True,
-            -1,
-            False,
-        ],
-        [
-            None,
-            False,
-            None,
-            False,
-            1,
-            ["B"],
-            True,
-            {"propF": 42.42, "propI": 42, "propList": [1, 2, 3]},
-            True,
-            -1,
-            False,
-        ],
+        [None, False, None, False, 0, ["A"], True, {"pF": 1337.0, "pI": 1337, "pList": [4, 5, 6, 7]}, True, -1, False],
+        [None, False, None, False, 1, ["B"], True, {"pF": 42.42, "pI": 42, "pList": [1, 2, 3]}, True, -1, False],
         [{"relPropA": 1337.2}, True, "REL", True, 0, None, False, None, False, 1, True],
         [{"relPropA": 42.0}, True, "REL2", True, 1, None, False, None, False, 0, True],
     ]
