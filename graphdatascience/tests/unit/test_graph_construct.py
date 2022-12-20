@@ -75,11 +75,11 @@ def test_multi_df(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
         " CASE data[3] WHEN true THEN data[2] ELSE null END AS relationshipType,"
         " CASE data[10] WHEN true THEN data[9] ELSE null END AS targetNodeId,"
         " CASE data[8] WHEN true THEN data[7] ELSE null END AS sourceNodeProperties,"
-        " CASE data[1] WHEN true THEN data[0] ELSE null END AS relProperties"
+        " CASE data[1] WHEN true THEN data[0] ELSE null END AS properties"
         " RETURN gds.alpha.graph.project("
         "$graph_name, data[4], targetNodeId,"
         " {sourceNodeLabels: sourceNodeLabels, sourceNodeProperties: sourceNodeProperties},"
-        " {relationshipType: relationshipType, properties: relProperties}, $configuration)"
+        " {relationshipType: relationshipType, properties: properties}, $configuration)"
     )
 
     assert runner.last_query().replace("\n", "") == expected_proc_query
@@ -135,11 +135,11 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
         " CASE data[3] WHEN true THEN data[2] ELSE null END AS relationshipType,"
         " CASE data[10] WHEN true THEN data[9] ELSE null END AS targetNodeId,"
         " CASE data[8] WHEN true THEN data[7] ELSE null END AS sourceNodeProperties,"
-        " CASE data[1] WHEN true THEN data[0] ELSE null END AS relProperties"
+        " CASE data[1] WHEN true THEN data[0] ELSE null END AS properties"
         " RETURN gds.alpha.graph.project("
         "$graph_name, data[4], targetNodeId,"
         " {sourceNodeLabels: sourceNodeLabels, sourceNodeProperties: sourceNodeProperties},"
-        " {relationshipType: relationshipType, properties: relProperties}, $configuration)"
+        " {relationshipType: relationshipType, properties: properties}, $configuration)"
     )
 
     # indices are based off the combined df

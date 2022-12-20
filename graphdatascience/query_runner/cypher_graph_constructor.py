@@ -12,6 +12,13 @@ from .query_runner import QueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 
 
+class CypherAggregationApi:
+    RELATIONSHIP_TYPE = "relationshipType"
+    SOURCE_NODE_LABEL = "sourceNodeLabels"
+    SOURCE_NODE_PROPERTIES = "sourceNodeProperties"
+    REL_PROPERTIES = "properties"
+
+
 @dataclass
 class EntityColumnSchema:
     all: Set[str]
@@ -140,7 +147,7 @@ class CypherGraphConstructor(GraphConstructor):
             aligned_rel_dfs = self.adjust_rel_df(relationship_dfs, graph_schema)
 
             # concat instead of join as we want to first have all nodes and then the rels
-            # this way we dont duplicate the node property data and its cheaper
+            # this way we don't duplicate the node property data and its cheaper
             combined_df: DataFrame = concat(aligned_node_dfs + aligned_rel_dfs, ignore_index=True, copy=False)
             # make column order deterministic
             combined_df = combined_df[sorted(combined_df)]
@@ -150,12 +157,12 @@ class CypherGraphConstructor(GraphConstructor):
 
             property_clauses: List[str] = [
                 self.check_value_clause(combined_cols, prop_col)
-                for prop_col in ["sourceNodeProperties", "relProperties"]
+                for prop_col in [CypherAggregationApi.SOURCE_NODE_PROPERTIES, CypherAggregationApi.REL_PROPERTIES]
             ]
 
             source_node_labels_clause = (
-                self.check_value_clause(combined_cols, "sourceNodeLabels")
-                if "sourceNodeLabels" in combined_cols
+                self.check_value_clause(combined_cols, CypherAggregationApi.SOURCE_NODE_LABEL)
+                if CypherAggregationApi.SOURCE_NODE_LABEL in combined_cols
                 else ""
             )
             rel_type_clause = (
@@ -232,25 +239,25 @@ class CypherGraphConstructor(GraphConstructor):
                     "targetNodeId": -1,
                 }
 
-                if "relationshipType" in schema.all_rels.all:
-                    node_dict["relationshipType"] = None
-                    node_dict["relationshipType" + self._BIT_COL_SUFFIX] = False
+                if CypherAggregationApi.RELATIONSHIP_TYPE in schema.all_rels.all:
+                    node_dict[CypherAggregationApi.RELATIONSHIP_TYPE] = None
+                    node_dict[CypherAggregationApi.RELATIONSHIP_TYPE + self._BIT_COL_SUFFIX] = False
 
                 if "labels" in schema.nodes_per_df[i].all:
-                    node_dict["sourceNodeLabels" + self._BIT_COL_SUFFIX] = True
-                    node_dict["sourceNodeLabels"] = df["labels"]
+                    node_dict[CypherAggregationApi.SOURCE_NODE_LABEL + self._BIT_COL_SUFFIX] = True
+                    node_dict[CypherAggregationApi.SOURCE_NODE_LABEL] = df["labels"]
                 elif "labels" in schema.all_nodes.all:
-                    node_dict["sourceNodeLabels" + self._BIT_COL_SUFFIX] = False
-                    node_dict["sourceNodeLabels"] = ""
+                    node_dict[CypherAggregationApi.SOURCE_NODE_LABEL + self._BIT_COL_SUFFIX] = False
+                    node_dict[CypherAggregationApi.SOURCE_NODE_LABEL] = ""
 
                 def collect_to_dict(row):  # type: ignore
                     return {column: row[column] for column in schema.nodes_per_df[i].properties}
 
                 node_dict_df = DataFrame(node_dict)
-                node_dict_df["sourceNodeProperties"] = df.apply(collect_to_dict, axis=1)
-                node_dict_df["sourceNodeProperties" + self._BIT_COL_SUFFIX] = True
-                node_dict_df["relProperties"] = None
-                node_dict_df["relProperties" + self._BIT_COL_SUFFIX] = False
+                node_dict_df[CypherAggregationApi.SOURCE_NODE_PROPERTIES] = df.apply(collect_to_dict, axis=1)
+                node_dict_df[CypherAggregationApi.SOURCE_NODE_PROPERTIES + self._BIT_COL_SUFFIX] = True
+                node_dict_df[CypherAggregationApi.REL_PROPERTIES] = None
+                node_dict_df[CypherAggregationApi.REL_PROPERTIES + self._BIT_COL_SUFFIX] = False
 
                 adjusted_dfs.append(node_dict_df)
 
@@ -266,25 +273,25 @@ class CypherGraphConstructor(GraphConstructor):
                     f"targetNodeId{self._BIT_COL_SUFFIX}": True,
                 }
 
-                if "relationshipType" in schema.rels_per_df[i].all:
-                    rel_dict["relationshipType" + self._BIT_COL_SUFFIX] = True
-                    rel_dict["relationshipType"] = df["relationshipType"]
-                elif "relationshipType" in schema.all_rels.all:
-                    rel_dict["relationshipType" + self._BIT_COL_SUFFIX] = False
-                    rel_dict["relationshipType"] = None
+                if CypherAggregationApi.RELATIONSHIP_TYPE in schema.rels_per_df[i].all:
+                    rel_dict[CypherAggregationApi.RELATIONSHIP_TYPE + self._BIT_COL_SUFFIX] = True
+                    rel_dict[CypherAggregationApi.RELATIONSHIP_TYPE] = df[CypherAggregationApi.RELATIONSHIP_TYPE]
+                elif CypherAggregationApi.RELATIONSHIP_TYPE in schema.all_rels.all:
+                    rel_dict[CypherAggregationApi.RELATIONSHIP_TYPE + self._BIT_COL_SUFFIX] = False
+                    rel_dict[CypherAggregationApi.RELATIONSHIP_TYPE] = None
 
                 if "labels" in schema.all_nodes.all:
-                    rel_dict["sourceNodeLabels"] = None
-                    rel_dict["sourceNodeLabels" + self._BIT_COL_SUFFIX] = False
+                    rel_dict[CypherAggregationApi.SOURCE_NODE_LABEL] = None
+                    rel_dict[CypherAggregationApi.SOURCE_NODE_LABEL + self._BIT_COL_SUFFIX] = False
 
                 def collect_to_dict(row):  # type: ignore
                     return {column: row[column] for column in schema.rels_per_df[i].properties}
 
                 rel_dict_df = DataFrame(rel_dict)
-                rel_dict_df["relProperties"] = df.apply(collect_to_dict, axis=1)
-                rel_dict_df["relProperties" + self._BIT_COL_SUFFIX] = True
-                rel_dict_df["sourceNodeProperties"] = None
-                rel_dict_df["sourceNodeProperties" + self._BIT_COL_SUFFIX] = False
+                rel_dict_df[CypherAggregationApi.REL_PROPERTIES] = df.apply(collect_to_dict, axis=1)
+                rel_dict_df[CypherAggregationApi.REL_PROPERTIES + self._BIT_COL_SUFFIX] = True
+                rel_dict_df[CypherAggregationApi.SOURCE_NODE_PROPERTIES] = None
+                rel_dict_df[CypherAggregationApi.SOURCE_NODE_PROPERTIES + self._BIT_COL_SUFFIX] = False
 
                 adjusted_dfs.append(rel_dict_df)
 
@@ -295,11 +302,15 @@ class CypherGraphConstructor(GraphConstructor):
             # Otherwise we would just pass a string such as `data[0]`
             nodes_config_fields: List[str] = []
             if reduce(lambda x, y: x | y.has_labels(), node_cols, False):
-                nodes_config_fields.append("sourceNodeLabels: sourceNodeLabels")
+                nodes_config_fields.append(
+                    f"{CypherAggregationApi.SOURCE_NODE_LABEL}: {CypherAggregationApi.SOURCE_NODE_LABEL}"
+                )
 
             # as we first list all nodes at the top of the df, we don't need to lookup properties for the target node
             if reduce(lambda x, y: x | y.has_properties(), node_cols, False):
-                nodes_config_fields.append("sourceNodeProperties: sourceNodeProperties")
+                nodes_config_fields.append(
+                    f"{CypherAggregationApi.SOURCE_NODE_PROPERTIES}: {CypherAggregationApi.SOURCE_NODE_PROPERTIES}"
+                )
 
             return f"{{{', '.join(nodes_config_fields)}}}"
 
@@ -307,10 +318,14 @@ class CypherGraphConstructor(GraphConstructor):
             rels_config_fields: List[str] = []
 
             if reduce(lambda x, y: x | y.has_rel_type(), rel_cols, False):
-                rels_config_fields.append("relationshipType: relationshipType")
+                rels_config_fields.append(
+                    f"{CypherAggregationApi.RELATIONSHIP_TYPE}: {CypherAggregationApi.RELATIONSHIP_TYPE}"
+                )
 
             if reduce(lambda x, y: x | y.has_properties(), rel_cols, False):
-                rels_config_fields.append("properties: relProperties")
+                rels_config_fields.append(
+                    f"{CypherAggregationApi.REL_PROPERTIES}: {CypherAggregationApi.REL_PROPERTIES}"
+                )
 
             return f"{{{', '.join(rels_config_fields)}}}"
 
