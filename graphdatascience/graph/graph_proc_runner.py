@@ -63,6 +63,9 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
     @client_only_endpoint("gds.graph")
     def load_imdb(self, graph_name: str = "imdb", undirected: bool = True) -> Graph:
+        if self._server_version < ServerVersion(2, 3, 0):
+            raise ValueError("The IMDB dataset loading is only supported by GDS 2.3 or later.")
+
         with path("graphdatascience.resources.imdb", "imdb_movies_with_genre_gzip.pkl") as nodes_resource:
             movies_with_genre = read_pickle(nodes_resource, compression="gzip")
         with path("graphdatascience.resources.imdb", "imdb_movies_without_genre_gzip.pkl") as nodes_resource:
