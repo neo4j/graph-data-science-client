@@ -181,6 +181,22 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
 
         return TopologyDataFrame(self._query_runner.run_query(query, params))
 
+    @compatible_with("toUndirected", min_inclusive=ServerVersion(2, 3, 0))
+    @graph_type_check
+    def to_undirected(
+        self, G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any
+    ) -> "Series[Any]":
+        self._namespace += ".toUndirected"
+        query = f"CALL {self._namespace}($graph_name, $config)"
+
+        actual_config = config | {
+            "relationshipType": relationship_type,
+            "mutateRelationshipType": mutate_relationship_type,
+        }
+        params = {"graph_name": G.name(), "config": actual_config}
+
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+
 
 class GraphPropertyRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
