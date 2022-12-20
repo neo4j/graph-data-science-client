@@ -34,12 +34,6 @@ class EntityColumnSchema:
         return "relationshipType" in self.all
 
 
-@dataclass
-class DummyValues:
-    nodes: Dict[str, Any]
-    rels: Dict[str, Any]
-
-
 class GraphColumnSchema:
     def __init__(self, nodes: List[EntityColumnSchema], rels: List[EntityColumnSchema]):
         self.nodes_per_df = nodes
@@ -133,7 +127,7 @@ class CypherGraphConstructor(GraphConstructor):
             self._undirected_relationship_types = undirected_relationship_types
 
         def run(self, node_dfs: List[DataFrame], relationship_dfs: List[DataFrame]) -> None:
-            graph_schema, dummy_values = self.schema(node_dfs, relationship_dfs)
+            graph_schema = self.schema(node_dfs, relationship_dfs)
 
             same_cols = graph_schema.all_rels.all.intersection(graph_schema.all_nodes.all)
 
@@ -206,28 +200,20 @@ class CypherGraphConstructor(GraphConstructor):
                 f" WHEN true THEN data[{combined_cols.index(col)}] ELSE null END AS {col}, "
             )
 
-        def schema(self, node_dfs: List[DataFrame], rel_dfs: List[DataFrame]) -> Tuple[GraphColumnSchema, DummyValues]:
+        def schema(self, node_dfs: List[DataFrame], rel_dfs: List[DataFrame]) -> GraphColumnSchema:
             node_schema = []
-            node_dummy_values = {}
             for df in node_dfs:
                 node_cols = set(df.columns.tolist())
                 node_schema.append(EntityColumnSchema(node_cols, node_cols - {"nodeId", "labels"}))
 
-                for col in node_cols:
-                    node_dummy_values[col] = df[col][0]
-
             rel_schema = []
-            rel_dummy_values = {}
             for df in rel_dfs:
                 rel_cols = set(df.columns.tolist())
                 rel_schema.append(
                     EntityColumnSchema(rel_cols, rel_cols - {"sourceNodeId", "targetNodeId", "relationshipType"})
                 )
 
-                for col in rel_cols:
-                    rel_dummy_values[col] = df[col][0]
-
-            return GraphColumnSchema(node_schema, rel_schema), DummyValues(node_dummy_values, rel_dummy_values)
+            return GraphColumnSchema(node_schema, rel_schema)
 
         def adjust_node_df(self, node_dfs: List[DataFrame], schema: GraphColumnSchema) -> List[DataFrame]:
             adjusted_dfs = []
