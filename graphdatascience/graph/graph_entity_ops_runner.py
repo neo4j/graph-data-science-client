@@ -154,6 +154,31 @@ class GraphRelationshipRunner(GraphEntityOpsBaseRunner):
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
 
+class ToUndirectedRunner(CallerBase, IllegalAttrChecker):
+    def _run_procedure(
+        self, G: Graph, query: str, relationship_type: str, mutate_relationship_type: str, **config: Any
+    ) -> "Series[Any]":
+        actual_config = {
+            **config,
+            "relationshipType": relationship_type,
+            "mutateRelationshipType": mutate_relationship_type,
+        }
+
+        params = {"graph_name": G.name(), "config": actual_config}
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+
+    @graph_type_check
+    def __call__(self, G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any) -> "Series[Any]":
+        query = f"CALL {self._namespace}($graph_name, $config)"
+        return self._run_procedure(G, query, relationship_type, mutate_relationship_type)
+
+    @graph_type_check
+    @compatible_with("estimate", min_inclusive=ServerVersion(2, 3, 0))
+    def estimate(self, G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any) -> "Series[Any]":
+        query = f"CALL {self._namespace}.estimate($graph_name, $config)"
+        return self._run_procedure(G, query, relationship_type, mutate_relationship_type)
+
+
 class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
     @compatible_with("drop", min_inclusive=ServerVersion(2, 2, 0))
     @graph_type_check
@@ -181,21 +206,11 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
 
         return TopologyDataFrame(self._query_runner.run_query(query, params))
 
+    @property
     @compatible_with("toUndirected", min_inclusive=ServerVersion(2, 3, 0))
-    @graph_type_check
-    def to_undirected(
-        self, G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any
-    ) -> "Series[Any]":
+    def toUndirected(self) -> ToUndirectedRunner:
         self._namespace += ".toUndirected"
-        query = f"CALL {self._namespace}($graph_name, $config)"
-
-        actual_config = config | {
-            "relationshipType": relationship_type,
-            "mutateRelationshipType": mutate_relationship_type,
-        }
-        params = {"graph_name": G.name(), "config": actual_config}
-
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return ToUndirectedRunner(self._query_runner, self._namespace, self._server_version)
 
 
 class GraphPropertyRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
