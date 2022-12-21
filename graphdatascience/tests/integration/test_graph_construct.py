@@ -117,6 +117,35 @@ def test_karate_club_graph_with_arrow_undirected(gds: GraphDataScience) -> None:
         G.drop()
 
 
+@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 3, 0))
+def test_imdb_without_arrow_fails_before_23(gds_without_arrow: GraphDataScience) -> None:
+    with pytest.raises(ValueError):
+        gds_without_arrow.graph.load_imdb()
+
+
+@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
+def test_imdb_graph_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    G = gds_without_arrow.graph.load_imdb()
+
+    try:
+        assert G.node_count() == 12772
+        assert G.relationship_count() == 37288
+    finally:
+        G.drop()
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
+def test_imdb_graph_with_arrow(gds: GraphDataScience) -> None:
+    G = gds.graph.load_imdb()
+
+    try:
+        assert G.node_count() == 12772
+        assert G.relationship_count() == 37288
+    finally:
+        G.drop()
+
+
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 @pytest.mark.enterprise
 def test_roundtrip_with_arrow(gds: GraphDataScience) -> None:

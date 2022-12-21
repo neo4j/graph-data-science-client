@@ -19,6 +19,9 @@
 * Added new convenience factory methods to create pipeline objects.
 * `gds.graph.construct` now renders a progress bar if Arrow support is enabled.
 * Added a new method `gds.graph.relationships.to_undirected` to turn a directed relationship type to an undirected, when using GDS >= 2.3.0
+* Added new pre-canned datasets:
+  * `gds.graph.load_karate_club`
+  * `gds.graph.load_imdb`
 
 
 ## Bug fixes

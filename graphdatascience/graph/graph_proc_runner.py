@@ -61,6 +61,35 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
 
+    @client_only_endpoint("gds.graph")
+    def load_imdb(self, graph_name: str = "imdb", undirected: bool = True) -> Graph:
+        if self._server_version < ServerVersion(2, 3, 0):
+            raise ValueError("The IMDB dataset loading is only supported by GDS 2.3 or later.")
+
+        with path("graphdatascience.resources.imdb", "imdb_movies_with_genre_gzip.pkl") as nodes_resource:
+            movies_with_genre = read_pickle(nodes_resource, compression="gzip")
+        with path("graphdatascience.resources.imdb", "imdb_movies_without_genre_gzip.pkl") as nodes_resource:
+            movies_without_genre = read_pickle(nodes_resource, compression="gzip")
+        with path("graphdatascience.resources.imdb", "imdb_actors_gzip.pkl") as nodes_resource:
+            actors = read_pickle(nodes_resource, compression="gzip")
+        with path("graphdatascience.resources.imdb", "imdb_directors_gzip.pkl") as nodes_resource:
+            directors = read_pickle(nodes_resource, compression="gzip")
+
+        with path("graphdatascience.resources.imdb", "imdb_acted_in_rels_gzip.pkl") as rels_resource:
+            acted_in_rels = read_pickle(rels_resource, compression="gzip")
+        with path("graphdatascience.resources.imdb", "imdb_directed_in_rels_gzip.pkl") as rels_resource:
+            directed_in_rels = read_pickle(rels_resource, compression="gzip")
+
+        self._namespace = "gds.alpha.graph"
+
+        nodes = [movies_with_genre, movies_without_genre, actors, directors]
+        rels = [acted_in_rels, directed_in_rels]
+
+        # Default undirected which matches raw data
+        undirected_relationship_types = ["*"] if undirected else []
+
+        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
+
     @property
     def project(self) -> GraphProjectRunner:
         self._namespace += ".project"
