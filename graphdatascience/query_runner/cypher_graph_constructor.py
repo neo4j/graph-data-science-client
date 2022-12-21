@@ -79,13 +79,14 @@ class CypherGraphConstructor(GraphConstructor):
         else:
             assert not self._undirected_relationship_types, "This should have been raised earlier."
 
+            def graph_construct_error_multidf(element: str) -> str:
+                return f"Graph construction only supports a single {element} dataframe on GDS versions prior to GDS 2.3"
+
             if len(node_dfs) > 1:
-                raise ValueError("The GDS Community edition graph construction supports only a single node dataframe")
+                raise ValueError(graph_construct_error_multidf("node"))
 
             if len(relationship_dfs) > 1:
-                raise ValueError(
-                    "The GDS Community edition graph construction supports at most one relationship dataframe"
-                )
+                raise ValueError(graph_construct_error_multidf("relationship"))
 
             node_df = node_dfs[0]
             rel_df = relationship_dfs[0]
