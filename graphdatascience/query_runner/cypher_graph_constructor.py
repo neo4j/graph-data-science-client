@@ -138,8 +138,8 @@ class CypherGraphConstructor(GraphConstructor):
                     f"but the columns {same_cols} exist in both dfs. Please rename the column in one df."
                 )
 
-            aligned_node_dfs = self.adjust_node_df(node_dfs, graph_schema)
-            aligned_rel_dfs = self.adjust_rel_df(relationship_dfs, graph_schema)
+            aligned_node_dfs = self.adjust_node_dfs(node_dfs, graph_schema)
+            aligned_rel_dfs = self.adjust_rel_dfs(relationship_dfs, graph_schema)
 
             # concat instead of join as we want to first have all nodes and then the rels
             # this way we don't duplicate the node property data and its cheaper
@@ -216,7 +216,7 @@ class CypherGraphConstructor(GraphConstructor):
 
             return GraphColumnSchema(node_schema, rel_schema)
 
-        def adjust_node_df(self, node_dfs: List[DataFrame], schema: GraphColumnSchema) -> List[DataFrame]:
+        def adjust_node_dfs(self, node_dfs: List[DataFrame], schema: GraphColumnSchema) -> List[DataFrame]:
             adjusted_dfs = []
 
             for i, df in enumerate(node_dfs):
@@ -250,7 +250,7 @@ class CypherGraphConstructor(GraphConstructor):
 
             return adjusted_dfs
 
-        def adjust_rel_df(self, rel_dfs: List[DataFrame], schema: GraphColumnSchema) -> List[DataFrame]:
+        def adjust_rel_dfs(self, rel_dfs: List[DataFrame], schema: GraphColumnSchema) -> List[DataFrame]:
             adjusted_dfs = []
 
             for i, df in enumerate(rel_dfs):
