@@ -17,7 +17,7 @@
   * `link_features` (only for LP models)
   * `node_property_steps`
 * Added new convenience factory methods to create pipeline objects.
-
+* Added a new method `gds.graph.relationships.to_undirected` to turn a directed relationship type to an undirected, when using GDS >= 2.3.0
 
 ## Bug fixes
 

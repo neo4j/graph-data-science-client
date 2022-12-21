@@ -597,6 +597,15 @@ def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
     assert num_rels == result.shape[0]
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
+def test_graph_relationships_to_undirected(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "Node", ["REL", "REL2"])
+
+    result = gds.beta.graph.relationships.toUndirected(G, "REL", "REL_UNDIRECTED")
+    assert result["relationshipsWritten"] == 6
+    assert "REL_UNDIRECTED" in G.relationship_types()
+
+
 def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
