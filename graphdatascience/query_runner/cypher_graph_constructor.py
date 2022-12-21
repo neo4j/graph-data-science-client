@@ -222,8 +222,8 @@ class CypherGraphConstructor(GraphConstructor):
             for i, df in enumerate(node_dfs):
                 node_dict: Dict[str, Any] = {
                     "sourceNodeId": df["nodeId"],
-                    f"targetNodeId{self._BIT_COL_SUFFIX}": False,
                     "targetNodeId": -1,
+                    f"targetNodeId{self._BIT_COL_SUFFIX}": False,
                 }
 
                 if CypherAggregationApi.RELATIONSHIP_TYPE in schema.all_rels.all:
@@ -237,7 +237,7 @@ class CypherGraphConstructor(GraphConstructor):
                     node_dict[CypherAggregationApi.SOURCE_NODE_LABEL + self._BIT_COL_SUFFIX] = False
                     node_dict[CypherAggregationApi.SOURCE_NODE_LABEL] = ""
 
-                def collect_to_dict(row):  # type: ignore
+                def collect_to_dict(row: Dict[str, Any]) -> Dict[str, Any]:
                     return {column: row[column] for column in schema.nodes_per_df[i].properties}
 
                 node_dict_df = DataFrame(node_dict)
@@ -254,7 +254,7 @@ class CypherGraphConstructor(GraphConstructor):
             adjusted_dfs = []
 
             for i, df in enumerate(rel_dfs):
-                rel_dict = {
+                rel_dict: Dict[str, Any] = {
                     "sourceNodeId": df["sourceNodeId"],
                     "targetNodeId": df["targetNodeId"],
                     f"targetNodeId{self._BIT_COL_SUFFIX}": True,
@@ -271,7 +271,7 @@ class CypherGraphConstructor(GraphConstructor):
                     rel_dict[CypherAggregationApi.SOURCE_NODE_LABEL] = None
                     rel_dict[CypherAggregationApi.SOURCE_NODE_LABEL + self._BIT_COL_SUFFIX] = False
 
-                def collect_to_dict(row):  # type: ignore
+                def collect_to_dict(row: Dict[str, Any]) -> Dict[str, Any]:
                     return {column: row[column] for column in schema.rels_per_df[i].properties}
 
                 rel_dict_df = DataFrame(rel_dict)
