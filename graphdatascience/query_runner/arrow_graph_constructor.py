@@ -1,12 +1,14 @@
+import concurrent
 import json
 import math
-from concurrent.futures import ThreadPoolExecutor, wait
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional
 
 import numpy
 import pyarrow.flight as flight
 from pandas import DataFrame
 from pyarrow import Table
+from tqdm.auto import tqdm
 
 from .graph_constructor import GraphConstructor
 
@@ -73,28 +75,31 @@ class ArrowGraphConstructor(GraphConstructor):
 
         json.loads(next(result).body.to_pybytes().decode())
 
-    def _send_df(self, df: DataFrame, entity_type: str) -> None:
+    def _send_df(self, df: DataFrame, entity_type: str, pbar: tqdm) -> None:
         table = Table.from_pandas(df)
+        batches = table.to_batches(self._chunk_size)
         flight_descriptor = {"name": self._graph_name, "entity_type": entity_type}
 
         # Write schema
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
-
         writer, _ = self._client.do_put(upload_descriptor, table.schema)
 
         with writer:
             # Write table in chunks
-            writer.write_table(table, max_chunksize=self._chunk_size)
+            for partition in batches:
+                writer.write_batch(partition)
+                pbar.update(partition.num_rows)
 
     def _send_dfs(self, dfs: List[DataFrame], entity_type: str) -> None:
+        desc = "Uploading Nodes" if entity_type == "node" else "Uploading Relationships"
+        pbar = tqdm(total=sum([df.shape[0] for df in dfs]), unit="Records", desc=desc)
+
         partitioned_dfs = self._partition_dfs(dfs)
 
         with ThreadPoolExecutor(self._concurrency) as executor:
-            futures = [executor.submit(self._send_df, df, entity_type) for df in partitioned_dfs]
+            futures = [executor.submit(self._send_df, df, entity_type, pbar) for df in partitioned_dfs]
 
-            wait(futures)
-
-            for future in futures:
+            for future in concurrent.futures.as_completed(futures):
                 if not future.exception():
                     continue
                 raise future.exception()  # type: ignore
