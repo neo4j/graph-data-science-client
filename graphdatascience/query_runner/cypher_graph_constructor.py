@@ -197,8 +197,11 @@ class CypherGraphConstructor(GraphConstructor):
 
         def check_value_clause(self, combined_cols: List[str], col: str) -> str:
             return (
-                f"CASE data[{combined_cols.index(col + self._BIT_COL_SUFFIX)}]"
-                f" WHEN true THEN data[{combined_cols.index(col)}] ELSE null END AS {col}, "
+                f"CASE"
+                f" WHEN data[{combined_cols.index(col + self._BIT_COL_SUFFIX)}]"
+                f" THEN data[{combined_cols.index(col)}]"
+                f" ELSE null"
+                f" END AS {col}, "
             )
 
         def schema(self, node_dfs: List[DataFrame], rel_dfs: List[DataFrame]) -> GraphColumnSchema:
