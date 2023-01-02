@@ -405,6 +405,12 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         relationships = relationships if isinstance(relationships, List) else [relationships]
 
         errors = []
+
+        if self._query_runner.run_query(f"CALL gds.graph.exists('{graph_name}')")["exists"].squeeze():
+            errors.append(
+                f"Graph '{graph_name}' already exists. Please drop the existing graph or use a different name."
+            )
+
         for idx, node_df in enumerate(nodes):
             if "nodeId" not in node_df.columns.values:
                 errors.append(f"Node dataframe at index {idx} needs to contain a 'nodeId' column.")
