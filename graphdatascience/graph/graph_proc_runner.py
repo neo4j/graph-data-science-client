@@ -406,7 +406,10 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
 
         errors = []
 
-        if self._query_runner.run_query(f"CALL gds.graph.exists('{graph_name}')")["exists"].squeeze():
+        exists = self._query_runner.run_query(f"CALL gds.graph.exists('{graph_name}') YIELD exists").squeeze()
+
+        # compare against True as (1) unit tests return None here and (2) numpys True does not work with `is True`.
+        if exists == True:  # noqa: E712
             errors.append(
                 f"Graph '{graph_name}' already exists. Please drop the existing graph or use a different name."
             )

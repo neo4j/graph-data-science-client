@@ -318,7 +318,7 @@ def warn_for_graph_alpha_construct_undirected_with_arrow(gds: GraphDataScience) 
 
 
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
-def test_error_on_loading_cora_twice(gds: GraphDataScience) -> None:
+def test_error_on_construct_same_graph_twice(gds: GraphDataScience) -> None:
     nodes = DataFrame({"nodeId": [0, 1]})
     relationships = DataFrame({"sourceNodeId": [0, 1], "targetNodeId": [1, 0]})
     graph_name = "g"
