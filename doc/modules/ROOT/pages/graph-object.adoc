@@ -13,7 +13,7 @@ include::partial$/gds-object.adoc[]
 == Projecting a graph object
 
 There are several ways of projecting a graph object.
-The simplest way is to do a https://neo4j.com/docs/graph-data-science/current/graph-project/[native projection]:
+The simplest way is to do a https://neo4j.com/docs/graph-data-science/current/management-ops/projections/graph-project/[native projection]:
 
 [source,python]
 ----
