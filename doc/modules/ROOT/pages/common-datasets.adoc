@@ -1,0 +1,84 @@
+= Common datasets
+
+
+For convenience, the library is shipped with a few common datasets.
+We can easily load it into GDS and get a graph object representing the dataset.
+
+Every pre-canned dataset comes with a loader method that takes two optional parameters:
+`graph_name` which assigns a graph name,
+`undirected` which takes a boolean and will load the graph as undirected if set to true.
+
+If a graph is loaded as `undirected = True`, then it will have twice the number of relationships compared to its directed version.
+The default value for `undirected` varies for each dataset.
+
+For example:
+[source, python]
+----
+G = gds.graph.load_cora()
+
+assert G.node_count() == 2708
+assert G.node_labels() == ["Paper"]
+----
+
+
+== Datasets
+
+=== Cora
+A well known citation network introduced by
+https://doi.org/10.1023/A:1009953814988[Automating the Construction of Internet Portals with Machine Learning]
+and used in many node classification or link prediction https://paperswithcode.com/dataset/cora[publications].
+
+The default is to load Cora as `undirected = False`.
+
+.The loaded cora graph object
+[opts="header",cols="3m,3m", role="no-break"]
+|===
+| Name                    | Value
+| name                    | cora
+| node_count              | 2708
+| relationship_count      | 5429
+| node_labels             | ['Paper']
+| relationship_types      | ['CITES']
+| node_properties         | Paper: [features, subject]
+| relationship_properties | CITES: []
+|===
+
+=== Karate club
+A well known social network introduced by http://konect.cc/networks/ucidata-zachary/[Zachary].
+The default is to load Karate club as `undirected = False`.
+
+.The loaded karate club graph object
+[opts="header",cols="3m,3m", role="no-break"]
+|===
+| Name                    | Value
+| name                    | karate_club
+| node_count              | 34
+| relationship_count      | 78
+| node_labels             | ['__ALL__']
+| relationship_types      | ['KNOWS']
+| node_properties         | __ALL__: []
+| relationship_properties | KNOWS: []
+|===
+
+=== IMDB
+A heterogeneous graph that is used to benchmark node classification or link prediction models such as
+https://arxiv.org/abs/1903.07293[Heterogeneous Graph Attention Network],
+https://arxiv.org/abs/2002.01680[MAGNN: Metapath Aggregated Graph Neural Network for Heterogeneous Graph Embedding] and
+https://arxiv.org/abs/1911.06455[Graph Transformer Networks].
+The graph contains Actors, Directors and Movies as nodes, and relationships between actors and movies that they acted in,
+and between directors and movies which they directed for.
+
+The default is to load IMDB dataset as `undirected = True`. If loaded as directed, it will have half the relationships.
+
+.The loaded imdb graph object
+[opts="header",cols="3m,3m", role="no-break"]
+|===
+| Name                    | Value
+| name                    | imdb
+| node_count              | 12772
+| relationship_count      | 37288
+| node_labels             | ['Movie', 'Actor', 'Director']
+| relationship_types      | ['ACTED_IN', 'DIRECTED_IN']
+| node_properties         | Movie: [plot_keywords], Actor: [plot_keywords], Director: [plot_keywords]
+| relationship_properties | ACTED_IN: [], DIRECTED_IN
+|===
