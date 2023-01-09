@@ -51,6 +51,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     @client_only_endpoint("gds.graph")
     def load_karate_club(self, graph_name: str = "karate_club", undirected: bool = False) -> Graph:
         nodes = pd.DataFrame({"nodeId": range(1, 35)})
+        nodes["labels"] = "Person"
 
         with path("graphdatascience.resources.karate", "karate_club_gzip.pkl") as rels_resource:
             rels = read_pickle(rels_resource, compression="gzip")

@@ -54,9 +54,9 @@ The default is to load Karate club as `undirected = False`.
 | name                    | karate_club
 | node_count              | 34
 | relationship_count      | 78
-| node_labels             | ['__ALL__']
+| node_labels             | ['Person']
 | relationship_types      | ['KNOWS']
-| node_properties         | __ALL__: []
+| node_properties         | Person: []
 | relationship_properties | KNOWS: []
 |===
 
@@ -65,7 +65,7 @@ A heterogeneous graph that is used to benchmark node classification or link pred
 https://arxiv.org/abs/1903.07293[Heterogeneous Graph Attention Network],
 https://arxiv.org/abs/2002.01680[MAGNN: Metapath Aggregated Graph Neural Network for Heterogeneous Graph Embedding] and
 https://arxiv.org/abs/1911.06455[Graph Transformer Networks].
-The graph contains Actors, Directors and Movies as nodes, and relationships between actors and movies that they acted in,
+The graph contains Actors, Directors, Movies (and UnclassifiedMovies) as nodes, and relationships between actors and movies that they acted in,
 and between directors and movies which they directed for.
 
 The default is to load IMDB dataset as `undirected = True`. If loaded as directed, it will have half the relationships.
@@ -77,8 +77,8 @@ The default is to load IMDB dataset as `undirected = True`. If loaded as directe
 | name                    | imdb
 | node_count              | 12772
 | relationship_count      | 37288
-| node_labels             | ['Movie', 'Actor', 'Director']
+| node_labels             | ['Movie', 'Actor', 'Director', 'UnclassifiedMovie']
 | relationship_types      | ['ACTED_IN', 'DIRECTED_IN']
-| node_properties         | Movie: [plot_keywords], Actor: [plot_keywords], Director: [plot_keywords]
+| node_properties         | Movie: [plot_keywords, genre], Actor: [plot_keywords], Director: [plot_keywords]
 | relationship_properties | ACTED_IN: [], DIRECTED_IN
 |===

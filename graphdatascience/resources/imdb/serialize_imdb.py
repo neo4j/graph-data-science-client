@@ -36,7 +36,7 @@ other_nodes_with_features = (
 
 unlabeled_movies = other_nodes_with_features["nodeId"] < 4661
 unlabeled_movies_df = other_nodes_with_features[unlabeled_movies]
-unlabeled_movies_df["labels"] = "Movie"
+unlabeled_movies_df["labels"] = "UnclassifiedMovie"
 unlabeled_movies_df.reset_index(drop=True, inplace=True)
 
 directors_df = other_nodes_with_features[
