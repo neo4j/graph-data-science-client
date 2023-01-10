@@ -2,9 +2,9 @@
 
 
 For convenience, the library is shipped with a few common datasets.
-We can easily load it into GDS and get a graph object representing the dataset.
+These are easily imported to GDS to get a graph object representing the dataset.
 
-Every pre-canned dataset comes with a loader method that takes two optional parameters:
+The common datasets comes with a loader method that takes two optional parameters:
 `graph_name` which assigns a graph name,
 `undirected` which takes a boolean and will load the graph as undirected if set to true.
 
@@ -30,7 +30,7 @@ and used in many node classification or link prediction https://paperswithcode.c
 
 The default is to load Cora as `undirected = False`.
 
-.The loaded cora graph object
+.Cora graph statistics
 [opts="header",cols="3m,3m", role="no-break"]
 |===
 | Name                    | Value
@@ -47,7 +47,7 @@ The default is to load Cora as `undirected = False`.
 A well known social network introduced by http://konect.cc/networks/ucidata-zachary/[Zachary].
 The default is to load Karate club as `undirected = False`.
 
-.The loaded karate club graph object
+.Karate club graph statistics
 [opts="header",cols="3m,3m", role="no-break"]
 |===
 | Name                    | Value
@@ -70,7 +70,7 @@ and between directors and movies which they directed for.
 
 The default is to load IMDB dataset as `undirected = True`. If loaded as directed, it will have half the relationships.
 
-.The loaded imdb graph object
+.IMDB graph statistics
 [opts="header",cols="3m,3m", role="no-break"]
 |===
 | Name                    | Value
@@ -80,5 +80,5 @@ The default is to load IMDB dataset as `undirected = True`. If loaded as directe
 | node_labels             | ['Movie', 'Actor', 'Director', 'UnclassifiedMovie']
 | relationship_types      | ['ACTED_IN', 'DIRECTED_IN']
 | node_properties         | Movie: [plot_keywords, genre], Actor: [plot_keywords], Director: [plot_keywords]
-| relationship_properties | ACTED_IN: [], DIRECTED_IN
+| relationship_properties | ACTED_IN: [], DIRECTED_IN: []
 |===
