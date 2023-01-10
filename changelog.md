@@ -22,6 +22,7 @@
 * Added new pre-canned datasets:
   * `gds.graph.load_karate_club`
   * `gds.graph.load_imdb`
+* Added new method `gds.alpha.graph.nodeLabel.mutate` to mutate the in-memory graph with new node labels.
 
 
 ## Bug fixes
