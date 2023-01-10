@@ -12,10 +12,13 @@ include::ROOT:partial$/gds-object.adoc[]
 [[model-object-constructing]]
 == Constructing a model object
 
-There are several ways of constructing a model object.
-One of the simplest is to train a https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/[GraphSAGE] model.
+The primary way to construct a model object is through training a model.
+There are two types of models: pipeline models and https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/[GraphSAGE] models.
+In order to train a pipeline model, a pipeline must first be created and configured
+Read more about how to operate pipelines in xref:pipelines.adoc[], including examples of using pipeline models.
+In this section, we will exemplify creating and using a GraphSAGE model object.
 
-To exemplify this, we introduce a small road-network graph:
+First, we introduce a small road-network graph:
 
 [source,python,group=gs-model]
 ----
