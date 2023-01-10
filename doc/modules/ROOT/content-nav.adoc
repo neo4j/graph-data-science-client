@@ -5,6 +5,7 @@
 ** xref:algorithms.adoc[]
 ** xref:pipelines.adoc[]
 ** xref:model-object.adoc[]
+** xref:common-datasets.adoc[]
 ** xref:known-limitations.adoc[]
 
 ** Tutorials
