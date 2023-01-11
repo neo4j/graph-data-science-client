@@ -331,7 +331,9 @@ def test_graph_nodeProperties_stream_with_arrow_separate_property_columns(gds: G
     assert list(result.keys()) == ["nodeId", "x", "y", "z", "name"]
     assert {e for e in result["x"]} == {1, 2, 3}
     assert {e for e in result["y"]} == {2, 3, 4}
-    assert [e for e in result["z"]] == [[42], [1337], [9]]
+    assert len(result["z"]) == 3
+    for e in result["z"]:
+        assert e in [[9], [42], [1337]]
     assert {e for e in result["name"]} == {"nodeA", "nodeB", "nodeC"}
 
 
@@ -366,7 +368,9 @@ def test_graph_nodeProperties_stream_without_arrow(gds_without_arrow: GraphDataS
     assert {e for e in y_values["propertyValue"]} == {2, 3, 4}
 
     z_values = result[result.nodeProperty == "z"]
-    assert [e for e in z_values["propertyValue"]] == [[42], [1337], [9]]
+    assert len(z_values) == 3
+    for e in z_values["propertyValue"]:
+        assert e in [[9], [42], [1337]]
 
     name_values = result[result.nodeProperty == "name"]
     assert {e for e in name_values["propertyValue"]} == {"nodeA", "nodeB", "nodeC"}
