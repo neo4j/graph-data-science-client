@@ -1,7 +1,9 @@
 from typing import Any, Dict, List, Type, Union
 
+import pandas as pd
 from pandas import DataFrame, Series
 
+from ..utils.util_proc_runner import UtilProcRunner
 from .graph_object import Graph
 from .graph_type_check import graph_type_check
 from graphdatascience.caller_base import CallerBase
@@ -33,6 +35,7 @@ class TopologyDataFrame(DataFrame):
 class GraphEntityOpsBaseRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
         super().__init__(query_runner, namespace, server_version)
+        self._util_proc_runner = UtilProcRunner(query_runner, "gds.util", server_version)
 
     @graph_type_check
     def _handle_properties(
@@ -68,6 +71,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         node_properties: List[str],
         node_labels: Strings = ["*"],
         separate_property_columns: bool = False,
+        db_node_properties: List[str] = [],
         **config: Any,
     ) -> DataFrame:
         self._namespace += ".stream"
@@ -84,6 +88,23 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
             result = result.melt(id_vars=["nodeId"]).rename(
                 columns={"variable": "nodeProperty", "value": "propertyValue"}
             )
+
+        if db_node_properties:
+            nodeIds = result["nodeId"].tolist()
+            db_nodes = self._util_proc_runner.asNodes(nodeIds)
+            properties = []
+            for node in db_nodes:
+                properties.append(list([node.id] + list(map(lambda p: node._properties[p], db_node_properties))))
+            db_properties_df = pd.DataFrame(properties, columns=["nodeId"] + db_node_properties).drop_duplicates(
+                subset=["nodeId"]
+            )
+            if "propertyValue" not in result.keys():
+                result = result.join(db_properties_df.set_index("nodeId"), on="nodeId")
+            else:
+                db_properties_df = db_properties_df.melt(id_vars=["nodeId"]).rename(
+                    columns={"variable": "nodeProperty", "value": "propertyValue"}
+                )
+                result = pd.concat([result, db_properties_df])
 
         return result
 

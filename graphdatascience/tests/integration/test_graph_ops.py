@@ -20,9 +20,9 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     runner.run_query(
         """
         CREATE
-        (a: Node {x: 1, y: 2, z: [42]}),
-        (b: Node {x: 2, y: 3, z: [1337]}),
-        (c: Node {x: 3, y: 4, z: [9]}),
+        (a: Node {x: 1, y: 2, z: [42], name: "nodeA"}),
+        (b: Node {x: 2, y: 3, z: [1337], name: "nodeB"}),
+        (c: Node {x: 3, y: 4, z: [9], name: "nodeC"}),
         (a)-[:REL {relX: 4, relY: 5}]->(b),
         (a)-[:REL {relX: 5, relY: 6}]->(c),
         (b)-[:REL {relX: 6, relY: 7}]->(c),
@@ -293,7 +293,7 @@ def test_graph_streamNodeProperties_with_arrow(gds: GraphDataScience) -> None:
 def test_graph_nodeProperties_stream_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
-    result = gds.graph.nodeProperties.stream(G, ["x", "y"], concurrency=2)
+    result = gds.graph.nodeProperties.stream(G, ["x", "y"], db_node_properties=["z", "name"], concurrency=2)
 
     assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
 
@@ -302,6 +302,14 @@ def test_graph_nodeProperties_stream_with_arrow(gds: GraphDataScience) -> None:
 
     y_values = result[result.nodeProperty == "y"]
     assert {e for e in y_values["propertyValue"]} == {2, 3, 4}
+
+    z_values = result[result.nodeProperty == "z"]
+    assert len(z_values) == 3
+    for e in z_values["propertyValue"]:
+        assert e in [[9], [42], [1337]]
+
+    name_values = result[result.nodeProperty == "name"]
+    assert {e for e in name_values["propertyValue"]} == {"nodeA", "nodeB", "nodeC"}
 
 
 def test_graph_streamNodeProperties_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
@@ -317,10 +325,14 @@ def test_graph_streamNodeProperties_with_arrow_separate_property_columns(gds: Gr
 def test_graph_nodeProperties_stream_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
-    result = gds.graph.nodeProperties.stream(G, ["x", "y"], separate_property_columns=True, concurrency=2)
-    assert list(result.keys()) == ["nodeId", "x", "y"]
+    result = gds.graph.nodeProperties.stream(
+        G, ["x", "y"], db_node_properties=["z", "name"], separate_property_columns=True, concurrency=2
+    )
+    assert list(result.keys()) == ["nodeId", "x", "y", "z", "name"]
     assert {e for e in result["x"]} == {1, 2, 3}
     assert {e for e in result["y"]} == {2, 3, 4}
+    assert [e for e in result["z"]] == [[42], [1337], [9]]
+    assert {e for e in result["name"]} == {"nodeA", "nodeB", "nodeC"}
 
 
 def test_graph_streamNodeProperties_without_arrow(gds_without_arrow: GraphDataScience) -> None:
@@ -341,7 +353,9 @@ def test_graph_streamNodeProperties_without_arrow(gds_without_arrow: GraphDataSc
 def test_graph_nodeProperties_stream_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
-    result = gds_without_arrow.graph.nodeProperties.stream(G, ["x", "y"], concurrency=2)
+    result = gds_without_arrow.graph.nodeProperties.stream(
+        G, ["x", "y"], db_node_properties=["z", "name"], concurrency=2
+    )
 
     assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
 
@@ -350,6 +364,12 @@ def test_graph_nodeProperties_stream_without_arrow(gds_without_arrow: GraphDataS
 
     y_values = result[result.nodeProperty == "y"]
     assert {e for e in y_values["propertyValue"]} == {2, 3, 4}
+
+    z_values = result[result.nodeProperty == "z"]
+    assert [e for e in z_values["propertyValue"]] == [[42], [1337], [9]]
+
+    name_values = result[result.nodeProperty == "name"]
+    assert {e for e in name_values["propertyValue"]} == {"nodeA", "nodeB", "nodeC"}
 
 
 def test_graph_streamNodeProperties_without_arrow_separate_property_columns(
@@ -372,17 +392,20 @@ def test_graph_streamNodeProperties_without_arrow_separate_property_columns(
 def test_graph_nodeProperties_stream_without_arrow_separate_property_columns(
     gds_without_arrow: GraphDataScience,
 ) -> None:
-    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "z"]}}, "*")
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
-    result = gds_without_arrow.graph.nodeProperties.stream(G, ["x", "z"], separate_property_columns=True, concurrency=2)
+    result = gds_without_arrow.graph.nodeProperties.stream(
+        G, ["x", "y"], db_node_properties=["z", "name"], separate_property_columns=True, concurrency=2
+    )
 
-    assert list(result.keys()) == ["nodeId", "x", "z"]
+    assert list(result.keys()) == ["nodeId", "x", "y", "z", "name"]
 
     assert {e for e in result["x"]} == {1, 2, 3}
-
+    assert {e for e in result["y"]} == {2, 3, 4}
     assert len(result["z"]) == 3
     for e in result["z"]:
-        assert e in [[9], [42], [1337]]
+        assert e in [[42], [1337], [9]]
+    assert {e for e in result["name"]} == {"nodeA", "nodeB", "nodeC"}
 
 
 def test_graph_streamRelationshipProperty_with_arrow(gds: GraphDataScience) -> None:
