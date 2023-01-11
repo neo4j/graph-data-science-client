@@ -1,3 +1,4 @@
+[[pipelines]]
 = Machine learning pipelines
 
 The Python client has special support for https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/link-prediction/[Link prediction pipelines] and https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/[pipelines for node property prediction].
@@ -168,6 +169,10 @@ In addition to inheriting the methods common to all xref:model-object.adoc[model
 | predict_write_estimate  | G: Graph, +
                             config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/predict/#nodeclassification-pipelines-examples-predict-memory-estimation[Estimate predicting classes for nodes of the input graph and writing the results back to the database].
 | metrics                 | -                | Series      | Returns values for the metrics specified when training, for this particular model.
+| best_parameters         | -                | Series      | Returns the training method parameters that performed best on the validation set.
+| node_property_steps     | -                | List[NodePropertyStep] | Returns a list of algorithms that the pipeline used for computing node properties before training.
+| feature_properties      | -                | List[str]   | Returns the node properties that were used as input model features.
+| classes                 | -                | List[int]   | Returns the list of classes used to train the classification model.
 |===
 
 One can note that the predict methods are indeed very similar to https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/predict/[their Cypher counterparts].
@@ -351,6 +356,9 @@ In addition to inheriting the methods common to all xref:model-object.adoc[model
 | predict_stream_estimate | G: Graph, +
                             config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/predict/#algorithms-link-prediction-pipelines-predict-examples-estimate[Estimate predicting links between non-neighboring nodes of the input graph and streaming the results].
 | metrics                 | -                | Series      | Returns values for the metrics used when training, for this particular model.
+| best_parameters         | -                | Series      | Returns the training method parameters that performed best on the validation set.
+| node_property_steps     | -                | List[NodePropertyStep] | Returns a list of algorithms that the pipeline used for computing node properties before training.
+| link_features           | -                | List[LinkFeature]   | The input link features used to train the model.
 |===
 
 One can note that the predict methods are indeed very similar to https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/predict/[their Cypher counterparts].
@@ -520,6 +528,9 @@ config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/curre
 | predict_stream          | G: Graph, +
 config: **kwargs | DataFrame   | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/predict/#noderegression-pipelines-predict-examples-stream[Predict property values for nodes of the input graph and stream the results].
 | metrics                 | -                | Series      | Returns values for the metrics specified when training, for this particular model.
+| best_parameters         | -                | Series      | Returns the training method parameters that performed best on the validation set.
+| node_property_steps     | -                | List[NodePropertyStep] | Returns a list of algorithms that the pipeline used for computing node properties before training.
+| feature_properties      | -                | List[str]   | Returns the node properties that were used as input model features.
 |===
 
 One can note that the predict methods are indeed very similar to https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/predict/[their Cypher counterparts].
