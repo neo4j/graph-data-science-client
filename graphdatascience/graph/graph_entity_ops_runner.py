@@ -94,7 +94,9 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
             db_nodes = self._util_proc_runner.asNodes(nodeIds)
             properties = []
             for node in db_nodes:
-                properties.append(list([node.id] + list(map(lambda p: node._properties[p], db_node_properties))))
+                properties.append(
+                    list([node.id] + list(map(lambda p: node._properties[p], db_node_properties)))  # type: ignore
+                )
             db_properties_df = pd.DataFrame(properties, columns=["nodeId"] + db_node_properties).drop_duplicates(
                 subset=["nodeId"]
             )
