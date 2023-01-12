@@ -13,6 +13,7 @@ It enables users to write pure Python code to project graphs, run algorithms, as
 
 The API is designed to mimic the GDS Cypher procedure API in Python code.
 It abstracts the necessary operations of the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) to offer a simpler surface.
+Additionally, the client-specific graph, model, and pipeline objects offer convenient functions that heavily reduce the need to use Cypher to access and operate these GDS resources.
 
 `graphdatascience` is only guaranteed to work with GDS versions 2.0+.
 
@@ -29,284 +30,464 @@ pip install graphdatascience
 ```
 
 
-## Usage
+## Getting started
 
-What follows is a high level description of some of the operations supported by `graphdatascience`.
-For extensive documentation of all capabilities, please refer to the [GDS Python Client Manual](https://neo4j.com/docs/graph-data-science-client/current/).
+To use the GDS Python Client, we need to instantiate a GraphDataScience object.
+Then, we can project graphs, create pipelines, train models, and run algorithms.
 
-Extensive end-to-end examples in Jupyter ready-to-run notebooks can be found in the [`examples` source directory](https://github.com/neo4j/graph-data-science-client/tree/main/examples):
+
+```python
+from graphdatascience import GraphDataScience
+
+# Configure the driver with AuraDS-recommended settings
+gds = GraphDataScience("neo4j+s://my-aura-ds.databases.neo4j.io:7687", auth=("neo4j", "my-password"), aura_ds=True)
+
+# Import the Cora common dataset to GDS
+G = gds.graph.load_cora()
+assert G.node_count() == 2708
+
+# Run PageRank in mutate mode
+result = gds.pageRank.mutate(G, tolerance=0.5, mutateProperty="pagerank")
+assert result["nodePropertiesWritten"] == G.node_count()
+```
+
+The example here assumes using an AuraDS instance.
+For additional examples and extensive documentation of all capabilities, please refer to the [GDS Python Client Manual](https://neo4j.com/docs/graph-data-science-client/current/).
+
+Full end-to-end examples in Jupyter ready-to-run notebooks can be found in the [`examples` source directory](https://github.com/neo4j/graph-data-science-client/tree/main/examples):
 
 * [Product recommendations with kNN based on FastRP embeddings](examples/fastrp-and-knn.ipynb)
 * [Exporting from GDS and running GCN with PyG](https://github.com/neo4j/graph-data-science-client/tree/main/examples/import-sample-export-gnn.ipynb)
 * [Load data to a projected graph via graph construction](https://github.com/neo4j/graph-data-science-client/tree/main/examples/load-data-via-graph-construction.ipynb)
 
 
-### Imports and setup
+[//]: # (### Imports and setup)
 
-The library wraps the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) with a `GraphDataScience` object through which most calls to GDS will be made.
+[//]: # ()
+[//]: # (The library wraps the [Neo4j Python driver]&#40;https://neo4j.com/docs/python-manual/current/&#41; with a `GraphDataScience` object through which most calls to GDS will be made.)
 
-```python
-from graphdatascience import GraphDataScience
+[//]: # ()
+[//]: # (```python)
 
-# Use Neo4j URI and credentials according to your setup
-gds = GraphDataScience("bolt://localhost:7687", auth=None)
-```
+[//]: # (from graphdatascience import GraphDataScience)
 
-There's also a method `GraphDataScience.from_neo4j_driver` for instantiating the `gds` object directly from a Neo4j driver object.
+[//]: # ()
+[//]: # (# Use Neo4j URI and credentials according to your setup)
 
-If we don't want to use the default database of our DBMS, we can specify which one to use:
+[//]: # (gds = GraphDataScience&#40;"bolt://localhost:7687", auth=None&#41;)
 
-```python
-gds.set_database("my-db")
-```
+[//]: # (```)
 
+[//]: # ()
+[//]: # ()
+[//]: # (#### AuraDS)
 
-#### AuraDS
+[//]: # ()
+[//]: # (If you are connecting the client to an [AuraDS instance]&#40;https://neo4j.com/cloud/graph-data-science/&#41;, you can get recommended non-default configuration settings of the Python Driver applied automatically.)
 
-If you are connecting the client to an [AuraDS instance](https://neo4j.com/cloud/graph-data-science/), you can get recommended non-default configuration settings of the Python Driver applied automatically.
-To achieve this, set the constructor argument `aura_ds=True`:
+[//]: # (To achieve this, set the constructor argument `aura_ds=True`:)
 
-```python
-from graphdatascience import GraphDataScience
+[//]: # ()
+[//]: # (```python)
 
-# Configures the driver with AuraDS-recommended settings
-gds = GraphDataScience("neo4j+s://my-aura-ds.databases.neo4j.io:7687", auth=("neo4j", "my-password"), aura_ds=True)
-```
+[//]: # (from graphdatascience import GraphDataScience)
 
+[//]: # ()
+[//]: # (# Configures the driver with AuraDS-recommended settings)
 
-### Projecting a graph from Neo4j
+[//]: # (gds = GraphDataScience&#40;"neo4j+s://my-aura-ds.databases.neo4j.io:7687", auth=&#40;"neo4j", "my-password"&#41;, aura_ds=True&#41;)
 
-Supposing that we have some graph data in our Neo4j database, we can [project the graph into memory](https://neo4j.com/docs/graph-data-science/current/graph-project/).
+[//]: # (```)
 
-```python
-# Optionally we can estimate memory of the operation first
-res = gds.graph.project.estimate("*", "*")
-assert res["bytesMax"] < 1e12
 
-G, res = gds.graph.project("graph", "*", "*")
-assert res["projectMillis"] >= 0
-```
+[//]: # (### Projecting a graph from Neo4j)
 
-The `G` that is returned here is a `Graph` which on the client side represents the projection on the server side.
+[//]: # ()
+[//]: # (Supposing that we have some graph data in our Neo4j database, we can [project the graph into memory]&#40;https://neo4j.com/docs/graph-data-science/current/graph-project/&#41;.)
 
-The analogous calls `gds.graph.project.cypher{,.estimate}` for [Cypher based projection](https://neo4j.com/docs/graph-data-science/current/graph-project-cypher/) are also supported.
+[//]: # ()
+[//]: # (```python)
 
+[//]: # (# Optionally we can estimate memory of the operation first)
 
-### Constructing a graph from data frames
+[//]: # (res = gds.graph.project.estimate&#40;"*", "*"&#41;)
 
-We can also construct a GDS graph from client side pandas `DataFrame`s.
-To do this we provide the `gds.alpha.graph.construct` method with node data frames (see schema [here](https://neo4j.com/docs/graph-data-science/current/graph-project-apache-arrow/#arrow-send-nodes)) and relationship data frames (see schema [here](https://neo4j.com/docs/graph-data-science/current/graph-project-apache-arrow/#arrow-send-relationships)).
+[//]: # (assert res["bytesMax"] < 1e12)
 
-```python
-nodes = pandas.DataFrame(
-    {
-        "nodeId": [0, 1, 2, 3],
-        "labels":  ["A", "B", "C", "A"],
-        "prop1": [42, 1337, 8, 0],
-        "otherProperty": [0.1, 0.2, 0.3, 0.4]
-    }
-)
+[//]: # ()
+[//]: # (G, res = gds.graph.project&#40;"graph", "*", "*"&#41;)
 
-relationships = pandas.DataFrame(
-    {
-        "sourceNodeId": [0, 1, 2, 3],
-        "targetNodeId": [1, 2, 3, 0],
-        "relationshipType": ["REL", "REL", "REL", "REL"],
-        "weight": [0.0, 0.0, 0.1, 42.0]
-    }
-)
+[//]: # (assert res["projectMillis"] >= 0)
 
-G = gds.alpha.graph.construct(
-    "my-graph",      # Graph name
-    nodes,           # One or more dataframes containing node data
-    relationships    # One or more dataframes containing relationship data
-)
-```
+[//]: # (```)
 
-If your server uses GDS Enterprise edition and you have [enabled its Arrow Apache server](https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/), the construction will be a lot faster.
-In this case you must also make sure that you have explicitly specified which database to use via `GraphDataScience.set_database`.
+[//]: # ()
+[//]: # (The `G` that is returned here is a `Graph` which on the client side represents the projection on the server side.)
 
+[//]: # ()
+[//]: # (The analogous calls `gds.graph.project.cypher{,.estimate}` for [Cypher based projection]&#40;https://neo4j.com/docs/graph-data-science/current/graph-project-cypher/&#41; are also supported.)
 
-### Running algorithms
 
-We can take a projected graph, represented to us by a `Graph` object named `G`, and run [algorithms](https://neo4j.com/docs/graph-data-science/current/algorithms/) on it.
+[//]: # (### Constructing a graph from data frames)
 
-```python
-# Optionally we can estimate memory of the operation first (if the algo supports it)
-res = gds.pageRank.mutate.estimate(G, tolerance=0.5, mutateProperty="pagerank")
-assert res["bytesMax"] < 1e12
+[//]: # ()
+[//]: # (We can also construct a GDS graph from client side pandas `DataFrame`s.)
 
-res = gds.pageRank.mutate(G, tolerance=0.5, mutateProperty="pagerank")
-assert res["nodePropertiesWritten"] == G.node_count()
-```
+[//]: # (To do this we provide the `gds.alpha.graph.construct` method with node data frames &#40;see schema [here]&#40;https://neo4j.com/docs/graph-data-science/current/graph-project-apache-arrow/#arrow-send-nodes&#41;&#41; and relationship data frames &#40;see schema [here]&#40;https://neo4j.com/docs/graph-data-science/current/graph-project-apache-arrow/#arrow-send-relationships&#41;&#41;.)
 
-These calls take one positional argument and a number of keyword arguments depending on the algorithm.
-The first (positional) argument is a `Graph`, and the keyword arguments map directly to the algorithm's [configuration map](https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/#algorithms-syntax-configuration-parameters).
+[//]: # ()
+[//]: # (```python)
 
-The other [algorithm execution modes](https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/) - stats, stream and write - are also supported via analogous calls.
-The stream mode call returns a pandas DataFrame (with contents depending on the algorithm of course).
-The mutate, stats and write mode calls however return a pandas Series with metadata about the algorithm execution.
+[//]: # (nodes = pandas.DataFrame&#40;)
 
+[//]: # (    {)
 
-#### Topological link prediction
+[//]: # (        "nodeId": [0, 1, 2, 3],)
 
-The methods for doing [topological link prediction](https://neo4j.com/docs/graph-data-science/current/algorithms/linkprediction/) are a bit different.
-Just like in the GDS procedure API they do not take a graph as an argument, but rather two node references as positional arguments.
-And they simply return the similarity score of the prediction just made as a float - not any kind of pandas data structure.
+[//]: # (        "labels":  ["A", "B", "C", "A"],)
 
+[//]: # (        "prop1": [42, 1337, 8, 0],)
 
-### The Graph object
+[//]: # (        "otherProperty": [0.1, 0.2, 0.3, 0.4])
 
-In this library, graphs projected onto server-side memory are represented by `Graph` objects.
-There are convenience methods on the `Graph` object that let us extract information about our projected graph.
-Some examples are (where `G` is a `Graph`):
+[//]: # (    })
 
-```python
-# Get the graph's node count
-n = G.node_count()
+[//]: # (&#41;)
 
-# Get a list of all relationship properties present on
-# relationships of the type "myRelType"
-rel_props = G.relationship_properties("myRelType")
+[//]: # ()
+[//]: # (relationships = pandas.DataFrame&#40;)
 
-# Drop the projection represented by G
-G.drop()
-```
+[//]: # (    {)
 
+[//]: # (        "sourceNodeId": [0, 1, 2, 3],)
 
-### Machine learning models
+[//]: # (        "targetNodeId": [1, 2, 3, 0],)
 
-In GDS, you can train machine learning models.
-When doing this using the `graphdatascience`, you can get a model object returned directly in the client.
-The model object allows for convenient access to details about the model via Python methods.
-It also offers the ability to directly compute predictions using the appropriate GDS procedure for that model.
-This includes support for models trained using pipelines (for Link Prediction and Node Classification) as well as GraphSAGE models.
+[//]: # (        "relationshipType": ["REL", "REL", "REL", "REL"],)
 
+[//]: # (        "weight": [0.0, 0.0, 0.1, 42.0])
 
-#### Pipelines
+[//]: # (    })
 
-There's native support for [Link prediction pipelines](https://neo4j.com/docs/graph-data-science/current/algorithms/ml-models/linkprediction-pipelines/), [Node classification pipelines](https://neo4j.com/docs/graph-data-science/current/algorithms/ml-models/nodeclassification-pipelines/), and [Node regression pipeline](https://neo4j.com/docs/graph-data-science/2.1-preview/machine-learning/node-property-prediction/noderegression-pipelines/).
-Apart from the call to create a pipeline, the GDS native pipelines calls are represented by methods on pipeline Python objects.
-Additionally to the standard GDS calls, there are several methods to query the pipeline for information about it.
+[//]: # (&#41;)
 
-Below is a minimal example for node classification (supposing we have a graph `G` with a property "myClass"):
+[//]: # ()
+[//]: # (G = gds.alpha.graph.construct&#40;)
 
-```python
-pipe, _ = gds.beta.pipeline.nodeClassification.create("myPipe")
-assert pipe.type() == "Node classification training pipeline"
+[//]: # (    "my-graph",      # Graph name)
 
-pipe.addNodeProperty("degree", mutateProperty="rank")
-pipe.selectFeatures("rank")
-steps = pipe.feature_properties()
-assert len(steps) == 1
-assert steps[0]["feature"] == "rank"
+[//]: # (    nodes,           # One or more dataframes containing node data)
 
-pipe.addLogisticRegression(penalty=(0.1, 2))
+[//]: # (    relationships    # One or more dataframes containing relationship data)
 
-model, res = pipe.train(G, modelName="myModel", targetProperty="myClass", metrics=["ACCURACY"])
-assert model.metrics()["ACCURACY"]["test"] > 0
-assert res["trainMillis"] >= 0
+[//]: # (&#41;)
 
-res = model.predict_stream(G)
-assert len(res) == G.node_count()
-```
+[//]: # (```)
 
-Link prediction and Node regression works the same way, just with different method names for calls specific to that pipeline.
-Please see the GDS documentation for more on the pipelines' procedure APIs.
+[//]: # ()
+[//]: # (If your server uses GDS Enterprise edition and you have [enabled its Arrow Apache server]&#40;https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/&#41;, the construction will be a lot faster.)
 
+[//]: # (In this case you must also make sure that you have explicitly specified which database to use via `GraphDataScience.set_database`.)
 
-#### GraphSAGE
+[//]: # ()
 
-Assuming we have a graph `G` with node property `x`, we can do the following:
+[//]: # (### Running algorithms)
 
-```python
-model, res = gds.beta.graphSage.train(G, modelName="myModel", featureProperties=["x"])
-assert len(model.metrics()["epochLosses"]) == model.metrics()["ranEpochs"] 
-assert res["trainMillis"] >= 0
+[//]: # ()
+[//]: # (We can take a projected graph, represented to us by a `Graph` object named `G`, and run [algorithms]&#40;https://neo4j.com/docs/graph-data-science/current/algorithms/&#41; on it.)
 
-res = model.predict_stream(G)
-assert len(res) == G.node_count()
-```
+[//]: # ()
+[//]: # (```python)
 
-Note that with GraphSAGE we call the `train` method directly and supply all training configuration.
+[//]: # (# Optionally we can estimate memory of the operation first &#40;if the algo supports it&#41;)
 
+[//]: # (res = gds.pageRank.mutate.estimate&#40;G, tolerance=0.5, mutateProperty="pagerank"&#41;)
 
-### Graph catalog utils
+[//]: # (assert res["bytesMax"] < 1e12)
 
-All procedures from the [GDS Graph catalog](https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/) are supported with `graphdatascience`.
-Some examples are (where `G` is a `Graph`):
+[//]: # ()
+[//]: # (res = gds.pageRank.mutate&#40;G, tolerance=0.5, mutateProperty="pagerank"&#41;)
 
-```python
-res = gds.graph.list()
-assert len(res) == 1  # Exactly one graph is projected
+[//]: # (assert res["nodePropertiesWritten"] == G.node_count&#40;&#41;)
 
-res = gds.graph.streamNodeProperties(G, "rank")
-assert len(res) == G.node_count()
-```
+[//]: # (```)
 
-Further, there's a call named `gds.graph.get` (`graphdatascience` only).
-It takes a graph name as input and returns a `Graph` object, if a graph projection of that name exists in the user's graph catalog.
-The idea is to have a way of creating `Graph`s for already projected graphs, without having to do a new projection.
+[//]: # ()
+[//]: # (These calls take one positional argument and a number of keyword arguments depending on the algorithm.)
 
+[//]: # (The first &#40;positional&#41; argument is a `Graph`, and the keyword arguments map directly to the algorithm's [configuration map]&#40;https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/#algorithms-syntax-configuration-parameters&#41;.)
 
-### Pipeline catalog utils
+[//]: # ()
+[//]: # (The other [algorithm execution modes]&#40;https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/&#41; - stats, stream and write - are also supported via analogous calls.)
 
-All procedures from the [GDS Pipeline catalog](https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/) are supported with `graphdatascience`.
-Some examples are (where `pipe` is a machine learning training pipeline object):
+[//]: # (The stream mode call returns a pandas DataFrame &#40;with contents depending on the algorithm of course&#41;.)
 
-```python
-res = gds.beta.pipeline.list()
-assert len(res) == 1  # Exactly one pipeline is in the catalog
+[//]: # (The mutate, stats and write mode calls however return a pandas Series with metadata about the algorithm execution.)
 
-res = gds.beta.pipeline.drop(pipe)
-assert res["pipelineName"] == pipe.name()
-```
 
-Further, there's a call named `gds.pipeline.get` (`graphdatascience` only).
-It takes a pipeline name as input and returns a training pipeline object, if a pipeline of that name exists in the user's pipeline catalog.
-The idea is to have a way of creating pipeline objects for already existing pipelines, without having to create them again.
+[//]: # (#### Topological link prediction)
 
+[//]: # ()
+[//]: # (The methods for doing [topological link prediction]&#40;https://neo4j.com/docs/graph-data-science/current/algorithms/linkprediction/&#41; are a bit different.)
 
-### Model catalog utils
+[//]: # (Just like in the GDS procedure API they do not take a graph as an argument, but rather two node references as positional arguments.)
 
-All procedures from the [GDS Model catalog](https://neo4j.com/docs/graph-data-science/current/model-catalog/) are supported with `graphdatascience`.
-Some examples are (where `model` is a machine learning model object):
+[//]: # (And they simply return the similarity score of the prediction just made as a float - not any kind of pandas data structure.)
 
-```python
-res = gds.beta.model.list()
-assert len(res) == 1  # Exactly one model is loaded
 
-res = gds.beta.model.drop(model)
-assert res["modelInfo"]["modelName"] == model.name()
-```
+[//]: # (### The Graph object)
 
-Further, there's a call named `gds.model.get` (`graphdatascience` only).
-It takes a model name as input and returns a model object, if a model of that name exists in the user's model catalog.
-The idea is to have a way of creating model objects for already loaded models, without having to create them again.
+[//]: # ()
+[//]: # (In this library, graphs projected onto server-side memory are represented by `Graph` objects.)
 
+[//]: # (There are convenience methods on the `Graph` object that let us extract information about our projected graph.)
 
-### Node matching without Cypher
+[//]: # (Some examples are &#40;where `G` is a `Graph`&#41;:)
 
-When calling path finding or topological link prediction algorithms one has to provide specific nodes as input arguments.
-When using the GDS procedure API directly to call such algorithms, typically Cypher `MATCH` statements are used in order to find valid representations of input nodes of interest, see eg. [this example in the GDS docs](https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/#algorithms-dijkstra-source-target-examples-stream).
-To simplify this, `graphdatascience` provides a utility function, `gds.find_node_id`, for letting one find nodes without using Cypher.
+[//]: # ()
+[//]: # (```python)
 
-Below is an example of how this can be done (supposing `G` is a projected `Graph` with `City` nodes having `name` properties):
+[//]: # (# Get the graph's node count)
 
-```python
-# gds.find_node_id takes a list of labels and a dictionary of
-# property key-value pairs
-source_id = gds.find_node_id(["City"], {"name": "New York"})
-target_id = gds.find_node_id(["City"], {"name": "Philadelphia"})
+[//]: # (n = G.node_count&#40;&#41;)
 
-res = gds.shortestPath.dijkstra.stream(G, sourceNode=source_id, targetNode=target_id)
-assert res["totalCost"][0] == 100
-```
+[//]: # ()
+[//]: # (# Get a list of all relationship properties present on)
 
-The nodes found by `gds.find_node_id` are those that have all labels specified and fully match all property key-value pairs given.
-Note that exactly one node per method call must be matched.
+[//]: # (# relationships of the type "myRelType")
 
-For more advanced filtering we recommend users do matching via Cypher's `MATCH`.
+[//]: # (rel_props = G.relationship_properties&#40;"myRelType"&#41;)
+
+[//]: # ()
+[//]: # (# Drop the projection represented by G)
+
+[//]: # (G.drop&#40;&#41;)
+
+[//]: # (```)
+
+
+[//]: # (### Machine learning models)
+
+[//]: # ()
+[//]: # (In GDS, you can train machine learning models.)
+
+[//]: # (When doing this using the `graphdatascience`, you can get a model object returned directly in the client.)
+
+[//]: # (The model object allows for convenient access to details about the model via Python methods.)
+
+[//]: # (It also offers the ability to directly compute predictions using the appropriate GDS procedure for that model.)
+
+[//]: # (This includes support for models trained using pipelines &#40;for Link Prediction and Node Classification&#41; as well as GraphSAGE models.)
+
+[//]: # ()
+[//]: # ()
+[//]: # (#### Pipelines)
+
+[//]: # ()
+[//]: # (There's native support for [Link prediction pipelines]&#40;https://neo4j.com/docs/graph-data-science/current/algorithms/ml-models/linkprediction-pipelines/&#41;, [Node classification pipelines]&#40;https://neo4j.com/docs/graph-data-science/current/algorithms/ml-models/nodeclassification-pipelines/&#41;, and [Node regression pipeline]&#40;https://neo4j.com/docs/graph-data-science/2.1-preview/machine-learning/node-property-prediction/noderegression-pipelines/&#41;.)
+
+[//]: # (Apart from the call to create a pipeline, the GDS native pipelines calls are represented by methods on pipeline Python objects.)
+
+[//]: # (Additionally to the standard GDS calls, there are several methods to query the pipeline for information about it.)
+
+[//]: # ()
+[//]: # (Below is a minimal example for node classification &#40;supposing we have a graph `G` with a property "myClass"&#41;:)
+
+[//]: # ()
+[//]: # (```python)
+
+[//]: # (pipe, _ = gds.beta.pipeline.nodeClassification.create&#40;"myPipe"&#41;)
+
+[//]: # (assert pipe.type&#40;&#41; == "Node classification training pipeline")
+
+[//]: # ()
+[//]: # (pipe.addNodeProperty&#40;"degree", mutateProperty="rank"&#41;)
+
+[//]: # (pipe.selectFeatures&#40;"rank"&#41;)
+
+[//]: # (steps = pipe.feature_properties&#40;&#41;)
+
+[//]: # (assert len&#40;steps&#41; == 1)
+
+[//]: # (assert steps[0]["feature"] == "rank")
+
+[//]: # ()
+[//]: # (pipe.addLogisticRegression&#40;penalty=&#40;0.1, 2&#41;&#41;)
+
+[//]: # ()
+[//]: # (model, res = pipe.train&#40;G, modelName="myModel", targetProperty="myClass", metrics=["ACCURACY"]&#41;)
+
+[//]: # (assert model.metrics&#40;&#41;["ACCURACY"]["test"] > 0)
+
+[//]: # (assert res["trainMillis"] >= 0)
+
+[//]: # ()
+[//]: # (res = model.predict_stream&#40;G&#41;)
+
+[//]: # (assert len&#40;res&#41; == G.node_count&#40;&#41;)
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (Link prediction and Node regression works the same way, just with different method names for calls specific to that pipeline.)
+
+[//]: # (Please see the GDS documentation for more on the pipelines' procedure APIs.)
+
+[//]: # ()
+[//]: # ()
+[//]: # (#### GraphSAGE)
+
+[//]: # ()
+[//]: # (Assuming we have a graph `G` with node property `x`, we can do the following:)
+
+[//]: # ()
+[//]: # (```python)
+
+[//]: # (model, res = gds.beta.graphSage.train&#40;G, modelName="myModel", featureProperties=["x"]&#41;)
+
+[//]: # (assert len&#40;model.metrics&#40;&#41;["epochLosses"]&#41; == model.metrics&#40;&#41;["ranEpochs"] )
+
+[//]: # (assert res["trainMillis"] >= 0)
+
+[//]: # ()
+[//]: # (res = model.predict_stream&#40;G&#41;)
+
+[//]: # (assert len&#40;res&#41; == G.node_count&#40;&#41;)
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (Note that with GraphSAGE we call the `train` method directly and supply all training configuration.)
+
+[//]: # ()
+[//]: # ()
+[//]: # (### Graph catalog utils)
+
+[//]: # ()
+[//]: # (All procedures from the [GDS Graph catalog]&#40;https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/&#41; are supported with `graphdatascience`.)
+
+[//]: # (Some examples are &#40;where `G` is a `Graph`&#41;:)
+
+[//]: # ()
+[//]: # (```python)
+
+[//]: # (res = gds.graph.list&#40;&#41;)
+
+[//]: # (assert len&#40;res&#41; == 1  # Exactly one graph is projected)
+
+[//]: # ()
+[//]: # (res = gds.graph.streamNodeProperties&#40;G, "rank"&#41;)
+
+[//]: # (assert len&#40;res&#41; == G.node_count&#40;&#41;)
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (Further, there's a call named `gds.graph.get` &#40;`graphdatascience` only&#41;.)
+
+[//]: # (It takes a graph name as input and returns a `Graph` object, if a graph projection of that name exists in the user's graph catalog.)
+
+[//]: # (The idea is to have a way of creating `Graph`s for already projected graphs, without having to do a new projection.)
+
+[//]: # ()
+[//]: # ()
+[//]: # (### Pipeline catalog utils)
+
+[//]: # ()
+[//]: # (All procedures from the [GDS Pipeline catalog]&#40;https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/&#41; are supported with `graphdatascience`.)
+
+[//]: # (Some examples are &#40;where `pipe` is a machine learning training pipeline object&#41;:)
+
+[//]: # ()
+[//]: # (```python)
+
+[//]: # (res = gds.beta.pipeline.list&#40;&#41;)
+
+[//]: # (assert len&#40;res&#41; == 1  # Exactly one pipeline is in the catalog)
+
+[//]: # ()
+[//]: # (res = gds.beta.pipeline.drop&#40;pipe&#41;)
+
+[//]: # (assert res["pipelineName"] == pipe.name&#40;&#41;)
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (Further, there's a call named `gds.pipeline.get` &#40;`graphdatascience` only&#41;.)
+
+[//]: # (It takes a pipeline name as input and returns a training pipeline object, if a pipeline of that name exists in the user's pipeline catalog.)
+
+[//]: # (The idea is to have a way of creating pipeline objects for already existing pipelines, without having to create them again.)
+
+[//]: # ()
+[//]: # ()
+[//]: # (### Model catalog utils)
+
+[//]: # ()
+[//]: # (All procedures from the [GDS Model catalog]&#40;https://neo4j.com/docs/graph-data-science/current/model-catalog/&#41; are supported with `graphdatascience`.)
+
+[//]: # (Some examples are &#40;where `model` is a machine learning model object&#41;:)
+
+[//]: # ()
+[//]: # (```python)
+
+[//]: # (res = gds.beta.model.list&#40;&#41;)
+
+[//]: # (assert len&#40;res&#41; == 1  # Exactly one model is loaded)
+
+[//]: # ()
+[//]: # (res = gds.beta.model.drop&#40;model&#41;)
+
+[//]: # (assert res["modelInfo"]["modelName"] == model.name&#40;&#41;)
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (Further, there's a call named `gds.model.get` &#40;`graphdatascience` only&#41;.)
+
+[//]: # (It takes a model name as input and returns a model object, if a model of that name exists in the user's model catalog.)
+
+[//]: # (The idea is to have a way of creating model objects for already loaded models, without having to create them again.)
+
+[//]: # ()
+[//]: # ()
+[//]: # (### Node matching without Cypher)
+
+[//]: # ()
+[//]: # (When calling path finding or topological link prediction algorithms one has to provide specific nodes as input arguments.)
+
+[//]: # (When using the GDS procedure API directly to call such algorithms, typically Cypher `MATCH` statements are used in order to find valid representations of input nodes of interest, see eg. [this example in the GDS docs]&#40;https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/#algorithms-dijkstra-source-target-examples-stream&#41;.)
+
+[//]: # (To simplify this, `graphdatascience` provides a utility function, `gds.find_node_id`, for letting one find nodes without using Cypher.)
+
+[//]: # ()
+[//]: # (Below is an example of how this can be done &#40;supposing `G` is a projected `Graph` with `City` nodes having `name` properties&#41;:)
+
+[//]: # ()
+[//]: # (```python)
+
+[//]: # (# gds.find_node_id takes a list of labels and a dictionary of)
+
+[//]: # (# property key-value pairs)
+
+[//]: # (source_id = gds.find_node_id&#40;["City"], {"name": "New York"}&#41;)
+
+[//]: # (target_id = gds.find_node_id&#40;["City"], {"name": "Philadelphia"}&#41;)
+
+[//]: # ()
+[//]: # (res = gds.shortestPath.dijkstra.stream&#40;G, sourceNode=source_id, targetNode=target_id&#41;)
+
+[//]: # (assert res["totalCost"][0] == 100)
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (The nodes found by `gds.find_node_id` are those that have all labels specified and fully match all property key-value pairs given.)
+
+[//]: # (Note that exactly one node per method call must be matched.)
+
+[//]: # ()
+[//]: # (For more advanced filtering we recommend users do matching via Cypher's `MATCH`.)
 
 
 ## Known limitations
