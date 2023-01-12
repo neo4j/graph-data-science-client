@@ -35,7 +35,6 @@ pip install graphdatascience
 To use the GDS Python Client, we need to instantiate a GraphDataScience object.
 Then, we can project graphs, create pipelines, train models, and run algorithms.
 
-
 ```python
 from graphdatascience import GraphDataScience
 
@@ -46,9 +45,32 @@ gds = GraphDataScience("neo4j+s://my-aura-ds.databases.neo4j.io:7687", auth=("ne
 G = gds.graph.load_cora()
 assert G.node_count() == 2708
 
-# Run PageRank in mutate mode
-result = gds.pageRank.mutate(G, tolerance=0.5, mutateProperty="pagerank")
-assert result["nodePropertiesWritten"] == G.node_count()
+# Run PageRank in mutate mode on G
+pagerank_result = gds.pageRank.mutate(G, tolerance=0.5, mutateProperty="pagerank")
+assert pagerank_result["nodePropertiesWritten"] == G.node_count()
+
+# Create a Node Classification pipeline
+pipeline = gds.nc_pipe("myPipe")
+assert pipeline.type() == "Node classification training pipeline"
+
+# Add a Degree Centrality feature to the pipeline
+pipeline.addNodeProperty("degree", mutateProperty="rank")
+pipeline.selectFeatures("rank")
+features = pipeline.feature_properties()
+assert len(features) == 1
+assert features[0]["feature"] == "rank"
+
+# Add a training method
+pipeline.addLogisticRegression(penalty=(0.1, 2))
+
+# Train a model on G
+model, train_result = pipeline.train(G, modelName="myModel", targetProperty="myClass", metrics=["ACCURACY"])
+assert model.metrics()["ACCURACY"]["test"] > 0
+assert train_result["trainMillis"] >= 0
+
+# Compute predictions in stream mode
+predictions = model.predict_stream(G)
+assert len(predictions) == G.node_count()
 ```
 
 The example here assumes using an AuraDS instance.
