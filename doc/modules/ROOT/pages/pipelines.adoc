@@ -54,16 +54,8 @@ Below is a description of the methods on such objects:
                                                              Series          | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/training/[Train the pipeline on the given input graph using given keyword arguments].
 | train_estimate        | G: Graph, +
                             config: **kwargs            | Series                  | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/training/#nodeclassification-pipelines-examples-train-memory-estimation[Estimate training the pipeline on the given input graph using given keyword arguments].
-| node_property_steps   | -                             | DataFrame               | Returns the node property steps of the pipeline.
 | feature_properties    | -                             | Series                  | Returns a list of the selected feature properties for the pipeline.
-| split_config          | -                             | Series                  | Returns the configuration set up for train-test splitting of the dataset.
-| parameter_space       | -                             | Series                  | Returns the model parameter space set up for model selection when training.
-| auto_tuning_config    | -                             | Series                  | Returns the configuration set up for auto-tuning.
-| name                  | -                             | str                     | The name of the pipeline as it appears in the pipeline catalog.
-| type                  | -                             | str                     | The type of pipeline.
-| creation_time         | -                             | neo4j.time.Datetime     | Time when the pipeline was created.
-| drop                  | failIfMissing: Optional[bool] | Series                  | https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/drop/[Removes the pipeline] from the GDS Pipeline Catalog.
-| exists                | -                             | bool                    | `True` if the model exists in the GDS Pipeline Catalog, `False` otherwise.
+include::partial$/pipelines/shared-pipeline-methods.adoc[]
 |===
 
 There are two main differences when comparing the methods above that map to procedures of the Cypher API:
@@ -241,16 +233,8 @@ config: **kwargs        | LPPredictionPipeline, +
                                                   Series               | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/training/[Train the model on the given input graph using given keyword arguments].
 | train_estimate        | G: Graph, +
                         config: **kwargs                | Series              | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/training/#linkprediction-pipeline-examples-train-estimate[Estimate training the pipeline on the given input graph using given keyword arguments].
-| node_property_steps   | -                             | DataFrame           | Returns the node property steps of the pipeline.
 | feature_steps         | -                             | DataFrame           | Returns a list of the selected feature steps for the pipeline.
-| split_config          | -                             | Series              | Returns the configuration set up for feature-train-test splitting of the dataset.
-| parameter_space       | -                             | Series              | Returns the model parameter space set up for model selection when training.
-| auto_tuning_config    | -                             | Series              | Returns the configuration set up for auto-tuning.
-| name                  | -                             | str                 | The name of the pipeline as it appears in the pipeline catalog.
-| type                  | -                             | str                 | The type of pipeline.
-| creation_time         | -                             | neo4j.time.Datetime | Time when the pipeline was created.
-| drop                  | failIfMissing: Optional[bool] | Series              | https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/drop/[Removes the pipeline] from the GDS Pipeline Catalog.
-| exists                | -                             | bool                | `True` if the model exists in the GDS Pipeline Catalog, `False` otherwise.
+include::partial$/pipelines/shared-pipeline-methods.adoc[]
 |===
 
 There are two main differences when comparing the methods above that map to procedures of the Cypher API:
@@ -418,16 +402,8 @@ dict[str, any]          | Series                        | https://neo4j.com/docs
 | train                 | G: Graph, +
 config: **kwargs        | NCPredictionPipeline, +
 Series          | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/training/[Train the pipeline on the given input graph using given keyword arguments].
-| node_property_steps   | -                             | DataFrame               | Returns the node property steps of the pipeline.
 | feature_properties    | -                             | Series                  | Returns a list of the selected feature properties for the pipeline.
-| split_config          | -                             | Series                  | Returns the configuration set up for train-test splitting of the dataset.
-| parameter_space       | -                             | Series                  | Returns the model parameter space set up for model selection when training.
-| auto_tuning_config    | -                             | Series                  | Returns the configuration set up for auto-tuning.
-| name                  | -                             | str                     | The name of the pipeline as it appears in the pipeline catalog.
-| type                  | -                             | str                     | The type of pipeline.
-| creation_time         | -                             | neo4j.time.Datetime     | Time when the pipeline was created.
-| drop                  | failIfMissing: Optional[bool] | Series                  | https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/drop/[Removes the pipeline] from the GDS Pipeline Catalog.
-| exists                | -                             | bool                    | `True` if the model exists in the GDS Pipeline Catalog, `False` otherwise.
+include::partial$/pipelines/shared-pipeline-methods.adoc[]
 |===
 
 There are two main differences when comparing the methods above that map to procedures of the Cypher API:
