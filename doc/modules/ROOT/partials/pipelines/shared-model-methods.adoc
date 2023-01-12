@@ -1,3 +1,4 @@
-| node_property_steps     | -                | List[NodePropertyStep] | Returns a list of algorithms that the pipeline used for computing node properties before training.
-| metrics                 | -                | Series      | Returns values for the metrics specified when training, for this particular model.
-| best_parameters         | -                | Series      | Returns the training method parameters that performed best on the validation set.
+//| Name          | Arguments | Return type        | Description
+| node_property_steps | - | List[NodePropertyStep] | List of algorithms used by the pipeline to compute node properties before training.
+| metrics             | - | Series                 | Values for the metrics specified when training.
+| best_parameters     | - | Series                 | Training method parameters which performed best across the validation sets.

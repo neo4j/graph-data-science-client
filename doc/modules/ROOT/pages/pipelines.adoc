@@ -155,8 +155,8 @@ In addition to inheriting the methods common to all xref:model-object.adoc[model
 [opts="header",cols="8m,6m,4m,13"]
 |===
 | Name                    | Arguments        | Return type | Description
-| classes                 | -                | List[int]   | Returns the list of classes used to train the classification model.
-| feature_properties      | -                | List[str]   | Returns the node properties that were used as input model features.
+| classes                 | -                | List[int]   | List of classes used to train the classification model.
+| feature_properties      | -                | List[str]   | Node properties used as input model features.
 include::partial$/pipelines/shared-model-methods.adoc[]
 | predict_mutate          | G: Graph, +
                             config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/predict/#nodeclassification-pipelines-examples-mutate[Predict classes for nodes of the input graph and mutate graph with predictions].
