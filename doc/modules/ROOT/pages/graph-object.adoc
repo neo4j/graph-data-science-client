@@ -216,7 +216,7 @@ Below are some examples of how the GDS Graph Catalog can be used via the client,
 list_result = gds.graph.list()
 
 # Check for existence of a graph in the catalog
-exists_result = gds.graph.exists("my-graph")
+exists_result = gds.graph.exists("offices")
 assert exists_result["exists"]
 
 # Stream the node property 'degree'
