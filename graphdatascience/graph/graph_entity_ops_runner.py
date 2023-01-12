@@ -1,3 +1,4 @@
+from functools import reduce
 from typing import Any, Dict, List, Type, Union
 
 import pandas as pd
@@ -90,15 +91,9 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
             )
 
         if db_node_properties:
-            nodeIds = result["nodeId"].tolist()
-            db_nodes = self._util_proc_runner.asNodes(nodeIds)
-            properties = []
-            for node in db_nodes:
-                properties.append(
-                    list([node.id] + list(map(lambda p: node.get(p), db_node_properties)))  # type: ignore
-                )
-            db_properties_df = pd.DataFrame(properties, columns=["nodeId"] + db_node_properties).drop_duplicates(
-                subset=["nodeId"]
+            unique_node_ids = result["nodeId"].drop_duplicates().tolist()
+            db_properties_df = self._query_runner.run_query(
+                self._build_query(db_node_properties), {"ids": unique_node_ids}
             )
             if "propertyValue" not in result.keys():
                 result = result.join(db_properties_df.set_index("nodeId"), on="nodeId")
@@ -109,6 +104,15 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
                 result = pd.concat([result, db_properties_df])
 
         return result
+
+    @staticmethod
+    def _build_query(db_node_properties: List[str]) -> str:
+        query_prefix = "MATCH (n) WHERE id(n) IN $ids RETURN id(n) AS nodeId"
+
+        def add_property(query: str, prop: str) -> str:
+            return f"{query}, n.`{prop}` AS `{prop}`"
+
+        return reduce(add_property, db_node_properties, query_prefix)
 
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
     def write(self, G: Graph, node_properties: List[str], node_labels: Strings = ["*"], **config: Any) -> "Series[Any]":
