@@ -2,9 +2,10 @@
 = Machine learning pipelines
 
 The Python client has special support for https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/link-prediction/[Link prediction pipelines] and https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/[pipelines for node property prediction].
-The GDS pipelines are represented as pipeline objects.
+The GDS pipelines are represented as pipeline objects in the GDS Python Client.
 
-While it is possible to operate pipelines using the same signatures as the Cypher procedures, the GDS Python Client offers a more convenient way by using the pipeline objects.
+Operating pipelines through the client is based entirely on these pipeline objects.
+This is a more convenient and pythonic API compared to the Cypher procedure API.
 Once created, the pipeline objects can be passed as arguments to various methods in the Python client, such as the https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/pipeline-catalog/[pipeline catalog operations].
 Additionally, the pipeline objects have convenience methods allowing for inspection of the represented pipeline without explicitly involving the pipeline catalog.
 
