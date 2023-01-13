@@ -1,4 +1,4 @@
-= The Neo4j Graph Data Science Client Library Manual v{docs-version}
+= The Neo4j Graph Data Science Client Manual v{docs-version}
 :description: This manual documents how to use the dedicated Python Client v{docs-version} for the Neo4j Graph Data Science library.
 
 :toc: left
@@ -20,14 +20,15 @@ License: <<license, Creative Commons 4.0>>
 endif::[]
 
 
-To help users of the https://neo4j.com/docs/graph-data-science/current/[Neo4j Graph Data Science library] who work with Python as their primary language and environment, there is an official GDS client package called `graphdatascience`.
-It enables users to write pure Python code to project graphs, run algorithms, and define and use machine learning pipelines in GDS.
+To help users of https://neo4j.com/docs/graph-data-science/current/[Neo4j Graph Data Science] who work with Python as their primary language and environment, we offer the official Graph Data Science (GDS) Python Client package called `graphdatascience`.
+It enables users to write pure Python code to project graphs, run algorithms, use machine learning pipelines, and train machine learning models with GDS.
 To avoid naming confusion with the server-side GDS library, we will here refer to the Neo4j Graph Data Science client as the _Python client_.
 
 The Python client API is designed to mimic the GDS Cypher procedure API in Python code.
 It wraps and abstracts the necessary operations of the https://neo4j.com/docs/python-manual/current/[Neo4j Python driver] to offer a simpler surface.
-Except for those listed in xref:known-limitations.adoc[Known limitations], every operation of the GDS Cypher API should be represented in the Python client API.
 For a high level explanation of how the Cypher API maps to the Python client API please see xref:getting-started.adoc#getting-started-mapping[Mapping between Cypher and Python].
+
+Additionally, the client-specific graph, model, and pipeline objects offer convenient functions that heavily reduce the need to use Cypher to access and operate these GDS resources.
 
 This manual is divided into the following chapters:
 
@@ -39,5 +40,5 @@ This manual is divided into the following chapters:
 * xref:model-object.adoc[The model object]
 * xref:known-limitations.adoc[Known limitations]
 
-The source code of the library is available at https://github.com/neo4j/graph-data-science-client[GitHub].
+The source code of the GDS Python client is available at https://github.com/neo4j/graph-data-science-client[GitHub].
 If you have a suggestion on how we can improve the library or want to report a problem, you can create a https://github.com/neo4j/graph-data-science-client/issues/new[new issue].
