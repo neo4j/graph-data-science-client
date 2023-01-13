@@ -85,6 +85,12 @@ Full end-to-end examples in Jupyter ready-to-run notebooks can be found in the [
 * [Load data to a projected graph via graph construction](examples/load-data-via-graph-construction.ipynb)
 
 
+## Documentation
+
+The primary source for learning everything about the GDS Python Client is the manual, hosted at https://neo4j.com/docs/graph-data-science-client/current/.
+The manual is versioned to cover all GDS Python Client versions, so make sure to use the correct version to get the correct information.
+
+
 ## Known limitations
 
 Operations known to not yet work with `graphdatascience`:
