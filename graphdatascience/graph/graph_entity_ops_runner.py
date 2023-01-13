@@ -257,7 +257,7 @@ class GraphLabelRunner(GraphEntityOpsBaseRunner):
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
-    @compatible_with("write", min_inclusive=ServerVersion(2, 3, 0))
+    @compatible_with("mutate", min_inclusive=ServerVersion(2, 3, 0))
     @graph_type_check
     def mutate(self, G: Graph, node_label: str, **config: Any) -> "Series[Any]":
         self._namespace += ".mutate"
