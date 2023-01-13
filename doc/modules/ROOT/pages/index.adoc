@@ -39,7 +39,7 @@ This manual is divided into the following chapters:
 * xref:pipelines.adoc[Machine learning pipelines]
 * xref:model-object.adoc[The model object]
 * xref:common-datasets.adoc[Common datasets]
-* xref:tutorials/index.adoc[Tutorials]
+* xref:tutorials/tutorials.adoc[Tutorials]
 * xref:known-limitations.adoc[Known limitations]
 
 The source code of the GDS Python client is available at https://github.com/neo4j/graph-data-science-client[GitHub].
