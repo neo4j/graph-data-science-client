@@ -55,7 +55,7 @@ Below is a description of the methods on such objects:
 | train_estimate        | G: Graph, +
                             config: **kwargs            | Series                  | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/training/#nodeclassification-pipelines-examples-train-memory-estimation[Estimate training the pipeline on the given input graph using given keyword arguments].
 | feature_properties    | -                             | Series                  | Returns a list of the selected feature properties for the pipeline.
-include::partial$/pipelines/shared-pipeline-methods.adoc[]
+include::ROOT:partial$/pipelines/shared-pipeline-methods.adoc[]
 |===
 
 There are two main differences when comparing the methods above that map to procedures of the Cypher API:
@@ -149,7 +149,7 @@ In addition to inheriting the methods common to all xref:model-object.adoc[model
 | Name                    | Arguments        | Return type | Description
 | classes                 | -                | List[int]   | List of classes used to train the classification model.
 | feature_properties      | -                | List[str]   | Node properties used as input model features.
-include::partial$/pipelines/shared-model-methods.adoc[]
+include::ROOT:partial$/pipelines/shared-model-methods.adoc[]
 | predict_mutate          | G: Graph, +
                             config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/predict/#nodeclassification-pipelines-examples-mutate[Predict classes for nodes of the input graph and mutate graph with predictions].
 | predict_mutate_estimate | G: Graph, +
@@ -234,7 +234,7 @@ config: **kwargs        | LPPredictionPipeline, +
 | train_estimate        | G: Graph, +
                         config: **kwargs                | Series              | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/training/#linkprediction-pipeline-examples-train-estimate[Estimate training the pipeline on the given input graph using given keyword arguments].
 | feature_steps         | -                             | DataFrame           | Returns a list of the selected feature steps for the pipeline.
-include::partial$/pipelines/shared-pipeline-methods.adoc[]
+include::ROOT:partial$/pipelines/shared-pipeline-methods.adoc[]
 |===
 
 There are two main differences when comparing the methods above that map to procedures of the Cypher API:
@@ -330,7 +330,7 @@ In addition to inheriting the methods common to all xref:model-object.adoc[model
 |===
 | Name                    | Arguments        | Return type | Description
 | link_features           | -                | List[LinkFeature]   | The input link features used to train the model.
-include::partial$/pipelines/shared-model-methods.adoc[]
+include::ROOT:partial$/pipelines/shared-model-methods.adoc[]
 | predict_mutate          | G: Graph, +
                             config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/predict/#algorithms-link-prediction-pipelines-predict-examples-mutate[Predict links between non-neighboring nodes of the input graph and mutate graph with predictions].
 | predict_mutate_estimate | G: Graph, +
@@ -403,7 +403,7 @@ dict[str, any]          | Series                        | https://neo4j.com/docs
 config: **kwargs        | NCPredictionPipeline, +
 Series          | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/training/[Train the pipeline on the given input graph using given keyword arguments].
 | feature_properties    | -                             | Series                  | Returns a list of the selected feature properties for the pipeline.
-include::partial$/pipelines/shared-pipeline-methods.adoc[]
+include::ROOT:partial$/pipelines/shared-pipeline-methods.adoc[]
 |===
 
 There are two main differences when comparing the methods above that map to procedures of the Cypher API:
@@ -496,7 +496,7 @@ In addition to inheriting the methods common to all xref:model-object.adoc[model
 |===
 | Name                    | Arguments        | Return type | Description
 | feature_properties      | -                | List[str]   | Returns the node properties that were used as input model features.
-include::partial$/pipelines/shared-model-methods.adoc[]
+include::ROOT:partial$/pipelines/shared-model-methods.adoc[]
 | predict_mutate          | G: Graph, +
 config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/predict/#noderegression-pipelines-predict-examples-mutate[Predict property values for nodes of the input graph and mutate graph with predictions].
 | predict_stream          | G: Graph, +
