@@ -1,0 +1,10 @@
+//| Name              | Arguments                     | Return type         | Description
+| exists              | -                             | bool                | `True` if the model exists in the GDS Pipeline Catalog, `False` otherwise.
+| name                | -                             | str                 | The name of the pipeline as it appears in the pipeline catalog.
+| type                | -                             | str                 | The type of pipeline.
+| creation_time       | -                             | neo4j.time.Datetime | Time when the pipeline was created.
+| node_property_steps | -                             | DataFrame           | Returns the node property steps of the pipeline.
+| split_config        | -                             | Series              | Returns the configuration set up for feature-train-test splitting of the dataset.
+| parameter_space     | -                             | Series              | Returns the model parameter space set up for model selection when training.
+| auto_tuning_config  | -                             | Series              | Returns the configuration set up for auto-tuning.
+| drop                | failIfMissing: Optional[bool] | Series              | https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/drop/[Removes the pipeline] from the GDS Pipeline Catalog.
