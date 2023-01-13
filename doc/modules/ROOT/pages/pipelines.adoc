@@ -2,12 +2,12 @@
 = Machine learning pipelines
 
 The Python client has special support for https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/link-prediction/[Link prediction pipelines] and https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/[pipelines for node property prediction].
-The GDS pipelines are represented as pipeline objects.
+The GDS pipelines are represented as pipeline objects in the GDS Python Client.
 
-The Python method calls to _create_ the pipelines match their Cypher counterparts exactly.
-However, the rest of the pipeline functionality is deferred to methods on the pipeline objects themselves.
-Once created, the `TrainingPipeline` can be passed as arguments to methods in the Python client, such as the https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/pipeline-catalog/[pipeline catalog operations].
-Additionally, the `TrainingPipeline` has convenience methods allowing for inspection of the pipeline represented without explicitly involving the pipeline catalog.
+Operating pipelines through the client is based entirely on these pipeline objects.
+This is a more convenient and pythonic API compared to the Cypher procedure API.
+Once created, the pipeline objects can be passed as arguments to various methods in the Python client, such as the https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/pipeline-catalog/[pipeline catalog operations].
+Additionally, the pipeline objects have convenience methods allowing for inspection of the represented pipeline without explicitly involving the pipeline catalog.
 
 include::ROOT:partial$/gds-object.adoc[]
 
@@ -545,11 +545,13 @@ if exists_result["exists"]:
 ----
 
 A pipeline object that has already been created and is present in the pipeline catalog can be retrieved calling the `get` method with its name.
-For example, we can retrieve a pipeline object representing our node classification pipeline named "my-pipe" from the <<pipelines-nc-create-example, example above>>:
+For example, we can list from the catalog and use the first pipeline name we find to get a pipeline object representing that pipeline, which will be the NodeClassification pipeline we created in the <<pipelines-nc-create-example, example above>>.
 
 [source,python,group=nc-pipe]
 ----
-pipe = gds.pipeline.get("my-pipe")
+list_result = gds.beta.pipeline.list()
+first_pipeline_name = list_result["pipelineName"][0]
+pipe = gds.pipeline.get(first_pipeline_name)
 assert pipe.name() == "my-pipe"
 ----
 

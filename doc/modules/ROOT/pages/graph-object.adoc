@@ -17,7 +17,7 @@ The simplest way is to do a https://neo4j.com/docs/graph-data-science/current/ma
 
 [source,python,group=graph-project]
 ----
-# Suppose we have this simple graph in our database
+# We put this simple graph in our database
 gds.run_cypher(
   """
   CREATE
@@ -31,6 +31,14 @@ gds.run_cypher(
     (s)-[:FLY_TO]->(l)
   """
 )
+
+# We estimate required memory of the operation
+res = gds.graph.project.estimate(
+    ["City"],                   #  Node projection
+    "FLY_TO",                   #  Relationship projection
+    readConcurrency=4           #  Configuration parameters
+)
+assert res["bytesMax"] < 1e12
 
 G, result = gds.graph.project(
     "offices",                  #  Graph name
@@ -204,9 +212,18 @@ Below are some examples of how the GDS Graph Catalog can be used via the client,
 
 [source,python,group=graph-project]
 ----
-result = gds.graph.streamNodeProperty(G, node_properties="degree")
+# List graphs in the catalog
+list_result = gds.graph.list()
 
-gds.graph.drop(G)  # same as G.drop()
+# Check for existence of a graph in the catalog
+exists_result = gds.graph.exists("offices")
+assert exists_result["exists"]
+
+# Stream the node property 'degree'
+result = gds.graph.nodeProperty.stream(G, node_properties="degree")
+
+# Drop a graph; same as G.drop()
+gds.graph.drop(G)
 ----
 
 
