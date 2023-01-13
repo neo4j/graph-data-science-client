@@ -45,6 +45,10 @@ class Neo4jQueryRunner(QueryRunner):
                     "ignore",
                     message=r"^ssl.OP_NO_SSL\*/ssl.OP_NO_TLS\* options are deprecated$",
                 )
+                warnings.filterwarnings(
+                    "ignore",
+                    message=r"^`id` is deprecated, use `element_id` instead$",
+                )
 
             result = session.run(query, params)
 

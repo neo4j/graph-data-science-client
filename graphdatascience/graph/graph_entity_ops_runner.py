@@ -1,7 +1,10 @@
+from functools import reduce
 from typing import Any, Dict, List, Type, Union
 
+import pandas as pd
 from pandas import DataFrame, Series
 
+from ..utils.util_proc_runner import UtilProcRunner
 from .graph_object import Graph
 from .graph_type_check import graph_type_check
 from graphdatascience.caller_base import CallerBase
@@ -33,6 +36,7 @@ class TopologyDataFrame(DataFrame):
 class GraphEntityOpsBaseRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
     def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
         super().__init__(query_runner, namespace, server_version)
+        self._util_proc_runner = UtilProcRunner(query_runner, "gds.util", server_version)
 
     @graph_type_check
     def _handle_properties(
@@ -68,6 +72,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         node_properties: List[str],
         node_labels: Strings = ["*"],
         separate_property_columns: bool = False,
+        db_node_properties: List[str] = [],
         **config: Any,
     ) -> DataFrame:
         self._namespace += ".stream"
@@ -85,7 +90,35 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
                 columns={"variable": "nodeProperty", "value": "propertyValue"}
             )
 
+        if db_node_properties:
+            duplicate_properties = set(db_node_properties).intersection(set(node_properties))
+            if duplicate_properties:
+                raise ValueError(
+                    f"Duplicate property keys '{duplicate_properties}' in db_node_properties and " f"node_properties."
+                )
+
+            unique_node_ids = result["nodeId"].drop_duplicates().tolist()
+            db_properties_df = self._query_runner.run_query(
+                self._build_query(db_node_properties), {"ids": unique_node_ids}
+            )
+            if "propertyValue" not in result.keys():
+                result = result.join(db_properties_df.set_index("nodeId"), on="nodeId")
+            else:
+                db_properties_df = db_properties_df.melt(id_vars=["nodeId"]).rename(
+                    columns={"variable": "nodeProperty", "value": "propertyValue"}
+                )
+                result = pd.concat([result, db_properties_df])
+
         return result
+
+    @staticmethod
+    def _build_query(db_node_properties: List[str]) -> str:
+        query_prefix = "MATCH (n) WHERE id(n) IN $ids RETURN id(n) AS nodeId"
+
+        def add_property(query: str, prop: str) -> str:
+            return f"{query}, n.`{prop}` AS `{prop}`"
+
+        return reduce(add_property, db_node_properties, query_prefix)
 
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
     def write(self, G: Graph, node_properties: List[str], node_labels: Strings = ["*"], **config: Any) -> "Series[Any]":
