@@ -10,3 +10,4 @@ You can find the notebooks here:
 * xref:tutorials/load-data-via-graph-construction.adoc[]
 * https://github.com/neo4j/graph-data-science-client/blob/{docs-version}/examples/ml-pipelines-node-classification.ipynb[Machine learning pipelines: Node classification]
 * https://github.com/neo4j/graph-data-science-client/blob/{docs-version}/examples/node-regression-with-subgraph-and-graph-sample.ipynb[Node regression with subgraph and sampling projections]
+* https://github.com/neo4j/graph-data-science-client/tree/{docs-version}/examples/heterogeneous-node-classification-with-hashgnn.ipynb[Heterogeneous Node Classification with HashGNN and Autotuning]
