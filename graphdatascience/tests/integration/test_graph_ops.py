@@ -337,6 +337,16 @@ def test_graph_nodeProperties_stream_with_arrow_separate_property_columns(gds: G
     assert {e for e in result["name"]} == {"nodeA", "nodeB", "nodeC"}
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_nodeProperties_stream_raise_error_with_duplicate_keys(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
+
+    with pytest.raises(ValueError, match="Duplicate property keys '{'y'}' in db_node_properties and node_properties."):
+        gds.graph.nodeProperties.stream(
+            G, ["x", "y"], db_node_properties=["y", "z", "name"], separate_property_columns=True, concurrency=2
+        )
+
+
 def test_graph_streamNodeProperties_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
