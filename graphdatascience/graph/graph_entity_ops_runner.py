@@ -256,3 +256,16 @@ class GraphLabelRunner(GraphEntityOpsBaseRunner):
         }
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+
+    @compatible_with("mutate", min_inclusive=ServerVersion(2, 3, 0))
+    @graph_type_check
+    def mutate(self, G: Graph, node_label: str, **config: Any) -> "Series[Any]":
+        self._namespace += ".mutate"
+        query = f"CALL {self._namespace}($graph_name, $node_label, $config)"
+        params = {
+            "graph_name": G.name(),
+            "node_label": node_label,
+            "config": config,
+        }
+
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
