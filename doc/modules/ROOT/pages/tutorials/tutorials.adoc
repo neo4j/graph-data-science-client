@@ -1,0 +1,12 @@
+= Tutorials
+
+The `graphdatascience` library comes with some extensive Jupyter ready-to-run notebooks to showcase its features.
+In contrast to the rest of the `graphdatascience` manual, these notebooks are meant to be full end-to-end examples outlining realistic use-cases.
+
+You can find the notebooks here:
+
+* https://github.com/neo4j/graph-data-science-client/blob/{docs-version}/examples/fastrp-and-knn.ipynb[Product recommendations with kNN based on FastRP embeddings]
+* https://github.com/neo4j/graph-data-science-client/blob/{docs-version}/examples/import-sample-export-gnn.ipynb[Exporting from GDS and running GNN with PyG]
+* xref:tutorials/load-data-via-graph-construction.adoc[]
+* https://github.com/neo4j/graph-data-science-client/blob/{docs-version}/examples/ml-pipelines-node-classification.ipynb[Machine learning pipelines: Node classification]
+* https://github.com/neo4j/graph-data-science-client/blob/{docs-version}/examples/node-regression-with-subgraph-and-graph-sample.ipynb[Node regression with subgraph and sampling projections]
