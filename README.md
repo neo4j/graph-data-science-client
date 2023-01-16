@@ -1,5 +1,8 @@
 # Neo4j Graph Data Science Client
 
+I am not really suggesting making this change.
+
+
 [![Latest version](https://img.shields.io/pypi/v/graphdatascience)](https://pypi.org/project/graphdatascience/)
 [![PyPI downloads month](https://img.shields.io/pypi/dm/graphdatascience)](https://pypi.org/project/graphdatascience/)
 ![Python versions](https://img.shields.io/pypi/pyversions/graphdatascience)
