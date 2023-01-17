@@ -228,7 +228,7 @@ def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience
         assert set(G.relationship_types()) == {"REL", "REL2"}
         assert set(G.node_properties("A")) == {"propA", "propB", "propList"}
         # Missing rel properties to be fixed by cypher aggregation
-        expected_rel_properties = set() if gds_without_arrow.version().startswith("2.3") else {"relPropA", "relPropB"}
+        expected_rel_properties = set() if gds_without_arrow.version()[0:3] >= "2.3" else {"relPropA", "relPropB"}
         assert set(G.relationship_properties("REL")) == expected_rel_properties
     finally:
         G.drop()
