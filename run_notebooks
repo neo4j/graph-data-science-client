@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+for file in examples/*; do
+    if [ -f "$file" ]; then
+        echo "Executing jupyter notebook $file"
+        jupyter nbconvert --to notebook --inplace --execute --ExecutePreprocessor.kernel_name=python3 $file
+        echo "Finished executing jupyter notebook $file"
+    fi
+done
+
