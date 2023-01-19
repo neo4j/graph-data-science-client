@@ -84,6 +84,21 @@ include::ROOT:partial$/alpha-note.adoc[]
 
 Instead of projecting a graph from the Neo4j database it is also possible to construct new graphs using pandas `DataFrames` from the client.
 
+=== Syntax
+.Graph construct signature
+[opts="header",cols="1m,7m,1m,6", role="no-break"]
+|===
+| Name                            | Type                                |Default | Description
+| graph_name                      | str                                 | -      | Name of the graph to be constructed.
+| nodes                           | Union[DataFrame, List[DataFrame]]   | -      | One or more dataframes containing node data.
+| relationships                   | Union[DataFrame, List[DataFrame]]   | -      | One or more dataframes containing relationship data.
+| concurrency                     | int                                 | 4      | Number of threads used to construct the graph.
+| undirected_relationship_types   | Optional[List[str]]                 | None   | List of relationship types to be projected as undirected.
+|===
+
+
+=== Example
+
 [[graph-object-construct-example]]
 [source,python,group=graph-roundtrip]
 ----
