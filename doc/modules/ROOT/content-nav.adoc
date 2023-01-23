@@ -8,4 +8,5 @@
 ** xref:common-datasets.adoc[]
 ** xref:tutorials/tutorials.adoc[]
 *** xref:tutorials/load-data-via-graph-construction.adoc[]
+*** xref:tutorials/load-data-via-graph-construction-generated.adoc[]
 ** xref:known-limitations.adoc[]
