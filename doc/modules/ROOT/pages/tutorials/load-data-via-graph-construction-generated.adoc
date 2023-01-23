@@ -1,3 +1,7 @@
+// DO NOT EDIT - AsciiDoc file generated automatically
+
+
+
 = Load data to a projected graph via graph construction
 
 This notebook shows the usage of the `gds.alpha.graph.construct` method
