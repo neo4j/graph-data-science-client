@@ -1,8 +1,11 @@
 // DO NOT EDIT - AsciiDoc file generated automatically
 
-
-
 = Load data to a projected graph via graph construction
+
+
+https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/load-data-via-graph-construction.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
+In Colab]]
+
 
 This notebook shows the usage of the `gds.alpha.graph.construct` method
 (available only in GDS 2.1+) to build a graph directly in memory.
@@ -127,7 +130,6 @@ Let’s check the first 5 rows of the new `DataFrame`:
 nodes.head()
 ----
 
-
 [cols=",,,,",options="header",]
 |===
 | |nodeId |labels |subject |features
@@ -156,7 +158,6 @@ Again, let’s check the first 5 rows of the new `DataFrame`:
 ----
 relationships.head()
 ----
-
 
 [cols=",,,",options="header",]
 |===
@@ -191,7 +192,6 @@ Let’s also count the nodes in the graph:
 G.node_count()
 ----
 
-
 ----
 2708
 ----
@@ -202,7 +202,6 @@ The count matches with the number of rows in the Pandas dataset:
 ----
 len(content)
 ----
-
 
 ----
 2708
@@ -215,7 +214,6 @@ the graph, printing only the first 10.
 ----
 gds.graph.streamNodeProperties(G, ["subject"]).head(10)
 ----
-
 
 [cols=",,,",options="header",]
 |===
