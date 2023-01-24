@@ -227,9 +227,7 @@ def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience
         assert set(G.node_labels()) == {"A", "B", "C", "D"}
         assert set(G.relationship_types()) == {"REL", "REL2"}
         assert set(G.node_properties("A")) == {"propA", "propB", "propList"}
-        # Missing rel properties to be fixed by cypher aggregation
-        expected_rel_properties = set() if gds_without_arrow.version()[0:3] >= "2.3" else {"relPropA", "relPropB"}
-        assert set(G.relationship_properties("REL")) == expected_rel_properties
+        assert set(G.relationship_properties("REL")) == {"relPropA", "relPropB"}
     finally:
         G.drop()
 
@@ -420,11 +418,10 @@ def test_graph_construct_without_arrow_multi_dfs(gds_without_arrow: GraphDataSci
 
     G = gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
 
-    # Once CypherAggregation schema computation is fixed, assert for different node properties and rel properties
     assert G.name() == "hello"
     assert G.node_count() == 4
-    assert G.node_properties("a") == ["q", "property"]
-    assert G.node_properties("b") == ["q", "property"]
+    assert G.node_properties("a") == ["property"]
+    assert G.node_properties("b") == ["q"]
     assert G.relationship_count() == 4
     assert G.relationship_properties("A") == []
     assert G.relationship_properties("B") == []
