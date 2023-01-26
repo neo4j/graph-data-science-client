@@ -21,12 +21,12 @@ AuraDS (which comes with GDS preinstalled) or Neo4j Desktop.
 Once the credentials to this environment are available, we can install
 the `graphdatascience` package and import the client class.
 
-[source, python]
+[source, python, role=no-test]
 ----
 !pip install graphdatascience
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 from graphdatascience import GraphDataScience
 ----
@@ -34,7 +34,7 @@ from graphdatascience import GraphDataScience
 When using a local Neo4j setup, the default connection URI is
 `bolt://localhost:7687`:
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Replace with the actual connection URI and credentials
 NEO4J_CONNECTION_URI = "bolt://localhost:7687"
@@ -52,7 +52,7 @@ When using AuraDS, the connection URI is slightly different as it uses
 the `neo4j+s` protocol. The client should also include the
 `aura_ds=True` flag to enable AuraDS-recommended settings.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # # Replace with the actual connection URI and credentials
 # NEO4J_CONNECTION_URI = "neo4j+s://xxxxxxxx.databases.neo4j.io"
@@ -65,14 +65,14 @@ the `neo4j+s` protocol. The client should also include the
 We also import `pandas` to create a Pandas `DataFrame` from the original
 data source.
 
-[source, python]
+[source, python, role=no-test]
 ----
 import pandas as pd
 ----
 
 == Load the Cora dataset
 
-[source, python]
+[source, python, role=no-test]
 ----
 CORA_CONTENT = (
     "https://raw.githubusercontent.com/neo4j/graph-data-science/master/test-utils/src/main/resources/cora.content"
@@ -84,7 +84,7 @@ CORA_CITES = (
 
 We can load each CSV locally as a Pandas `DataFrame`.
 
-[source, python]
+[source, python, role=no-test]
 ----
 content = pd.read_csv(CORA_CONTENT, header=None)
 cites = pd.read_csv(CORA_CITES, header=None)
@@ -95,7 +95,7 @@ We need to perform an additional preprocessing step to convert the
 because node properties have to be numerical in order to be projected
 into a graph. We can use a map for this.
 
-[source, python]
+[source, python, role=no-test]
 ----
 SUBJECT_TO_ID = {
     "Neural_Networks": 0,
@@ -113,7 +113,7 @@ node labels, and the additional node properties `subject` (using the
 `SUBJECT_TO_ID` mapping) and `features` (converting all the feature
 columns to a single array column).
 
-[source, python]
+[source, python, role=no-test]
 ----
 nodes = pd.DataFrame().assign(
     nodeId=content[0],
@@ -125,7 +125,7 @@ nodes = pd.DataFrame().assign(
 
 Let’s check the first 5 rows of the new `DataFrame`:
 
-[source, python]
+[source, python, role=no-test]
 ----
 nodes.head()
 ----
@@ -144,7 +144,7 @@ Now we create a new `DataFrame` containing the relationships between the
 nodes. To create the equivalent of an undirected graph, we need to add
 direct and inverse relationships explicitly.
 
-[source, python]
+[source, python, role=no-test]
 ----
 dir_relationships = pd.DataFrame().assign(sourceNodeId=cites[0], targetNodeId=cites[1], relationshipType="CITES")
 inv_relationships = pd.DataFrame().assign(sourceNodeId=cites[1], targetNodeId=cites[0], relationshipType="CITES")
@@ -154,7 +154,7 @@ relationships = pd.concat([dir_relationships, inv_relationships]).drop_duplicate
 
 Again, let’s check the first 5 rows of the new `DataFrame`:
 
-[source, python]
+[source, python, role=no-test]
 ----
 relationships.head()
 ----
@@ -171,7 +171,7 @@ relationships.head()
 
 Finally, we can create the in-memory graph.
 
-[source, python]
+[source, python, role=no-test]
 ----
 G = gds.alpha.graph.construct("cora-graph", nodes, relationships)
 ----
@@ -180,14 +180,14 @@ G = gds.alpha.graph.construct("cora-graph", nodes, relationships)
 
 Let’s check that the new graph has been created:
 
-[source, python]
+[source, python, role=no-test]
 ----
 gds.graph.list()
 ----
 
 Let’s also count the nodes in the graph:
 
-[source, python]
+[source, python, role=no-test]
 ----
 G.node_count()
 ----
@@ -198,7 +198,7 @@ G.node_count()
 
 The count matches with the number of rows in the Pandas dataset:
 
-[source, python]
+[source, python, role=no-test]
 ----
 len(content)
 ----
@@ -210,7 +210,7 @@ len(content)
 We can stream the value of the `subject` node property for each node in
 the graph, printing only the first 10.
 
-[source, python]
+[source, python, role=no-test]
 ----
 gds.graph.streamNodeProperties(G, ["subject"]).head(10)
 ----
@@ -235,7 +235,7 @@ gds.graph.streamNodeProperties(G, ["subject"]).head(10)
 When the graph is no longer needed, it should be dropped to free up
 memory:
 
-[source, python]
+[source, python, role=no-test]
 ----
 G.drop()
 ----

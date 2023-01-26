@@ -42,13 +42,13 @@ In order to run this pipeline, you must have the following:
 These requirements are satisfied if you have an AuraDS instance active
 and running.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # First, we must install the GDS Python Client
 %pip install graphdatascience
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Then, we connect to our Neo4j DBMS hosting the Graph Data Science library
 from graphdatascience import GraphDataScience
@@ -71,7 +71,7 @@ gds.set_database(NEO4J_DB)
 print(gds.version())
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Importing the dataset
 
@@ -104,7 +104,7 @@ gds.run_cypher(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Create nodes and relationships
 gds.run_cypher(
@@ -136,7 +136,7 @@ gds.run_cypher(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Create target properties
 gds.run_cypher(
@@ -165,7 +165,7 @@ gds.run_cypher(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Create feature vectors
 gds.run_cypher(
@@ -215,7 +215,7 @@ features that work well for linear regression. We begin by learning the
 dictionaries of nouns across the node sets. We create a node to host the
 dictionary, then we use it to one-hot encode all feature vectors.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Construct one-hot dictionaries
 gds.run_cypher(
@@ -279,7 +279,7 @@ gds.run_cypher(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # First, let's project our graph into the GDS Graph Catalog
 # We will use a native projection to begin with
@@ -302,7 +302,7 @@ are no connections.
 The fastest way to determine the number of components in our graph is to
 use the WCC (Weakly Connected Components) algorithm.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # We use the WCC algorithm to see how many components we have
 wcc_result = gds.wcc.mutate(G_animals, mutateProperty="wcc_component")
@@ -317,7 +317,7 @@ separate the components into separate graphs. We will use the `subgraph`
 projection to accomplish this. We will create one subgraph for each of
 the components.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # First, we stream the component ids
 components = gds.graph.nodeProperty.stream(G_animals, "wcc_component")
@@ -342,7 +342,7 @@ graph_components_by_labels = {str(G_component.node_labels()): G_component for G_
 print({k: v.name() for k, v in graph_components_by_labels.items()})
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Now, we are only interested in the Chameleon graph,
 # so we will drop the other graphs and define a better variable for the one we keep
@@ -351,7 +351,7 @@ graph_components_by_labels[str(["Squirrel"])].drop()
 G_chameleon = graph_components_by_labels[str(["Chameleon"])]
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # With the graph object G_chameleon, we can inspect some statistics
 print("#nodes: " + str(G_chameleon.node_count()))
@@ -375,7 +375,7 @@ We will create a Node Regression pipeline, and then
 The pipeline lives in the Pipeline Catalog, and we are operating it
 through the Pipeline object, for maximum convenience.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Now, let's construct a training pipeline!
 chameleons_nr_training = gds.nr_pipe("node_regression_pipeline__Chameleons")
@@ -414,7 +414,7 @@ chameleons_nr_training.selectFeatures("frp_embedding")
 # The training pipeline is now fully configured and ready to be run!
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # We use the training pipeline to train a model
 cora_nc_model, train_result = chameleons_nr_training.train(
@@ -427,7 +427,7 @@ cora_nc_model, train_result = chameleons_nr_training.train(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 print("Winning model parameters: \n\t\t" + str(train_result["modelInfo"]["bestParameters"]))
 print()
@@ -435,7 +435,7 @@ print("MEAN_SQUARED_ERROR      test score: " + str(train_result["modelInfo"]["me
 print("MEAN_ABSOLUTE_ERROR     test score: " + str(train_result["modelInfo"]["metrics"]["MEAN_ABSOLUTE_ERROR"]["test"]))
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Let's sample the graph to see if we can get a similarly good model
 G_chameleon_sample, _ = gds.alpha.graph.sample.rwr(
@@ -455,7 +455,7 @@ cora_nc_model_sample, train_result_sample = chameleons_nr_training.train(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 print("Winning model parameters: \n\t\t" + str(train_result_sample["modelInfo"]["bestParameters"]))
 print()
@@ -469,7 +469,7 @@ print(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Let's see what our models predict
 

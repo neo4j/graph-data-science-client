@@ -20,7 +20,7 @@ plugin installed. We recommend using Neo4j Desktop with GDS, or AuraDS.
 Additionally, the version of the `graphdatascience` library used must be
 1.6 or newer.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Install necessary Python dependencies
 %pip install graphdatascience
@@ -31,13 +31,13 @@ Additionally, the version of the `graphdatascience` library used must be
 We start by importing our dependencies and setting up our GDS client
 connection to the database.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Import our dependency
 from graphdatascience import GraphDataScience
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Override NEO4J_URI and NEO4J_AUTH here according to your setup
 NEO4J_URI = "bolt://localhost:7687"
@@ -62,7 +62,7 @@ data from a Neo4j database into GDS instead, or using
 `gds.alpha.graph.construct` to create a graph from our own client side
 data.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Run the loading to obtain a `Graph` object representing our GDS projection
 G = gds.graph.load_imdb()
@@ -70,7 +70,7 @@ G = gds.graph.load_imdb()
 
 Let’s inspect our graph to see what it contains.
 
-[source, python]
+[source, python, role=no-test]
 ----
 print(f"Overview of G: {G}")
 print(f"Node labels in G: {G.node_labels()}")
@@ -82,7 +82,7 @@ It looks as expected, though we notice that some nodes are of a
 wish to predict with a node classification model. Let’s look at the node
 properties present on the various node labels to see this more clearly.
 
-[source, python]
+[source, python, role=no-test]
 ----
 print(f"Node properties per label:\n{G.node_properties()}")
 ----
@@ -108,7 +108,7 @@ use a
 https://neo4j.com/docs/graph-data-science-client/current/pipelines/#_node_classification[node
 classification pipeline].
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Create an empty node classification pipeline
 pipe, _ = gds.beta.pipeline.nodeClassification.create("genre-predictor-pipe")
@@ -120,7 +120,7 @@ Graph Transformer Network paper
 (https://proceedings.neurips.cc/paper/2019/file/9d63484abb477c97640154d40595a3bb-Paper.pdf[NIPS
 paper link]). We configure our pipeline accordingly.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Set the test set size to be 79.6 % of the entire set of `Movie` nodes
 _ = pipe.configureSplit(testFraction=0.796)
@@ -168,7 +168,7 @@ Please see the
 https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/hashgnn/[HashGNN
 documentation] for more on this algorithm.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Add a HashGNN node property step to the pipeline
 _ = pipe.addNodeProperty(
@@ -184,7 +184,7 @@ _ = pipe.addNodeProperty(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Set the embeddings vectors produced by HashGNN as feature input to our ML algorithm
 _ = pipe.selectFeatures("embedding")
@@ -215,14 +215,14 @@ regression] and
 https://neo4j.com/docs/graph-data-science/current/machine-learning/training-methods/random-forest/[random
 forest].
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Add logistic regression as a candidate ML algorithm for the training
 # Provide an interval for the `penalty` parameter to enable autotuning for it
 _ = pipe.addLogisticRegression(penalty=(0.1, 1.0), maxEpochs=1000, patience=5, tolerance=0.0001, learningRate=0.01)
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Add random forest as a candidate ML algorithm for the training
 # Provide an interval for the `minSplitSize` parameter to enable autotuning for it
@@ -238,7 +238,7 @@ In our training call, we provide what node label and property we want
 the training to target, as well as the metric that will determine how
 the best model candidate is chosen.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Call train on our pipeline object to run the entire training pipeline and produce a model
 model, _ = pipe.train(
@@ -253,12 +253,12 @@ model, _ = pipe.train(
 
 Let’s inspect the model that was created by the training pipeline.
 
-[source, python]
+[source, python, role=no-test]
 ----
 print(f"Accuracy scores of trained model:\n{model.metrics()['ACCURACY']}")
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 print(f"Winning ML algorithm candidate config:\n{model.best_parameters()}")
 ----
@@ -276,7 +276,7 @@ link:#Conclusion[Conclusion] section below.
 We can now use the model produced by our training pipeline to predict
 genres of the `UnclassifiedMovie` nodes.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Predict `genre` for `UnclassifiedMovie` nodes and stream the results
 predictions = model.predict_stream(G, targetNodeLabels=["UnclassifiedMovie"], includePredictedProbabilities=True)
@@ -293,19 +293,19 @@ represented by `G` by calling `model.predict_mutate` instead.
 Optionally we can now clean up our GDS state, to free up memory for
 other tasks.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Drop the GDS graph represented by `G` from the GDS graph catalog
 _ = G.drop()
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Drop the GDS training pipeline represented by `pipe` from the GDS pipeline catalog
 _ = pipe.drop()
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Drop the GDS model represented by `model` from the GDS model catalog
 _ = model.drop()
