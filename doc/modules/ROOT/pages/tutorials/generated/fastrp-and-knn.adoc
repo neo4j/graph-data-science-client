@@ -37,13 +37,13 @@ installation instructions].
 We start by installing and importing our dependencies, and setting up
 our GDS client connection to the database.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Install necessary dependencies
 %pip graphdatascience
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 from graphdatascience import GraphDataScience
 
@@ -59,7 +59,7 @@ We now create a graph of products and customers in the database. The
 `amount` relationship property represents the average weekly amount of
 money spent by a customer on a given product.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # The `run_cypher` method can be used to run arbitrary Cypher queries on the database.
 _ = gds.run_cypher(
@@ -112,7 +112,7 @@ _ = gds.run_cypher(
 In order to be able to analyze the data in our database, we proceed to
 projecting it into memory where GDS can operate on it.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # We define how we want to project our database into GDS
 node_projection = ["Person", "Product"]
@@ -124,7 +124,7 @@ result = gds.graph.project.estimate(node_projection, relationship_projection)
 print(f"Required memory for native loading: {result['requiredMemory']}")
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # For this small graph memory requirement is low. Let us go through with the projection
 G, result = gds.graph.project("purchases", node_projection, relationship_projection)
@@ -152,7 +152,7 @@ these parameters.
 Since we want to use the embeddings as input when we run kNN later we
 use FastRP’s mutate mode.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # We can also estimate memory of running algorithms like FastRP, so let's do that first
 result = gds.fastRP.mutate.estimate(
@@ -167,7 +167,7 @@ result = gds.fastRP.mutate.estimate(
 print(f"Required memory for running FastRP: {result['requiredMemory']}")
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Now let's run FastRP and mutate our projected graph 'purchases' with the results
 result = gds.fastRP.mutate(
@@ -201,7 +201,7 @@ Note that we will use the algorithm’s write mode to write the properties
 and relationships back to our database, so that we can analyze them
 later using Cypher.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Run kNN and write back to db (we skip memory estimation this time...)
 result = gds.knn.write(
@@ -236,7 +236,7 @@ nodes with the `Person` label.
 Please see https://neo4j.com/docs/cypher-manual/current/[the Cypher
 manual] for documentation on how to use Cypher.
 
-[source, python]
+[source, python, role=no-test]
 ----
 gds.run_cypher(
     """
@@ -265,7 +265,7 @@ person not already buying the product. By this principle we can derive
 product recommendations for the `Person` named ``Matt'' using a simple
 Cypher query.
 
-[source, python]
+[source, python, role=no-test]
 ----
 gds.run_cypher(
     """
@@ -286,7 +286,7 @@ that is also not purchased by the Person named ``Matt''.
 Before finishing we can clean up the example data from both the GDS
 in-memory state and the database.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Remove our projection from the GDS graph catalog
 G.drop()

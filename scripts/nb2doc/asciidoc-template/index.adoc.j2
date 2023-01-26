@@ -16,7 +16,7 @@
    , {{ nb.metadata.language_info.pygments_lexer }}
 {%- elif 'name' in nb.metadata.get('language_info', {}) -%}
    , {{ nb.metadata.language_info.name }}
-{%- endif -%}]
+{%- endif -%}, role=no-test]
 ----
 {{cell.source}}
 ----

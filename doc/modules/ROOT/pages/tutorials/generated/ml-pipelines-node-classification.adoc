@@ -25,12 +25,12 @@ Neo4j Desktop with a dedicated database.
 Once the credentials to access this environment are available, we can
 install the `graphdatascience` package and import the client class.
 
-[source, python]
+[source, python, role=no-test]
 ----
 %pip install graphdatascience
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 from graphdatascience import GraphDataScience
 ----
@@ -43,7 +43,7 @@ AuraDS-recommended settings. Check the
 https://neo4j.com/docs/graph-data-science-client/current/getting-started/[Neo4j
 GDS Client docs] for more details.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Replace with the actual connection URI and credentials
 NEO4J_CONNECTION_URI = "bolt://localhost:7687"
@@ -66,7 +66,7 @@ newer, because we will use the concept of ``context'' introduced in
 https://github.com/neo4j/graph-data-science/releases/tag/2.2.0[GDS
 2.2.0].
 
-[source, python]
+[source, python, role=no-test]
 ----
 assert gds.version() >= "2.2.0"
 ----
@@ -74,7 +74,7 @@ assert gds.version() >= "2.2.0"
 Finally, we import `json` to help in writing the Cypher queries used to
 load the data, and `numpy` and `pandas` for further data processing.
 
-[source, python]
+[source, python, role=no-test]
 ----
 import json
 
@@ -102,7 +102,7 @@ the Neo4j database.*
 
 The CSV files can be found at the following URIs:
 
-[source, python]
+[source, python, role=no-test]
 ----
 CORA_CONTENT = (
     "https://raw.githubusercontent.com/neo4j/graph-data-science/master/test-utils/src/main/resources/cora.content"
@@ -123,7 +123,7 @@ We also select a number of nodes to be held out to test the model after
 it has been trained. *NOTE:* This is not related to the algorithm
 test/split ratio.
 
-[source, python]
+[source, python, role=no-test]
 ----
 SUBJECT_TO_ID = {
     "Neural_Networks": 100,
@@ -141,7 +141,7 @@ HOLDOUT_NODES = 10
 We can now load the CSV files using the `LOAD CSV` Cypher statement and
 some basic data transformation:
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Define a string representation of the SUBJECT_TO_ID map using backticks
 subject_map = json.dumps(SUBJECT_TO_ID).replace('"', "`")
@@ -180,7 +180,7 @@ the nodes and the `CITES` relationship as undirected (and with `SINGLE`
 aggregation, to skip repeated relationships as a result of adding the
 inverse direction).
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Create the projected graph containing both classified and unclassified nodes
 G, _ = gds.graph.project(
@@ -193,7 +193,7 @@ G, _ = gds.graph.project(
 We can finally check the number of nodes and relationships in the
 newly-projected graph to make sure it has been created correctly:
 
-[source, python]
+[source, python, role=no-test]
 ----
 assert G.node_count() == 2708
 assert G.relationship_count() == 10556
@@ -204,7 +204,7 @@ assert G.relationship_count() == 10556
 Once the dataset has been loaded, we can define a node classification
 machine learning pipeline.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Create the pipeline
 node_pipeline, _ = gds.beta.pipeline.nodeClassification.create("cora-pipeline")
@@ -213,7 +213,7 @@ node_pipeline, _ = gds.beta.pipeline.nodeClassification.create("cora-pipeline")
 We can check that the pipeline has actually been created with the `list`
 method:
 
-[source, python]
+[source, python, role=no-test]
 ----
 # List all pipelines
 gds.beta.pipeline.list()
@@ -253,7 +253,7 @@ value.
 The `configureAutoTuning` method can be used to set the number of model
 candidates to try. Here we choose 5 to keep the training time short.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # "Mark" some node properties that will be used as features
 node_pipeline.selectFeatures(["features"])
@@ -282,7 +282,7 @@ we use the global metric `F1_WEIGHTED`.
 value) for demonstration purposes. The maximum concurrency in the
 library is limited to 4 for Neo4j Community Edition.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Estimate the resources needed for training the model
 node_pipeline.train_estimate(
@@ -296,7 +296,7 @@ node_pipeline.train_estimate(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Perform the actual training
 model, stats = node_pipeline.train(
@@ -313,7 +313,7 @@ model, stats = node_pipeline.train(
 We can inspect the result of the training, for example to print the
 evaluation metrics of the trained model.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Uncomment to print all stats
 # print(stats.to_json(indent=2))
@@ -334,7 +334,7 @@ One simple way to use the `predict` mode is to just stream the result of
 the prediction. This can be impractical when a graph is very large, so
 it should be only used for experimentation purposes.
 
-[source, python]
+[source, python, role=no-test]
 ----
 predicted = model.predict_stream(
     G, modelName="cora-pipeline-model", includePredictedProbabilities=True, targetNodeLabels=["UnclassifiedPaper"]
@@ -345,7 +345,7 @@ The result of the prediction is a Pandas `DataFrame` containing the
 predicted class and the predicted probabilities for all the classes for
 each node.
 
-[source, python]
+[source, python, role=no-test]
 ----
 predicted
 ----
@@ -374,7 +374,7 @@ Please note that the order in which the classes appear in the
 to access each probability is via the class index obtained from the
 model, _not_ its position.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # List of class labels
 classes = stats["modelInfo"]["classes"]
@@ -425,7 +425,7 @@ information can be found in graph ML publications such as the
 https://www.cs.mcgill.ca/~wlh/grl_book/[Graph Representation Learning
 Book].
 
-[source, python]
+[source, python, role=no-test]
 ----
 node_pipeline_fastrp, _ = gds.beta.pipeline.nodeClassification.create("cora-pipeline-fastrp")
 
@@ -451,7 +451,7 @@ node_pipeline.configureAutoTuning(maxTrials=5)
 
 The training then proceeds as in the previous section:
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Perform the actual training
 model_fastrp, stats_fastrp = node_pipeline_fastrp.train(
@@ -467,7 +467,7 @@ model_fastrp, stats_fastrp = node_pipeline_fastrp.train(
 
 The `F1_WEIGHTED` metrics is better with embeddings:
 
-[source, python]
+[source, python, role=no-test]
 ----
 print(stats_fastrp["modelInfo"]["metrics"]["F1_WEIGHTED"]["test"])
 ----
@@ -477,7 +477,7 @@ print(stats_fastrp["modelInfo"]["metrics"]["F1_WEIGHTED"]["test"])
 
 The classification using `predict_stream` can be run in the same way:
 
-[source, python]
+[source, python, role=no-test]
 ----
 predicted_fastrp = model_fastrp.predict_stream(
     G,
@@ -487,7 +487,7 @@ predicted_fastrp = model_fastrp.predict_stream(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 print(len(predicted_fastrp))
 ----
@@ -500,7 +500,7 @@ mode to be more performant, especially when the predicted values are
 used multiple times. The predicted nodes can be retrieved using the
 `streamNodeProperty` method with the `UnclassifiedPaper` class.
 
-[source, python]
+[source, python, role=no-test]
 ----
 model_fastrp.predict_mutate(
     G,
@@ -513,7 +513,7 @@ model_fastrp.predict_mutate(
 predicted_fastrp = gds.graph.streamNodeProperty(G, "predictedClass", ["UnclassifiedPaper"])
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 predicted_fastrp
 ----
@@ -537,7 +537,7 @@ This is useful to compare the result of classification with the original
 `subject` value of the test nodes, which must be retrieved from the
 Neo4j database since it has been excluded from the projected graph.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Retrieve node information from Neo4j using the node IDs from the prediction result
 nodes = gds.util.asNodes(predicted_fastrp.nodeId.to_list())
@@ -579,7 +579,7 @@ them back to the Neo4j database.
 *Please note that this step is not applicable if you are running this
 notebook on AuraDS.*
 
-[source, python]
+[source, python, role=no-test]
 ----
 gds.graph.nodeProperties.write(
     G,
@@ -595,7 +595,7 @@ should be dropped to free up memory. This only needs to be done if the
 Neo4j or AuraDS instance is not restarted, since a restart would clean
 up all the in-memory content anyway.
 
-[source, python]
+[source, python, role=no-test]
 ----
 model.drop()
 model_fastrp.drop()
@@ -608,14 +608,14 @@ G.drop()
 The Neo4j database instead needs to be cleaned up explicitly if no
 longer useful:
 
-[source, python]
+[source, python, role=no-test]
 ----
 gds.run_cypher("MATCH (n:Paper|UnclassifiedPaper) DETACH DELETE n")
 ----
 
 It is good practice to close the client as well:
 
-[source, python]
+[source, python, role=no-test]
 ----
 gds.close()
 ----

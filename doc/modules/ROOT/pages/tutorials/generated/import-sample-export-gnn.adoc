@@ -28,13 +28,13 @@ docs] for installation instructions)
 We start by importing our dependencies and setting up our GDS client
 connection to the database.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Install necessary dependencies
 %pip install torch torch_scatter torch_sparse torch_geometric graphdatascience
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 import pandas as pd
 from graphdatascience import GraphDataScience
@@ -47,7 +47,7 @@ import random
 import numpy as np
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Set seeds for consistent results
 random.seed(42)
@@ -56,7 +56,7 @@ torch.manual_seed(42)
 torch.cuda.manual_seed_all(42)
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Override NEO4J_URI and NEO4J_AUTH here according to your setup
 NEO4J_URI = "bolt://localhost:7687"
@@ -75,12 +75,12 @@ then sample it to get a smaller graph to train on. In a real world
 scenario, we would probably project data from a Neo4j database into GDS
 instead.
 
-[source, python]
+[source, python, role=no-test]
 ----
 G = gds.graph.load_cora()
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Let's make sure we constructed the correct graph
 print(f"Metadata for our loaded Cora graph `G`: {G}")
@@ -89,13 +89,13 @@ print(f"Node labels present in `G`: {G.node_labels()}")
 
 It’s looks correct! Now let’s go ahead and sample the graph.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # We use the random walk with restarts sampling algorithm with default values
 G_sample, _ = gds.alpha.graph.sample.rwr("cora_sample", G, randomSeed=42, concurrency=1)
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # We should have somewhere around 0.15 * 2708 ~ 406 nodes in our sample
 print(f"Number of nodes in our sample: {G_sample.node_count()}")
@@ -109,13 +109,13 @@ print(f"Number of relationships in our sample: {G_sample.relationship_count()}")
 We can now export the topology and node properties of the sampled graph
 that we need to train our model.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Get the relationship data from our sample
 sample_topology_df = gds.beta.graph.relationships.stream(G_sample)
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Let's see what we got:
 display(sample_topology_df)
@@ -126,7 +126,7 @@ However, the node IDs are rather large whereas PyG expects consecutive
 IDs starting from zero. We now will start to massage our data structure
 containing the relationships until PyG can use it.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # By using `by_rel_type` we get the topology in a format that can be used as input to several GNN frameworks:
 # {"rel_type": [[source_nodes], [target_nodes]]}
@@ -134,7 +134,7 @@ containing the relationships until PyG can use it.
 sample_topology = sample_topology_df.by_rel_type()
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # We should only have the "CITES" keys since there's only one relationship type
 print(f"Relationship type keys: {sample_topology.keys()}")
@@ -147,7 +147,7 @@ print(len(sample_topology["CITES"][0]))
 Great, it looks like we have the format we need to create a PyG
 `edge_index` later.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # We also need to export the node properties corresponding to our node labels and features, represented by the
 # "subject" and "features" node properties respectively
@@ -158,7 +158,7 @@ sample_node_properties = gds.graph.nodeProperties.stream(
 )
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Let's make sure we got the data we expected
 display(sample_node_properties)
@@ -172,7 +172,7 @@ node IDs to be consecutive and starting from zero. We use the ordering
 of node ids in `sample_node_properties` as our remapping so that the
 index is aligned with the node properties.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # In order for the node ids used in the `topology` to be consecutive and starting from zero,
 # we will need to remap them. This way they will also align with the row numbering of the
@@ -188,7 +188,7 @@ def normalize_topology_index(new_idx_to_old, topology):
 normalized_topology = normalize_topology_index(dict(sample_node_properties["nodeId"]), sample_topology["CITES"])
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # We use the ordering of node ids in `sample_node_properties` as our remapping
 edge_index = torch.tensor(normalized_topology, dtype=torch.long)
@@ -204,7 +204,7 @@ data = Data(x=x, y=y, edge_index=edge_index)
 print(data)
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Do a random split of the data so that ~10% goes into a test set and the rest used for training
 transform = RandomNodeSplit(num_test=40, num_val=0)
@@ -230,7 +230,7 @@ Please note however, that since GCN is an inductive algorithm we could
 also have evaluated it on the full CORA dataset, or even another
 (similar) graph for that matter.
 
-[source, python]
+[source, python, role=no-test]
 ----
 num_classes = y.unique().shape[0]
 
@@ -255,7 +255,7 @@ class GCN(torch.nn.Module):
         return F.log_softmax(x, dim=1)
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Prepare training by setting up for the chosen device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -264,7 +264,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # In standard PyTorch fashion we instantiate our model, and transfer it to the memory of the chosen device
 model = GCN().to(device)
@@ -284,7 +284,7 @@ From inspecting the model we can see that that the output size is 7,
 which looks correct since Cora does indeed have 7 different paper
 subjects.
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Train the GCN using the CORA sample represented by `data` using the standard PyTorch training loop
 model.train()
@@ -296,7 +296,7 @@ for epoch in range(200):
     optimizer.step()
 ----
 
-[source, python]
+[source, python, role=no-test]
 ----
 # Evaluate the trained GCN model on our test set
 model.eval()
@@ -315,7 +315,7 @@ exercise.
 
 We remove the CORA graphs from the GDS graph catalog.
 
-[source, python]
+[source, python, role=no-test]
 ----
 _ = G_sample.drop()
 _ = G.drop()
