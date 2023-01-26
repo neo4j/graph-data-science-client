@@ -1,0 +1,492 @@
+// DO NOT EDIT - AsciiDoc file generated automatically
+
+= Node Regression pipeline
+
+This notebook exemplifies using a Node Regression pipeline. It also
+contains many examples of using
+
+* Convenience objects
+* Subgraph projection
+* Graph sample projection
+
+It is written in pure Python, to showcase the GDS Python Client’s
+ability to abstract away from Cypher queries.
+
+== The dataset
+
+Our input graph represents Wikipedia pages on particular topics, and how
+they link to each other:
+
+* Chameleons
+* Squirrels
+* Crocodiles
+
+The features are presences of certain informative nouns in the text of
+the page. The target is the average monthly traffic of the page.
+
+The dataset was first published in _Multi-scale Attributed Node
+Embedding_ by B. Rozemberczki, C. Allen and R. Sarkar,
+https://arxiv.org/abs/1909.13021[eprint 1909.13021]. The version hosted
+here was taken from
+https://snap.stanford.edu/data/wikipedia-article-networks.html[SNAP] on
+2022-11-14.
+
+== Pre-requisites
+
+In order to run this pipeline, you must have the following:
+
+* A running Neo4j DBMS with
+** a recent version of Graph Data Science installed
+** a recent version of APOC installed
+
+These requirements are satisfied if you have an AuraDS instance active
+and running.
+
+[source, python]
+----
+# First, we must install the GDS Python Client
+%pip install graphdatascience
+----
+
+[source, python]
+----
+# Then, we connect to our Neo4j DBMS hosting the Graph Data Science library
+from graphdatascience import GraphDataScience
+
+# Replace with the actual connection URI and credentials
+NEO4J_CONNECTION_URI = "bolt://localhost:7687"
+NEO4J_USERNAME = "neo4j"
+NEO4J_PASSWORD = ""
+
+
+# Connect to Neo4j and create the GraphDataScience object
+# Set `aura_ds=True` if you're running against a Neo4j Aura instance
+gds = GraphDataScience(NEO4J_CONNECTION_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD), aura_ds=False)
+
+# Necessary if you enabled Arrow on the db. Override with your DB name
+NEO4J_DB = "neo4j"
+gds.set_database(NEO4J_DB)
+
+# Test our connection and print the Graph Data Science library version
+print(gds.version())
+----
+
+[source, python]
+----
+# Importing the dataset
+
+# The dataset is sourced from this GitHub repository
+baseUrl = (
+    "https://raw.githubusercontent.com/neo4j/graph-data-science-client/main/examples/datasets/wikipedia-animals-pages"
+)
+
+# Constraints to speed up importing
+gds.run_cypher(
+    """
+    CREATE CONSTRAINT chameleons
+    FOR (c:Chameleon)
+    REQUIRE c.id IS NODE KEY
+"""
+)
+gds.run_cypher(
+    """
+    CREATE CONSTRAINT crocodiles
+    FOR (c:Crocodile)
+    REQUIRE c.id IS NODE KEY
+"""
+)
+gds.run_cypher(
+    """
+    CREATE CONSTRAINT squirrels
+    FOR (s:Squirrel)
+    REQUIRE s.id IS NODE KEY
+"""
+)
+----
+
+[source, python]
+----
+# Create nodes and relationships
+gds.run_cypher(
+    """
+    LOAD CSV WITH HEADERS FROM $baseUrl + '/chameleon/musae_chameleon_edges.csv' AS row
+    MERGE (c1:Chameleon {id: row.id1})
+    MERGE (c2:Chameleon {id: row.id2})
+    MERGE (c1)-[:LINK]->(c2)
+""",
+    {"baseUrl": baseUrl},
+)
+gds.run_cypher(
+    """
+    LOAD CSV WITH HEADERS FROM $baseUrl + '/crocodile/musae_crocodile_edges.csv' AS row
+    MERGE (c1:Crocodile {id: row.id1})
+    MERGE (c2:Crocodile {id: row.id2})
+    MERGE (c1)-[:LINK]->(c2)
+""",
+    {"baseUrl": baseUrl},
+)
+gds.run_cypher(
+    """
+    LOAD CSV WITH HEADERS FROM $baseUrl + '/squirrel/musae_squirrel_edges.csv' AS row
+    MERGE (s1:Squirrel {id: row.id1})
+    MERGE (s2:Squirrel {id: row.id2})
+    MERGE (s1)-[:LINK]->(s2)
+""",
+    {"baseUrl": baseUrl},
+)
+----
+
+[source, python]
+----
+# Create target properties
+gds.run_cypher(
+    """
+    LOAD CSV WITH HEADERS FROM $baseUrl + '/chameleon/musae_chameleon_target.csv' AS row
+    MATCH (c:Chameleon {id: row.id})
+    SET c.target = toInteger(row.target)
+""",
+    {"baseUrl": baseUrl},
+)
+gds.run_cypher(
+    """
+    LOAD CSV WITH HEADERS FROM $baseUrl + '/crocodile/musae_crocodile_target.csv' AS row
+    MATCH (c:Crocodile {id: row.id})
+    SET c.target = toInteger(row.target)
+""",
+    {"baseUrl": baseUrl},
+)
+gds.run_cypher(
+    """
+    LOAD CSV WITH HEADERS FROM $baseUrl + '/squirrel/musae_squirrel_target.csv' AS row
+    MATCH (s:Squirrel {id: row.id})
+    SET s.target = toInteger(row.target)
+""",
+    {"baseUrl": baseUrl},
+)
+----
+
+[source, python]
+----
+# Create feature vectors
+gds.run_cypher(
+    """
+    CALL apoc.load.json($baseUrl + '/chameleon/musae_chameleon_features.json') YIELD value
+    WITH value, keys(value) AS keys
+    UNWIND keys AS key
+    WITH value[key] AS feature, key
+    MATCH (c:Chameleon {id: key})
+    SET c.features = feature
+""",
+    {"baseUrl": baseUrl},
+)
+gds.run_cypher(
+    """
+    CALL apoc.load.json($baseUrl + '/crocodile/musae_crocodile_features.json') YIELD value
+    WITH value, keys(value) AS keys
+    UNWIND keys AS key
+    WITH value[key] AS feature, key
+    MATCH (c:Crocodile {id: key})
+    SET c.features = feature
+""",
+    {"baseUrl": baseUrl},
+)
+gds.run_cypher(
+    """
+    CALL apoc.load.json($baseUrl + '/squirrel/musae_squirrel_features.json') YIELD value
+    WITH value, keys(value) AS keys
+    UNWIND keys AS key
+    WITH value[key] AS feature, key
+    MATCH (c:Squirrel {id: key})
+    SET c.features = feature
+""",
+    {"baseUrl": baseUrl},
+)
+----
+
+== Preparing the dataset for the pipeline
+
+In order to use the dataset, we must prepare the features in a format
+that the model supports and can work well with. In their raw form, the
+features are ids of particular words, and therefore are not suitable as
+input to linear regression.
+
+To overcome this, we will use a one-hot encoding. This will produce
+features that work well for linear regression. We begin by learning the
+dictionaries of nouns across the node sets. We create a node to host the
+dictionary, then we use it to one-hot encode all feature vectors.
+
+[source, python]
+----
+# Construct one-hot dictionaries
+gds.run_cypher(
+    """
+    MATCH (s:Chameleon)
+    WITH s.features AS features
+    UNWIND features AS feature
+    WITH feature
+      ORDER BY feature ASC
+    WITH collect(distinct feature) AS orderedTotality
+    CREATE (:Feature {animal: 'chameleon', totality: orderedTotality})
+    RETURN orderedTotality
+"""
+)
+gds.run_cypher(
+    """
+    MATCH (s:Crocodile)
+    WITH s.features AS features
+    UNWIND features AS feature
+    WITH feature
+      ORDER BY feature ASC
+    WITH collect(distinct feature) AS orderedTotality
+    CREATE (:Feature {animal: 'crocodile', totality: orderedTotality})
+    RETURN orderedTotality
+"""
+)
+gds.run_cypher(
+    """
+    MATCH (s:Squirrel)
+    WITH s.features AS features
+    UNWIND features AS feature
+    WITH feature
+      ORDER BY feature ASC
+    WITH collect(distinct feature) AS orderedTotality
+    CREATE (:Feature {animal: 'squirrel', totality: orderedTotality})
+    RETURN orderedTotality
+"""
+)
+
+# Do one-hot encoding
+gds.run_cypher(
+    """
+    MATCH (f:Feature {animal: 'chameleon'})
+    MATCH (c:Chameleon)
+    SET c.features_one_hot = gds.alpha.ml.oneHotEncoding(f.totality, c.features)
+"""
+)
+gds.run_cypher(
+    """
+    MATCH (f:Feature {animal: 'crocodile'})
+    MATCH (c:Crocodile)
+    SET c.features_one_hot = gds.alpha.ml.oneHotEncoding(f.totality, c.features)
+"""
+)
+gds.run_cypher(
+    """
+    MATCH (f:Feature {animal: 'squirrel'})
+    MATCH (c:Squirrel)
+    SET c.features_one_hot = gds.alpha.ml.oneHotEncoding(f.totality, c.features)
+"""
+)
+----
+
+[source, python]
+----
+# First, let's project our graph into the GDS Graph Catalog
+# We will use a native projection to begin with
+G_animals, projection_result = gds.graph.project(
+    "wiki_animals",
+    ["Chameleon", "Squirrel", "Crocodile"],
+    {"LINK": {"orientation": "UNDIRECTED"}},
+    nodeProperties=["features_one_hot", "target"],
+)
+print(projection_result[["graphName", "nodeCount", "relationshipCount"]])
+----
+
+== Connectivity
+
+In graph analysis, it is common to operate only over _connected_ graphs.
+That is, graphs that consist of only a single _component_. The reason
+for this is that in most cases, information does not flow where there
+are no connections.
+
+The fastest way to determine the number of components in our graph is to
+use the WCC (Weakly Connected Components) algorithm.
+
+[source, python]
+----
+# We use the WCC algorithm to see how many components we have
+wcc_result = gds.wcc.mutate(G_animals, mutateProperty="wcc_component")
+
+print(wcc_result[["computeMillis", "componentCount"]])
+----
+
+== Component separation
+
+Learning that our graph consists of three components, we will next
+separate the components into separate graphs. We will use the `subgraph`
+projection to accomplish this. We will create one subgraph for each of
+the components.
+
+[source, python]
+----
+# First, we stream the component ids
+components = gds.graph.nodeProperty.stream(G_animals, "wcc_component")
+
+# Second, we compute the unique component ids
+component_ids = components["propertyValue"].unique()
+
+# Third, we project a subgraph for each component
+component_graphs = [
+    gds.beta.graph.project.subgraph(
+        f"animals_component_{component_id}",
+        G_animals,
+        f"n.wcc_component = {component_id}",
+        "*",
+    )[0]
+    for component_id in component_ids
+]
+
+# Lastly, we map the node labels in the graphs to the graph
+graph_components_by_labels = {str(G_component.node_labels()): G_component for G_component in component_graphs}
+
+print({k: v.name() for k, v in graph_components_by_labels.items()})
+----
+
+[source, python]
+----
+# Now, we are only interested in the Chameleon graph,
+# so we will drop the other graphs and define a better variable for the one we keep
+graph_components_by_labels[str(["Crocodile"])].drop()
+graph_components_by_labels[str(["Squirrel"])].drop()
+G_chameleon = graph_components_by_labels[str(["Chameleon"])]
+----
+
+[source, python]
+----
+# With the graph object G_chameleon, we can inspect some statistics
+print("#nodes: " + str(G_chameleon.node_count()))
+print("#relationships: " + str(G_chameleon.relationship_count()))
+print("Degree distribution")
+print("=" * 25)
+print(G_chameleon.degree_distribution().sort_index())
+----
+
+== Now, let’s construct a training pipeline!
+
+We will create a Node Regression pipeline, and then
+
+[arabic]
+. configure the splitting
+. add model candidates
+. configure auto-tuning
+. add node property steps
+. select model features
+
+The pipeline lives in the Pipeline Catalog, and we are operating it
+through the Pipeline object, for maximum convenience.
+
+[source, python]
+----
+# Now, let's construct a training pipeline!
+chameleons_nr_training = gds.nr_pipe("node_regression_pipeline__Chameleons")
+
+# We configure the splitting
+chameleons_nr_training.configureSplit(validationFolds=5, testFraction=0.2)
+
+# We add a set of model candidates
+# A linear regression model with the learningRate parameter in a search space
+chameleons_nr_training.addLinearRegression(
+    penalty=1e-5,
+    patience=3,
+    tolerance=1e-5,
+    minEpochs=20,
+    maxEpochs=500,
+    learningRate={"range": [100, 1000]},  # We let the auto-tuner find a good value
+)
+# Let's try a few different models
+chameleons_nr_training.configureAutoTuning(maxTrials=10)
+
+# Our input feature dimension is 3132
+# We can reduce the dimension to speed up training using a FastRP node embedding
+chameleons_nr_training.addNodeProperty(
+    "fastRP",
+    embeddingDimension=256,
+    propertyRatio=0.8,
+    featureProperties=["features_one_hot"],
+    mutateProperty="frp_embedding",
+    randomSeed=420,
+)
+
+# And finally we select what features the model should be using
+# We rely on the FastRP embedding solely, because it encapsulates the one-hot encoded source features
+chameleons_nr_training.selectFeatures("frp_embedding")
+
+# The training pipeline is now fully configured and ready to be run!
+----
+
+[source, python]
+----
+# We use the training pipeline to train a model
+cora_nc_model, train_result = chameleons_nr_training.train(
+    G_chameleon,  # First, we use the entire Chameleon graph
+    modelName="chameleon_nr_model",
+    targetNodeLabels=["Chameleon"],
+    targetProperty="target",
+    metrics=["MEAN_SQUARED_ERROR", "MEAN_ABSOLUTE_ERROR"],
+    randomSeed=420,
+)
+----
+
+[source, python]
+----
+print("Winning model parameters: \n\t\t" + str(train_result["modelInfo"]["bestParameters"]))
+print()
+print("MEAN_SQUARED_ERROR      test score: " + str(train_result["modelInfo"]["metrics"]["MEAN_SQUARED_ERROR"]["test"]))
+print("MEAN_ABSOLUTE_ERROR     test score: " + str(train_result["modelInfo"]["metrics"]["MEAN_ABSOLUTE_ERROR"]["test"]))
+----
+
+[source, python]
+----
+# Let's sample the graph to see if we can get a similarly good model
+G_chameleon_sample, _ = gds.alpha.graph.sample.rwr(
+    "cham_sample",
+    G_chameleon,
+    samplingRatio=0.30,  # We'll use 30% of the graph
+)
+
+# Now we can use the same training pipeline to train another model, but faster!
+cora_nc_model_sample, train_result_sample = chameleons_nr_training.train(
+    G_chameleon_sample,
+    modelName="chameleon_nr_model_sample",
+    targetNodeLabels=["Chameleon"],
+    targetProperty="target",
+    metrics=["MEAN_SQUARED_ERROR", "MEAN_ABSOLUTE_ERROR"],
+    randomSeed=420,
+)
+----
+
+[source, python]
+----
+print("Winning model parameters: \n\t\t" + str(train_result_sample["modelInfo"]["bestParameters"]))
+print()
+print(
+    "MEAN_SQUARED_ERROR      test score: "
+    + str(train_result_sample["modelInfo"]["metrics"]["MEAN_SQUARED_ERROR"]["test"])
+)
+print(
+    "MEAN_ABSOLUTE_ERROR     test score: "
+    + str(train_result_sample["modelInfo"]["metrics"]["MEAN_ABSOLUTE_ERROR"]["test"])
+)
+----
+
+[source, python]
+----
+# Let's see what our models predict
+
+# The speed-trained model on 24% training data (30% sample - 20% test set)
+predicted_targets_sample = cora_nc_model_sample.predict_stream(G_chameleon)
+# The fully trained model on 80% training data (20% test set)
+predicted_targets_full = cora_nc_model.predict_stream(G_chameleon)
+
+# The original training data for comparison
+real_targets = gds.graph.nodeProperty.stream(G_chameleon, "target")
+
+# Merging the data frames
+merged_full = real_targets.merge(predicted_targets_full, left_on="nodeId", right_on="nodeId")
+merged_all = merged_full.merge(predicted_targets_sample, left_on="nodeId", right_on="nodeId")
+
+# Look at the last 10 rows
+print(merged_all.tail(10))
+----
+
+== And we are done!
