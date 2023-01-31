@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional, Tuple, Type, TypeVar, Union
 from neo4j import Driver, GraphDatabase
 from pandas import DataFrame, Series
 
+from .alpha_endpoints import AlphaEndpoints
 from .call_builder import CallBuilder
 from .direct_endpoints import DirectEndpoints
 from .error.unable_to_connect import UnableToConnectError
@@ -124,6 +125,14 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                     warnings.warn(f"Could not initialize GDS Flight Server client: {e}")
 
         super().__init__(self._query_runner, "gds", self._server_version)
+
+    @property
+    def alpha(self) -> AlphaEndpoints:
+        return AlphaEndpoints(self._query_runner, "gds.alpha", self._server_version)
+
+    # TODO
+    # def beta(self) -> None:
+    #     pass
 
     def __getattr__(self, attr: str) -> CallBuilder:
         return CallBuilder(self._query_runner, f"gds.{attr}", self._server_version)

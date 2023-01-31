@@ -53,6 +53,8 @@ class IndirectSystemEndpoints(CallerBase):
 
         return self._query_runner.run_query(query, params)
 
+
+class SystemAlphaEndpoints(CallerBase):
     def userLog(self) -> DataFrame:
         self._namespace += ".userLog"
         query = f"CALL {self._namespace}()"

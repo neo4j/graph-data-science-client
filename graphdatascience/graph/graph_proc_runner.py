@@ -1,4 +1,3 @@
-import os
 from importlib.resources import path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -14,12 +13,10 @@ from ..server_version.server_version import ServerVersion
 from .graph_export_runner import GraphExportRunner
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
-from .graph_sample_runner import GraphSampleRunner
+from graphdatascience.graph.graph_alpha_proc_runner import GraphAlphaProcRunner
 from graphdatascience.graph.graph_entity_ops_runner import (
     GraphElementPropertyRunner,
-    GraphLabelRunner,
     GraphNodePropertiesRunner,
-    GraphPropertyRunner,
     GraphRelationshipPropertiesRunner,
     GraphRelationshipRunner,
     GraphRelationshipsRunner,
@@ -42,10 +39,13 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             rels = read_pickle(rels_resource, compression="gzip")
 
         self._namespace = "gds.alpha.graph"
+        alpha_proc_runner = GraphAlphaProcRunner(self._query_runner, self._namespace, self._server_version)
 
         undirected_relationship_types = ["*"] if undirected else []
 
-        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
+        return alpha_proc_runner.construct(
+            graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types
+        )
 
     @client_only_endpoint("gds.graph")
     def load_karate_club(self, graph_name: str = "karate_club", undirected: bool = False) -> Graph:
@@ -56,10 +56,13 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             rels = read_pickle(rels_resource, compression="gzip")
 
         self._namespace = "gds.alpha.graph"
+        alpha_proc_runner = GraphAlphaProcRunner(self._query_runner, self._namespace, self._server_version)
 
         undirected_relationship_types = ["*"] if undirected else []
 
-        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
+        return alpha_proc_runner.construct(
+            graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types
+        )
 
     @client_only_endpoint("gds.graph")
     def load_imdb(self, graph_name: str = "imdb", undirected: bool = True) -> Graph:
@@ -81,6 +84,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             directed_in_rels = read_pickle(rels_resource, compression="gzip")
 
         self._namespace = "gds.alpha.graph"
+        alpha_proc_runner = GraphAlphaProcRunner(self._query_runner, self._namespace, self._server_version)
 
         nodes = [movies_with_genre, movies_without_genre, actors, directors]
         rels = [acted_in_rels, directed_in_rels]
@@ -88,7 +92,9 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         # Default undirected which matches raw data
         undirected_relationship_types = ["*"] if undirected else []
 
-        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
+        return alpha_proc_runner.construct(
+            graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types
+        )
 
     @property
     def project(self) -> GraphProjectRunner:
@@ -99,11 +105,6 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def export(self) -> GraphExportRunner:
         self._namespace += ".export"
         return GraphExportRunner(self._query_runner, self._namespace, self._server_version)
-
-    @property
-    def sample(self) -> GraphSampleRunner:
-        self._namespace += ".sample"
-        return GraphSampleRunner(self._query_runner, self._namespace, self._server_version)
 
     @graph_type_check
     def drop(
@@ -208,16 +209,6 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def relationships(self) -> GraphRelationshipsRunner:
         self._namespace += ".relationships"
         return GraphRelationshipsRunner(self._query_runner, self._namespace, self._server_version)
-
-    @property
-    def graphProperty(self) -> GraphPropertyRunner:
-        self._namespace += ".graphProperty"
-        return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version)
-
-    @property
-    def nodeLabel(self) -> GraphLabelRunner:
-        self._namespace += ".nodeLabel"
-        return GraphLabelRunner(self._query_runner, self._namespace, self._server_version)
 
     def streamNodeProperties(
         self,
@@ -390,48 +381,3 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         result = self._query_runner.run_query(query, params).squeeze()
 
         return Graph(graph_name, self._query_runner, self._server_version), result
-
-    @client_only_endpoint("gds.alpha.graph")
-    @compatible_with("construct", min_inclusive=ServerVersion(2, 1, 0))
-    def construct(
-        self,
-        graph_name: str,
-        nodes: Union[DataFrame, List[DataFrame]],
-        relationships: Union[DataFrame, List[DataFrame]],
-        concurrency: int = 4,
-        undirected_relationship_types: Optional[List[str]] = None,
-    ) -> Graph:
-        nodes = nodes if isinstance(nodes, List) else [nodes]
-        relationships = relationships if isinstance(relationships, List) else [relationships]
-
-        errors = []
-
-        exists = self._query_runner.run_query(f"CALL gds.graph.exists('{graph_name}') YIELD exists").squeeze()
-
-        # compare against True as (1) unit tests return None here and (2) numpys True does not work with `is True`.
-        if exists == True:  # noqa: E712
-            errors.append(
-                f"Graph '{graph_name}' already exists. Please drop the existing graph or use a different name."
-            )
-
-        for idx, node_df in enumerate(nodes):
-            if "nodeId" not in node_df.columns.values:
-                errors.append(f"Node dataframe at index {idx} needs to contain a 'nodeId' column.")
-
-        for idx, rel_df in enumerate(relationships):
-            for expected_col in ["sourceNodeId", "targetNodeId"]:
-                if expected_col not in rel_df.columns.values:
-                    errors.append(f"Relationship dataframe at index {idx} needs to contain a '{expected_col}' column.")
-
-        if self._server_version < ServerVersion(2, 3, 0) and undirected_relationship_types:
-            errors.append("The parameter 'undirected_relationship_types' is only supported since GDS 2.3.0.")
-
-        if len(errors) > 0:
-            raise ValueError(os.linesep.join(errors))
-
-        constructor = self._query_runner.create_graph_constructor(
-            graph_name, concurrency, undirected_relationship_types
-        )
-        constructor.run(nodes, relationships)
-
-        return Graph(graph_name, self._query_runner, self._server_version)

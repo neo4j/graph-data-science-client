@@ -39,7 +39,7 @@ class ConfigProcRunner(IllegalAttrChecker, UncallableNamespace):
         return self._query_runner.run_query(query, params)
 
 
-class IndirectConfigEndpoints(CallerBase):
+class ConfigIntermediateSteps(CallerBase):
     @property
     def defaults(self) -> ConfigProcRunner:
         return ConfigProcRunner(self._query_runner, f"{self._namespace}.defaults", self._server_version)
@@ -47,3 +47,9 @@ class IndirectConfigEndpoints(CallerBase):
     @property
     def limits(self) -> ConfigProcRunner:
         return ConfigProcRunner(self._query_runner, f"{self._namespace}.limits", self._server_version)
+
+
+class ConfigEndpoints(CallerBase):
+    @property
+    def config(self) -> ConfigIntermediateSteps:
+        return ConfigIntermediateSteps(self._query_runner, f"{self._namespace}.config", self._server_version)

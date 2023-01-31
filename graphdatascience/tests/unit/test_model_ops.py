@@ -34,16 +34,16 @@ def test_list_models(runner: CollectingQueryRunner, gds: GraphDataScience, model
 
 
 def test_exists_model(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    gds.alpha.model.exists("my_model")
+    gds.beta.model.exists("my_model")
 
-    assert runner.last_query() == "CALL gds.alpha.model.exists($model_name)"
+    assert runner.last_query() == "CALL gds.beta.model.exists($model_name)"
     assert runner.last_params() == {"model_name": "my_model"}
 
 
 def test_drop_model(runner: CollectingQueryRunner, gds: GraphDataScience, model: Model) -> None:
-    gds.alpha.model.drop(model)
+    gds.beta.model.drop(model)
 
-    assert runner.last_query() == "CALL gds.alpha.model.drop($model_name)"
+    assert runner.last_query() == "CALL gds.beta.model.drop($model_name)"
     assert runner.last_params() == {"model_name": MODEL_NAME}
 
 
