@@ -3,6 +3,7 @@ from .lp_training_pipeline import LPTrainingPipeline
 from .nc_training_pipeline import NCTrainingPipeline
 from .nr_training_pipeline import NRTrainingPipeline
 from .pipeline_alpha_proc_runner import PipelineAlphaProcRunner
+from .pipeline_beta_proc_runner import PipelineBetaProcRunner
 from .pipeline_proc_runner import PipelineProcRunner
 
 
@@ -12,12 +13,12 @@ class PipelineEndpoints(CallerBase):
         return PipelineProcRunner(self._query_runner, f"{self._namespace}.pipeline", self._server_version)
 
     def lp_pipe(self, name: str) -> LPTrainingPipeline:
-        runner = PipelineProcRunner(self._query_runner, f"{self._namespace}.beta.pipeline", self._server_version)
+        runner = PipelineBetaProcRunner(self._query_runner, f"{self._namespace}.beta.pipeline", self._server_version)
         p, _ = runner.linkPrediction.create(name)
         return p
 
     def nc_pipe(self, name: str) -> NCTrainingPipeline:
-        runner = PipelineProcRunner(self._query_runner, f"{self._namespace}.beta.pipeline", self._server_version)
+        runner = PipelineBetaProcRunner(self._query_runner, f"{self._namespace}.beta.pipeline", self._server_version)
         p, _ = runner.nodeClassification.create(name)
         return p
 
@@ -25,6 +26,12 @@ class PipelineEndpoints(CallerBase):
         runner = PipelineAlphaProcRunner(self._query_runner, f"{self._namespace}.alpha.pipeline", self._server_version)
         p, _ = runner.nodeRegression.create(name)
         return p
+
+
+class PipelineBetaEndpoints(CallerBase):
+    @property
+    def pipeline(self) -> PipelineBetaProcRunner:
+        return PipelineBetaProcRunner(self._query_runner, f"{self._namespace}.pipeline", self._server_version)
 
 
 class PipelineAlphaEndpoints(CallerBase):

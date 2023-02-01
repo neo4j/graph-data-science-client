@@ -1,8 +1,21 @@
+from .algo.algo_endpoints import AlgoEndpoints
 from .error.uncallable_namespace import UncallableNamespace
-from .indirect_endpoints import IndirectEndpoints
+from .utils.util_endpoints import IndirectUtilAlphaEndpoints
 
 
-class CallBuilder(IndirectEndpoints, UncallableNamespace):
-    def __getattr__(self, attr: str) -> "CallBuilder":
+class IndirectCallBuilder(AlgoEndpoints, UncallableNamespace):
+    def __getattr__(self, attr: str) -> "IndirectCallBuilder":
         namespace = f"{self._namespace}.{attr}"
-        return CallBuilder(self._query_runner, namespace, self._server_version)
+        return IndirectCallBuilder(self._query_runner, namespace, self._server_version)
+
+
+class IndirectBetaCallBuilder(AlgoEndpoints, UncallableNamespace):
+    def __getattr__(self, attr: str) -> "IndirectBetaCallBuilder":
+        namespace = f"{self._namespace}.{attr}"
+        return IndirectBetaCallBuilder(self._query_runner, namespace, self._server_version)
+
+
+class IndirectAlphaCallBuilder(AlgoEndpoints, IndirectUtilAlphaEndpoints, UncallableNamespace):
+    def __getattr__(self, attr: str) -> "IndirectAlphaCallBuilder":
+        namespace = f"{self._namespace}.{attr}"
+        return IndirectAlphaCallBuilder(self._query_runner, namespace, self._server_version)

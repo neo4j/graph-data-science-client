@@ -1,11 +1,6 @@
 from .algo.algo_endpoints import AlgoEndpoints
-from .graph.graph_endpoints import GraphEndpoints
-from .model.model_endpoints import ModelEndpoints
-from .pipeline.pipeline_endpoints import PipelineEndpoints
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
-from .system.system_endpoints import IndirectSystemEndpoints
-from .utils.util_endpoints import IndirectUtilEndpoints
 
 """
 This class should inherit endpoint classes that only contain endpoints that needs more of a prefix
@@ -14,13 +9,6 @@ as prefix, eg. for `gds.alpha.graph.construct`.
 """
 
 
-class IndirectEndpoints(
-    AlgoEndpoints,
-    GraphEndpoints,
-    ModelEndpoints,
-    PipelineEndpoints,
-    IndirectSystemEndpoints,
-    IndirectUtilEndpoints,
-):
+class IndirectProductEndpoints(AlgoEndpoints):
     def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
         super().__init__(query_runner, namespace, server_version)

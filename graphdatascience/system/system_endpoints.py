@@ -40,7 +40,7 @@ class DirectSystemEndpoints(CallerBase):
         return DebugProcRunner(self._query_runner, f"{self._namespace}.debug", self._server_version)
 
 
-class IndirectSystemEndpoints(CallerBase):
+class SystemBetaEndpoints(CallerBase):
     def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
         self._namespace += ".listProgress"
 

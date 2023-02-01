@@ -5,7 +5,8 @@ from neo4j import Driver, GraphDatabase
 from pandas import DataFrame, Series
 
 from .alpha_endpoints import AlphaEndpoints
-from .call_builder import CallBuilder
+from .beta_endpoints import BetaEndpoints
+from .call_builder import IndirectCallBuilder
 from .direct_endpoints import DirectEndpoints
 from .error.unable_to_connect import UnableToConnectError
 from .error.uncallable_namespace import UncallableNamespace
@@ -130,12 +131,12 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def alpha(self) -> AlphaEndpoints:
         return AlphaEndpoints(self._query_runner, "gds.alpha", self._server_version)
 
-    # TODO
-    # def beta(self) -> None:
-    #     pass
+    @property
+    def beta(self) -> BetaEndpoints:
+        return BetaEndpoints(self._query_runner, "gds.beta", self._server_version)
 
-    def __getattr__(self, attr: str) -> CallBuilder:
-        return CallBuilder(self._query_runner, f"gds.{attr}", self._server_version)
+    def __getattr__(self, attr: str) -> IndirectCallBuilder:
+        return IndirectCallBuilder(self._query_runner, f"gds.{attr}", self._server_version)
 
     def set_database(self, database: str) -> None:
         self._query_runner.set_database(database)
