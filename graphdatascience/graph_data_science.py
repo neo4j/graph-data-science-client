@@ -4,10 +4,8 @@ from typing import Any, Dict, Optional, Tuple, Type, TypeVar, Union
 from neo4j import Driver, GraphDatabase
 from pandas import DataFrame, Series
 
-from .alpha_endpoints import AlphaEndpoints
-from .beta_endpoints import BetaEndpoints
 from .call_builder import IndirectCallBuilder
-from .direct_endpoints import DirectEndpoints
+from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from .error.unable_to_connect import UnableToConnectError
 from .error.uncallable_namespace import UncallableNamespace
 from .query_runner.arrow_query_runner import ArrowQueryRunner
