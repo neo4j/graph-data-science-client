@@ -106,10 +106,9 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".sample"
         return GraphSampleRunner(self._query_runner, self._namespace, self._server_version)
 
-    @graph_type_check
-    def drop(
+    def _drop_by_name(
         self,
-        G: Graph,
+        name: str,
         failIfMissing: bool = False,
         dbName: str = "",
         username: Optional[str] = None,
@@ -117,7 +116,7 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".drop"
 
         params = {
-            "graph_name": G.name(),
+            "graph_name": name,
             "fail_if_missing": failIfMissing,
             "db_name": dbName,
         }
@@ -132,6 +131,26 @@ class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
             return result.squeeze()  # type: ignore
 
         return None
+
+    @client_only_endpoint("gds.graph")
+    def drop_by_name(
+        self,
+        name: str,
+        failIfMissing: bool = False,
+        dbName: str = "",
+        username: Optional[str] = None,
+    ) -> Optional["Series[Any]"]:
+        return self._drop_by_name(name, failIfMissing, dbName, username)
+
+    @graph_type_check
+    def drop(
+        self,
+        G: Graph,
+        failIfMissing: bool = False,
+        dbName: str = "",
+        username: Optional[str] = None,
+    ) -> Optional["Series[Any]"]:
+        return self._drop_by_name(G.name(), failIfMissing, dbName, username)
 
     def exists(self, graph_name: str) -> "Series[Any]":
         self._namespace += ".exists"
