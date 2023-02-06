@@ -140,4 +140,24 @@ mypy .
 
 from the root. See `mypy.ini` for our custom mypy settings.
 
+## Generate documentation from Jupyter notebooks
 
+The documents in the `tutorials` section are automatically generated from the Jupyter notebooks.
+
+The `convert.sh` script in the `scripts/nb2doc/` directory can be used:
+
+* to generate documents from new notebooks;
+* to ensure that any changes to the existing notebooks are reflected in the existing documents (for instance in a CI setting).
+
+The script must be run from the project root directory and requires [Pandoc](https://pandoc.org/) to be already installed.
+
+```bash
+$ scripts/nb2doc/convert.sh
+```
+
+### Style notes
+
+For a successful conversion of the notebooks, some style notes apply.
+
+* A notebook must only contain one first-level header, which should be in the first cell (as a title).
+* TBD
