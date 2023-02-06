@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOC_DIR=doc/modules/ROOT/pages/tutorials/generated
+DOC_DIR=doc/modules/ROOT/pages/tutorials
 NB_DIR=examples
 
 for notebook in ${NB_DIR}/*.ipynb
