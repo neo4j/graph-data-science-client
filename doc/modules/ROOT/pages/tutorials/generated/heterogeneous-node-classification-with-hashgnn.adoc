@@ -177,7 +177,7 @@ _ = pipe.addNodeProperty(
     iterations=4,
     heterogeneous=True,
     embeddingDensity=512,
-    neighborInfluence=0.8,
+    neighborInfluence=0.7,
     featureProperties=["plot_keywords"],
     randomSeed=41,
     contextNodeLabels=G.node_labels(),
@@ -246,7 +246,7 @@ model, _ = pipe.train(
     modelName="genre-predictor-model",
     targetNodeLabels=["Movie"],
     targetProperty="genre",
-    metrics=["ACCURACY"],
+    metrics=["F1_MACRO"],
     randomSeed=42,
 )
 ----
@@ -255,7 +255,7 @@ Let’s inspect the model that was created by the training pipeline.
 
 [source, python, role=no-test]
 ----
-print(f"Accuracy scores of trained model:\n{model.metrics()['ACCURACY']}")
+print(f"Accuracy scores of trained model:\n{model.metrics()['F1_MACRO']}")
 ----
 
 [source, python, role=no-test]
@@ -264,11 +264,11 @@ print(f"Winning ML algorithm candidate config:\n{model.best_parameters()}")
 ----
 
 As we can see the best ML algorithm configuration that the autotuning
-found was logistic regression with `penalty=0.631876`.
+found was logistic regression with `penalty=0.159748`.
 
-Further we note that the test set accuracy score is 0.65213676, which is
-actually a big improvement compared to the currently best state of the
-art score in the literature. More on this in the
+Further we note that the test set F1 score is 0.59118347, which is
+really good to when comparing to scores of other algorithms on this
+dataset in the literature. More on this in the
 link:#Conclusion[Conclusion] section below.
 
 == Making new predictions
@@ -332,7 +332,7 @@ from a Neo4j database] to create a more realistic production workflow.
 As mentioned we tried to mimic the setup of the benchmarks in the
 NeurIPS paper
 https://proceedings.neurips.cc/paper/2019/file/9d63484abb477c97640154d40595a3bb-Paper.pdf[Graph
-Transformer Network], in order to compare with the current state of the
+Transformer Networks], in order to compare with the current state of the
 art methods. A difference from this paper is that they have a predefined
 train-test set split, whereas we just generate a split (with the same
 size) uniformly at random within our training pipeline. However, we have
@@ -345,7 +345,7 @@ The scores they observe are the following:
 
 [cols=",",options="header",]
 |===
-|Algorithm |Test set accuracy (%)
+|Algorithm |Test set F1 score (%)
 |DeepWalk |32.08
 |metapath2vec |35.21
 |GCN |56.89
@@ -354,13 +354,13 @@ The scores they observe are the following:
 |GTN |60.92
 |===
 
-In light of this, it is indeed very impressive that we get a test set
-accuracy score of 65.21 % with HashGNN and logistic regression.
-Especially considering that: - we use fewer bits to represent the
-embeddings (1256 vs 2048) - use dramatically fewer training parameters
-in our gradient descent compared to the deep learning models above -
-HashGNN is an unsupervised algorithm - HashGNN runs a lot faster (even
-without a GPU) and requires a lot less memory
+In light of this, it is indeed very impressive that we get a test set F1
+score of 59.11 % with HashGNN and logistic regression. Especially
+considering that: - we use fewer bits to represent the embeddings (1256
+vs 2048) - use dramatically fewer training parameters in our gradient
+descent compared to the deep learning models above - HashGNN is an
+unsupervised algorithm - HashGNN runs a lot faster (even without a GPU)
+and requires a lot less memory
 
 == Further learning
 

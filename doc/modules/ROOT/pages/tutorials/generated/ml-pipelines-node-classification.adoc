@@ -50,7 +50,7 @@ NEO4J_CONNECTION_URI = "bolt://localhost:7687"
 NEO4J_USERNAME = "neo4j"
 NEO4J_PASSWORD = "test"
 
-gds = GraphDataScience(NEO4J_CONNECTION_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
+gds = GraphDataScience(NEO4J_CONNECTION_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD), database="neo4j")
 
 # On AuraDS:
 #
@@ -610,7 +610,7 @@ longer useful:
 
 [source, python, role=no-test]
 ----
-gds.run_cypher("MATCH (n:Paper|UnclassifiedPaper) DETACH DELETE n")
+gds.run_cypher("MATCH (n) WHERE n:Paper OR n:UnclassifiedPaper DETACH DELETE n")
 ----
 
 It is good practice to close the client as well:
