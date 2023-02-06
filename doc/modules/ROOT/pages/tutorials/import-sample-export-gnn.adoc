@@ -3,23 +3,29 @@
 = Export and integration with PyG example
 
 This notebook exemplifies how to use the `graphdatascience` and PyTorch
-Geometric (PyG) Python libraries to: * Import the
-https://paperswithcode.com/dataset/cora[CORA dataset] directly into GDS
+Geometric (PyG) Python libraries to:
+
+* Import the https://paperswithcode.com/dataset/cora[CORA dataset]
+directly into GDS
 * Sample a part of CORA using the
 https://neo4j.com/docs/graph-data-science/current/management-ops/projections/rwr/[GDS
-Random walk with restarts algorithm] * Export the CORA sample client
-side * Define and train a Graph Convolutional Neural Network (GCN) on
-the CORA sample * Evaluate the GCN on a test set
+Random walk with restarts algorithm]
+* Export the CORA sample client side
+* Define and train a Graph Convolutional Neural Network (GCN) on the
+CORA sample
+* Evaluate the GCN on a test set
 
 == Prerequisites
 
 Running this notebook requires a Neo4j server with a recent GDS version
 (2.2+) installed. We recommend using Neo4j Desktop with GDS, or AuraDS.
 
-Also required are of course the Python libraries: * `graphdatascience`
-(see
+Also required are of course the Python libraries:
+
+* `graphdatascience` (see
 https://neo4j.com/docs/graph-data-science-client/current/installation/[docs]
-for installation instructions) * PyG (see
+for installation instructions)
+* PyG (see
 https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html[PyG
 docs] for installation instructions)
 
