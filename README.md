@@ -79,9 +79,9 @@ For additional examples and extensive documentation of all capabilities, please 
 Full end-to-end examples in Jupyter ready-to-run notebooks can be found in the [`examples` source directory](https://github.com/neo4j/graph-data-science-client/tree/main/examples):
 
 * [Machine learning pipelines: Node classification](examples/ml-pipelines-node-classification.ipynb)
-* [Node regression with subgraph and sampling projections](examples/node-regression-with-subgraph-and-graph-sample.ipynb)
+* [Node Regression with Subgraph and Graph Sample projections](examples/node-regression-with-subgraph-and-graph-sample.ipynb)
 * [Product recommendations with kNN based on FastRP embeddings](examples/fastrp-and-knn.ipynb)
-* [Exporting from GDS and running GNN with PyG](examples/import-sample-export-gnn.ipynb)
+* [Sampling, Export and Integration with PyG example](examples/import-sample-export-gnn.ipynb)
 * [Load data to a projected graph via graph construction](examples/load-data-via-graph-construction.ipynb)
 * [Heterogeneous Node Classification with HashGNN and Autotuning](https://github.com/neo4j/graph-data-science-client/tree/main/examples/heterogeneous-node-classification-with-hashgnn.ipynb)
 
