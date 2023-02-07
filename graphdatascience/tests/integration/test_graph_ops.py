@@ -12,6 +12,7 @@ from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.tests.integration.conftest import AUTH, DB, URI
 
 GRAPH_NAME = "g"
+BOGUS_GRAPH_NAME = "bogusName"
 
 
 @pytest.fixture(autouse=True)
@@ -119,7 +120,7 @@ def test_graph_exists(gds: GraphDataScience) -> None:
     result = gds.graph.exists(G.name())
     assert result["exists"]
 
-    result = gds.graph.exists("bogusName")
+    result = gds.graph.exists(BOGUS_GRAPH_NAME)
     assert not result["exists"]
 
 
@@ -132,6 +133,19 @@ def test_graph_drop(gds: GraphDataScience) -> None:
 
     with pytest.raises(Exception):
         gds.graph.drop(G, True)
+
+
+def test_graph_drop_by_name(gds: GraphDataScience) -> None:
+    gds.graph.project(GRAPH_NAME, "*", "*")
+
+    # get and drop graph
+    result0 = gds.graph.get(GRAPH_NAME).drop(True)
+    assert result0 is not None
+    assert result0["graphName"] == GRAPH_NAME
+
+    # try and drop a graph that doesn't exist with failIfMissing=False
+    result1 = gds.graph.get(GRAPH_NAME, False).drop()
+    assert result1.shape[0] == 0
 
 
 def test_graph_type_check(gds: GraphDataScience) -> None:
@@ -212,9 +226,12 @@ def test_graph_get(gds: GraphDataScience) -> None:
 
     with pytest.raises(
         ValueError,
-        match=f"No projected graph named 'bogusName' exists in current database '{gds.database()}'",
+        match=f"No projected graph named '{BOGUS_GRAPH_NAME}' exists in current database '{gds.database()}'",
     ):
-        gds.graph.get("bogusName")
+        gds.graph.get(BOGUS_GRAPH_NAME)
+
+    G = gds.graph.get(BOGUS_GRAPH_NAME, False)
+    assert G.name() == BOGUS_GRAPH_NAME
 
 
 def test_graph_streamNodeProperty_with_arrow(gds: GraphDataScience) -> None:
