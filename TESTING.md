@@ -144,12 +144,12 @@ from the root. See `mypy.ini` for our custom mypy settings.
 
 The documents in the `tutorials` section are automatically generated from the Jupyter notebooks.
 
-The `convert.sh` script in the `scripts/nb2doc/` directory can be used:
+The script `scripts/nb2doc/convert.sh` can be used:
 
 * to generate documents from new notebooks;
 * to ensure that any changes to the existing notebooks are reflected in the existing documents (for instance in a CI setting).
 
-The script must be run from the project root directory and requires [Pandoc](https://pandoc.org/) to be already installed.
+The script must be run from the project root directory and requires [Pandoc](https://pandoc.org/) to be already installed. The latest supported version of Pandoc is 2.19.2; version 3.0.1 seems to work the same but raises some warnings.
 
 ```bash
 $ scripts/nb2doc/convert.sh
