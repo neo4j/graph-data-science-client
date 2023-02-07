@@ -143,7 +143,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         if isinstance(self._query_runner, ArrowQueryRunner):
             qr = self._query_runner.fallback_query_runner()
 
-        return qr.run_query(query, params, database)
+        return qr.run_query(query, params, database, False)
 
     def driver_config(self) -> Dict[str, Any]:
         return self._config

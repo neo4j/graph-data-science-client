@@ -47,7 +47,11 @@ class ArrowQueryRunner(QueryRunner):
         self._flight_client = flight.FlightClient(location, **client_options)
 
     def run_query(
-        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
+        self,
+        query: str,
+        params: Optional[Dict[str, Any]] = None,
+        database: Optional[str] = None,
+        internal: bool = True,
     ) -> DataFrame:
         if params is None:
             params = {}

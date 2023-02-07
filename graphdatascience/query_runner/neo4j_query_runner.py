@@ -1,9 +1,11 @@
+import re
 import warnings
 from concurrent.futures import Future, ThreadPoolExecutor, wait
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 import neo4j
+import textdistance
 from pandas import DataFrame
 from tqdm.auto import tqdm
 
@@ -25,7 +27,11 @@ class Neo4jQueryRunner(QueryRunner):
         self._database = database
 
     def run_query(
-        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
+        self,
+        query: str,
+        params: Optional[Dict[str, Any]] = None,
+        database: Optional[str] = None,
+        internal: bool = True,
     ) -> DataFrame:
         if params is None:
             params = {}
@@ -50,7 +56,13 @@ class Neo4jQueryRunner(QueryRunner):
                     message=r"^`id` is deprecated, use `element_id` instead$",
                 )
 
-            result = session.run(query, params)
+            try:
+                result = session.run(query, params)
+            except Exception as e:
+                if internal:
+                    self.handle_driver_exception(session, e)
+                else:
+                    raise e
 
             # Though pandas support may be experimental in the `neo4j` package, it should always
             # be supported in the `graphdatascience` package.
@@ -142,3 +154,31 @@ class Neo4jQueryRunner(QueryRunner):
 
     def set_server_version(self, server_version: ServerVersion) -> None:
         self._server_version = server_version
+
+    @staticmethod
+    def handle_driver_exception(session: neo4j.Session, e: Exception) -> None:
+        MAX_DIST_FOR_SUGGESTION = 3
+        reg_gds_hit = re.search(
+            r"There is no procedure with the name `(gds(?:\.\w+)+)` registered for this database instance",
+            str(e),
+        )
+        if not reg_gds_hit:
+            raise e
+
+        requested_endpoint = reg_gds_hit.group(1)
+
+        list_result = session.run("CALL gds.list()")
+        all_endpoints = list_result.to_df()["name"].tolist()
+
+        closest_endpoint = None
+        curr_min_dist = 1_000
+        for ep in all_endpoints:
+            dist = textdistance.levenshtein(requested_endpoint, ep)
+            if dist <= MAX_DIST_FOR_SUGGESTION and dist < curr_min_dist:
+                closest_endpoint = ep
+                curr_min_dist = dist
+
+        if closest_endpoint:
+            raise SyntaxError(f"There is no '{requested_endpoint}' to call. Did you mean '{closest_endpoint}'?") from e
+        else:
+            raise SyntaxError(f"There is no '{requested_endpoint}' to call") from e
