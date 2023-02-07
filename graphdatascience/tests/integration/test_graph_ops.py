@@ -134,14 +134,15 @@ def test_graph_drop(gds: GraphDataScience) -> None:
         gds.graph.drop(G, True)
 
 
-def test_graph_drop_by_name(gds: GraphDataScience) -> None:
+def test_graph_drop_if_exists(gds: GraphDataScience) -> None:
     gds.graph.project(GRAPH_NAME, "*", "*")
 
-    result = gds.graph.drop_by_name(GRAPH_NAME, True)
-    assert result is not None
-    assert result["graphName"] == GRAPH_NAME
-    with pytest.raises(Exception):
-        gds.graph.drop_by_name(GRAPH_NAME, True)
+    result0 = gds.graph.drop_if_exists(GRAPH_NAME)
+    assert result0 is not None
+    assert result0["graphName"] == GRAPH_NAME
+
+    result1 = gds.graph.drop_if_exists(GRAPH_NAME)
+    assert result1 is None
 
 
 def test_graph_type_check(gds: GraphDataScience) -> None:
