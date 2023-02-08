@@ -1,0 +1,306 @@
+// DO NOT EDIT - AsciiDoc file generated automatically
+
+= FastRP and kNN end-to-end example
+
+This notebook exemplifies how to use the `graphdatascience` Python
+library to operate Neo4j GDS. It shows an adapted version of the FastRP
+and kNN end-to-end example from the GDS Manual, found
+https://neo4j.com/docs/graph-data-science/current/end-to-end-examples/fastrp-knn-example[here].
+
+We consider a graph of products and customers, and we want to find new
+products to recommend for each customer. We want to use
+https://neo4j.com/docs/graph-data-science/current/algorithms/knn/[the
+K-Nearest Neighbors algorithm (kNN)] to identify similar customers and
+base our product recommendations on that. In order to be able to
+leverage topological information about the graph in kNN, we will first
+create node embeddings using
+https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/fastrp/[FastRP].
+These embeddings will be the input to the kNN algorithm.
+
+We will then use a Cypher query to generate recommendations for each
+pair of similar customers, where products that have been purchased by
+one of the customers will be recommended to the other.
+
+== Prerequisites
+
+Running this notebook requires a Neo4j server with a recent version
+(2.0+) of GDS installed. We recommend using Neo4j Desktop with GDS, or
+AuraDS.
+
+The `graphdatascience` Python library needs to be installed as well. See
+the examples in the Setup section below and in the
+https://neo4j.com/docs/graph-data-science-client/current/installation/[client
+installation instructions].
+
+== Setup
+
+We start by installing and importing our dependencies, and setting up
+our GDS client connection to the database.
+
+[source, python, role=no-test]
+----
+# Install necessary dependencies
+%pip graphdatascience
+----
+
+[source, python, role=no-test]
+----
+from graphdatascience import GraphDataScience
+
+# Override NEO4J_URI and NEO4J_AUTH here according to your setup
+NEO4J_URI = "bolt://localhost:7687"
+NEO4J_AUTH = None
+gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH)
+----
+
+== Example graph creation
+
+We now create a graph of products and customers in the database. The
+`amount` relationship property represents the average weekly amount of
+money spent by a customer on a given product.
+
+[source, python, role=no-test]
+----
+# The `run_cypher` method can be used to run arbitrary Cypher queries on the database.
+_ = gds.run_cypher(
+    """
+        CREATE
+         (dan:Person {name: 'Dan'}),
+         (annie:Person {name: 'Annie'}),
+         (matt:Person {name: 'Matt'}),
+         (jeff:Person {name: 'Jeff'}),
+         (brie:Person {name: 'Brie'}),
+         (elsa:Person {name: 'Elsa'}),
+
+         (cookies:Product {name: 'Cookies'}),
+         (tomatoes:Product {name: 'Tomatoes'}),
+         (cucumber:Product {name: 'Cucumber'}),
+         (celery:Product {name: 'Celery'}),
+         (kale:Product {name: 'Kale'}),
+         (milk:Product {name: 'Milk'}),
+         (chocolate:Product {name: 'Chocolate'}),
+
+         (dan)-[:BUYS {amount: 1.2}]->(cookies),
+         (dan)-[:BUYS {amount: 3.2}]->(milk),
+         (dan)-[:BUYS {amount: 2.2}]->(chocolate),
+
+         (annie)-[:BUYS {amount: 1.2}]->(cucumber),
+         (annie)-[:BUYS {amount: 3.2}]->(milk),
+         (annie)-[:BUYS {amount: 3.2}]->(tomatoes),
+
+         (matt)-[:BUYS {amount: 3}]->(tomatoes),
+         (matt)-[:BUYS {amount: 2}]->(kale),
+         (matt)-[:BUYS {amount: 1}]->(cucumber),
+
+         (jeff)-[:BUYS {amount: 3}]->(cookies),
+         (jeff)-[:BUYS {amount: 2}]->(milk),
+
+         (brie)-[:BUYS {amount: 1}]->(tomatoes),
+         (brie)-[:BUYS {amount: 2}]->(milk),
+         (brie)-[:BUYS {amount: 2}]->(kale),
+         (brie)-[:BUYS {amount: 3}]->(cucumber),
+         (brie)-[:BUYS {amount: 0.3}]->(celery),
+
+         (elsa)-[:BUYS {amount: 3}]->(chocolate),
+         (elsa)-[:BUYS {amount: 3}]->(milk)
+    """
+)
+----
+
+== Projecting into GDS
+
+In order to be able to analyze the data in our database, we proceed to
+projecting it into memory where GDS can operate on it.
+
+[source, python, role=no-test]
+----
+# We define how we want to project our database into GDS
+node_projection = ["Person", "Product"]
+relationship_projection = {"BUYS": {"orientation": "UNDIRECTED", "properties": "amount"}}
+
+# Before actually going through with the projection, let's check how much memory is required
+result = gds.graph.project.estimate(node_projection, relationship_projection)
+
+print(f"Required memory for native loading: {result['requiredMemory']}")
+----
+
+[source, python, role=no-test]
+----
+# For this small graph memory requirement is low. Let us go through with the projection
+G, result = gds.graph.project("purchases", node_projection, relationship_projection)
+
+print(f"The projection took {result['projectMillis']} ms")
+
+# We can use convenience methods on `G` to check if the projection looks correct
+print(f"Graph '{G.name()}' node count: {G.node_count()}")
+print(f"Graph '{G.name()}' node labels: {G.node_labels()}")
+----
+
+== Creating FastRP node embeddings
+
+Next we use the
+https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/fastrp/[FastRP
+algorithm] to generate node embeddings that capture topological
+information from the graph. We choose to work with `embeddingDimension`
+set to 4 which is sufficient since our example graph is very small. The
+`iterationWeights` are chosen empirically to yield sensible results.
+Please see
+https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/fastrp/#algorithms-embeddings-fastrp-syntax[the
+syntax section of the FastRP documentation] for more information on
+these parameters.
+
+Since we want to use the embeddings as input when we run kNN later we
+use FastRP’s mutate mode.
+
+[source, python, role=no-test]
+----
+# We can also estimate memory of running algorithms like FastRP, so let's do that first
+result = gds.fastRP.mutate.estimate(
+    G,
+    mutateProperty="embedding",
+    randomSeed=42,
+    embeddingDimension=4,
+    relationshipWeightProperty="amount",
+    iterationWeights=[0.8, 1, 1, 1],
+)
+
+print(f"Required memory for running FastRP: {result['requiredMemory']}")
+----
+
+[source, python, role=no-test]
+----
+# Now let's run FastRP and mutate our projected graph 'purchases' with the results
+result = gds.fastRP.mutate(
+    G,
+    mutateProperty="embedding",
+    randomSeed=42,
+    embeddingDimension=4,
+    relationshipWeightProperty="amount",
+    iterationWeights=[0.8, 1, 1, 1],
+)
+
+# Let's make sure we got an embedding for each node
+print(f"Number of embedding vectors produced: {result['nodePropertiesWritten']}")
+----
+
+== Similarities with kNN
+
+Now we can run
+https://neo4j.com/docs/graph-data-science/current/algorithms/knn/[kNN]
+to identify similar nodes by using the node embeddings that we generated
+with FastRP as `nodeProperties`. Since we are working with a small
+graph, we can set `sampleRate` to 1 and `deltaThreshold` to 0 without
+having to worry about long computation times. The `concurrency`
+parameter is set to 1 (along with the fixed `randomSeed`) in order to
+get a deterministic result. Please see
+https://neo4j.com/docs/graph-data-science/current/algorithms/knn/#algorithms-knn-syntax[the
+syntax section of the kNN documentation] for more information on these
+parameters.
+
+Note that we will use the algorithm’s write mode to write the properties
+and relationships back to our database, so that we can analyze them
+later using Cypher.
+
+[source, python, role=no-test]
+----
+# Run kNN and write back to db (we skip memory estimation this time...)
+result = gds.knn.write(
+    G,
+    topK=2,
+    nodeProperties=["embedding"],
+    randomSeed=42,
+    concurrency=1,
+    sampleRate=1.0,
+    deltaThreshold=0.0,
+    writeRelationshipType="SIMILAR",
+    writeProperty="score",
+)
+
+print(f"Relationships produced: {result['relationshipsWritten']}")
+print(f"Nodes compared: {result['nodesCompared']}")
+print(f"Mean similarity: {result['similarityDistribution']['mean']}")
+----
+
+As we can see the mean similarity between nodes is quite high. This is
+due to the fact that we have a small example where there are no long
+paths between nodes leading to many similar FastRP node embeddings.
+
+== Exploring the results
+
+Let us now inspect the results of our kNN call by using Cypher. We can
+use the `SIMILARITY` relationship type to filter out the relationships
+we are interested in. And since we just care about similarities between
+people for our product recommendation engine, we make sure to only match
+nodes with the `Person` label.
+
+Please see https://neo4j.com/docs/cypher-manual/current/[the Cypher
+manual] for documentation on how to use Cypher.
+
+[source, python, role=no-test]
+----
+gds.run_cypher(
+    """
+        MATCH (p1:Person)-[r:SIMILAR]->(p2:Person)
+        RETURN p1.name AS person1, p2.name AS person2, r.score AS similarity
+        ORDER BY similarity DESCENDING, person1, person2
+    """
+)
+----
+
+Our kNN results indicate among other things that the `Person` nodes
+named ``Annie'' and ``Matt'' are very similar. Looking at the `BUYS`
+relationships for these two nodes we can see that such a conclusion
+makes sense. They both buy three products, two of which are the same
+(`Product` nodes named ``Cucumber'' and ``Tomatoes'') for both people
+and with similar amounts. We can therefore have high confidence in our
+approach.
+
+== Making recommendations
+
+Using the information we derived that the `Person` nodes named ``Annie''
+and ``Matt'' are similar, we can make product recommendations for each
+of them. Since they are similar, we can assume that products purchased
+by only one of the people may be of interest to buy also for the other
+person not already buying the product. By this principle we can derive
+product recommendations for the `Person` named ``Matt'' using a simple
+Cypher query.
+
+[source, python, role=no-test]
+----
+gds.run_cypher(
+    """
+        MATCH (:Person {name: "Annie"})-[:BUYS]->(p1:Product)
+        WITH collect(p1) as products
+        MATCH (:Person {name: "Matt"})-[:BUYS]->(p2:Product)
+        WHERE not p2 in products
+        RETURN p2.name as recommendation
+    """
+)
+----
+
+Indeed, ``Kale'' is the one product that the Person named ``Annie'' buys
+that is also not purchased by the Person named ``Matt''.
+
+== Cleaning up
+
+Before finishing we can clean up the example data from both the GDS
+in-memory state and the database.
+
+[source, python, role=no-test]
+----
+# Remove our projection from the GDS graph catalog
+G.drop()
+
+# Remove all the example data from the database
+_ = gds.run_cypher("MATCH (n) DETACH DELETE n")
+----
+
+== Conclusion
+
+Using two GDS algorithms and some basic Cypher we were easily able to
+derive some sensible product recommendations for a customer in our small
+example.
+
+To make sure to get similarities to other customers for every customer
+in our graph with kNN, we could play around with increasing the `topK`
+parameter.
