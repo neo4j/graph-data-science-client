@@ -14,7 +14,7 @@ def client_only_endpoint(expected_namespace_prefix: str) -> Callable[[F], F]:
             if self._namespace != expected_namespace_prefix:
                 raise SyntaxError(
                     f"There is no '{self._namespace}.{func.__name__}' to call. "
-                    "Did you mean '{expected_namespace_prefix}.{func.__name__}?"
+                    f"Did you mean '{expected_namespace_prefix}.{func.__name__}?"
                 )
 
             return func(self, *args, **kwargs)

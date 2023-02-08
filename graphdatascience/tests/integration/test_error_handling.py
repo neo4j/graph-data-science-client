@@ -60,13 +60,18 @@ def test_suggest_with_wrong_endpoint(gds: GraphDataScience) -> None:
         gds.bersion()
 
 
-def test_no_custom_cypher_exception(gds: GraphDataScience) -> None:
+def test_no_suggestive_cypher_exception(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
     with pytest.raises(
         Exception,
         match="There is no procedure with the name `gds.pagerank.stream` registered for this database instance",
     ):
         gds.run_cypher(f"CALL gds.pagerank.stream('{G.name()}')")
+
+
+def test_no_suggestive_ignored_ep_exception(gds: GraphDataScience) -> None:
+    with pytest.raises(SyntaxError, match="There is no 'gds.util.NaN' to call$"):
+        gds.util.NaN()  # type: ignore
 
 
 def test_calling_gds(gds: GraphDataScience) -> None:
