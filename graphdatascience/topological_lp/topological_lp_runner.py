@@ -1,11 +1,10 @@
 from typing import Any, Dict, Optional
 
-from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 
 
-class TopologicalLPRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class TopologicalLPRunner(UncallableNamespace, IllegalAttrChecker):
     def _run_standard_function(self, node1: int, node2: int, config: Dict[str, Any]) -> float:
         query = f"""
         MATCH (n1) WHERE id(n1) = {node1}

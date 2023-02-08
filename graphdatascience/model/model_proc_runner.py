@@ -2,7 +2,6 @@ from typing import Any, Optional, Tuple
 
 from pandas import DataFrame, Series
 
-from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
@@ -13,7 +12,7 @@ from .graphsage_model import GraphSageModel
 from .model import Model
 
 
-class ModelProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class ModelProcRunner(UncallableNamespace, IllegalAttrChecker):
     def store(self, model: Model, failIfUnsupportedType: bool = True) -> "Series[Any]":
         self._namespace += ".store"
 

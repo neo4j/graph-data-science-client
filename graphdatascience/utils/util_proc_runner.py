@@ -1,13 +1,12 @@
 from typing import Any, List
 
-from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
 
 
-class UtilProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
     def asNode(self, node_id: int) -> Any:
         self._namespace += ".asNode"
         result = self._query_runner.run_query(f"RETURN {self._namespace}({node_id}) AS node")

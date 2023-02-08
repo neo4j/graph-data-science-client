@@ -5,10 +5,10 @@ from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 import neo4j
-import textdistance
 from pandas import DataFrame
 from tqdm.auto import tqdm
 
+from ..error.endpoint_suggester import generate_suggestive_error_message
 from ..server_version.server_version import ServerVersion
 from .cypher_graph_constructor import CypherGraphConstructor
 from .graph_constructor import GraphConstructor
@@ -157,7 +157,6 @@ class Neo4jQueryRunner(QueryRunner):
 
     @staticmethod
     def handle_driver_exception(session: neo4j.Session, e: Exception) -> None:
-        MAX_DIST_FOR_SUGGESTION = 3
         reg_gds_hit = re.search(
             r"There is no procedure with the name `(gds(?:\.\w+)+)` registered for this database instance",
             str(e),
@@ -170,15 +169,4 @@ class Neo4jQueryRunner(QueryRunner):
         list_result = session.run("CALL gds.list()")
         all_endpoints = list_result.to_df()["name"].tolist()
 
-        closest_endpoint = None
-        curr_min_dist = 1_000
-        for ep in all_endpoints:
-            dist = textdistance.levenshtein(requested_endpoint, ep)
-            if dist <= MAX_DIST_FOR_SUGGESTION and dist < curr_min_dist:
-                closest_endpoint = ep
-                curr_min_dist = dist
-
-        if closest_endpoint:
-            raise SyntaxError(f"There is no '{requested_endpoint}' to call. Did you mean '{closest_endpoint}'?") from e
-        else:
-            raise SyntaxError(f"There is no '{requested_endpoint}' to call") from e
+        raise SyntaxError(generate_suggestive_error_message(requested_endpoint, all_endpoints)) from e

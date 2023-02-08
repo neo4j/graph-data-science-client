@@ -8,7 +8,7 @@ from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 
 
-class DebugProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class DebugProcRunner(UncallableNamespace, IllegalAttrChecker):
     def sysInfo(self) -> "Series[Any]":
         self._namespace += ".sysInfo"
         query = f"CALL {self._namespace}()"

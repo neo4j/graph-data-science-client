@@ -2,13 +2,12 @@ from typing import Any, Tuple
 
 from pandas import Series
 
-from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from .nc_training_pipeline import NCTrainingPipeline
 
 
-class NCPipelineCreateRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class NCPipelineCreateRunner(UncallableNamespace, IllegalAttrChecker):
     def create(self, name: str) -> Tuple[NCTrainingPipeline, "Series[Any]"]:
         self._namespace += ".create"
 

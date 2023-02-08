@@ -4,15 +4,14 @@ from typing import Any, Dict, List, Type, Union
 import pandas as pd
 from pandas import DataFrame, Series
 
+from ..error.illegal_attr_checker import IllegalAttrChecker
+from ..error.uncallable_namespace import UncallableNamespace
+from ..query_runner.query_runner import QueryRunner
+from ..server_version.compatible_with import compatible_with
+from ..server_version.server_version import ServerVersion
 from ..utils.util_proc_runner import UtilProcRunner
 from .graph_object import Graph
 from .graph_type_check import graph_type_check
-from graphdatascience.caller_base import CallerBase
-from graphdatascience.error.illegal_attr_checker import IllegalAttrChecker
-from graphdatascience.error.uncallable_namespace import UncallableNamespace
-from graphdatascience.query_runner.query_runner import QueryRunner
-from graphdatascience.server_version.compatible_with import compatible_with
-from graphdatascience.server_version.server_version import ServerVersion
 
 Strings = Union[str, List[str]]
 
@@ -33,7 +32,7 @@ class TopologyDataFrame(DataFrame):
         return output
 
 
-class GraphEntityOpsBaseRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class GraphEntityOpsBaseRunner(UncallableNamespace, IllegalAttrChecker):
     def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
         super().__init__(query_runner, namespace, server_version)
         self._util_proc_runner = UtilProcRunner(query_runner, "gds.util", server_version)
@@ -187,7 +186,7 @@ class GraphRelationshipRunner(GraphEntityOpsBaseRunner):
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
 
-class ToUndirectedRunner(CallerBase, IllegalAttrChecker):
+class ToUndirectedRunner(IllegalAttrChecker):
     def _run_procedure(
         self, G: Graph, query: str, relationship_type: str, mutate_relationship_type: str, **config: Any
     ) -> "Series[Any]":
@@ -246,7 +245,7 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
         return ToUndirectedRunner(self._query_runner, self._namespace, self._server_version)
 
 
-class GraphPropertyRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class GraphPropertyRunner(UncallableNamespace, IllegalAttrChecker):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
     @graph_type_check
     def stream(

@@ -2,7 +2,6 @@ from typing import Any, Tuple
 
 from pandas import Series
 
-from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..server_version.compatible_with import compatible_with
@@ -11,7 +10,7 @@ from .graph_object import Graph
 from .graph_type_check import from_graph_type_check
 
 
-class GraphSampleRunner(CallerBase, IllegalAttrChecker):
+class GraphSampleRunner(IllegalAttrChecker):
     @client_only_endpoint("gds.alpha.graph.sample")
     @compatible_with("construct", min_inclusive=ServerVersion(2, 2, 0))
     @from_graph_type_check

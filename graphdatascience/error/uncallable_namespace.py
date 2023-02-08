@@ -1,10 +1,9 @@
 from abc import ABC
 from typing import Any, NoReturn
 
+from ..caller_base import CallerBase
 
-class UncallableNamespace(ABC):
-    def __init__(self, namespace: str):
-        self._namespace = namespace
 
+class UncallableNamespace(CallerBase, ABC):
     def __call__(self, *_: Any, **__: Any) -> NoReturn:
-        raise SyntaxError(f"There is no '{self._namespace}' to call")
+        self._raise_suggestive_error_message(self._namespace)

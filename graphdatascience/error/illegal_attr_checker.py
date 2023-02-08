@@ -1,10 +1,9 @@
 from abc import ABC
 from typing import NoReturn
 
+from ..caller_base import CallerBase
 
-class IllegalAttrChecker(ABC):
-    def __init__(self, namespace: str):
-        self._namespace = namespace
 
+class IllegalAttrChecker(CallerBase, ABC):
     def __getattr__(self, attr: str) -> NoReturn:
-        raise SyntaxError(f"There is no '{self._namespace}.{attr}' to call")
+        self._raise_suggestive_error_message(f"{self._namespace}.{attr}")
