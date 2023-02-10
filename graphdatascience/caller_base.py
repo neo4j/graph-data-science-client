@@ -13,7 +13,7 @@ class CallerBase(ABC):
         self._server_version = server_version
 
     def _raise_suggestive_error_message(self, requested_endpoint: str) -> NoReturn:
-        list_result = self._query_runner.run_query("CALL gds.list()")
+        list_result = self._query_runner.run_query("CALL gds.list() YIELD name")
         all_endpoints = list_result["name"].tolist()
 
         raise SyntaxError(generate_suggestive_error_message(requested_endpoint, all_endpoints))

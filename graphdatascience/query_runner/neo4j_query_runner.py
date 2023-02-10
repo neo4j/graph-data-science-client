@@ -166,7 +166,7 @@ class Neo4jQueryRunner(QueryRunner):
 
         requested_endpoint = reg_gds_hit.group(1)
 
-        list_result = session.run("CALL gds.list()")
+        list_result = session.run("CALL gds.list() YIELD name")
         all_endpoints = list_result.to_df()["name"].tolist()
 
         raise SyntaxError(generate_suggestive_error_message(requested_endpoint, all_endpoints)) from e
