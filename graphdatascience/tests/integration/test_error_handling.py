@@ -69,8 +69,11 @@ def test_no_suggestive_cypher_exception(gds: GraphDataScience) -> None:
         gds.run_cypher(f"CALL gds.pagerank.stream('{G.name()}')")
 
 
-def test_no_suggestive_ignored_ep_exception(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.util.NaN' to call$"):
+def test_acknowledge_ignored_server_call(gds: GraphDataScience) -> None:
+    with pytest.raises(
+        SyntaxError,
+        match="The call 'gds.util.NaN' is a valid GDS server endpoint, but does not have a corresponding Python method",
+    ):
         gds.util.NaN()  # type: ignore
 
 
