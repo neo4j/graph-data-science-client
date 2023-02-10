@@ -5,6 +5,7 @@ from pandas import DataFrame
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from .util_proc_runner import UtilProcRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 class DirectUtilEndpoints(CallerBase):
@@ -44,6 +45,9 @@ class DirectUtilEndpoints(CallerBase):
         result = self._query_runner.run_query(f"RETURN {namespace}() as version").squeeze()
 
         return result  # type: ignore
+
+    def server_version(self) -> ServerVersion:
+        return ServerVersion.from_string(self.version())
 
     def list(self) -> DataFrame:
         namespace = self._namespace + ".list"
