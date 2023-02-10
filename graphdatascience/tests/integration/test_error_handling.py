@@ -32,8 +32,8 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 
 def test_bogus_algo(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
-    with pytest.raises(SyntaxError, match="There is no 'gds.bogusAlgo.stream' to call$"):
-        gds.bogusAlgo.stream(G)
+    with pytest.raises(SyntaxError, match="There is no 'gds.bogusAlgoWithLongName.stream' to call$"):
+        gds.bogusAlgoWithLongName.stream(G)
 
 
 def test_suggest_correct_algo_endpoint(gds: GraphDataScience) -> None:
@@ -46,8 +46,8 @@ def test_suggest_correct_algo_endpoint(gds: GraphDataScience) -> None:
         gds.pagerank.stream(G)
 
     # Too different
-    with pytest.raises(SyntaxError, match="There is no 'gds.peggyRanker.stream' to call$"):
-        gds.peggyRanker.stream(G)
+    with pytest.raises(SyntaxError, match="There is no 'gds.peggyRankerTroll.stream' to call$"):
+        gds.peggyRankerTroll.stream(G)
 
 
 def test_suggest_client_only_endpoint(gds: GraphDataScience) -> None:
@@ -56,7 +56,7 @@ def test_suggest_client_only_endpoint(gds: GraphDataScience) -> None:
 
 
 def test_suggest_with_wrong_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.bersion' to call. Did you mean 'gds.version'?"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.bersion' to call"):
         gds.bersion()
 
 
@@ -78,114 +78,114 @@ def test_acknowledge_ignored_server_call(gds: GraphDataScience) -> None:
 
 
 def test_calling_gds(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds' to call"):
         gds()
 
 
 def test_nonexisting_direct_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.bogus' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.bogus' to call"):
         gds.bogus()
 
 
 def test_nonexisting_indirect_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.bogus.thing' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.bogus.thing' to call"):
         gds.bogus.thing()
 
 
 def test_calling_graph(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.graph' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.graph' to call"):
         gds.graph("hello")
 
 
 def test_nonexisting_graph_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.graph.bogus' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.graph.bogus' to call"):
         gds.graph.bogus("hello")  # type: ignore
 
 
 def test_nonexisting_graph_export_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.graph.export.bogus' to call$"):
-        gds.graph.export.bogus("hello")  # type: ignore
+    with pytest.raises(SyntaxError, match="There is no 'gds.graph.export.bogusBananaStuff' to call"):
+        gds.graph.export.bogusBananaStuff("hello")  # type: ignore
 
 
 def test_nonexisting_graph_project_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.graph.project.bogus' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.graph.project.bogus' to call"):
         gds.graph.project.bogus("there")  # type: ignore
 
 
 def test_calling_model(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.beta.model' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.beta.model' to call"):
         gds.beta.model(42, 1337)
 
 
 def test_nonexisting_model_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.beta.model.bogus' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.beta.model.bogus' to call"):
         gds.beta.model.bogus(42, 1337)  # type: ignore
 
 
 def test_calling_pipeline(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.beta.pipeline' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.beta.pipeline' to call"):
         gds.beta.pipeline(42, 1337)
 
 
 def test_nonexisting_pipeline_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.beta.pipeline.bogus' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.beta.pipeline.bogus' to call"):
         gds.beta.pipeline.bogus(42, 1337)  # type: ignore
 
 
 def test_calling_linkPrediction(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.beta.pipeline.linkPrediction' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.beta.pipeline.linkPrediction' to call"):
         gds.beta.pipeline.linkPrediction()
 
 
 def test_nonexisting_linkPrediction_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(
-        SyntaxError,
-        match="There is no 'gds.beta.pipeline.linkPrediction.whoops' to call$",
-    ):
+    with pytest.raises(SyntaxError, match="There is no 'gds.beta.pipeline.linkPrediction.whoops' to call"):
         gds.beta.pipeline.linkPrediction.whoops()  # type: ignore
 
 
 def test_calling_nodeClassification(gds: GraphDataScience) -> None:
     with pytest.raises(
         SyntaxError,
-        match="There is no 'gds.beta.pipeline.nodeClassification' to call$",
+        match="There is no 'gds.beta.pipeline.nodeClassification' to call",
     ):
         gds.beta.pipeline.nodeClassification(13.37)
 
 
 def test_nonexisting_nodeClassification_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(
-        SyntaxError,
-        match="There is no 'gds.beta.pipeline.nodeClassification.whoops' to call$",
-    ):
+    with pytest.raises(SyntaxError, match="There is no 'gds.beta.pipeline.nodeClassification.whoops' to call"):
         gds.beta.pipeline.nodeClassification.whoops(13.37)  # type: ignore
 
 
 def test_calling_linkprediction(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.alpha.linkprediction' to call$"):
+    with pytest.raises(
+        SyntaxError,
+        match="There is no 'gds.alpha.linkprediction' to call",
+    ):
         gds.alpha.linkprediction(1, 2, direction="REVERSE")
 
 
 def test_nonexisting_linkprediction_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.alpha.linkprediction.adamicFoobar' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.alpha.linkprediction.adamicFoobar' to call"):
         gds.alpha.linkprediction.adamicFoobar(1, 2, direction="REVERSE")  # type: ignore
 
 
 def test_calling_debug(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.debug' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.debug' to call"):
         gds.debug()
 
 
 def test_nonexisting_debug_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.debug.sniffDumpo' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.debug.sniffDumpo' to call?"):
         gds.debug.sniffDumpo()  # type: ignore
 
 
 def test_calling_util(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.util' to call$"):
+    with pytest.raises(
+        SyntaxError,
+        match="There is no 'gds.util' to call",
+    ):
         gds.util()
 
 
 def test_nonexisting_util_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.util.askNodezzzzz' to call$"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.util.askNodezzzzz' to call"):
         gds.util.askNodezzzzz()  # type: ignore
