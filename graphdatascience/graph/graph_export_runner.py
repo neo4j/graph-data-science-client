@@ -2,13 +2,12 @@ from typing import Any, Dict
 
 from pandas import Series
 
-from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from .graph_object import Graph
 from .graph_type_check import graph_type_check
 
 
-class GraphExportCsvRunner(CallerBase, IllegalAttrChecker):
+class GraphExportCsvRunner(IllegalAttrChecker):
     # TODO: Add an integration test for this call.
     def __call__(self, G: Graph, **config: Any) -> "Series[Any]":
         return self._export_call(G, config)
@@ -27,7 +26,7 @@ class GraphExportCsvRunner(CallerBase, IllegalAttrChecker):
         return self._export_call(G, config)
 
 
-class GraphExportRunner(CallerBase, IllegalAttrChecker):
+class GraphExportRunner(IllegalAttrChecker):
     def __call__(self, G: Graph, **config: Any) -> "Series[Any]":
         return self._export_call(G, config)
 

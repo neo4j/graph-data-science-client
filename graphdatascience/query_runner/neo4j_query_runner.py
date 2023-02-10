@@ -1,3 +1,4 @@
+import re
 import warnings
 from concurrent.futures import Future, ThreadPoolExecutor, wait
 from typing import Any, Dict, List, Optional
@@ -7,6 +8,7 @@ import neo4j
 from pandas import DataFrame
 from tqdm.auto import tqdm
 
+from ..error.endpoint_suggester import generate_suggestive_error_message
 from ..server_version.server_version import ServerVersion
 from .cypher_graph_constructor import CypherGraphConstructor
 from .graph_constructor import GraphConstructor
@@ -25,7 +27,11 @@ class Neo4jQueryRunner(QueryRunner):
         self._database = database
 
     def run_query(
-        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
+        self,
+        query: str,
+        params: Optional[Dict[str, Any]] = None,
+        database: Optional[str] = None,
+        internal: bool = True,
     ) -> DataFrame:
         if params is None:
             params = {}
@@ -50,7 +56,13 @@ class Neo4jQueryRunner(QueryRunner):
                     message=r"^`id` is deprecated, use `element_id` instead$",
                 )
 
-            result = session.run(query, params)
+            try:
+                result = session.run(query, params)
+            except Exception as e:
+                if internal:
+                    self.handle_driver_exception(session, e)
+                else:
+                    raise e
 
             # Though pandas support may be experimental in the `neo4j` package, it should always
             # be supported in the `graphdatascience` package.
@@ -142,3 +154,19 @@ class Neo4jQueryRunner(QueryRunner):
 
     def set_server_version(self, server_version: ServerVersion) -> None:
         self._server_version = server_version
+
+    @staticmethod
+    def handle_driver_exception(session: neo4j.Session, e: Exception) -> None:
+        reg_gds_hit = re.search(
+            r"There is no procedure with the name `(gds(?:\.\w+)+)` registered for this database instance",
+            str(e),
+        )
+        if not reg_gds_hit:
+            raise e
+
+        requested_endpoint = reg_gds_hit.group(1)
+
+        list_result = session.run("CALL gds.list() YIELD name")
+        all_endpoints = list_result.to_df()["name"].tolist()
+
+        raise SyntaxError(generate_suggestive_error_message(requested_endpoint, all_endpoints)) from e

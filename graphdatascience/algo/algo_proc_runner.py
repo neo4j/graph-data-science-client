@@ -3,14 +3,13 @@ from typing import Any, Dict, Tuple
 
 from pandas import DataFrame, Series
 
-from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
 from ..model.graphsage_model import GraphSageModel
 
 
-class AlgoProcRunner(CallerBase, IllegalAttrChecker, ABC):
+class AlgoProcRunner(IllegalAttrChecker, ABC):
     @graph_type_check
     def _run_procedure(self, G: Graph, config: Dict[str, Any], with_logging: bool = True) -> DataFrame:
         query = f"CALL {self._namespace}($graph_name, $config)"

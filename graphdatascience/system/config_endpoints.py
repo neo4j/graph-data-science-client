@@ -7,7 +7,7 @@ from graphdatascience.error.illegal_attr_checker import IllegalAttrChecker
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
 
 
-class ConfigProcRunner(CallerBase, IllegalAttrChecker, UncallableNamespace):
+class ConfigProcRunner(IllegalAttrChecker, UncallableNamespace):
     def set(self, key: str, value: Any, username: Optional[str] = None) -> None:
         self._namespace += ".set"
 

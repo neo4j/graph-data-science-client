@@ -2,13 +2,12 @@ from typing import Any, Tuple
 
 from pandas import Series
 
-from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from .graph_object import Graph
 from .graph_type_check import from_graph_type_check
 
 
-class GraphProjectRunner(CallerBase, IllegalAttrChecker):
+class GraphProjectRunner(IllegalAttrChecker):
     def __call__(
         self, graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any
     ) -> Tuple[Graph, "Series[Any]"]:

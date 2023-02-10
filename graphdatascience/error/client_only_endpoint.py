@@ -1,21 +1,21 @@
-from abc import ABC
 from functools import wraps
 from typing import Any, Callable, TypeVar, cast
 
+from ..caller_base import CallerBase
+
 F = TypeVar("F", bound=Callable[..., Any])
-
-
-class WithNamespace(ABC):
-    _namespace: str
 
 
 def client_only_endpoint(expected_namespace_prefix: str) -> Callable[[F], F]:
     def decorator(func: F) -> F:
         wraps(func)
 
-        def wrapper(self: WithNamespace, *args: Any, **kwargs: Any) -> Any:
+        def wrapper(self: CallerBase, *args: Any, **kwargs: Any) -> Any:
             if self._namespace != expected_namespace_prefix:
-                raise SyntaxError(f"There is no '{self._namespace}.{func.__name__}' to call")
+                raise SyntaxError(
+                    f"There is no '{self._namespace}.{func.__name__}' to call. "
+                    f"Did you mean '{expected_namespace_prefix}.{func.__name__}?"
+                )
 
             return func(self, *args, **kwargs)
 

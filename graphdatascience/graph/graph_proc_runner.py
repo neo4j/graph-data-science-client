@@ -6,7 +6,6 @@ import pandas as pd
 from multimethod import multimethod
 from pandas import DataFrame, Series, read_pickle
 
-from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
@@ -33,7 +32,7 @@ from graphdatascience.graph.graph_type_check import (
 Strings = Union[str, List[str]]
 
 
-class GraphProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     @client_only_endpoint("gds.graph")
     def load_cora(self, graph_name: str = "cora", undirected: bool = False) -> Graph:
         with path("graphdatascience.resources.cora", "cora_nodes_gzip.pkl") as nodes_resource:
