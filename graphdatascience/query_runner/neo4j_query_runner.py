@@ -31,7 +31,7 @@ class Neo4jQueryRunner(QueryRunner):
         query: str,
         params: Optional[Dict[str, Any]] = None,
         database: Optional[str] = None,
-        internal: bool = True,
+        custom_error: bool = True,
     ) -> DataFrame:
         if params is None:
             params = {}
@@ -59,7 +59,7 @@ class Neo4jQueryRunner(QueryRunner):
             try:
                 result = session.run(query, params)
             except Exception as e:
-                if internal:
+                if custom_error:
                     self.handle_driver_exception(session, e)
                 else:
                     raise e

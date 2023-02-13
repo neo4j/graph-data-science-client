@@ -7,13 +7,13 @@ import pyarrow.flight as flight
 from pandas import DataFrame
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 
+from ..server_version.server_version import ServerVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
 from graphdatascience.server_version.compatible_with import (
     IncompatibleServerVersionError,
 )
-from graphdatascience.server_version.server_version import ServerVersion
 
 
 class ArrowQueryRunner(QueryRunner):
@@ -51,7 +51,7 @@ class ArrowQueryRunner(QueryRunner):
         query: str,
         params: Optional[Dict[str, Any]] = None,
         database: Optional[str] = None,
-        internal: bool = True,
+        custom_error: bool = True,
     ) -> DataFrame:
         if params is None:
             params = {}

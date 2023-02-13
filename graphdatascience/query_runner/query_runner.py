@@ -14,7 +14,7 @@ class QueryRunner(ABC):
         query: str,
         params: Optional[Dict[str, Any]] = None,
         database: Optional[str] = None,
-        internal: bool = True,
+        custom_error: bool = True,
     ) -> DataFrame:
         pass
 
