@@ -21,7 +21,7 @@ class DirectSystemEndpoints(CallerBase):
     def is_licensed(self) -> bool:
         try:
             license: str = self._query_runner.run_query(
-                "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value"
+                "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value", custom_error=False
             ).squeeze()
         except Exception as e:
             # AuraDS does not have `gds.debug.sysInfo`, but is always GDS EE.
