@@ -5,6 +5,7 @@ import pytest
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 @pytest.fixture(autouse=True)
@@ -78,6 +79,11 @@ def test_dijkstra_with_find_node_id(gds: GraphDataScience, G: Graph) -> None:
 def test_version(gds: GraphDataScience) -> None:
     result = gds.version()
     assert isinstance(result, str)
+
+
+def test_server_version(gds: GraphDataScience) -> None:
+    result = gds.server_version()
+    assert isinstance(result, ServerVersion)
 
 
 def test_list(gds: GraphDataScience) -> None:
