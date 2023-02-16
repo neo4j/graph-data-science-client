@@ -28,6 +28,7 @@ the `graphdatascience` package and import the client class.
 
 [source, python, role=no-test]
 ----
+import os
 from graphdatascience import GraphDataScience
 ----
 
@@ -36,16 +37,16 @@ When using a local Neo4j setup, the default connection URI is
 
 [source, python, role=no-test]
 ----
-# Replace with the actual connection URI and credentials
-NEO4J_CONNECTION_URI = "bolt://localhost:7687"
-NEO4J_USERNAME = "neo4j"
-NEO4J_PASSWORD = ""
-
-gds = GraphDataScience(NEO4J_CONNECTION_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
-
-# Necessary if you enabled Arrow on the db. Override with your DB name
-NEO4J_DB = "neo4j"
-gds.set_database(NEO4J_DB)
+# Get Neo4j DB URI, credentials and name from environment if applicable
+NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
+NEO4J_AUTH = None
+NEO4J_DB = os.environ.get("NEO4J_DB", "neo4j")
+if os.environ.get("NEO4J_USER") and os.environ.get("NEO4J_PASSWORD"):
+    NEO4J_AUTH = (
+        os.environ.get("NEO4J_USER"),
+        os.environ.get("NEO4J_PASSWORD"),
+    )
+gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 ----
 
 When using AuraDS, the connection URI is slightly different as it uses
@@ -54,12 +55,9 @@ the `neo4j+s` protocol. The client should also include the
 
 [source, python, role=no-test]
 ----
-# # Replace with the actual connection URI and credentials
-# NEO4J_CONNECTION_URI = "neo4j+s://xxxxxxxx.databases.neo4j.io"
-# NEO4J_USERNAME = "neo4j"
-# NEO4J_PASSWORD = ""
+# On AuraDS:
 #
-# gds = GraphDataScience(NEO4J_CONNECTION_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD), aura_ds=True)
+# gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB, aura_ds=True)
 ----
 
 We also import `pandas` to create a Pandas `DataFrame` from the original
@@ -130,16 +128,6 @@ Let’s check the first 5 rows of the new `DataFrame`:
 nodes.head()
 ----
 
-[cols=",,,,",options="header",]
-|===
-| |nodeId |labels |subject |features
-|0 |31336 |Paper |0 |[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
-|1 |1061127 |Paper |1 |[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, ...
-|2 |1106406 |Paper |2 |[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
-|3 |13195 |Paper |2 |[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
-|4 |37879 |Paper |3 |[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
-|===
-
 Now we create a new `DataFrame` containing the relationships between the
 nodes. To create the equivalent of an undirected graph, we need to add
 direct and inverse relationships explicitly.
@@ -158,16 +146,6 @@ Again, let’s check the first 5 rows of the new `DataFrame`:
 ----
 relationships.head()
 ----
-
-[cols=",,,",options="header",]
-|===
-| |sourceNodeId |targetNodeId |relationshipType
-|0 |35 |1033 |CITES
-|1 |35 |103482 |CITES
-|2 |35 |103515 |CITES
-|3 |35 |1050679 |CITES
-|4 |35 |1103960 |CITES
-|===
 
 Finally, we can create the in-memory graph.
 
@@ -192,19 +170,11 @@ Let’s also count the nodes in the graph:
 G.node_count()
 ----
 
-----
-2708
-----
-
 The count matches with the number of rows in the Pandas dataset:
 
 [source, python, role=no-test]
 ----
 len(content)
-----
-
-----
-2708
 ----
 
 We can stream the value of the `subject` node property for each node in
@@ -214,21 +184,6 @@ the graph, printing only the first 10.
 ----
 gds.graph.streamNodeProperties(G, ["subject"]).head(10)
 ----
-
-[cols=",,,",options="header",]
-|===
-| |nodeId |nodeProperty |propertyValue
-|0 |31336 |subject |0
-|1 |1061127 |subject |1
-|2 |1106406 |subject |2
-|3 |13195 |subject |2
-|4 |37879 |subject |3
-|5 |1126012 |subject |3
-|6 |1107140 |subject |4
-|7 |1102850 |subject |0
-|8 |31349 |subject |0
-|9 |1106418 |subject |4
-|===
 
 == Cleanup
 
