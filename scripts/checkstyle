@@ -3,9 +3,27 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -o xtrace
 
 black --check .
 isort --check .
 flake8
 mypy .
+
+NOTEBOOKS="./**/*.ipynb"
+for f in $NOTEBOOKS
+do
+  NB=$(cat $f)
+  FORMATTED_NB=$(jupyter nbconvert \
+    --clear-output \
+    --stdout \
+    --ClearOutputPreprocessor.enabled=True \
+    --ClearMetadataPreprocessor.enabled=True \
+    --log-level CRITICAL \
+    $f)
+
+  if [[ "$FORMATTED_NB" != "$NB" ]];
+  then
+    echo "Notebook $f is not correctly formatted"
+    exit 1
+  fi
+done
