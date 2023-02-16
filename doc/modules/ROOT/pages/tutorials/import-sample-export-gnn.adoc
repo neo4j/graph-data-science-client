@@ -1,6 +1,6 @@
 // DO NOT EDIT - AsciiDoc file generated automatically
 
-= Export and integration with PyG example
+= Sampling, Export and Integration with PyG example
 
 This notebook exemplifies how to use the `graphdatascience` and PyTorch
 Geometric (PyG) Python libraries to:

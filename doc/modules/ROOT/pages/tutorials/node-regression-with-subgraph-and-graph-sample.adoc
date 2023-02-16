@@ -1,6 +1,6 @@
 // DO NOT EDIT - AsciiDoc file generated automatically
 
-= Node Regression pipeline
+= Node Regression with Subgraph and Graph Sample projections
 
 This notebook exemplifies using a Node Regression pipeline. It also
 contains many examples of using
