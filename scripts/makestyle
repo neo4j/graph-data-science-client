@@ -7,3 +7,10 @@ set -o xtrace
 
 black .
 isort .
+jupyter nbconvert \
+  --clear-output \
+  --inplace \
+  --ClearOutputPreprocessor.enabled=True \
+  --ClearMetadataPreprocessor.enabled=True \
+  --log-level CRITICAL \
+  ./**/*.ipynb
