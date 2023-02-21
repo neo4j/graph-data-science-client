@@ -2,7 +2,7 @@ neo4j >= 5.0, < 6.0
 pyarrow >= 10.0, < 11.0
 pytest
 nbconvert == 7.2.9
-setuptools == 65.5.1
+setuptools == 67.3.3
 jupyter == 1.0.0
 scipy == 1.10.0
 numpy == 1.24.1
