@@ -3,6 +3,7 @@ from typing import Any, Dict
 from pandas import Series
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
+from ..error.uncallable_namespace import UncallableNamespace
 from .graph_object import Graph
 from .graph_type_check import graph_type_check
 
@@ -24,6 +25,14 @@ class GraphExportCsvRunner(IllegalAttrChecker):
         self._namespace += ".estimate"
 
         return self._export_call(G, config)
+
+
+class GraphExportCsvEndpoints(UncallableNamespace, IllegalAttrChecker):
+    @property
+    def csv(self) -> GraphExportCsvRunner:
+        self._namespace += ".csv"
+
+        return GraphExportCsvRunner(self._query_runner, self._namespace, self._server_version)
 
 
 class GraphExportRunner(IllegalAttrChecker):

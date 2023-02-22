@@ -58,7 +58,7 @@ class DirectUtilEndpoints(CallerBase):
         return UtilProcRunner(self._query_runner, f"{self._namespace}.util", self._server_version)
 
 
-class IndirectUtilEndpoints(CallerBase):
+class IndirectUtilAlphaEndpoints(CallerBase):
     def oneHotEncoding(self, available_values: List[Any], selected_values: List[Any]) -> List[int]:
         namespace = self._namespace + ".oneHotEncoding"
 

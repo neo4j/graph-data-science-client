@@ -1,8 +1,8 @@
 from ..caller_base import CallerBase
-from .topological_lp_runner import TopologicalLPRunner
+from .topological_lp_alpha_runner import TopologicalLPAlphaRunner
 
 
-class TopologicalLPEndpoints(CallerBase):
+class TopologicalLPAlphaEndpoints(CallerBase):
     @property
-    def linkprediction(self) -> TopologicalLPRunner:
-        return TopologicalLPRunner(self._query_runner, f"{self._namespace}.linkprediction", self._server_version)
+    def linkprediction(self) -> TopologicalLPAlphaRunner:
+        return TopologicalLPAlphaRunner(self._query_runner, f"{self._namespace}.linkprediction", self._server_version)

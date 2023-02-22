@@ -228,6 +228,8 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
+
+class GraphRelationshipsBetaRunner(GraphEntityOpsBaseRunner):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
     @graph_type_check
     def stream(self, G: Graph, relationship_types: List[str] = ["*"], **config: Any) -> TopologyDataFrame:

@@ -40,7 +40,7 @@ class DirectSystemEndpoints(CallerBase):
         return DebugProcRunner(self._query_runner, f"{self._namespace}.debug", self._server_version)
 
 
-class IndirectSystemEndpoints(CallerBase):
+class SystemBetaEndpoints(CallerBase):
     def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
         self._namespace += ".listProgress"
 
@@ -53,6 +53,8 @@ class IndirectSystemEndpoints(CallerBase):
 
         return self._query_runner.run_query(query, params)
 
+
+class SystemAlphaEndpoints(CallerBase):
     def userLog(self) -> DataFrame:
         self._namespace += ".userLog"
         query = f"CALL {self._namespace}()"

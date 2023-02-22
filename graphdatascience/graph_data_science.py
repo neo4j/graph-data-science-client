@@ -4,8 +4,8 @@ from typing import Any, Dict, Optional, Tuple, Type, TypeVar, Union
 from neo4j import Driver, GraphDatabase
 from pandas import DataFrame, Series
 
-from .call_builder import CallBuilder
-from .direct_endpoints import DirectEndpoints
+from .call_builder import IndirectCallBuilder
+from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from .error.unable_to_connect import UnableToConnectError
 from .error.uncallable_namespace import UncallableNamespace
 from .query_runner.arrow_query_runner import ArrowQueryRunner
@@ -125,8 +125,16 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
         super().__init__(self._query_runner, "gds", self._server_version)
 
-    def __getattr__(self, attr: str) -> CallBuilder:
-        return CallBuilder(self._query_runner, f"gds.{attr}", self._server_version)
+    @property
+    def alpha(self) -> AlphaEndpoints:
+        return AlphaEndpoints(self._query_runner, "gds.alpha", self._server_version)
+
+    @property
+    def beta(self) -> BetaEndpoints:
+        return BetaEndpoints(self._query_runner, "gds.beta", self._server_version)
+
+    def __getattr__(self, attr: str) -> IndirectCallBuilder:
+        return IndirectCallBuilder(self._query_runner, f"gds.{attr}", self._server_version)
 
     def set_database(self, database: str) -> None:
         self._query_runner.set_database(database)

@@ -26,14 +26,14 @@ def test_list_pipelines(runner: CollectingQueryRunner, gds: GraphDataScience, pi
 
 
 def test_exists_pipeline(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    gds.alpha.pipeline.exists("my_pipeline")
+    gds.beta.pipeline.exists("my_pipeline")
 
-    assert runner.last_query() == "CALL gds.alpha.pipeline.exists($pipeline_name)"
+    assert runner.last_query() == "CALL gds.beta.pipeline.exists($pipeline_name)"
     assert runner.last_params() == {"pipeline_name": "my_pipeline"}
 
 
 def test_drop_pipeline(runner: CollectingQueryRunner, gds: GraphDataScience, pipeline: LPTrainingPipeline) -> None:
-    gds.alpha.pipeline.drop(pipeline)
+    gds.beta.pipeline.drop(pipeline)
 
-    assert runner.last_query() == "CALL gds.alpha.pipeline.drop($pipeline_name)"
+    assert runner.last_query() == "CALL gds.beta.pipeline.drop($pipeline_name)"
     assert runner.last_params() == {"pipeline_name": PIPELINE_NAME}
