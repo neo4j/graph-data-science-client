@@ -21,6 +21,11 @@ We will then use a Cypher query to generate recommendations for each
 pair of similar customers, where products that have been purchased by
 one of the customers will be recommended to the other.
 
+
+https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/fastrp-and-knn.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
+In Colab]]
+
+
 == Prerequisites
 
 Running this notebook requires a Neo4j server with a recent version

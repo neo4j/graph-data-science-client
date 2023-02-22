@@ -121,7 +121,7 @@ The script `../scripts/nb2doc/convert.sh` can be used:
 The script must be run from the project root directory and requires [Pandoc](https://pandoc.org/) to be already installed. The latest supported version of Pandoc is 2.19.2; version 3.0.1 seems to work the same but raises some warnings.
 
 ```bash
-../scripts/nb2doc/convert.sh
+./scripts/nb2doc/convert.sh
 ```
 
 ### Style notes

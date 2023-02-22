@@ -12,6 +12,11 @@ contains many examples of using
 It is written in pure Python, to showcase the GDS Python Client’s
 ability to abstract away from Cypher queries.
 
+
+https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/node-regression-with-subgraph-and-graph-sample.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
+In Colab]]
+
+
 == The dataset
 
 Our input graph represents Wikipedia pages on particular topics, and how

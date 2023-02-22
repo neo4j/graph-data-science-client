@@ -15,6 +15,11 @@ Random walk with restarts algorithm]
 CORA sample
 * Evaluate the GCN on a test set
 
+
+https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/import-sample-export-gnn.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
+In Colab]]
+
+
 == Prerequisites
 
 Running this notebook requires a Neo4j server with a recent GDS version

@@ -11,6 +11,11 @@ predicting the genre of `Movie` nodes
 * Train the pipeline with autotuning and inspecting the results
 * Make predictions for movie nodes missing without a specified genre
 
+
+https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/heterogeneous-node-classification-with-hashgnn.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
+In Colab]]
+
+
 == Prerequisites
 
 Running this notebook requires a Neo4j database server with a recent
