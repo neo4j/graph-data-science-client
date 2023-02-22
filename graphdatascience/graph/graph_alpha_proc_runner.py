@@ -3,7 +3,6 @@ from typing import List, Optional, Union
 
 from pandas import DataFrame
 
-from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
@@ -14,7 +13,7 @@ from .graph_object import Graph
 from .graph_sample_runner import GraphSampleRunner
 
 
-class GraphAlphaProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class GraphAlphaProcRunner(UncallableNamespace, IllegalAttrChecker):
     @property
     def sample(self) -> GraphSampleRunner:
         self._namespace += ".sample"

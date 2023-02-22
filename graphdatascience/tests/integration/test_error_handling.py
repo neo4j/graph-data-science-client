@@ -50,11 +50,6 @@ def test_suggest_correct_algo_endpoint(gds: GraphDataScience) -> None:
         gds.peggyRankerTroll.stream(G)
 
 
-def test_suggest_client_only_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.beta.model.get' to call. Did you mean 'gds.model.get'?"):
-        gds.beta.model.get("model")
-
-
 def test_suggest_with_wrong_endpoint(gds: GraphDataScience) -> None:
     with pytest.raises(SyntaxError, match="There is no 'gds.bersion' to call"):
         gds.bersion()
@@ -189,3 +184,13 @@ def test_calling_util(gds: GraphDataScience) -> None:
 def test_nonexisting_util_endpoint(gds: GraphDataScience) -> None:
     with pytest.raises(SyntaxError, match="There is no 'gds.util.askNodezzzzz' to call"):
         gds.util.askNodezzzzz()  # type: ignore
+
+
+def test_auto_completion_false_positives(gds: GraphDataScience) -> None:
+    # Using `alpha` prefix instead of `beta`
+    with pytest.raises(SyntaxError, match="There is no 'gds.alpha.model.list' to call"):
+        gds.alpha.model.list()  # type: ignore
+
+    # Without `beta` prefix
+    with pytest.raises(SyntaxError, match="There is no 'gds.graph.relationships.toUndirected' to call"):
+        gds.graph.relationships.toUndirected()  # type: ignore

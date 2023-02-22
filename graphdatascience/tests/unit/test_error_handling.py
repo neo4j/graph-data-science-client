@@ -47,13 +47,3 @@ def test_generate_suggestive_error_message() -> None:
         "'gds.beta.pipeline.linkPrediction.train' which is a valid GDS server endpoint. "
         "'gds.beta.pipeline.linkPrediction.train' does however not have a corresponding Python method"
     )
-
-
-def test_auto_completion_false_positives(gds: GraphDataScience) -> None:
-    # Using `alpha` prefix instead of `beta`
-    with pytest.raises(SyntaxError, match="There is no 'gds.alpha.model.list' to call"):
-        gds.alpha.model.list()  # type: ignore
-
-    # Without `beta` prefix
-    with pytest.raises(SyntaxError, match="There is no 'gds.graph.relationships.toUndirected' to call"):
-        gds.graph.relationships.toUndirected()  # type: ignore

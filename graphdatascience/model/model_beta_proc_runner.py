@@ -2,13 +2,12 @@ from typing import Any, Optional
 
 from pandas import DataFrame, Series
 
-from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from .model import Model
 
 
-class ModelBetaProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class ModelBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
     def list(self, model: Optional[Model] = None) -> DataFrame:
         self._namespace += ".list"
 

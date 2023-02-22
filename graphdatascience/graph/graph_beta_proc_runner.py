@@ -2,7 +2,6 @@ from typing import Any, List, Tuple, Union
 
 from pandas import Series
 
-from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from .graph_export_runner import GraphExportCsvEndpoints
@@ -13,7 +12,7 @@ from graphdatascience.graph.graph_entity_ops_runner import GraphRelationshipsBet
 Strings = Union[str, List[str]]
 
 
-class GraphBetaProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class GraphBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
     @property
     def project(self) -> GraphProjectBetaRunner:
         self._namespace += ".project"

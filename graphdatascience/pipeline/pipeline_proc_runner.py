@@ -1,4 +1,3 @@
-from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
@@ -9,7 +8,7 @@ from .nr_training_pipeline import NRTrainingPipeline
 from .training_pipeline import TrainingPipeline
 
 
-class PipelineProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
     @client_only_endpoint("gds.pipeline")
     def get(self, pipeline_name: str) -> TrainingPipeline[PipelineModel]:
         query = "CALL gds.beta.pipeline.list($pipeline_name)"

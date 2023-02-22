@@ -1,4 +1,3 @@
-from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..model.link_prediction_model import LPModel
@@ -8,7 +7,7 @@ from .graphsage_model import GraphSageModel
 from .model import Model
 
 
-class ModelResolver(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class ModelResolver(UncallableNamespace, IllegalAttrChecker):
     def _resolve_model(self, model_type: str, model_name: str) -> Model:
         if model_type == "NodeClassification":
             return NCModel(model_name, self._query_runner, self._server_version)

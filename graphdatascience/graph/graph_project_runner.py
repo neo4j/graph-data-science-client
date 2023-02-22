@@ -41,7 +41,7 @@ class GraphProjectRunner(IllegalAttrChecker):
         return GraphProjectRunner(self._query_runner, self._namespace + ".cypher", self._server_version)
 
 
-class GraphProjectBetaRunner(CallerBase, IllegalAttrChecker):
+class GraphProjectBetaRunner(IllegalAttrChecker):
     @from_graph_type_check
     def subgraph(
         self,

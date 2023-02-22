@@ -2,7 +2,6 @@ from typing import Any, Optional
 
 from pandas import DataFrame, Series
 
-from ..caller_base import CallerBase
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..model.pipeline_model import PipelineModel
@@ -11,7 +10,7 @@ from .nc_pipeline_create_runner import NCPipelineCreateRunner
 from .training_pipeline import TrainingPipeline
 
 
-class PipelineBetaProcRunner(CallerBase, UncallableNamespace, IllegalAttrChecker):
+class PipelineBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
     @property
     def linkPrediction(self) -> LPPipelineCreateRunner:
         return LPPipelineCreateRunner(self._query_runner, f"{self._namespace}.linkPrediction", self._server_version)
