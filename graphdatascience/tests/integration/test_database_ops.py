@@ -1,4 +1,6 @@
+import concurrent.futures as f
 import re
+import time
 
 import pytest
 from neo4j import Driver
@@ -139,3 +141,10 @@ def test_no_db_explicitly_set() -> None:
     gds = GraphDataScience(URI, AUTH)
     result = gds.run_cypher("CALL gds.list()")
     assert len(result) > 10
+
+
+def test_warning_when_logging_fails(runner: Neo4jQueryRunner) -> None:
+    pool = f.ThreadPoolExecutor(1)
+    future = pool.submit(lambda: time.sleep(2))
+    with pytest.warns(RuntimeWarning, match=r"^Unable to get progress:"):
+        runner._log("DUMMY", future, "bad_database")
