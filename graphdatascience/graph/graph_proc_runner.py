@@ -1,5 +1,5 @@
 from importlib.resources import path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 from multimethod import multimethod
@@ -364,20 +364,3 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         }
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
-
-    def generate(
-        self, graph_name: str, node_count: int, average_degree: int, **config: Any
-    ) -> Tuple[Graph, "Series[Any]"]:
-        self._namespace += ".generate"
-
-        query = f"CALL {self._namespace}($graph_name, $node_count, $average_degree, $config)"
-        params = {
-            "graph_name": graph_name,
-            "node_count": node_count,
-            "average_degree": average_degree,
-            "config": config,
-        }
-
-        result = self._query_runner.run_query(query, params).squeeze()
-
-        return Graph(graph_name, self._query_runner, self._server_version), result
