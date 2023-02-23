@@ -1,4 +1,5 @@
 import re
+import time
 import warnings
 from concurrent.futures import Future, ThreadPoolExecutor, wait
 from typing import Any, Dict, List, Optional
@@ -18,6 +19,7 @@ from .query_runner import QueryRunner
 class Neo4jQueryRunner(QueryRunner):
     _LOG_POLLING_INTERVAL = 0.5
     _NEO4J_DRIVER_VERSION = ServerVersion.from_string(neo4j.__version__)
+    _MAX_NUM_RETRYS = 10
 
     def __init__(
         self, driver: neo4j.Driver, database: Optional[str] = neo4j.DEFAULT_DATABASE, auto_close: bool = False
@@ -56,13 +58,22 @@ class Neo4jQueryRunner(QueryRunner):
                     message=r"^`id` is deprecated, use `element_id` instead$",
                 )
 
-            try:
-                result = session.run(query, params)
-            except Exception as e:
-                if custom_error:
-                    self.handle_driver_exception(session, e)
-                else:
-                    raise e
+            trys = 1
+            while trys < self._MAX_NUM_RETRYS:
+                try:
+                    result = session.run(query, params)
+                    break
+                except neo4j.exceptions.Neo4jError as e:
+                    trys += 1
+
+                    if self._error_retryable(e):
+                        time.sleep(0.5)
+                        continue
+
+                    if custom_error:
+                        self.handle_driver_exception(session, e)
+                    else:
+                        raise e
 
             # Though pandas support may be experimental in the `neo4j` package, it should always
             # be supported in the `graphdatascience` package.
@@ -72,6 +83,12 @@ class Neo4jQueryRunner(QueryRunner):
             )
 
             return result.to_df()
+
+    def _error_retryable(self, e: neo4j.exceptions.Neo4jError) -> bool:
+        if self._NEO4J_DRIVER_VERSION.major > 4:
+            return e.is_retryable()
+        else:
+            return e.is_retriable()
 
     def run_query_with_logging(
         self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
