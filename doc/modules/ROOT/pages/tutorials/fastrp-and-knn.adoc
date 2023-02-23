@@ -2,6 +2,11 @@
 
 = Product recommendations with kNN based on FastRP embeddings
 
+
+https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/fastrp-and-knn.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
+In Colab]]
+
+
 This notebook exemplifies how to use the `graphdatascience` Python
 library to operate Neo4j GDS. It shows an adapted version of the FastRP
 and kNN end-to-end example from the GDS Manual, found
@@ -20,11 +25,6 @@ These embeddings will be the input to the kNN algorithm.
 We will then use a Cypher query to generate recommendations for each
 pair of similar customers, where products that have been purchased by
 one of the customers will be recommended to the other.
-
-
-https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/fastrp-and-knn.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
-In Colab]]
-
 
 == Prerequisites
 
