@@ -2,6 +2,11 @@
 
 = Sampling, Export and Integration with PyG example
 
+
+https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/import-sample-export-gnn.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
+In Colab]]
+
+
 This notebook exemplifies how to use the `graphdatascience` and PyTorch
 Geometric (PyG) Python libraries to:
 

@@ -121,12 +121,24 @@ The script `../scripts/nb2doc/convert.sh` can be used:
 The script must be run from the project root directory and requires [Pandoc](https://pandoc.org/) to be already installed. The latest supported version of Pandoc is 2.19.2; version 3.0.1 seems to work the same but raises some warnings.
 
 ```bash
-../scripts/nb2doc/convert.sh
+./scripts/nb2doc/convert.sh
 ```
+
 
 ### Style notes
 
 For a successful conversion of the notebooks, some style notes apply.
 
 * A notebook must only contain one first-level header, which should be in the first cell (as a title).
+* The notebook should contain an "Open with Colab" badge after its title and before any other section (instructions below)
 * TBD
+
+
+### Adding an "Open with Colab" badge
+
+1. Go to https://openincolab.com/
+2. Insert the Github link to the notebook and press "GENERATE"
+3. Paste the generated HTML into a new "Markdown" cell in the notebook after the title cell
+4. Lastly, edit the raw notebook file by adding `"colab_type": "text"` to the `metadata` map of the cell containing the Colab badge
+
+Please refer to other notebooks for examples on the final result.

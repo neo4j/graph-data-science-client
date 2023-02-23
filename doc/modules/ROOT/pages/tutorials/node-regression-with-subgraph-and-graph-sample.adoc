@@ -2,6 +2,11 @@
 
 = Node Regression with Subgraph and Graph Sample projections
 
+
+https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/node-regression-with-subgraph-and-graph-sample.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
+In Colab]]
+
+
 This notebook exemplifies using a Node Regression pipeline. It also
 contains many examples of using
 
