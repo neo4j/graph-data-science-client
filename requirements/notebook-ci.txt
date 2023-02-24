@@ -4,6 +4,6 @@ pytest
 nbconvert == 7.2.9
 setuptools == 67.3.3
 jupyter == 1.0.0
-scipy == 1.10.0
+scipy == 1.10.1
 numpy == 1.24.2
 typing_extensions == 4.3.0
