@@ -16,6 +16,7 @@
 
 * When an almost correct method is called, raise an error with a message that suggests the most probable correct method name that was intended.
 * Improved IDE auto-completion support to give significantly fewer false positive suggestions.
+* Failing to log progress of a call will no longer fail the call itself, but just warn that logging was unsuccessful.
 
 
 ## Other changes

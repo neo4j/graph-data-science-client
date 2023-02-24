@@ -104,6 +104,7 @@ class Neo4jQueryRunner(QueryRunner):
 
     def _log(self, job_id: str, future: "Future[Any]", database: Optional[str] = None) -> None:
         pbar = None
+        warn_if_failure = True
 
         while wait([future], timeout=self._LOG_POLLING_INTERVAL).not_done:
             try:
@@ -117,7 +118,10 @@ class Neo4jQueryRunner(QueryRunner):
                 if f"No task with job id `{job_id}` was found" in str(e):
                     continue
                 else:
-                    raise e
+                    if warn_if_failure:
+                        warnings.warn(f"Unable to get progress: {str(e)}", RuntimeWarning)
+                        warn_if_failure = False
+                    continue
 
             progress_percent = progress["progress"][0]
             if not progress_percent == "n/a":
