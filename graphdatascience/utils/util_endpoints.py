@@ -34,7 +34,7 @@ class DirectUtilEndpoints(CallerBase):
         else:
             query = "MATCH (n) RETURN id(n) AS id"
 
-        node_match = self._query_runner.run_query(query)
+        node_match = self._query_runner.run_query(query, custom_error=False)
         if len(node_match) != 1:
             raise ValueError(f"Filter did not match with exactly one node: {node_match}")
 
@@ -42,7 +42,7 @@ class DirectUtilEndpoints(CallerBase):
 
     def version(self) -> str:
         namespace = self._namespace + ".version"
-        result = self._query_runner.run_query(f"RETURN {namespace}() as version").squeeze()
+        result = self._query_runner.run_query(f"RETURN {namespace}() as version", custom_error=False).squeeze()
 
         return result  # type: ignore
 
@@ -51,7 +51,7 @@ class DirectUtilEndpoints(CallerBase):
 
     def list(self) -> DataFrame:
         namespace = self._namespace + ".list"
-        return self._query_runner.run_query(f"CALL {namespace}()")
+        return self._query_runner.run_query(f"CALL {namespace}()", custom_error=False)
 
     @property
     def util(self) -> UtilProcRunner:

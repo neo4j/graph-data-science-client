@@ -193,6 +193,7 @@ class CypherGraphConstructor(GraphConstructor):
                     "graph_name": self._graph_name,
                     "configuration": configuration,
                 },
+                custom_error=False,
             )
 
         def check_value_clause(self, combined_cols: List[str], col: str) -> str:
@@ -347,6 +348,7 @@ class CypherGraphConstructor(GraphConstructor):
                     "nodes": nodes,
                     "relationships": relationships,
                 },
+                custom_error=False,
             )
 
         def _node_query(self, node_df: DataFrame) -> Tuple[str, List[List[Any]]]:

@@ -86,7 +86,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             self._query_runner.set_database(database)
 
         try:
-            server_version_string = self._query_runner.run_query("RETURN gds.version()").squeeze()
+            server_version_string = self._query_runner.run_query("RETURN gds.version()", custom_error=False).squeeze()
         except Exception as e:
             raise UnableToConnectError(e)
         finally:
@@ -100,7 +100,9 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
         if arrow and self._server_version >= ServerVersion(2, 1, 0):
             try:
-                arrow_info: "Series[Any]" = self._query_runner.run_query("CALL gds.debug.arrow()").squeeze()
+                arrow_info: "Series[Any]" = self._query_runner.run_query(
+                    "CALL gds.debug.arrow()", custom_error=False
+                ).squeeze()
                 listen_address: str = arrow_info.get(
                     "advertisedListenAddress", arrow_info["listenAddress"]
                 )  # type: ignore

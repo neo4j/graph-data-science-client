@@ -8,7 +8,7 @@ class ModelProcRunner(ModelResolver):
     def get(self, model_name: str) -> Model:
         query = "CALL gds.beta.model.list($model_name)"
         params = {"model_name": model_name}
-        result = self._query_runner.run_query(query, params)
+        result = self._query_runner.run_query(query, params, custom_error=False)
 
         if len(result) == 0:
             raise ValueError(f"No loaded model named '{model_name}' exists")

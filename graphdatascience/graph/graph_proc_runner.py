@@ -154,7 +154,9 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @client_only_endpoint("gds.graph")
     def get(self, graph_name: str) -> Graph:
-        result = self._query_runner.run_query(f"CALL gds.graph.list('{graph_name}') YIELD graphName")
+        result = self._query_runner.run_query(
+            f"CALL gds.graph.list('{graph_name}') YIELD graphName", custom_error=False
+        )
         if len(result["graphName"]) == 0:
             raise ValueError(
                 f"No projected graph named '{graph_name}' exists in current database '{self._query_runner.database()}'"

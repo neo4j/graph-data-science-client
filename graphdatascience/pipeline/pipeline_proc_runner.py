@@ -13,7 +13,7 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
     def get(self, pipeline_name: str) -> TrainingPipeline[PipelineModel]:
         query = "CALL gds.beta.pipeline.list($pipeline_name)"
         params = {"pipeline_name": pipeline_name}
-        result = self._query_runner.run_query(query, params)
+        result = self._query_runner.run_query(query, params, custom_error=False)
 
         if len(result) == 0:
             raise ValueError(f"No pipeline named '{pipeline_name}' exists")

@@ -108,7 +108,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         query = "CALL gds.beta.pipeline.list($name)"
         params = {"name": self.name()}
 
-        info = self._query_runner.run_query(query, params)
+        info = self._query_runner.run_query(query, params, custom_error=False)
 
         if len(info) == 0:
             raise ValueError(f"There is no '{self.name()}' in the pipeline catalog")
@@ -125,13 +125,13 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         query = "CALL gds.beta.pipeline.exists($pipeline_name) YIELD exists"
         params = {"pipeline_name": self._name}
 
-        return self._query_runner.run_query(query, params)["exists"].squeeze()  # type: ignore
+        return self._query_runner.run_query(query, params, custom_error=False)["exists"].squeeze()  # type: ignore
 
     def drop(self, failIfMissing: bool = False) -> "Series[Any]":
         query = "CALL gds.beta.pipeline.drop($pipeline_name, $fail_if_missing)"
         params = {"pipeline_name": self._name, "fail_if_missing": failIfMissing}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.run_query(query, params, custom_error=False).squeeze()  # type: ignore
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}(name={self.name()}, type={self.type()})"

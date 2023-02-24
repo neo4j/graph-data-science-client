@@ -18,8 +18,7 @@ class Graph:
     def _graph_info(self, yields: List[str] = []) -> "Series[Any]":
         yield_suffix = "" if len(yields) == 0 else " YIELD " + ", ".join(yields)
         info = self._query_runner.run_query(
-            f"CALL gds.graph.list($graph_name){yield_suffix}",
-            {"graph_name": self._name},
+            f"CALL gds.graph.list($graph_name){yield_suffix}", {"graph_name": self._name}, custom_error=False
         )
 
         if len(info) == 0:
@@ -83,6 +82,7 @@ class Graph:
         result = self._query_runner.run_query(
             "CALL gds.graph.exists($graph_name)",
             {"graph_name": self._name},
+            custom_error=False,
         )
         return result.squeeze()["exists"]  # type: ignore
 
@@ -90,6 +90,7 @@ class Graph:
         result = self._query_runner.run_query(
             "CALL gds.graph.drop($graph_name, $fail_if_missing)",
             {"graph_name": self._name, "fail_if_missing": failIfMissing},
+            custom_error=False,
         )
 
         return result.squeeze()  # type: ignore

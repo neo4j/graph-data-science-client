@@ -23,7 +23,7 @@ class Model(ABC):
         query = "CALL gds.beta.model.list($name)"
         params = {"name": self.name()}
 
-        info = self._query_runner.run_query(query, params)
+        info = self._query_runner.run_query(query, params, custom_error=False)
 
         if len(info) == 0:
             raise ValueError(f"There is no '{self.name()}' in the model catalog")
@@ -70,13 +70,13 @@ class Model(ABC):
         query = "CALL gds.beta.model.exists($model_name) YIELD exists"
         params = {"model_name": self._name}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.run_query(query, params, custom_error=False).squeeze()  # type: ignore
 
     def drop(self, failIfMissing: bool = False) -> "Series[Any]":
         query = "CALL gds.beta.model.drop($model_name, $fail_if_missing)"
         params = {"model_name": self._name, "fail_if_missing": failIfMissing}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.run_query(query, params, custom_error=False).squeeze()  # type: ignore
 
     def metrics(self) -> "Series[Any]":
         model_info = self._list_info()["modelInfo"][0]
