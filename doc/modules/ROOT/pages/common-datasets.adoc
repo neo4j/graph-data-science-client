@@ -16,7 +16,7 @@ For example:
 ----
 G = gds.graph.load_cora()
 
-assert G.node_count() == 2708
+assert G.node_count() == 2_708
 assert G.node_labels() == ["Paper"]
 ----
 
@@ -35,8 +35,8 @@ The default is to load Cora as `undirected = False`.
 |===
 | Name                    | Value
 | name                    | cora
-| node_count              | 2708
-| relationship_count      | 5429
+| node_count              | 2_708
+| relationship_count      | 5_429
 | node_labels             | ['Paper']
 | relationship_types      | ['CITES']
 | node_properties         | Paper: [features, subject]
@@ -75,10 +75,11 @@ The default is to load IMDB dataset as `undirected = True`. If loaded as directe
 |===
 | Name                    | Value
 | name                    | imdb
-| node_count              | 12772
-| relationship_count      | 37288
+| node_count              | 12_772
+| relationship_count      | 37_288
 | node_labels             | ['Movie', 'Actor', 'Director', 'UnclassifiedMovie']
 | relationship_types      | ['ACTED_IN', 'DIRECTED_IN']
-| node_properties         | Movie: [plot_keywords, genre], Actor: [plot_keywords], Director: [plot_keywords]
+| node_properties         | Movie: [plot_keywords, genre], Actor: [plot_keywords], Director: [plot_keywords], UnclassifiedMovie: [plot_keywords]
+
 | relationship_properties | ACTED_IN: [], DIRECTED_IN: []
 |===
