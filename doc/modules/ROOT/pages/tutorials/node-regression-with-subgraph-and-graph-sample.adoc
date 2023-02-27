@@ -7,7 +7,11 @@ https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/ma
 In Colab]]
 
 
-This notebook exemplifies using a Node Regression pipeline. It also
+This Jupyter notebook is hosted
+https://github.com/neo4j/graph-data-science-client/blob/main/examples/node-regression-with-subgraph-and-graph-sample.ipynb[here]
+in the Neo4j Graph Data Science Client Github repository.
+
+The notebook exemplifies using a Node Regression pipeline. It also
 contains many examples of using
 
 * Convenience objects
