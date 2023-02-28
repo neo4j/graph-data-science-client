@@ -131,6 +131,7 @@ For a successful conversion of the notebooks, some style notes apply.
 
 * A notebook must only contain one first-level header, which should be in the first cell (as a title).
 * The notebook should contain an "Open with Colab" badge after its title and before any other section (instructions below)
+* The beginning of the introduction section of the notebook (after the Colab badge) should reference where the notebook is hosted. See existing notebooks for examples.
 * TBD
 
 

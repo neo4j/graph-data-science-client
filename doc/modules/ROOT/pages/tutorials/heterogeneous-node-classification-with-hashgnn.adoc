@@ -7,7 +7,11 @@ https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/ma
 In Colab]]
 
 
-This notebook exemplifies how to use the `graphdatascience` library to:
+This Jupyter notebook is hosted
+https://github.com/neo4j/graph-data-science-client/blob/main/examples/heterogeneous-node-classification-with-hashgnn.ipynb[here]
+in the Neo4j Graph Data Science Client Github repository.
+
+The notebook exemplifies how to use the `graphdatascience` library to:
 
 * Import an IMDB dataset with `Movie`, `Actor` and `Director` nodes
 directly into GDS using a convenience data loader

@@ -7,7 +7,11 @@ https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/ma
 In Colab]]
 
 
-This notebook shows the usage of GDS machine learning pipelines with the
+This Jupyter notebook is hosted
+https://github.com/neo4j/graph-data-science-client/blob/main/examples/ml-pipelines-node-classification.ipynb[here]
+in the Neo4j Graph Data Science Client Github repository.
+
+The notebook shows the usage of GDS machine learning pipelines with the
 Python client and the well-known
 https://paperswithcode.com/dataset/cora[Cora dataset].
 

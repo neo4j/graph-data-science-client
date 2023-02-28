@@ -7,7 +7,11 @@ https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/ma
 In Colab]]
 
 
-This notebook shows the usage of the `gds.alpha.graph.construct` method
+This Jupyter notebook is hosted
+https://github.com/neo4j/graph-data-science-client/blob/main/examples/load-data-via-graph-construction.ipynb[here]
+in the Neo4j Graph Data Science Client Github repository.
+
+The notebook shows the usage of the `gds.alpha.graph.construct` method
 (available only in GDS 2.1+) to build a graph directly in memory.
 
 NOTE: If you are using AuraDS, it is currently not possible to write the
