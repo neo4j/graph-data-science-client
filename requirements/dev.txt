@@ -5,7 +5,7 @@ isort == 5.12.0
 mypy == 1.0.1
 nbconvert == 7.2.9
 pandas-stubs == 1.5.2.221213
-pytest == 7.2.0
+pytest == 7.2.1
 pytest-annotate == 1.0.5
 tox == 4.4.6
 types-setuptools == 65.6.0.2
