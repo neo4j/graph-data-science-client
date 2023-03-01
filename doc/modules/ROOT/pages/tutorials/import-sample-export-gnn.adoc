@@ -252,6 +252,7 @@ also have evaluated it on the full CORA dataset, or even another
 ----
 num_classes = y.unique().shape[0]
 
+
 # Define the GCN architecture
 class GCN(torch.nn.Module):
     def __init__(self):

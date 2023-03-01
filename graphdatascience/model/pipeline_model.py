@@ -9,7 +9,6 @@ from .model import Model
 
 @dataclass(repr=True)
 class EvaluationScores(Dict[str, float]):
-
     min: float
     avg: float
     max: float
@@ -28,7 +27,6 @@ class EvaluationScores(Dict[str, float]):
 
 @dataclass(repr=True)
 class MetricScores(Dict[str, Any]):
-
     train: EvaluationScores
     validation: EvaluationScores
     outer_train: float
@@ -52,7 +50,6 @@ class MetricScores(Dict[str, Any]):
 
 @dataclass(frozen=True, repr=True)
 class NodePropertyStep:
-
     proc: str
     config: Dict[str, Any]
 

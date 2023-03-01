@@ -6,7 +6,6 @@ from .pipeline_model import PipelineModel
 
 @dataclass(frozen=True, repr=True)
 class LinkFeature:
-
     name: str
     config: Dict[str, Any]
 
