@@ -112,7 +112,6 @@ class CypherGraphConstructor(GraphConstructor):
         return should_warn
 
     class CypherAggregationRunner:
-
         _BIT_COL_SUFFIX = "_is_present" + str(uuid4())
 
         def __init__(
