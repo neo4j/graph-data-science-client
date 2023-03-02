@@ -57,4 +57,5 @@ IGNORED_SERVER_ENDPOINTS = {
     "gds.util.isInfinite",
     "gds.alpha.create.cypherdb",
     "gds.alpha.graph.project",  # TODO: Figure out how to support this well
+    "gds.alpha.drop.cypherdb",
 }
