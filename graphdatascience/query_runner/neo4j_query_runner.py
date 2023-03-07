@@ -1,4 +1,6 @@
+import logging
 import re
+import time
 import warnings
 from concurrent.futures import Future, ThreadPoolExecutor, wait
 from typing import Any, Dict, List, Optional
@@ -9,6 +11,7 @@ from pandas import DataFrame
 from tqdm.auto import tqdm
 
 from ..error.endpoint_suggester import generate_suggestive_error_message
+from ..error.unable_to_connect import UnableToConnectError
 from ..server_version.server_version import ServerVersion
 from .cypher_graph_constructor import CypherGraphConstructor
 from .graph_constructor import GraphConstructor
@@ -25,6 +28,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._driver = driver
         self._auto_close = auto_close
         self._database = database
+        self._logger = logging.getLogger()
 
     def run_query(
         self,
@@ -38,6 +42,8 @@ class Neo4jQueryRunner(QueryRunner):
 
         if database is None:
             database = self._database
+
+        self._verify_connectivity()
 
         with self._driver.session(database=database) as session:
             if self._NEO4J_DRIVER_VERSION == ServerVersion(4, 4, 6):
@@ -174,3 +180,27 @@ class Neo4jQueryRunner(QueryRunner):
         all_endpoints = list_result.to_df()["name"].tolist()
 
         raise SyntaxError(generate_suggestive_error_message(requested_endpoint, all_endpoints)) from e
+
+    def _verify_connectivity(self) -> None:
+        WAIT_TIME = 1
+        MAX_RETRYS = 10 * 60
+        WARN_INTERVAL = 10
+
+        exception = None
+        retrys = 0
+        while retrys < MAX_RETRYS:
+            try:
+                self._driver.verify_connectivity()
+                break
+            except neo4j.exceptions.DriverError as e:
+                exception = e
+                if retrys % WARN_INTERVAL == 0:
+                    self._logger.warn("Unable to connect to the Neo4j DBMS. Trying again...")
+
+                time.sleep(WAIT_TIME)
+                retrys += 1
+
+                continue
+
+        if retrys == MAX_RETRYS:
+            raise UnableToConnectError("Unable to connect to the Neo4j DBMS") from exception

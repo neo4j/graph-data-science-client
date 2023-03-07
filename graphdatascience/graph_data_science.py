@@ -58,15 +58,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             self._config: Dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
 
             if aura_ds:
-                protocol = endpoint.split(":")[0]
-                if not protocol == self._AURA_DS_PROTOCOL:
-                    raise ValueError(
-                        f"AuraDS requires using the '{self._AURA_DS_PROTOCOL}' protocol ('{protocol}' was provided)"
-                    )
-
-                self._config["max_connection_lifetime"] = 60 * 8  # 8 minutes
-                self._config["keep_alive"] = True
-                self._config["max_connection_pool_size"] = 50
+                self._configure_aura(endpoint, self._config)
 
             driver = GraphDatabase.driver(endpoint, auth=auth, **self._config)
 
@@ -166,3 +158,15 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def close(self) -> None:
         self._query_runner.close()
+
+    @classmethod
+    def _configure_aura(cls, uri: str, config: Dict[str, Any]) -> None:
+        protocol = uri.split(":")[0]
+        if not protocol == cls._AURA_DS_PROTOCOL:
+            raise ValueError(
+                f"AuraDS requires using the '{cls._AURA_DS_PROTOCOL}' protocol ('{protocol}' was provided)"
+            )
+
+        config["max_connection_lifetime"] = 60 * 8  # 8 minutes
+        config["keep_alive"] = True
+        config["max_connection_pool_size"] = 50
