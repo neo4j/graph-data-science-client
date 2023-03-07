@@ -103,6 +103,11 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
         for item in items:
             if "skip_on_aura" in item.keywords:
                 item.add_marker(skip_on_aura)
+    else:
+        skip_not_aura = pytest.mark.skip(reason="skipping since not targeting AuraDS")
+        for item in items:
+            if "only_on_aura" in item.keywords:
+                item.add_marker(skip_not_aura)
 
     if not config.getoption("--include-enterprise"):
         skip_enterprise = pytest.mark.skip(reason="need --include-enterprise option to run")
