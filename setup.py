@@ -3,7 +3,7 @@ import setuptools
 with open("README.md", "r", encoding="utf-8") as f:
     long_description = f.read()
 
-with open("requirements/base.txt", "r", encoding="utf-8") as f:
+with open("requirements/base/base.txt", "r", encoding="utf-8") as f:
     reqs = f.read().splitlines()
 
 with open("graphdatascience/version.py") as f:
