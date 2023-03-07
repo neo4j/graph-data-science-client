@@ -673,6 +673,7 @@ def test_graph_relationship_write(gds: GraphDataScience) -> None:
     assert result["propertiesWritten"] == 2
 
 
+@pytest.mark.skip_on_aura  # TODO: Remove annotation when support deployed to AuraDS
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
 def test_graph_nodeLabel_write(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
@@ -681,6 +682,7 @@ def test_graph_nodeLabel_write(gds: GraphDataScience) -> None:
     assert result["nodeLabelsWritten"] == 2
 
 
+@pytest.mark.skip_on_aura  # TODO: Remove annotation when support deployed to AuraDS
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
 def test_graph_nodeLabel_mutate(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
