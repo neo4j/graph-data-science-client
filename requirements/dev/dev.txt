@@ -2,7 +2,7 @@ black == 23.1.0
 black[jupyter] == 23.1.0
 flake8 == 6.0.0
 isort == 5.12.0
-mypy == 1.0.1
+mypy == 1.1.1
 nbconvert == 7.2.9
 pandas-stubs == 1.5.3.230227
 pytest == 7.2.1
