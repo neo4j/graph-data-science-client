@@ -691,6 +691,26 @@ def test_graph_nodeLabel_mutate(gds: GraphDataScience) -> None:
     assert result["nodeLabelsWritten"] == 2
 
 
+# TODO: Remove this test when non-deprecated version suported on AuraDS
+@pytest.mark.only_on_aura
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
+def test_graph_nodeLabel_write_deprecated(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds.alpha.graph.nodeLabel.write(G, "FilteredNode", nodeFilter="n.x > 1.0", concurrency=2)
+    assert result["nodeLabelsWritten"] == 2
+
+
+# TODO: Remove this test when non-deprecated version suported on AuraDS
+@pytest.mark.only_on_aura
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
+def test_graph_nodeLabel_mutate_deprecated(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds.alpha.graph.nodeLabel.mutate(G, "FilteredNode", nodeFilter="n.x > 1.0", concurrency=2)
+    assert result["nodeLabelsWritten"] == 2
+
+
 def test_graph_removeNodeProperties_21(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
