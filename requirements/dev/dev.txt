@@ -8,4 +8,4 @@ pandas-stubs == 1.5.3.230227
 pytest == 7.2.1
 pytest-annotate == 1.0.5
 tox == 4.4.6
-types-setuptools == 67.4.0.3
+types-setuptools == 67.5.0.0
