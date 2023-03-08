@@ -5,7 +5,6 @@ import time
 import pytest
 from neo4j import Driver
 
-from graphdatascience.error.unable_to_connect import UnableToConnectError
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.tests.integration.conftest import AUTH, URI
@@ -94,7 +93,7 @@ def test_aurads_rejects_bolt() -> None:
         ValueError,
         match=r"AuraDS requires using the 'neo4j\+s' protocol \('bolt' was provided\)",
     ):
-        GraphDataScience("bolt://localhost:7687", auth=AUTH, aura_ds=True)
+        GraphDataScience._configure_aura("bolt://localhost:7687", {})
 
 
 def test_aurads_rejects_neo4j() -> None:
@@ -102,7 +101,7 @@ def test_aurads_rejects_neo4j() -> None:
         ValueError,
         match=r"AuraDS requires using the 'neo4j\+s' protocol \('neo4j' was provided\)",
     ):
-        GraphDataScience("neo4j://localhost:7687", auth=AUTH, aura_ds=True)
+        GraphDataScience._configure_aura("neo4j://localhost:7687", {})
 
 
 def test_aurads_rejects_neo4j_ssc() -> None:
@@ -110,12 +109,11 @@ def test_aurads_rejects_neo4j_ssc() -> None:
         ValueError,
         match=r"AuraDS requires using the 'neo4j\+s' protocol \('neo4j\+ssc' was provided\)",
     ):
-        GraphDataScience("neo4j+ssc://localhost:7687", auth=AUTH, aura_ds=True)
+        GraphDataScience._configure_aura("neo4j+ssc://localhost:7687", {})
 
 
 def test_aurads_accepts_neo4j_s() -> None:
-    with pytest.raises(UnableToConnectError):
-        GraphDataScience("neo4j+s://localhost:7687", auth=AUTH, aura_ds=True)
+    GraphDataScience._configure_aura("neo4j+s://localhost:7687", {})
 
 
 def test_run_cypher(gds: GraphDataScience) -> None:
