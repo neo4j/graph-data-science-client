@@ -190,6 +190,12 @@ class Neo4jQueryRunner(QueryRunner):
         retrys = 0
         while retrys < MAX_RETRYS:
             try:
+                if self._NEO4J_DRIVER_VERSION < ServerVersion(5, 0, 0):
+                    warnings.filterwarnings(
+                        "ignore",
+                        category=neo4j.ExperimentalWarning,
+                        message=r"^The configuration may change in the future.$",
+                    )
                 self._driver.verify_connectivity()
                 break
             except neo4j.exceptions.DriverError as e:
