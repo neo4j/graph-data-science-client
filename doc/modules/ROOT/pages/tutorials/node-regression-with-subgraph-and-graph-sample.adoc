@@ -11,6 +11,11 @@ This Jupyter notebook is hosted
 https://github.com/neo4j/graph-data-science-client/blob/main/examples/node-regression-with-subgraph-and-graph-sample.ipynb[here]
 in the Neo4j Graph Data Science Client Github repository.
 
+For a video presentation on this notebook, see the talk
+https://youtu.be/7hx56qtf80Q?t=1759[Fundamentals of Neo4j Graph Data
+Science Series 2.x – Pipelines and More] that was given at the NODES
+2022 conference.
+
 The notebook exemplifies using a Node Regression pipeline. It also
 contains many examples of using
 

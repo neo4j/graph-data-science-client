@@ -11,6 +11,11 @@ This Jupyter notebook is hosted
 https://github.com/neo4j/graph-data-science-client/blob/main/examples/import-sample-export-gnn.ipynb[here]
 in the Neo4j Graph Data Science Client Github repository.
 
+For a video presentation on this notebook, see the talk
+https://www.youtube.com/watch?v=c66u_wsPz-U&t=1082s[GNNs at Scale With
+Graph Data Science Sampling and Python Client Integration] that was
+given at the NODES 2022 conference.
+
 The notebook exemplifies how to use the `graphdatascience` and PyTorch
 Geometric (PyG) Python libraries to:
 
