@@ -73,7 +73,11 @@ class ArrowGraphConstructor(GraphConstructor):
     def _send_action(self, action_type: str, meta_data: Dict[str, Any]) -> None:
         result = self._client.do_action(flight.Action(action_type, json.dumps(meta_data).encode("utf-8")))
 
-        json.loads(next(result).body.to_pybytes().decode())
+        # Consume result fully to sanity check and avoid cancelled streams
+        collected_result = list(result)
+        assert len(collected_result) == 1
+
+        json.loads(collected_result[0].body.to_pybytes().decode())
 
     def _send_df(self, df: DataFrame, entity_type: str, pbar: tqdm) -> None:
         table = Table.from_pandas(df)
