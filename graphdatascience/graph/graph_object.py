@@ -1,9 +1,12 @@
-from typing import Any, List, Optional, Union
+from types import TracebackType
+from typing import Any, List, Optional, Type, TypeVar, Union
 
 from pandas import Series
 
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
+
+TGraph = TypeVar("TGraph", bound="Graph")
 
 
 class Graph:
@@ -11,6 +14,17 @@ class Graph:
         self._name = name
         self._query_runner = query_runner
         self._server_version = server_version
+
+    def __enter__(self: TGraph) -> TGraph:
+        return self
+
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
+        self.drop()
 
     def name(self) -> str:
         return self._name

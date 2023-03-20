@@ -145,3 +145,12 @@ def test_graph_str(G: Graph) -> None:
 
 def test_graph_repr(G: Graph) -> None:
     assert "'memoryUsage'" in repr(G)
+
+
+def test_with_graph(gds: GraphDataScience) -> None:
+    temp_graph_name: str = "temp_graph"
+
+    with gds.graph.project(temp_graph_name, "*", "*")[0] as TempG:
+        assert TempG.exists()
+
+    assert not gds.graph.exists(temp_graph_name)["exists"]
