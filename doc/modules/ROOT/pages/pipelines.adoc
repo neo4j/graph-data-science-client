@@ -358,7 +358,7 @@ We now continue the xref:pipelines.adoc#pipelines-linkprediction-pipe-example[ex
 ----
 # Make sure we indeed obtained an AUCPR score
 metrics = friend_recommender.metrics()
-assert AUCPR in metrics
+assert "AUCPR" in metrics
 
 # Predict on `G` and mutate it with the relationship predictions
 mutate_result = friend_recommender.predict_mutate(G, topN=5, mutateRelationshipType="PRED_REL")
