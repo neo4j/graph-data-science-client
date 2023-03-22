@@ -109,6 +109,12 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
             if "only_on_aura" in item.keywords:
                 item.add_marker(skip_not_aura)
 
+    if not config.getoption("--include-ogb"):
+        skip_ogb_only = pytest.mark.skip(reason="need --include-ogb option to run")
+        for item in items:
+            if "ogb" in item.keywords:
+                item.add_marker(skip_ogb_only)
+
     if not config.getoption("--include-enterprise"):
         skip_enterprise = pytest.mark.skip(reason="need --include-enterprise option to run")
         for item in items:
