@@ -198,14 +198,14 @@ props = G.node_properties("City")
 
 == Context managament 
 
-The graph object also implement the context managment protocol, i.e., is usable inside `with` cluases.
-This allows automatically dropping the graph at the end of `with` block.
+The graph object also implement the context managment protocol, i.e., is usable inside `with` clauses.
+On exiting the `with` block, the graph projection will be automatically dropped on the server side.
 
-[source,python, graph-project]
+[source,python, group=graph-project]
 ----
 # We use the example graph from the `Projecting a graph object` section
 with gds.graph.project(
-    "tmp_offices",                  #  Graph name
+    "tmp_offices",              #  Graph name
     ["City"],                   #  Node projection
     "FLY_TO",                   #  Relationship projection
     readConcurrency=4           #  Configuration parameters
@@ -215,7 +215,6 @@ with gds.graph.project(
 # Outside of the with block the Graph does not exist
 assert not gds.graph.exists("tmp_offices")["exists"]
 ----
-
 
 
 == Using a graph object
