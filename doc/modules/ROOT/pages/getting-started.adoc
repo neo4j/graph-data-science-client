@@ -60,7 +60,7 @@ gds = GraphDataScience(
 === Instantiating from a Neo4j driver
 
 For some use cases, direct access and control of the Neo4j driver is required.
-For example if one needs to configure the Neo4j driver that is used in a certain a certain way.
+For example if one needs to configure the Neo4j driver that is used in a certain way.
 In this case, one can use the method `GraphDataScience.from_neo4j_driver` for instantiating a `GraphDataScience` object.
 It takes the same arguments as the regular `GraphDataScience` constructor, except for the `aura_ds` keyword parameter which is only relevant when the Neo4j driver under the hood used is instantiated internally.
 
