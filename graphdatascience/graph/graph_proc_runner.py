@@ -13,6 +13,7 @@ from ..server_version.server_version import ServerVersion
 from .graph_export_runner import GraphExportRunner
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
+from .ogb_loader import OGBLLoader, OGBNLoader
 from graphdatascience.graph.graph_alpha_proc_runner import GraphAlphaProcRunner
 from graphdatascience.graph.graph_entity_ops_runner import (
     GraphElementPropertyRunner,
@@ -105,6 +106,16 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def export(self) -> GraphExportRunner:
         self._namespace += ".export"
         return GraphExportRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def ogbn(self) -> OGBNLoader:
+        self._namespace += ".ogbn"
+        return OGBNLoader(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def ogbl(self) -> OGBLLoader:
+        self._namespace += ".ogbl"
+        return OGBLLoader(self._query_runner, self._namespace, self._server_version)
 
     @graph_type_check
     def drop(
