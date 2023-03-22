@@ -39,6 +39,7 @@ class HeterogeneousOGBGraph(_HeterogeneousOGBGraphBase, total=False):
 
 class HomogeneousOGBNDataset(Protocol):
     graph: HomogeneousOGBGraph
+    # `labels` here refers to class labels, not node labels in the Neo4j sense
     labels: npt.NDArray[np.int64]
 
     @abstractmethod
@@ -56,6 +57,7 @@ class HomogeneousOGBLDataset(Protocol):
 
 class HeterogeneousOGBNDataset(Protocol):
     graph: HeterogeneousOGBGraph
+    # `labels` here refers to class labels, not node labels in the Neo4j sense
     labels: Dict[str, npt.NDArray[np.int64]]
 
     @abstractmethod
