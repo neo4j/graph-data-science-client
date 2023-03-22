@@ -128,7 +128,7 @@ class OGBNLoader(OGBLoader):
 
     def _parse_heterogeneous(self, dataset: HeterogeneousOGBNDataset) -> Tuple[List[pd.DataFrame], List[pd.DataFrame]]:
         graph: HeterogeneousOGBGraph = dataset.graph
-        labels = dataset.labels
+        class_labels = dataset.labels
 
         if "edge_feat_dict" in graph and graph["edge_feat_dict"] is not None:
             warn("Edge features are not supported and will not be loaded")
@@ -161,8 +161,8 @@ class OGBNLoader(OGBLoader):
             if node_label in node_features:
                 node_dict["features"] = node_features[node_label].tolist()
 
-            if node_label in labels:
-                node_dict["classLabel"] = [cl[0] for cl in labels[node_label]]
+            if node_label in class_labels:
+                node_dict["classLabel"] = [cl[0] for cl in class_labels[node_label]]
 
             node_id_offsets[node_label] = current_offset
             current_offset += node_count
