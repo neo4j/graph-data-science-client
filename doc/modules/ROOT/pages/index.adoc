@@ -38,7 +38,7 @@ This manual is divided into the following chapters:
 * xref:algorithms.adoc[Running algorithms]
 * xref:pipelines.adoc[Machine learning pipelines]
 * xref:model-object.adoc[The model object]
-* xref:common-datasets.adoc[Common datasets]
+* xref:common-datasets.adoc[Datasets]
 * xref:tutorials/tutorials.adoc[Tutorials]
 * xref:known-limitations.adoc[Known limitations]
 

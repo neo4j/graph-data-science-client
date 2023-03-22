@@ -69,7 +69,8 @@ def test_graph_load_ogbl_biokg(gds: GraphDataScience) -> None:
     for lbl in G.node_labels():
         assert G.node_properties()[lbl] == []  # type: ignore
     assert G.relationship_count() == 5_088_434
-    assert len(G.relationship_types()) == 51 * 3  # For each of the train, valid, tests: number of rel types
+    # For each of the train, valid and test sets: number of rel types
+    assert len(G.relationship_types()) == 51 * 3
     for t in G.relationship_types():
         assert G.relationship_properties()[t] == ["classLabel"]  # type: ignore
 

@@ -126,7 +126,8 @@ mutate_result = gds.pageRank.mutate(G_office, tolerance=0.5, mutateProperty="ran
 assert G_office.node_properties("City") == ["rank"]
 ----
 
-NOTE: You can also use `gds.graph.load_cora` to get started with a real dataset. See xref:graph-object.adoc#graph-object-load-cora[this segment] for more details.
+NOTE: You can also use one of the datasets that comes with the library to get started.
+See the xref:common-datasets.adoc[] chapter for more on this.
 
 
 [NOTE]

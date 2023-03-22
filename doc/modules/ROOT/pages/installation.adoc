@@ -7,6 +7,7 @@ To install the latest deployed version of the Python client, run:
 pip install graphdatascience
 ----
 
+
 [[python-client-system-requirements]]
 == System requirements
 
@@ -53,3 +54,13 @@ The Python client follows https://semver.org/[semantic versioning].
 Python client versions do not map identically to versions of the GDS library.
 Eg. Python client version X.Y must not necessarily be compatible with GDS library version X.Y.
 Instead, the Python client may be released independently and one has to consult xref:installation.adoc#python-client-system-requirements[System requirements] above to figure out whether one's client version is compatible with the GDS library on the server.
+
+
+== Optional dependencies
+
+In order to use the xref:common-datasets#ogb[convenience OGB dataset loading functionality] of `graphdatascience`, one has to install the optional `ogb` dependency:
+
+[source,bash]
+----
+pip install graphdatascience[ogb]
+----

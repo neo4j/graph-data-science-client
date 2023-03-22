@@ -1,10 +1,15 @@
-= Common datasets
+= Datasets
+
+To support getting up and running quickly and conveniently with `graphdatascience`, the library comes with functionality for very easily projecting some interesting datasets into server-side GDS.
+Some of these are smaller and built-in to the library, and others are larger and hosted elsewhere and are automatically fetched under the hood upon loading.
 
 
-For convenience, the library is shipped with a few common datasets.
+== Built-in datasets
+
+For convenience, the library is shipped with a few smaller built-in datasets that are very fast to load.
 These are easily imported to GDS to get a graph object representing the dataset.
 
-The common datasets comes with a loader method that takes two optional parameters:
+These datasets comes with a loader method that takes two optional parameters:
 `graph_name` which assigns a graph name,
 `undirected` which takes a boolean and will load the graph as undirected if set to true.
 
@@ -21,9 +26,8 @@ assert G.node_labels() == ["Paper"]
 ----
 
 
-== Datasets
-
 === Cora
+
 A well known citation network introduced by
 https://doi.org/10.1023/A:1009953814988[Automating the Construction of Internet Portals with Machine Learning]
 and used in many node classification or link prediction https://paperswithcode.com/dataset/cora[publications].
@@ -43,7 +47,9 @@ The default is to load Cora as `undirected = False`.
 | relationship_properties | CITES: []
 |===
 
+
 === Karate club
+
 A well known social network introduced by http://konect.cc/networks/ucidata-zachary/[Zachary].
 The default is to load Karate club as `undirected = False`.
 
@@ -60,7 +66,9 @@ The default is to load Karate club as `undirected = False`.
 | relationship_properties | KNOWS: []
 |===
 
+
 === IMDB
+
 A heterogeneous graph that is used to benchmark node classification or link prediction models such as
 https://arxiv.org/abs/1903.07293[Heterogeneous Graph Attention Network],
 https://arxiv.org/abs/2002.01680[MAGNN: Metapath Aggregated Graph Neural Network for Heterogeneous Graph Embedding] and
@@ -80,6 +88,191 @@ The default is to load IMDB dataset as `undirected = True`. If loaded as directe
 | node_labels             | ['Movie', 'Actor', 'Director', 'UnclassifiedMovie']
 | relationship_types      | ['ACTED_IN', 'DIRECTED_IN']
 | node_properties         | Movie: [plot_keywords, genre], Actor: [plot_keywords], Director: [plot_keywords], UnclassifiedMovie: [plot_keywords]
-
 | relationship_properties | ACTED_IN: [], DIRECTED_IN: []
 |===
+
+
+[[ogb]]
+== Datasets from the Open Graph Benchmark
+
+There are convenience methods for loading https://ogb.stanford.edu/[Open Graph Benchmark] datasets in the library.
+In order to use these methods, one has to install OGB support for the `graphdatascience` library:
+
+[source,bash]
+----
+pip install graphdatascience[ogb]
+----
+
+The two methods that expose the OGB dataset loading functionality are:
+
+* `gds.graph.obgn.load` for loading https://ogb.stanford.edu/docs/nodeprop/[node property prediction datasets], and
+* `gds.graph.obgl.load` for loading https://ogb.stanford.edu/docs/linkprop/[link property prediction datasets].
+
+These methods both return a `Graph` object, and take four arguments:
+
+.OGB dataset loading method arguments
+[opts="header",cols="1m,1m,3", role="no-break"]
+|===
+| Name              | Type              |
+| dataset_name      | str			    | The name of the ODB dataset
+| dataset_root_path | str = "./dataset" | An optional path for where the downloaded OGB dataset will be stored
+| graph_name        | Optional[str]     | An optional name of the created graph. Defaults to `dataset_name`
+| concurrency       | int = 4           | An optional number of threads to use
+|===
+
+[NOTE]
+====
+The OGB loading methods uses the https://pypi.org/project/ogb/[OGB library] under the hood.
+As such, when loading a new OGB dataset, the dataset will be downloaded from the internet, hence an internet connection is required.
+If the dataset is already found in the `dataset_root_path` however, an internet connection is not required.
+====
+
+[NOTE]
+====
+All OGB datasets are loaded into GDS with orientation `DIRECTED`.
+However, some of the datasets are effectively undirected in the sense that for each relationship, one in the opposite direction between the same nodes also exists.
+The https://ogb.stanford.edu/[Open Graph Benchmark] website informs us on for which of the datasets this is the case.
+====
+
+[WARNING]
+====
+If the targeted GDS server has an enterprise license and the https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/[Arrow Flight Server] enabled, the performance of the OGB dataset loading will be very good.
+If not, the performance will be a lot worse.
+The loading will take several magnitudes longer time, and require substantially more memory.
+Indeed, one may need to increase the https://neo4j.com/docs/operations-manual/current/configuration/neo4j-conf/#neo4j-conf-JVM[maximum heap size of the Neo4j database] which hosts GDS in order to have enough memory for the loading.
+====
+
+[WARNING]
+====
+At this time, the loading methods do not support loading of relationship features that are in the OGB datasets.
+Whenever an dataset that includes relationship features is loaded, those features will not be included in the projection, and a warning till be issued.
+====
+
+Depending on the dataset and task, the graphs projected into server-side GDS will look a bit different.
+
+
+=== OGBN graphs
+
+Datasets used for node property prediction.
+
+
+==== Homogeneous
+
+These graphs will, when projected into server-side GDS, have:
+
+* Up to three disjoint node labels representing the dataset split: "Train", "Valid" and "Test"
+* One relationship type "R" for all relationships
+* A "classLabel" property on all nodes, which is represented by a single number
+* If provided by the dataset, a node property "features", which is represented by an array of numbers for all nodes
+
+Let's see an example of loading and inspecting one of these datasets:
+
+.Example of loading the 'ogbn-arxiv' dataset
+[source, python, role=no-test]
+----
+G = gds.graph.ogbn.load("ogbn-arxiv")
+
+assert G.name() == "ogbn-arxiv"
+assert G.node_count() == 169_343
+assert G.node_labels() == ["Train", "Valid", "Test"]
+assert G.node_properties()["Train"] == ["features", "classLabel"]
+assert G.relationship_count() == 1_166_243
+assert G.relationship_types() == ["R"]
+assert G.relationship_properties()["R"] == []
+----
+
+
+==== Heterogeneous
+
+These graphs are heterogenous, so by definition will have multiple node labels and relationship types.
+These labels and types will be named in the graph projection according to the their names in the original dataset.
+In addition, the projected graph will have:
+
+* Up to three disjoint node labels representing the dataset split: "Train", "Valid" and "Test".
+This implies that nodes might have multiple labels
+* A "classLabel" property on the nodes targeted for prediction, which is represented by a single number
+* If provided by the dataset, a node property "features", which is represented by an array of numbers for some or all of the nodes
+
+Let's see an example of loading and inspecting one of these datasets:
+
+.Example of loading the 'ogbn-mag' dataset
+[source, python, role=no-test]
+----
+G = gds.graph.ogbn.load("ogbn-mag")
+
+assert G.name() == "ogbn-mag"
+assert G.node_count() == 1_939_743
+assert set(G.node_labels()) == {
+	"Train",
+	"Test",
+	"Valid",
+	"institution",
+	"field_of_study",
+	"paper",
+	"author",
+}
+assert G.node_properties()["paper"] == ["features", "classLabel"]
+assert G.node_properties()["institution"] == []
+assert G.relationship_count() == 21_111_007
+assert G.relationship_types() == ["cites", "writes", "affiliated_with", "has_topic"]
+----
+
+
+=== OGBL graphs
+
+Datasets used for link property prediction.
+
+
+==== Homogeneous
+
+These graphs are used for link prediction.
+When projected into server-side GDS, they will have have:
+
+* One node label "N" for all nodes
+* Up to six disjoint relationship types representing the dataset split: "TRAIN_POS", "TRAIN_NEG", "VALID_POS", "VALID_NEG", "TEST_POS", "TEST_NEG"
+* If provided by the dataset, a node property "features" which is represented by an array of numbers for all nodes
+
+Let's see an example of loading and inspecting one of these datasets:
+
+.Example of loading the 'ogbl-ddi' dataset
+[source, python, role=no-test]
+----
+G = gds.graph.ogbl.load("ogbl-ddi")
+
+assert G.name() == "ogbl-ddi"
+assert G.node_count() == 4_267
+assert G.node_labels() == ["N"]
+assert G.node_properties()["N"] == []
+assert G.relationship_count() == 1_334_889 + 197_481  # Positive + negative counts
+assert G.relationship_types() == ["TRAIN_POS", "VALID_POS", "VALID_NEG", "TEST_POS", "TEST_NEG"]
+----
+
+
+==== Heterogeneous
+
+These are heterogenous graphs used for knowledge graph completion, so by definition will have multiple node labels and relationship types.
+The node labels will be named in the graph projection according to the their names in the original dataset.
+Complementing the naming in the original dataset, the relationship types names will be suffixed with an underscore followed by the kind of set they appear in in the dataset split ("TRAIN", "VALID" or "TEST").
+
+In addition, the projected graph will have:
+
+* A "classLabel" property on all relationships, which is represented by a single non-negative integer.
+This integer maps one-to-one with the relationship types of the original dataset
+* If provided by the dataset, a node property "features" which is represented by an array of numbers for some or all of the nodes
+
+Let's see an example of loading and inspecting one of these datasets:
+
+.Example of loading the 'ogbl-biokg' dataset
+[source, python, role=no-test]
+----
+G = gds.graph.ogbl.load("ogbl-biokg")
+
+assert G.name() == "ogbl-biokg"
+assert G.node_count() == 93_773
+assert G.node_labels() == ["disease", "protein", "drug", "sideeffect", "function"]
+assert G.node_properties()["protein"] == []
+assert G.relationship_count() == 5_088_434
+# For each of the train, valid and test sets: number of rel types
+assert len(G.relationship_types()) == 51 * 3
+assert G.relationship_properties()["drug-drug_polycystic_ovary_syndrome_TRAIN"] == ["classLabel"]
+----
