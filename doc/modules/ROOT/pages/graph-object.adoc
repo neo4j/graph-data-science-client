@@ -209,8 +209,8 @@ with gds.graph.project(
     ["City"],                   #  Node projection
     "FLY_TO",                   #  Relationship projection
     readConcurrency=4           #  Configuration parameters
-)[0] as G:
-    assert G.exists()
+)[0] as G_tmp:
+    assert G_tmp.exists()
 
 # Outside of the with block the Graph does not exist
 assert not gds.graph.exists("tmp_offices")["exists"]
