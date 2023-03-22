@@ -18,6 +18,7 @@
 * Improved IDE auto-completion support to give significantly fewer false positive suggestions.
 * Failing to log progress of a call will no longer fail the call itself, but just warn that logging was unsuccessful.
 * Underlying connections to a Neo4j DBMS is now being verified and retried automatically up to a timeout of 10 minutes.
+* The `GraphDataScience.from_neo4j_driver` factory method now additionally takes the same Arrow related keyword parameters as the `GraphDataScience` constructor.
 
 
 ## Other changes

@@ -152,9 +152,22 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
     @classmethod
     def from_neo4j_driver(
-        cls: Type[GDS], driver: Driver, auth: Optional[Tuple[str, str]] = None, arrow: bool = True
+        cls: Type[GDS],
+        driver: Driver,
+        auth: Optional[Tuple[str, str]] = None,
+        database: Optional[str] = None,
+        arrow: bool = True,
+        arrow_disable_server_verification: bool = True,
+        arrow_tls_root_certs: Optional[bytes] = None,
     ) -> "GraphDataScience":
-        return cls(driver, auth=auth, arrow=arrow)
+        return cls(
+            driver,
+            auth=auth,
+            database=database,
+            arrow=arrow,
+            arrow_disable_server_verification=arrow_disable_server_verification,
+            arrow_tls_root_certs=arrow_tls_root_certs,
+        )
 
     def close(self) -> None:
         self._query_runner.close()
