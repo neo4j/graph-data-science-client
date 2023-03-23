@@ -11,7 +11,6 @@ from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..graph.graph_object import Graph
-from ..query_runner.arrow_query_runner import ArrowQueryRunner
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
@@ -198,11 +197,6 @@ class OGBNLoader(OGBLoader):
         graph_name: Optional[str] = None,
         concurrency: int = 4,
     ) -> Graph:
-        if not isinstance(self._query_runner, ArrowQueryRunner):
-            raise NotImplementedError(
-                "OGB graph loading is only supported when targeting GDS EE with the Arrow server enabled"
-            )
-
         try:
             from ogb.nodeproppred import NodePropPredDataset
         except ModuleNotFoundError:
@@ -339,11 +333,6 @@ class OGBLLoader(OGBLoader):
         graph_name: Optional[str] = None,
         concurrency: int = 4,
     ) -> Graph:
-        if not isinstance(self._query_runner, ArrowQueryRunner):
-            raise NotImplementedError(
-                "OGB graph loading is only supported when targeting GDS EE with the Arrow server enabled"
-            )
-
         try:
             from ogb.linkproppred import LinkPropPredDataset
         except ModuleNotFoundError:
