@@ -176,11 +176,11 @@ class OGBNLoader(OGBLoader):
 
         rels = []
         for rel_triple, edge_index in graph["edge_index_dict"].items():
-            _, rel_type, _ = rel_triple
+            source_label, rel_type, target_label = rel_triple
 
             rel_dict = {
-                "sourceNodeId": edge_index[0],
-                "targetNodeId": edge_index[1],
+                "sourceNodeId": edge_index[0] + node_id_offsets[source_label],
+                "targetNodeId": edge_index[1] + node_id_offsets[target_label],
                 "relationshipType": rel_type,
             }
 
@@ -308,6 +308,9 @@ class OGBLLoader(OGBLoader):
                 source_label, edge_type, target_label = available_rel_types[class_label]
                 assert source_labels[i] == source_label
                 assert target_labels[i] == target_label
+
+                source_ids[i] += node_id_offsets[edges["head_type"][i]]
+                target_ids[i] += node_id_offsets[edges["tail_type"][i]]
 
                 rel_types.append(f"{edge_type}_{set_type.upper()}")
 

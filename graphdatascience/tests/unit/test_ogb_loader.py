@@ -49,7 +49,7 @@ class HomoOBGLTestDataset(HomogeneousOGBLDataset):
         }
 
 
-HETEROGENEOUS_EDGE_INDEX = {("A", "R", "B"): np.array([[0], [1]]), ("B", "R2", "C"): np.array([[1], [2]])}
+HETEROGENEOUS_EDGE_INDEX = {("A", "R", "B"): np.array([[0], [0]]), ("B", "R2", "C"): np.array([[0], [0]])}
 HETEROGENEOUS_NODE_FEAT = {"A": np.array([[1.0]]), "C": np.array([[42.1337]])}
 HETEROGENEOUS_NUM_NODES = {"A": 1, "B": 1, "C": 1}
 HETEROGENEOUS_CLASS_LABELS = {"A": np.array([[5]])}
@@ -78,8 +78,8 @@ class HeteroOBGLTestDataset(HeterogeneousOGBLDataset):
 
     def get_edge_split(self) -> Dict[str, Dict[str, Any]]:
         return {
-            "train": {"head_type": ["A"], "head": [0], "relation": [0], "tail_type": ["B"], "tail": [1]},
-            "valid": {"head_type": ["B"], "head": [1], "relation": [1], "tail_type": ["C"], "tail": [2]},
+            "train": {"head_type": ["A"], "head": [0], "relation": [0], "tail_type": ["B"], "tail": [0]},
+            "valid": {"head_type": ["B"], "head": [0], "relation": [1], "tail_type": ["C"], "tail": [0]},
             "test": {"head_type": [], "head": [], "relation": [], "tail_type": [], "tail": []},
         }
 
@@ -135,12 +135,12 @@ def test_ogbn_parse_heterogeneous(gds: GraphDataScience) -> None:
 
     assert len(rels) == 2
 
-    assert rels[0]["sourceNodeId"].tolist() == HETEROGENEOUS_EDGE_INDEX[("A", "R", "B")][0]
-    assert rels[0]["targetNodeId"].tolist() == HETEROGENEOUS_EDGE_INDEX[("A", "R", "B")][1]
+    assert rels[0]["sourceNodeId"].tolist() == [0]
+    assert rels[0]["targetNodeId"].tolist() == [1]
     assert rels[0]["relationshipType"].tolist() == ["R"] * len(HETEROGENEOUS_EDGE_INDEX[("A", "R", "B")][0])
 
-    assert rels[1]["sourceNodeId"].tolist() == HETEROGENEOUS_EDGE_INDEX[("B", "R2", "C")][0]
-    assert rels[1]["targetNodeId"].tolist() == HETEROGENEOUS_EDGE_INDEX[("B", "R2", "C")][1]
+    assert rels[1]["sourceNodeId"].tolist() == [1]
+    assert rels[1]["targetNodeId"].tolist() == [2]
     assert rels[1]["relationshipType"].tolist() == ["R2"] * len(HETEROGENEOUS_EDGE_INDEX[("B", "R2", "C")][0])
 
 
@@ -163,13 +163,13 @@ def test_ogbl_parse_heterogeneous(gds: GraphDataScience) -> None:
 
     assert len(rels) == 3
 
-    assert rels[0]["sourceNodeId"].tolist() == HETEROGENEOUS_EDGE_INDEX[("A", "R", "B")][0]
-    assert rels[0]["targetNodeId"].tolist() == HETEROGENEOUS_EDGE_INDEX[("A", "R", "B")][1]
+    assert rels[0]["sourceNodeId"].tolist() == [0]
+    assert rels[0]["targetNodeId"].tolist() == [1]
     assert rels[0]["relationshipType"].tolist() == ["R_TRAIN"] * len(HETEROGENEOUS_EDGE_INDEX[("A", "R", "B")][0])
     assert rels[0]["classLabel"].tolist() == [0] * len(HETEROGENEOUS_EDGE_INDEX[("A", "R", "B")][0])
 
-    assert rels[1]["sourceNodeId"].tolist() == HETEROGENEOUS_EDGE_INDEX[("B", "R2", "C")][0]
-    assert rels[1]["targetNodeId"].tolist() == HETEROGENEOUS_EDGE_INDEX[("B", "R2", "C")][1]
+    assert rels[1]["sourceNodeId"].tolist() == [1]
+    assert rels[1]["targetNodeId"].tolist() == [2]
     assert rels[1]["relationshipType"].tolist() == ["R2_VALID"] * len(HETEROGENEOUS_EDGE_INDEX[("B", "R2", "C")][0])
     assert rels[1]["classLabel"].tolist() == [1] * len(HETEROGENEOUS_EDGE_INDEX[("B", "R2", "C")][0])
 
