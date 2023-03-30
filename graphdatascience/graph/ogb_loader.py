@@ -41,6 +41,7 @@ class HomogeneousOGBNDataset(Protocol):
     # `labels` here refers to class labels, not node labels in the Neo4j sense
     # The representation is a node_count x 1 shaped matrix
     labels: npt.NDArray[np.int64]
+    meta_info: "pd.Series[Any]"
 
     @abstractmethod
     def get_idx_split(self) -> Dict[str, npt.NDArray[np.int64]]:
@@ -49,6 +50,7 @@ class HomogeneousOGBNDataset(Protocol):
 
 class HomogeneousOGBLDataset(Protocol):
     graph: HomogeneousOGBGraph
+    meta_info: "pd.Series[Any]"
 
     @abstractmethod
     def get_edge_split(self) -> Dict[str, Dict[str, npt.NDArray[np.int64]]]:
@@ -60,6 +62,7 @@ class HeterogeneousOGBNDataset(Protocol):
     # `labels` here refers to class labels, not node labels in the Neo4j sense
     # The representation is a node_count x 1 shaped matrix
     labels: Dict[str, npt.NDArray[np.int64]]
+    meta_info: "pd.Series[Any]"
 
     @abstractmethod
     def get_idx_split(self) -> Dict[str, Dict[str, npt.NDArray[np.int64]]]:
@@ -68,6 +71,7 @@ class HeterogeneousOGBNDataset(Protocol):
 
 class HeterogeneousOGBLDataset(Protocol):
     graph: HeterogeneousOGBGraph
+    meta_info: "pd.Series[Any]"
 
     @abstractmethod
     def get_edge_split(self) -> Dict[str, Dict[str, Any]]:
@@ -92,7 +96,7 @@ class OGBNLoader(OGBLoader):
     def _parse_homogeneous(self, dataset: HomogeneousOGBNDataset) -> Tuple[List[pd.DataFrame], List[pd.DataFrame]]:
         graph: HomogeneousOGBGraph = dataset.graph
 
-        if "edge_feat" in graph and graph["edge_feat"] is not None:
+        if dataset.meta_info["has_edge_attr"] == "True":
             warn("Edge features are not supported and will not be loaded")
 
         self._logger.info("Preparing node data for transfer to server...")
@@ -133,7 +137,7 @@ class OGBNLoader(OGBLoader):
         graph: HeterogeneousOGBGraph = dataset.graph
         class_labels = dataset.labels
 
-        if "edge_feat_dict" in graph and graph["edge_feat_dict"] is not None:
+        if dataset.meta_info["has_edge_attr"] == "True":
             warn("Edge features are not supported and will not be loaded")
 
         self._logger.info("Preparing node data for transfer to server...")
@@ -222,7 +226,7 @@ class OGBLLoader(OGBLoader):
     def _parse_homogeneous(self, dataset: HomogeneousOGBLDataset) -> Tuple[List[pd.DataFrame], List[pd.DataFrame]]:
         graph: HomogeneousOGBGraph = dataset.graph
 
-        if "edge_feat" in graph and graph["edge_feat"] is not None:
+        if dataset.meta_info["has_edge_attr"] == "True":
             warn("Edge features are not supported and will not be loaded")
 
         self._logger.info("Preparing node data for transfer to server...")
@@ -265,7 +269,7 @@ class OGBLLoader(OGBLoader):
     def _parse_heterogeneous(self, dataset: HeterogeneousOGBLDataset) -> Tuple[List[pd.DataFrame], List[pd.DataFrame]]:
         graph: HeterogeneousOGBGraph = dataset.graph
 
-        if "edge_feat_dict" in graph and graph["edge_feat_dict"] is not None:
+        if dataset.meta_info["has_edge_attr"] == "True":
             warn("Edge features are not supported and will not be loaded")
 
         self._logger.info("Preparing node data for transfer to server...")
