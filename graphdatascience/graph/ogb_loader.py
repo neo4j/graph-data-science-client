@@ -109,7 +109,10 @@ class OGBNLoader(OGBLoader):
         if "node_feat" in graph and graph["node_feat"] is not None:
             node_dict["features"] = graph["node_feat"].tolist()
 
-        node_dict["classLabel"] = [cl[0] for cl in dataset.labels]
+        if len(dataset.labels[0]) == 1:
+            node_dict["classLabel"] = [cl[0] for cl in dataset.labels]
+        else:
+            node_dict["classLabel"] = dataset.labels.tolist()
 
         split = dataset.get_idx_split()
         node_labels = ["Train" for _ in range(node_count)]
@@ -169,7 +172,10 @@ class OGBNLoader(OGBLoader):
                 node_dict["features"] = node_features[node_label].tolist()
 
             if node_label in class_labels:
-                node_dict["classLabel"] = [cl[0] for cl in class_labels[node_label]]
+                if len(class_labels[node_label]) == 1:
+                    node_dict["classLabel"] = [cl[0] for cl in class_labels[node_label]]
+                else:
+                    node_dict["classLabel"] = class_labels[node_label].tolist()
 
             node_id_offsets[node_label] = current_offset
             current_offset += node_count
