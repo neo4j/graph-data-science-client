@@ -1,6 +1,7 @@
 import logging
+import sys
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Protocol, Tuple, TypedDict, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 from warnings import warn
 
 import numpy as np
@@ -14,6 +15,11 @@ from ..graph.graph_object import Graph
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
+
+if sys.version_info >= (3, 8):
+    from typing import Protocol, TypedDict
+else:
+    from typing_extensions import Protocol, TypedDict
 
 
 class _HomogeneousOGBGraphBase(TypedDict):
