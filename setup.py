@@ -6,6 +6,9 @@ with open("README.md", "r", encoding="utf-8") as f:
 with open("requirements/base/base.txt", "r", encoding="utf-8") as f:
     reqs = f.read().splitlines()
 
+with open("requirements/base/ogb.txt", "r", encoding="utf-8") as f:
+    ogb_reqs = f.read().splitlines()
+
 with open("graphdatascience/version.py") as f:
     version = f.readline().strip().split()[-1][1:-1]
 
@@ -50,4 +53,5 @@ setuptools.setup(
     python_requires=">=3.7",
     install_requires=reqs,
     zip_safe=False,
+    extras_require={"ogb": ogb_reqs},
 )
