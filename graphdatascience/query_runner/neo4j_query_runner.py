@@ -201,7 +201,7 @@ class Neo4jQueryRunner(QueryRunner):
             except neo4j.exceptions.DriverError as e:
                 exception = e
                 if retrys % WARN_INTERVAL == 0:
-                    self._logger.warn("Unable to connect to the Neo4j DBMS. Trying again...")
+                    self._logger.warning("Unable to connect to the Neo4j DBMS. Trying again...")
 
                 time.sleep(WAIT_TIME)
                 retrys += 1
