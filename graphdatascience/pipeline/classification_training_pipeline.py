@@ -14,8 +14,7 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def addRandomForest(self, **config: Any) -> "Series[Any]":
-        query_prefix = self._query_prefix().replace("beta", "alpha")
-        query = f"{query_prefix}addRandomForest($pipeline_name, $config)"
+        query = f"{self._query_prefix()}addRandomForest($pipeline_name, $config)"
         params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
