@@ -445,7 +445,7 @@ assert len(results) == H.node_count()
 == The pipeline catalog
 
 The primary way to use pipeline objects is for training models.
-Additionally, pipeline objects can be used as input to https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/[GDS Pipeline Catalog operations].
+Additionally, pipeline objects can be used as input to https://neo4j.com/docs/graph-data-science/current/pipeline-catalog/pipeline-catalog/[GDS Pipeline Catalog operations].
 For instance, supposing we have a pipeline object `pipe`, we could:
 
 [source,python]
