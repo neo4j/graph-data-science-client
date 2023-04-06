@@ -3,8 +3,8 @@ from typing import Any
 
 from pandas import Series
 
-from .training_pipeline import MODEL_TYPE, TrainingPipeline
 from ..server_version.server_version import ServerVersion
+from .training_pipeline import MODEL_TYPE, TrainingPipeline
 
 
 class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
