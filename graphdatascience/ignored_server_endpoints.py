@@ -10,6 +10,7 @@ IGNORED_SERVER_ENDPOINTS = {
     "gds.alpha.graph.streamGraphProperty",  # Exists but undocumented for GDS 2.1
     "gds.alpha.pipeline.linkPrediction.addMLP",
     "gds.alpha.pipeline.linkPrediction.addRandomForest",
+    "gds.beta.pipeline.linkPrediction.addRandomForest",
     "gds.beta.pipeline.linkPrediction.addFeature",
     "gds.beta.pipeline.linkPrediction.addLogisticRegression",
     "gds.beta.pipeline.linkPrediction.addNodeProperty",
@@ -23,6 +24,7 @@ IGNORED_SERVER_ENDPOINTS = {
     "gds.beta.pipeline.linkPrediction.train.estimate",
     "gds.alpha.pipeline.nodeClassification.addMLP",
     "gds.alpha.pipeline.nodeClassification.addRandomForest",
+    "gds.beta.pipeline.nodeClassification.addRandomForest",
     "gds.beta.pipeline.nodeClassification.addLogisticRegression",
     "gds.beta.pipeline.nodeClassification.addNodeProperty",
     "gds.alpha.pipeline.nodeClassification.configureAutoTuning",
