@@ -16,7 +16,7 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
 
     def addRandomForest(self, **config: Any) -> "Series[Any]":
         query_prefix = self._query_prefix()
-        if self._server_version < ServerVersion(2, 3, 0):
+        if self._server_version < ServerVersion(2, 4, 0):
             query_prefix = self._query_prefix().replace("beta", "alpha")
         query = f"{query_prefix}addRandomForest($pipeline_name, $config)"
         params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
