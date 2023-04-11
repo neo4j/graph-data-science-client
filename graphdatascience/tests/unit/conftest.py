@@ -12,7 +12,7 @@ from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.server_version.server_version import ServerVersion
 
 # Should mirror the latest GDS server version under development.
-DEFAULT_SERVER_VERSION = ServerVersion(2, 3, 0)
+DEFAULT_SERVER_VERSION = ServerVersion(2, 4, 0)
 
 
 class CollectingQueryRunner(QueryRunner):

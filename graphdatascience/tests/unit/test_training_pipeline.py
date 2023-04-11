@@ -101,7 +101,7 @@ def test_add_linear_regression_nr_pipeline(runner: CollectingQueryRunner, nr_pip
 def test_add_random_forest_lp_pipeline(runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
     lp_pipe.addRandomForest(penalty=1)
 
-    assert runner.last_query() == "CALL gds.alpha.pipeline.linkPrediction.addRandomForest($pipeline_name, $config)"
+    assert runner.last_query() == "CALL gds.beta.pipeline.linkPrediction.addRandomForest($pipeline_name, $config)"
     assert runner.last_params() == {
         "pipeline_name": lp_pipe.name(),
         "config": {"penalty": 1},
@@ -111,7 +111,7 @@ def test_add_random_forest_lp_pipeline(runner: CollectingQueryRunner, lp_pipe: L
 def test_add_random_forest_with_range_lp_pipeline(runner: CollectingQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
     lp_pipe.addRandomForest(maxDepth=(1, 2))
 
-    assert runner.last_query() == "CALL gds.alpha.pipeline.linkPrediction.addRandomForest($pipeline_name, $config)"
+    assert runner.last_query() == "CALL gds.beta.pipeline.linkPrediction.addRandomForest($pipeline_name, $config)"
     assert runner.last_params() == {
         "pipeline_name": lp_pipe.name(),
         "config": {"maxDepth": {"range": [1, 2]}},
