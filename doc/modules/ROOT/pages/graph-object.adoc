@@ -78,7 +78,8 @@ Their Cypher signatures map to Python in much the same way as `gds.graph.project
 
 
 [.alpha]
-== Constructing a graph
+[[construct]]
+== Constructing a graph from DataFrames
 
 include::ROOT:partial$/alpha-note.adoc[]
 
@@ -159,6 +160,129 @@ This in particular means that:
 * It is possible to supply more than one data frame, both for nodes and relationships.
 If multiple node dataframes are used, they need to contain distinct node ids across all node data frames.
 * Prior to the `construct` call, a call to `GraphDataScience.set_database` must have been made to explicitly specify which Neo4j database should be targeted.
+
+
+[[networkx]]
+== Loading a NetworkX graph
+
+Another way to construct a graph from client-side data is by using the library's convenience https://networkx.org/[NetworkX] loading method.
+In order to use this method, one has to install NetworkX support for the `graphdatascience` library:
+
+[source,bash]
+----
+pip install graphdatascience[networkx]
+----
+
+The method that exposes the NetworkX dataset loading functionality is called `gds.graph.networkx.load`.
+It returns `Graph` object, and takes three arguments:
+
+.NetworkX graph loading method arguments
+[opts="header",cols="1m,1m,3", role="no-break"]
+|===
+| Name        | Type           |
+| nx_G        | networkx.Graph | A graph in the NetworX format
+| graph_name  | str            | The name of the created GDS graph
+| concurrency | int = 4        | An optional number of threads to use
+|===
+
+Exactly how the `networkx.Graph` `nx_G` maps to a GDS `Graph` projection is outlined in detail xref:graph-object.adoc#nx-schema[below].
+
+
+=== Example
+
+Let's look at an example of loading a minimal heterogeneous toy NetworkX graph.
+
+.Example of loading a directed NetworkX graph
+[source, python, networkx=true]
+----
+import networkx as nx
+
+# Construct a directed NetworkX graph
+nx_G = nx.DiGraph()
+nx_G.add_node(1, labels=["Person"], age=52)
+nx_G.add_node(42, labels=["Product", "Item"], cost=17.2)
+nx_G.add_edge(1, 42, relationshipType="BUYS", quantity=4)
+
+# Load the graph into GDS
+G = gds.graph.networkx.load(nx_G, "purchases")
+
+# Verify that the projection is what we expect
+assert G.name() == "purchases"
+assert G.node_count() == 2
+assert set(G.node_labels()) == {"Person", "Product", "Item"}
+assert G.node_properties("Person") == ["age"]
+assert G.node_properties("Product") == ["cost"]
+# Count rel not being = 2 indicates the graph is indeed directed
+assert G.relationship_count() == 1
+assert G.relationship_types() == ["BUYS"]
+assert G.relationship_properties("BUYS") == ["quantity"]
+----
+
+
+[TIP]
+====
+Combined with https://networkx.org/documentation/stable/reference/readwrite/index.html[NetworkX's functionality for reading various graph formats] one can easily load popular graph formats like edge list and GML into GDS.
+====
+
+[TIP]
+====
+Combined with https://networkx.org/documentation/stable/reference/generators.html[NetworkX's functionality for generating various kinds of graphs] one can easily load graph types popular in the literature into GDS, such as expanders, lollipop graphs, complete graphs, and more.
+====
+
+
+[[nx-schema]]
+=== NetworkX schema to GDS schema
+
+There are some rules as to how the NetworkX graph maps to the projected `Graph` in GDS.
+They follow principles similar to those of xref:graph-object#construct[], and are outlined in detail in this section.
+
+
+==== Node labels
+
+Node labels for the projected GDS graph are taken from attributes on `networkx.Graph` nodes.
+The values of node attribute key `labels` will dictate what labels nodes are given in the projection.
+These values should be either strings or lists of strings.
+
+Either all nodes of the `networkx.Graph` must have valid `labels` attributes, or they can be _completely_ left out from the graph.
+That is, a `networx.Graph` with no `labels` node attributes at all is also allowed.
+In this latter case, the nodes in the projected `Graph` will all have the node label `N`.
+
+
+==== Node properties
+
+Node properties for the projected GDS graph are taken from attributes on `networkx.Graph` nodes.
+The keys of the attributes will map to property names, and the allowed values must follow the regular guidelines for node property values in GDS.
+Please note though that the node attribute key `labels` is reserved for node labels (previous section) and will not translate to node properties in the projection.
+
+Nodes having the same values for the `labels` attribute must have the same set of node property keys.
+
+
+==== Relationship types
+
+Relationship types for the projected GDS graph are taken from attributes on `networkx.Graph` edges.
+The values of edge attribute key `relationshipType` will dictate what types relationships are given in the projection.
+These values should be either strings or omitted.
+
+Either all edges of the `networkx.Graph` must have valid `relationshipType` attributes, or they can be _completely_ left out from the graph.
+That is, a `networx.Graph` with no `relationshipType` edge attributes at all is also allowed.
+In this latter case, the relationships in the projected `Graph` will all have the relationship type `R`.
+
+
+==== Relationship properties
+
+Relationship properties for the projected GDS graph are taken from attributes on `networkx.Graph` edges.
+The keys of the attributes will map to property names, and the allowed values must follow the regular guidelines for relationship property values in GDS.
+That includes the limitation of having at most one property per relationship.
+Please note though that the edge attribute key `relationshipType` is reserved for relationship types (previous section) and will not translate to relationship properties in the projection.
+
+Edges having the same values for the `relationshipType` attribute must have the same set of edge property keys.
+
+
+==== Relationship direction
+
+The direction (`DIRECTED` or `UNDIRECTED`) of the relationships in the projected GDS graph are inferred from the type of `networkx.Graph` used.
+If the given NetworkX graph is directed, so a (sub)class of either `networkx.DiGraph` or `networkx.MultiDiGraph`, the relationships will be `DIRECTED` in the projection.
+Otherwise, they will be `UNDIRECTED`.
 
 
 == Inspecting a graph object

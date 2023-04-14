@@ -79,12 +79,22 @@ def block_to_raw_code(block)
   end
 end
 
-def scripts_of_file(path, enterprise)
+def filter_source_blocks(source_blocks, scope)
+  testable_source_blocks = source_blocks.select { |b| !b.has_role?('no-test') && b.attr('language') == 'python' }
+  testable_source_blocks = testable_source_blocks.reject { |b| b.attr? 'enterprise' } unless scope == :enterprise
+
+  if scope == :networkx
+    testable_source_blocks.select { |b| b.attr? 'networkx' }
+  else
+    testable_source_blocks.reject { |b| b.attr? 'networkx' }
+  end
+end
+
+def scripts_of_file(path, scope)
   doc = Asciidoctor.load_file path, safe: :safe
 
   source_blocks = doc.find_by style: 'source'
-  testable_source_blocks = source_blocks.select { |b| !b.has_role?('no-test') && b.attr('language') == 'python' }
-  testable_source_blocks = testable_source_blocks.reject { |b| b.attr? 'enterprise' } unless enterprise
+  testable_source_blocks = filter_source_blocks(source_blocks, scope)
 
   raw_scripts = []
   raw_scripts_by_group = Hash.new { |h, k| h[k] = "# #{k}" }
@@ -106,11 +116,11 @@ def scripts_of_file(path, enterprise)
 end
 
 class DocTest < Minitest::Test
-  def run_doc_scripts(enterprise)
+  def run_doc_scripts(scope)
     files = doc_files
 
     files.each do |f|
-      scripts = scripts_of_file(f, enterprise)
+      scripts = scripts_of_file(f, scope)
 
       scripts.each do |s|
         stdout, stderr, status = Open3.capture3 "#{ARGV[0]} -c '#{s}'"
@@ -121,10 +131,14 @@ class DocTest < Minitest::Test
   end
 
   def test_community
-    run_doc_scripts(false)
+    run_doc_scripts(:community)
   end
 
   def test_enterprise
-    run_doc_scripts(true)
+    run_doc_scripts(:enterprise)
+  end
+
+  def test_networkx
+    run_doc_scripts(:networkx)
   end
 end
