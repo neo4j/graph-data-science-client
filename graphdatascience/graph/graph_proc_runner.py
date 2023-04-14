@@ -10,22 +10,19 @@ from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
-from .graph_export_runner import GraphExportRunner
-from .graph_object import Graph
-from .graph_project_runner import GraphProjectRunner
-from .ogb_loader import OGBLLoader, OGBNLoader
-from graphdatascience.graph.graph_alpha_proc_runner import GraphAlphaProcRunner
-from graphdatascience.graph.graph_entity_ops_runner import (
+from .graph_alpha_proc_runner import GraphAlphaProcRunner
+from .graph_entity_ops_runner import (
     GraphElementPropertyRunner,
     GraphNodePropertiesRunner,
     GraphRelationshipPropertiesRunner,
     GraphRelationshipRunner,
     GraphRelationshipsRunner,
 )
-from graphdatascience.graph.graph_type_check import (
-    graph_type_check,
-    graph_type_check_optional,
-)
+from .graph_export_runner import GraphExportRunner
+from .graph_object import Graph
+from .graph_project_runner import GraphProjectRunner
+from .graph_type_check import graph_type_check, graph_type_check_optional
+from .ogb_loader import OGBLLoader, OGBNLoader
 
 Strings = Union[str, List[str]]
 
@@ -96,6 +93,19 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         return alpha_proc_runner.construct(
             graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types
         )
+
+    @property
+    def networkx(self):  # type: ignore
+        try:
+            from .nx_loader import NXLoader
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(
+                "This feature requires NetworkX support. "
+                "You can add NetworkX support by running `pip install graphdatascience[networkx]`"
+            )
+
+        self._namespace += ".networkx"
+        return NXLoader(self._query_runner, self._namespace, self._server_version)
 
     @property
     def project(self) -> GraphProjectRunner:
