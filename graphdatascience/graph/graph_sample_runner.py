@@ -13,6 +13,17 @@ class GraphSampleRunner(IllegalAttrChecker):
     @compatible_with("construct", min_inclusive=ServerVersion(2, 2, 0))
     @from_graph_type_check
     def rwr(self, graph_name: str, from_G: Graph, **config: Any) -> Tuple[Graph, "Series[Any]"]:
+        """
+        Creates a new graph by sampling a given graph using the Random Walks with Restarts algorithm.
+
+        Args:
+            graph_name: the name to give the new graph in the catalog.
+            from_G: the graph to sample from.
+            **config: the configuration for the algorithm.
+
+        Returns:
+
+        """
         self._namespace += ".rwr"
 
         query = f"CALL {self._namespace}($graph_name, $from_graph_name, $config)"

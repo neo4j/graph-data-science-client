@@ -9,6 +9,16 @@ from .classification_training_pipeline import ClassificationTrainingPipeline
 
 class LPTrainingPipeline(ClassificationTrainingPipeline[LPModel]):
     def addFeature(self, feature_type: str, **config: Any) -> "Series[Any]":
+        """
+        Add a link feature to the pipeline.
+
+        Args:
+            feature_type: The type of feature to add. (For example, L2 or Hadamard)
+            **config: The configuration for the feature, this includes the node properties to use.
+
+        Returns:
+            The result of the query.
+        """
         query = f"{self._query_prefix()}addFeature($pipeline_name, $feature_type, $config)"
         params = {
             "pipeline_name": self.name(),
@@ -19,6 +29,13 @@ class LPTrainingPipeline(ClassificationTrainingPipeline[LPModel]):
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def feature_steps(self) -> DataFrame:
+        """
+        Get the feature steps of the pipeline.
+
+        Returns:
+            A DataFrame containing the feature steps of the pipeline.
+
+        """
         pipeline_info = self._list_info()["pipelineInfo"][0]
         return DataFrame(pipeline_info["featurePipeline"]["featureSteps"])
 

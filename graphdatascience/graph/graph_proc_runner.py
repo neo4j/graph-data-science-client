@@ -1,5 +1,6 @@
 import pathlib
 import sys
+from logging import warning
 from typing import Any, ContextManager, Dict, List, Optional, Union
 
 import pandas as pd
@@ -43,6 +44,17 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @client_only_endpoint("gds.graph")
     def load_cora(self, graph_name: str = "cora", undirected: bool = False) -> Graph:
+        """
+        Loads the Cora dataset into the graph catalog.
+
+        Args:
+            graph_name: the name to give the Cora graph.
+            undirected: whether to load the Cora graph as undirected.
+
+        Returns:
+            A graph object representing the Cora graph.
+        """
+
         with self._path("graphdatascience.resources.cora", "cora_nodes_gzip.pkl") as nodes_resource:
             nodes = read_pickle(nodes_resource, compression="gzip")
 
@@ -60,6 +72,16 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @client_only_endpoint("gds.graph")
     def load_karate_club(self, graph_name: str = "karate_club", undirected: bool = False) -> Graph:
+        """
+        Loads the Karate Club dataset into the graph catalog.
+
+        Args:
+            graph_name: the name to give the Karate Club graph. Defaults to "karate_club".
+            undirected: whether to load the Karate Club graph as undirected.
+
+        Returns:
+            A graph object representing the Karate Club graph.
+        """
         nodes = pd.DataFrame({"nodeId": range(1, 35)})
         nodes["labels"] = "Person"
 
@@ -77,6 +99,16 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @client_only_endpoint("gds.graph")
     def load_imdb(self, graph_name: str = "imdb", undirected: bool = True) -> Graph:
+        """
+        Loads the IMDB dataset into the graph catalog.
+
+        Args:
+            graph_name: the name to give the IMDB graph.
+            undirected: whether to load the IMDB graph as undirected.
+
+        Returns:
+            A graph object representing the IMDB graph.
+        """
         if self._server_version < ServerVersion(2, 3, 0):
             raise ValueError("The IMDB dataset loading is only supported by GDS 2.3 or later.")
 
@@ -122,6 +154,22 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @property
     def project(self) -> GraphProjectRunner:
+        """
+        project(graph_name: str, node_projection: Any, relationship_projection: Any, **config: Any)
+            -> Tuple[Graph, "Series[Any]"]
+
+        Projects a new graph to the graph catalog using a native projection.
+
+        Args:
+            graph_name: the name to give the projected graph.
+            node_projection: the node projection.
+            relationship_projection: the relationship projection.
+            config: the configuration for the projection.
+
+        Returns:
+            A tuple containing a graph object representing the projected graph
+            and a Series containing metadata about the projection.
+        """
         self._namespace += ".project"
         return GraphProjectRunner(self._query_runner, self._namespace, self._server_version)
 
@@ -148,6 +196,18 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         dbName: str = "",
         username: Optional[str] = None,
     ) -> Optional["Series[Any]"]:
+        """
+        Drops a graph from the graph catalog.
+
+        Args:
+            G: a graph object representing the graph to drop.
+            failIfMissing: whether to fail if the graphe is not found.
+            dbName: the name of the database to drop the graph from.
+            username: the name of the user to drop the graph from. If None, the current user is used.
+
+        Returns:
+            A pandas Series containing the result of the drop operation, or None if the result is empty.
+        """
         self._namespace += ".drop"
 
         params = {
@@ -168,6 +228,15 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         return None
 
     def exists(self, graph_name: str) -> "Series[Any]":
+        """
+        Checks if a graph with a given name exists in the graph catalog.
+
+        Args:
+            graph_name: the name of the graph to check for.
+
+        Returns:
+            A pandas Series containing the result of the check.
+        """
         self._namespace += ".exists"
         result = self._query_runner.run_query(f"CALL {self._namespace}($graph_name)", {"graph_name": graph_name})
 
@@ -175,6 +244,15 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @graph_type_check_optional
     def list(self, G: Optional[Graph] = None) -> DataFrame:
+        """
+        Lists all graphs in the graph catalog, or just the graphs matching the given graph object.
+
+        Args:
+            G: a graph object representing the graph to list.
+
+        Returns:
+            A pandas DataFrame containing the list of graphs.
+        """
         self._namespace += ".list"
 
         if G:
@@ -188,6 +266,15 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @client_only_endpoint("gds.graph")
     def get(self, graph_name: str) -> Graph:
+        """
+        Creates a graph object representing a graph in the graph catalog.
+
+        Args:
+            graph_name: the name of the graph to get.
+
+        Returns:
+            A graph object representing the graph in the graph catalog.
+        """
         result = self._query_runner.run_query(
             f"CALL gds.graph.list('{graph_name}') YIELD graphName", custom_error=False
         )
@@ -254,6 +341,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         separate_property_columns: bool = False,
         **config: Any,
     ) -> DataFrame:
+        warning("Deprecated in favor of `gds.nodeProperties.stream`")
         self._namespace += ".streamNodeProperties"
 
         result = self._handle_properties(G, node_properties, node_labels, config)
@@ -278,6 +366,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         node_labels: Strings = ["*"],
         **config: Any,
     ) -> DataFrame:
+        warning("Deprecated in favor of `gds.nodeProperty.stream`")
         self._namespace += ".streamNodeProperty"
 
         return self._handle_properties(G, node_properties, node_labels, config)
@@ -290,6 +379,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         separate_property_columns: bool = False,
         **config: Any,
     ) -> DataFrame:
+        warning("Deprecated in favor of `gds.relationshipProperties.stream`")
         self._namespace += ".streamRelationshipProperties"
 
         result = self._handle_properties(G, relationship_properties, relationship_types, config)
@@ -318,6 +408,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         relationship_types: Strings = ["*"],
         **config: Any,
     ) -> DataFrame:
+        warning("Deprecated in favor of `gds.relationshipProperty.stream`")
         self._namespace += ".streamRelationshipProperty"
 
         return self._handle_properties(G, relationship_properties, relationship_types, config)
@@ -329,6 +420,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         node_labels: Strings = ["*"],
         **config: Any,
     ) -> "Series[Any]":
+        warning("Deprecated in favor of `gds.nodeProperties.write`")
         self._namespace += ".writeNodeProperties"
 
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
@@ -340,6 +432,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         relationship_property: str = "",
         **config: Any,
     ) -> "Series[Any]":
+        warning("Deprecated in favor of `gds.relationship.write`")
         self._namespace += ".writeRelationship"
 
         query = f"CALL {self._namespace}($graph_name, $relationship_type, $relationship_property, $config)"
@@ -364,6 +457,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         node_properties: List[str],
         **config: Any,
     ) -> Series:  # type: ignore
+        warning("Deprecated in favor of `gds.nodeProperties.drop`")
         self._namespace += ".removeNodeProperties"
 
         query = f"CALL {self._namespace}($graph_name, $properties, $config)"
@@ -385,12 +479,14 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         node_labels: Strings,
         **config: Any,
     ) -> Series:  # type: ignore
+        warning("Deprecated in favor of `gds.nodeProperties.drop`")
         self._namespace += ".removeNodeProperties"
 
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
     @graph_type_check
     def deleteRelationships(self, G: Graph, relationship_type: str) -> "Series[Any]":
+        warning("Deprecated in favor of `gds.relationships.drop`")
         self._namespace += ".deleteRelationships"
 
         query = f"CALL {self._namespace}($graph_name, $relationship_type)"

@@ -39,6 +39,20 @@ class GraphAlphaProcRunner(UncallableNamespace, IllegalAttrChecker):
         concurrency: int = 4,
         undirected_relationship_types: Optional[List[str]] = None,
     ) -> Graph:
+        """
+        Constructs a new graph in the graph catalog, using the provided node and relationship data frames.
+
+        Args:
+            graph_name: the name to give the graph in the catalog.
+            nodes: one or more data frames containing node data. Each data frame must contain a column named 'nodeId'.
+            relationships: one or more data frames containing relationship data.
+                Each data frame must contain columns named 'sourceNodeId' and 'targetNodeId'.
+            concurrency: the number of threads to use for the import.
+            undirected_relationship_types: a list of relationship types that should be treated as undirected.
+
+        Returns:
+            A new graph object representing the constructed graph.
+        """
         nodes = nodes if isinstance(nodes, List) else [nodes]
         relationships = relationships if isinstance(relationships, List) else [relationships]
 

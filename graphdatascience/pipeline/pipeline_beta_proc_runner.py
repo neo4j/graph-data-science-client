@@ -20,6 +20,16 @@ class PipelineBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
         return NCPipelineCreateRunner(self._query_runner, f"{self._namespace}.nodeClassification", self._server_version)
 
     def list(self, pipeline: Optional[TrainingPipeline[PipelineModel]] = None) -> DataFrame:
+        """
+        List all pipelines in the Pipeline Catalog, or only the specified pipeline.
+
+        Args:
+            pipeline (TrainingPipeline, optional): a pipeline object representing the pipeline to list,
+            or omit to list all pipelines.
+
+        Returns:
+            a DataFrame containing information about the requested pipelines.
+        """
         self._namespace += ".list"
 
         if pipeline:
@@ -32,6 +42,15 @@ class PipelineBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
         return self._query_runner.run_query(query, params)
 
     def exists(self, pipeline_name: str) -> "Series[Any]":
+        """
+        Check if a pipeline with the specified name exists in the Pipeline Catalog.
+
+        Args:
+            pipeline_name (str): the name of the pipeline to check for.
+
+        Returns:
+            a Series containing the result of the check.
+        """
         self._namespace += ".exists"
 
         query = f"CALL {self._namespace}($pipeline_name)"
@@ -40,6 +59,15 @@ class PipelineBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def drop(self, pipeline: TrainingPipeline[PipelineModel]) -> "Series[Any]":
+        """
+        Drop a pipeline from the Pipeline Catalog.
+
+        Args:
+            pipeline (TrainingPipeline): a pipeline object representing the pipeline to drop.
+
+        Returns:
+            a Series containing the result of the drop operation.
+        """
         self._namespace += ".drop"
 
         query = f"CALL {self._namespace}($pipeline_name)"

@@ -1,0 +1,19 @@
+= Building GDS client ref docs with sphinx
+
+Doc sources exist in code source files.
+Edit it there.
+
+To build the html content, do this:
+
+1. Set working directory to the root of this repository.
+2. Install sphinx into your venv: `pip install sphinx`
+3. Build the HTML: `(cd doc/sphinx && make html)`
+4. Serve the HTML: `(cd doc/sphinx/build/ && python -m http.server 8000)`
+5. Go to `localhost:8000` in your web browser.
+
+In order to make changes, iterate on steps 3-5 above.
+
+Adding new content sections is done by editing the `doc/sphinx/source/index.rst` file.
+Configure stuff in `doc/sphinx/source/conf.py`.
+
+Add more or edit content in this file when you learn something new.

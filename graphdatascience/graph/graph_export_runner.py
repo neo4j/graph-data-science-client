@@ -11,6 +11,17 @@ from .graph_type_check import graph_type_check
 class GraphExportCsvRunner(IllegalAttrChecker):
     # TODO: Add an integration test for this call.
     def __call__(self, G: Graph, **config: Any) -> "Series[Any]":
+        """
+        Export a graph to CSV.
+
+        Args:
+            G: Graph to export.
+            **config: Additional configuration parameters.
+
+        Returns:
+            Size of the CSV export.
+
+        """
         return self._export_call(G, config)
 
     @graph_type_check
@@ -22,6 +33,17 @@ class GraphExportCsvRunner(IllegalAttrChecker):
 
     @graph_type_check
     def estimate(self, G: Graph, **config: Any) -> "Series[Any]":
+        """
+        Estimate the size of the CSV export.
+
+        Args:
+            G: Graph to export.
+            **config: Additional configuration parameters.
+
+        Returns:
+            Estimated size of the CSV export.
+
+        """
         self._namespace += ".estimate"
 
         return self._export_call(G, config)
@@ -30,6 +52,18 @@ class GraphExportCsvRunner(IllegalAttrChecker):
 class GraphExportCsvEndpoints(UncallableNamespace, IllegalAttrChecker):
     @property
     def csv(self) -> GraphExportCsvRunner:
+        """
+        csv(self, G: Graph, **config: Any) -> "Series[Any]":
+        Export a graph to CSV.
+
+        Args:
+            G: Graph to export.
+            **config: Additional configuration parameters.
+
+        Returns:
+            Size of the CSV export.
+
+        """
         self._namespace += ".csv"
 
         return GraphExportCsvRunner(self._query_runner, self._namespace, self._server_version)

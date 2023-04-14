@@ -18,5 +18,12 @@ class LPModel(PipelineModel):
         return "CALL gds.beta.pipeline.linkPrediction.predict."
 
     def link_features(self) -> List[LinkFeature]:
+        """
+        Get the link features of the pipeline.
+
+        Returns:
+            A list of LinkFeatures of the pipeline.
+
+        """
         steps: List[Dict[str, Any]] = self._list_info()["modelInfo"][0]["pipeline"]["featureSteps"]
         return [LinkFeature(s["name"], s["config"]) for s in steps]

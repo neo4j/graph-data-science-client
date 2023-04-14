@@ -11,6 +11,17 @@ from graphdatascience.server_version.server_version import ServerVersion
 class DirectUtilEndpoints(CallerBase):
     @client_only_endpoint("gds")
     def find_node_id(self, labels: List[str] = [], properties: Dict[str, Any] = {}) -> int:
+        """
+        Find the node id of a node with the given labels and properties.
+
+        Args:
+            labels: The labels of the node to find.
+            properties: The properties of the node to find.
+
+        Returns:
+            The node id of the node with the given labels and properties.
+
+        """
         label_match = None
         if labels:
             label_match = " AND ".join([f"n:{label}" for label in labels])
@@ -41,15 +52,36 @@ class DirectUtilEndpoints(CallerBase):
         return node_match["id"][0].item()  # type: ignore
 
     def version(self) -> str:
+        """
+        Get the version of the GDS library.
+
+        Returns:
+            The version of the GDS library.
+
+        """
         namespace = self._namespace + ".version"
         result = self._query_runner.run_query(f"RETURN {namespace}() as version", custom_error=False).squeeze()
 
         return result  # type: ignore
 
     def server_version(self) -> ServerVersion:
+        """
+        Get the version of the GDS library.
+
+        Returns:
+            The version of the GDS library.
+
+        """
         return ServerVersion.from_string(self.version())
 
     def list(self) -> DataFrame:
+        """
+        List all available GDS procedures.
+
+        Returns:
+            A DataFrame containing all available GDS procedures.
+
+        """
         namespace = self._namespace + ".list"
         return self._query_runner.run_query(f"CALL {namespace}()", custom_error=False)
 
@@ -60,6 +92,17 @@ class DirectUtilEndpoints(CallerBase):
 
 class IndirectUtilAlphaEndpoints(CallerBase):
     def oneHotEncoding(self, available_values: List[Any], selected_values: List[Any]) -> List[int]:
+        """
+        One hot encode a list of values.
+
+        Args:
+            available_values: The available values to encode.
+            selected_values: The values to encode.
+
+        Returns:
+            The one hot encoded values.
+
+        """
         namespace = self._namespace + ".oneHotEncoding"
 
         query = f"RETURN {namespace}($available_values, $selected_values) AS embedding"

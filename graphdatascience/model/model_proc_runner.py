@@ -6,6 +6,15 @@ from .model_resolver import ModelResolver
 class ModelProcRunner(ModelResolver):
     @client_only_endpoint("gds.model")
     def get(self, model_name: str) -> Model:
+        """
+        Create a model object representing a model in the Model Catalog.
+
+        Args:
+            model_name (str): the name of the model to create a model object for.
+
+        Returns:
+            a Model object representing the model.
+        """
         query = "CALL gds.beta.model.list($model_name)"
         params = {"model_name": model_name}
         result = self._query_runner.run_query(query, params, custom_error=False)

@@ -31,6 +31,19 @@ class GraphBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
     def generate(
         self, graph_name: str, node_count: int, average_degree: int, **config: Any
     ) -> Tuple[Graph, "Series[Any]"]:
+        """
+        Generate a random graph.
+
+        Args:
+            graph_name: Name of the graph to generate.
+            node_count: Number of nodes in the graph.
+            average_degree: Average degree of the graph.
+            **config: Additional configuration parameters.
+
+        Returns:
+            Generated graph and size of the generated graph.
+
+        """
         self._namespace += ".generate"
 
         query = f"CALL {self._namespace}($graph_name, $node_count, $average_degree, $config)"
