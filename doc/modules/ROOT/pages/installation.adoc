@@ -58,9 +58,26 @@ Instead, the Python client may be released independently and one has to consult 
 
 == Optional dependencies
 
+Some functionality of the `graphdatascience` library requires extra dependencies.
+These dependencies are not installed by default since they are somewhat sizeable, and the functionality they enable is not necessarily something every user of the library needs.
+Instructions on how to install these extra dependencies and what they enable is outlined in this section.
+
+
+=== OGB dataset loading
+
 In order to use the xref:common-datasets#ogb[convenience OGB dataset loading functionality] of `graphdatascience`, one has to install the optional `ogb` dependency:
 
 [source,bash]
 ----
 pip install graphdatascience[ogb]
+----
+
+
+=== NetworkX graph loading
+
+In order to use the xref:graph-object#networkx[convenience NetworkX graph loading functionality] of `graphdatascience`, one has to install the optional `networkx` dependency:
+
+[source,bash]
+----
+pip install graphdatascience[networkx]
 ----

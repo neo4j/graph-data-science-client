@@ -10,7 +10,8 @@
 * Implement context managment protocol for `Graph`. This allows usage as part of the `with` statements, where the graph is dropped at the end.
 * Added possibility to load datasets from the Open Graph Benchmark via the new methods:
 	* `gds.graph.ogbn.load` for node property prediction datasets, and
-	* `gds.graph.ogbl.load` for link property prediction datasets
+	* `gds.graph.ogbl.load` for link property prediction datasets.
+* Added possibility to load NetworkX graphs via the new method `gds.graph.networkx.load`.
 
 
 ## Bug fixes
