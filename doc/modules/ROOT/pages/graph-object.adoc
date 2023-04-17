@@ -254,8 +254,6 @@ Node properties for the projected GDS graph are taken from attributes on `networ
 The keys of the attributes will map to property names, and the allowed values must follow the regular guidelines for node property values in GDS.
 Please note though that the node attribute key `labels` is reserved for node labels (previous section) and will not translate to node properties in the projection.
 
-Nodes having the same values for the `labels` attribute must have the same set of node property keys.
-
 
 ==== Relationship types
 
@@ -274,8 +272,6 @@ Relationship properties for the projected GDS graph are taken from attributes on
 The keys of the attributes will map to property names, and the allowed values must follow the regular guidelines for relationship property values in GDS.
 That includes the limitation of having at most one property per relationship.
 Please note though that the edge attribute key `relationshipType` is reserved for relationship types (previous section) and will not translate to relationship properties in the projection.
-
-Edges having the same values for the `relationshipType` attribute must have the same set of edge property keys.
 
 
 ==== Relationship direction

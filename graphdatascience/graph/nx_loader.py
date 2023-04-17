@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 import networkx as nx
 from pandas import DataFrame
@@ -28,97 +28,109 @@ class NXLoader(UncallableNamespace, IllegalAttrChecker):
         return Graph(graph_name, self._query_runner, self._server_version)
 
     @staticmethod
-    def _parse(nx_G: nx.Graph) -> Tuple[List[DataFrame], List[DataFrame]]:
+    def _attr_to_labels_key(labels_attr: Any, node_id: Any, no_node_labels: Optional[bool]) -> Tuple[str, ...]:
+        node_labels: List[str]
+        if no_node_labels:
+            node_labels = ["N"]
+        elif isinstance(labels_attr, str):
+            node_labels = [labels_attr]
+        elif isinstance(labels_attr, list):
+            node_labels = labels_attr
+        else:
+            raise ValueError(
+                "`labels` node attributes must be of type `str` or `list[str]`. "
+                f"Given `labels`: {labels_attr} for node with id {node_id}"
+            )
+
+        return tuple(sorted(node_labels))
+
+    @staticmethod
+    def _parse_nodes(nx_G: nx.Graph) -> List[DataFrame]:
         node_dicts_by_labels: Dict[Tuple[str, ...], Dict[str, List[Any]]] = defaultdict(lambda: defaultdict(list))
-        node_props_schema: Dict[Tuple[str, ...], Set[str]] = {}
+        node_props_schema: Dict[Tuple[str, ...], Set[str]] = defaultdict(set)
+
         no_node_labels = None
 
         for node_id, attrs in nx_G.nodes(data=True):
             labels_attr = attrs.get("labels", None)
+
             if no_node_labels is None:
                 no_node_labels = labels_attr in [None, []]
 
             if (labels_attr in [None, []]) is not no_node_labels:
                 raise ValueError("Some but not all nodes have a 'labels' attribute")
 
-            node_labels: List[str]
-            if no_node_labels:
-                node_labels = ["N"]
-            elif isinstance(labels_attr, str):
-                node_labels = [labels_attr]
-            elif isinstance(labels_attr, list):
-                node_labels = labels_attr
-            else:
-                raise ValueError(
-                    "`labels` node attributes must be of type `str` or `list[str]`. "
-                    f"Given `labels`: {labels_attr} for node with id {node_id}"
-                )
-
-            labels_key: Tuple[str, ...] = tuple(sorted(node_labels))
-
-            node_dicts_by_labels[labels_key]["nodeId"].append(node_id)
+            labels_key = NXLoader._attr_to_labels_key(labels_attr, node_id, no_node_labels)
 
             props = {prop for prop in attrs.keys() if prop != "labels"}
 
-            if labels_key in node_props_schema:
-                if props != node_props_schema[labels_key]:
-                    raise ValueError(
-                        f"Not all nodes with labels {node_labels} have the properties: "
-                        f"{sorted(list(props.symmetric_difference(node_props_schema[labels_key])))}"
-                    )
-            else:
-                node_props_schema[labels_key] = props
+            node_props_schema[labels_key] = props.union(node_props_schema[labels_key])
 
-            for prop in props:
-                node_dicts_by_labels[labels_key][prop].append(attrs[prop])
+        for node_id, attrs in nx_G.nodes(data=True):
+            labels_key = NXLoader._attr_to_labels_key(attrs.get("labels", None), node_id, no_node_labels)
 
-        nodes = [
+            node_dicts_by_labels[labels_key]["nodeId"].append(node_id)
+
+            for prop in node_props_schema[labels_key]:
+                node_dicts_by_labels[labels_key][prop].append(attrs.get(prop, None))
+
+        return [
             DataFrame({"labels": [list(labels)] * len(attrs["nodeId"]), **attrs})
             for labels, attrs in node_dicts_by_labels.items()
         ]
 
+    @staticmethod
+    def _attr_to_type_key(type_attr: Optional[str]) -> str:
+        return "R" if type_attr is None else type_attr
+
+    @staticmethod
+    def _parse_rels(nx_G: nx.Graph) -> List[DataFrame]:
         rel_dicts_by_types: Dict[str, Dict[str, List[Any]]] = defaultdict(lambda: defaultdict(list))
-        rel_props_schema: Dict[str, Set[str]] = {}
+        rel_props_schema: Dict[str, Set[str]] = defaultdict(set)
         no_rel_types = None
 
         for edge_data in nx_G.edges(data=True):
             source_id, target_id, attrs = edge_data
 
-            rel_type = attrs.get("relationshipType", None)
+            type_attr = attrs.get("relationshipType", None)
             if no_rel_types is None:
-                no_rel_types = rel_type is None
+                no_rel_types = type_attr is None
 
-            if (rel_type is None) is not no_rel_types:
+            if (type_attr is None) is not no_rel_types:
                 raise ValueError("Some but not all edges have a 'relationshipType' attribute")
 
-            type_key = "R" if rel_type is None else rel_type
+            if type_attr and not isinstance(type_attr, str):
+                raise ValueError(
+                    "`relationshipType` edge attributes must be `None` or of type `str`. "
+                    f"Given `relationshipType`: {type_attr} for edge with "
+                    f"source id {source_id} and target id {target_id}"
+                )
+
+            type_key = NXLoader._attr_to_type_key(type_attr)
+
+            props = {prop for prop in attrs.keys() if prop != "relationshipType"}
+
+            rel_props_schema[type_key] = props.union(rel_props_schema[type_key])
+
+        for edge_data in nx_G.edges(data=True):
+            source_id, target_id, attrs = edge_data
+
+            type_key = NXLoader._attr_to_type_key(attrs.get("relationshipType", None))
 
             rel_dicts_by_types[type_key]["sourceNodeId"].append(source_id)
             rel_dicts_by_types[type_key]["targetNodeId"].append(target_id)
 
-            props = {prop for prop in attrs.keys() if prop != "relationshipType"}
+            for prop in rel_props_schema[type_key]:
+                rel_dicts_by_types[type_key][prop].append(attrs.get(prop, None))
 
-            if type_key in rel_props_schema:
-                if props != rel_props_schema[type_key]:
-                    if rel_type is None:
-                        raise ValueError(
-                            f"Not all relationships have the properties: "
-                            f"{sorted(list(props.symmetric_difference(rel_props_schema[type_key])))}"
-                        )
-                    else:
-                        raise ValueError(
-                            f"Not all relationships with type '{rel_type}' have the properties: "
-                            f"{sorted(list(props.symmetric_difference(rel_props_schema[type_key])))}"
-                        )
-            else:
-                rel_props_schema[type_key] = props
-
-            for prop in props:
-                rel_dicts_by_types[type_key][prop].append(attrs[prop])
-
-        rels = [
+        return [
             DataFrame({"relationshipType": [rel_type] * len(attrs["sourceNodeId"]), **attrs})
             for rel_type, attrs in rel_dicts_by_types.items()
         ]
+
+    @staticmethod
+    def _parse(nx_G: nx.Graph) -> Tuple[List[DataFrame], List[DataFrame]]:
+        nodes = NXLoader._parse_nodes(nx_G)
+        rels = NXLoader._parse_rels(nx_G)
 
         return nodes, rels
