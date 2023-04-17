@@ -1,5 +1,6 @@
-from importlib.resources import path
-from typing import Any, Dict, List, Optional, Union
+import pathlib
+import sys
+from typing import Any, ContextManager, Dict, List, Optional, Union
 
 import pandas as pd
 from multimethod import multimethod
@@ -28,12 +29,24 @@ Strings = Union[str, List[str]]
 
 
 class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
+    @staticmethod
+    def _path(package: str, resource: str) -> ContextManager[pathlib.Path]:
+        if sys.version_info >= (3, 9):
+            import os.path
+            from importlib.resources import as_file, files
+
+            return as_file(files(package) / os.path.normpath(resource))
+        else:
+            from importlib.resources import path
+
+            return path(package, resource)
+
     @client_only_endpoint("gds.graph")
     def load_cora(self, graph_name: str = "cora", undirected: bool = False) -> Graph:
-        with path("graphdatascience.resources.cora", "cora_nodes_gzip.pkl") as nodes_resource:
+        with self._path("graphdatascience.resources.cora", "cora_nodes_gzip.pkl") as nodes_resource:
             nodes = read_pickle(nodes_resource, compression="gzip")
 
-        with path("graphdatascience.resources.cora", "cora_rels_gzip.pkl") as rels_resource:
+        with self._path("graphdatascience.resources.cora", "cora_rels_gzip.pkl") as rels_resource:
             rels = read_pickle(rels_resource, compression="gzip")
 
         self._namespace = "gds.alpha.graph"
@@ -50,7 +63,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         nodes = pd.DataFrame({"nodeId": range(1, 35)})
         nodes["labels"] = "Person"
 
-        with path("graphdatascience.resources.karate", "karate_club_gzip.pkl") as rels_resource:
+        with self._path("graphdatascience.resources.karate", "karate_club_gzip.pkl") as rels_resource:
             rels = read_pickle(rels_resource, compression="gzip")
 
         self._namespace = "gds.alpha.graph"
@@ -67,18 +80,18 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         if self._server_version < ServerVersion(2, 3, 0):
             raise ValueError("The IMDB dataset loading is only supported by GDS 2.3 or later.")
 
-        with path("graphdatascience.resources.imdb", "imdb_movies_with_genre_gzip.pkl") as nodes_resource:
+        with self._path("graphdatascience.resources.imdb", "imdb_movies_with_genre_gzip.pkl") as nodes_resource:
             movies_with_genre = read_pickle(nodes_resource, compression="gzip")
-        with path("graphdatascience.resources.imdb", "imdb_movies_without_genre_gzip.pkl") as nodes_resource:
+        with self._path("graphdatascience.resources.imdb", "imdb_movies_without_genre_gzip.pkl") as nodes_resource:
             movies_without_genre = read_pickle(nodes_resource, compression="gzip")
-        with path("graphdatascience.resources.imdb", "imdb_actors_gzip.pkl") as nodes_resource:
+        with self._path("graphdatascience.resources.imdb", "imdb_actors_gzip.pkl") as nodes_resource:
             actors = read_pickle(nodes_resource, compression="gzip")
-        with path("graphdatascience.resources.imdb", "imdb_directors_gzip.pkl") as nodes_resource:
+        with self._path("graphdatascience.resources.imdb", "imdb_directors_gzip.pkl") as nodes_resource:
             directors = read_pickle(nodes_resource, compression="gzip")
 
-        with path("graphdatascience.resources.imdb", "imdb_acted_in_rels_gzip.pkl") as rels_resource:
+        with self._path("graphdatascience.resources.imdb", "imdb_acted_in_rels_gzip.pkl") as rels_resource:
             acted_in_rels = read_pickle(rels_resource, compression="gzip")
-        with path("graphdatascience.resources.imdb", "imdb_directed_in_rels_gzip.pkl") as rels_resource:
+        with self._path("graphdatascience.resources.imdb", "imdb_directed_in_rels_gzip.pkl") as rels_resource:
             directed_in_rels = read_pickle(rels_resource, compression="gzip")
 
         self._namespace = "gds.alpha.graph"
