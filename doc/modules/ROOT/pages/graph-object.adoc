@@ -270,7 +270,6 @@ In this latter case, the relationships in the projected `Graph` will all have th
 
 Relationship properties for the projected GDS graph are taken from attributes on `networkx.Graph` edges.
 The keys of the attributes will map to property names, and the allowed values must follow the regular guidelines for relationship property values in GDS.
-That includes the limitation of having at most one property per relationship.
 Please note though that the edge attribute key `relationshipType` is reserved for relationship types (previous section) and will not translate to relationship properties in the projection.
 
 
