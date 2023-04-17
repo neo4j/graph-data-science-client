@@ -19,7 +19,7 @@ class NXLoader(UncallableNamespace, IllegalAttrChecker):
         nodes, rels = self._parse(nx_G)
 
         undirected_rel_types = []
-        if not isinstance(nx_G, nx.DiGraph) and not isinstance(nx_G, nx.MultiDiGraph):
+        if not isinstance(nx_G, nx_G.to_directed_class()):
             undirected_rel_types = [df["relationshipType"][0] for df in rels]
 
         constructor = self._query_runner.create_graph_constructor(graph_name, concurrency, undirected_rel_types)
