@@ -111,7 +111,7 @@ def test_parse_inconsistent_rel_props(gds: GraphDataScience) -> None:
 
     assert len(rels) == 1
     assert_frame_equal(
-        rels[0],
+        rels[0].sort_index(axis=1),
         DataFrame(
             {
                 "relationshipType": ["R"] * 2,
@@ -120,7 +120,7 @@ def test_parse_inconsistent_rel_props(gds: GraphDataScience) -> None:
                 "weight": [0.4, None],
                 "weight2": [None, 1.4],
             }
-        ),
+        ).sort_index(axis=1),
     )
 
 
