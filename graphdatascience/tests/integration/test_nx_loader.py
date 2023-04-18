@@ -56,6 +56,7 @@ def test_undirected_nx(gds: GraphDataScience, undirected_nx_G: nx.Graph) -> None
     G.drop()
 
 
+@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_undirected_nx_without_Arrow(gds_without_arrow: GraphDataScience, undirected_nx_G: nx.Graph) -> None:
     G = gds_without_arrow.graph.networkx.load(undirected_nx_G, GRAPH_NAME)
@@ -92,6 +93,7 @@ def test_directed_nx(gds: GraphDataScience, directed_nx_G: nx.Graph) -> None:
     G.drop()
 
 
+@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_directed_nx_without_Arrow(gds_without_arrow: GraphDataScience, directed_nx_G: nx.Graph) -> None:
     G = gds_without_arrow.graph.networkx.load(directed_nx_G, GRAPH_NAME)
