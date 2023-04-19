@@ -677,6 +677,19 @@ def test_graph_writeRelationship(gds: GraphDataScience) -> None:
     assert result["propertiesWritten"] == 2
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 4, 0))
+def test_graph_relationshipProperties_write(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", {"R": {"type": "REL", "properties": ["relX", "relY"]}})
+
+    result = gds.graph.relationshipProperties.write(
+        G,
+        "R",
+        ["relX", "relY"],
+    )
+    assert result["relationshipsWritten"] == 3
+    assert result["propertiesWritten"] == 6
+
+
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_graph_relationship_write(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
