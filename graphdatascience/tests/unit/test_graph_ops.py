@@ -590,3 +590,15 @@ def test_graph_sample_rwr(runner: CollectingQueryRunner, gds: GraphDataScience) 
         "from_graph_name": "g",
         "config": {"samplingRatio": 0.9, "concurrency": 7},
     }
+
+
+def test_graph_sample_cnarw(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    from_G, _ = gds.graph.project("g", "*", "*")
+    gds.alpha.graph.sample.cnarw("s", from_G, samplingRatio=0.9, concurrency=7)
+
+    assert runner.last_query() == "CALL gds.alpha.graph.sample.cnarw($graph_name, $from_graph_name, $config)"
+    assert runner.last_params() == {
+        "graph_name": "s",
+        "from_graph_name": "g",
+        "config": {"samplingRatio": 0.9, "concurrency": 7},
+    }
