@@ -101,7 +101,7 @@ def test_sample_rwr(runner: QueryRunner, gds: GraphDataScience) -> None:
     runner.run_query(f"CALL gds.graph.drop('{rwr_G.name()}')")
 
 
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 4, 0))
 def test_sample_cnarw(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
