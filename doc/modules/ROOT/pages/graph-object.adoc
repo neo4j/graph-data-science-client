@@ -67,12 +67,13 @@ G = gds.graph.get("offices")
 
 For users who are https://neo4j.com/docs/graph-data-science/current/management-ops/administration/[GDS admins], `gds.graph.get` will resolve graph names into `Graph` objects also when the provided name refers to another user's graph projection.
 
-In addition to those aforementioned there are four more methods that create graph objects:
+In addition to those aforementioned there are five more methods that create graph objects:
 
 * `gds.graph.project.cypher`
 * `gds.beta.graph.subgraph`
 * `gds.beta.graph.generate`
 * `gds.alpha.graph.sample.rwr`
+* `gds.alpha.graph.sample.cnarw`
 
 Their Cypher signatures map to Python in much the same way as `gds.graph.project` above.
 
