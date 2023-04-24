@@ -21,4 +21,9 @@ Welcome to Neo4j Graph Data Science Python Client's documentation!
    model/node-regression-model
    model/graphsage-model
    topological_link_prediction
+   algorithms
+   model
+   configuration
+   graph
+   ml
 
