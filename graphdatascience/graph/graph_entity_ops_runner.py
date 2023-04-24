@@ -228,19 +228,6 @@ class ToUndirectedRunner(IllegalAttrChecker):
     @graph_type_check
     @compatible_with("estimate", min_inclusive=ServerVersion(2, 3, 0))
     def estimate(self, G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any) -> "Series[Any]":
-        """
-        Estimate the number of relationships that will be created by the toUndirected procedure.
-
-        Args:
-            G: Graph
-            relationship_type: The relationship type to convert to undirected.
-            mutate_relationship_type: The relationship type to use for the new relationships.
-            **config: Additional configuration parameters for the procedure.
-
-        Returns:
-            A Series containing the number of relationships that will be created.
-
-        """
         query = f"CALL {self._namespace}.estimate($graph_name, $config)"
         return self._run_procedure(G, query, relationship_type, mutate_relationship_type)
 
@@ -267,23 +254,6 @@ class GraphRelationshipsBetaRunner(GraphEntityOpsBaseRunner):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
     @graph_type_check
     def stream(self, G: Graph, relationship_types: List[str] = ["*"], **config: Any) -> TopologyDataFrame:
-        """
-        Stream relationships from a graph.
-
-        Args:
-            G: Graph to stream from
-            relationship_types: Relationship types to stream
-            **config: Additional configuration parameters
-
-        Returns:
-            A DataFrame with the following columns:
-                - sourceNodeId: ID of the source node
-                - targetNodeId: ID of the target node
-                - relationshipType: Type of the relationship
-                - relationshipProperty: Name of the relationship property
-                - propertyValue: Value of the relationship property
-
-        """
         self._namespace += ".stream"
         query = f"CALL {self._namespace}($graph_name, $relationship_types, $config)"
 
@@ -294,20 +264,6 @@ class GraphRelationshipsBetaRunner(GraphEntityOpsBaseRunner):
     @property
     @compatible_with("toUndirected", min_inclusive=ServerVersion(2, 3, 0))
     def toUndirected(self) -> ToUndirectedRunner:
-        """toUndirected(self, G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any)
-                -> "Series[Any]":
-        Convert a directed graph to an undirected graph.
-
-        Args:
-            G: graph to convert
-            relationship_type: relationship type to convert
-            mutate_relationship_type: relationship type to use for the new relationships
-            **config: additional configuration parameters
-
-        Returns:
-            A Series containing the number of relationships created
-
-        """
         self._namespace += ".toUndirected"
         return ToUndirectedRunner(self._query_runner, self._namespace, self._server_version)
 
@@ -321,17 +277,6 @@ class GraphPropertyRunner(UncallableNamespace, IllegalAttrChecker):
         graph_property: str,
         **config: Any,
     ) -> DataFrame:
-        """
-        Stream graph properties from a graph.
-
-        Args:
-            G: a graph object representing the graph to stream from.
-            graph_property: the name of the graph property to stream.
-            **config: additional configuration.
-
-        Returns:
-            A DataFrame containing the graph property.
-        """
         self._namespace += ".stream"
         query = f"CALL {self._namespace}($graph_name, $graph_property, $config)"
         params = {"graph_name": G.name(), "graph_property": graph_property, "config": config}
@@ -346,17 +291,6 @@ class GraphPropertyRunner(UncallableNamespace, IllegalAttrChecker):
         graph_property: str,
         **config: Any,
     ) -> "Series[Any]":
-        """
-        Drop a graph property from a graph.
-
-        Args:
-            G: a graph object representing the graph to drop the property from.
-            graph_property: the name of the graph property to drop.
-            **config: additional configuration.
-
-        Returns:
-            A Series containing a summary result of the operation.
-        """
         self._namespace += ".drop"
         query = f"CALL {self._namespace}($graph_name, $graph_property, $config)"
         params = {"graph_name": G.name(), "graph_property": graph_property, "config": config}

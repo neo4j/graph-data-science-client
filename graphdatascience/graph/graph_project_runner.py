@@ -24,17 +24,6 @@ class GraphProjectRunner(IllegalAttrChecker):
         return Graph(graph_name, self._query_runner, self._server_version), result
 
     def estimate(self, node_projection: Any, relationship_projection: Any, **config: Any) -> "Series[Any]":
-        """
-        Estimate the memory required to project a graph using a native projection.
-
-        Args:
-            node_projection: the node projection to use.
-            relationship_projection: the relationship projection to use.
-            **config: configuration for the projection.
-
-        Returns:
-            A pandas Series containing the estimated memory requirements.
-        """
         self._namespace += ".estimate"
         result = self._query_runner.run_query(
             f"CALL {self._namespace}($node_spec, $relationship_spec, $config)",
@@ -49,21 +38,6 @@ class GraphProjectRunner(IllegalAttrChecker):
 
     @property
     def cypher(self) -> "GraphProjectRunner":
-        """
-        cypher(graph_name: str, node_query: Any, relationship_query: Any, **config: Any) -> Tuple[Graph, "Series[Any]"]
-
-        Projects a new graph to the graph catalog using a Cypher projection.
-
-        Args:
-            graph_name: the name to give the projected graph.
-            node_query: the node query.
-            relationship_query: the relationship query.
-            config: the configuration for the projection.
-
-        Returns:
-            A tuple containing a graph object representing the projected graph
-            and a Series containing metadata about the projection.
-        """
         return GraphProjectRunner(self._query_runner, self._namespace + ".cypher", self._server_version)
 
 
@@ -77,20 +51,6 @@ class GraphProjectBetaRunner(IllegalAttrChecker):
         relationship_filter: str,
         **config: Any,
     ) -> Tuple[Graph, "Series[Any]"]:
-        """
-        Create a subgraph from a given graph.
-
-        Args:
-            graph_name: The name of the new graph.
-            from_G: The graph to create the subgraph from.
-            node_filter: A Cypher predicate to filter nodes.
-            relationship_filter: A Cypher predicate to filter relationships.
-            **config: Additional configuration parameters.
-
-        Returns:
-            The new graph and results of executing the query.
-
-        """
         self._namespace += ".subgraph"
         result = self._query_runner.run_query_with_logging(
             f"CALL {self._namespace}($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)",
