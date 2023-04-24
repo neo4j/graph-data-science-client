@@ -12,6 +12,7 @@ This API reference manual contains all the procedures available in the Neo4j Gra
    :maxdepth: 1
    :caption: Contents:
 
+   graphdatascience
    graph
    graph_object
    algorithms
@@ -20,7 +21,6 @@ This API reference manual contains all the procedures available in the Neo4j Gra
    pipeline/node-classification
    pipeline/node-regression
    model
-   model/model
    model/link-prediction-model
    model/node-classification-model
    model/node-regression-model
