@@ -1,5 +1,6 @@
-Algorithms list
-----------------
+Algorithms procedures
+----------------------
+All the graph procedures under the `gds` namespace.
 
 .. py:function:: gds.allShortestPaths.delta.mutate(self, G: Graph, **config: Any) -> "Series[Any]"
 

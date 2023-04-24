@@ -168,7 +168,7 @@ as well as methods for handling node or relationship properties.
 
     Loads the IMDB dataset into a named graph in the catalog for use by algorithms.
 
-.. py:functin:: gds.graph.ogbn.load(self, dataset_name: str, dataset_root_path: str = "dataset", graph_name: Optional[str] = None, concurrency: int = 4) -> Graph
+.. py:function:: gds.graph.ogbn.load(self, dataset_name: str, dataset_root_path: str = "dataset", graph_name: Optional[str] = None, concurrency: int = 4) -> Graph
 
     Loads a OGBN dataset into a named graph in the catalog for use by algorithms.
 

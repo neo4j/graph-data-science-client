@@ -64,6 +64,7 @@ class DirectUtilEndpoints(CallerBase):
 
         return result  # type: ignore
 
+    @client_only_endpoint("gds")
     def server_version(self) -> ServerVersion:
         """
         Get the version of the GDS library.

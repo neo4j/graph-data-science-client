@@ -50,6 +50,10 @@ All the miscellaneous procedures including configuring the library.
 
     Return the installed graph data science library version.
 
+.. py:fuction:: gds.server_version(self) -> ServerVersion:
+
+    Return the installed graph data science library version.
+
 .. py:function:: gds.is_licensed(self) -> bool
 
     Return True if the graph data science library is licensed.
