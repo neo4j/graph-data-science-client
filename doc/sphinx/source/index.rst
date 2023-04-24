@@ -23,7 +23,7 @@ Welcome to Neo4j Graph Data Science Python Client's documentation!
    topological_link_prediction
    algorithms
    model
-   configuration
+   misc
    graph
    ml
 

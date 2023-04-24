@@ -1,5 +1,20 @@
-Graph operations
+Graph procedures
 ----------------
+All the graph procedures under the `gds` namespace.
+This includes all the methods for projecting, deleting, and listing graphs,
+as well as methods for handling node or relationship properties.
+
+.. py:function:: gds.alpha.graph.construct(self, graph_name: str, nodes: Union[DataFrame, List[DataFrame]], relationships: Union[DataFrame, List[DataFrame]], concurrency: int = 4, undirected_relationship_types: Optional[List[str]] = None) -> Graph
+
+    Constructs a new graph in the graph catalog, using the provided node and relationship data frames.
+
+.. py:function:: gds.graph.get(self, graph_name: str) -> Graph
+
+    Gets a graph object representing a graph in the graph catalog.
+
+.. py:function:: gds.alpha.graph.sample.rwr(self, graph_name: str, from_G: Graph, **config: Any) -> Tuple[Graph, "Series[Any]"]
+
+    Creates a new graph by sampling a given graph using the Random Walks with Restarts algorithm.
 
 .. py:function:: gds.alpha.graph.graphProperty.drop(self, G: Graph, graph_property: str, **config: Any) -> "Series[Any]"
 
@@ -24,7 +39,6 @@ Graph operations
 .. py:function:: gds.beta.graph.export.csv.estimate(self, G: Graph, **config: Any) -> "Series[Any]
 
     Estimate the required disk space for exporting a named graph to CSV files.
-
 
 .. py:function:: gds.beta.graph.generate(self, graph_name: str, node_count: int, average_degree: int, **config: Any) -> Tuple[Graph, "Series[Any]"]
 
@@ -141,3 +155,31 @@ Graph operations
 .. py:function:: gds.graph.writeRelationship(self, G: Graph, relationship_type: str, relationship_property: str = "", **config: Any) -> "Series[Any]"
 
     Writes the given relationship and an optional relationship property to an online Neo4j database.
+
+.. py:function:: gds.graph.load_cora(self, graph_name: str = "cora", undirected: bool = False) -> Graph
+
+    Loads the Cora dataset into a named graph in the catalog for use by algorithms.
+
+.. py:function:: gds.graph.load_karate_club(self, graph_name: str = "karate_club", undirected: bool = False) -> Graph
+
+    Loads the Karate Club dataset into a named graph in the catalog for use by algorithms.
+
+.. py:function:: gds.graph.load_imdb(self, graph_name: str = "imdb", undirected: bool = True) -> Graph
+
+    Loads the IMDB dataset into a named graph in the catalog for use by algorithms.
+
+.. py:functin:: gds.graph.ogbn.load(self, dataset_name: str, dataset_root_path: str = "dataset", graph_name: Optional[str] = None, concurrency: int = 4) -> Graph
+
+    Loads a OGBN dataset into a named graph in the catalog for use by algorithms.
+
+.. py:function:: gds.graph.ogbl.load(self, dataset_name: str, dataset_root_path: str = "dataset", graph_name: Optional[str] = None, concurrency: int = 4) -> Graph
+
+    Loads a OGBL dataset into a named graph in the catalog for use by algorithms.
+
+.. py:function:: gds.graph.networkx.load(self, nx_G: nx.Graph, graph_name: str, concurrency: int = 4) -> Graph
+
+    Loads a NetworkX graph into a named graph in the catalog for use by algorithms.
+
+.. py:function:: gds.find_node_id(self, labels: List[str] = [], properties: Dict[str, Any] = {}) -> int
+
+    Finds a node id by its labels and properties.

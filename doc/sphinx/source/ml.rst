@@ -1,6 +1,11 @@
 Machine learning procedures
 ----------------------------
+All the machine learning procedures under the `gds` namespace.
+This includes running embedding algorithms and creating various pipelines.
 
+.. py:function:: gds.pipeline.get(self, pipeline_name: str) -> TrainingPipeline[PipelineModel]
+
+    Get a pipeline object representing a pipeline in the Pipeline Catalog.
 
 .. py:function:: gds.alpha.ml.splitRelationships.mutate(self, G: Graph, **config: Any) -> "Series[Any]"
 

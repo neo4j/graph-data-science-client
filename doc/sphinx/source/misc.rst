@@ -1,5 +1,6 @@
-Configuring GDS
-----------------
+Miscellaneous procedures
+-------------------------
+All the miscellaneous procedures including configuring the library.
 
 .. py:function:: gds.alpha.config.defaults.list(self, key: Optional[str] = None, username: Optional[str] = None) -> DataFrame
 
@@ -48,3 +49,7 @@ Configuring GDS
 .. py:function:: gds.version(self) -> str
 
     Return the installed graph data science library version.
+
+.. py:function:: gds.is_licensed(self) -> bool
+
+    Return True if the graph data science library is licensed.

@@ -1,11 +1,10 @@
-Model operations
+Model procedures
 ----------------
-
+All the model procedures under the `gds` namespace.
 
 .. py:function:: gds.alpha.backup(self, **config) -> DataFrame
 
     The back-up procedure persists graphs and models to disk
-
 
 .. py:function:: gds.alpha.model.delete(self, model: Model) -> "Series[Any]"
 
@@ -38,3 +37,7 @@ Model operations
 .. py:function:: gds.beta.model.list(self, model: Optional[Model] = None) -> DataFrame
 
     Lists all models contained in the model catalog.
+
+.. py:function:: gds.model.get(self, model_name: str) -> Model
+
+    Returns a model from the model catalog.
