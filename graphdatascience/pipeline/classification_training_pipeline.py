@@ -10,7 +10,7 @@ from .training_pipeline import MODEL_TYPE, TrainingPipeline
 class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
     def addLogisticRegression(self, **config: Any) -> "Series[Any]":
         """
-        Add a logistic regression model to the pipeline.
+        Add a logistic regression model candidate to the pipeline.
 
         Args:
             **config: The configuration for the logistic regression model.
@@ -25,7 +25,7 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
 
     def addRandomForest(self, **config: Any) -> "Series[Any]":
         """
-        Add a random forest model to the pipeline.
+        Add a random forest model candidate to the pipeline.
 
         Args:
             **config: The configuration for the random forest model.
@@ -44,7 +44,7 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
 
     def addMLP(self, **config: Any) -> "Series[Any]":
         """
-        Add a multi-layer perceptron model to the pipeline.
+        Add a multi-layer perceptron model candidate to the pipeline.
 
         Args:
             **config: The configuration for the multi-layer perceptron model.

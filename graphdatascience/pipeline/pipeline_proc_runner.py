@@ -11,15 +11,6 @@ from .training_pipeline import TrainingPipeline
 class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
     @client_only_endpoint("gds.pipeline")
     def get(self, pipeline_name: str) -> TrainingPipeline[PipelineModel]:
-        """
-        Create a pipeline object representing a pipeline in the Pipeline Catalog.
-
-        Args:
-            pipeline_name (str): the name of the pipeline to create a pipeline object for.
-
-        Returns:
-            a TrainingPipeline object representing the pipeline.
-        """
         query = "CALL gds.beta.pipeline.list($pipeline_name)"
         params = {"pipeline_name": pipeline_name}
         result = self._query_runner.run_query(query, params, custom_error=False)

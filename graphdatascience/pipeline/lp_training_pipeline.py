@@ -13,7 +13,7 @@ class LPTrainingPipeline(ClassificationTrainingPipeline[LPModel]):
         Add a link feature to the pipeline.
 
         Args:
-            feature_type: The type of feature to add. (For example, L2 or Hadamard)
+            feature_type: The type of feature to add.
             **config: The configuration for the feature, this includes the node properties to use.
 
         Returns:

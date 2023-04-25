@@ -10,7 +10,7 @@ from .training_pipeline import TrainingPipeline
 class NRTrainingPipeline(TrainingPipeline[NRModel]):
     def addLinearRegression(self, **config: Any) -> "Series[Any]":
         """
-        Add a linear regression model to the pipeline.
+        Add a linear regression model candidate to the pipeline.
 
         Args:
             **config: The configuration for the linear regression model.
@@ -26,7 +26,7 @@ class NRTrainingPipeline(TrainingPipeline[NRModel]):
 
     def addRandomForest(self, **config: Any) -> "Series[Any]":
         """
-        Add a random forest regressor to the pipeline.
+        Add a random forest regressor candidate to the pipeline.
 
         Args:
             **config: The configuration for the random forest regressor.

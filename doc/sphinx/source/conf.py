@@ -20,9 +20,8 @@ release = "2023"
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
 extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.napoleon",
-    # 'sphinx.ext.autosummary',
+    "sphinx.ext.autodoc", # include docs from docstrings
+    "sphinx.ext.napoleon", # Support for NumPy and Google style docstrings
 ]
 
 # napoleon_use_rtype = False
