@@ -1,4 +1,5 @@
 # Minimal makefile for Sphinx documentation
+# Generated with sphinx-quickstart together with the basic folder structure
 #
 
 # You can set these variables from the command line, and also
