@@ -12,10 +12,6 @@ as well as methods for handling node or relationship properties.
 
     Gets a graph object representing a graph in the graph catalog.
 
-.. py:function:: gds.alpha.graph.sample.rwr(self, graph_name: str, from_G: Graph, **config: Any) -> Tuple[Graph, "Series[Any]"]
-
-    Creates a new graph by sampling a given graph using the Random Walks with Restarts algorithm.
-
 .. py:function:: gds.alpha.graph.graphProperty.drop(self, G: Graph, graph_property: str, **config: Any) -> "Series[Any]"
 
     Removes a graph property from a projected graph.

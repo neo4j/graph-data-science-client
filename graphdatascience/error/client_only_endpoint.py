@@ -10,7 +10,7 @@ def client_only_endpoint(expected_namespace_prefix: str) -> Callable[[F], F]:
     def decorator(func: F) -> F:
         wraps(func)
 
-        # @wraps(func)
+        @wraps(func)
         def wrapper(self: CallerBase, *args: Any, **kwargs: Any) -> Any:
             if self._namespace != expected_namespace_prefix:
                 raise SyntaxError(

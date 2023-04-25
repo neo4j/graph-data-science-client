@@ -50,7 +50,6 @@ class Graph:
 
     def database(self) -> str:
         """
-
         Returns:
             the name of the database the graph is stored in
         """
@@ -58,7 +57,6 @@ class Graph:
 
     def configuration(self) -> "Series[Any]":
         """
-
         Returns:
             the configuration of the graph
         """
@@ -114,7 +112,6 @@ class Graph:
 
     def relationship_properties(self, type: Optional[str] = None) -> Union["Series[str]", List[str]]:
         """
-
         Args:
             type: the relationship type to get the properties for
 
@@ -190,7 +187,6 @@ class Graph:
 
     def creation_time(self) -> Any:  # neo4j.time.DateTime not exported
         """
-
         Returns:
             the creation time of the graph
 
@@ -199,7 +195,6 @@ class Graph:
 
     def modification_time(self) -> Any:  # neo4j.time.DateTime not exported
         """
-
         Returns:
             the modification time of the graph
         """
