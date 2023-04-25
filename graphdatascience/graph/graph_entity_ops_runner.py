@@ -169,6 +169,27 @@ class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
 
         return result
 
+    @compatible_with("write", min_inclusive=ServerVersion(2, 4, 0))
+    @graph_type_check
+    def write(
+        self,
+        G: Graph,
+        relationship_type: str,
+        relationship_properties: List[str],
+        **config: Any,
+    ) -> "Series[Any]":
+        self._namespace += ".write"
+
+        query = f"CALL {self._namespace}($graph_name, $relationship_type, $relationship_properties, $config)"
+        params = {
+            "graph_name": G.name(),
+            "relationship_type": relationship_type,
+            "relationship_properties": relationship_properties,
+            "config": config,
+        }
+
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+
 
 class GraphRelationshipRunner(GraphEntityOpsBaseRunner):
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))

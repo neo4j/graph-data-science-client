@@ -356,6 +356,28 @@ def test_graph_relationshipProperties_stream(runner: CollectingQueryRunner, gds:
     }
 
 
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
+def test_graph_relationshipProperties_write(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    gds.graph.relationshipProperties.write(
+        G,
+        "dummyType",
+        ["dummyProp", "dummyProp2"],
+    )
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.relationshipProperties.write($graph_name, $relationship_type, "
+        + "$relationship_properties, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "relationship_type": "dummyType",
+        "relationship_properties": ["dummyProp", "dummyProp2"],
+        "config": {},
+    }
+
+
 def test_graph_writeNodeProperties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
