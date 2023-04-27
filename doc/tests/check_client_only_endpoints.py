@@ -5,17 +5,17 @@ from typing import List
 # Check that all the functions annotated with @client_only_endpoints are covered in sphinx docs.
 
 # Project directory where Python files are located
-PROJECT_DIR = 'graphdatascience/'
+PROJECT_DIR = "graphdatascience/"
 
 # RST files directory where the function names should be mentioned
-RST_DIR = 'doc/sphinx/source/'
+RST_DIR = "doc/sphinx/source/"
 
 # Regex pattern to match the @client_only_endpoint annotation
 
 CLIENT_ONLY_PATTERN = re.compile(r"@client_only_endpoint\(\"([\w\.]+)\"\)\s*\n*((?:(?:@[^\n]+\n)*?)\s*)def (\w+)\(")
 
 # Regex pattern to match function definitions
-FUNCTION_DEF_PATTERN = re.compile(r'def\s+(\w+)\s*\(')
+FUNCTION_DEF_PATTERN = re.compile(r"def\s+(\w+)\s*\(")
 
 
 def find_single_client_only_functions(py_file_path: str) -> List[str]:
@@ -24,11 +24,12 @@ def find_single_client_only_functions(py_file_path: str) -> List[str]:
         matches = re.finditer(CLIENT_ONLY_PATTERN, contents)
         return [(match.group(1), match.group(3)) for match in matches]
 
+
 def find_client_only_functions():
     client_only_functions = []
     for root, dirs, files in os.walk(PROJECT_DIR):
         for file in files:
-            if file.endswith('.py'):
+            if file.endswith(".py"):
                 filepath = os.path.join(root, file)
                 client_only_functions += find_single_client_only_functions(filepath)
     return client_only_functions
@@ -38,7 +39,7 @@ def check_rst_files(client_only_functions):
     not_mentioned = set(client_only_functions)
     for root, dirs, files in os.walk(RST_DIR):
         for file in files:
-            if file.endswith('.rst'):
+            if file.endswith(".rst"):
                 filepath = os.path.join(root, file)
                 with open(filepath) as f:
                     content = f.read()
@@ -55,6 +56,6 @@ def check_rst_files(client_only_functions):
         print("All client_only_endpoints are documented in RST files.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     client_only_functions = find_client_only_functions()
     check_rst_files(client_only_functions)

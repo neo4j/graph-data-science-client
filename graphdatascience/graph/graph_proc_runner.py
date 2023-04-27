@@ -8,6 +8,7 @@ from multimethod import multimethod
 from pandas import DataFrame, Series, read_pickle
 
 from ..error.client_only_endpoint import client_only_endpoint
+from ..error.deprecation_warning import deprecation_warning
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..server_version.compatible_with import compatible_with
@@ -247,6 +248,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".relationships"
         return GraphRelationshipsRunner(self._query_runner, self._namespace, self._server_version)
 
+    @deprecation_warning("gds.nodeProperties.stream")
     def streamNodeProperties(
         self,
         G: Graph,
@@ -255,7 +257,6 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         separate_property_columns: bool = False,
         **config: Any,
     ) -> DataFrame:
-        warning("Deprecated in favor of `gds.nodeProperties.stream`")
         self._namespace += ".streamNodeProperties"
 
         result = self._handle_properties(G, node_properties, node_labels, config)
@@ -273,6 +274,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return result
 
+    @deprecation_warning("gds.nodeProperty.stream")
     def streamNodeProperty(
         self,
         G: Graph,
@@ -280,11 +282,11 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         node_labels: Strings = ["*"],
         **config: Any,
     ) -> DataFrame:
-        warning("Deprecated in favor of `gds.nodeProperty.stream`")
         self._namespace += ".streamNodeProperty"
 
         return self._handle_properties(G, node_properties, node_labels, config)
 
+    @deprecation_warning("gds.relationshipProperties.stream")
     def streamRelationshipProperties(
         self,
         G: Graph,
@@ -293,7 +295,6 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         separate_property_columns: bool = False,
         **config: Any,
     ) -> DataFrame:
-        warning("Deprecated in favor of `gds.relationshipProperties.stream`")
         self._namespace += ".streamRelationshipProperties"
 
         result = self._handle_properties(G, relationship_properties, relationship_types, config)
@@ -315,6 +316,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return result
 
+    @deprecation_warning("gds.relationshipProperty.stream")
     def streamRelationshipProperty(
         self,
         G: Graph,
@@ -322,11 +324,11 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         relationship_types: Strings = ["*"],
         **config: Any,
     ) -> DataFrame:
-        warning("Deprecated in favor of `gds.relationshipProperty.stream`")
         self._namespace += ".streamRelationshipProperty"
 
         return self._handle_properties(G, relationship_properties, relationship_types, config)
 
+    @deprecation_warning("gds.nodeProperties.write")
     def writeNodeProperties(
         self,
         G: Graph,
@@ -334,11 +336,11 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         node_labels: Strings = ["*"],
         **config: Any,
     ) -> "Series[Any]":
-        warning("Deprecated in favor of `gds.nodeProperties.write`")
         self._namespace += ".writeNodeProperties"
 
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
+    @deprecation_warning("Deprecated in favor of `gds.relationship.write")
     def writeRelationship(
         self,
         G: Graph,
@@ -346,7 +348,6 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         relationship_property: str = "",
         **config: Any,
     ) -> "Series[Any]":
-        warning("Deprecated in favor of `gds.relationship.write`")
         self._namespace += ".writeRelationship"
 
         query = f"CALL {self._namespace}($graph_name, $relationship_type, $relationship_property, $config)"
@@ -365,13 +366,13 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @removeNodeProperties.register
     @graph_type_check
+    @deprecation_warning("Deprecated in favor of `gds.nodeProperties.drop")
     def _(
         self,
         G: Graph,
         node_properties: List[str],
         **config: Any,
     ) -> Series:  # type: ignore
-        warning("Deprecated in favor of `gds.nodeProperties.drop`")
         self._namespace += ".removeNodeProperties"
 
         query = f"CALL {self._namespace}($graph_name, $properties, $config)"
@@ -385,6 +386,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @removeNodeProperties.register
     @compatible_with("removeNodeProperties", max_exclusive=ServerVersion(2, 1, 0))
+    @deprecation_warning("Deprecated in favor of `gds.nodeProperties.drop")
     @graph_type_check
     def _(
         self,
@@ -393,11 +395,11 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         node_labels: Strings,
         **config: Any,
     ) -> Series:  # type: ignore
-        warning("Deprecated in favor of `gds.nodeProperties.drop`")
         self._namespace += ".removeNodeProperties"
 
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
+    @deprecation_warning("Deprecated in favor of `gds.relationships.drop")
     @graph_type_check
     def deleteRelationships(self, G: Graph, relationship_type: str) -> "Series[Any]":
         warning("Deprecated in favor of `gds.relationships.drop`")
