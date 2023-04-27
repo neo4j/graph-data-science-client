@@ -73,6 +73,12 @@ def gds_without_arrow() -> GraphDataScience:
 
     return _gds
 
+@pytest.fixture(scope="package")
+def gds_with_aura_db() -> GraphDataScience:
+    _gds = GraphDataScience(URI, auth=AUTH, aura_db_connection_info=(URI, AUTH))
+    _gds.set_database(DB)
+
+    return _gds
 
 @pytest.fixture(autouse=True)
 def clean_up(gds: GraphDataScience) -> Generator[None, None, None]:

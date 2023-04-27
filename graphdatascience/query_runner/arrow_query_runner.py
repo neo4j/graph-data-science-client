@@ -1,7 +1,7 @@
 import base64
 import json
 import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import pyarrow.flight as flight
 from pandas import DataFrame
@@ -26,6 +26,7 @@ class ArrowQueryRunner(QueryRunner):
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
+        aura_db_connection_info: Optional[Tuple[str, Tuple[str, str]]] = None
     ):
         self._fallback_query_runner = fallback_query_runner
         self._server_version = server_version

@@ -462,3 +462,15 @@ def test_graph_construct_with_arrow_no_db() -> None:
 
     with pytest.raises(ValueError):
         gds.alpha.graph.construct("hello", nodes, relationships)
+
+
+@pytest.mark.enterprise
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 4, 0))
+def test_graph_remote_projection(gds_with_aura_db: GraphDataScience) -> None:
+    G = gds_with_aura_db.alpha.graph.project.remote("graph", "MATCH (n)-->(m) RETURN n as sourceNode, m as targetNode")
+
+    assert G.name() == "hello"
+    assert G.node_count() == 3
+    assert G.relationship_count() == 4
+
+    G.drop()
