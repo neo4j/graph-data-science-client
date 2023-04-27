@@ -1,6 +1,6 @@
 import os
 import re
-from typing import List
+from typing import Any, List
 
 # Check that all the functions annotated with @client_only_endpoints are covered in sphinx docs.
 
@@ -11,21 +11,22 @@ PROJECT_DIR = "graphdatascience/"
 RST_DIR = "doc/sphinx/source/"
 
 # Regex pattern to match the @client_only_endpoint annotation
-
+# Client_only_endpoint def potentially have other annotations too.
+# This extracts the namespace and def name of any client_only_endpoint
 CLIENT_ONLY_PATTERN = re.compile(r"@client_only_endpoint\(\"([\w\.]+)\"\)\s*\n*((?:(?:@[^\n]+\n)*?)\s*)def (\w+)\(")
 
 # Regex pattern to match function definitions
 FUNCTION_DEF_PATTERN = re.compile(r"def\s+(\w+)\s*\(")
 
 
-def find_single_client_only_functions(py_file_path: str) -> List[str]:
+def find_single_client_only_functions(py_file_path: str):  # type: ignore
     with open(py_file_path) as f:
         contents = f.read()
         matches = re.finditer(CLIENT_ONLY_PATTERN, contents)
         return [(match.group(1), match.group(3)) for match in matches]
 
 
-def find_client_only_functions():
+def find_client_only_functions() -> List[str]:
     client_only_functions = []
     for root, dirs, files in os.walk(PROJECT_DIR):
         for file in files:
@@ -35,7 +36,7 @@ def find_client_only_functions():
     return client_only_functions
 
 
-def check_rst_files(client_only_functions):
+def check_rst_files(client_only_functions) -> Any:  # type: ignore
     not_mentioned = set(client_only_functions)
     for root, dirs, files in os.walk(RST_DIR):
         for file in files:
