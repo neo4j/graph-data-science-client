@@ -57,6 +57,6 @@ def check_rst_files(client_only_functions) -> Any:  # type: ignore
         print("All client_only_endpoints are documented in RST files.")
 
 
-if __name__ == "__main__":
+def test_client_only_endpoint_coverage() -> None:
     client_only_functions = find_client_only_functions()
     check_rst_files(client_only_functions)
