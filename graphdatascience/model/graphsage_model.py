@@ -13,6 +13,17 @@ class GraphSageModel(Model):
 
     @graph_type_check
     def predict_write(self, G: Graph, **config: Any) -> "Series[Any]":
+        """
+        Generate embeddings for the given graph and write the results to the database.
+
+        Args:
+            G: The graph to generate embeddings for.
+            **config: The config for the prediction.
+
+        Returns:
+            The result of the write operation.
+
+        """
         query = f"{self._query_prefix()}write($graph_name, $config)"
         config["modelName"] = self.name()
         params = {"graph_name": G.name(), "config": config}
@@ -21,4 +32,15 @@ class GraphSageModel(Model):
 
     @graph_type_check
     def predict_write_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
+        """
+        Estimate the memory needed to generate embeddings for the given graph and write the results to the database.
+
+        Args:
+            G: The graph to generate embeddings for.
+            **config: The config for the prediction.
+
+        Returns:
+            The memory needed to generate embeddings for the given graph and write the results to the database.
+
+        """
         return self._estimate_predict("write", G.name(), config)

@@ -23,13 +23,13 @@ class GraphProjectRunner(IllegalAttrChecker):
 
         return Graph(graph_name, self._query_runner, self._server_version), result
 
-    def estimate(self, node_spec: Any, relationship_spec: Any, **config: Any) -> "Series[Any]":
+    def estimate(self, node_projection: Any, relationship_projection: Any, **config: Any) -> "Series[Any]":
         self._namespace += ".estimate"
         result = self._query_runner.run_query(
             f"CALL {self._namespace}($node_spec, $relationship_spec, $config)",
             {
-                "node_spec": node_spec,
-                "relationship_spec": relationship_spec,
+                "node_spec": node_projection,
+                "relationship_spec": relationship_projection,
                 "config": config,
             },
         )
