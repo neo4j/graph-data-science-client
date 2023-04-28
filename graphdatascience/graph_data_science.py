@@ -56,7 +56,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow: bool = True,
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
-        aura_db_connection_info: Optional[Tuple[str, Tuple[str, str]]] = None
+        aura_db_connection_info: Optional[Tuple[str, Tuple[str, str]]] = None,
     ):
         """
         Parameters
