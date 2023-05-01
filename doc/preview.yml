@@ -62,3 +62,5 @@ asciidoc:
     copyright: 2022
     common-license-page-uri: https://neo4j.com/docs/license/
     operations-manual-base-uri: https://neo4j.com/docs/operations-manual/
+    neo4j-docs-base-uri: https://neo4j.com/docs
+    api-version: 1.7-preview

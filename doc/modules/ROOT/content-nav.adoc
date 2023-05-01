@@ -14,4 +14,4 @@
 *** xref:tutorials/node-regression-with-subgraph-and-graph-sample.adoc[]
 *** xref:tutorials/heterogeneous-node-classification-with-hashgnn.adoc[]
 ** xref:known-limitations.adoc[]
-** link:https://neo4j.com/docs/graph-data-science-client/1.7-preview/api/[API Reference]
+** link:{neo4j-docs-base-uri}/graph-data-science-client/{api-version}/api/[API Reference]

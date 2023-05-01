@@ -11,7 +11,7 @@ import sys
 project = "Neo4j Graph Data Science Python Client"
 copyright = "2023, Neo4j"
 author = "Neo4j"
-release = "2023"
+version = "1.7"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -29,9 +29,14 @@ extensions = [
 templates_path = ["_templates"]
 exclude_patterns = []  # type: ignore
 
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "alabaster"
 html_static_path = []  # type: ignore
+
+rst_epilog = """
+.. |api-version| replace:: {versionnum}
+""".format(
+    versionnum=version,
+)
