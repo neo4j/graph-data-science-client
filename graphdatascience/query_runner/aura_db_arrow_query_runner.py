@@ -17,9 +17,7 @@ class AuraDbConnectionInfo(NamedTuple):
 
 
 class AuraDbArrowQueryRunner(QueryRunner):
-    def __init__(
-        self, fallback_query_runner: QueryRunner, aura_db_connection_info: Optional[AuraDbConnectionInfo] = None
-    ):
+    def __init__(self, fallback_query_runner: QueryRunner, aura_db_connection_info: AuraDbConnectionInfo):
         self._fallback_query_runner = fallback_query_runner
 
         aura_db_endpoint, auth, config = aura_db_connection_info
@@ -34,7 +32,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
 
         if not arrow_info.get("running"):
             raise RuntimeError("Arrow server is not running")
-        listen_address: str = arrow_info.get("advertisedListenAddress")
+        listen_address: str = arrow_info.get("advertisedListenAddress")  # type: ignore
         if not listen_address:
             raise ConnectionError("Did not retrieve connection info from database")
 
@@ -59,6 +57,9 @@ class AuraDbArrowQueryRunner(QueryRunner):
         database: Optional[str] = None,
         custom_error: bool = True,
     ) -> DataFrame:
+        if params is None:
+            params = {}
+
         if "gds.alpha.graph.project.remote" in query:
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
             params["token"] = token
@@ -66,7 +67,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
             # TODO: make this part of mandatory signature
             params["remote_database"] = database if database else self.database()
 
-        self._fallback_query_runner.run_query(query, params, database, custom_error)
+        return self._fallback_query_runner.run_query(query, params, database, custom_error)
 
     def set_database(self, database: str) -> None:
         self._fallback_query_runner.set_database(database)
@@ -77,7 +78,9 @@ class AuraDbArrowQueryRunner(QueryRunner):
     def create_graph_constructor(
         self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
     ) -> GraphConstructor:
-        self._fallback_query_runner.create_graph_constructor(graph_name, concurrency, undirected_relationship_types)
+        return self._fallback_query_runner.create_graph_constructor(
+            graph_name, concurrency, undirected_relationship_types
+        )
 
     def close(self) -> None:
         self._client.close()
@@ -89,26 +92,26 @@ class AuraDbArrowQueryRunner(QueryRunner):
         return (self._auth_pair_middleware.token(), self._auth_pair_middleware.endpoint())
 
 
-class AuthPairInterceptingMiddlewareFactory(ClientMiddlewareFactory):
-    def __init__(self, middleware: "AuthPairInterceptingMiddleware") -> None:
+class AuthPairInterceptingMiddlewareFactory(ClientMiddlewareFactory):  # type: ignore
+    def __init__(self, middleware: "AuthPairInterceptingMiddleware", *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
         self._middleware = middleware
 
-    def start_call(self, info: any) -> "AuthPairInterceptingMiddleware":
+    def start_call(self, info: Any) -> "AuthPairInterceptingMiddleware":
         return self._middleware
 
 
-class AuthPairInterceptingMiddleware(ClientMiddleware):
+class AuthPairInterceptingMiddleware(ClientMiddleware):  # type: ignore
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
     def received_headers(self, headers: Dict[str, Any]) -> None:
-        auth_header: str = headers.get("authorization", None)[0]
-        if not auth_header:
-            return
-        [auth_type, token] = auth_header.split(" ", 1)
+        auth_header = headers.get("authorization")
+        auth_type, token = self._read_auth_header(auth_header)
         if auth_type == "Bearer":
             self._token = token
 
-        arrow_address_header: str = headers.get("arrowpluginaddress")[0]
-        if arrow_address_header:
-            self._arrow_address = arrow_address_header
+        self._arrow_address = self._read_address_header(headers.get("arrowpluginaddress"))
 
     def sending_headers(self) -> Dict[str, str]:
         pass
@@ -118,3 +121,19 @@ class AuthPairInterceptingMiddleware(ClientMiddleware):
 
     def endpoint(self) -> str:
         return self._arrow_address
+
+    def _read_auth_header(self, auth_header: Any) -> Tuple[str, str]:
+        if isinstance(auth_header, List):
+            auth_header = auth_header[0]
+        elif not isinstance(auth_header, str):
+            raise ValueError("Incompatible header format '{}'", auth_header)
+
+        auth_type, token = auth_header.split(" ", 1)
+        return (str(auth_type), str(token))
+
+    def _read_address_header(self, address_header: Any) -> str:
+        if isinstance(address_header, List):
+            return str(address_header[0])
+        if isinstance(address_header, str):
+            return address_header
+        raise ValueError("Incompatible header format '{}'", address_header)
