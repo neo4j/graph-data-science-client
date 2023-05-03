@@ -21,7 +21,36 @@ class AuraDbArrowQueryRunner(QueryRunner):
         self, fallback_query_runner: QueryRunner, aura_db_connection_info: Optional[AuraDbConnectionInfo] = None
     ):
         self._fallback_query_runner = fallback_query_runner
-        self._aura_db_connection_info = aura_db_connection_info
+
+        aura_db_endpoint, auth, config = aura_db_connection_info
+        self._auth = auth
+
+        self._driver = GraphDatabase.driver(aura_db_endpoint, auth=auth, **config)
+        arrow_info: "Series[Any]" = (
+            Neo4jQueryRunner(self._driver, auto_close=True)
+            .run_query("CALL gds.debug.arrow.plugin()", custom_error=False)
+            .squeeze()
+        )
+
+        if not arrow_info.get("running"):
+            raise RuntimeError("Arrow server is not running")
+        listen_address: str = arrow_info.get("advertisedListenAddress")
+        if not listen_address:
+            raise ConnectionError("Did not retrieve connection info from database")
+
+        host, port_string = listen_address.split(":")
+
+        self._auth_pair_middleware = AuthPairInterceptingMiddleware()
+        client_options: Dict[str, Any] = {
+            "middleware": [AuthPairInterceptingMiddlewareFactory(self._auth_pair_middleware)],
+            "disable_server_verification": True,
+        }
+        location = (
+            flight.Location.for_grpc_tls(host, int(port_string))
+            if self._driver.encrypted
+            else flight.Location.for_grpc_tcp(host, int(port_string))
+        )
+        self._client = flight.FlightClient(location, **client_options)
 
     def run_query(
         self,
@@ -51,40 +80,13 @@ class AuraDbArrowQueryRunner(QueryRunner):
         self._fallback_query_runner.create_graph_constructor(graph_name, concurrency, undirected_relationship_types)
 
     def close(self) -> None:
-        self._fallback_qeury_runner.close()
+        self._client.close()
+        self._driver.close()
+        self._fallback_query_runner.close()
 
     def _get_or_request_auth_pair(self) -> Tuple[str, str]:
-        aura_db_endpoint, auth, config = self._aura_db_connection_info
-
-        driver = GraphDatabase.driver(aura_db_endpoint, auth=auth, **config)
-        query_runner = Neo4jQueryRunner(driver, auto_close=True)
-
-        arrow_info: "Series[Any]" = query_runner.run_query(
-            "CALL gds.debug.arrow.plugin()", custom_error=False
-        ).squeeze()
-        if not arrow_info.get("running"):
-            raise RuntimeError("Arrow server is not running")
-        listen_address: str = arrow_info.get("advertisedListenAddress")
-        if not listen_address:
-            raise ConnectionError("Did not retrieve connection info from database")
-
-        host, port_string = listen_address.split(":")
-
-        auth_pair_middleware = AuthPairInterceptingMiddleware()
-        client_options: Dict[str, Any] = {
-            "middleware": [AuthPairInterceptingMiddlewareFactory(auth_pair_middleware)],
-            "disable_server_verification": True,
-        }
-        location = (
-            flight.Location.for_grpc_tls(host, int(port_string))
-            if driver.encrypted
-            else flight.Location.for_grpc_tcp(host, int(port_string))
-        )
-        client = flight.FlightClient(location, **client_options)
-
-        client.authenticate_basic_token(auth[0], auth[1])
-
-        return (auth_pair_middleware.token(), auth_pair_middleware.endpoint())
+        self._client.authenticate_basic_token(self._auth[0], self._auth[1])
+        return (self._auth_pair_middleware.token(), self._auth_pair_middleware.endpoint())
 
 
 class AuthPairInterceptingMiddlewareFactory(ClientMiddlewareFactory):
