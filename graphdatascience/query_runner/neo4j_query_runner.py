@@ -36,7 +36,7 @@ class Neo4jQueryRunner(QueryRunner):
         params: Optional[Dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
-    ) -> DataFrame:
+    ) -> Optional[DataFrame]:
         if params is None:
             params = {}
 

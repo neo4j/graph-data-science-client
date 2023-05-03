@@ -774,3 +774,15 @@ def test_graph_nodeProperty_stream_via_run_query(gds: GraphDataScience) -> None:
         )
     )
     assert {e for e in result["degree"]} == {1, 2, 3}
+
+
+@pytest.mark.enterprise
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 4, 0))
+def test_graph_remote_projection(gds_with_aura_db: GraphDataScience) -> None:
+    G = gds_with_aura_db.alpha.graph.project.remote("graph", "MATCH (n)-->(m) RETURN n as sourceNode, m as targetNode")
+
+    assert G.name() == "hello"
+    assert G.node_count() == 3
+    assert G.relationship_count() == 4
+
+    G.drop()
