@@ -64,8 +64,6 @@ class AuraDbArrowQueryRunner(QueryRunner):
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
             params["token"] = token
             params["host"] = aura_db_arrow_endpoint
-            # TODO: make this part of mandatory signature
-            params["remote_database"] = database if database else self.database()
 
         return self._fallback_query_runner.run_query(query, params, database, custom_error)
 

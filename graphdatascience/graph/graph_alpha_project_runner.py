@@ -11,9 +11,9 @@ from graphdatascience.server_version.server_version import ServerVersion
 
 class GraphAlphaProjectRunner(IllegalAttrChecker):
     @compatible_with("remote", min_inclusive=ServerVersion(2, 4, 0))
-    def remote(self, graph_name: str, query: str, **config: Any) -> "Series[Any]":
+    def remote(self, graph_name: str, query: str, remote_database: str, **config: Any) -> "Series[Any]":
         self._namespace += ".remote"
         return self._query_runner.run_query(
             f"CALL {self._namespace}($graph_name, $query, $token, $host, $remote_database, $config)",
-            {"graph_name": graph_name, "query": query, "config": config},
+            {"graph_name": graph_name, "query": query, "remote_database": remote_database, "config": config},
         ).squeeze()  # type: ignore
