@@ -112,7 +112,7 @@ class AuthPairInterceptingMiddleware(ClientMiddleware):  # type: ignore
         self._arrow_address = self._read_address_header(headers.get("arrowpluginaddress"))
 
     def sending_headers(self) -> Dict[str, str]:
-        pass
+        return {}
 
     def token(self) -> str:
         return self._token

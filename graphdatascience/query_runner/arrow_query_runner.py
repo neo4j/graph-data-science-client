@@ -8,7 +8,6 @@ from pandas import DataFrame
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 
 from ..server_version.server_version import ServerVersion
-from ..version import __version__
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
