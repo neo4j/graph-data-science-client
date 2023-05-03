@@ -1,19 +1,28 @@
 import base64
 import json
 import time
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, NamedTuple, Optional, Tuple
 
 import pyarrow.flight as flight
-from pandas import DataFrame
+from neo4j import GraphDatabase
+from pandas import DataFrame, Series
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 
 from ..server_version.server_version import ServerVersion
+from ..version import __version__
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.compatible_with import (
     IncompatibleServerVersionError,
 )
+
+
+class AuraDbConnectionInfo(NamedTuple):
+    uri: str
+    auth: Tuple[str, str]
+    config: Dict[str, Any]
 
 
 class ArrowQueryRunner(QueryRunner):
@@ -26,10 +35,11 @@ class ArrowQueryRunner(QueryRunner):
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
-        aura_db_connection_info: Optional[Tuple[str, Tuple[str, str]]] = None
+        aura_db_connection_info: Optional[AuraDbConnectionInfo] = None,
     ):
         self._fallback_query_runner = fallback_query_runner
         self._server_version = server_version
+        self._aura_db_connection_info = aura_db_connection_info
 
         host, port_string = uri.split(":")
 
@@ -131,7 +141,10 @@ class ArrowQueryRunner(QueryRunner):
 
             return self._run_arrow_property_get(graph_name, endpoint, {"relationship_types": relationship_types})
         elif "gds.alpha.graph.project.remote" in query:
-            raise ValueError("not implemented")
+            token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
+            params["token"] = token
+            params["host"] = aura_db_arrow_endpoint
+            params["remote_database"] = "neo4j"
 
         return self._fallback_query_runner.run_query(query, params, database, custom_error)
 
@@ -187,6 +200,39 @@ class ArrowQueryRunner(QueryRunner):
             database, graph_name, self._flight_client, concurrency, undirected_relationship_types
         )
 
+    def _get_or_request_auth_pair(self) -> Tuple[str, str]:
+        aura_db_endpoint, auth, config = self._aura_db_connection_info
+
+        driver = GraphDatabase.driver(aura_db_endpoint, auth=auth, **config)
+        query_runner = Neo4jQueryRunner(driver, auto_close=True)
+
+        arrow_info: "Series[Any]" = query_runner.run_query(
+            "CALL gds.debug.arrow.plugin()", custom_error=False
+        ).squeeze()
+        if not arrow_info.get("running"):
+            raise RuntimeError("Arrow server is not running")
+        listen_address: str = arrow_info.get("advertisedListenAddress")
+        if not listen_address:
+            raise ConnectionError("Did not retrieve connection info from database")
+
+        host, port_string = listen_address.split(":")
+
+        auth_pair_middleware = AuthPairInterceptingMiddleware()
+        client_options: Dict[str, Any] = {
+            "middleware": [AuthPairInterceptingMiddlewareFactory(auth_pair_middleware)],
+            "disable_server_verification": True,
+        }
+        location = (
+            flight.Location.for_grpc_tls(host, int(port_string))
+            if driver.encrypted
+            else flight.Location.for_grpc_tcp(host, int(port_string))
+        )
+        client = flight.FlightClient(location, **client_options)
+
+        client.authenticate_basic_token(auth[0], auth[1])
+
+        return (auth_pair_middleware.token(), auth_pair_middleware.endpoint())
+
 
 class AuthFactory(ClientMiddlewareFactory):  # type: ignore
     def __init__(self, auth: Tuple[str, str], *args: Any, **kwargs: Any) -> None:
@@ -237,3 +283,34 @@ class AuthMiddleware(ClientMiddleware):  # type: ignore
             return {"authorization": auth_token}
         else:
             return {"authorization": "Bearer " + token}
+
+
+class AuthPairInterceptingMiddlewareFactory(ClientMiddlewareFactory):
+    def __init__(self, middleware: "AuthPairInterceptingMiddleware") -> None:
+        self._middleware = middleware
+
+    def start_call(self, info: any) -> "AuthPairInterceptingMiddleware":
+        return self._middleware
+
+
+class AuthPairInterceptingMiddleware(ClientMiddleware):
+    def received_headers(self, headers: Dict[str, Any]) -> None:
+        auth_header: str = headers.get("authorization", None)[0]
+        if not auth_header:
+            return
+        [auth_type, token] = auth_header.split(" ", 1)
+        if auth_type == "Bearer":
+            self._token = token
+
+        arrow_address_header: str = headers.get("arrowpluginaddress")[0]
+        if arrow_address_header:
+            self._arrow_address = arrow_address_header
+
+    def sending_headers(self) -> Dict[str, str]:
+        pass
+
+    def token(self) -> str:
+        return self._token
+
+    def endpoint(self) -> str:
+        return self._arrow_address

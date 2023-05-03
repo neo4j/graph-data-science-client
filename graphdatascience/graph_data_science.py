@@ -8,7 +8,7 @@ from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from .error.unable_to_connect import UnableToConnectError
 from .error.uncallable_namespace import UncallableNamespace
-from .query_runner.arrow_query_runner import ArrowQueryRunner
+from .query_runner.arrow_query_runner import ArrowQueryRunner, AuraDbConnectionInfo
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
@@ -119,6 +119,13 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         self._query_runner.set_server_version(self._server_version)
 
         if arrow and self._server_version >= ServerVersion(2, 1, 0):
+            if aura_db_connection_info and self._server_version >= ServerVersion(2, 4, 0):
+                aura_db_conneciton_info = AuraDbConnectionInfo(
+                    aura_db_connection_info[0], aura_db_connection_info[1], self._config
+                )
+            else:
+                aura_db_conneciton_info = None
+
             try:
                 arrow_info: "Series[Any]" = self._query_runner.run_query(
                     "CALL gds.debug.arrow()", custom_error=False
@@ -135,6 +142,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                         driver.encrypted,
                         arrow_disable_server_verification,
                         arrow_tls_root_certs,
+                        aura_db_conneciton_info,
                     )
             except Exception as e:
                 # AuraDS does not have arrow support at this time, so we should not warn about it.

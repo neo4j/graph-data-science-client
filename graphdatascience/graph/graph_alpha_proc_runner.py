@@ -8,10 +8,10 @@ from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
+from .graph_alpha_project_runner import GraphAlphaProjectRunner
 from .graph_entity_ops_runner import GraphLabelRunner, GraphPropertyRunner
 from .graph_object import Graph
 from .graph_sample_runner import GraphSampleRunner
-from .graph_alpha_project_runner import GraphAlphaProjectRunner
 
 
 class GraphAlphaProcRunner(UncallableNamespace, IllegalAttrChecker):
