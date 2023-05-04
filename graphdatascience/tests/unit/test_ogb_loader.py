@@ -30,6 +30,7 @@ class HomoOBGNTestDataset(HomogeneousOGBNDataset):
         }
         self.labels = np.array([[cl] for cl in HOMOGENEOUS_CLASS_LABELS])
         self.meta_info = Series({"has_edge_attr": "False"})
+        self.name = "ogb_test_graph"
 
     def get_idx_split(self) -> Dict[str, npt.NDArray[np.int64]]:
         return {"train": np.array([0]), "valid": np.array([1]), "test": np.array([2])}
@@ -43,6 +44,7 @@ class HomoOBGLTestDataset(HomogeneousOGBLDataset):
             "num_nodes": HOMOGENEOUS_NUM_NODES,
         }
         self.meta_info = Series({"has_edge_attr": "False"})
+        self.name = "ogb_test_graph"
 
     def get_edge_split(self) -> Dict[str, Dict[str, npt.NDArray[np.int64]]]:
         return {
@@ -67,6 +69,7 @@ class HeteroOBGNTestDataset(HeterogeneousOGBNDataset):
         }
         self.labels = HETEROGENEOUS_CLASS_LABELS
         self.meta_info = Series({"has_edge_attr": "False"})
+        self.name = "ogb_test_graph"
 
     def get_idx_split(self) -> Dict[str, Dict[str, npt.NDArray[np.int64]]]:
         return {"train": {"A": np.array([0])}, "valid": {"A": np.array([])}, "test": {"A": np.array([])}}
@@ -80,6 +83,7 @@ class HeteroOBGLTestDataset(HeterogeneousOGBLDataset):
             "num_nodes_dict": HETEROGENEOUS_NUM_NODES,
         }
         self.meta_info = Series({"has_edge_attr": "False"})
+        self.name = "ogb_test_graph"
 
     def get_edge_split(self) -> Dict[str, Dict[str, Any]]:
         return {
