@@ -60,7 +60,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow: bool = True,
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
-        aura_db_connection_info: Optional[Tuple[str, Tuple[str, str]]] = None,
+        aura_db_connection_info: Optional[AuraDbConnectionInfo] = None,
     ):
         """
         Parameters
@@ -149,11 +149,13 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                 ):
                     warnings.warn(f"Could not initialize GDS Flight Server client: {e}")
 
-        if aura_db_connection_info and self._server_version >= ServerVersion(2, 4, 0):
-            aura_db_conneciton_info = AuraDbConnectionInfo(
-                aura_db_connection_info[0], aura_db_connection_info[1], self._config
-            )
-            self._query_runner = AuraDbArrowQueryRunner(self._query_runner, aura_db_conneciton_info)
+        if aura_db_connection_info:
+            if self._server_version >= ServerVersion(2, 4, 0):
+                self._query_runner = AuraDbArrowQueryRunner(self._query_runner, aura_db_connection_info, self._config)
+            else:
+                warnings.warn(
+                    f"AuraDB connection info was provided but GDS version {self._server_version} does not support connecting to AuraDB"
+                )
 
         super().__init__(self._query_runner, "gds", self._server_version)
 

@@ -13,14 +13,15 @@ from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 class AuraDbConnectionInfo(NamedTuple):
     uri: str
     auth: Tuple[str, str]
-    config: Dict[str, Any]
 
 
 class AuraDbArrowQueryRunner(QueryRunner):
-    def __init__(self, fallback_query_runner: QueryRunner, aura_db_connection_info: AuraDbConnectionInfo):
+    def __init__(
+        self, fallback_query_runner: QueryRunner, aura_db_connection_info: AuraDbConnectionInfo, config: Dict[str, Any]
+    ):
         self._fallback_query_runner = fallback_query_runner
 
-        aura_db_endpoint, auth, config = aura_db_connection_info
+        aura_db_endpoint, auth = aura_db_connection_info
         self._auth = auth
 
         self._driver = GraphDatabase.driver(aura_db_endpoint, auth=auth, **config)
@@ -31,8 +32,8 @@ class AuraDbArrowQueryRunner(QueryRunner):
         )
 
         if not arrow_info.get("running"):
-            raise RuntimeError("Arrow server is not running")
-        listen_address: str = arrow_info.get("advertisedListenAddress")  # type: ignore
+            raise RuntimeError("The plugin arrow server for AuraDB is not running")
+        listen_address: Optional[str] = arrow_info.get("advertisedListenAddress")  # type: ignore
         if not listen_address:
             raise ConnectionError("Did not retrieve connection info from database")
 
