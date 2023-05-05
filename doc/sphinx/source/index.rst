@@ -10,7 +10,7 @@ This API reference manual contains all the procedures available in the Neo4j Gra
 
 .. toctree::
    :maxdepth: 1
-   :caption: Contents:
+   :caption: Contents
 
    graphdatascience
    graph
