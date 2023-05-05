@@ -6,6 +6,9 @@ import pytest
 from neo4j import Driver, GraphDatabase
 
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.query_runner.aura_db_arrow_query_runner import (
+    AuraDbConnectionInfo,
+)
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
@@ -20,6 +23,9 @@ if os.environ.get("NEO4J_USER"):
 
 DB = os.environ.get("NEO4J_DB", "neo4j")
 
+AURA_DB_URI = os.environ.get("NEO4J_AURA_DB_URI", "bold://localhost:7688")
+AURA_DB_AUTH = ("neo4j", "Password")
+
 
 @pytest.fixture(scope="package")
 def neo4j_driver() -> Generator[Driver, None, None]:
@@ -33,6 +39,16 @@ def neo4j_driver() -> Generator[Driver, None, None]:
 @pytest.fixture(scope="package")
 def runner(neo4j_driver: Driver) -> Neo4jQueryRunner:
     _runner = Neo4jQueryRunner(neo4j_driver)
+    _runner.set_database(DB)
+
+    return _runner
+
+
+@pytest.fixture(scope="package")
+def auradb_runner() -> Neo4jQueryRunner:
+    driver = GraphDatabase.driver(AURA_DB_URI, auth=AURA_DB_AUTH)
+
+    _runner = Neo4jQueryRunner(driver)
     _runner.set_database(DB)
 
     return _runner
@@ -69,6 +85,16 @@ def gds_with_tls() -> GraphDataScience:
 @pytest.fixture(scope="package")
 def gds_without_arrow() -> GraphDataScience:
     _gds = GraphDataScience(URI, auth=AUTH, arrow=False)
+    _gds.set_database(DB)
+
+    return _gds
+
+
+@pytest.fixture(scope="package")
+def gds_with_cloud_setup() -> GraphDataScience:
+    _gds = GraphDataScience(
+        URI, auth=AUTH, arrow=True, aura_db_connection_info=AuraDbConnectionInfo(AURA_DB_URI, AURA_DB_AUTH)
+    )
     _gds.set_database(DB)
 
     return _gds
@@ -138,6 +164,12 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
         for item in items:
             if "model_store_location" in item.keywords:
                 item.add_marker(skip_stored_models)
+
+    if config.getoption("--include-cloud-architecture"):
+        skip_on_prem = pytest.mark.skip(reason="not marked as `cloud_architecture`")
+        for item in items:
+            if "cloud_architecture" not in item.keywords:
+                item.add_marker(skip_on_prem)
 
     try:
         server_version = GraphDataScience(URI, auth=AUTH)._server_version
