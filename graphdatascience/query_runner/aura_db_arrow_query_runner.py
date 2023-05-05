@@ -16,14 +16,13 @@ class AuraDbConnectionInfo(NamedTuple):
 
 
 class AuraDbArrowQueryRunner(QueryRunner):
-    def __init__(
-        self, fallback_query_runner: QueryRunner, aura_db_connection_info: AuraDbConnectionInfo, config: Dict[str, Any]
-    ):
+    def __init__(self, fallback_query_runner: QueryRunner, aura_db_connection_info: AuraDbConnectionInfo):
         self._fallback_query_runner = fallback_query_runner
 
         aura_db_endpoint, auth = aura_db_connection_info
         self._auth = auth
 
+        config: Dict[str, Any] = {"max_connection_lifetime": 60}
         self._driver = GraphDatabase.driver(aura_db_endpoint, auth=auth, **config)
         arrow_info: "Series[Any]" = (
             Neo4jQueryRunner(self._driver, auto_close=True)

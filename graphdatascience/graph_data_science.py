@@ -151,10 +151,11 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
         if aura_db_connection_info:
             if self._server_version >= ServerVersion(2, 4, 0):
-                self._query_runner = AuraDbArrowQueryRunner(self._query_runner, aura_db_connection_info, self._config)
+                self._query_runner = AuraDbArrowQueryRunner(self._query_runner, aura_db_connection_info)
             else:
                 warnings.warn(
-                    f"AuraDB connection info was provided but GDS version {self._server_version} does not support connecting to AuraDB"
+                    f"AuraDB connection info was provided but GDS version {self._server_version} \
+                        does not support connecting to AuraDB"
                 )
 
         super().__init__(self._query_runner, "gds", self._server_version)
