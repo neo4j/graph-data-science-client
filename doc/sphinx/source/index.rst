@@ -6,7 +6,7 @@
 Welcome to Neo4j Graph Data Science Python Client's documentation!
 ==================================================================
 
-This API reference manual contains all the procedures available in the Neo4j Graph Data Science Python Client.
+This API reference manual contains all the procedures available in the Neo4j Graph Data Science Python Client |api-version|.
 
 .. toctree::
    :maxdepth: 1

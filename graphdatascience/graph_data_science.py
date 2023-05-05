@@ -13,6 +13,10 @@ from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
 from .version import __version__
+from graphdatascience.query_runner.aura_db_arrow_query_runner import (
+    AuraDbArrowQueryRunner,
+    AuraDbConnectionInfo,
+)
 
 GDS = TypeVar("GDS", bound="GraphDataScience")
 
@@ -56,6 +60,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow: bool = True,
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
+        aura_db_connection_info: Optional[AuraDbConnectionInfo] = None,
     ):
         """
         Parameters
@@ -143,6 +148,15 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                     "registered for this database instance." not in str(e)
                 ):
                     warnings.warn(f"Could not initialize GDS Flight Server client: {e}")
+
+        if aura_db_connection_info:
+            if self._server_version >= ServerVersion(2, 4, 0):
+                self._query_runner = AuraDbArrowQueryRunner(self._query_runner, aura_db_connection_info)
+            else:
+                warnings.warn(
+                    f"AuraDB connection info was provided but GDS version {self._server_version} \
+                        does not support connecting to AuraDB"
+                )
 
         super().__init__(self._query_runner, "gds", self._server_version)
 
