@@ -39,8 +39,9 @@ html_theme_path = ["themes"]
 
 # 01-nav.js is a copy of a js file of the same name that is included in the docs-ui bundle
 def setup(app):
-    app.add_js_file('js/01-nav.js', loading_method="defer")
-    app.add_js_file('js/12-fragment-jumper.js', loading_method="defer")
+    app.add_js_file("js/01-nav.js", loading_method="defer")
+    app.add_js_file("js/12-fragment-jumper.js", loading_method="defer")
+
 
 rst_epilog = """
 .. |api-version| replace:: {versionnum}
