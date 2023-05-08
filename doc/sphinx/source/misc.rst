@@ -36,11 +36,11 @@ All the miscellaneous procedures including configuring the library.
 
 .. py:function:: gds.util.asNode(node_id: int) -> Any
 
-    RETURN gds.util.asNode(nodeId) - Return the node objects for the given node id or null if none exists.
+    Return a node object for the given node id or null if none exists.
 
 .. py:function:: gds.util.asNodes(node_ids: List[int]) -> List[Any]
 
-    RETURN gds.util.asNodes(nodeIds) - Return the node objects for the given node ids or an empty list if none exists.
+    Return a list of node objects for the given node id or an empty list if none exists.
 
 .. py:function:: gds.util.nodeProperty(G: Graph, node_id: int, property_key: str, node_label: str = "*") -> Any
 
