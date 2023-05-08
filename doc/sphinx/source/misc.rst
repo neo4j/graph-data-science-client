@@ -1,6 +1,9 @@
 Miscellaneous procedures
 -------------------------
-All the miscellaneous procedures including configuring the library.
+Listing of all miscellaneous procedures in the Neo4j Graph Data Science Python Client API.
+This includes procedures for configuring the library.
+These all assume that an object of :class:`.GraphDataScience` is available as `gds`.
+
 
 .. py:function:: gds.alpha.config.defaults.list(key: Optional[str] = None, username: Optional[str] = None) -> DataFrame
 

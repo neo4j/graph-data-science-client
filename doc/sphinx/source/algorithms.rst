@@ -1,6 +1,7 @@
 Algorithms procedures
 ----------------------
-All the graph procedures under the `gds` namespace.
+Listing of all algorithm procedures in the Neo4j Graph Data Science Python Client API.
+These all assume that an object of :class:`.GraphDataScience` is available as `gds`.
 
 .. py:function:: gds.allShortestPaths.delta.mutate(G: Graph, **config: Any) -> "Series[Any]"
 

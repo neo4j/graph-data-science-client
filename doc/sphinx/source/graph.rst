@@ -1,8 +1,9 @@
 Graph procedures
 ----------------
-All the graph procedures under the `gds` namespace.
-This includes all the methods for projecting, deleting, and listing graphs,
-as well as methods for handling node or relationship properties.
+Listing of all graph procedures in the Neo4j Graph Data Science Python Client API.
+This includes all the methods for projecting, deleting, and listing graphs, as well as methods for handling node or relationship properties.
+These all assume that an object of :class:`.GraphDataScience` is available as `gds`.
+
 
 .. py:function:: gds.alpha.graph.construct(graph_name: str, nodes: Union[DataFrame, List[DataFrame]], relationships: Union[DataFrame, List[DataFrame]], concurrency: int = 4, undirected_relationship_types: Optional[List[str]] = None) -> Graph
 
