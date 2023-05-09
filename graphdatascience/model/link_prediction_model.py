@@ -13,6 +13,7 @@ class LinkFeature:
         name: The name of the link feature.
         config: The configuration of the link feature.
     """
+
     name: str
     config: Dict[str, Any]
 

@@ -57,6 +57,7 @@ class NodePropertyStep:
         proc: The procedure for the node property step.
         config: The configuration of the node property step.
     """
+
     proc: str
     config: Dict[str, Any]
 
