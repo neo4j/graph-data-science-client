@@ -37,8 +37,9 @@ exclude_patterns = []  # type: ignore
 html_theme = "neo4j"
 html_theme_path = ["themes"]
 
+
 # 01-nav.js is a copy of a js file of the same name that is included in the docs-ui bundle
-def setup(app):
+def setup(app):  # type: ignore
     app.add_js_file("js/01-nav.js", loading_method="defer")
     app.add_js_file("js/12-fragment-jumper.js", loading_method="defer")
 
