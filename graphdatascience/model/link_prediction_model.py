@@ -6,6 +6,13 @@ from .pipeline_model import PipelineModel
 
 @dataclass(frozen=True, repr=True)
 class LinkFeature:
+    """
+    A link feature of a link prediction pipeline.
+
+    Attributes:
+        name: The name of the link feature.
+        config: The configuration of the link feature.
+    """
     name: str
     config: Dict[str, Any]
 
