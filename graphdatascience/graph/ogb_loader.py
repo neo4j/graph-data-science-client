@@ -262,7 +262,7 @@ class OGBLLoader(OGBLoader):
         rel_types: List[str] = []
         split = dataset.get_edge_split()
 
-        self._load_relationships(dataset.name, split, source_ids, target_ids, rel_types)
+        self._load_homogenous_ogbl_relationships(dataset.name, split, source_ids, target_ids, rel_types)
 
         relationships = pd.DataFrame(
             {"sourceNodeId": source_ids, "targetNodeId": target_ids, "relationshipType": rel_types}
@@ -364,7 +364,7 @@ class OGBLLoader(OGBLoader):
 
         return self._load(graph_name, nodes, rels, concurrency)
 
-    def _load_relationships(
+    def _load_homogenous_ogbl_relationships(
         self,
         dataset_name: str,
         split: Dict[str, Any],
@@ -374,16 +374,14 @@ class OGBLLoader(OGBLoader):
     ) -> None:
         if dataset_name == "ogbl-wikikg2":
             for set_type, entity in split.items():
-                rel_prefix = f"{set_type.upper()}"
+                rel_suffix = f"{set_type.upper()}"
                 for i in range(len(entity["relation"])):
                     source_ids.append(entity["head"][i])
                     target_ids.append(entity["tail"][i])
-                    rel_types.append(f"{rel_prefix}_{entity['relation'][i]}")
-                    # Validation and test sets have negative edges
-                    # Each validation and test edge h-r-t becomes
-                    # 500 (negative-head)-r-t edges and 500 h-r-(negative-tail) edges
-                    # This gives 1000 * 429456 (negative validation) + 1000 * 598543 (negative test)  = 1,028,999,000
-                    # Too many edges. Omit loading them.
+                    rel_types.append(f"{entity['relation'][i]}_{rel_suffix}")
+                    # This dataset is effectively heterogeneous.
+                    # There are 1000 negative edges for each positive edge which is too many.
+                    # Do not load negative edges just like other heterogeneous datasets.
         else:
             for set_type, edges in split.items():
                 if "edge" in edges:
