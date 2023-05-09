@@ -32,8 +32,17 @@ exclude_patterns = []  # type: ignore
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "alabaster"
-html_static_path = []  # type: ignore
+# use neo4j theme, which extends neo4j docs css for sphinx
+
+html_theme = "neo4j"
+html_theme_path = ["themes"]
+
+
+# 01-nav.js is a copy of a js file of the same name that is included in the docs-ui bundle
+def setup(app):  # type: ignore
+    app.add_js_file("js/01-nav.js", loading_method="defer")
+    app.add_js_file("js/12-fragment-jumper.js", loading_method="defer")
+
 
 rst_epilog = """
 .. |api-version| replace:: {versionnum}
