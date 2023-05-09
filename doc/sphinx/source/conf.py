@@ -24,7 +24,7 @@ extensions = [
     "sphinx.ext.napoleon",  # Support for NumPy and Google style docstrings
 ]
 
-# napoleon_use_rtype = False
+autodoc_class_signature = "separated"
 
 templates_path = ["_templates"]
 exclude_patterns = []  # type: ignore

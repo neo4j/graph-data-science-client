@@ -8,6 +8,11 @@ from .training_pipeline import TrainingPipeline
 
 
 class NRTrainingPipeline(TrainingPipeline[NRModel]):
+    """
+    Represents a node regression training pipeline.
+    Construct an instance of this class using :func:`graphdatascience.GraphDataScience.nr_pipe`.
+    """
+
     def addLinearRegression(self, **config: Any) -> "Series[Any]":
         """
         Add a linear regression model candidate to the pipeline.

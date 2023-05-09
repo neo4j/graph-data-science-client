@@ -8,6 +8,7 @@ from .pipeline_model import PipelineModel
 class LinkFeature:
     """
     A link feature of a link prediction pipeline.
+    Retrieve this for a pipeline using :func:`LPModel.link_features() <graphdatascience.model.link_prediction_model.LPModel.link_features>`.
 
     Attributes:
         name: The name of the link feature.
@@ -22,6 +23,11 @@ class LinkFeature:
 
 
 class LPModel(PipelineModel):
+    """
+    Represents a link prediction model in the model catalog.
+    Construct this using :func:`LPTrainingPipeline.train() <graphdatascience.pipeline.lp_training_pipeline.LPTrainingPipeline.train>`.
+    """
+
     def _query_prefix(self) -> str:
         return "CALL gds.beta.pipeline.linkPrediction.predict."
 

@@ -11,7 +11,9 @@ TGraph = TypeVar("TGraph", bound="Graph")
 
 class Graph:
     """
-    A graph object that can be pass to run algorithms on. It contains summary information about the graph.
+    A graph object that represents a graph in the graph catalog.
+    It can be passed into algorithm endpoints to compute over the corresponding graph.
+    It contains summary information about the graph.
     """
 
     def __init__(self, name: str, query_runner: QueryRunner, server_version: ServerVersion):

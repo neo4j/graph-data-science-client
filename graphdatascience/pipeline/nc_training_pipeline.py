@@ -9,6 +9,11 @@ from ..query_runner.query_runner import QueryRunner
 
 
 class NCTrainingPipeline(ClassificationTrainingPipeline[NCModel], ABC):
+    """
+    Represents a node classification training pipeline.
+    Construct an instance of this class using :func:`graphdatascience.GraphDataScience.nc_pipe`.
+    """
+
     def selectFeatures(self, node_properties: Union[str, List[str]]) -> "Series[Any]":
         """
         Select the node properties to use for training.

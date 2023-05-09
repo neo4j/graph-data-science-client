@@ -8,6 +8,11 @@ from .classification_training_pipeline import ClassificationTrainingPipeline
 
 
 class LPTrainingPipeline(ClassificationTrainingPipeline[LPModel]):
+    """
+    Represents a link prediction training pipeline.
+    Construct an instance of this class using :func:`graphdatascience.GraphDataScience.lp_pipe`.
+    """
+
     def addFeature(self, feature_type: str, **config: Any) -> "Series[Any]":
         """
         Add a link feature to the pipeline.
