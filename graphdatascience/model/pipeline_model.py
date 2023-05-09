@@ -61,6 +61,7 @@ class PipelineModel(Model, ABC):
     def best_parameters(self) -> "Series[Any]":
         """
         Get the best parameters for the pipeline model.
+
         Returns:
             The best parameters for the pipeline model.
 
@@ -71,6 +72,7 @@ class PipelineModel(Model, ABC):
     def node_property_steps(self) -> List[NodePropertyStep]:
         """
         Get the node property steps for the pipeline model.
+
         Returns:
             The node property steps for the pipeline model.
 
@@ -81,6 +83,7 @@ class PipelineModel(Model, ABC):
     def metrics(self) -> "Series[Any]":
         """
         Get the metrics for the pipeline model.
+
         Returns:
             The metrics for the pipeline model.
 

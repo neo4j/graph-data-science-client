@@ -40,6 +40,7 @@ class Model(ABC):
     def name(self) -> str:
         """
         Get the name of the model.
+
         Returns:
             The name of the model.
 
@@ -49,6 +50,7 @@ class Model(ABC):
     def type(self) -> str:
         """
         Get the type of the model.
+
         Returns:
             The type of the model.
 
@@ -58,6 +60,7 @@ class Model(ABC):
     def train_config(self) -> "Series[Any]":
         """
         Get the train config of the model.
+
         Returns:
             The train config of the model.
 
@@ -68,6 +71,7 @@ class Model(ABC):
     def graph_schema(self) -> "Series[Any]":
         """
         Get the graph schema of the model.
+
         Returns:
             The graph schema of the model.
 
@@ -78,6 +82,7 @@ class Model(ABC):
     def loaded(self) -> bool:
         """
         Check whether the model is loaded in memory.
+
         Returns:
             True if the model is loaded in memory, False otherwise.
 
@@ -87,6 +92,7 @@ class Model(ABC):
     def stored(self) -> bool:
         """
         Check whether the model is stored on disk.
+
         Returns:
             True if the model is stored on disk, False otherwise.
 
@@ -96,6 +102,7 @@ class Model(ABC):
     def creation_time(self) -> Any:  # neo4j.time.DateTime not exported
         """
         Get the creation time of the model.
+
         Returns:
             The creation time of the model.
 
@@ -105,6 +112,7 @@ class Model(ABC):
     def shared(self) -> bool:
         """
         Check whether the model is shared.
+
         Returns:
             True if the model is shared, False otherwise.
 
@@ -114,6 +122,7 @@ class Model(ABC):
     def model_info(self) -> "Series[Any]":
         """
         Get the model info of the model.
+
         Returns:
             The model info of the model.
 
@@ -123,6 +132,7 @@ class Model(ABC):
     def exists(self) -> bool:
         """
         Check whether the model exists.
+
         Returns:
             True if the model exists, False otherwise.
 
@@ -135,6 +145,7 @@ class Model(ABC):
     def drop(self, failIfMissing: bool = False) -> "Series[Any]":
         """
         Drop the model.
+
         Args:
             failIfMissing: If True, an error is thrown if the model does not exist. If False, no error is thrown.
 
@@ -150,6 +161,7 @@ class Model(ABC):
     def metrics(self) -> "Series[Any]":
         """
         Get the metrics of the model.
+
         Returns:
             The metrics of the model.
 
@@ -162,6 +174,7 @@ class Model(ABC):
     def predict_stream(self, G: Graph, **config: Any) -> DataFrame:
         """
         Predict on the given graph using the model and stream the results as DataFrame
+
         Args:
             G: The graph to predict on.
             **config: The config for the prediction.
@@ -180,6 +193,7 @@ class Model(ABC):
     def predict_stream_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
         """
         Estimate the prediction on the given graph using the model and stream the results as DataFrame
+
         Args:
             G: The graph to predict on.
             **config: The config for the prediction.
@@ -194,6 +208,7 @@ class Model(ABC):
     def predict_mutate(self, G: Graph, **config: Any) -> "Series[Any]":
         """
         Predict on the given graph using the model and mutate the graph with the results.
+
         Args:
             G: The graph to predict on.
             **config: The config for the prediction.
@@ -212,6 +227,7 @@ class Model(ABC):
     def predict_mutate_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
         """
         Estimate the memory needed to predict on the given graph using the model.
+
         Args:
             G: The graph to predict on.
             **config: The config for the prediction.

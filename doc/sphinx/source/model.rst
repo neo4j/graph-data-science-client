@@ -1,6 +1,8 @@
 Model procedures
 ----------------
-All the model procedures under the `gds` namespace.
+Listing of all model procedures in the Neo4j Graph Data Science Python Client API.
+These all assume that an object of :class:`.GraphDataScience` is available as `gds`.
+
 
 .. py:function:: gds.alpha.backup(**config) -> DataFrame
 
