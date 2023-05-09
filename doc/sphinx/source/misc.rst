@@ -53,7 +53,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Return the installed graph data science library version.
 
-.. py:function:: gds.server_version() -> ServerVersion:
+.. py:function:: gds.server_version() -> ServerVersion
 
     Return the installed graph data science library version.
 
