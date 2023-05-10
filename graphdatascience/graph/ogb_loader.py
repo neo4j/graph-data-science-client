@@ -57,6 +57,7 @@ class HomogeneousOGBNDataset(Protocol):
 class HomogeneousOGBLDataset(Protocol):
     graph: HomogeneousOGBGraph
     meta_info: "pd.Series[Any]"
+    name: str
 
     @abstractmethod
     def get_edge_split(self) -> Dict[str, Dict[str, npt.NDArray[np.int64]]]:
@@ -253,24 +254,12 @@ class OGBLLoader(OGBLoader):
 
         self._logger.info("Preparing relationship data for transfer to server...")
 
-        source_ids = []
-        target_ids = []
-        rel_types = []
+        source_ids: List[int] = []
+        target_ids: List[int] = []
+        rel_types: List[str] = []
         split = dataset.get_edge_split()
 
-        for set_type, edges in split.items():
-            if "edge" in edges:
-                rel_type = f"{set_type.upper()}_POS"
-                for source_id, target_id in edges["edge"]:
-                    source_ids.append(source_id)
-                    target_ids.append(target_id)
-                    rel_types.append(rel_type)
-            if "edge_neg" in edges:
-                rel_type = f"{set_type.upper()}_NEG"
-                for source_id, target_id in edges["edge_neg"]:
-                    source_ids.append(source_id)
-                    target_ids.append(target_id)
-                    rel_types.append(rel_type)
+        self._load_homogenous_ogbl_relationships(dataset.name, split, source_ids, target_ids, rel_types)
 
         relationships = pd.DataFrame(
             {"sourceNodeId": source_ids, "targetNodeId": target_ids, "relationshipType": rel_types}
@@ -371,3 +360,36 @@ class OGBLLoader(OGBLoader):
             graph_name = dataset_name
 
         return self._load(graph_name, nodes, rels, concurrency)
+
+    def _load_homogenous_ogbl_relationships(
+        self,
+        dataset_name: str,
+        split: Dict[str, Any],
+        source_ids: List[int],
+        target_ids: List[int],
+        rel_types: List[str],
+    ) -> None:
+        if dataset_name == "ogbl-wikikg2":
+            for set_type, entity in split.items():
+                rel_suffix = f"{set_type.upper()}"
+                for i in range(len(entity["relation"])):
+                    source_ids.append(entity["head"][i])
+                    target_ids.append(entity["tail"][i])
+                    rel_types.append(f"{entity['relation'][i]}_{rel_suffix}")
+                    # This dataset is effectively heterogeneous.
+                    # There are 1000 negative edges for each positive edge which is too many.
+                    # Do not load negative edges just like other heterogeneous datasets.
+        else:
+            for set_type, edges in split.items():
+                if "edge" in edges:
+                    rel_type = f"{set_type.upper()}_POS"
+                    for source_id, target_id in edges["edge"]:
+                        source_ids.append(source_id)
+                        target_ids.append(target_id)
+                        rel_types.append(rel_type)
+                if "edge_neg" in edges:
+                    rel_type = f"{set_type.upper()}_NEG"
+                    for source_id, target_id in edges["edge_neg"]:
+                        source_ids.append(source_id)
+                        target_ids.append(target_id)
+                        rel_types.append(rel_type)

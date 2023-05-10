@@ -43,6 +43,7 @@ class HomoOBGLTestDataset(HomogeneousOGBLDataset):
             "num_nodes": HOMOGENEOUS_NUM_NODES,
         }
         self.meta_info = Series({"has_edge_attr": "False"})
+        self.name = "ogb_test_graph"
 
     def get_edge_split(self) -> Dict[str, Dict[str, npt.NDArray[np.int64]]]:
         return {

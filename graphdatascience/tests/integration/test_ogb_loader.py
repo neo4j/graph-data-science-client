@@ -4,7 +4,6 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
 
 
-@pytest.mark.enterprise
 @pytest.mark.ogb
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_load_ogbn_arxiv(gds: GraphDataScience) -> None:
@@ -24,7 +23,6 @@ def test_graph_load_ogbn_arxiv(gds: GraphDataScience) -> None:
     G.drop()
 
 
-@pytest.mark.enterprise
 @pytest.mark.ogb
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_load_ogbn_mag(gds: GraphDataScience) -> None:
@@ -55,7 +53,28 @@ def test_graph_load_ogbn_mag(gds: GraphDataScience) -> None:
     G.drop()
 
 
-@pytest.mark.enterprise
+@pytest.mark.ogb
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+def test_graph_load_ogbl_wikikg2(gds: GraphDataScience) -> None:
+    # ogbl-wikikg2 is a homogenous dataset for knowledge graph completion
+
+    G = gds.graph.ogbl.load("ogbl-wikikg2")
+
+    assert G.name() == "ogbl-wikikg2"
+    assert G.node_count() == 2_500_604
+    assert set(G.node_labels()) == {"N"}
+    assert G.node_properties()["N"] == []  # type: ignore
+
+    # We don't store the negative sampled relationships in the graph.
+    assert G.relationship_count() == 17_137_181
+    # 535 train, 363 valid, 367 test
+    assert len(G.relationship_types()) == 1265
+    for t in G.relationship_types():
+        assert G.relationship_properties()[t] == []  # type: ignore
+
+    G.drop()
+
+
 @pytest.mark.ogb
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_load_ogbl_biokg(gds: GraphDataScience) -> None:
@@ -77,7 +96,6 @@ def test_graph_load_ogbl_biokg(gds: GraphDataScience) -> None:
     G.drop()
 
 
-@pytest.mark.enterprise
 @pytest.mark.ogb
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_load_ogbl_ddi(gds: GraphDataScience) -> None:

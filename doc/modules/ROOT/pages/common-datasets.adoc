@@ -248,6 +248,14 @@ assert G.relationship_count() == 1_334_889 + 197_481  # Positive + negative coun
 assert G.relationship_types() == ["TRAIN_POS", "VALID_POS", "VALID_NEG", "TEST_POS", "TEST_NEG"]
 ----
 
+[NOTE]
+====
+ogbl-wikikg2 is a homogenous dataset according to the OGB API, but it has multiple relationship types.
+Hence we load it in the same way as the heterogeneous ones.
+For example we suffix the relationships with the dataset split type (see below).
+Please also note that since the number of negative relationships in this particular dataset is so large only positive relationships will be loaded.
+====
+
 
 ==== Heterogeneous
 
