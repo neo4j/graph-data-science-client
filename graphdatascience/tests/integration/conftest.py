@@ -83,6 +83,7 @@ def gds_with_tls() -> GraphDataScience:
 
 
 @pytest.fixture(scope="package")
+@pytest.fixture(autouse=False)
 def gds_without_arrow() -> GraphDataScience:
     _gds = GraphDataScience(URI, auth=AUTH, arrow=False)
     _gds.set_database(DB)
