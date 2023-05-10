@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, Optional
 
 import pytest
 
@@ -10,7 +10,10 @@ GRAPH_NAME = "g"
 
 
 @pytest.fixture(autouse=False)
-def run_around_tests(auradb_runner: Neo4jQueryRunner) -> Generator[None, None, None]:
+def run_around_tests(auradb_runner: Optional[Neo4jQueryRunner]) -> Generator[None, None, None]:
+    if not auradb_runner:
+        raise RuntimeError("Aura db runner was not initialized")
+
     # Runs before each test
     auradb_runner.run_query(
         """

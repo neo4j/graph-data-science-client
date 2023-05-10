@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any, Generator, Optional
 
 import pytest
 from neo4j import Driver, GraphDatabase
@@ -83,7 +83,6 @@ def gds_with_tls() -> GraphDataScience:
 
 
 @pytest.fixture(scope="package")
-@pytest.fixture(autouse=False)
 def gds_without_arrow() -> GraphDataScience:
     _gds = GraphDataScience(URI, auth=AUTH, arrow=False)
     _gds.set_database(DB)
@@ -92,13 +91,15 @@ def gds_without_arrow() -> GraphDataScience:
 
 
 @pytest.fixture(scope="package")
-def gds_with_cloud_setup() -> GraphDataScience:
-    _gds = GraphDataScience(
-        URI, auth=AUTH, arrow=True, aura_db_connection_info=AuraDbConnectionInfo(AURA_DB_URI, AURA_DB_AUTH)
-    )
-    _gds.set_database(DB)
+def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Optional[GraphDataScience]:
+    if "cloud_architecture" not in request.keywords:
+        _gds = GraphDataScience(
+            URI, auth=AUTH, arrow=True, aura_db_connection_info=AuraDbConnectionInfo(AURA_DB_URI, AURA_DB_AUTH)
+        )
+        _gds.set_database(DB)
 
-    return _gds
+        return _gds
+    return None
 
 
 @pytest.fixture(autouse=True)
