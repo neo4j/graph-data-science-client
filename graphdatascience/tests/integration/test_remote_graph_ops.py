@@ -9,10 +9,7 @@ from graphdatascience.server_version.server_version import ServerVersion
 GRAPH_NAME = "g"
 
 
-@pytest.mark.enterprise
-@pytest.mark.cloud_architecture
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 4, 0))
-@pytest.fixture(autouse=True)
+@pytest.fixture(autouse=False)
 def run_around_tests(auradb_runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     # Runs before each test
     auradb_runner.run_query(
