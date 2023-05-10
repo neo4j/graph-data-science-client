@@ -152,9 +152,9 @@ The supported format for the node data frames is described in https://neo4j.com/
 
 
 [.enterprise-edition]
-=== Arrow flight server support
+=== Apache Arrow flight server support
 
-The `construct` method can utilize the https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/[Arrow Flight Server] of GDS if it's enabled.
+The `construct` method can utilize the https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/[Apache Arrow Flight Server] of GDS if it's enabled.
 This in particular means that:
 
 * The construction of the graph is greatly sped up,
@@ -393,7 +393,7 @@ The client methods
 * https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/[`gds.graph.relationshipProperty.stream`] (previously `gds.graph.streamRelationshipProperty`)
 * https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/[`gds.graph.relationshipProperties.stream`] (previously `gds.graph.streamRelationshipProperties`)
 
-are greatly sped up if https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/[Arrow Flight Server] of GDS is enabled.
+are greatly sped up if https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/[Apache Arrow Flight Server] of GDS is enabled.
 
 Additionally, setting the client only optional keyword parameter `separate_property_columns=True` (it defaults to `False`) for `gds.graph.streamNodeProperties` and `gds.graph.streamRelationshipProperties` returns a pandas `DataFrame` in which each property requested has its own column.
 Note that this is different from the default behavior for which there would only be one column called `propertyValue` that contains all properties requested interleaved for each node or relationship.
@@ -420,4 +420,4 @@ assert topology_by_rel_type["REL"][0] == [0, 1, 2, 3]
 assert topology_by_rel_type["REL"][1] == [1, 2, 3, 0]
 ----
 
-Like the <<graph-object-streaming-properties>> methods, the `gds.beta.graph.relationships.stream` is also accelerated if the GDS Arrow Flight Server is enabled.
+Like the <<graph-object-streaming-properties>> methods, the `gds.beta.graph.relationships.stream` is also accelerated if the GDS Apache Arrow Flight Server is enabled.
