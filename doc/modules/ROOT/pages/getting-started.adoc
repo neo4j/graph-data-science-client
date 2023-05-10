@@ -93,13 +93,11 @@ gds.set_database("my-db")
 
 === Configure Arrow parameters
 
-If Arrow is available on the server, we can provide the `GraphDataScience` constructor with several keyword parameters to configure the connection:
+If Arrow is available on the https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow[server], we can provide the `GraphDataScience` constructor with several keyword parameters to configure the connection:
 
-* arrow_disable_server_verification - A flag that indicates that, if the flight client is connecting with
-        TLS, that it skips server verification. If this is enabled, all
-        other TLS settings are overridden.
-* arrow_tls_root_certs - PEM-encoded certificates that are used for the connecting to the
-        Arrow Flight server.
+* `arrow_disable_server_verification`: A flag that indicates that, if the flight client is connecting with
+        TLS, that it skips server verification. If this is enabled, all other TLS settings are overridden.
+* `arrow_tls_root_certs`: PEM-encoded certificates that are used for the connecting to the Arrow Flight server.
 
 [source,python,role=no-test]
 ----
@@ -109,7 +107,7 @@ gds = GraphDataScience(
   arrow=True, 
   arrow_disable_server_verification=False, 
   arrow_tls_root_certs=CERT
-  )
+)
 ----
 
 
