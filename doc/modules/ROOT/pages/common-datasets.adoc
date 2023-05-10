@@ -140,7 +140,6 @@ If you want the a projected graph to be `UNDIRECTED` in the Neo4j GDS sense of t
 If the targeted GDS server has an enterprise license and the https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/[Arrow Flight Server] enabled, the performance of the OGB dataset loading will be very good.
 If not, the performance will be a lot worse.
 The loading will take several magnitudes longer time, and require substantially more memory.
-Loading a medium OGB graph on default concurrency could take ~15min.
 Indeed, one may need to increase the https://neo4j.com/docs/operations-manual/current/configuration/neo4j-conf/#neo4j-conf-JVM[maximum heap size of the Neo4j database] which hosts GDS in order to have enough memory for the loading.
 ====
 
@@ -251,8 +250,9 @@ assert G.relationship_types() == ["TRAIN_POS", "VALID_POS", "VALID_NEG", "TEST_P
 
 [NOTE]
 ====
-ogbl-wikikg2 is a homogenous dataset (meta_info['is_hetero'] == False), but it has multiple relationship types.
-Hence we load it the same as the heterogeneous ones, suffix the relationships with the dataset split type.
+ogbl-wikikg2 is a homogenous dataset according to the OGB API, but it has multiple relationship types.
+Hence we load it in the same way as the heterogeneous ones.
+For example we suffix the relationships with the dataset split type (see below), and we do not load the negative relationships.
 ====
 
 

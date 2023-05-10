@@ -62,11 +62,15 @@ def test_graph_load_ogbl_wikikg2(gds: GraphDataScience) -> None:
 
     assert G.name() == "ogbl-wikikg2"
     assert G.node_count() == 2_500_604
+    assert set(G.node_labels()) == {"N"}
+    assert G.node_properties()["N"] == []  # type: ignore
+
     # We don't store the negative sampled relationships in the graph.
     assert G.relationship_count() == 17_137_181
-
-    # 535 train rels
-    assert len(G.relationship_types()) == 1995
+    # 535 train, 363 valid, 367 test
+    assert len(G.relationship_types()) == 1265
+    for t in G.relationship_types():
+        assert G.relationship_properties()[t] == []  # type: ignore
 
     G.drop()
 

@@ -48,7 +48,6 @@ class HomogeneousOGBNDataset(Protocol):
     # The representation is a node_count x 1 shaped matrix
     labels: npt.NDArray[np.int64]
     meta_info: "pd.Series[Any]"
-    name: str
 
     @abstractmethod
     def get_idx_split(self) -> Dict[str, npt.NDArray[np.int64]]:
@@ -71,7 +70,6 @@ class HeterogeneousOGBNDataset(Protocol):
     # The representation is a node_count x 1 shaped matrix
     labels: Dict[str, npt.NDArray[np.int64]]
     meta_info: "pd.Series[Any]"
-    name: str
 
     @abstractmethod
     def get_idx_split(self) -> Dict[str, Dict[str, npt.NDArray[np.int64]]]:
@@ -81,7 +79,6 @@ class HeterogeneousOGBNDataset(Protocol):
 class HeterogeneousOGBLDataset(Protocol):
     graph: HeterogeneousOGBGraph
     meta_info: "pd.Series[Any]"
-    name: str
 
     @abstractmethod
     def get_edge_split(self) -> Dict[str, Dict[str, Any]]:
