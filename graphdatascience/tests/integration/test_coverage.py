@@ -29,4 +29,8 @@ def test_coverage(gds: GraphDataScience) -> None:
                 if isinstance(base, UncallableNamespace):
                     raise AssertionError()
             except Exception:
-                raise AssertionError(f"Could not find a client endpoint for the {server_endpoint} server endpoint")
+                raise AssertionError(
+                    f"Could not find a client endpoint for the {server_endpoint} server endpoint."
+                    f"If it will not be supported by the client, add it to the IGNORED_SERVER_ENDPOINTS list."
+                    f"Otherwise, please implement it in the client and also add it to the sphinx documentation."
+                )

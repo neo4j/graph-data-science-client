@@ -92,6 +92,11 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Constructs a random subgraph based on random walks with restarts.
 
+.. py:function:: gds.alpha.graph.sample.cnarw(graph_name: str, from_G: Graph, **config: Any)
+    -> Tuple[Graph, "Series[Any]"]
+
+    Constructs a random subgraph based on common-neighbour-aware random walks.
+
 .. py:function:: gds.alpha.hits.mutate(G: Graph, **config: Any) -> "Series[Any]"
 
     Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
