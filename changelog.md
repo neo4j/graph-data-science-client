@@ -12,7 +12,7 @@
 	* `gds.graph.ogbn.load` for node property prediction datasets, and
 	* `gds.graph.ogbl.load` for link property prediction datasets.
 * Added possibility to load NetworkX graphs via the new method `gds.graph.networkx.load`.
-
+* Added new sphinx API reference documentation for all procedures.
 
 ## Bug fixes
 
