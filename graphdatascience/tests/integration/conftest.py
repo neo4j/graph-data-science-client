@@ -44,7 +44,7 @@ def runner(neo4j_driver: Driver) -> Neo4jQueryRunner:
     return _runner
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="package", autouse=False)
 def auradb_runner() -> Neo4jQueryRunner:
     driver = GraphDatabase.driver(AURA_DB_URI, auth=AURA_DB_AUTH)
 
@@ -90,7 +90,7 @@ def gds_without_arrow() -> GraphDataScience:
     return _gds
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="package", autouse=False)
 def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Optional[GraphDataScience]:
     if "cloud_architecture" not in request.keywords:
         _gds = GraphDataScience(

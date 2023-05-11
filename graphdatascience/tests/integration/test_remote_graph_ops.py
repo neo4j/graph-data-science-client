@@ -1,4 +1,4 @@
-from typing import Generator, Optional
+from typing import Generator
 
 import pytest
 
@@ -9,11 +9,8 @@ from graphdatascience.server_version.server_version import ServerVersion
 GRAPH_NAME = "g"
 
 
-@pytest.fixture(autouse=False)
-def run_around_tests(auradb_runner: Optional[Neo4jQueryRunner]) -> Generator[None, None, None]:
-    if not auradb_runner:
-        raise RuntimeError("Aura db runner was not initialized")
-
+@pytest.fixture(autouse=True)
+def run_around_tests(auradb_runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     # Runs before each test
     auradb_runner.run_query(
         """
@@ -28,6 +25,7 @@ def run_around_tests(auradb_runner: Optional[Neo4jQueryRunner]) -> Generator[Non
         """
     )
 
+    print(auradb_runner.run_query("MATCH (n)-->(m) RETURN n as sourceNode, m as targetNode"))
     yield  # Test runs here
 
     # Runs after each test
@@ -35,7 +33,6 @@ def run_around_tests(auradb_runner: Optional[Neo4jQueryRunner]) -> Generator[Non
     auradb_runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
 
 
-@pytest.mark.enterprise
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 4, 0))
 def test_remote_projection(gds_with_cloud_setup: GraphDataScience) -> None:
