@@ -10,7 +10,8 @@ from .pipeline_model import PipelineModel
 class NCModel(PipelineModel):
     """
     Represents a node classification model in the model catalog.
-    Construct this using :func:`NCTrainingPipeline.train() <graphdatascience.pipeline.nc_training_pipeline.NCTrainingPipeline.train>`.
+    Construct this using
+    :func:`NCTrainingPipeline.train() <graphdatascience.pipeline.nc_training_pipeline.NCTrainingPipeline.train>`.
     """
 
     def _query_prefix(self) -> str:
