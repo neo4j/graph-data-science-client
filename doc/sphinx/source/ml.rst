@@ -1,6 +1,6 @@
 Machine learning procedures
 ----------------------------
-Listing of all machine learning procedures in the Neo4j Graph Data Science Python Client API..
+Listing of all machine learning procedures in the Neo4j Graph Data Science Python Client API.
 This includes running embedding algorithms and creating various pipelines.
 These all assume that an object of :class:`.GraphDataScience` is available as `gds`.
 

@@ -9,6 +9,10 @@ class InvalidServerVersionError(Exception):
 
 
 class ServerVersion:
+    """
+    A representation of the version of the Neo4j Graph Data Science library installed on the server.
+    """
+
     def __init__(self, major: int, minor: int, patch: int):
         self.major = major
         self.minor = minor

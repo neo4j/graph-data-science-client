@@ -50,6 +50,15 @@ class MetricScores(Dict[str, Any]):
 
 @dataclass(frozen=True, repr=True)
 class NodePropertyStep:
+    """
+    A node property step of a pipeline.
+    Retrieve this for a pipeline using a `node_property_steps()` method of a pipeline model.
+
+    Attributes:
+        proc: The procedure for the node property step.
+        config: The configuration of the node property step.
+    """
+
     proc: str
     config: Dict[str, Any]
 

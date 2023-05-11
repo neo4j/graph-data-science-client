@@ -8,6 +8,11 @@ from .model import Model
 
 
 class GraphSageModel(Model):
+    """
+    Represents a GraphSAGE model in the model catalog.
+    Construct this using :func:`gds.beta.graphSage.train()`.
+    """
+
     def _query_prefix(self) -> str:
         return "CALL gds.beta.graphSage."
 

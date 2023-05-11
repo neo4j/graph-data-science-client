@@ -25,28 +25,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     """
     Primary API class for the Neo4j Graph Data Science Python Client.
     Always bind this object to a variable called `gds`.
-
-    Parameters
-    ----------
-    endpoint : Union[str, Driver, QueryRunner]
-        The Neo4j endpoint to connect to
-    auth : Optional[Tuple[str, str]], default None
-        A username, password pair for database authentication.
-    aura_ds : bool, default False
-        A flag that indicates that that the client is used to connect
-        to a Neo4j Aura instance.
-    database: Optional[str], default None
-        The Neo4j database to query against.
-    arrow : bool, default True
-        A flag that indicates that the client should use Apache Arrow
-        for data streaming if it is available on the server.
-    arrow_disable_server_verification : bool, default True
-        A flag that indicates that, if the flight client is connecting with
-        TLS, that it skips server verification. If this is enabled, all
-        other TLS settings are overridden.
-    arrow_tls_root_certs : Optional[bytes], default None
-        PEM-encoded certificates that are used for the connecting to the
-        Arrow Flight server.
     """
 
     _AURA_DS_PROTOCOL = "neo4j+s"
@@ -63,10 +41,12 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         aura_db_connection_info: Optional[AuraDbConnectionInfo] = None,
     ):
         """
+        Construct a new GraphDataScience object.
+
         Parameters
         ----------
         endpoint : Union[str, Driver, QueryRunner]
-            The Neo4j endpoint to connect to
+            The Neo4j endpoint to connect to. Most commonly, this is a Bolt connection URI.
         auth : Optional[Tuple[str, str]], default None
             A username, password pair for database authentication.
         aura_ds : bool, default False

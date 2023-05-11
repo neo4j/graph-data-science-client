@@ -20,10 +20,13 @@ This API reference manual contains all the procedures available in the Neo4j Gra
    pipeline/link-prediction
    pipeline/node-classification
    pipeline/node-regression
+   pipeline/node_property_step
+   pipeline/link_feature
    model
    model/link-prediction-model
    model/node-classification-model
    model/node-regression-model
    model/graphsage-model
    misc
+   server_version
 
