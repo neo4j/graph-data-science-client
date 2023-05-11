@@ -116,6 +116,15 @@ def test_sample_cnarw(runner: QueryRunner, gds: GraphDataScience) -> None:
     runner.run_query(f"CALL gds.graph.drop('{cnarw_G.name()}')")
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 4, 0))
+def test_sample_cnarw_estimate(runner: QueryRunner, gds: GraphDataScience) -> None:
+    from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds.alpha.graph.sample.cnarw.estimate(from_G, samplingRatio=0.6, concurrency=1, randomSeed=42)
+
+    assert result["requiredMemory"]
+
+
 def test_graph_list(gds: GraphDataScience) -> None:
     result = gds.graph.list()
     assert len(result) == 0
