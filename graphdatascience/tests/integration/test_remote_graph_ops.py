@@ -9,7 +9,7 @@ from graphdatascience.server_version.server_version import ServerVersion
 GRAPH_NAME = "g"
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(autouse=True, scope="class")
 def run_around_tests(
     auradb_runner: Neo4jQueryRunner, gds_with_cloud_setup: GraphDataScience
 ) -> Generator[None, None, None]:
