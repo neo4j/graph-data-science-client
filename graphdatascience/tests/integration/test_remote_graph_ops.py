@@ -10,7 +10,9 @@ GRAPH_NAME = "g"
 
 
 @pytest.fixture(autouse=True)
-def run_around_tests(auradb_runner: Neo4jQueryRunner) -> Generator[None, None, None]:
+def run_around_tests(
+    auradb_runner: Neo4jQueryRunner, gds_with_cloud_setup: GraphDataScience
+) -> Generator[None, None, None]:
     # Runs before each test
     auradb_runner.run_query(
         """
@@ -25,12 +27,11 @@ def run_around_tests(auradb_runner: Neo4jQueryRunner) -> Generator[None, None, N
         """
     )
 
-    print(auradb_runner.run_query("MATCH (n)-->(m) RETURN n as sourceNode, m as targetNode"))
     yield  # Test runs here
 
     # Runs after each test
     auradb_runner.run_query("MATCH (n) DETACH DELETE n")
-    auradb_runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
+    gds_with_cloud_setup._query_runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
 
 
 @pytest.mark.cloud_architecture
