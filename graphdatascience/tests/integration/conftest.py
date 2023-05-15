@@ -167,10 +167,10 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
             if "model_store_location" in item.keywords:
                 item.add_marker(skip_stored_models)
 
-    if config.getoption("--include-cloud-architecture"):
-        skip_on_prem = pytest.mark.skip(reason="not marked as `cloud_architecture`")
+    if not config.getoption("--include-cloud-architecture"):
+        skip_on_prem = pytest.mark.skip(reason="need --include-cloud-architecture option to run")
         for item in items:
-            if "cloud_architecture" not in item.keywords:
+            if "cloud_architecture" in item.keywords:
                 item.add_marker(skip_on_prem)
 
     try:
