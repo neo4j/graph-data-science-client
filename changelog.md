@@ -27,3 +27,5 @@
 
 
 ## Other changes
+
+* Added an example for community detection thanks to @kedarghule.
