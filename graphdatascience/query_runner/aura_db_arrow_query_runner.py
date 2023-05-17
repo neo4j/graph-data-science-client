@@ -87,6 +87,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
         self._fallback_query_runner.close()
 
     def _get_or_request_auth_pair(self) -> Tuple[str, str]:
+        self._client.authenticate_basic_token(self._auth[0], self._auth[1])
         return (self._auth_pair_middleware.token(), self._auth_pair_middleware.endpoint())
 
 
