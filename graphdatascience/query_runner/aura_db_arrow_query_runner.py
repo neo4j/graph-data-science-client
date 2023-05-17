@@ -30,8 +30,6 @@ class AuraDbArrowQueryRunner(QueryRunner):
             .squeeze()
         )
 
-        print(arrow_info)
-
         if not arrow_info.get("running"):
             raise RuntimeError("The plugin arrow server for AuraDB is not running")
         listen_address: Optional[str] = arrow_info.get("advertisedListenAddress")  # type: ignore
@@ -63,14 +61,11 @@ class AuraDbArrowQueryRunner(QueryRunner):
             params = {}
 
         if "gds.alpha.graph.project.remote" in query:
-            print("call remote projection")
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
             params["token"] = token
             params["host"] = aura_db_arrow_endpoint
             params["config"] = {"useEncryption": False}
 
-        print(query)
-        print(params)
         return self._fallback_query_runner.run_query(query, params, database, custom_error)
 
     def set_database(self, database: str) -> None:
@@ -92,7 +87,6 @@ class AuraDbArrowQueryRunner(QueryRunner):
         self._fallback_query_runner.close()
 
     def _get_or_request_auth_pair(self) -> Tuple[str, str]:
-        print(self._client.authenticate_basic_token(self._auth[0], self._auth[1]))
         return (self._auth_pair_middleware.token(), self._auth_pair_middleware.endpoint())
 
 
