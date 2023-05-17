@@ -66,6 +66,17 @@ class AuraDbArrowQueryRunner(QueryRunner):
             params["host"] = aura_db_arrow_endpoint
             params["config"] = {"useEncryption": False}
 
+        elif ".write" in query and "config" in params and "remote" in params["config"] and params["config"]["remote"]:
+            token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
+            host, port_string = aura_db_arrow_endpoint.split(":")
+            del params["config"]["remote"]
+            params["config"]["arrowConnectionInfo"] = {
+                "hostname": host,
+                "port": int(port_string),
+                "bearerToken": token,
+                "useEncryption": False,
+            }
+
         return self._fallback_query_runner.run_query(query, params, database, custom_error)
 
     def set_database(self, database: str) -> None:
