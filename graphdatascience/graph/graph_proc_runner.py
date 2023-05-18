@@ -14,6 +14,7 @@ from ..error.uncallable_namespace import UncallableNamespace
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
 from .graph_alpha_proc_runner import GraphAlphaProcRunner
+from .graph_sample_runner import GraphSampleRunner
 from .graph_entity_ops_runner import (
     GraphElementPropertyRunner,
     GraphNodePropertiesRunner,
@@ -108,6 +109,11 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         return alpha_proc_runner.construct(
             graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types
         )
+
+    @property
+    def sample(self) -> GraphProjectRunner:
+        self._namespace += ".sample"
+        return GraphSampleRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def networkx(self):  # type: ignore
