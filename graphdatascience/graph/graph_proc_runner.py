@@ -14,7 +14,6 @@ from ..error.uncallable_namespace import UncallableNamespace
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
 from .graph_alpha_proc_runner import GraphAlphaProcRunner
-from .graph_sample_runner import GraphSampleRunner
 from .graph_entity_ops_runner import (
     GraphElementPropertyRunner,
     GraphNodePropertiesRunner,
@@ -25,6 +24,7 @@ from .graph_entity_ops_runner import (
 from .graph_export_runner import GraphExportRunner
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
+from .graph_sample_runner import GraphSampleRunner
 from .graph_type_check import graph_type_check, graph_type_check_optional
 from .ogb_loader import OGBLLoader, OGBNLoader
 
@@ -111,7 +111,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         )
 
     @property
-    def sample(self) -> GraphProjectRunner:
+    def sample(self) -> GraphSampleRunner:
         self._namespace += ".sample"
         return GraphSampleRunner(self._query_runner, self._namespace, self._server_version)
 
