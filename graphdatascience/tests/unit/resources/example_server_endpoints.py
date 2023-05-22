@@ -273,6 +273,7 @@ EXAMPLE_SERVER_ENDPOINTS = [
     "gds.graph.removeNodeProperties",
     "gds.graph.sample.rwr",
     "gds.graph.sample.cnarw",
+    "gds.graph.sample.cnarw.estimate",
     "gds.graph.streamNodeProperties",
     "gds.graph.streamNodeProperty",
     "gds.graph.streamRelationshipProperties",
