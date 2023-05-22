@@ -90,7 +90,7 @@ def test_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
 def test_sample_rwr(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    rwr_G, result = gds.alpha.graph.sample.rwr("s", from_G, samplingRatio=0.6, concurrency=1, randomSeed=42)
+    rwr_G, result = gds.graph.sample.rwr("s", from_G, samplingRatio=0.6, concurrency=1, randomSeed=42)
 
     assert rwr_G.name() == "s"
     assert result["graphName"] == "s"

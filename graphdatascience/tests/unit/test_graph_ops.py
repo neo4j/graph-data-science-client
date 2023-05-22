@@ -604,9 +604,9 @@ def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) ->
 
 def test_graph_sample_rwr(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project("g", "*", "*")
-    gds.alpha.graph.sample.rwr("s", from_G, samplingRatio=0.9, concurrency=7)
+    gds.graph.sample.rwr("s", from_G, samplingRatio=0.9, concurrency=7)
 
-    assert runner.last_query() == "CALL gds.alpha.graph.sample.rwr($graph_name, $from_graph_name, $config)"
+    assert runner.last_query() == "CALL gds.graph.sample.rwr($graph_name, $from_graph_name, $config)"
     assert runner.last_params() == {
         "graph_name": "s",
         "from_graph_name": "g",
