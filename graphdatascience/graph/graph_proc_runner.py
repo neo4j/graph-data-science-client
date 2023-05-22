@@ -24,6 +24,7 @@ from .graph_entity_ops_runner import (
 from .graph_export_runner import GraphExportRunner
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
+from .graph_sample_runner import GraphSampleRunner
 from .graph_type_check import graph_type_check, graph_type_check_optional
 from .ogb_loader import OGBLLoader, OGBNLoader
 
@@ -108,6 +109,11 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         return alpha_proc_runner.construct(
             graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types
         )
+
+    @property
+    def sample(self) -> GraphSampleRunner:
+        self._namespace += ".sample"
+        return GraphSampleRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def networkx(self):  # type: ignore
