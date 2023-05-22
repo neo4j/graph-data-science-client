@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Neo4j Graph Data Science Python Client's documentation!
-==================================================================
+Neo4j Graph Data Science Python Client API Reference
+====================================================
 
-This API reference manual contains all the procedures available in the Neo4j Graph Data Science Python Client |api-version|.
+This API reference manual lists all available endpoints in the Neo4j Graph Data Science Python Client |api-version|.
 
 .. toctree::
    :maxdepth: 1
