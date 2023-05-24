@@ -11,14 +11,14 @@ from ..server_version.server_version import ServerVersion
 from .graph_alpha_project_runner import GraphAlphaProjectRunner
 from .graph_entity_ops_runner import GraphLabelRunner, GraphPropertyRunner
 from .graph_object import Graph
-from .graph_sample_runner import GraphSampleRunner
+from .graph_sample_runner import GraphAlphaSampleRunner
 
 
 class GraphAlphaProcRunner(UncallableNamespace, IllegalAttrChecker):
     @property
-    def sample(self) -> GraphSampleRunner:
+    def sample(self) -> GraphAlphaSampleRunner:
         self._namespace += ".sample"
-        return GraphSampleRunner(self._query_runner, self._namespace, self._server_version)
+        return GraphAlphaSampleRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def graphProperty(self) -> GraphPropertyRunner:

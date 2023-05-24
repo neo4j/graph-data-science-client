@@ -27,6 +27,7 @@ EXAMPLE_SERVER_ENDPOINTS = [
     "gds.alpha.graph.graphProperty.stream",
     "gds.alpha.graph.nodeLabel.mutate",
     "gds.alpha.graph.nodeLabel.write",
+    "gds.alpha.graph.sample.rwr",
     "gds.alpha.hits.mutate",
     "gds.alpha.hits.mutate.estimate",
     "gds.alpha.hits.stats",
