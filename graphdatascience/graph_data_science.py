@@ -103,32 +103,20 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         self._query_runner.set_server_version(self._server_version)
 
         if arrow and self._server_version >= ServerVersion(2, 1, 0):
-            try:
-                arrow_info: "Series[Any]" = self._query_runner.run_query(
-                    "CALL gds.debug.arrow()", custom_error=False
-                ).squeeze()
-                listen_address: str = arrow_info.get(
-                    "advertisedListenAddress", arrow_info["listenAddress"]
-                )  # type: ignore
-                if arrow_info["running"]:
-                    self._query_runner = ArrowQueryRunner(
-                        listen_address,
-                        self._query_runner,
-                        self._server_version,
-                        auth,
-                        driver.encrypted,
-                        arrow_disable_server_verification,
-                        arrow_tls_root_certs,
-                    )
-            except Exception as e:
-                # AuraDS does not have arrow support at this time, so we should not warn about it.
-                # TODO: Remove this check when AuraDS gets arrow support.
-                if (
-                    "There is no procedure with the name `gds.debug.arrow` "
-                    "registered for this database instance." not in str(e)
-                ):
-                    warnings.warn(f"Could not initialize GDS Flight Server client: {e}")
-
+            arrow_info: "Series[Any]" = self._query_runner.run_query(
+                "CALL gds.debug.arrow()", custom_error=False
+            ).squeeze()
+            listen_address: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])  # type: ignore
+            if arrow_info["running"]:
+                self._query_runner = ArrowQueryRunner(
+                    listen_address,
+                    self._query_runner,
+                    self._server_version,
+                    auth,
+                    driver.encrypted,
+                    arrow_disable_server_verification,
+                    arrow_tls_root_certs,
+                )
         if aura_db_connection_info:
             if self._server_version >= ServerVersion(2, 4, 0):
                 self._query_runner = AuraDbArrowQueryRunner(self._query_runner, aura_db_connection_info)
