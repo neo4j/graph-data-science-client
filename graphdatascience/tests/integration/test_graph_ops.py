@@ -805,3 +805,5 @@ def test_fake() -> None:
 
 def test_fake2() -> None:
     assert True
+def test_fake3() -> None:
+    assert True
