@@ -802,3 +802,6 @@ def test_graph_nodeProperty_stream_via_run_query(gds: GraphDataScience) -> None:
 
 def test_fake() -> None:
     assert True
+
+def test_fake2() -> None:
+    assert True
