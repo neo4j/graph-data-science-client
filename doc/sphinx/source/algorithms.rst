@@ -92,14 +92,8 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Constructs a random subgraph based on random walks with restarts.
 
-.. py:function:: gds.graph.sample.cnarw(graph_name: str, from_G: Graph, **config: Any)
-    -> Tuple[Graph, "Series[Any]"]
-
-    Constructs a random subgraph based on common-neighbour-aware random walks.
-
-.. py:function:: gds.graph.sample.cnarw.estimate(G: Graph, **config: Any) -> "Series[Any]"
-
-    Returns an estimation of the memory consumption for that procedure.
+.. deprecated:: 2.4.0
+   Since GDS server version 2.4.0 you should use the endpoint :func:`gds.graph.sample.rwr` instead.
 
 .. py:function:: gds.alpha.hits.mutate(G: Graph, **config: Any) -> "Series[Any]"
 
@@ -524,36 +518,35 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.beta.scaleProperties.mutate(G: Graph, **config: Any) -> "Series[Any]"
+.. py:function:: gds.scaleProperties.mutate(G: Graph, **config: Any) -> "Series[Any]"
 
     Scale node properties
 
-.. py:function:: gds.beta.scaleProperties.mutate.estimate(G: Graph, **config: Any) -> "Series[Any]"
+.. py:function:: gds.scaleProperties.mutate.estimate(G: Graph, **config: Any) -> "Series[Any]"
 
     Returns an estimation of the memory consumption for that procedure.
 
-
-.. py:function:: gds.beta.scaleProperties.stats(G: Graph, **config: Any) -> "Series[Any]"
+.. py:function:: gds.scaleProperties.stats(G: Graph, **config: Any) -> "Series[Any]"
 
     Scale node properties
 
-.. py:function:: gds.beta.scaleProperties.stats.estimate(G: Graph, **config: Any) -> "Series[Any]"
+.. py:function:: gds.scaleProperties.stats.estimate(G: Graph, **config: Any) -> "Series[Any]"
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.beta.scaleProperties.stream(G: Graph, **config: Any) -> DataFrame
+.. py:function:: gds.scaleProperties.stream(G: Graph, **config: Any) -> DataFrame
 
     Scale node properties
 
-.. py:function:: gds.beta.scaleProperties.stream.estimate(G: Graph, **config: Any) -> "Series[Any]"
+.. py:function:: gds.scaleProperties.stream.estimate(G: Graph, **config: Any) -> "Series[Any]"
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.beta.scaleProperties.write(G: Graph, **config: Any) -> "Series[Any]"
+.. py:function:: gds.scaleProperties.write(G: Graph, **config: Any) -> "Series[Any]"
 
     Scale node properties
 
-.. py:function:: gds.beta.scaleProperties.write.estimate(G: Graph, **config: Any) -> "Series[Any]"
+.. py:function:: gds.scaleProperties.write.estimate(G: Graph, **config: Any) -> "Series[Any]"
 
     Returns an estimation of the memory consumption for that procedure.
 
@@ -763,6 +756,52 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Eigenvector Centrality is an algorithm that measures the transitive influence or connectivity of nodes.
 
 .. py:function:: gds.eigenvector.write.estimate(G: Graph, **config: Any) -> "Series[Any]"
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.graph.sample.cnarw(graph_name: str, from_G: Graph, **config: Any)
+    -> Tuple[Graph, "Series[Any]"]
+
+    Constructs a random subgraph based on common-neighbour-aware random walks.
+
+.. py:function:: gds.graph.sample.cnarw.estimate(G: Graph, **config: Any) -> "Series[Any]"
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.graph.sample.rwr(graph_name: str, from_G: Graph, **config: Any)
+    -> Tuple[Graph, "Series[Any]"]
+
+    Constructs a random subgraph based on random walks with restarts.
+
+.. py:function:: gds.kcore.mutate(G: Graph, **config: Any) -> "Series[Any]"
+
+    Computes the k-core values in a network
+
+.. py:function:: gds.kcore.mutate.estimate(G: Graph, **config: Any) -> "Series[Any]"
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.kcore.stats(G: Graph, **config: Any) -> "Series[Any]"
+
+    Computes the k-core values in a network
+
+.. py:function:: gds.kcore.stats.estimate(G: Graph, **config: Any) -> "Series[Any]"
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.kcore.stream(G: Graph, **config: Any) -> "Series[Any]"
+
+    Computes the k-core values in a network
+
+.. py:function:: gds.kcore.stream.estimate(G: Graph, **config: Any) -> "Series[Any]"
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.kcore.write(G: Graph, **config: Any) -> "Series[Any]"
+
+    Computes the k-core values in a network
+
+.. py:function:: gds.kcore.write.estimate(G: Graph, **config: Any) -> "Series[Any]"
 
     Returns an estimation of the memory consumption for that procedure.
 

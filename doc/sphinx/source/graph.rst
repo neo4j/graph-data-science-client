@@ -113,11 +113,15 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Writes the given relationship and an optional relationship property to an online Neo4j database.
 
-.. py:function:: gds.graph.relationshipProperties.stream(G: Graph,relationship_properties: List[str],relationship_types: Strings = ["*"],separate_property_columns: bool = False,**config: Any,) -> DataFrame
+.. py:function:: gds.graph.relationshipProperties.stream(G: Graph, relationship_properties: List[str],relationship_types: Union[str, List[str]] = ["*"],separate_property_columns: bool = False,**config: Any,) -> DataFrame
 
     Streams the given relationship properties.
 
-.. py:function:: gds.graph.relationshipProperty.stream(G: Graph, node_properties: str, node_labels: Strings = ["*"], **config: Any) -> DataFrame
+.. py:function:: gds.graph.relationshipProperties.write(G: Graph, relationship_type: str, relationship_properties: List[str], **config: Any,) -> DataFrame
+
+    Write the given relationship properties back to the database.
+
+.. py:function:: gds.graph.relationshipProperty.stream(G: Graph, node_properties: str, node_labels: Union[str, List[str]] = ["*"], **config: Any) -> DataFrame
 
     Streams the given relationship property.
 
