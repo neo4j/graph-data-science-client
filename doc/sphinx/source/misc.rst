@@ -21,7 +21,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Set a limit; global by, default, but also optionally for a specific user
 
-.. py:function:: gds.alpha.systemMonitor() -> "Series[Any]"
+.. py:function:: gds.alpha.systemMonitor() -> Series[Any]
 
     Get an overview of the system's workload and available resources
 
@@ -33,7 +33,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     List progress events for currently running tasks.
 
-.. py:function:: gds.debug.sysInfo() -> "Series[Any]"
+.. py:function:: gds.debug.sysInfo() -> Series[Any]
 
     Returns details about the status of the system
 
