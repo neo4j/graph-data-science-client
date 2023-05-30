@@ -227,6 +227,20 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.alpha.scaleProperties.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    Scale node properties
+
+.. deprecated:: 2.4.0
+   Since GDS server version 2.4.0 you should use the endpoint :func:`gds.scaleProperties.mutate` instead.
+
+.. py:function:: gds.alpha.scaleProperties.stream(G: Graph, **config: Any) -> DataFrame
+
+    Scale node properties
+
+.. deprecated:: 2.4.0
+   Since GDS server version 2.4.0 you should use the endpoint :func:`gds.scaleProperties.stream` instead.
+
 .. py:function:: gds.alpha.scc.stream(G: Graph, **config: Any) -> DataFrame
 
     The SCC algorithm finds sets of connected nodes in an directed graph,

@@ -17,14 +17,6 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Creates a node regression training pipeline in the pipeline catalog.
 
-.. py:function:: gds.alpha.scaleProperties.mutate(G: Graph, **config: Any) -> Series[Any]
-
-    Scale node properties
-
-.. py:function:: gds.alpha.scaleProperties.stream(G: Graph, **config: Any) -> DataFrame
-
-    Scale node properties
-
 .. py:function:: gds.beta.graphSage.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The GraphSage algorithm inductively computes embeddings for nodes based on a their features and neighborhoods.
