@@ -91,6 +91,7 @@ class ArrowGraphConstructor(GraphConstructor):
         with writer:
             # Write table in chunks
             for partition in batches:
+                breakpoint()
                 writer.write_batch(partition)
                 pbar.update(partition.num_rows)
 

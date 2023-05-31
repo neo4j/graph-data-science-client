@@ -12,6 +12,7 @@ split_artist = [line.split('\t')[:1] for line in artist_lines[1:]]
 artist_df = pd.DataFrame(split_artist, columns=['nodeId'])
 artist_df['nodeId'] = artist_df['nodeId'].astype(int)
 artist_df['labels'] = 'Artist'
+artist_df.reset_index(drop=True, inplace=True)
 
 # User LISTEN_TO Artist relationships
 user_listen_artist_lines = readlines("raw/lastfm2k/user_artists.dat")
@@ -21,9 +22,11 @@ user_artist_df['sourceNodeId'] = user_artist_df['sourceNodeId'].astype(int)
 user_artist_df['targetNodeId'] = user_artist_df['targetNodeId'].astype(int)
 user_artist_df['weight'] = user_artist_df['weight'].astype(int)
 user_artist_df['relationshipType'] = 'LISTEN_TO'
+user_artist_df.reset_index(drop=True, inplace=True)
 
 # User nodes
 user_df = pd.DataFrame({'nodeId': user_artist_df['sourceNodeId'].drop_duplicates(), 'labels': 'User'})
+user_df.reset_index(drop=True, inplace=True)
 
 # User TAG Artist relationships
 user_tag_dmy = readlines("raw/lastfm2k/user_taggedartists.dat")
@@ -44,6 +47,7 @@ user_tag_artist_df['timestamp'] = user_tag_artist_df['timestamp'].astype(int)
 user_tag_artist_df['day'] = user_tag_artist_df['day'].astype(int)
 user_tag_artist_df['month'] = user_tag_artist_df['month'].astype(int)
 user_tag_artist_df['year'] = user_tag_artist_df['year'].astype(int)
+user_tag_artist_df.reset_index(drop=True, inplace=True)
 
 # User FRIEND User relationships
 user_friends = readlines("raw/lastfm2k/user_friends.dat")
@@ -56,6 +60,7 @@ user_friend_df_directed = sorted_user_friend_df.drop_duplicates()
 user_friend_df_directed['relationshipType'] = 'IS_FRIEND'
 user_friend_df_directed['sourceNodeId'] = user_friend_df_directed['sourceNodeId'].astype(int)
 user_friend_df_directed['targetNodeId'] = user_friend_df_directed['targetNodeId'].astype(int)
+user_friend_df_directed.reset_index(drop=True, inplace=True)
 
 artist_df.to_pickle(
     "artist_nodes.pkl",
