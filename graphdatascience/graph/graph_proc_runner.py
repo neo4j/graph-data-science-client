@@ -155,7 +155,6 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
 
-
     @client_only_endpoint("gds.graph")
     def load_lastfm(self, graph_name: str = "lastfm", undirected: bool = True) -> Any:
         if self._server_version < ServerVersion(2, 3, 0):
@@ -180,11 +179,12 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         rels = [user_friend_df_directed, user_listen_artist_rels, user_tag_artist_rels]
 
         # Default undirected for usage in GDS ML pipelines
-        undirected_relationship_types = ['LISTEN_TO', 'TAGGED', 'IS_FRIEND'] if undirected else []
+        undirected_relationship_types = ["LISTEN_TO", "TAGGED", "IS_FRIEND"] if undirected else []
 
         return alpha_proc_runner.construct(
             graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types
         )
+
     @property
     def sample(self) -> GraphSampleRunner:
         self._namespace += ".sample"

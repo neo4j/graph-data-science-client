@@ -145,6 +145,7 @@ def test_imdb_graph_with_arrow(gds: GraphDataScience) -> None:
     finally:
         G.drop()
 
+
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
 def test_lastfm_graph_without_arrow(gds_without_arrow: GraphDataScience) -> None:
@@ -535,13 +536,15 @@ def test_graph_alpha_construct_backward_compat_with_arrow(gds: GraphDataScience)
 
 @pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
-def test_graph_construct_with_arrow_abort(gds: GraphDataScience) -> None:
+def test_graph_construct_with_mismatch_dataframe_idspace(gds: GraphDataScience) -> None:
     nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
     goodRels = DataFrame({"sourceNodeId": [0, 1], "targetNodeId": [3, 0]})
     badRels = DataFrame({"sourceNodeId": [3], "targetNodeId": [99]})
 
-    with pytest.raises(ValueError, match=f"Index out of bounds during arrow transaction. "
-                                         f"It is likely that there's mismatch in the id space."):
+    with pytest.raises(
+        ValueError,
+        match="Index out of bounds during arrow transaction. It is likely that there's mismatch in the id space.",
+    ):
         gds.alpha.graph.construct("graph", nodes, [goodRels, badRels])
 
     G = gds.alpha.graph.construct("graph", nodes, goodRels)
@@ -551,4 +554,3 @@ def test_graph_construct_with_arrow_abort(gds: GraphDataScience) -> None:
     assert G.relationship_count() == 2
 
     G.drop()
-
