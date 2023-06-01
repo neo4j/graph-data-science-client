@@ -92,6 +92,38 @@ The default is to load IMDB dataset as `undirected = True`. If loaded as directe
 |===
 
 
+=== LastFM
+
+A heterogeneous graph that is used to benchmark link prediction models, for example used by https://arxiv.org/pdf/2002.01680.pdf[MAGNN: Metapath Aggregated Graph Neural Network for
+Heterogeneous Graph Embedding]. The data and licensing is from https://grouplens.org/datasets/hetrec-2011/[HetRec 2011]
+The original raw data is from http://www.lastfm.com/[LastFM].
+
+The graph contains User and Artists as nodes.
+
+There are three types of relationships.`IS_FRIEND` which represents User-User friendship.
+
+`LISTEN_TO` between User and Artist. It has a relationship property `weight` that represents the number of times the user listened to the artist.
+
+`TAGGED` between User and Artist. It has a `tagID` property where each `tagId` represents a genre,
+It also has `day`, `month`, `year` properties, as well as an equivalent `timestamp` property converted from the day-month-year,
+which represents when the user tagged that artist with that `tagId`.
+
+The default is to load LastFM dataset as `undirected = True`. If loaded as directed, it will have half the relationships.
+
+.LastFM graph statistics
+[opts="header",cols="3m,3m", role="no-break"]
+|===
+| Name                    | Value
+| name                    | lastfm
+| node_count              | 19_914
+| relationship_count      | 584_060
+| node_labels             | ['Artist', 'User']
+| relationship_types      | ['TAGGED', 'LISTEN_TO', 'IS_FRIEND']
+| node_properties         | Artist: [], User: []
+| relationship_properties | TAGGED: [year, month, day, tagID, timestamp], LISTEN_TO: [weight], IS_FRIEND: []
+|===
+
+
 [[ogb]]
 == Datasets from the Open Graph Benchmark
 
