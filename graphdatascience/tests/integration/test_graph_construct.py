@@ -145,6 +145,28 @@ def test_imdb_graph_with_arrow(gds: GraphDataScience) -> None:
     finally:
         G.drop()
 
+@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
+def test_lastfm_graph_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    G = gds_without_arrow.graph.load_lastfm()
+
+    try:
+        assert G.node_count() == 19914
+        assert G.relationship_count() == 584060
+    finally:
+        G.drop()
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
+def test_lastfm_graph_with_arrow(gds: GraphDataScience) -> None:
+    G = gds.graph.load_lastfm()
+
+    try:
+        assert G.node_count() == 19914
+        assert G.relationship_count() == 584060
+    finally:
+        G.drop()
+
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 @pytest.mark.enterprise

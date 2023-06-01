@@ -157,7 +157,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
 
     @client_only_endpoint("gds.graph")
-    def load_lastfm2k(self, graph_name: str = "lastfm2k", undirected: bool = True) -> Any:
+    def load_lastfm(self, graph_name: str = "lastfm", undirected: bool = True) -> Any:
         if self._server_version < ServerVersion(2, 3, 0):
             raise ValueError("The LastFM2K dataset loading is only supported by GDS 2.3 or later.")
 
@@ -182,8 +182,9 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         # Default undirected for usage in GDS ML pipelines
         undirected_relationship_types = ['LISTEN_TO', 'TAGGED', 'IS_FRIEND'] if undirected else []
 
-        return nodes, rels
-
+        return alpha_proc_runner.construct(
+            graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types
+        )
     @property
     def sample(self) -> GraphSampleRunner:
         self._namespace += ".sample"
