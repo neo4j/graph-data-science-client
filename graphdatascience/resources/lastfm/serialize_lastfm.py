@@ -5,14 +5,15 @@ def readlines(path):
     with open(path, 'r') as f:
         return list(map(lambda line: line.strip(), f.readlines()))
 
-# Artist nodes
-artist_lines = readlines("raw/lastfm2k/artists.dat")
-#Artist names are not loaded, since GDS does not support string node properties
-split_artist = [line.split('\t')[:1] for line in artist_lines[1:]]
-artist_df = pd.DataFrame(split_artist, columns=['nodeId'])
-artist_df['nodeId'] = artist_df['nodeId'].astype(int)
-artist_df['labels'] = 'Artist'
-artist_df.reset_index(drop=True, inplace=True)
+# There are artists in rels that are missing in artists.dat
+# artist_lines = readlines("raw/lastfm2k/artists.dat")
+# split_artist = [line.split('\t')[:1] for line in artist_lines[1:]]
+# artist_df = pd.DataFrame(split_artist, columns=['nodeId'])
+# artist_df['nodeId'] = artist_df['nodeId'].astype(int)
+# artist_df
+# artist_df['labels'] = 'Artist'
+# artist_df['nodeId'] = artist_df['nodeId'] + 10000
+# artist_df.reset_index(drop=True, inplace=True)
 
 # User LISTEN_TO Artist relationships
 user_listen_artist_lines = readlines("raw/lastfm2k/user_artists.dat")
@@ -21,6 +22,8 @@ user_artist_df = pd.DataFrame(split_user_listen_artist, columns=['sourceNodeId',
 user_artist_df['sourceNodeId'] = user_artist_df['sourceNodeId'].astype(int)
 user_artist_df['targetNodeId'] = user_artist_df['targetNodeId'].astype(int)
 user_artist_df['weight'] = user_artist_df['weight'].astype(int)
+#Increment artists ids to avoid clash with usrs ids
+user_artist_df['targetNodeId'] = user_artist_df['targetNodeId'] + 10000
 user_artist_df['relationshipType'] = 'LISTEN_TO'
 user_artist_df.reset_index(drop=True, inplace=True)
 
@@ -42,6 +45,8 @@ user_tag_timestamp_df['relationshipType'] = 'TAGGED'
 user_tag_artist_df = user_tag_dmy_df.join(user_tag_timestamp_df.set_index(['sourceNodeId', 'targetNodeId', 'tagID', 'relationshipType']), on=['sourceNodeId', 'targetNodeId', 'tagID', 'relationshipType'])
 user_tag_artist_df['sourceNodeId'] = user_tag_artist_df['sourceNodeId'].astype(int)
 user_tag_artist_df['targetNodeId'] = user_tag_artist_df['targetNodeId'].astype(int)
+#Increment artists ids to avoid clash with usrs ids
+user_tag_artist_df['targetNodeId'] = user_tag_artist_df['targetNodeId'] + 10000
 user_tag_artist_df['tagID'] = user_tag_artist_df['tagID'].astype(int)
 user_tag_artist_df['timestamp'] = user_tag_artist_df['timestamp'].astype(int)
 user_tag_artist_df['day'] = user_tag_artist_df['day'].astype(int)
@@ -61,6 +66,13 @@ user_friend_df_directed['relationshipType'] = 'IS_FRIEND'
 user_friend_df_directed['sourceNodeId'] = user_friend_df_directed['sourceNodeId'].astype(int)
 user_friend_df_directed['targetNodeId'] = user_friend_df_directed['targetNodeId'].astype(int)
 user_friend_df_directed.reset_index(drop=True, inplace=True)
+
+# Artists
+artists_df1 = user_artist_df[['targetNodeId']].drop_duplicates().reset_index(drop=True)
+artists_df2 = user_tag_artist_df[['targetNodeId']].drop_duplicates().reset_index(drop=True)
+artist_df = pd.concat([artists_df1, artists_df2]).drop_duplicates().reset_index(drop=True).rename({'targetNodeId': 'nodeId'}, axis=1)
+artist_df['labels'] = 'Artist'
+
 
 artist_df.to_pickle(
     "artist_nodes.pkl",
