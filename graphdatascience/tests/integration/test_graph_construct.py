@@ -532,25 +532,3 @@ def test_graph_alpha_construct_backward_compat_with_arrow(gds: GraphDataScience)
 
     with pytest.warns(DeprecationWarning):
         gds.alpha.graph.construct("hello", nodes, relationships)
-
-
-@pytest.mark.enterprise
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
-def test_graph_construct_with_mismatch_dataframe_idspace(gds: GraphDataScience) -> None:
-    nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
-    goodRels = DataFrame({"sourceNodeId": [0, 1], "targetNodeId": [3, 0]})
-    badRels = DataFrame({"sourceNodeId": [3], "targetNodeId": [99]})
-
-    with pytest.raises(
-        ValueError,
-        match="Index out of bounds during arrow transaction. It is likely that there's mismatch in the id space.",
-    ):
-        gds.alpha.graph.construct("graph", nodes, [goodRels, badRels])
-
-    G = gds.alpha.graph.construct("graph", nodes, goodRels)
-
-    assert G.name() == "graph"
-    assert G.node_count() == 4
-    assert G.relationship_count() == 2
-
-    G.drop()

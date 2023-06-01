@@ -4,6 +4,7 @@ import pandas as pd
 # Raw data is taken from the zip at https://grouplens.org/datasets/hetrec-2011/
 # Download and put the files at some local directory and modify readlines to read from the appropriate path
 
+
 def readlines(path: str) -> list[str]:
     with open(path, "r") as f:
         return list(map(lambda line: line.strip(), f.readlines()))

@@ -106,7 +106,7 @@ There are three types of relationships.`IS_FRIEND` which represents User-User fr
 
 `TAGGED` between User and Artist. It has a `tagID` property where each `tagId` represents a genre,
 It also has `day`, `month`, `year` properties, as well as an equivalent `timestamp` property converted from the day-month-year,
-which represents when the user tagged that artist with that `tagId`.
+which represents when the user tagged that artist with that `tagId`. Note that a user can tag the same artist at different times with different `tagId`.
 
 The default is to load LastFM dataset as `undirected = True`. If loaded as directed, it will have half the relationships.
 
