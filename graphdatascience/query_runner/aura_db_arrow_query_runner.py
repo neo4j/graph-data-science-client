@@ -64,6 +64,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
             params["token"] = token
             params["host"] = aura_db_arrow_endpoint
+            params["config"] = {"useEncryption": False}
 
         return self._fallback_query_runner.run_query(query, params, database, custom_error)
 

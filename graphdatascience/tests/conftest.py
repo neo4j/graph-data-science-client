@@ -13,3 +13,6 @@ def pytest_addoption(parser: Any) -> None:
     )
     parser.addoption("--target-aura", action="store_true", help="the database targeted is an AuraDS instance")
     parser.addoption("--include-ogb", action="store_true", help="include tests requiring the ogb dependency")
+    parser.addoption(
+        "--include-cloud-architecture", action="store_true", help="include tests resuiring a cloud architecture setup"
+    )
