@@ -11,7 +11,7 @@ def readlines(path: str) -> list[str]:
 
 
 # There are artists in rels that are missing in artists.dat
-# artist_lines = readlines("raw/lastfm2k/artists.dat")
+# artist_lines = readlines("raw2k/artists.dat")
 # split_artist = [line.split('\t')[:1] for line in artist_lines[1:]]
 # artist_df = pd.DataFrame(split_artist, columns=['nodeId'])
 # artist_df['nodeId'] = artist_df['nodeId'].astype(int)
@@ -21,7 +21,7 @@ def readlines(path: str) -> list[str]:
 # artist_df.reset_index(drop=True, inplace=True)
 
 # User LISTEN_TO Artist relationships
-user_listen_artist_lines = readlines("raw/lastfm2k/user_artists.dat")
+user_listen_artist_lines = readlines("raw/user_artists.dat")
 split_user_listen_artist = [line.split("\t")[:3] for line in user_listen_artist_lines[1:]]
 user_artist_df = pd.DataFrame(split_user_listen_artist, columns=["sourceNodeId", "targetNodeId", "weight"])
 user_artist_df["sourceNodeId"] = user_artist_df["sourceNodeId"].astype(int)
@@ -34,17 +34,18 @@ user_artist_df.reset_index(drop=True, inplace=True)
 
 # User nodes
 user_df = pd.DataFrame({"nodeId": user_artist_df["sourceNodeId"].drop_duplicates(), "labels": "User"})
+user_df["rawId"] = user_df["nodeId"]
 user_df.reset_index(drop=True, inplace=True)
 
 # User TAG Artist relationships
-user_tag_dmy = readlines("raw/lastfm2k/user_taggedartists.dat")
+user_tag_dmy = readlines("raw/user_taggedartists.dat")
 split_user_tag_dmy = [line.split("\t") for line in user_tag_dmy[1:]]
 # Create a pandas DataFrame with the split data
 user_tag_dmy_df = pd.DataFrame(
     split_user_tag_dmy, columns=["sourceNodeId", "targetNodeId", "tagID", "day", "month", "year"]
 )
 user_tag_dmy_df["relationshipType"] = "TAGGED"
-user_tag_timestamp = readlines("raw/lastfm2k/user_taggedartists-timestamps.dat")
+user_tag_timestamp = readlines("raw/user_taggedartists-timestamps.dat")
 split_user_tag_timestamp = [line.split("\t") for line in user_tag_timestamp[1:]]
 # Create a pandas DataFrame with the split data
 user_tag_timestamp_df = pd.DataFrame(
@@ -67,7 +68,7 @@ user_tag_artist_df["year"] = user_tag_artist_df["year"].astype(int)
 user_tag_artist_df.reset_index(drop=True, inplace=True)
 
 # User FRIEND User relationships
-user_friends = readlines("raw/lastfm2k/user_friends.dat")
+user_friends = readlines("raw/user_friends.dat")
 split_user_friends = [line.split("\t") for line in user_friends[1:]]
 # Create a pandas DataFrame with the split data
 user_friend_df = pd.DataFrame(split_user_friends, columns=["sourceNodeId", "targetNodeId"])
@@ -88,6 +89,7 @@ artist_df = (
     .reset_index(drop=True)
     .rename({"targetNodeId": "nodeId"}, axis=1)
 )
+artist_df["rawId"] = artist_df["nodeId"]
 artist_df["labels"] = "Artist"
 
 

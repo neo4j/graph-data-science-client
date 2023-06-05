@@ -98,7 +98,8 @@ A heterogeneous graph that is used to benchmark link prediction models, for exam
 The data and licensing is from https://grouplens.org/datasets/hetrec-2011/[HetRec 2011]
 The original raw data is from http://www.lastfm.com/[LastFM].
 
-The graph contains User and Artists as nodes.
+The graph contains User and Artists as nodes, each with a `rawId` field that corresponds to the ids from the raw data.
+The `rawId` could be used, for example, to check the artist names by referring back to the HetRec'11 .dat files.
 
 There are three types of relationships.
 `IS_FRIEND` which represents User-User friendship.
@@ -124,7 +125,7 @@ If loaded as directed, it will have half the relationships.
 | relationship_count      | 584_060
 | node_labels             | ['Artist', 'User']
 | relationship_types      | ['TAGGED', 'LISTEN_TO', 'IS_FRIEND']
-| node_properties         | Artist: [], User: []
+| node_properties         | Artist: [rawId], User: [rawId]
 | relationship_properties | TAGGED: [year, month, day, tagID, timestamp], LISTEN_TO: [weight], IS_FRIEND: []
 |===
 
