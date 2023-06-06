@@ -45,6 +45,8 @@ user_tag_dmy_df = pd.DataFrame(
     split_user_tag_dmy, columns=["sourceNodeId", "targetNodeId", "tagID", "day", "month", "year"]
 )
 user_tag_dmy_df["relationshipType"] = "TAGGED"
+# UNCOMMENT TO ENCODE EACH TAGID AS A DIFFERENT RELATIONSHIP TYPE
+# user_tag_dmy_df["relationshipType"] = "TAGGED_" + user_tag_dmy_df["tagID"]
 user_tag_timestamp = readlines("raw/user_taggedartists-timestamps.dat")
 split_user_tag_timestamp = [line.split("\t") for line in user_tag_timestamp[1:]]
 # Create a pandas DataFrame with the split data
@@ -52,6 +54,8 @@ user_tag_timestamp_df = pd.DataFrame(
     split_user_tag_timestamp, columns=["sourceNodeId", "targetNodeId", "tagID", "timestamp"]
 )
 user_tag_timestamp_df["relationshipType"] = "TAGGED"
+# UNCOMMENT TO ENCODE EACH TAGID AS A DIFFERENT RELATIONSHIP TYPE
+# user_tag_timestamp_df["relationshipType"] = "TAGGED_" + user_tag_timestamp_df["tagID"]
 user_tag_artist_df = user_tag_dmy_df.join(
     user_tag_timestamp_df.set_index(["sourceNodeId", "targetNodeId", "tagID", "relationshipType"]),
     on=["sourceNodeId", "targetNodeId", "tagID", "relationshipType"],
