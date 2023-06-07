@@ -37,6 +37,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns details about the status of the system
 
+.. py:function:: gds.debug.arrow() -> Series[Any]
+
+    Returns details about the status of the GDS Arrow Flight server
+
 .. py:function:: gds.util.asNode(node_id: int) -> Any
 
     Return a node object for the given node id or null if none exists.
