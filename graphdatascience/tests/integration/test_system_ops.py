@@ -29,10 +29,12 @@ def test_sysInfo(gds: GraphDataScience) -> None:
 
     assert "gdsVersion" in (list(result["key"]))
 
+
 def test_debug_arrow(gds: GraphDataScience) -> None:
     result = gds.debug.arrow()
 
     assert "listenAddress" in (list(result["key"]))
+
 
 @pytest.mark.enterprise
 def test_is_licensed(gds: GraphDataScience) -> None:
