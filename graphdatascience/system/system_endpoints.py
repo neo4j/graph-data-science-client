@@ -15,6 +15,12 @@ class DebugProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.run_query(query).squeeze()  # type: ignore
 
+    def arrow(self) -> "Series[Any]":
+        self._namespace += ".arrow"
+        query = f"CALL {self._namespace}()"
+
+        return self._query_runner.run_query(query).squeeze()  # type: ignore
+
 
 class DirectSystemEndpoints(CallerBase):
     @client_only_endpoint("gds")
