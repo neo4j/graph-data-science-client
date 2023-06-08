@@ -167,11 +167,17 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
             if "model_store_location" in item.keywords:
                 item.add_marker(skip_stored_models)
 
-    if not config.getoption("--include-cloud-architecture"):
-        skip_on_prem = pytest.mark.skip(reason="need --include-cloud-architecture option to run")
+    # `cloud-architecture` includes marked tests and excludes everything else
+    if config.getoption("--include-cloud-architecture"):
+        skip_on_prem = pytest.mark.skip(reason="not marked as `cloud-architecture`")
+        for item in items:
+            if "cloud_architecture" not in item.keywords:
+                item.add_marker(skip_on_prem)
+    else:
+        skip_cloud_architecture = pytest.mark.skip(reason="need --include-cloud-architecture option to run")
         for item in items:
             if "cloud_architecture" in item.keywords:
-                item.add_marker(skip_on_prem)
+                item.add_marker(skip_cloud_architecture)
 
     try:
         server_version = GraphDataScience(URI, auth=AUTH)._server_version
