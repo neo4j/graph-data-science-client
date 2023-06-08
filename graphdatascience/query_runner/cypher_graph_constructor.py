@@ -15,7 +15,9 @@ from graphdatascience.server_version.server_version import ServerVersion
 class CypherAggregationApi:
     RELATIONSHIP_TYPE = "relationshipType"
     SOURCE_NODE_LABEL = "sourceNodeLabels"
+    TARGET_NODE_LABEL = "targetNodeLabels"
     SOURCE_NODE_PROPERTIES = "sourceNodeProperties"
+    TARGET_NODE_PROPERTIES = "targetNodeProperties"
     REL_PROPERTIES = "properties"
     REL_PROPERTIES_NEW = "relationshipProperties"
 
@@ -181,7 +183,7 @@ class CypherGraphConstructor(GraphConstructor):
             )
             target_id_clause = self.check_value_clause(combined_cols, "targetNodeId")
 
-            nodes_config_part = self.nodes_config_part(graph_schema.nodes_per_df)
+            nodes_config_part = self.nodes_config_part(graph_schema.nodes_per_df, is_cypher_projection_v2)
             rels_config_part = self.rels_config_part(graph_schema.rels_per_df, properties_key)
 
             if is_cypher_projection_v2:
@@ -313,7 +315,7 @@ class CypherGraphConstructor(GraphConstructor):
 
             return adjusted_dfs
 
-        def nodes_config_part(self, node_cols: List[EntityColumnSchema]) -> List[str]:
+        def nodes_config_part(self, node_cols: List[EntityColumnSchema], is_cypher_projection_v2: bool) -> List[str]:
             # Cannot use a dictionary as we need to refer to the `data` variable in the cypher query.
             # Otherwise we would just pass a string such as `data[0]`
             nodes_config_fields: List[str] = []
@@ -321,12 +323,20 @@ class CypherGraphConstructor(GraphConstructor):
                 nodes_config_fields.append(
                     f"{CypherAggregationApi.SOURCE_NODE_LABEL}: {CypherAggregationApi.SOURCE_NODE_LABEL}"
                 )
+                if is_cypher_projection_v2:
+                    nodes_config_fields.append(
+                        f"{CypherAggregationApi.TARGET_NODE_LABEL}: NULL",
+                    )
 
             # as we first list all nodes at the top of the df, we don't need to lookup properties for the target node
             if any(x.has_properties() for x in node_cols):
                 nodes_config_fields.append(
                     f"{CypherAggregationApi.SOURCE_NODE_PROPERTIES}: {CypherAggregationApi.SOURCE_NODE_PROPERTIES}"
                 )
+                if is_cypher_projection_v2:
+                    nodes_config_fields.append(
+                        f"{CypherAggregationApi.TARGET_NODE_PROPERTIES}: NULL",
+                    )
 
             return nodes_config_fields
 

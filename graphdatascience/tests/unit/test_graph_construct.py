@@ -54,15 +54,28 @@ def test_graph_project_based_alpha_construct_without_arrow(
 
 
 @pytest.mark.parametrize(
-    "server_version, tier, properties_key, in_between_configs",
+    "server_version, tier, target_node_labels, target_node_properties, properties_key, in_between_configs",
     [
-        (ServerVersion(2, 3, 0), ".alpha", "properties", "}, {"),
-        (ServerVersion(2, 4, 0), "", "relationshipProperties", ", "),
+        (ServerVersion(2, 3, 0), ".alpha", "", "", "properties", "}, {"),
+        (
+            ServerVersion(2, 4, 0),
+            "",
+            ", targetNodeLabels: NULL",
+            ", targetNodeProperties: NULL",
+            "relationshipProperties",
+            ", ",
+        ),
     ],
     ids=["2.3.0 - Alpha Cypher Aggregation", "2.4.0 - New Cypher projection"],
 )
 def test_multi_df(
-    runner: CollectingQueryRunner, gds: GraphDataScience, tier: str, properties_key: str, in_between_configs: str
+    runner: CollectingQueryRunner,
+    gds: GraphDataScience,
+    tier: str,
+    target_node_labels: str,
+    target_node_properties: str,
+    properties_key: str,
+    in_between_configs: str,
 ) -> None:
     nodes = [
         DataFrame({"nodeId": [0, 1], "labels": ["a", "a"], "property": [6.0, 7.0]}),
@@ -86,9 +99,12 @@ def test_multi_df(
         " CASE WHEN data[8] THEN data[7] ELSE null END AS sourceNodeProperties,"
         f" CASE WHEN data[1] THEN data[0] ELSE null END AS {properties_key}"
         f" RETURN gds{tier}.graph.project("
-        "$graph_name, data[4], targetNodeId,"
-        f" {{sourceNodeLabels: sourceNodeLabels, sourceNodeProperties: sourceNodeProperties{in_between_configs}"
-        f"relationshipType: relationshipType, {properties_key}: {properties_key}}}, $configuration)"
+        "$graph_name, data[4], targetNodeId, {"
+        f"sourceNodeLabels: sourceNodeLabels{target_node_labels}, "
+        f"sourceNodeProperties: sourceNodeProperties{target_node_properties}"
+        f"{in_between_configs}"
+        f"relationshipType: relationshipType, {properties_key}: {properties_key}"
+        "}, $configuration)"
     )
 
     assert runner.last_query().replace("\n", "") == expected_proc_query
@@ -114,15 +130,28 @@ def test_multi_df(
 
 
 @pytest.mark.parametrize(
-    "server_version, tier, properties_key, in_between_configs",
+    "server_version, tier, target_node_labels, target_node_properties, properties_key, in_between_configs",
     [
-        (ServerVersion(2, 3, 0), ".alpha", "properties", "}, {"),
-        (ServerVersion(2, 4, 0), "", "relationshipProperties", ", "),
+        (ServerVersion(2, 3, 0), ".alpha", "", "", "properties", "}, {"),
+        (
+            ServerVersion(2, 4, 0),
+            "",
+            ", targetNodeLabels: NULL",
+            ", targetNodeProperties: NULL",
+            "relationshipProperties",
+            ", ",
+        ),
     ],
     ids=["2.3.0 - Alpha Cypher Aggregation", "2.4.0 - New Cypher projection"],
 )
 def test_graph_aggregation_based_alpha_construct_without_arrow(
-    runner: CollectingQueryRunner, gds: GraphDataScience, tier: str, properties_key: str, in_between_configs: str
+    runner: CollectingQueryRunner,
+    gds: GraphDataScience,
+    tier: str,
+    target_node_labels: str,
+    target_node_properties: str,
+    properties_key: str,
+    in_between_configs: str,
 ) -> None:
     nodes = DataFrame(
         {
@@ -153,9 +182,12 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
         " CASE WHEN data[8] THEN data[7] ELSE null END AS sourceNodeProperties,"
         f" CASE WHEN data[1] THEN data[0] ELSE null END AS {properties_key}"
         f" RETURN gds{tier}.graph.project("
-        "$graph_name, data[4], targetNodeId,"
-        f" {{sourceNodeLabels: sourceNodeLabels, sourceNodeProperties: sourceNodeProperties{in_between_configs}"
-        f"relationshipType: relationshipType, {properties_key}: {properties_key}}}, $configuration)"
+        "$graph_name, data[4], targetNodeId, {"
+        f"sourceNodeLabels: sourceNodeLabels{target_node_labels}, "
+        f"sourceNodeProperties: sourceNodeProperties{target_node_properties}"
+        f"{in_between_configs}"
+        f"relationshipType: relationshipType, {properties_key}: {properties_key}"
+        "}, $configuration)"
     )
 
     # indices are based off the combined df
