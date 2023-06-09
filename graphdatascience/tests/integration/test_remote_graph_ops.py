@@ -43,3 +43,15 @@ def test_remote_projection(gds_with_cloud_setup: GraphDataScience) -> None:
 
     assert G.name() == GRAPH_NAME
     assert result["nodeCount"] == 3
+
+
+@pytest.mark.cloud_architecture
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 4, 0))
+def test_remote_write_back(gds_with_cloud_setup: GraphDataScience) -> None:
+    G, result = gds_with_cloud_setup.alpha.graph.project.remote(
+        GRAPH_NAME, "MATCH (n)-->(m) RETURN n as sourceNode, m as targetNode", "neo4j"
+    )
+
+    result = gds_with_cloud_setup.pageRank.write(G, writeProperty="score", remote=True)
+
+    assert result["nodePropertiesWritten"] == 3
