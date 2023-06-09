@@ -150,14 +150,14 @@ class CypherGraphConstructor(GraphConstructor):
 
             is_cypher_projection_v2 = self._server_version >= ServerVersion(2, 4, 0)
 
-            properties_key = (
+            rel_properties_key = (
                 CypherProjectionApi.REL_PROPERTIES_NEW
                 if is_cypher_projection_v2
                 else CypherProjectionApi.REL_PROPERTIES
             )
 
-            aligned_node_dfs = self.adjust_node_dfs(node_dfs, graph_schema, properties_key)
-            aligned_rel_dfs = self.adjust_rel_dfs(relationship_dfs, graph_schema, properties_key)
+            aligned_node_dfs = self.adjust_node_dfs(node_dfs, graph_schema, rel_properties_key)
+            aligned_rel_dfs = self.adjust_rel_dfs(relationship_dfs, graph_schema, rel_properties_key)
 
             # concat instead of join as we want to first have all nodes and then the rels
             # this way we don't duplicate the node property data and its cheaper
@@ -170,7 +170,7 @@ class CypherGraphConstructor(GraphConstructor):
 
             property_clauses: List[str] = [
                 self.check_value_clause(combined_cols, prop_col)
-                for prop_col in [CypherProjectionApi.SOURCE_NODE_PROPERTIES, properties_key]
+                for prop_col in [CypherProjectionApi.SOURCE_NODE_PROPERTIES, rel_properties_key]
             ]
 
             source_node_labels_clause = (
@@ -186,7 +186,7 @@ class CypherGraphConstructor(GraphConstructor):
             target_id_clause = self.check_value_clause(combined_cols, "targetNodeId")
 
             nodes_config_part = self.nodes_config_part(graph_schema.nodes_per_df, is_cypher_projection_v2)
-            rels_config_part = self.rels_config_part(graph_schema.rels_per_df, properties_key)
+            rels_config_part = self.rels_config_part(graph_schema.rels_per_df, rel_properties_key)
 
             if is_cypher_projection_v2:
                 data_config = f"{{{', '.join(itertools.chain(nodes_config_part, rels_config_part))}}}"
@@ -246,7 +246,7 @@ class CypherGraphConstructor(GraphConstructor):
             return GraphColumnSchema(node_schema, rel_schema)
 
         def adjust_node_dfs(
-            self, node_dfs: List[DataFrame], schema: GraphColumnSchema, properties_key: str
+            self, node_dfs: List[DataFrame], schema: GraphColumnSchema, rel_properties_key: str
         ) -> List[DataFrame]:
             adjusted_dfs = []
 
@@ -274,15 +274,15 @@ class CypherGraphConstructor(GraphConstructor):
                 node_dict_df = DataFrame(node_dict)
                 node_dict_df[CypherProjectionApi.SOURCE_NODE_PROPERTIES] = df.apply(collect_to_dict, axis=1)
                 node_dict_df[CypherProjectionApi.SOURCE_NODE_PROPERTIES + self._BIT_COL_SUFFIX] = True
-                node_dict_df[properties_key] = None
-                node_dict_df[properties_key + self._BIT_COL_SUFFIX] = False
+                node_dict_df[rel_properties_key] = None
+                node_dict_df[rel_properties_key + self._BIT_COL_SUFFIX] = False
 
                 adjusted_dfs.append(node_dict_df)
 
             return adjusted_dfs
 
         def adjust_rel_dfs(
-            self, rel_dfs: List[DataFrame], schema: GraphColumnSchema, properties_key: str
+            self, rel_dfs: List[DataFrame], schema: GraphColumnSchema, rel_properties_key: str
         ) -> List[DataFrame]:
             adjusted_dfs = []
 
@@ -308,8 +308,8 @@ class CypherGraphConstructor(GraphConstructor):
                     return {column: row[column] for column in schema.rels_per_df[i].properties}
 
                 rel_dict_df = DataFrame(rel_dict)
-                rel_dict_df[properties_key] = df.apply(collect_to_dict, axis=1)
-                rel_dict_df[properties_key + self._BIT_COL_SUFFIX] = True
+                rel_dict_df[rel_properties_key] = df.apply(collect_to_dict, axis=1)
+                rel_dict_df[rel_properties_key + self._BIT_COL_SUFFIX] = True
                 rel_dict_df[CypherProjectionApi.SOURCE_NODE_PROPERTIES] = None
                 rel_dict_df[CypherProjectionApi.SOURCE_NODE_PROPERTIES + self._BIT_COL_SUFFIX] = False
 
@@ -342,7 +342,7 @@ class CypherGraphConstructor(GraphConstructor):
 
             return nodes_config_fields
 
-        def rels_config_part(self, rel_cols: List[EntityColumnSchema], properties_key: str) -> List[str]:
+        def rels_config_part(self, rel_cols: List[EntityColumnSchema], rel_properties_key: str) -> List[str]:
             rels_config_fields: List[str] = []
 
             if any(x.has_rel_type() for x in rel_cols):
@@ -351,7 +351,7 @@ class CypherGraphConstructor(GraphConstructor):
                 )
 
             if any(x.has_properties() for x in rel_cols):
-                rels_config_fields.append(f"{properties_key}: {properties_key}")
+                rels_config_fields.append(f"{rel_properties_key}: {rel_properties_key}")
 
             return rels_config_fields
 
