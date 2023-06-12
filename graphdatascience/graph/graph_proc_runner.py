@@ -169,11 +169,11 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             user_friend_df_directed = read_pickle(rels_resource, compression="gzip")
         with self._path("graphdatascience.resources.lastfm", "user_listen_artist_rels.pkl") as rels_resource:
             user_listen_artist_rels = read_pickle(rels_resource, compression="gzip")
-        if not hetero_tag_rel:
-            with self._path("graphdatascience.resources.lastfm", "user_tag_artist_rels.pkl") as rels_resource:
+        if hetero_tag_rel:
+            with self._path("graphdatascience.resources.lastfm", "user_tag_artist_rels_hetero.pkl") as rels_resource:
                 user_tag_artist_rels = read_pickle(rels_resource, compression="gzip")
         else:
-            with self._path("graphdatascience.resources.lastfm", "user_tag_artist_rels_hetero.pkl") as rels_resource:
+            with self._path("graphdatascience.resources.lastfm", "user_tag_artist_rels.pkl") as rels_resource:
                 user_tag_artist_rels = read_pickle(rels_resource, compression="gzip")
 
         self._namespace = "gds.alpha.graph"
@@ -184,14 +184,14 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         # Default undirected for usage in GDS ML pipelines
         if undirected:
-            if not hetero_tag_rel:
-                undirected_relationship_types = ["LISTEN_TO", "TAGGED", "IS_FRIEND"]
-            else:
+            if hetero_tag_rel:
                 # There are 9749 different tag ids (hence hetero-Tag rels)
                 tag_rels = user_tag_artist_rels[["relationshipType"]].drop_duplicates()
                 undirected_relationship_types = ["LISTEN_TO", "IS_FRIEND"] + tag_rels[
                     "relationshipType"
                 ].values.tolist()
+            else:
+                undirected_relationship_types = ["LISTEN_TO", "TAGGED", "IS_FRIEND"]
         else:
             undirected_relationship_types = []
 

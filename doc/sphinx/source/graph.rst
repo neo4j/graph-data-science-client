@@ -228,7 +228,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Loads the IMDB dataset into a named graph in the catalog for use by algorithms.
 
-.. py:function:: gds.graph.load_lastfm(graph_name: str = "lastfm", undirected: bool = True) -> Graph
+.. py:function:: gds.graph.load_lastfm(graph_name: str = "lastfm", undirected: bool = True, hetero_tag_rel: bool = False) -> Graph
 
     Loads the LastFM dataset into a named graph in the catalog for use by algorithms.
 

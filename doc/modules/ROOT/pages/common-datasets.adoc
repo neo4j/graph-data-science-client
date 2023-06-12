@@ -101,22 +101,26 @@ The original raw data is from http://www.lastfm.com/[LastFM].
 The graph contains User and Artists as nodes, each with a `rawId` field that corresponds to the ids from the raw data.
 The `rawId` could be used, for example, to check the artist names by referring back to the HetRec'11 .dat files.
 
-There are three types of relationships.
-`IS_FRIEND` which represents User-User friendship.
+There are three types of relationships:
 
-`LISTEN_TO` between User and Artist.
-It has a relationship property `weight` that represents the number of times the user listened to the artist.
+* `IS_FRIEND` exists between `User` nodes, representing user-to-user friendships.
+* `LISTEN_TO` exists between `User` and `Artist` nodes, indicating the artists a user listens to.
+  * `weight` property represents the number of times the user listened to the artist.
+* `TAGGED` exists between `User` and `Artist` nodes, indicating artists that a user has tagged.
+  * `tagID` property represents a genre
+  * `day`, `month`, and `year` properties represents the time when tagging was created
+  * `timestamp` represents the same date as milliseconds since EPOCH
 
-`TAGGED` between User and Artist.
-It has a `tagID` property where each `tagId` represents a genre,
-It also has `day`, `month`, `year` properties, as well as an equivalent `timestamp` property converted from the day-month-year,
-which represents when the user tagged that artist with that `tagId`.
-Note that a user can tag the same artist at different times with different `tagId`.
+Note that a user can tag the same artist multiple times with different `tagID`.
 
 The default is to load LastFM dataset as `undirected = True`.
 If loaded as directed, it will have half the relationships.
 
-.LastFM graph statistics
+The default is to load all tagging relationships as one `TAGGED` relationship type with `hetero_tag_rel = False`.
+If `hetero_tag_rel = True`, each `TAGGED` relationship will become a `TAGGED_{tagID}` relationship, encoding tags with different ids as different relationship types.
+There are 9749 different tagIDs resulting in 9749 different relationship types.
+
+.Default LastFM graph statistics
 [opts="header",cols="3m,3m", role="no-break"]
 |===
 | Name                    | Value
