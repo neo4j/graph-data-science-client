@@ -154,7 +154,7 @@ def test_roundtrip_with_arrow(gds: GraphDataScience) -> None:
     rel_df = gds.graph.streamRelationshipProperty(G, "relX")
     node_df = gds.graph.streamNodeProperty(G, "x")
 
-    G_2 = gds.alpha.graph.construct("arrowGraph", node_df, rel_df)
+    G_2 = gds.graph.construct("arrowGraph", node_df, rel_df)
 
     try:
         assert G.node_count() == G_2.node_count()
@@ -171,7 +171,7 @@ def test_roundtrip_with_arrow_22(gds: GraphDataScience) -> None:
     rel_df = gds.graph.relationshipProperty.stream(G, "relX")
     node_df = gds.graph.nodeProperty.stream(G, "x")
 
-    G_2 = gds.alpha.graph.construct("arrowGraph", node_df, rel_df)
+    G_2 = gds.graph.construct("arrowGraph", node_df, rel_df)
 
     try:
         assert G.node_count() == G_2.node_count()
@@ -286,7 +286,7 @@ def test_graph_construct_with_arrow(gds: GraphDataScience) -> None:
     nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
     relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
-    G = gds.alpha.graph.construct("hello", nodes, relationships)
+    G = gds.graph.construct("hello", nodes, relationships)
 
     assert G.name() == "hello"
     assert G.node_count() == 4
@@ -312,7 +312,7 @@ def warn_for_graph_alpha_construct_undirected_with_arrow(gds: GraphDataScience) 
     )
 
     with pytest.raises(ValueError):
-        gds.alpha.graph.construct("hello", nodes, relationships, undirected_relationship_types=["REL2"])
+        gds.graph.construct("hello", nodes, relationships, undirected_relationship_types=["REL2"])
 
 
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
@@ -321,11 +321,11 @@ def test_error_on_construct_same_graph_twice(gds: GraphDataScience) -> None:
     relationships = DataFrame({"sourceNodeId": [0, 1], "targetNodeId": [1, 0]})
     graph_name = "g"
 
-    G = gds.alpha.graph.construct(graph_name, nodes, relationships, concurrency=2)
+    G = gds.graph.construct(graph_name, nodes, relationships, concurrency=2)
 
     try:
         with pytest.raises(ValueError, match=f"Graph '{graph_name}' already exists."):
-            gds.alpha.graph.construct(graph_name, nodes, relationships, concurrency=2)
+            gds.graph.construct(graph_name, nodes, relationships, concurrency=2)
     finally:
         G.drop()
 
@@ -342,7 +342,7 @@ def test_graph_construct_undirected_with_arrow(gds: GraphDataScience) -> None:
         }
     )
 
-    G = gds.alpha.graph.construct("hello", nodes, relationships, undirected_relationship_types=["*"])
+    G = gds.graph.construct("hello", nodes, relationships, undirected_relationship_types=["*"])
 
     try:
         assert G.name() == "hello"
@@ -368,7 +368,7 @@ def test_graph_construct_with_nan_properties_with_arrow(gds: GraphDataScience) -
         {"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0], "scalarProp": [42.42, np.nan, float("NaN"), None]}
     )
 
-    G = gds.alpha.graph.construct("hello", nodes, relationships)
+    G = gds.graph.construct("hello", nodes, relationships)
 
     assert G.name() == "hello"
     assert G.node_count() == 4
@@ -383,7 +383,7 @@ def test_graph_construct_with_arrow_multiple_dfs(gds: GraphDataScience) -> None:
     nodes = [DataFrame({"nodeId": [0, 1]}), DataFrame({"nodeId": [2, 3]})]
     relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
-    G = gds.alpha.graph.construct("hello", nodes, relationships)
+    G = gds.graph.construct("hello", nodes, relationships)
 
     assert G.name() == "hello"
     assert G.node_count() == 4
@@ -436,10 +436,10 @@ def test_graph_construct_with_arrow_abort(gds: GraphDataScience) -> None:
     relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
     with pytest.raises(Exception):
-        gds.alpha.graph.construct("hello", bad_nodes, relationships)
+        gds.graph.construct("hello", bad_nodes, relationships)
 
     good_nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
-    G = gds.alpha.graph.construct("hello", good_nodes, relationships)
+    G = gds.graph.construct("hello", good_nodes, relationships)
 
     assert G.name() == "hello"
     assert G.node_count() == 4
@@ -461,4 +461,4 @@ def test_graph_construct_with_arrow_no_db() -> None:
     relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
     with pytest.raises(ValueError):
-        gds.alpha.graph.construct("hello", nodes, relationships)
+        gds.graph.construct("hello", nodes, relationships)

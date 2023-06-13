@@ -122,7 +122,7 @@ relationships = pandas.DataFrame(
     }
 )
 
-G = gds.alpha.graph.construct(
+G = gds.graph.construct(
     "my-graph",      # Graph name
     nodes,           # One or more dataframes containing node data
     relationships    # One or more dataframes containing relationship data

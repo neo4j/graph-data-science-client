@@ -1,3 +1,4 @@
+import os
 import pathlib
 import sys
 from logging import warning
@@ -43,6 +44,53 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             from importlib.resources import path
 
             return path(package, resource)
+
+    @client_only_endpoint("gds.graph")
+    @compatible_with("construct", min_inclusive=ServerVersion(2, 1, 0))
+    def construct(
+        self,
+        graph_name: str,
+        nodes: Union[DataFrame, List[DataFrame]],
+        relationships: Union[DataFrame, List[DataFrame]],
+        concurrency: int = 4,
+        undirected_relationship_types: Optional[List[str]] = None,
+    ) -> Graph:
+        nodes = nodes if isinstance(nodes, List) else [nodes]
+        relationships = relationships if isinstance(relationships, List) else [relationships]
+
+        errors = []
+
+        exists = self._query_runner.run_query(
+            f"CALL gds.graph.exists('{graph_name}') YIELD exists", custom_error=False
+        ).squeeze()
+
+        # compare against True as (1) unit tests return None here and (2) numpys True does not work with `is True`.
+        if exists == True:  # noqa: E712
+            errors.append(
+                f"Graph '{graph_name}' already exists. Please drop the existing graph or use a different name."
+            )
+
+        for idx, node_df in enumerate(nodes):
+            if "nodeId" not in node_df.columns.values:
+                errors.append(f"Node dataframe at index {idx} needs to contain a 'nodeId' column.")
+
+        for idx, rel_df in enumerate(relationships):
+            for expected_col in ["sourceNodeId", "targetNodeId"]:
+                if expected_col not in rel_df.columns.values:
+                    errors.append(f"Relationship dataframe at index {idx} needs to contain a '{expected_col}' column.")
+
+        if self._server_version < ServerVersion(2, 3, 0) and undirected_relationship_types:
+            errors.append("The parameter 'undirected_relationship_types' is only supported since GDS 2.3.0.")
+
+        if len(errors) > 0:
+            raise ValueError(os.linesep.join(errors))
+
+        constructor = self._query_runner.create_graph_constructor(
+            graph_name, concurrency, undirected_relationship_types
+        )
+        constructor.run(nodes, relationships)
+
+        return Graph(graph_name, self._query_runner, self._server_version)
 
     @client_only_endpoint("gds.graph")
     def load_cora(self, graph_name: str = "cora", undirected: bool = False) -> Graph:

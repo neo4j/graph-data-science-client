@@ -26,7 +26,7 @@ def test_graph_project_based_alpha_construct_without_arrow(
         }
     )
 
-    gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2)
+    gds.graph.construct("hello", nodes, relationships, concurrency=2)
 
     expected_node_query = "UNWIND $nodes as node RETURN node[0] as id, node[1] as labels, node[2] as propA"
     expected_relationship_query = (
@@ -88,7 +88,7 @@ def test_multi_df(
         DataFrame({"sourceNodeId": [2, 3], "targetNodeId": [3, 0], "relationshipType": ["B", "B"]}),
     ]
 
-    gds.alpha.graph.construct("hello", nodes, relationships)
+    gds.graph.construct("hello", nodes, relationships)
 
     expected_proc_query = (
         "UNWIND $data AS data"
@@ -171,7 +171,7 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
         }
     )
 
-    gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2, undirected_relationship_types=["REL"])
+    gds.graph.construct("hello", nodes, relationships, concurrency=2, undirected_relationship_types=["REL"])
 
     expected_proc_query = (
         "UNWIND $data AS data"
@@ -232,7 +232,7 @@ def test_graph_aggregation_based_alpha_construct_without_arrow_with_overlapping_
     )
 
     with pytest.raises(ValueError, match="Expected disjoint column names in node and relationship df but the columns"):
-        gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2)
+        gds.graph.construct("hello", nodes, relationships, concurrency=2)
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
@@ -241,4 +241,4 @@ def test_graph_alpha_construct_validate_df_columns(runner: CollectingQueryRunner
     relationships = DataFrame({"sourceNodeId": [0, 1], "TargetNodeIds": [1, 0]})
 
     with pytest.raises(ValueError, match=r"(.*'nodeId'.*\s.*'targetNodeId'.*)|(.*'targetNodeId'.*\s.*'nodeId'.*)"):
-        gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2)
+        gds.graph.construct("hello", nodes, relationships, concurrency=2)
