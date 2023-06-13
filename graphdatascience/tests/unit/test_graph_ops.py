@@ -389,7 +389,8 @@ def test_graph_relationshipProperties_write(runner: CollectingQueryRunner, gds: 
 def test_graph_writeNodeProperties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    gds.graph.writeNodeProperties(G, ["dummyProp"], concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        gds.graph.writeNodeProperties(G, ["dummyProp"], concurrency=2)
     assert runner.last_query() == "CALL gds.graph.writeNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
@@ -398,7 +399,8 @@ def test_graph_writeNodeProperties(runner: CollectingQueryRunner, gds: GraphData
         "config": {"concurrency": 2},
     }
 
-    gds.graph.writeNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        gds.graph.writeNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
     assert runner.last_query() == "CALL gds.graph.writeNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
@@ -434,7 +436,8 @@ def test_graph_nodeProperties_write(runner: CollectingQueryRunner, gds: GraphDat
 def test_graph_writeRelationship(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    gds.graph.writeRelationship(G, "dummyType", "dummyProp", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        gds.graph.writeRelationship(G, "dummyType", "dummyProp", concurrency=2)
     assert (
         runner.last_query()
         == "CALL gds.graph.writeRelationship($graph_name, $relationship_type, $relationship_property, $config)"
@@ -446,7 +449,8 @@ def test_graph_writeRelationship(runner: CollectingQueryRunner, gds: GraphDataSc
         "config": {"concurrency": 2},
     }
 
-    gds.graph.writeRelationship(G, "dummyType", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        gds.graph.writeRelationship(G, "dummyType", concurrency=2)
     assert (
         runner.last_query()
         == "CALL gds.graph.writeRelationship($graph_name, $relationship_type, $relationship_property, $config)"
@@ -557,7 +561,8 @@ def test_graph_nodeProperties_remove_drop(runner: CollectingQueryRunner, gds: Gr
 def test_graph_deleteRelationships(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    gds.graph.deleteRelationships(G, "REL_A")
+    with pytest.warns(DeprecationWarning):
+        gds.graph.deleteRelationships(G, "REL_A")
     assert runner.last_query() == "CALL gds.graph.deleteRelationships($graph_name, $relationship_type)"
     assert runner.last_params() == {"graph_name": "g", "relationship_type": "REL_A"}
 
@@ -612,7 +617,9 @@ def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) ->
 
 def test_alpha_graph_sample_rwr(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project("g", "*", "*")
-    gds.alpha.graph.sample.rwr("s", from_G, samplingRatio=0.9, concurrency=7)
+
+    with pytest.warns(DeprecationWarning):
+        gds.alpha.graph.sample.rwr("s", from_G, samplingRatio=0.9, concurrency=7)
 
     assert runner.last_query() == "CALL gds.alpha.graph.sample.rwr($graph_name, $from_graph_name, $config)"
     assert runner.last_params() == {

@@ -704,7 +704,8 @@ def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
 
     gds.pageRank.mutate(G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
 
-    result = gds.graph.writeNodeProperties(G, ["rank"], concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds.graph.writeNodeProperties(G, ["rank"], concurrency=2)
     assert result["propertiesWritten"] == 3
 
 
@@ -713,7 +714,8 @@ def test_graph_writeRelationship(gds: GraphDataScience) -> None:
 
     gds.nodeSimilarity.mutate(G, mutateRelationshipType="SIMILAR", mutateProperty="score", similarityCutoff=0)
 
-    result = gds.graph.writeRelationship(G, "SIMILAR", "score", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds.graph.writeRelationship(G, "SIMILAR", "score", concurrency=2)
     assert result["relationshipsWritten"] == 2
     assert result["propertiesWritten"] == 2
 
@@ -784,7 +786,8 @@ def test_graph_removeNodeProperties_20(gds: GraphDataScience) -> None:
 def test_graph_deleteRelationships(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
 
-    result = gds.graph.deleteRelationships(G, "REL")
+    with pytest.warns(DeprecationWarning):
+        result = gds.graph.deleteRelationships(G, "REL")
     assert result["deletedRelationships"] == 3
 
 
