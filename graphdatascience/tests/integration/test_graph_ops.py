@@ -473,7 +473,8 @@ def test_graph_nodeProperties_stream_without_arrow_separate_property_columns(
 def test_graph_streamRelationshipProperty_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 
-    result = gds.graph.streamRelationshipProperty(G, "relX", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds.graph.streamRelationshipProperty(G, "relX", concurrency=2)
     assert {e for e in result["propertyValue"]} == {4, 5, 6}
 
 
@@ -488,7 +489,8 @@ def test_graph_relationshipProperty_stream_with_arrow(gds: GraphDataScience) -> 
 def test_graph_streamRelationshipProperty_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
 
-    result = gds_without_arrow.graph.streamRelationshipProperty(G, "relX", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds_without_arrow.graph.streamRelationshipProperty(G, "relX", concurrency=2)
     assert {e for e in result["propertyValue"]} == {4, 5, 6}
 
 
@@ -503,7 +505,8 @@ def test_graph_relationshipProperty_stream_without_arrow(gds_without_arrow: Grap
 def test_graph_streamRelationshipProperties_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
-    result = gds.graph.streamRelationshipProperties(G, ["relX", "relY"], concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds.graph.streamRelationshipProperties(G, ["relX", "relY"], concurrency=2)
 
     assert list(result.keys()) == [
         "sourceNodeId",
@@ -542,7 +545,10 @@ def test_graph_relationshipProperties_stream_with_arrow(gds: GraphDataScience) -
 def test_graph_streamRelationshipProperties_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
-    result = gds.graph.streamRelationshipProperties(G, ["relX", "relY"], separate_property_columns=True, concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds.graph.streamRelationshipProperties(
+            G, ["relX", "relY"], separate_property_columns=True, concurrency=2
+        )
 
     assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType", "relX", "relY"]
     assert {e for e in result["relX"]} == {4, 5, 6}
@@ -563,7 +569,8 @@ def test_graph_relationshipProperties_stream_with_arrow_separate_property_column
 def test_graph_streamRelationshipProperties_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
-    result = gds_without_arrow.graph.streamRelationshipProperties(G, ["relX", "relY"], concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds_without_arrow.graph.streamRelationshipProperties(G, ["relX", "relY"], concurrency=2)
 
     assert list(result.keys()) == [
         "sourceNodeId",
@@ -604,9 +611,10 @@ def test_graph_streamRelationshipProperties_without_arrow_separate_property_colu
 ) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
-    result = gds_without_arrow.graph.streamRelationshipProperties(
-        G, ["relX", "relY"], separate_property_columns=True, concurrency=2
-    )
+    with pytest.warns(DeprecationWarning):
+        result = gds_without_arrow.graph.streamRelationshipProperties(
+            G, ["relX", "relY"], separate_property_columns=True, concurrency=2
+        )
 
     assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType", "relX", "relY"]
     assert {e for e in result["relX"]} == {4, 5, 6}

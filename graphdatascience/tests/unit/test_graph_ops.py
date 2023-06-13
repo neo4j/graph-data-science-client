@@ -223,7 +223,8 @@ def test_graph_nodeProperties_stream(runner: CollectingQueryRunner, gds: GraphDa
 def test_graph_streamRelationshipProperty(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    gds.graph.streamRelationshipProperty(G, "dummyProp", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        gds.graph.streamRelationshipProperty(G, "dummyProp", concurrency=2)
     assert (
         runner.last_query() == "CALL gds.graph.streamRelationshipProperty($graph_name, $properties, $entities, $config)"
     )
@@ -234,7 +235,8 @@ def test_graph_streamRelationshipProperty(runner: CollectingQueryRunner, gds: Gr
         "config": {"concurrency": 2},
     }
 
-    gds.graph.streamRelationshipProperty(G, "dummyProp", "dummyType", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        gds.graph.streamRelationshipProperty(G, "dummyProp", "dummyType", concurrency=2)
     assert (
         runner.last_query() == "CALL gds.graph.streamRelationshipProperty($graph_name, $properties, $entities, $config)"
     )
@@ -292,7 +294,8 @@ def test_graph_streamRelationshipProperties(runner: CollectingQueryRunner, gds: 
 
     runner.set__mock_result(result_df)
 
-    gds.graph.streamRelationshipProperties(G, ["dummyProp"], concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        gds.graph.streamRelationshipProperties(G, ["dummyProp"], concurrency=2)
     assert (
         runner.last_query()
         == "CALL gds.graph.streamRelationshipProperties($graph_name, $properties, $entities, $config)"
@@ -304,7 +307,8 @@ def test_graph_streamRelationshipProperties(runner: CollectingQueryRunner, gds: 
         "config": {"concurrency": 2},
     }
 
-    gds.graph.streamRelationshipProperties(G, ["dummyProp"], "dummyType", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        gds.graph.streamRelationshipProperties(G, ["dummyProp"], "dummyType", concurrency=2)
     assert (
         runner.last_query()
         == "CALL gds.graph.streamRelationshipProperties($graph_name, $properties, $entities, $config)"
