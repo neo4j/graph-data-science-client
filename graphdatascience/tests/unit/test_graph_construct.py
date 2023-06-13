@@ -7,9 +7,7 @@ from graphdatascience.server_version.server_version import ServerVersion
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
-def test_graph_project_based_alpha_construct_without_arrow(
-    runner: CollectingQueryRunner, gds: GraphDataScience
-) -> None:
+def test_graph_project_based_construct_without_arrow(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     nodes = DataFrame(
         {
             "nodeId": [0, 1],
@@ -144,7 +142,7 @@ def test_multi_df(
     ],
     ids=["2.3.0 - Alpha Cypher Aggregation", "2.4.0 - New Cypher projection"],
 )
-def test_graph_aggregation_based_alpha_construct_without_arrow(
+def test_graph_aggregation_based_construct_without_arrow(
     runner: CollectingQueryRunner,
     gds: GraphDataScience,
     tier: str,
@@ -210,7 +208,7 @@ def test_graph_aggregation_based_alpha_construct_without_arrow(
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 3, 0)])
-def test_graph_aggregation_based_alpha_construct_without_arrow_with_overlapping_property_columns(
+def test_graph_aggregation_based_construct_without_arrow_with_overlapping_property_columns(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
     nodes = DataFrame(
@@ -236,9 +234,31 @@ def test_graph_aggregation_based_alpha_construct_without_arrow_with_overlapping_
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
-def test_graph_alpha_construct_validate_df_columns(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+def test_graph_construct_validate_df_columns(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     nodes = DataFrame({"nodeIds": [0, 1]})
     relationships = DataFrame({"sourceNodeId": [0, 1], "TargetNodeIds": [1, 0]})
 
     with pytest.raises(ValueError, match=r"(.*'nodeId'.*\s.*'targetNodeId'.*)|(.*'targetNodeId'.*\s.*'nodeId'.*)"):
         gds.graph.construct("hello", nodes, relationships, concurrency=2)
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
+def test_graph_alpha_construct_backward_compat(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    nodes = DataFrame(
+        {
+            "nodeId": [0, 1],
+            "labels": [["A"], ["B"]],
+            "propA": [1337, 42.1],
+        }
+    )
+    relationships = DataFrame(
+        {
+            "sourceNodeId": [0, 1],
+            "targetNodeId": [1, 0],
+            "relationshipType": ["REL", "REL2"],
+            "relPropA": [1337.2, 42],
+        }
+    )
+
+    with pytest.warns(DeprecationWarning):
+        gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2)
