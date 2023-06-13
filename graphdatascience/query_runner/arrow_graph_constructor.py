@@ -55,7 +55,7 @@ class ArrowGraphConstructor(GraphConstructor):
             self._send_dfs(relationship_dfs, "relationship")
 
             self._send_action("RELATIONSHIP_LOAD_DONE", {"name": self._graph_name})
-        except Exception as e:
+        except (Exception, KeyboardInterrupt) as e:
             self._send_action("ABORT", {"name": self._graph_name})
 
             raise e
