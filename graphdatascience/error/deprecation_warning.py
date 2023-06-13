@@ -1,3 +1,4 @@
+import warnings
 from functools import wraps
 from logging import warning
 from typing import Any, Callable, Optional, TypeVar, cast
@@ -20,8 +21,9 @@ def deprecation_warning(
 
         @wraps(func)
         def wrapper(self: WithServerVersion, *args: Any, **kwargs: Any) -> Any:
-            if deprecation_start_version and self._server_version > deprecation_start_version:
+            if deprecation_start_version and self._server_version >= deprecation_start_version:
                 warning(f"Deprecated in favor of {new_procedure}")
+                warnings.warn(f"Deprecated in favor of {new_procedure}", DeprecationWarning)
             return func(self, *args, **kwargs)
 
         return cast(F, wrapper)
