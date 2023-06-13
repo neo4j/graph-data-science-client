@@ -78,11 +78,8 @@ In addition to those aforementioned there are five more methods that create grap
 Their Cypher signatures map to Python in much the same way as `gds.graph.project` above.
 
 
-[.alpha]
 [[construct]]
 == Constructing a graph from DataFrames
-
-include::ROOT:partial$/alpha-note.adoc[]
 
 Instead of projecting a graph from the Neo4j database it is also possible to construct new graphs using pandas `DataFrames` from the client.
 
@@ -161,6 +158,16 @@ This in particular means that:
 * It is possible to supply more than one data frame, both for nodes and relationships.
 If multiple node dataframes are used, they need to contain distinct node ids across all node data frames.
 * Prior to the `construct` call, a call to `GraphDataScience.set_database` must have been made to explicitly specify which Neo4j database should be targeted.
+
+
+=== Limitations on community edition
+
+For users of GDS community edition, `gds.graph.construct` leverages Cypher Aggregation in implementation.
+This implies performance can be impacted for large graphs.
+It is possible that socket connection with the database times out.
+If this happens, a possible workaround is to modify the server configuration [https://neo4j.com/docs/operations-manual/current/configuration/configuration-settings/#config_server.bolt.connection_keep_alive]`server.bolt.connection_keep_alive`
+or [https://neo4j.com/docs/operations-manual/current/configuration/configuration-settings/#config_server.bolt.connection_keep_alive_probes]`server.bolt.connection_keep_alive_probes`.
+However, be aware of the side effects such as a genuine connection issue now taking longer to be detected.
 
 
 [[networkx]]
