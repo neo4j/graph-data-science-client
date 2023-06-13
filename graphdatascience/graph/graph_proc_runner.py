@@ -14,7 +14,6 @@ from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
-from .graph_alpha_proc_runner import GraphAlphaProcRunner
 from .graph_entity_ops_runner import (
     GraphElementPropertyRunner,
     GraphNodePropertiesRunner,
@@ -100,14 +99,9 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         with self._path("graphdatascience.resources.cora", "cora_rels_gzip.pkl") as rels_resource:
             rels = read_pickle(rels_resource, compression="gzip")
 
-        self._namespace = "gds.alpha.graph"
-        alpha_proc_runner = GraphAlphaProcRunner(self._query_runner, self._namespace, self._server_version)
-
         undirected_relationship_types = ["*"] if undirected else []
 
-        return alpha_proc_runner.construct(
-            graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types
-        )
+        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
 
     @client_only_endpoint("gds.graph")
     def load_karate_club(self, graph_name: str = "karate_club", undirected: bool = False) -> Graph:
@@ -117,14 +111,9 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         with self._path("graphdatascience.resources.karate", "karate_club_gzip.pkl") as rels_resource:
             rels = read_pickle(rels_resource, compression="gzip")
 
-        self._namespace = "gds.alpha.graph"
-        alpha_proc_runner = GraphAlphaProcRunner(self._query_runner, self._namespace, self._server_version)
-
         undirected_relationship_types = ["*"] if undirected else []
 
-        return alpha_proc_runner.construct(
-            graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types
-        )
+        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
 
     @client_only_endpoint("gds.graph")
     def load_imdb(self, graph_name: str = "imdb", undirected: bool = True) -> Graph:
@@ -145,18 +134,13 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         with self._path("graphdatascience.resources.imdb", "imdb_directed_in_rels_gzip.pkl") as rels_resource:
             directed_in_rels = read_pickle(rels_resource, compression="gzip")
 
-        self._namespace = "gds.alpha.graph"
-        alpha_proc_runner = GraphAlphaProcRunner(self._query_runner, self._namespace, self._server_version)
-
         nodes = [movies_with_genre, movies_without_genre, actors, directors]
         rels = [acted_in_rels, directed_in_rels]
 
         # Default undirected which matches raw data
         undirected_relationship_types = ["*"] if undirected else []
 
-        return alpha_proc_runner.construct(
-            graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types
-        )
+        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
 
     @property
     def sample(self) -> GraphSampleRunner:
