@@ -522,7 +522,8 @@ def test_graph_nodeLabel_mutate(runner: CollectingQueryRunner, gds: GraphDataSci
 def test_graph_removeNodeProperties_20(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    gds.graph.removeNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        gds.graph.removeNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
     assert runner.last_query() == "CALL gds.graph.removeNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
@@ -536,7 +537,8 @@ def test_graph_removeNodeProperties_20(runner: CollectingQueryRunner, gds: Graph
 def test_graph_removeNodeProperties_21(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    gds.graph.removeNodeProperties(G, ["dummyProp"], concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        gds.graph.removeNodeProperties(G, ["dummyProp"], concurrency=2)
     assert runner.last_query() == "CALL gds.graph.removeNodeProperties($graph_name, $properties, $config)"
     assert runner.last_params() == {
         "graph_name": "g",

@@ -72,7 +72,7 @@ In addition to those aforementioned there are five more methods that create grap
 * `gds.graph.project.cypher`
 * `gds.beta.graph.subgraph`
 * `gds.beta.graph.generate`
-* `gds.alpha.graph.sample.rwr`
+* `gds.graph.sample.rwr`
 * `gds.graph.sample.cnarw`
 
 Their Cypher signatures map to Python in much the same way as `gds.graph.project` above.

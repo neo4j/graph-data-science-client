@@ -105,7 +105,8 @@ def test_sample_rwr(runner: QueryRunner, gds: GraphDataScience) -> None:
 def test_sample_rwr_alpha(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    rwr_G, result = gds.alpha.graph.sample.rwr("s", from_G, samplingRatio=0.6, concurrency=1, randomSeed=42)
+    with pytest.warns(DeprecationWarning):
+        rwr_G, result = gds.alpha.graph.sample.rwr("s", from_G, samplingRatio=0.6, concurrency=1, randomSeed=42)
 
     assert rwr_G.name() == "s"
     assert result["graphName"] == "s"
@@ -763,7 +764,8 @@ def test_graph_nodeLabel_mutate(gds: GraphDataScience) -> None:
 def test_graph_removeNodeProperties_21(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    result = gds.graph.removeNodeProperties(G, ["x"], concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds.graph.removeNodeProperties(G, ["x"], concurrency=2)
     assert result["propertiesRemoved"] == 3
 
 
@@ -779,7 +781,8 @@ def test_graph_removeNodeProperties_22(gds: GraphDataScience) -> None:
 def test_graph_removeNodeProperties_20(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    result = gds.graph.removeNodeProperties(G, ["x"], ["*"], concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds.graph.removeNodeProperties(G, ["x"], ["*"], concurrency=2)
     assert result["propertiesRemoved"] == 3
 
 
