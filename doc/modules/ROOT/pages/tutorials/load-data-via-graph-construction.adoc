@@ -186,7 +186,7 @@ the graph, printing only the first 10.
 
 [source, python, role=no-test]
 ----
-gds.graph.streamNodeProperties(G, ["subject"]).head(10)
+gds.graph.nodeProperties.stream(G, ["subject"]).head(10)
 ----
 
 == Cleanup

@@ -125,7 +125,8 @@ def test_graph_export_csv(runner: CollectingQueryRunner, gds: GraphDataScience) 
 def test_graph_streamNodeProperty(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    gds.graph.streamNodeProperty(G, "dummyProp", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        gds.graph.streamNodeProperty(G, "dummyProp", concurrency=2)
     assert runner.last_query() == "CALL gds.graph.streamNodeProperty($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
@@ -134,7 +135,8 @@ def test_graph_streamNodeProperty(runner: CollectingQueryRunner, gds: GraphDataS
         "config": {"concurrency": 2},
     }
 
-    gds.graph.streamNodeProperty(G, "dummyProp", "dummyLabel", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        gds.graph.streamNodeProperty(G, "dummyProp", "dummyLabel", concurrency=2)
     assert runner.last_query() == "CALL gds.graph.streamNodeProperty($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
@@ -172,7 +174,8 @@ def test_graph_streamNodeProperties(runner: CollectingQueryRunner, gds: GraphDat
 
     runner.set__mock_result(DataFrame([{"nodeId": 0, "dummyProp": 2}]))
 
-    gds.graph.streamNodeProperties(G, ["dummyProp"], concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        gds.graph.streamNodeProperties(G, ["dummyProp"], concurrency=2)
     assert runner.last_query() == "CALL gds.graph.streamNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
@@ -181,7 +184,8 @@ def test_graph_streamNodeProperties(runner: CollectingQueryRunner, gds: GraphDat
         "config": {"concurrency": 2},
     }
 
-    gds.graph.streamNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        gds.graph.streamNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
     assert runner.last_query() == "CALL gds.graph.streamNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
         "graph_name": "g",

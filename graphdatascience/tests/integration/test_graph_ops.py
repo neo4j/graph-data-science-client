@@ -260,7 +260,8 @@ def test_graph_get(gds: GraphDataScience) -> None:
 def test_graph_streamNodeProperty_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    result = gds.graph.streamNodeProperty(G, "x", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds.graph.streamNodeProperty(G, "x", concurrency=2)
     assert {e for e in result["propertyValue"]} == {1, 2, 3}
 
 
@@ -301,7 +302,8 @@ def test_graph_nodeProperty_stream_with_arrow_no_db() -> None:
 def test_graph_streamNodeProperty_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    result = gds_without_arrow.graph.streamNodeProperty(G, "x", concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds_without_arrow.graph.streamNodeProperty(G, "x", concurrency=2)
 
     assert {e for e in result["propertyValue"]} == {1, 2, 3}
 
@@ -318,7 +320,8 @@ def test_graph_nodeProperty_stream_without_arrow(gds_without_arrow: GraphDataSci
 def test_graph_streamNodeProperties_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
-    result = gds.graph.streamNodeProperties(G, ["x", "y"], concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds.graph.streamNodeProperties(G, ["x", "y"], concurrency=2)
 
     assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
 
@@ -355,7 +358,8 @@ def test_graph_nodeProperties_stream_with_arrow(gds: GraphDataScience) -> None:
 def test_graph_streamNodeProperties_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
-    result = gds.graph.streamNodeProperties(G, ["x", "y"], separate_property_columns=True, concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds.graph.streamNodeProperties(G, ["x", "y"], separate_property_columns=True, concurrency=2)
     assert list(result.keys()) == ["nodeId", "x", "y"]
     assert {e for e in result["x"]} == {1, 2, 3}
     assert {e for e in result["y"]} == {2, 3, 4}
@@ -390,7 +394,8 @@ def test_graph_nodeProperties_stream_raise_error_with_duplicate_keys(gds: GraphD
 def test_graph_streamNodeProperties_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
-    result = gds_without_arrow.graph.streamNodeProperties(G, ["x", "y"], concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds_without_arrow.graph.streamNodeProperties(G, ["x", "y"], concurrency=2)
 
     assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
 
@@ -431,7 +436,10 @@ def test_graph_streamNodeProperties_without_arrow_separate_property_columns(
 ) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "z"]}}, "*")
 
-    result = gds_without_arrow.graph.streamNodeProperties(G, ["x", "z"], separate_property_columns=True, concurrency=2)
+    with pytest.warns(DeprecationWarning):
+        result = gds_without_arrow.graph.streamNodeProperties(
+            G, ["x", "z"], separate_property_columns=True, concurrency=2
+        )
 
     assert list(result.keys()) == ["nodeId", "x", "z"]
 

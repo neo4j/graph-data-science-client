@@ -465,7 +465,7 @@ model_fastrp.predict_mutate(
     targetNodeLabels=["UnclassifiedPaper"],
 )
 
-predicted_fastrp = gds.graph.streamNodeProperty(G, "predictedClass", ["UnclassifiedPaper"])
+predicted_fastrp = gds.graph.nodeProperty.stream(G, "predictedClass", ["UnclassifiedPaper"])
 ----
 
 [source, python, role=no-test]

@@ -151,8 +151,9 @@ def test_imdb_graph_with_arrow(gds: GraphDataScience) -> None:
 def test_roundtrip_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
 
-    rel_df = gds.graph.streamRelationshipProperty(G, "relX")
-    node_df = gds.graph.streamNodeProperty(G, "x")
+    with pytest.warns(DeprecationWarning):
+        rel_df = gds.graph.streamRelationshipProperty(G, "relX")
+        node_df = gds.graph.streamNodeProperty(G, "x")
 
     G_2 = gds.graph.construct("arrowGraph", node_df, rel_df)
 
@@ -185,8 +186,9 @@ def test_roundtrip_with_arrow_22(gds: GraphDataScience) -> None:
 def test_roundtrip_with_arrow_encrypted(gds_with_tls: GraphDataScience) -> None:
     G, _ = gds_with_tls.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
 
-    rel_df = gds_with_tls.graph.streamRelationshipProperty(G, "relX")
-    node_df = gds_with_tls.graph.streamNodeProperty(G, "x")
+    with pytest.warns(DeprecationWarning):
+        rel_df = gds_with_tls.graph.streamRelationshipProperty(G, "relX")
+        node_df = gds_with_tls.graph.streamNodeProperty(G, "x")
 
     G_2 = gds_with_tls.graph.construct("arrowGraph", node_df, rel_df)
 
