@@ -105,7 +105,10 @@ def test_sample_rwr(runner: QueryRunner, gds: GraphDataScience) -> None:
 def test_sample_rwr_alpha(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    with pytest.warns(DeprecationWarning):
+    if gds.server_version() >= ServerVersion(2, 4, 0):
+        with pytest.warns(DeprecationWarning):
+            rwr_G, result = gds.alpha.graph.sample.rwr("s", from_G, samplingRatio=0.6, concurrency=1, randomSeed=42)
+    else:
         rwr_G, result = gds.alpha.graph.sample.rwr("s", from_G, samplingRatio=0.6, concurrency=1, randomSeed=42)
 
     assert rwr_G.name() == "s"
