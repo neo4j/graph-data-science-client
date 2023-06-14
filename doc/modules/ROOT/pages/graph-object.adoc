@@ -72,17 +72,14 @@ In addition to those aforementioned there are five more methods that create grap
 * `gds.graph.project.cypher`
 * `gds.beta.graph.subgraph`
 * `gds.beta.graph.generate`
-* `gds.alpha.graph.sample.rwr`
+* `gds.graph.sample.rwr`
 * `gds.graph.sample.cnarw`
 
 Their Cypher signatures map to Python in much the same way as `gds.graph.project` above.
 
 
-[.alpha]
 [[construct]]
 == Constructing a graph from DataFrames
-
-include::ROOT:partial$/alpha-note.adoc[]
 
 Instead of projecting a graph from the Neo4j database it is also possible to construct new graphs using pandas `DataFrames` from the client.
 
@@ -122,7 +119,7 @@ relationships = pandas.DataFrame(
     }
 )
 
-G = gds.alpha.graph.construct(
+G = gds.graph.construct(
     "my-graph",      # Graph name
     nodes,           # One or more dataframes containing node data
     relationships    # One or more dataframes containing relationship data
@@ -162,6 +159,7 @@ This in particular means that:
 If multiple node dataframes are used, they need to contain distinct node ids across all node data frames.
 * Prior to the `construct` call, a call to `GraphDataScience.set_database` must have been made to explicitly specify which Neo4j database should be targeted.
 
+include::ROOT:partial$/graph-construct-limitation.adoc[]
 
 [[networkx]]
 == Loading a NetworkX graph
@@ -279,6 +277,8 @@ Please note though that the edge attribute key `relationshipType` is reserved fo
 The direction (`DIRECTED` or `UNDIRECTED`) of the relationships in the projected GDS graph are inferred from the type of `networkx.Graph` used.
 If the given NetworkX graph is directed, so a (sub)class of either `networkx.DiGraph` or `networkx.MultiDiGraph`, the relationships will be `DIRECTED` in the projection.
 Otherwise, they will be `UNDIRECTED`.
+
+include::ROOT:partial$/graph-construct-limitation.adoc[]
 
 
 == Inspecting a graph object

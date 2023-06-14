@@ -1,0 +1,7 @@
+=== Limitations on community edition
+
+For users of GDS community edition, performance can be impacted for large graphs.
+It is possible that socket connection with the database times out.
+If this happens, a possible workaround is to modify the server configuration https://neo4j.com/docs/operations-manual/current/configuration/configuration-settings/#config_server.bolt.connection_keep_alive[`server.bolt.connection_keep_alive`]
+or https://neo4j.com/docs/operations-manual/current/configuration/configuration-settings/#config_server.bolt.connection_keep_alive_probes[`server.bolt.connection_keep_alive_probes`].
+However, be aware of the side effects such as a genuine connection issue now taking longer to be detected.

@@ -151,10 +151,11 @@ def test_imdb_graph_with_arrow(gds: GraphDataScience) -> None:
 def test_roundtrip_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
 
-    rel_df = gds.graph.streamRelationshipProperty(G, "relX")
-    node_df = gds.graph.streamNodeProperty(G, "x")
+    with pytest.warns(DeprecationWarning):
+        rel_df = gds.graph.streamRelationshipProperty(G, "relX")
+        node_df = gds.graph.streamNodeProperty(G, "x")
 
-    G_2 = gds.alpha.graph.construct("arrowGraph", node_df, rel_df)
+    G_2 = gds.graph.construct("arrowGraph", node_df, rel_df)
 
     try:
         assert G.node_count() == G_2.node_count()
@@ -171,7 +172,7 @@ def test_roundtrip_with_arrow_22(gds: GraphDataScience) -> None:
     rel_df = gds.graph.relationshipProperty.stream(G, "relX")
     node_df = gds.graph.nodeProperty.stream(G, "x")
 
-    G_2 = gds.alpha.graph.construct("arrowGraph", node_df, rel_df)
+    G_2 = gds.graph.construct("arrowGraph", node_df, rel_df)
 
     try:
         assert G.node_count() == G_2.node_count()
@@ -185,10 +186,11 @@ def test_roundtrip_with_arrow_22(gds: GraphDataScience) -> None:
 def test_roundtrip_with_arrow_encrypted(gds_with_tls: GraphDataScience) -> None:
     G, _ = gds_with_tls.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
 
-    rel_df = gds_with_tls.graph.streamRelationshipProperty(G, "relX")
-    node_df = gds_with_tls.graph.streamNodeProperty(G, "x")
+    with pytest.warns(DeprecationWarning):
+        rel_df = gds_with_tls.graph.streamRelationshipProperty(G, "relX")
+        node_df = gds_with_tls.graph.streamNodeProperty(G, "x")
 
-    G_2 = gds_with_tls.alpha.graph.construct("arrowGraph", node_df, rel_df)
+    G_2 = gds_with_tls.graph.construct("arrowGraph", node_df, rel_df)
 
     try:
         assert G.node_count() == G_2.node_count()
@@ -198,7 +200,7 @@ def test_roundtrip_with_arrow_encrypted(gds_with_tls: GraphDataScience) -> None:
 
 
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
-def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+def test_graph_construct_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     nodes = DataFrame(
         {
             "nodeId": [0, 1, 2, 3],
@@ -218,7 +220,7 @@ def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience
         }
     )
 
-    G = gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
+    G = gds_without_arrow.graph.construct("hello", nodes, relationships)
 
     try:
         assert G.name() == "hello"
@@ -234,7 +236,7 @@ def test_graph_alpha_construct_without_arrow(gds_without_arrow: GraphDataScience
 
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
-def test_graph_alpha_construct_undirected_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+def test_graph_construct_undirected_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     nodes = DataFrame(
         {
             "nodeId": [0, 1, 2, 3],
@@ -249,7 +251,7 @@ def test_graph_alpha_construct_undirected_without_arrow(gds_without_arrow: Graph
         }
     )
 
-    G = gds_without_arrow.alpha.graph.construct("hello", nodes, relationships, undirected_relationship_types=["REL2"])
+    G = gds_without_arrow.graph.construct("hello", nodes, relationships, undirected_relationship_types=["REL2"])
 
     try:
         assert G.name() == "hello"
@@ -262,7 +264,7 @@ def test_graph_alpha_construct_undirected_without_arrow(gds_without_arrow: Graph
 
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
 @pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 3, 0))
-def warn_for_graph_alpha_construct_undirected_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+def warn_for_graph_construct_undirected_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     nodes = DataFrame(
         {
             "nodeId": [0, 1, 2, 3],
@@ -277,7 +279,7 @@ def warn_for_graph_alpha_construct_undirected_without_arrow(gds_without_arrow: G
     )
 
     with pytest.raises(ValueError):
-        gds_without_arrow.alpha.graph.construct("hello", nodes, relationships, undirected_relationship_types=["REL2"])
+        gds_without_arrow.graph.construct("hello", nodes, relationships, undirected_relationship_types=["REL2"])
 
 
 @pytest.mark.enterprise
@@ -286,7 +288,7 @@ def test_graph_construct_with_arrow(gds: GraphDataScience) -> None:
     nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
     relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
-    G = gds.alpha.graph.construct("hello", nodes, relationships)
+    G = gds.graph.construct("hello", nodes, relationships)
 
     assert G.name() == "hello"
     assert G.node_count() == 4
@@ -297,7 +299,7 @@ def test_graph_construct_with_arrow(gds: GraphDataScience) -> None:
 
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
 @pytest.mark.compatible_with(max_exlusive=ServerVersion(2, 3, 0))
-def warn_for_graph_alpha_construct_undirected_with_arrow(gds: GraphDataScience) -> None:
+def warn_for_graph_construct_undirected_with_arrow(gds: GraphDataScience) -> None:
     nodes = DataFrame(
         {
             "nodeId": [0, 1, 2, 3],
@@ -312,7 +314,7 @@ def warn_for_graph_alpha_construct_undirected_with_arrow(gds: GraphDataScience) 
     )
 
     with pytest.raises(ValueError):
-        gds.alpha.graph.construct("hello", nodes, relationships, undirected_relationship_types=["REL2"])
+        gds.graph.construct("hello", nodes, relationships, undirected_relationship_types=["REL2"])
 
 
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
@@ -321,11 +323,11 @@ def test_error_on_construct_same_graph_twice(gds: GraphDataScience) -> None:
     relationships = DataFrame({"sourceNodeId": [0, 1], "targetNodeId": [1, 0]})
     graph_name = "g"
 
-    G = gds.alpha.graph.construct(graph_name, nodes, relationships, concurrency=2)
+    G = gds.graph.construct(graph_name, nodes, relationships, concurrency=2)
 
     try:
         with pytest.raises(ValueError, match=f"Graph '{graph_name}' already exists."):
-            gds.alpha.graph.construct(graph_name, nodes, relationships, concurrency=2)
+            gds.graph.construct(graph_name, nodes, relationships, concurrency=2)
     finally:
         G.drop()
 
@@ -342,7 +344,7 @@ def test_graph_construct_undirected_with_arrow(gds: GraphDataScience) -> None:
         }
     )
 
-    G = gds.alpha.graph.construct("hello", nodes, relationships, undirected_relationship_types=["*"])
+    G = gds.graph.construct("hello", nodes, relationships, undirected_relationship_types=["*"])
 
     try:
         assert G.name() == "hello"
@@ -368,7 +370,7 @@ def test_graph_construct_with_nan_properties_with_arrow(gds: GraphDataScience) -
         {"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0], "scalarProp": [42.42, np.nan, float("NaN"), None]}
     )
 
-    G = gds.alpha.graph.construct("hello", nodes, relationships)
+    G = gds.graph.construct("hello", nodes, relationships)
 
     assert G.name() == "hello"
     assert G.node_count() == 4
@@ -383,7 +385,7 @@ def test_graph_construct_with_arrow_multiple_dfs(gds: GraphDataScience) -> None:
     nodes = [DataFrame({"nodeId": [0, 1]}), DataFrame({"nodeId": [2, 3]})]
     relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
-    G = gds.alpha.graph.construct("hello", nodes, relationships)
+    G = gds.graph.construct("hello", nodes, relationships)
 
     assert G.name() == "hello"
     assert G.node_count() == 4
@@ -400,7 +402,7 @@ def test_graph_construct_without_arrow_enterprise_warning(gds_without_arrow: Gra
     relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
     with pytest.warns(UserWarning):
-        G = gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
+        G = gds_without_arrow.graph.construct("hello", nodes, relationships)
         G.drop()
 
 
@@ -416,7 +418,7 @@ def test_graph_construct_without_arrow_multi_dfs(gds_without_arrow: GraphDataSci
         DataFrame({"sourceNodeId": [2, 3], "targetNodeId": [3, 0], "relationshipType": ["B", "B"]}),
     ]
 
-    G = gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
+    G = gds_without_arrow.graph.construct("hello", nodes, relationships)
 
     assert G.name() == "hello"
     assert G.node_count() == 4
@@ -436,10 +438,10 @@ def test_graph_construct_with_arrow_abort(gds: GraphDataScience) -> None:
     relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
     with pytest.raises(Exception):
-        gds.alpha.graph.construct("hello", bad_nodes, relationships)
+        gds.graph.construct("hello", bad_nodes, relationships)
 
     good_nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
-    G = gds.alpha.graph.construct("hello", good_nodes, relationships)
+    G = gds.graph.construct("hello", good_nodes, relationships)
 
     assert G.name() == "hello"
     assert G.node_count() == 4
@@ -461,4 +463,25 @@ def test_graph_construct_with_arrow_no_db() -> None:
     relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
     with pytest.raises(ValueError):
+        gds.graph.construct("hello", nodes, relationships)
+
+
+@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
+def test_graph_alpha_construct_backward_compat_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    nodes = DataFrame({"nodeId": [0, 1, 2, 3], "labels": [["A"], "B", ["C", "A"], ["D"]]})
+    relationships = DataFrame(
+        {"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0], "relationshipType": ["REL", "REL", "REL", "REL2"]}
+    )
+
+    with pytest.warns(DeprecationWarning):
+        gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
+
+
+@pytest.mark.enterprise
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
+def test_graph_alpha_construct_backward_compat_with_arrow(gds: GraphDataScience) -> None:
+    nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
+    relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
+
+    with pytest.warns(DeprecationWarning):
         gds.alpha.graph.construct("hello", nodes, relationships)
