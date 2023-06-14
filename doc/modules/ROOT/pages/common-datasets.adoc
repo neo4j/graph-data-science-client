@@ -285,3 +285,5 @@ assert G.relationship_count() == 5_088_434
 assert len(G.relationship_types()) == 51 * 3
 assert G.relationship_properties()["drug-drug_polycystic_ovary_syndrome_TRAIN"] == ["classLabel"]
 ----
+
+include::ROOT:partial$/graph-construct-limitation.adoc[]

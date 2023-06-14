@@ -159,16 +159,7 @@ This in particular means that:
 If multiple node dataframes are used, they need to contain distinct node ids across all node data frames.
 * Prior to the `construct` call, a call to `GraphDataScience.set_database` must have been made to explicitly specify which Neo4j database should be targeted.
 
-
-=== Limitations on community edition
-
-For users of GDS community edition, `gds.graph.construct` leverages Cypher Aggregation in implementation.
-This implies performance can be impacted for large graphs.
-It is possible that socket connection with the database times out.
-If this happens, a possible workaround is to modify the server configuration [https://neo4j.com/docs/operations-manual/current/configuration/configuration-settings/#config_server.bolt.connection_keep_alive]`server.bolt.connection_keep_alive`
-or [https://neo4j.com/docs/operations-manual/current/configuration/configuration-settings/#config_server.bolt.connection_keep_alive_probes]`server.bolt.connection_keep_alive_probes`.
-However, be aware of the side effects such as a genuine connection issue now taking longer to be detected.
-
+include::ROOT:partial$/graph-construct-limitation.adoc[]
 
 [[networkx]]
 == Loading a NetworkX graph
@@ -286,6 +277,8 @@ Please note though that the edge attribute key `relationshipType` is reserved fo
 The direction (`DIRECTED` or `UNDIRECTED`) of the relationships in the projected GDS graph are inferred from the type of `networkx.Graph` used.
 If the given NetworkX graph is directed, so a (sub)class of either `networkx.DiGraph` or `networkx.MultiDiGraph`, the relationships will be `DIRECTED` in the projection.
 Otherwise, they will be `UNDIRECTED`.
+
+include::ROOT:partial$/graph-construct-limitation.adoc[]
 
 
 == Inspecting a graph object
