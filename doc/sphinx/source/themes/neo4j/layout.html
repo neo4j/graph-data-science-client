@@ -7,6 +7,10 @@
 {%- block relbar1 %}{% endblock %}
 {%- block relbar2 %}{% endblock %}
 
+{% block extrahead %}
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
 {%- block content %}
 <body class="article docs sphinx">
 
@@ -16,9 +20,9 @@
   <nav class="navbar">
     <div class="navbar-brand">
       <a class="navbar-item" href="/">
-
-      <img class="navbar-logo" src="https://dist.neo4j.com/wp-content/uploads/20210422142941/neo4j-logo-2020.svg" alt="Neo4j Graph Data Science Client API Reference">
-      </a><a href="/docs/" class="navbar-item no-left-padding" aria-label="Neo4j Graph Data Science Client API Reference">
+        <img class="navbar-logo" src="https://dist.neo4j.com/wp-content/uploads/20210422142941/neo4j-logo-2020.svg" alt="Neo4j Graph Data Science Client API Reference">
+      </a>
+      <a href="/docs/graph-data-science-client" class="navbar-item no-left-padding" aria-label="Neo4j Graph Data Science Client API Reference">
         Graph Data Science Client API Reference
       </a>
 
