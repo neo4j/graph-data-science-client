@@ -56,6 +56,10 @@ body.sphinx .content .search {
         height: auto;
         background: initial;
     }
+
+    body.sphinx .sphinxsidebar {
+        background: #f5f7fa;
+    }
     
     body.sphinx .nav-panel-menu:not(.is-active)::after {
         background: initial;
@@ -189,4 +193,41 @@ div.code-block-caption:hover > a.headerlink {
     font-weight: 400;
     display: block;
     padding: 0.25rem 0;
+}
+
+/* lists */
+
+body.sphinx .doc ul li{
+    margin-bottom: 0.5rem;
+}
+
+/* functions */
+
+body.sphinx .doc dl.py.function {
+    padding-top: 2rem;
+    padding: 1rem;
+    /* border-top: 2px dotted #eee; */
+}
+
+/*  deprecated */
+
+body.sphinx .deprecated::after,
+body.sphinx .deprecated > *::after {
+    content: unset;
+}
+
+body.sphinx .doc dl.deprecated,
+body.sphinx .doc div.deprecated {
+    border-left: 4px solid #d53f8c;
+    color: #702459;
+    background-color: #fed7e2;
+}
+
+body.sphinx .doc dl.deprecated {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+body.sphinx .doc div.deprecated {
+    padding: 1rem;
 }
