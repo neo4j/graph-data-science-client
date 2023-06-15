@@ -220,8 +220,11 @@ RETURN gds.graph.project($graph_name, source, target, {"""
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_node_properties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    # G, _ = gds.graph.cypher.project(
+    #     "g", nodes=dict(L1=["prop1"], L2=["prop2", "prop3"], L3=dict(prop4=True, prop5=dict()))
+    # )
     G, _ = gds.graph.cypher.project(
-        "g", nodes=dict(L1=["prop1"], L2=["prop2", "prop3"], L3=dict(prop4=True, prop5=dict()))
+        "g", nodes={"L1": ["prop1"], "L2": ["prop2", "prop3"], "L3": {"prop4": True, "prop5": {}}}
     )
 
     assert G.name() == "g"
@@ -242,6 +245,29 @@ WHEN 'L2' in labels(target) THEN [target {.prop2, .prop3}]
 WHEN 'L3' in labels(target) THEN [target {.prop4, .prop5}]
 END AS targetNodeProperties
 RETURN gds.graph.project($graph_name, source, target, {"""
+        "sourceNodeLabels: labels(source), "
+        "targetNodeLabels: labels(target), "
+        "sourceNodeProperties: sourceNodeProperties, "
+        "targetNodeProperties: targetNodeProperties})"
+    )
+
+
+@pytest.mark.skip(reason="Not implemented yet")
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
+def test_node_properties_alias(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.cypher.project(
+        "g", nodes=dict(A=dict(target_prop1="source_prop1", target_prop2=dict(property_key="source_prop2")))
+    )
+
+    assert G.name() == "g"
+    assert runner.last_params() == dict(graph_name="g")
+
+    assert runner.last_query() == (
+        """MATCH (source:A)-->(target:A)
+WITH source, target, """
+        "[{target_prop1: source.source_prop1, target_prop1: source.source_prop2}] AS sourceNodeProperties"
+        """[{target_prop1: target.source_prop1, target_prop1: target.source_prop2}] AS targetNodeProperties
+ RETURN gds.graph.project($graph_name, source, target, {"""
         "sourceNodeLabels: labels(source), "
         "targetNodeLabels: labels(target), "
         "sourceNodeProperties: sourceNodeProperties, "

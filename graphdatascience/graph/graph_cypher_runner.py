@@ -185,6 +185,9 @@ class GraphCypherRunner(IllegalAttrChecker):
 
         match_part = str(match_part)
 
+        print("nodes", nodes)
+        print("labels", label_mappings)
+
         case_part = []
         if label_mappings:
             with_rel = f", {rel_var}" if rel_var else ""
@@ -263,14 +266,21 @@ class GraphCypherRunner(IllegalAttrChecker):
         if isinstance(spec, str):
             return NodeProperty(name=name or spec, property_key=spec)
 
-        if name is None:
-            raise ValueError(f"Node properties spec must be used with the dict syntax: {spec}")
+        if isinstance(spec, dict):
+            name = spec.pop("name", name)
+            if name is None:
+                raise ValueError(
+                    f"Node properties must specify either a name in the outer dict or by using the `name` key: {spec}"
+                )
+            property_key = spec.pop("property_key", name)
+
+            return NodeProperty(name=name, property_key=property_key, **spec)
 
         if spec is True:
-            return NodeProperty(name=name, property_key=name)
+            if name is None:
+                raise ValueError(f"Node properties spec must be used with the dict syntax: {spec}")
 
-        if isinstance(spec, dict):
-            return NodeProperty(name=name, property_key=name, **spec)
+            return NodeProperty(name=name, property_key=name)
 
         raise TypeError(f"Invalid node property specification: {spec}")
 
