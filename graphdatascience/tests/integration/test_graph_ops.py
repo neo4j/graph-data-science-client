@@ -228,15 +228,13 @@ def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     assert result["graphName"] == GRAPH_NAME
     assert result["dbName"] == MY_DB_NAME
 
-    runner.run_query("CREATE DATABASE $dbName", {"dbName": MY_DB_NAME})
+    runner.run_query("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
     runner.set_database(MY_DB_NAME)
     node_count = runner.run_query("MATCH (n) RETURN COUNT(n) AS c").squeeze()
 
-    try:
-        assert node_count == 3
-    finally:
-        runner.run_query("DROP DATABASE $dbName", {"dbName": MY_DB_NAME})
-        runner.set_database(DB)
+    assert node_count == 3
+    runner.run_query("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+    runner.set_database(DB)
 
 
 @pytest.mark.skip_on_aura
