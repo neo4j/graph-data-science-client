@@ -8,7 +8,7 @@
 
 * New method `gds.graph.cypher.project` to project a graph using Cypher projection.
   More details can be found in the user guide.
-
+* Added new LastFM dataset through `gds.graph.load_lastfm()`
 
 ## Bug fixes
 
