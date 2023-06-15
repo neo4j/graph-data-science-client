@@ -176,9 +176,6 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             with self._path("graphdatascience.resources.lastfm", "user_tag_artist_rels.pkl") as rels_resource:
                 user_tag_artist_rels = read_pickle(rels_resource, compression="gzip")
 
-        self._namespace = "gds.alpha.graph"
-        alpha_proc_runner = GraphAlphaProcRunner(self._query_runner, self._namespace, self._server_version)
-
         nodes = [user_nodes, artist_nodes]
         rels = [user_friend_df_directed, user_listen_artist_rels, user_tag_artist_rels]
 
@@ -195,9 +192,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         else:
             undirected_relationship_types = []
 
-        return alpha_proc_runner.construct(
-            graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types
-        )
+        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
 
     @property
     def sample(self) -> GraphSampleRunner:
