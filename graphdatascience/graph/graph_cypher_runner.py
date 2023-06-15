@@ -1,4 +1,4 @@
-from collections import namedtuple
+from collections import defaultdict, namedtuple
 from typing import Any, NamedTuple, Optional, Tuple
 
 from pandas import Series
@@ -62,6 +62,12 @@ class MatchPattern(NamedTuple):
         return f"{self.left_arrow}{self.type_filter}{self.right_arrow}(target{self.label_filter})"
 
 
+class LabelPropertyMapping(NamedTuple):
+    label: str
+    property_key: str
+    default_value: Optional[Any] = None
+
+
 class GraphCypherRunner(IllegalAttrChecker):
     def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion) -> None:
         if server_version < ServerVersion(2, 4, 0):
@@ -121,6 +127,8 @@ class GraphCypherRunner(IllegalAttrChecker):
             right_arrow="-" if inverse else "->",
         )
 
+        label_mappings = defaultdict(list)
+
         if nodes:
             if len(nodes) == 1 or combine_labels_with == "AND":
                 match_pattern = match_pattern._replace(label_filter=f":{':'.join(spec.source_label for spec in nodes)}")
@@ -147,14 +155,22 @@ class GraphCypherRunner(IllegalAttrChecker):
             else:
                 raise ValueError(f"Invalid value for combine_labels_with: {combine_labels_with}")
 
+            for spec in nodes:
+                if spec.properties:
+                    for prop in spec.properties:
+                        label_mappings[spec.source_label].append(
+                            LabelPropertyMapping(spec.source_label, prop.property_key, prop.default_value)
+                        )
+
+        rel_var = ""
         if rels:
             if len(rels) == 1:
-                rel_var = ""
                 data_config["relationshipType"] = rels[0].source_type
             else:
                 rel_var = "rel"
                 data_config["relationshipTypes"] = "type(rel)"
                 data_config_is_static = False
+
             match_pattern = match_pattern._replace(
                 type_filter=f"[{rel_var}:{'|'.join(spec.source_type for spec in rels)}]"
             )
@@ -168,6 +184,24 @@ class GraphCypherRunner(IllegalAttrChecker):
             match_part = match_part._replace(match=f"MATCH {source}{match_pattern}")
 
         match_part = str(match_part)
+
+        case_part = []
+        if label_mappings:
+            with_rel = f", {rel_var}" if rel_var else ""
+            case_part = [f"WITH source, target{with_rel}"]
+            for kind in ["source", "target"]:
+                case_part.append("CASE")
+
+                for label, mappings in label_mappings.items():
+                    mappings = ", ".join(f".{key.property_key}" for key in mappings)
+                    when_part = f"WHEN '{label}' in labels({kind}) THEN [{kind} {{{mappings}}}]"
+                    case_part.append(when_part)
+
+                case_part.append(f"END AS {kind}NodeProperties")
+
+            data_config["sourceNodeProperties"] = "sourceNodeProperties"
+            data_config["targetNodeProperties"] = "targetNodeProperties"
+            data_config_is_static = False
 
         args = ["$graph_name", "source", "target"]
 
@@ -184,9 +218,7 @@ class GraphCypherRunner(IllegalAttrChecker):
 
         return_part = f"RETURN {self._namespace}({', '.join(args)})"
 
-        query = "\n".join(part for part in [match_part, return_part] if part)
-
-        print(query)
+        query = "\n".join(part for part in [match_part, *case_part, return_part] if part)
 
         result = self._query_runner.run_query_with_logging(
             query,
@@ -208,16 +240,39 @@ class GraphCypherRunner(IllegalAttrChecker):
         if isinstance(spec, dict):
             return [self._node_projection_spec(node, name) for name, node in spec.items()]
 
-        raise TypeError(f"Invalid node projection specification: {spec}")
+        raise TypeError(f"Invalid node projections specification: {spec}")
 
     def _node_projection_spec(self, spec: Any, name: Optional[str] = None) -> NodeProjection:
         if isinstance(spec, str):
             return NodeProjection(name=name or spec, source_label=spec)
 
+        if name is None:
+            raise ValueError(f"Node projections with properties must use the dict syntax: {spec}")
+
+        if isinstance(spec, dict):
+            properties = [self._node_properties_spec(prop, name) for name, prop in spec.items()]
+            return NodeProjection(name=name, source_label=name, properties=properties)
+
+        if isinstance(spec, list):
+            properties = [self._node_properties_spec(prop) for prop in spec]
+            return NodeProjection(name=name, source_label=name, properties=properties)
+
         raise TypeError(f"Invalid node projection specification: {spec}")
 
-    def _node_properties_spec(self, properties: dict[str, Any]) -> list[NodeProperty]:
-        raise TypeError(f"Invalid node projection specification: {properties}")
+    def _node_properties_spec(self, spec: Any, name: Optional[str] = None) -> NodeProperty:
+        if isinstance(spec, str):
+            return NodeProperty(name=name or spec, property_key=spec)
+
+        if name is None:
+            raise ValueError(f"Node properties spec must be used with the dict syntax: {spec}")
+
+        if spec is True:
+            return NodeProperty(name=name, property_key=name)
+
+        if isinstance(spec, dict):
+            return NodeProperty(name=name, property_key=name, **spec)
+
+        raise TypeError(f"Invalid node property specification: {spec}")
 
     def _rel_projections_spec(self, spec: Any) -> list[RelationshipProjection]:
         if spec is None or spec is False:

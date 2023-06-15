@@ -216,3 +216,34 @@ RETURN gds.graph.project($graph_name, source, target, {"""
         "targetNodeLabels: labels(target), "
         "relationshipTypes: type(rel)})"
     )
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
+def test_node_properties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.cypher.project(
+        "g", nodes=dict(L1=["prop1"], L2=["prop2", "prop3"], L3=dict(prop4=True, prop5=dict()))
+    )
+
+    assert G.name() == "g"
+    assert runner.last_params() == dict(graph_name="g")
+
+    assert runner.last_query() == (
+        """MATCH (source)-->(target)
+WHERE (source:L1 OR source:L2 OR source:L3) AND (target:L1 OR target:L2 OR target:L3)
+WITH source, target
+CASE
+WHEN 'L1' in labels(source) THEN [source {.prop1}]
+WHEN 'L2' in labels(source) THEN [source {.prop2, .prop3}]
+WHEN 'L3' in labels(source) THEN [source {.prop4, .prop5}]
+END AS sourceNodeProperties
+CASE
+WHEN 'L1' in labels(target) THEN [target {.prop1}]
+WHEN 'L2' in labels(target) THEN [target {.prop2, .prop3}]
+WHEN 'L3' in labels(target) THEN [target {.prop4, .prop5}]
+END AS targetNodeProperties
+RETURN gds.graph.project($graph_name, source, target, {"""
+        "sourceNodeLabels: labels(source), "
+        "targetNodeLabels: labels(target), "
+        "sourceNodeProperties: sourceNodeProperties, "
+        "targetNodeProperties: targetNodeProperties})"
+    )
