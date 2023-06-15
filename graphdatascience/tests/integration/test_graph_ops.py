@@ -822,3 +822,7 @@ def test_graph_nodeProperty_stream_via_run_query(gds: GraphDataScience) -> None:
         )
     )
     assert {e for e in result["degree"]} == {1, 2, 3}
+
+
+def test_foo():
+    assert 1 == 1
