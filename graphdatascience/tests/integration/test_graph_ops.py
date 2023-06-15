@@ -1,3 +1,4 @@
+import time
 from typing import Generator
 
 import numpy as np
@@ -229,6 +230,7 @@ def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     assert result["dbName"] == MY_DB_NAME
 
     runner.run_query("CREATE DATABASE $dbName", {"dbName": MY_DB_NAME})
+    time.sleep(5)
     runner.set_database(MY_DB_NAME)
     node_count = runner.run_query("MATCH (n) RETURN COUNT(n) AS c").squeeze()
 
