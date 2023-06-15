@@ -136,15 +136,14 @@ def test_multiple_node_labels_or(runner: CollectingQueryRunner, gds: GraphDataSc
     G, _ = gds.graph.cypher.project("g", nodes=["A", "B"], combine_labels_with="OR")
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(
-        graph_name="g", data_config={"sourceNodeLabels": "labels(source)", "targetNodeLabels": "labels(target)"}
-    )
+    assert runner.last_params() == dict(graph_name="g")
 
-    assert (
-        runner.last_query()
-        == """MATCH (source)-->(target)
+    assert runner.last_query() == (
+        """MATCH (source)-->(target)
 WHERE (source:A OR source:B) AND (target:A OR target:B)
-RETURN gds.graph.project($graph_name, source, target, $data_config)"""
+RETURN gds.graph.project($graph_name, source, target, {"""
+        "sourceNodeLabels: labels(source), "
+        "targetNodeLabels: labels(target)})"
     )
 
 
@@ -153,17 +152,16 @@ def test_disconnected_nodes_multiple_node_labels_or(runner: CollectingQueryRunne
     G, _ = gds.graph.cypher.project("g", nodes=["A", "B"], combine_labels_with="OR", allow_disconnected_nodes=True)
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(
-        graph_name="g", data_config={"sourceNodeLabels": "labels(source)", "targetNodeLabels": "labels(target)"}
-    )
+    assert runner.last_params() == dict(graph_name="g")
 
-    assert (
-        runner.last_query()
-        == """MATCH (source)
+    assert runner.last_query() == (
+        """MATCH (source)
 WHERE source:A OR source:B
 OPTIONAL MATCH (source)-->(target)
 WHERE target:A OR target:B
-RETURN gds.graph.project($graph_name, source, target, $data_config)"""
+RETURN gds.graph.project($graph_name, source, target, {"""
+        "sourceNodeLabels: labels(source), "
+        "targetNodeLabels: labels(target)})"
     )
 
 
@@ -207,18 +205,14 @@ def test_multiple_multi_graph(runner: CollectingQueryRunner, gds: GraphDataScien
     G, _ = gds.graph.cypher.project("g", nodes=["A", "B"], relationships=["REL1", "REL2"])
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(
-        graph_name="g",
-        data_config={
-            "sourceNodeLabels": "labels(source)",
-            "targetNodeLabels": "labels(target)",
-            "relationshipTypes": "type(rel)",
-        },
-    )
+    assert runner.last_params() == dict(graph_name="g")
 
     assert (
         runner.last_query()
         == """MATCH (source)-[rel:REL1|REL2]->(target)
 WHERE (source:A OR source:B) AND (target:A OR target:B)
-RETURN gds.graph.project($graph_name, source, target, $data_config)"""
+RETURN gds.graph.project($graph_name, source, target, {"""
+        "sourceNodeLabels: labels(source), "
+        "targetNodeLabels: labels(target), "
+        "relationshipTypes: type(rel)})"
     )

@@ -110,6 +110,7 @@ class GraphCypherRunner(IllegalAttrChecker):
         query_params = {"graph_name": graph_name}
 
         data_config = {}
+        data_config_is_static = True
 
         nodes = self._node_projections_spec(nodes)
         rels = self._rel_projections_spec(relationships)
@@ -142,6 +143,7 @@ class GraphCypherRunner(IllegalAttrChecker):
 
                 data_config["sourceNodeLabels"] = "labels(source)"
                 data_config["targetNodeLabels"] = "labels(target)"
+                data_config_is_static = False
             else:
                 raise ValueError(f"Invalid value for combine_labels_with: {combine_labels_with}")
 
@@ -152,6 +154,7 @@ class GraphCypherRunner(IllegalAttrChecker):
             else:
                 rel_var = "rel"
                 data_config["relationshipTypes"] = "type(rel)"
+                data_config_is_static = False
             match_pattern = match_pattern._replace(
                 type_filter=f"[{rel_var}:{'|'.join(spec.source_type for spec in rels)}]"
             )
@@ -169,8 +172,11 @@ class GraphCypherRunner(IllegalAttrChecker):
         args = ["$graph_name", "source", "target"]
 
         if data_config:
-            query_params["data_config"] = data_config
-            args += ["$data_config"]
+            if data_config_is_static:
+                query_params["data_config"] = data_config
+                args += ["$data_config"]
+            else:
+                args += [self._render_map(data_config)]
 
         if config:
             query_params["config"] = config
@@ -236,6 +242,9 @@ class GraphCypherRunner(IllegalAttrChecker):
 
     def _rel_properties_spec(self, properties: dict[str, Any]) -> list[RelationshipProperty]:
         raise TypeError(f"Invalid relationship projection specification: {properties}")
+
+    def _render_map(self, mapping: dict[str, Any]) -> str:
+        return "{" + ", ".join(f"{key}: {value}" for key, value in mapping.items()) + "}"
 
     #
     # def estimate(self, *, nodes: Any, relationships: Any, **config: Any) -> "Series[Any]":
