@@ -7,6 +7,7 @@ nbconvert == 7.4.0
 pandas-stubs == 1.5.3.230321
 pytest == 7.3.1
 pytest-annotate == 1.0.5
+ruff == 0.0.272
 tox == 4.4.8
 types-setuptools == 67.8.0.0
 sphinx == 5.0.2

@@ -7,6 +7,7 @@ set -o xtrace
 
 black .
 isort .
+ruff check . --fix
 jupyter nbconvert \
   --clear-output \
   --inplace \

@@ -6,7 +6,7 @@ set -o pipefail
 
 black --check .
 isort --check .
-flake8
+ruff check .
 mypy .
 
 NOTEBOOKS="./**/*.ipynb"
