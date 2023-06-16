@@ -6,6 +6,38 @@ from graphdatascience.server_version.server_version import ServerVersion
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
+def test_run_project(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.cypher.run_project("MATCH (s)-->(t) RETURN gds.graph.project('gg', s, t)")
+
+    assert G.name() == "gg"
+    assert runner.last_params() == {}
+
+    assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project('gg', s, t)"
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
+def test_run_project_with_return_as(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.cypher.run_project("MATCH (s)-->(t) RETURN gds.graph.project('gg', s, t) AS graph")
+
+    assert G.name() == "gg"
+    assert runner.last_params() == {}
+
+    assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project('gg', s, t)"
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
+def test_run_project_with_graph_name_parameter(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.cypher.run_project(
+        "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)", params={"graph_name": "gg"}
+    )
+
+    assert G.name() == "gg"
+    assert runner.last_params() == {"graph_name": "gg"}
+
+    assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)"
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_all(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.cypher.project("g")
 
