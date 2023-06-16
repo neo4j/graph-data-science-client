@@ -111,6 +111,10 @@ class GraphCypherRunner(IllegalAttrChecker):
             Allowed values are 'AND' and 'OR'.
         **config : Any
             Additional configuration for the projection.
+
+        Returns
+        -------
+        A tuple of the projected graph and statistics about the projection
         """
 
         query_params: Dict[str, Any] = {"graph_name": graph_name}
