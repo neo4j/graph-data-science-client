@@ -1,5 +1,5 @@
-from collections import defaultdict, namedtuple
-from typing import Any, NamedTuple, Optional, Tuple
+from collections import defaultdict
+from typing import Any, Dict, NamedTuple, Optional, Tuple
 
 from pandas import Series
 
@@ -33,7 +33,7 @@ class RelationshipProjection(NamedTuple):
     properties: Optional[list[RelationshipProperty]] = None
 
 
-class MatchPart(NamedTuple):
+class MatchParts(NamedTuple):
     match: str = ""
     source_where: str = ""
     optional_match: str = ""
@@ -113,15 +113,15 @@ class GraphCypherRunner(IllegalAttrChecker):
             Additional configuration for the projection.
         """
 
-        query_params = {"graph_name": graph_name}
+        query_params: Dict[str, Any] = {"graph_name": graph_name}
 
-        data_config = {}
+        data_config: Dict[str, Any] = {}
         data_config_is_static = True
 
         nodes = self._node_projections_spec(nodes)
         rels = self._rel_projections_spec(relationships)
 
-        match_part = MatchPart()
+        match_parts = MatchParts()
         match_pattern = MatchPattern(
             left_arrow="<-" if inverse else "-",
             right_arrow="-" if inverse else "->",
@@ -141,11 +141,11 @@ class GraphCypherRunner(IllegalAttrChecker):
                 source_labels_filter = " OR ".join(f"source:{spec.source_label}" for spec in nodes)
                 target_labels_filter = " OR ".join(f"target:{spec.source_label}" for spec in nodes)
                 if allow_disconnected_nodes:
-                    match_part = match_part._replace(
+                    match_parts = match_parts._replace(
                         source_where=f"WHERE {source_labels_filter}", optional_where=f"WHERE {target_labels_filter}"
                     )
                 else:
-                    match_part = match_part._replace(
+                    match_parts = match_parts._replace(
                         source_where=f"WHERE ({source_labels_filter}) AND ({target_labels_filter})"
                     )
 
@@ -177,13 +177,13 @@ class GraphCypherRunner(IllegalAttrChecker):
 
         source = f"(source{match_pattern.label_filter})"
         if allow_disconnected_nodes:
-            match_part = match_part._replace(
+            match_parts = match_parts._replace(
                 match=f"MATCH {source}", optional_match=f"OPTIONAL MATCH (source){match_pattern}"
             )
         else:
-            match_part = match_part._replace(match=f"MATCH {source}{match_pattern}")
+            match_parts = match_parts._replace(match=f"MATCH {source}{match_pattern}")
 
-        match_part = str(match_part)
+        match_part = str(match_parts)
 
         print("nodes", nodes)
         print("labels", label_mappings)
@@ -196,8 +196,8 @@ class GraphCypherRunner(IllegalAttrChecker):
                 case_part.append("CASE")
 
                 for label, mappings in label_mappings.items():
-                    mappings = ", ".join(f".{key.property_key}" for key in mappings)
-                    when_part = f"WHEN '{label}' in labels({kind}) THEN [{kind} {{{mappings}}}]"
+                    mapping_projection = ", ".join(f".{key.property_key}" for key in mappings)
+                    when_part = f"WHEN '{label}' in labels({kind}) THEN [{kind} {{{mapping_projection}}}]"
                     case_part.append(when_part)
 
                 case_part.append(f"END AS {kind}NodeProperties")
@@ -223,12 +223,10 @@ class GraphCypherRunner(IllegalAttrChecker):
 
         query = "\n".join(part for part in [match_part, *case_part, return_part] if part)
 
-        result = self._query_runner.run_query_with_logging(
-            query,
-            query_params,
-        ).squeeze()
+        result = self._query_runner.run_query_with_logging(query, query_params)
+        result = result.squeeze()
 
-        return Graph(graph_name, self._query_runner, self._server_version), result
+        return Graph(graph_name, self._query_runner, self._server_version), result  # type: ignore
 
     def _node_projections_spec(self, spec: Any) -> list[NodeProjection]:
         if spec is None or spec is False:
@@ -305,10 +303,10 @@ class GraphCypherRunner(IllegalAttrChecker):
 
         raise TypeError(f"Invalid relationship projection specification: {spec}")
 
-    def _rel_properties_spec(self, properties: dict[str, Any]) -> list[RelationshipProperty]:
+    def _rel_properties_spec(self, properties: Dict[str, Any]) -> list[RelationshipProperty]:
         raise TypeError(f"Invalid relationship projection specification: {properties}")
 
-    def _render_map(self, mapping: dict[str, Any]) -> str:
+    def _render_map(self, mapping: Dict[str, Any]) -> str:
         return "{" + ", ".join(f"{key}: {value}" for key, value in mapping.items()) + "}"
 
     #
