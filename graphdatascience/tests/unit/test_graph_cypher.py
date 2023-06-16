@@ -1,5 +1,4 @@
 import pytest
-from pandas import DataFrame
 
 from .conftest import CollectingQueryRunner
 from graphdatascience.graph_data_science import GraphDataScience
@@ -11,7 +10,7 @@ def test_all(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.cypher.project("g")
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(graph_name="g")
+    assert runner.last_params() == {"graph_name": "g"}
 
     assert (
         runner.last_query()
@@ -25,7 +24,7 @@ def test_disconnected(runner: CollectingQueryRunner, gds: GraphDataScience) -> N
     G, _ = gds.graph.cypher.project("g", allow_disconnected_nodes=True)
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(graph_name="g")
+    assert runner.last_params() == {"graph_name": "g"}
 
     assert (
         runner.last_query()
@@ -40,7 +39,7 @@ def test_inverse_graph(runner: CollectingQueryRunner, gds: GraphDataScience) -> 
     G, _ = gds.graph.cypher.project("g", inverse=True)  # TODO: or using orientation="INVERSE"?
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(graph_name="g")
+    assert runner.last_params() == {"graph_name": "g"}
 
     assert (
         runner.last_query()
@@ -54,9 +53,10 @@ def test_single_node_label(runner: CollectingQueryRunner, gds: GraphDataScience)
     G, _ = gds.graph.cypher.project("g", nodes="A")
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(
-        graph_name="g", data_config={"sourceNodeLabels": ["A"], "targetNodeLabels": ["A"]}
-    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "data_config": {"sourceNodeLabels": ["A"], "targetNodeLabels": ["A"]},
+    }
 
     assert (
         runner.last_query()
@@ -70,9 +70,10 @@ def test_disconnected_nodes_single_node_label(runner: CollectingQueryRunner, gds
     G, _ = gds.graph.cypher.project("g", nodes="A", allow_disconnected_nodes=True)
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(
-        graph_name="g", data_config={"sourceNodeLabels": ["A"], "targetNodeLabels": ["A"]}
-    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "data_config": {"sourceNodeLabels": ["A"], "targetNodeLabels": ["A"]},
+    }
 
     assert (
         runner.last_query()
@@ -84,12 +85,13 @@ RETURN gds.graph.project($graph_name, source, target, $data_config)"""
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_single_node_label_alias(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    G, _ = gds.graph.cypher.project("g", nodes=dict(Target="Label"))
+    G, _ = gds.graph.cypher.project("g", nodes={"Target": "Label"})
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(
-        graph_name="g", data_config={"sourceNodeLabels": ["Target"], "targetNodeLabels": ["Target"]}
-    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "data_config": {"sourceNodeLabels": ["Target"], "targetNodeLabels": ["Target"]},
+    }
 
     assert (
         runner.last_query()
@@ -103,9 +105,10 @@ def test_multiple_node_labels_and(runner: CollectingQueryRunner, gds: GraphDataS
     G, _ = gds.graph.cypher.project("g", nodes=["A", "B"], combine_labels_with="AND")
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(
-        graph_name="g", data_config={"sourceNodeLabels": ["A", "B"], "targetNodeLabels": ["A", "B"]}
-    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "data_config": {"sourceNodeLabels": ["A", "B"], "targetNodeLabels": ["A", "B"]},
+    }
 
     assert (
         runner.last_query()
@@ -119,9 +122,10 @@ def test_disconnected_nodes_multiple_node_labels_and(runner: CollectingQueryRunn
     G, _ = gds.graph.cypher.project("g", nodes=["A", "B"], combine_labels_with="AND", allow_disconnected_nodes=True)
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(
-        graph_name="g", data_config={"sourceNodeLabels": ["A", "B"], "targetNodeLabels": ["A", "B"]}
-    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "data_config": {"sourceNodeLabels": ["A", "B"], "targetNodeLabels": ["A", "B"]},
+    }
 
     assert (
         runner.last_query()
@@ -136,7 +140,7 @@ def test_multiple_node_labels_or(runner: CollectingQueryRunner, gds: GraphDataSc
     G, _ = gds.graph.cypher.project("g", nodes=["A", "B"], combine_labels_with="OR")
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(graph_name="g")
+    assert runner.last_params() == {"graph_name": "g"}
 
     assert runner.last_query() == (
         """MATCH (source)-->(target)
@@ -152,7 +156,7 @@ def test_disconnected_nodes_multiple_node_labels_or(runner: CollectingQueryRunne
     G, _ = gds.graph.cypher.project("g", nodes=["A", "B"], combine_labels_with="OR", allow_disconnected_nodes=True)
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(graph_name="g")
+    assert runner.last_params() == {"graph_name": "g"}
 
     assert runner.last_query() == (
         """MATCH (source)
@@ -170,10 +174,10 @@ def test_single_multi_graph(runner: CollectingQueryRunner, gds: GraphDataScience
     G, _ = gds.graph.cypher.project("g", nodes="A", relationships="REL")
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(
-        graph_name="g",
-        data_config={"sourceNodeLabels": ["A"], "targetNodeLabels": ["A"], "relationshipType": "REL"},
-    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "data_config": {"sourceNodeLabels": ["A"], "targetNodeLabels": ["A"], "relationshipType": "REL"},
+    }
 
     assert (
         runner.last_query()
@@ -187,10 +191,10 @@ def test_disconnected_nodes_single_multi_graph(runner: CollectingQueryRunner, gd
     G, _ = gds.graph.cypher.project("g", nodes="A", relationships="REL", allow_disconnected_nodes=True)
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(
-        graph_name="g",
-        data_config={"sourceNodeLabels": ["A"], "targetNodeLabels": ["A"], "relationshipType": "REL"},
-    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "data_config": {"sourceNodeLabels": ["A"], "targetNodeLabels": ["A"], "relationshipType": "REL"},
+    }
 
     assert (
         runner.last_query()
@@ -205,7 +209,7 @@ def test_multiple_multi_graph(runner: CollectingQueryRunner, gds: GraphDataScien
     G, _ = gds.graph.cypher.project("g", nodes=["A", "B"], relationships=["REL1", "REL2"])
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(graph_name="g")
+    assert runner.last_params() == {"graph_name": "g"}
 
     assert (
         runner.last_query()
@@ -220,15 +224,12 @@ RETURN gds.graph.project($graph_name, source, target, {"""
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_node_properties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    # G, _ = gds.graph.cypher.project(
-    #     "g", nodes=dict(L1=["prop1"], L2=["prop2", "prop3"], L3=dict(prop4=True, prop5=dict()))
-    # )
     G, _ = gds.graph.cypher.project(
         "g", nodes={"L1": ["prop1"], "L2": ["prop2", "prop3"], "L3": {"prop4": True, "prop5": {}}}
     )
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(graph_name="g")
+    assert runner.last_params() == {"graph_name": "g"}
 
     assert runner.last_query() == (
         """MATCH (source)-->(target)
@@ -256,11 +257,11 @@ RETURN gds.graph.project($graph_name, source, target, {"""
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_node_properties_alias(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.cypher.project(
-        "g", nodes=dict(A=dict(target_prop1="source_prop1", target_prop2=dict(property_key="source_prop2")))
+        "g", nodes={"A": {"target_prop1": "source_prop1", "target_prop2": {"property_key": "source_prop2"}}}
     )
 
     assert G.name() == "g"
-    assert runner.last_params() == dict(graph_name="g")
+    assert runner.last_params() == {"graph_name": "g"}
 
     assert runner.last_query() == (
         """MATCH (source:A)-->(target:A)
