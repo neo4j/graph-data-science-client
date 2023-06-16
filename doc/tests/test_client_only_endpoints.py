@@ -59,7 +59,7 @@ def find_covered_server_endpoints() -> List[str]:
 
     driver.close()
 
-    return [ep["name"] for ep in all_server_endpoints if not ep["name"] in IGNORED_SERVER_ENDPOINTS]
+    return [ep["name"] for ep in all_server_endpoints if ep["name"] not in IGNORED_SERVER_ENDPOINTS]
 
 
 def check_rst_files(endpoints: List[str]) -> None:
