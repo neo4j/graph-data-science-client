@@ -27,6 +27,7 @@ from .graph_project_runner import GraphProjectRunner
 from .graph_sample_runner import GraphSampleRunner
 from .graph_type_check import graph_type_check, graph_type_check_optional
 from .ogb_loader import OGBLLoader, OGBNLoader
+from graphdatascience.graph.graph_cypher_runner import GraphCypherRunner
 
 Strings = Union[str, List[str]]
 
@@ -164,6 +165,11 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def project(self) -> GraphProjectRunner:
         self._namespace += ".project"
         return GraphProjectRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def cypher(self) -> GraphCypherRunner:
+        self._namespace += ".project"
+        return GraphCypherRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def export(self) -> GraphExportRunner:
