@@ -14,4 +14,6 @@
 
 
 ## Other changes
+* Dropped Python 3.7 support which is EOL.
+
 
