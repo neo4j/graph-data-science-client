@@ -216,11 +216,11 @@ body.sphinx .deprecated > *::after {
     content: unset;
 }
 
-body.sphinx .doc dl.deprecated,
-body.sphinx .doc div.deprecated {
-    border-left: 4px solid #d53f8c;
-    color: #702459;
-    background-color: #fed7e2;
+body.sphinx .doc dl.deprecated dt:first-of-type span.sig-prename, 
+body.sphinx .doc dl.deprecated dt:first-of-type span.sig-name {
+    border-bottom: 1px solid #f6ad55;
+    /* color: #702459; */
+    /* background-color: #fed7e2; */
 }
 
 body.sphinx .doc dl.deprecated {
@@ -230,4 +230,8 @@ body.sphinx .doc dl.deprecated {
 
 body.sphinx .doc div.deprecated {
     padding: 1rem;
+    margin: 0 2rem;
+    /* color: #702459; */
+    border-left: 2px solid #f6ad55;
+    background-color: #fffaf0;
 }
