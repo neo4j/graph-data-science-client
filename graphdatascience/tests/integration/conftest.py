@@ -51,7 +51,9 @@ def auradb_runner() -> Neo4jQueryRunner:
     _runner = Neo4jQueryRunner(driver)
     _runner.set_database(DB)
 
-    return _runner
+    yield _runner
+
+    driver.close()
 
 
 @pytest.fixture(scope="package")
