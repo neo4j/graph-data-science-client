@@ -45,7 +45,7 @@ def runner(neo4j_driver: Driver) -> Neo4jQueryRunner:
 
 
 @pytest.fixture(scope="package", autouse=False)
-def auradb_runner() -> Neo4jQueryRunner:
+def auradb_runner() -> Generator[Neo4jQueryRunner, None, None]:
     driver = GraphDatabase.driver(AURA_DB_URI, auth=AURA_DB_AUTH)
 
     _runner = Neo4jQueryRunner(driver)
