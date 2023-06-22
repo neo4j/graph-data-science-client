@@ -1,0 +1,281 @@
+// DO NOT EDIT - AsciiDoc file generated automatically
+
+= Community Detection
+
+
+
+This Jupyter notebook is hosted
+https://github.com/neo4j/graph-data-science-client/blob/main/examples/community-detection.ipynb[here]
+in the Neo4j Graph Data Science Client Github repository.
+
+The notebook shows the usage of the `graphdatascience` library for
+community detection on the Reddit Hyperlink Network dataset that can be
+downloaded
+https://snap.stanford.edu/data/soc-RedditHyperlinks.html[here]. We will
+use the `soc-redditHyperlinks-body.tsv` file.
+
+The tasks we cover here include performing initial graph preprocessing
+using Weakly Connected Components and then performing community
+detection on the largest component using the Louvain algorithm.
+
+== Setup
+
+We start by importing our dependencies and setting up our GDS client
+connection to the database.
+
+[source, python, role=no-test]
+----
+# Install necessary dependencies
+%pip graphdatascience pandas
+----
+
+[source, python, role=no-test]
+----
+from graphdatascience import GraphDataScience
+import pandas as pd
+import os
+----
+
+[source, python, role=no-test]
+----
+NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
+NEO4J_AUTH = None
+if os.environ.get("NEO4J_USER") and os.environ.get("NEO4J_PASSWORD"):
+    NEO4J_AUTH = (
+        os.environ.get("NEO4J_USER"),
+        os.environ.get("NEO4J_PASSWORD"),
+    )
+
+gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH)
+----
+
+== Importing the dataset
+
+We import the dataset as a pandas dataframe first. We work with only a
+subset of the dataset. The sampled data is only till 1st March 2014.
+
+[source, python, role=no-test]
+----
+df = pd.read_csv("https://snap.stanford.edu/data/soc-redditHyperlinks-body.tsv", sep="\t")
+df = df[df["TIMESTAMP"] < "2014-03-01 02:51:13"]
+df.head()
+----
+
+The `LINK_SENTIMENT` column tells if there is a positive (+1) or
+negative (-1) relationship from the source subreddit to destination
+subreddit. We filter out the negative sentiment relationships as they
+won’t add to any meaningful communities. We also drop duplicate
+relationships.
+
+[source, python, role=no-test]
+----
+relationship_df = df[df["LINK_SENTIMENT"] == 1]
+columns = ["SOURCE_SUBREDDIT", "TARGET_SUBREDDIT"]
+relationship_df = relationship_df[columns]
+relationship_df = relationship_df.drop_duplicates()
+relationship_df.head()
+----
+
+Next, we get a list of all the distinct nodes (source or destination)
+and load them as a dataframe.
+
+[source, python, role=no-test]
+----
+# Get unique nodes for each column
+source_nodes = pd.Series(df["SOURCE_SUBREDDIT"])
+target_nodes = pd.Series(df["TARGET_SUBREDDIT"])
+# Get unique nodes for both columns
+all_nodes = pd.Series(pd.concat([df["SOURCE_SUBREDDIT"], df["TARGET_SUBREDDIT"]])).unique()
+
+# Create new dataframe with distinct nodes
+nodes_df = pd.DataFrame({"SUBREDDIT": all_nodes})
+nodes_df.head()
+----
+
+Finally, we load this data (nodes and edges) into a Graph Database and a
+GDS graph.
+
+[source, python, role=no-test]
+----
+gds.run_cypher(
+    "UNWIND $nodes AS node CREATE (n:Subreddit {name: node.SUBREDDIT})",
+    params={"nodes": nodes_df.to_dict("records")},
+)
+
+gds.run_cypher(
+    """
+    UNWIND $rels AS rel 
+    MATCH (source:Subreddit {name: rel.SOURCE_SUBREDDIT}), (target:Subreddit {name: rel.TARGET_SUBREDDIT}) 
+    CREATE (source)-[:HYPERLINKED_TO]->(target)
+    """,
+    params={"rels": relationship_df.to_dict("records")},
+)
+----
+
+[source, python, role=no-test]
+----
+G, result = gds.graph.project("reddit", "Subreddit", "HYPERLINKED_TO")
+
+print(f"The projection took {result['projectMillis']} ms")
+
+# We can use convenience methods on `G` to check if the projection looks correct
+print(f"Graph '{G.name()}' node count: {G.node_count()}")
+print(f"Graph '{G.name()}' node labels: {G.node_labels()}")
+----
+
+[source, python, role=no-test]
+----
+gds.graph.list()
+----
+
+== Weakly Connected Components
+
+A graph dataset need not always be connected. That is, there may not
+exist a path from every node to every other node in the graph dataset
+(subgraphs in it may not be connected to each other at all). Hence, we
+need to find the total number of nodes in each subgraph to see if it is
+big enough for further graph analysis. Smaller subgraphs or lone nodes
+will not contribute to the community detection task and should be
+eliminated. Weakly Connected Components is often used as one of the
+early steps of graph preprocessing.
+
+We use the
+https://neo4j.com/docs/graph-data-science/current/algorithms/wcc/[Weakly
+Connected Components] algorithm to find sets of connected nodes and
+assign each set a component ID.
+
+[source, python, role=no-test]
+----
+result = gds.wcc.mutate(G, mutateProperty="componentId")
+
+print(f"Components found: {result.componentCount}")
+----
+
+[source, python, role=no-test]
+----
+# We can verify that the componentId was mutated
+G.node_properties()
+----
+
+Next, we will see the size of each connected component and depending on
+that, we can pick the subgraph that needs further analysis.
+
+We use `run_cypher` here instead of the direct GDS client call since we
+want to see the size of the connected components.
+
+[source, python, role=no-test]
+----
+query = """
+    CALL gds.graph.nodeProperties.stream('reddit', 'componentId')
+    YIELD nodeId, propertyValue
+    WITH gds.util.asNode(nodeId).name AS node, propertyValue AS componentId
+    WITH componentId, collect(node) AS subreddits
+    WITH componentId, subreddits, size(subreddits) AS componentSize
+    RETURN componentId, componentSize, subreddits
+    ORDER BY componentSize DESC
+"""
+
+components = gds.run_cypher(query)
+components
+----
+
+[source, python, role=no-test]
+----
+largest_component = components["componentId"][0]
+
+print(f"The largest component has the id {largest_component} with {components['componentSize'][0]} subreddits.")
+----
+
+For our further analysis we will work only with that subgraph.
+
+[source, python, role=no-test]
+----
+largest_component_graph, _ = gds.beta.graph.project.subgraph(
+    "largest_connected_components", G, f"n.componentId={largest_component}", "*"
+)
+largest_component_graph
+----
+
+== Community Detection using Louvain
+
+We use the
+https://neo4j.com/docs/graph-data-science/current/algorithms/louvain/[Louvain]
+algorithm to detect communities in our subgraph and assign a
+`louvainCommunityId` to each community.
+
+[source, python, role=no-test]
+----
+gds.louvain.mutate(largest_component_graph, mutateProperty="louvainCommunityId")
+----
+
+We get a modularity score of 0.5898 for our community detection
+algorithm.
+
+[source, python, role=no-test]
+----
+gds.graph.nodeProperties.write(largest_component_graph, ["louvainCommunityId"])
+----
+
+We can also check that the property was written by the below command.
+
+[source, python, role=no-test]
+----
+gds.run_cypher(
+    """
+    MATCH (n) WHERE 'louvainCommunityId' IN keys(n) 
+    RETURN n.name, n.louvainCommunityId LIMIT 10
+    """
+)
+----
+
+Now we want to inspect the communities produced by Louvain.
+
+[source, python, role=no-test]
+----
+query = """
+    CALL gds.graph.nodeProperties.stream('largest_connected_components', 'louvainCommunityId')
+    YIELD nodeId, propertyValue
+    WITH gds.util.asNode(nodeId).name AS node, propertyValue AS communityId
+    WITH communityId, collect(node) AS subreddits
+    WITH communityId, subreddits, size(subreddits) AS communitySize
+    RETURN communityId, communitySize, subreddits
+    ORDER BY communitySize DESC
+"""
+
+communities = gds.run_cypher(query)
+communities
+----
+
+== Further ideas
+
+* Inspect the produced communities using
+https://neo4j.com/docs/bloom-user-guide/current/[Bloom]. You can use
+rule-based styling based on the community property.
+* Try to tune more parameters of Louvain and see how the communities
+differ.
+* Try to use other community detection algorithms listed in the
+https://neo4j.com/docs/graph-data-science/current/algorithms/community/[GDS
+docs].
+
+== Cleanup
+
+Before finishing we can clean up the example data from both the GDS
+in-memory state and the database.
+
+[source, python, role=no-test]
+----
+# Cleanup GDS
+largest_component_graph.drop()
+G.drop()
+----
+
+[source, python, role=no-test]
+----
+# Cleanup database
+gds.run_cypher("MATCH (n:Subreddit) DETACH DELETE n")
+----
+
+== References
+
+S. Kumar, W.L. Hamilton, J. Leskovec, D. Jurafsky. Community Interaction
+and Conflict on the Web. World Wide Web Conference, 2018.

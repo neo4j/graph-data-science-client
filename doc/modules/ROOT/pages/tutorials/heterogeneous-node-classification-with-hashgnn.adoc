@@ -71,8 +71,7 @@ graph with `Movie`, `Actor` and `Director` nodes, connected by
 
 Note that a ``real world scenario'', we would probably project our own
 data from a Neo4j database into GDS instead, or using
-`gds.graph.construct` to create a graph from our own client side
-data.
+`gds.graph.construct` to create a graph from our own client side data.
 
 [source, python, role=no-test]
 ----
