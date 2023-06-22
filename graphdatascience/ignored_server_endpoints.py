@@ -47,6 +47,7 @@ IGNORED_SERVER_ENDPOINTS = {
     "gds.alpha.pipeline.nodeRegression.predict.stream",
     "gds.alpha.pipeline.nodeRegression.selectFeatures",
     "gds.alpha.pipeline.nodeRegression.train",
+    "gds.gnn.nc",
     "gds.similarity.cosine",
     "gds.similarity.euclidean",
     "gds.similarity.euclideanDistance",
