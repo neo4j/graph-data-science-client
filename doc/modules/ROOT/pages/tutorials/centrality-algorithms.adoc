@@ -3,6 +3,9 @@
 = Centrality Algorithms
 
 
+https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/centrality-algorithms.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
+In Colab]]
+
 
 This Jupyter notebook is hosted
 https://github.com/neo4j/graph-data-science-client/blob/main/examples/centrality-algorithms.ipynb[here]
