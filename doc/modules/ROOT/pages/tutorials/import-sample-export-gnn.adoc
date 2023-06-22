@@ -115,7 +115,7 @@ It’s looks correct! Now let’s go ahead and sample the graph.
 [source, python, role=no-test]
 ----
 # We use the random walk with restarts sampling algorithm with default values
-G_sample, _ = gds.graph.sample.rwr("cora_sample", G, randomSeed=42, concurrency=1)
+G_sample, _ = gds.alpha.graph.sample.rwr("cora_sample", G, randomSeed=42, concurrency=1)
 ----
 
 [source, python, role=no-test]

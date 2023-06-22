@@ -451,7 +451,7 @@ print("MEAN_ABSOLUTE_ERROR     test score: " + str(train_result["modelInfo"]["me
 [source, python, role=no-test]
 ----
 # Let's sample the graph to see if we can get a similarly good model
-G_chameleon_sample, _ = gds.graph.sample.rwr(
+G_chameleon_sample, _ = gds.alpha.graph.sample.rwr(
     "cham_sample",
     G_chameleon,
     samplingRatio=0.30,  # We'll use 30% of the graph
