@@ -1,16 +1,15 @@
-from typing import Any, Tuple
+from typing import Any
 
 from pandas import Series
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from .graph_object import Graph
 from .graph_type_check import from_graph_type_check
+from graphdatascience.graph.graph_result import GraphResult
 
 
 class GraphProjectRunner(IllegalAttrChecker):
-    def __call__(
-        self, graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any
-    ) -> Tuple[Graph, "Series[Any]"]:
+    def __call__(self, graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> GraphResult:
         result = self._query_runner.run_query_with_logging(
             f"CALL {self._namespace}($graph_name, $node_spec, $relationship_spec, $config)",
             {
@@ -21,7 +20,7 @@ class GraphProjectRunner(IllegalAttrChecker):
             },
         ).squeeze()
 
-        return Graph(graph_name, self._query_runner, self._server_version), result
+        return GraphResult(Graph(graph_name, self._query_runner, self._server_version), result)
 
     def estimate(self, node_projection: Any, relationship_projection: Any, **config: Any) -> "Series[Any]":
         self._namespace += ".estimate"
@@ -50,7 +49,7 @@ class GraphProjectBetaRunner(IllegalAttrChecker):
         node_filter: str,
         relationship_filter: str,
         **config: Any,
-    ) -> Tuple[Graph, "Series[Any]"]:
+    ) -> GraphResult:
         self._namespace += ".subgraph"
         result = self._query_runner.run_query_with_logging(
             f"CALL {self._namespace}($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)",
@@ -63,4 +62,4 @@ class GraphProjectBetaRunner(IllegalAttrChecker):
             },
         ).squeeze()
 
-        return Graph(graph_name, self._query_runner, self._server_version), result
+        return GraphResult(Graph(graph_name, self._query_runner, self._server_version), result)
