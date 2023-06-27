@@ -12,6 +12,8 @@
 
 ## Improvements
 
+* Improved endpoint returning graphs to be used in `with` clauses. The expression `with gds.graph.project(...)[0] AS G` can now be simplified to `with gds.graph.project(...) AS G`.
+
 
 ## Other changes
 * Dropped Python 3.7 support which is EOL.
