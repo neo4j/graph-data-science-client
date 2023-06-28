@@ -9,6 +9,10 @@ TGraphCreateResult = TypeVar("TGraphCreateResult", bound="GraphCreateResult")
 
 
 class GraphCreateResult(NamedTuple):
+    """
+    A result object returned by endpoints which create graphs.
+    """
+
     graph: Graph
     result: "Series[Any]"
 

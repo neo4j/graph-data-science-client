@@ -96,7 +96,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.graph.project(graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> GraphResult
 
     Creates a named graph in the catalog for use by algorithms.
-# FIXME - how to document GraphResult here
+
 .. py:function:: gds.graph.project.cypher(graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> GraphResult
 
     Creates a named graph in the catalog for use by algorithms.
