@@ -12,7 +12,7 @@
 
 ## Improvements
 
-* Improved endpoint returning graphs to be used in `with` clauses. The expression `with gds.graph.project(...)[0] AS G` can now be simplified to `with gds.graph.project(...) AS G`.
+* Improved endpoint returning graphs to be used in `with` clauses. The expression `with gds.graph.project(...)[0] as G` can now be simplified to `with gds.graph.project(...) AS G`.
 
 
 ## Other changes
