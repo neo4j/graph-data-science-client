@@ -280,5 +280,8 @@ gds.run_cypher("MATCH (n:Subreddit) DETACH DELETE n")
 
 == References
 
-S. Kumar, W.L. Hamilton, J. Leskovec, D. Jurafsky. Community Interaction
-and Conflict on the Web. World Wide Web Conference, 2018.
+Srijan Kumar, William L. Hamilton, Jure Leskovec, and Dan Jurafsky.
+2018. Community Interaction and Conflict on the Web. In Proceedings of
+the 2018 World Wide Web Conference (WWW ’18). International World Wide
+Web Conferences Steering Committee, Republic and Canton of Geneva, CHE,
+933–943. https://doi.org/10.1145/3178876.3186141

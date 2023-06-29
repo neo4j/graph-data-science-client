@@ -5,7 +5,8 @@ set -o nounset
 set -o pipefail
 
 for file in examples/*; do
-    if [ -f "$file" ]; then
+    # disable testing of these notebooks as datasets are hosted on SNAP
+    if (test -f "$file") && (test "$file" != "examples/centrality-algorithms.ipynb") && (test "$file" != "examples/community-detection.ipynb"); then
         echo "Executing jupyter notebook $file"
         jupyter nbconvert --to notebook --inplace --execute --ExecutePreprocessor.kernel_name=python3 $file
         echo "Finished executing jupyter notebook $file"
