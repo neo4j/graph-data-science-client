@@ -61,6 +61,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Return the installed graph data science library version.
 
+.. py:function:: gds.license.state() -> Series[Any]
+
+    Returns details about the graph data science library license.
+
 .. py:function:: gds.is_licensed() -> bool
 
     Return True if the graph data science library is licensed.

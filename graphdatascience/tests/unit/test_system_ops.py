@@ -61,3 +61,10 @@ def test_restore(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
 
     assert runner.last_query() == "CALL gds.alpha.restore($config)"
     assert runner.last_params() == {"config": {"concurrency": 4}}
+
+
+def test_license_state(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    gds.license.state()
+
+    assert runner.last_query() == "CALL gds.license.state()"
+    assert runner.last_params() == {}
