@@ -83,7 +83,7 @@ class GraphCypherRunner(CallerBase):
     def _find_return_clause_graph_name(namespace: str, query: str) -> str:
         """
         Returns the 'graph name' in the RETURN clause of a Cypher projection query.
-        'graph name' here are the first argument of the `gds.graph.project` function.
+        'graph name' here is the first argument of the `gds.graph.project` function.
         """
 
         found = None
