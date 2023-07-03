@@ -15,6 +15,7 @@ This API reference manual lists all available endpoints in the Neo4j Graph Data 
    graphdatascience
    graph
    graph_object
+   graph_create_result
    algorithms
    ml
    pipeline/link-prediction

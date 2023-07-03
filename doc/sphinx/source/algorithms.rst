@@ -88,7 +88,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 
 .. py:function:: gds.alpha.graph.sample.rwr(graph_name: str, from_G: Graph, **config: Any)
-    -> Tuple[Graph, Series[Any]]
+    -> GraphCreateResult
 
     Constructs a random subgraph based on random walks with restarts.
 
@@ -774,7 +774,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.graph.sample.cnarw(graph_name: str, from_G: Graph, **config: Any)
-    -> Tuple[Graph, Series[Any]]
+    -> GraphCreateResult
 
     Constructs a random subgraph based on common-neighbour-aware random walks.
 
@@ -783,7 +783,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.graph.sample.rwr(graph_name: str, from_G: Graph, **config: Any)
-    -> Tuple[Graph, Series[Any]]
+    -> GraphCreateResult
 
     Constructs a random subgraph based on random walks with restarts.
 

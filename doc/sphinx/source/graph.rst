@@ -37,11 +37,11 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Estimate the required disk space for exporting a named graph to CSV files.
 
-.. py:function:: gds.beta.graph.generate(graph_name: str, node_count: int, average_degree: int, **config: Any) -> Tuple[Graph, Series[Any]]
+.. py:function:: gds.beta.graph.generate(graph_name: str, node_count: int, average_degree: int, **config: Any) -> GraphCreateResult
 
     Computes a random graph, which will be stored in the graph catalog.
 
-.. py:function:: gds.beta.graph.project.subgraph(graph_name: str,from_G: Graph,node_filter: str,relationship_filter: str,**config: Any,) -> Tuple[Graph, Series[Any]]
+.. py:function:: gds.beta.graph.project.subgraph(graph_name: str,from_G: Graph,node_filter: str,relationship_filter: str,**config: Any,) -> GraphCreateResult
 
     Creates a named graph in the catalog for use by algorithms.
 
@@ -93,11 +93,11 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Streams the given node property.
 
-.. py:function:: gds.graph.project(graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> Tuple[Graph, Series[Any]]
+.. py:function:: gds.graph.project(graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> GraphCreateResult
 
     Creates a named graph in the catalog for use by algorithms.
 
-.. py:function:: gds.graph.project.cypher(graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> Tuple[Graph, Series[Any]]
+.. py:function:: gds.graph.project.cypher(graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> GraphCreateResult
 
     Creates a named graph in the catalog for use by algorithms.
 
