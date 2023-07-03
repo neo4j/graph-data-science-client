@@ -93,8 +93,6 @@ class GraphCypherRunner(CallerBase):
         query_tokens = iter(query.split())
 
         for query_token in query_tokens:
-            print("query token", query_token)
-
             if at_end:
                 raise ValueError(f"Invalid query, the query must end with the `RETURN {namespace}(...)` call: {query}")
 
@@ -104,7 +102,6 @@ class GraphCypherRunner(CallerBase):
                 chars = chain(query_token, (c for tok in query_tokens for c in tok))
 
                 for c in chars:
-                    print("char", c)
                     if c == "(":
                         paren_balance += 1
                     elif c == ")":
@@ -116,8 +113,6 @@ class GraphCypherRunner(CallerBase):
             if query_token == "RETURN":
                 tokens = (tok for token in query_tokens for tok in GraphCypherRunner.__separators.split(token) if tok)
                 for token, expected in zip_longest(tokens, namespace_tokens):
-                    print("inner token", token, "expected", expected)
-
                     if expected is None:
                         found = token
                         break
