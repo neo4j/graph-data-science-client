@@ -1,8 +1,8 @@
 from typing import Any
 
 from graphdatascience.error.illegal_attr_checker import IllegalAttrChecker
-from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph.graph_create_result import GraphCreateResult
+from graphdatascience.graph.graph_object import Graph
 from graphdatascience.server_version.compatible_with import compatible_with
 from graphdatascience.server_version.server_version import ServerVersion
 

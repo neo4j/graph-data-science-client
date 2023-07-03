@@ -5,8 +5,8 @@ from ..error.uncallable_namespace import UncallableNamespace
 from .graph_export_runner import GraphExportCsvEndpoints
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectBetaRunner
-from graphdatascience.graph.graph_entity_ops_runner import GraphRelationshipsBetaRunner
 from graphdatascience.graph.graph_create_result import GraphCreateResult
+from graphdatascience.graph.graph_entity_ops_runner import GraphRelationshipsBetaRunner
 
 Strings = Union[str, List[str]]
 
