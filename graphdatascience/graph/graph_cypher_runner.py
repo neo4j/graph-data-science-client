@@ -44,7 +44,7 @@ class GraphCypherRunner(CallerBase):
         A tuple of the projected graph and statistics about the projection
         """
 
-        graph_name_param = self._find_return_clause_graph_name(query)
+        graph_name_param = GraphCypherRunner._find_return_clause_graph_name(self._namespace, query)
 
         if not graph_name_param.startswith("$"):
             raise ValueError(
@@ -79,7 +79,8 @@ class GraphCypherRunner(CallerBase):
 
     __separators = re.compile(r"[,(.]")
 
-    def _find_return_clause_graph_name(self, query: str) -> str:
+    @staticmethod
+    def _find_return_clause_graph_name(namespace: str, query: str) -> str:
         """
         Returns the 'graph name' in the RETURN clause of a Cypher projection query.
         'graph name' here are the first argument of the `gds.graph.project` function.
@@ -88,16 +89,14 @@ class GraphCypherRunner(CallerBase):
         found = None
         at_end = False
 
-        namespace_tokens = self._namespace.split(".")
+        namespace_tokens = namespace.split(".")
         query_tokens = iter(query.split())
 
         for query_token in query_tokens:
             print("query token", query_token)
 
             if at_end:
-                raise ValueError(
-                    f"Invalid query, the query must end with the `RETURN {self._namespace}(...)` call: {query}"
-                )
+                raise ValueError(f"Invalid query, the query must end with the `RETURN {namespace}(...)` call: {query}")
 
             if found is not None:
                 paren_balance = 0
@@ -128,7 +127,7 @@ class GraphCypherRunner(CallerBase):
 
         if found is None or not at_end:
             raise ValueError(
-                f"Invalid query, the query must contain exactly one `RETURN {self._namespace}(...)` call: {query}"
+                f"Invalid query, the query must contain exactly one `RETURN {namespace}(...)` call: {query}"
             )
 
         return found

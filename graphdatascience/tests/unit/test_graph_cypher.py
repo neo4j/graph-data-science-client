@@ -1,6 +1,7 @@
 import pytest
 
 from .conftest import CollectingQueryRunner
+from graphdatascience.graph.graph_cypher_runner import GraphCypherRunner
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -93,3 +94,39 @@ def test_with_existing_but_wrong_param(runner: CollectingQueryRunner, gds: Graph
         match="Invalid query, the `gg` parameter must be bound to `g`: .+",
     ):
         gds.graph.cypher.project("g", "MATCH (s)-->(t) RETURN gds.graph.project($gg, s, t)", params={"gg": "h"})
+
+
+@pytest.mark.parametrize(
+    "query, expected",
+    [
+        ("MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)", "$graph_name"),
+        ("MATCH (s)-->(t) RETURN gds.graph.project($the_gg, s, t)", "$the_gg"),
+        ("MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t, { property: labels(s) })", "$graph_name"),
+    ],
+)
+def test_find_return_clause_graph_name(query: str, expected: str) -> None:
+    actual = GraphCypherRunner._find_return_clause_graph_name("gds.graph.project", query)
+
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    "query, error",
+    [
+        (
+            "MATCH (s)-->(t) WITH gds.graph.project($graph_name, s, t)",
+            "Invalid query, the query must contain exactly one `RETURN gds\\.graph\\.project\\(...\\)` call: .+",
+        ),
+        (
+            "MATCH (s)-->(t) WITH gds.graph.project($graph_name, s, t",
+            "Invalid query, the query must contain exactly one `RETURN gds\\.graph\\.project\\(...\\)` call: .+",
+        ),
+        (
+            "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t) AS g",
+            "Invalid query, the query must end with the `RETURN gds\\.graph\\.project\\(...\\)` call: .+",
+        ),
+    ],
+)
+def test_find_return_clause_errors(query: str, error: str) -> None:
+    with pytest.raises(ValueError, match=error):
+        GraphCypherRunner._find_return_clause_graph_name("gds.graph.project", query)
