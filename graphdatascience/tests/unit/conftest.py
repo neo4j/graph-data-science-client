@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Generator, List, Optional
 
 import pytest
 from pandas import DataFrame
@@ -12,7 +12,7 @@ from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.server_version.server_version import ServerVersion
 
 # Should mirror the latest GDS server version under development.
-DEFAULT_SERVER_VERSION = ServerVersion(2, 4, 0)
+DEFAULT_SERVER_VERSION = ServerVersion(2, 5, 0)
 
 
 class CollectingQueryRunner(QueryRunner):
@@ -65,8 +65,11 @@ def runner(server_version: ServerVersion) -> CollectingQueryRunner:
 
 
 @pytest.fixture
-def gds(runner: CollectingQueryRunner) -> GraphDataScience:
-    return GraphDataScience(runner, arrow=False)
+def gds(runner: CollectingQueryRunner) -> Generator[GraphDataScience, None, None]:
+    gds = GraphDataScience(runner, arrow=False)
+    yield gds
+
+    gds.close()
 
 
 @pytest.fixture(scope="package")
