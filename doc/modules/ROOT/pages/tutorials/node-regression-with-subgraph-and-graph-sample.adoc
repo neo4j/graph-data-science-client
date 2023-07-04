@@ -430,7 +430,7 @@ chameleons_nr_training.selectFeatures("frp_embedding")
 [source, python, role=no-test]
 ----
 # We use the training pipeline to train a model
-cora_nc_model, train_result = chameleons_nr_training.train(
+nc_model, train_result = chameleons_nr_training.train(
     G_chameleon,  # First, we use the entire Chameleon graph
     modelName="chameleon_nr_model",
     targetNodeLabels=["Chameleon"],
@@ -458,7 +458,7 @@ G_chameleon_sample, _ = gds.alpha.graph.sample.rwr(
 )
 
 # Now we can use the same training pipeline to train another model, but faster!
-cora_nc_model_sample, train_result_sample = chameleons_nr_training.train(
+nc_model_sample, train_result_sample = chameleons_nr_training.train(
     G_chameleon_sample,
     modelName="chameleon_nr_model_sample",
     targetNodeLabels=["Chameleon"],
@@ -487,9 +487,9 @@ print(
 # Let's see what our models predict
 
 # The speed-trained model on 24% training data (30% sample - 20% test set)
-predicted_targets_sample = cora_nc_model_sample.predict_stream(G_chameleon)
+predicted_targets_sample = nc_model_sample.predict_stream(G_chameleon)
 # The fully trained model on 80% training data (20% test set)
-predicted_targets_full = cora_nc_model.predict_stream(G_chameleon)
+predicted_targets_full = nc_model.predict_stream(G_chameleon)
 
 # The original training data for comparison
 real_targets = gds.graph.nodeProperty.stream(G_chameleon, "target")
