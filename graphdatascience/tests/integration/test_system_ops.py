@@ -1,6 +1,7 @@
 import pytest
 
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 def test_listProgress(gds: GraphDataScience) -> None:
@@ -39,6 +40,11 @@ def test_debug_arrow(gds: GraphDataScience) -> None:
 @pytest.mark.enterprise
 def test_is_licensed(gds: GraphDataScience) -> None:
     assert gds.is_licensed()
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
+def test_license_state(gds: GraphDataScience) -> None:
+    assert gds.license.state()["isLicensed"] in [True, False]
 
 
 @pytest.mark.skip_on_aura

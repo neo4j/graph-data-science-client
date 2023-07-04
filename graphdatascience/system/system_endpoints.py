@@ -22,6 +22,14 @@ class DebugProcRunner(UncallableNamespace, IllegalAttrChecker):
         return self._query_runner.run_query(query).squeeze()  # type: ignore
 
 
+class LicenseProcRunner(UncallableNamespace, IllegalAttrChecker):
+    def state(self) -> "Series[Any]":
+        self._namespace += ".state"
+        query = f"CALL {self._namespace}()"
+
+        return self._query_runner.run_query(query).squeeze()  # type: ignore
+
+
 class DirectSystemEndpoints(CallerBase):
     @client_only_endpoint("gds")
     def is_licensed(self) -> bool:
@@ -40,6 +48,10 @@ class DirectSystemEndpoints(CallerBase):
                 raise e
 
         return license == "Licensed"
+
+    @property
+    def license(self) -> LicenseProcRunner:
+        return LicenseProcRunner(self._query_runner, f"{self._namespace}.license", self._server_version)
 
     @property
     def debug(self) -> DebugProcRunner:
