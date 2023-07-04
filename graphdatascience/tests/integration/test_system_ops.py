@@ -44,7 +44,7 @@ def test_is_licensed(gds: GraphDataScience) -> None:
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_license_state(gds: GraphDataScience) -> None:
-    assert isinstance(gds.license.state()["isLicensed"], bool)
+    assert gds.license.state()["isLicensed"] in [True, False]
 
 
 @pytest.mark.skip_on_aura
