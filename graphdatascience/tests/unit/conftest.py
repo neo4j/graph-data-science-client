@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Generator, List, Optional
 
 import pytest
 from pandas import DataFrame
@@ -65,7 +65,7 @@ def runner(server_version: ServerVersion) -> CollectingQueryRunner:
 
 
 @pytest.fixture
-def gds(runner: CollectingQueryRunner) -> GraphDataScience:
+def gds(runner: CollectingQueryRunner) -> Generator[GraphDataScience, None, None]:
     gds = GraphDataScience(runner, arrow=False)
     yield gds
 

@@ -37,11 +37,13 @@ def neo4j_driver() -> Generator[Driver, None, None]:
 
 
 @pytest.fixture(scope="package")
-def runner(neo4j_driver: Driver) -> Neo4jQueryRunner:
+def runner(neo4j_driver: Driver) -> Generator[Neo4jQueryRunner, None, None]:
     _runner = Neo4jQueryRunner(neo4j_driver)
     _runner.set_database(DB)
 
-    return _runner
+    yield _runner
+
+    _runner.close()
 
 
 @pytest.fixture(scope="package", autouse=False)
@@ -57,15 +59,17 @@ def auradb_runner() -> Generator[Neo4jQueryRunner, None, None]:
 
 
 @pytest.fixture(scope="package")
-def gds() -> GraphDataScience:
+def gds() -> Generator[GraphDataScience, None, None]:
     _gds = GraphDataScience(URI, auth=AUTH)
     _gds.set_database(DB)
 
-    return _gds
+    yield _gds
+
+    _gds.close()
 
 
 @pytest.fixture(scope="package")
-def gds_with_tls() -> GraphDataScience:
+def gds_with_tls() -> Generator[GraphDataScience, None, None]:
     integration_test_dir = Path(__file__).resolve().parent
     cert = os.path.join(integration_test_dir, "resources", "arrow-flight-gds-test.crt")
 
@@ -81,26 +85,32 @@ def gds_with_tls() -> GraphDataScience:
     )
     _gds.set_database(DB)
 
-    return _gds
+    yield _gds
+
+    _gds.close()
 
 
 @pytest.fixture(scope="package")
-def gds_without_arrow() -> GraphDataScience:
+def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
     _gds = GraphDataScience(URI, auth=AUTH, arrow=False)
     _gds.set_database(DB)
 
-    return _gds
+    yield _gds
+
+    _gds.close()
 
 
 @pytest.fixture(scope="package", autouse=False)
-def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Optional[GraphDataScience]:
+def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Optional[Generator[GraphDataScience, None, None]]:
     if "cloud_architecture" not in request.keywords:
         _gds = GraphDataScience(
             URI, auth=AUTH, arrow=True, aura_db_connection_info=AuraDbConnectionInfo(AURA_DB_URI, AURA_DB_AUTH)
         )
         _gds.set_database(DB)
 
-        return _gds
+        yield _gds
+
+        _gds.close()
     return None
 
 
