@@ -12,7 +12,7 @@ from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.server_version.server_version import ServerVersion
 
 # Should mirror the latest GDS server version under development.
-DEFAULT_SERVER_VERSION = ServerVersion(2, 4, 0)
+DEFAULT_SERVER_VERSION = ServerVersion(2, 5, 0)
 
 
 class CollectingQueryRunner(QueryRunner):
@@ -66,7 +66,10 @@ def runner(server_version: ServerVersion) -> CollectingQueryRunner:
 
 @pytest.fixture
 def gds(runner: CollectingQueryRunner) -> GraphDataScience:
-    return GraphDataScience(runner, arrow=False)
+    gds = GraphDataScience(runner, arrow=False)
+    yield gds
+
+    gds.close()
 
 
 @pytest.fixture(scope="package")
