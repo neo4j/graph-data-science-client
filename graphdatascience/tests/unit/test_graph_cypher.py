@@ -49,7 +49,7 @@ def test_with_existing_params(runner: CollectingQueryRunner, gds: GraphDataScien
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
-def test_with_return_not_being_last(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+def test_with_return_not_being_last(gds: GraphDataScience) -> None:
     with pytest.raises(
         ValueError,
         match="Invalid query, the query must end with the `RETURN gds.graph.project\\(\\.\\.\\.\\)` call: .+",
@@ -58,7 +58,7 @@ def test_with_return_not_being_last(runner: CollectingQueryRunner, gds: GraphDat
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
-def test_with_no_return(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+def test_with_no_return(gds: GraphDataScience) -> None:
     with pytest.raises(
         ValueError,
         match="Invalid query, the query must contain exactly one `RETURN gds.graph.project\\(\\.\\.\\.\\)` call: .+",
@@ -67,7 +67,7 @@ def test_with_no_return(runner: CollectingQueryRunner, gds: GraphDataScience) ->
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
-def test_with_multiple_returns(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+def test_with_multiple_returns(gds: GraphDataScience) -> None:
     with pytest.raises(
         ValueError,
         match="Invalid query, the query must end with the `RETURN gds.graph.project\\(\\.\\.\\.\\)` call: .+",
@@ -79,7 +79,7 @@ def test_with_multiple_returns(runner: CollectingQueryRunner, gds: GraphDataScie
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
-def test_with_non_param_name(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+def test_with_non_param_name(gds: GraphDataScience) -> None:
     with pytest.raises(
         ValueError,
         match="Invalid query, the `graph_name` must use a query parameter, but got `'graph_name'`: .+",
@@ -88,7 +88,7 @@ def test_with_non_param_name(runner: CollectingQueryRunner, gds: GraphDataScienc
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
-def test_with_existing_but_wrong_param(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+def test_with_existing_but_wrong_param(gds: GraphDataScience) -> None:
     with pytest.raises(
         ValueError,
         match="Invalid query, the `gg` parameter must be bound to `g`: .+",
