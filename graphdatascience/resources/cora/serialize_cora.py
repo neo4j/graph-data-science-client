@@ -5,12 +5,8 @@ from graphdatascience import GraphDataScience
 # Use Neo4j URI and credentials according to your setup
 gds = GraphDataScience("bolt://localhost:7687", auth=None)
 
-CORA_CONTENT = (
-    "https://raw.githubusercontent.com/neo4j/graph-data-science/master/test-utils/src/main/resources/cora.content"
-)
-CORA_CITES = (
-    "https://raw.githubusercontent.com/neo4j/graph-data-science/master/test-utils/src/main/resources/cora.cites"
-)
+CORA_CONTENT = "https://data.neo4j.com/cora/cora.content"
+CORA_CITES = "https://data.neo4j.com/cora/cora.cites"
 
 content = pd.read_csv(CORA_CONTENT, header=None)
 cites = pd.read_csv(CORA_CITES, header=None)

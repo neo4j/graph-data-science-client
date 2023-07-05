@@ -76,12 +76,8 @@ import pandas as pd
 
 [source, python, role=no-test]
 ----
-CORA_CONTENT = (
-    "https://raw.githubusercontent.com/neo4j/graph-data-science/master/test-utils/src/main/resources/cora.content"
-)
-CORA_CITES = (
-    "https://raw.githubusercontent.com/neo4j/graph-data-science/master/test-utils/src/main/resources/cora.cites"
-)
+CORA_CONTENT = "https://data.neo4j.com/cora/cora.content"
+CORA_CITES = "https://data.neo4j.com/cora/cora.cites"
 ----
 
 We can load each CSV locally as a Pandas `DataFrame`.
