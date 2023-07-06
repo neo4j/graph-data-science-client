@@ -37,7 +37,16 @@ class DirectSystemEndpoints(CallerBase):
         if self._server_version >= ServerVersion(2, 5, 0):
             query = "RETURN gds.isLicensed()"
         else:
-            query = "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN CASE value WHEN 'Licensed' THEN true ELSE false END"
+            query = """
+            CALL gds.debug.sysInfo()
+            YIELD key, value
+            WHERE key = 'gdsEdition'
+            RETURN
+                CASE value
+                    WHEN 'Licensed' THEN true
+                    ELSE false
+                END
+            """
 
         try:
             isLicensed: bool = self._query_runner.run_query(query, custom_error=False).squeeze()
