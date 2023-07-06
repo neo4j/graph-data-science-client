@@ -170,3 +170,20 @@ def test_warning_when_logging_fails(runner: Neo4jQueryRunner) -> None:
     future = pool.submit(lambda: time.sleep(2))
     with pytest.warns(RuntimeWarning, match=r"^Unable to get progress:"):
         runner._log("DUMMY", future, "bad_database")
+
+
+def test_bookmarks(runner: Neo4jQueryRunner) -> None:
+    runner.set_bookmarks(None)
+    assert runner.bookmarks() is None
+
+    _ = runner.run_query("CREATE (a: Node)")
+    assert runner.last_bookmarks() is not None
+
+    runner.set_bookmarks(runner.last_bookmarks())
+    assert runner.bookmarks() == runner.last_bookmarks()
+
+    _ = runner.run_query("CREATE (b: Node)")
+    assert runner.bookmarks() != runner.last_bookmarks()
+
+    runner.run_query("MATCH (n) DETACH DELETE n")
+    runner.set_bookmarks(None)

@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, NamedTuple, Optional, Tuple
 
-from neo4j import GraphDatabase
+from neo4j import Bookmarks, GraphDatabase
 from pandas import DataFrame, Series
 from pyarrow import flight
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
@@ -81,6 +81,15 @@ class AuraDbArrowQueryRunner(QueryRunner):
 
     def set_database(self, database: str) -> None:
         self._fallback_query_runner.set_database(database)
+
+    def set_bookmarks(self, bookmarks: Optional[Bookmarks]) -> None:
+        self._fallback_query_runner.set_bookmarks(bookmarks)
+
+    def bookmarks(self) -> Optional[Bookmarks]:
+        return self._fallback_query_runner.bookmarks()
+
+    def last_bookmarks(self) -> Optional[Bookmarks]:
+        return self._fallback_query_runner.last_bookmarks()
 
     def database(self) -> Optional[str]:
         return self._fallback_query_runner.database()
