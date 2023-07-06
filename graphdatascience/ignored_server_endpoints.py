@@ -57,7 +57,10 @@ IGNORED_SERVER_ENDPOINTS = {
     "gds.util.infinity",
     "gds.util.isFinite",
     "gds.util.isInfinite",
-    "gds.alpha.create.cypherdb",
+    "gds.isLicensed",  # mapped through gds.is_licensed
     "gds.alpha.graph.project",  # TODO: Figure out how to support this well
-    "gds.alpha.drop.cypherdb",
+    "gds.ephemeral.database.create",
+    "gds.ephemeral.database.drop",
+    "gds.alpha.create.cypherdb",
+    "gds.alpha.drop.cypherdb",  # previous name of gds.ephemeral.database.create
 }
