@@ -137,7 +137,6 @@ class ArrowQueryRunner(QueryRunner):
             # inject parameters
             params["config"]["token"] = self._get_or_request_token()
             params["config"]["arrowEndpoint"] = self._uri
-            print(params)
 
         return self._fallback_query_runner.run_query(query, params, database, custom_error)
 
@@ -194,7 +193,6 @@ class ArrowQueryRunner(QueryRunner):
         )
     
     def _get_or_request_token(self) -> str:
-        print("get or request token")
         self._flight_client.authenticate_basic_token(self._auth[0], self._auth[1])
         return self._auth_factory.token()
 
@@ -202,9 +200,6 @@ class ArrowQueryRunner(QueryRunner):
 class AuthFactory(ClientMiddlewareFactory):  # type: ignore
     def __init__(self, auth: Tuple[str, str], *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        print("init auth factory")
-
-
         self._auth = auth
         self._token: Optional[str] = None
         self._token_timestamp = 0
@@ -213,7 +208,6 @@ class AuthFactory(ClientMiddlewareFactory):  # type: ignore
         return AuthMiddleware(self)
 
     def token(self) -> Optional[str]:
-        print(f"current token {self._token} at {self._token_timestamp}")
         # check whether the token is older than 10 minutes. If so, reset it.
         if self._token and int(time.time()) - self._token_timestamp > 600:
             self._token = None
@@ -223,8 +217,6 @@ class AuthFactory(ClientMiddlewareFactory):  # type: ignore
     def set_token(self, token: str) -> None:
         self._token = token
         self._token_timestamp = int(time.time())
-
-        print(f"set token {self._token} time_stamp: {self._token_timestamp}")
 
     @property
     def auth(self) -> Tuple[str, str]:
@@ -250,8 +242,6 @@ class AuthMiddleware(ClientMiddleware):  # type: ignore
             self._factory.set_token(token)
 
     def sending_headers(self) -> Dict[str, str]:
-        print("sending headers")
-
         token = self._factory.token()
         if not token:
             username, password = self._factory.auth
