@@ -399,7 +399,11 @@ def test_graph_streamNodeProperties_without_arrow(gds_without_arrow: GraphDataSc
     with pytest.warns(DeprecationWarning):
         result = gds_without_arrow.graph.streamNodeProperties(G, ["x", "y"], concurrency=2)
 
-    assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
+    expected_keys = ["nodeId", "nodeProperty", "propertyValue"]
+    if gds_without_arrow.server_version() >= ServerVersion(2, 4, 2):
+        expected_keys.append("nodeLabels")
+
+    assert expected_keys == list(result.keys())
 
     x_values = result[result.nodeProperty == "x"]
     assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
@@ -416,7 +420,11 @@ def test_graph_nodeProperties_stream_without_arrow(gds_without_arrow: GraphDataS
         G, ["x", "y"], db_node_properties=["z", "name"], concurrency=2
     )
 
-    assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
+    expected_keys = ["nodeId", "nodeProperty", "propertyValue"]
+    if gds_without_arrow.server_version() >= ServerVersion(2, 4, 2):
+        expected_keys.append("nodeLabels")
+
+    assert expected_keys == list(result.keys())
 
     x_values = result[result.nodeProperty == "x"]
     assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
