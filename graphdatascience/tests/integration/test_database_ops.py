@@ -36,6 +36,30 @@ def test_switching_db(runner: Neo4jQueryRunner) -> None:
 
 
 @pytest.mark.skip_on_aura
+def test_switching_db_and_use_graph(gds: GraphDataScience) -> None:
+    default_database = gds.database()
+    gds.run_cypher("CREATE (a: A)")
+
+    G_A, _ = gds.graph.project(GRAPH_NAME, "A", "*")
+
+    assert G_A.node_count() == 1
+
+    MY_DB_NAME = "my-db"
+    gds.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+    gds.set_database(MY_DB_NAME)
+
+    try:
+        gds.run_cypher("CREATE (b1: B), (b2: B)")
+        G_B, _ = gds.graph.project(GRAPH_NAME, "B", "*")
+
+        assert G_B.node_count() == 2
+    finally:
+        gds.set_database(default_database)  # type: ignore
+        gds.run_cypher("MATCH (n) DETACH DELETE n")
+        gds.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+
+
+@pytest.mark.skip_on_aura
 def test_run_query_with_db(runner: Neo4jQueryRunner) -> None:
     runner.run_query("CREATE (a: Node)")
 

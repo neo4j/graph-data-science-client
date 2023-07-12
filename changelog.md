@@ -9,6 +9,8 @@
 
 ## Bug fixes
 
+* Fixed a bug, where the graph object would list multiple graphs if the same name was used for graphs on different databases.
+
 
 ## Improvements
 

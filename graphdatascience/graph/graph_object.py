@@ -19,6 +19,7 @@ class Graph:
     def __init__(self, name: str, query_runner: QueryRunner, server_version: ServerVersion):
         self._name = name
         self._query_runner = query_runner
+        self._db = query_runner.database()
         self._server_version = server_version
 
     def __enter__(self: TGraph) -> TGraph:
@@ -40,13 +41,22 @@ class Graph:
         return self._name
 
     def _graph_info(self, yields: List[str] = []) -> "Series[Any]":
-        yield_suffix = "" if len(yields) == 0 else " YIELD " + ", ".join(yields)
+        yield_db = "database" in yields
+        yields_with_db = yields if yield_db else yields + ["database"]
+        yield_suffix = "" if len(yields) == 0 else " YIELD " + ", ".join(yields_with_db)
+
         info = self._query_runner.run_query(
             f"CALL gds.graph.list($graph_name){yield_suffix}", {"graph_name": self._name}, custom_error=False
         )
 
         if len(info) == 0:
             raise ValueError(f"There is no projected graph named '{self.name()}'")
+        if len(info) > 1:
+            # for multiple dbs we can have the same graph name. But db + graph name is unique
+            info = info[info["database"] == self._db]
+
+        if not yield_db:
+            info = info.drop(columns=["database"])
 
         return info.squeeze()  # type: ignore
 
