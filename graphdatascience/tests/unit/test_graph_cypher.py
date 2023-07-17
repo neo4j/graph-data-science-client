@@ -1,4 +1,5 @@
 import pytest
+from pandas import DataFrame
 
 from .conftest import CollectingQueryRunner
 from graphdatascience.graph.graph_cypher_runner import GraphCypherRunner
@@ -8,6 +9,8 @@ from graphdatascience.server_version.server_version import ServerVersion
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_simple(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    runner.set__mock_result(DataFrame([{"graphName": "g"}]))
+
     G, _ = gds.graph.cypher.project("g", "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)")
 
     assert G.name() == "g"
@@ -18,6 +21,8 @@ def test_simple(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_with_custom_param_name(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    runner.set__mock_result(DataFrame([{"graphName": "g"}]))
+
     G, _ = gds.graph.cypher.project("g", "MATCH (s)-->(t) RETURN gds.graph.project($the_graph, s, t)")
 
     assert G.name() == "g"
@@ -28,6 +33,8 @@ def test_with_custom_param_name(runner: CollectingQueryRunner, gds: GraphDataSci
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_with_lots_of_whitespace(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    runner.set__mock_result(DataFrame([{"graphName": "g"}]))
+
     G, _ = gds.graph.cypher.project("g", "MATCH (s)-->(t) RETURN gds .graph. project\n(\t$graph_name  ,s, t)")
 
     assert G.name() == "g"
@@ -38,11 +45,27 @@ def test_with_lots_of_whitespace(runner: CollectingQueryRunner, gds: GraphDataSc
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_with_existing_params(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    runner.set__mock_result(DataFrame([{"graphName": "g"}]))
+
     G, _ = gds.graph.cypher.project(
         "g", "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)", {"graph_name": "g"}
     )
 
     assert G.name() == "g"
+
+    assert runner.last_params() == {"graph_name": "g"}
+    assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)"
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
+def test_extracting_graph_name(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    runner.set__mock_result(DataFrame([{"graphName": "the graph"}]))
+
+    G, res = gds.graph.cypher.project(
+        "g", "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)", params={"graph_name": "g"}
+    )
+
+    assert G.name() == "the graph"
 
     assert runner.last_params() == {"graph_name": "g"}
     assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)"

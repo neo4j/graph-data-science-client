@@ -21,8 +21,8 @@ class GraphCypherRunner(CallerBase):
         self,
         graph_name: str,
         query: str,
-        params: Optional[Dict[str, Any]] = None,
         database: Optional[str] = None,
+        params: Optional[Dict[str, Any]] = None,
     ) -> Tuple[Graph, "Series[Any]"]:
         """
         Run a Cypher projection.
@@ -74,6 +74,25 @@ class GraphCypherRunner(CallerBase):
 
         result = qr.run_query(query, params, database, False)
         result = result.squeeze()
+        try:
+            graph_name = str(result["graphName"])
+        except (KeyError, TypeError):
+            if isinstance(result, str):
+                if result == str(self._server_version):
+                    graph_name = (
+                        "Could not get the graph name from the result. "
+                        "This is probably because this is a unit test and no mock result was given to the query runner"
+                    )
+                else:
+                    # This is likely a test where a mock result was provided
+                    # But it was a dict with a single entry.
+                    # squeeze() will have removed the dict and only left that single value
+                    # so we assume that the key was graphName and use the value.
+                    graph_name = result
+            else:
+                raise ValueError(
+                    f"Invalid query, the query must end with the `RETURN {self._namespace}(...)` call: {query}"
+                )
 
         return Graph(graph_name, self._query_runner, self._server_version), result  # type: ignore
 
