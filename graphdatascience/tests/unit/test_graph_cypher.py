@@ -11,19 +11,46 @@ from graphdatascience.server_version.server_version import ServerVersion
 def test_simple(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     runner.set__mock_result(DataFrame([{"graphName": "g"}]))
 
-    G, _ = gds.graph.cypher.project("g", "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)")
+    G, _ = gds.graph.cypher.project("MATCH (s)-->(t) RETURN gds.graph.project('g', s, t)")
 
     assert G.name() == "g"
 
-    assert runner.last_params() == {"graph_name": "g"}
-    assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)"
+    assert runner.last_params() == {}
+    assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project('g', s, t)"
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
-def test_with_custom_param_name(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+def test_fstring(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     runner.set__mock_result(DataFrame([{"graphName": "g"}]))
 
-    G, _ = gds.graph.cypher.project("g", "MATCH (s)-->(t) RETURN gds.graph.project($the_graph, s, t)")
+    graph_name = "g"
+    G, _ = gds.graph.cypher.project(f"MATCH (s)-->(t) RETURN gds.graph.project('{graph_name}', s, t)")
+
+    assert G.name() == "g"
+
+    assert runner.last_params() == {}
+    assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project('g', s, t)"
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
+def test_expression(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    runner.set__mock_result(DataFrame([{"graphName": "gg"}]))
+
+    G, _ = gds.graph.cypher.project("WITH 'g' AS suffix MATCH (s)-->(t) RETURN gds.graph.project('g' + suffix, s, t)")
+
+    assert G.name() == "gg"
+
+    assert runner.last_params() == {}
+    assert runner.last_query() == "WITH 'g' AS suffix MATCH (s)-->(t) RETURN gds.graph.project('g' + suffix, s, t)"
+
+
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
+def test_with_parameter(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    runner.set__mock_result(DataFrame([{"graphName": "g"}]))
+
+    G, _ = gds.graph.cypher.project(
+        "MATCH (s)-->(t) RETURN gds.graph.project($the_graph, s, t)", params={"the_graph": "g"}
+    )
 
     assert G.name() == "g"
 
@@ -35,40 +62,24 @@ def test_with_custom_param_name(runner: CollectingQueryRunner, gds: GraphDataSci
 def test_with_lots_of_whitespace(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     runner.set__mock_result(DataFrame([{"graphName": "g"}]))
 
-    G, _ = gds.graph.cypher.project("g", "MATCH (s)-->(t) RETURN gds .graph. project\n(\t$graph_name  ,s, t)")
+    G, _ = gds.graph.cypher.project("MATCH (s)-->(t) RETURN gds .graph. project\n(\t'g'  ,s, t)")
 
     assert G.name() == "g"
 
-    assert runner.last_params() == {"graph_name": "g"}
-    assert runner.last_query() == "MATCH (s)-->(t) RETURN gds .graph. project\n(\t$graph_name  ,s, t)"
-
-
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
-def test_with_existing_params(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    runner.set__mock_result(DataFrame([{"graphName": "g"}]))
-
-    G, _ = gds.graph.cypher.project(
-        "g", "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)", {"graph_name": "g"}
-    )
-
-    assert G.name() == "g"
-
-    assert runner.last_params() == {"graph_name": "g"}
-    assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)"
+    assert runner.last_params() == {}
+    assert runner.last_query() == "MATCH (s)-->(t) RETURN gds .graph. project\n(\t'g'  ,s, t)"
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_extracting_graph_name(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     runner.set__mock_result(DataFrame([{"graphName": "the graph"}]))
 
-    G, res = gds.graph.cypher.project(
-        "g", "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)", params={"graph_name": "g"}
-    )
+    G, _ = gds.graph.cypher.project("MATCH (s)-->(t) RETURN gds.graph.project('g', s, t)")
 
     assert G.name() == "the graph"
 
-    assert runner.last_params() == {"graph_name": "g"}
-    assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)"
+    assert runner.last_params() == {}
+    assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project('g', s, t)"
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
@@ -77,7 +88,7 @@ def test_with_return_not_being_last(gds: GraphDataScience) -> None:
         ValueError,
         match="Invalid query, the query must end with the `RETURN gds.graph.project\\(\\.\\.\\.\\)` call: .+",
     ):
-        gds.graph.cypher.project("g", "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t) AS graph")
+        gds.graph.cypher.project("MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t) AS graph")
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
@@ -86,7 +97,7 @@ def test_with_no_return(gds: GraphDataScience) -> None:
         ValueError,
         match="Invalid query, the query must contain exactly one `RETURN gds.graph.project\\(\\.\\.\\.\\)` call: .+",
     ):
-        gds.graph.cypher.project("g", "MATCH (s)-->(t)")
+        gds.graph.cypher.project("MATCH (s)-->(t)")
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
@@ -96,41 +107,23 @@ def test_with_multiple_returns(gds: GraphDataScience) -> None:
         match="Invalid query, the query must end with the `RETURN gds.graph.project\\(\\.\\.\\.\\)` call: .+",
     ):
         gds.graph.cypher.project(
-            "g",
             "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t) RETURN gds.graph.project($graph_name, s, t)",
         )
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
-def test_with_non_param_name(gds: GraphDataScience) -> None:
-    with pytest.raises(
-        ValueError,
-        match="Invalid query, the `graph_name` must use a query parameter, but got `'graph_name'`: .+",
-    ):
-        gds.graph.cypher.project("g", "MATCH (s)-->(t) RETURN gds.graph.project('graph_name', s, t)")
-
-
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
-def test_with_existing_but_wrong_param(gds: GraphDataScience) -> None:
-    with pytest.raises(
-        ValueError,
-        match="Invalid query, the `gg` parameter must be bound to `g`: .+",
-    ):
-        gds.graph.cypher.project("g", "MATCH (s)-->(t) RETURN gds.graph.project($gg, s, t)", params={"gg": "h"})
-
-
 @pytest.mark.parametrize(
-    "query, expected",
+    "query",
     [
-        ("MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)", "$graph_name"),
-        ("MATCH (s)-->(t) RETURN gds.graph.project($the_gg, s, t)", "$the_gg"),
-        ("MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t, { property: labels(s) })", "$graph_name"),
+        "MATCH (s)-->(t) RETURN gds.graph.project('g', s, t)",
+        "MATCH (s)-->(t) RETURN gds.graph.project('g' + foo, s, t)",
+        "MATCH (s)-->(t) RETURN gds.graph.project('g' + CALL foo(bar), s, t)",
+        "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)",
+        "MATCH (s)-->(t) RETURN gds.graph.project($the_gg, s, t)",
+        "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t, { property: labels(s) })",
     ],
 )
-def test_find_return_clause_graph_name(query: str, expected: str) -> None:
-    actual = GraphCypherRunner._find_return_clause_graph_name("gds.graph.project", query)
-
-    assert actual == expected
+def test_verify_query_ends_with_return_clause(query: str) -> None:
+    GraphCypherRunner._verify_query_ends_with_return_clause("gds.graph.project", query)
 
 
 @pytest.mark.parametrize(
@@ -152,4 +145,4 @@ def test_find_return_clause_graph_name(query: str, expected: str) -> None:
 )
 def test_find_return_clause_errors(query: str, error: str) -> None:
     with pytest.raises(ValueError, match=error):
-        GraphCypherRunner._find_return_clause_graph_name("gds.graph.project", query)
+        GraphCypherRunner._verify_query_ends_with_return_clause("gds.graph.project", query)

@@ -19,7 +19,6 @@ class GraphCypherRunner(CallerBase):
 
     def project(
         self,
-        graph_name: str,
         query: str,
         database: Optional[str] = None,
         params: Optional[Dict[str, Any]] = None,
@@ -30,8 +29,6 @@ class GraphCypherRunner(CallerBase):
 
         Parameters
         ----------
-        graph_name: str
-            the name of the graph to project
         query: str
             the Cypher projection query
         params: Dict[str, Any]
@@ -44,26 +41,7 @@ class GraphCypherRunner(CallerBase):
         A tuple of the projected graph and statistics about the projection
         """
 
-        graph_name_param = GraphCypherRunner._find_return_clause_graph_name(self._namespace, query)
-
-        if not graph_name_param.startswith("$"):
-            raise ValueError(
-                f"Invalid query, the `graph_name` must use a query parameter, but got `{graph_name_param}`: {query}"
-            )
-
-        graph_name_param = graph_name_param[1:]
-
-        if params is not None and graph_name_param in params:
-            query_graph_name = params[graph_name_param]
-            if query_graph_name != graph_name:
-                raise ValueError(
-                    f"Invalid query, the `{graph_name_param}` parameter must be bound to `{graph_name}`: {query}"
-                )
-        else:
-            if params is None:
-                params = {}
-
-            params[graph_name_param] = graph_name
+        GraphCypherRunner._verify_query_ends_with_return_clause(self._namespace, query)
 
         # See run_cypher
         qr = self._query_runner
@@ -99,13 +77,19 @@ class GraphCypherRunner(CallerBase):
     __separators = re.compile(r"[,(.]")
 
     @staticmethod
-    def _find_return_clause_graph_name(namespace: str, query: str) -> str:
+    def _verify_query_ends_with_return_clause(namespace: str, query: str):
         """
-        Returns the 'graph name' in the RETURN clause of a Cypher projection query.
-        'graph name' here is the first argument of the `gds.graph.project` function.
+        Verifies that the query ends in a `RETURN gds.graph.project(...)` call.
+        Invalid queries will raise a ValueError.
         """
 
-        found = None
+        # We iterate through the "tokens" of the query, where a token here is
+        # the result of splitting on whitespace.
+        # The loop body is basically a state machine with three states:
+        # 1. Finding the start of the `RETURN gds.graph.project` call (found = False, at_end = False)
+        # 2. Finding the end of that call (found = True, at_end = False)
+        # 3. Verify we are at the end (found = <any>, at_end = True)
+        found = False
         at_end = False
 
         namespace_tokens = namespace.split(".")
@@ -113,12 +97,15 @@ class GraphCypherRunner(CallerBase):
 
         for query_token in query_tokens:
             if at_end:
+                # State 3: Nothing is allowed when we are at the end
                 raise ValueError(f"Invalid query, the query must end with the `RETURN {namespace}(...)` call: {query}")
 
-            if found is not None:
-                paren_balance = 0
-
+            if found:
+                # State 2: We are in the `RETURN gds.graph.project` call.
+                # Find closing parenthesis of the call by going through each character
+                # and keeping track of the parenthesis balance.
                 chars = chain(query_token, (c for tok in query_tokens for c in tok))
+                paren_balance = 0
 
                 for c in chars:
                     if c == "(":
@@ -130,18 +117,20 @@ class GraphCypherRunner(CallerBase):
                             break
 
             if query_token == "RETURN":
+                # State 1: We found the start of a `RETURN` clause.
+                # Check if it is the `RETURN gds.graph.project` call.
+                # We split tokens on `__separators` and flatten the nested iters.
                 tokens = (tok for token in query_tokens for tok in GraphCypherRunner.__separators.split(token) if tok)
                 for token, expected in zip_longest(tokens, namespace_tokens):
                     if expected is None:
-                        found = token
+                        # First token after the correct namespace, we are now _inside_ the arguments
+                        found = True
                         break
 
                     if token != expected:
                         break
 
-        if found is None or not at_end:
+        if not found or not at_end:
             raise ValueError(
                 f"Invalid query, the query must contain exactly one `RETURN {namespace}(...)` call: {query}"
             )
-
-        return found

@@ -74,8 +74,7 @@ def test_project_graph_cypher_estimate(gds: GraphDataScience) -> None:
 
 def test_cypher_projection(gds: GraphDataScience) -> None:
     G, result = gds.graph.cypher.project(
-        GRAPH_NAME,
-        "MATCH (n:Node) OPTIONAL MATCH (n)-->(m:Node) RETURN gds.graph.project($graph_name, n, m)"
+        f"MATCH (n:Node) OPTIONAL MATCH (n)-->(m:Node) RETURN gds.graph.project('{GRAPH_NAME}', n, m)"
     )
 
     assert G.name() == GRAPH_NAME
