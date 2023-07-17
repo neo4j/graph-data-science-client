@@ -48,9 +48,7 @@ def test_expression(runner: CollectingQueryRunner, gds: GraphDataScience) -> Non
 def test_with_parameter(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     runner.set__mock_result(DataFrame([{"graphName": "g"}]))
 
-    G, _ = gds.graph.cypher.project(
-        "MATCH (s)-->(t) RETURN gds.graph.project($the_graph, s, t)", params={"the_graph": "g"}
-    )
+    G, _ = gds.graph.cypher.project("MATCH (s)-->(t) RETURN gds.graph.project($the_graph, s, t)", the_graph="g")
 
     assert G.name() == "g"
 

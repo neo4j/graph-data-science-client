@@ -21,7 +21,7 @@ class GraphCypherRunner(CallerBase):
         self,
         query: str,
         database: Optional[str] = None,
-        params: Optional[Dict[str, Any]] = None,
+        **params,
     ) -> Tuple[Graph, "Series[Any]"]:
         """
         Run a Cypher projection.
@@ -31,10 +31,10 @@ class GraphCypherRunner(CallerBase):
         ----------
         query: str
             the Cypher projection query
-        params: Dict[str, Any]
-            parameters to the query
         database: str
             the database on which to run the query
+        params: Dict[str, Any]
+            parameters to the query
 
         Returns
         -------
