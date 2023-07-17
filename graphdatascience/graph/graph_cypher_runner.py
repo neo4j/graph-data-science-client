@@ -1,6 +1,6 @@
 import re
 from itertools import chain, zip_longest
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional, Tuple
 
 from pandas import Series
 
@@ -21,7 +21,7 @@ class GraphCypherRunner(CallerBase):
         self,
         query: str,
         database: Optional[str] = None,
-        **params,
+        **params: Any,
     ) -> Tuple[Graph, "Series[Any]"]:
         """
         Run a Cypher projection.
@@ -77,7 +77,7 @@ class GraphCypherRunner(CallerBase):
     __separators = re.compile(r"[,(.]")
 
     @staticmethod
-    def _verify_query_ends_with_return_clause(namespace: str, query: str):
+    def _verify_query_ends_with_return_clause(namespace: str, query: str) -> None:
         """
         Verifies that the query ends in a `RETURN gds.graph.project(...)` call.
         Invalid queries will raise a ValueError.
