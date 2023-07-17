@@ -191,7 +191,7 @@ class ArrowQueryRunner(QueryRunner):
         return ArrowGraphConstructor(
             database, graph_name, self._flight_client, concurrency, undirected_relationship_types
         )
-    
+
     def _get_or_request_token(self) -> str:
         self._flight_client.authenticate_basic_token(self._auth[0], self._auth[1])
         return self._auth_factory.token()
@@ -232,7 +232,7 @@ class AuthMiddleware(ClientMiddleware):  # type: ignore
         auth_header: str = headers.get("authorization", None)
         if not auth_header:
             return
-        # authenticate_basic_token() returns a list. 
+        # authenticate_basic_token() returns a list.
         # TODO We should take the first Bearer element here
         if isinstance(auth_header, list):
             auth_header = auth_header[0]
