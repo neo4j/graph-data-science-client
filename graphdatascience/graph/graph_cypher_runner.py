@@ -1,14 +1,13 @@
 import re
 from itertools import chain, zip_longest
-from typing import Any, Optional, Tuple
-
-from pandas import Series
+from typing import Any, Optional
 
 from ..query_runner.arrow_query_runner import ArrowQueryRunner
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
 from .graph_object import Graph
 from graphdatascience.caller_base import CallerBase
+from graphdatascience.graph.graph_create_result import GraphCreateResult
 
 
 class GraphCypherRunner(CallerBase):
@@ -22,7 +21,7 @@ class GraphCypherRunner(CallerBase):
         query: str,
         database: Optional[str] = None,
         **params: Any,
-    ) -> Tuple[Graph, "Series[Any]"]:
+    ) -> GraphCreateResult:
         """
         Run a Cypher projection.
         The provided query must end with a `RETURN gds.graph.project(...)` call.
@@ -72,7 +71,7 @@ class GraphCypherRunner(CallerBase):
                     f"Invalid query, the query must end with the `RETURN {self._namespace}(...)` call: {query}"
                 )
 
-        return Graph(graph_name, self._query_runner, self._server_version), result  # type: ignore
+        return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)  # type: ignore
 
     __separators = re.compile(r"[,(.]")
 
