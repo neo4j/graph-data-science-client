@@ -1121,6 +1121,69 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 	Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.spanningTree.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    The spanning tree algorithm visits all nodes that are in the same connected component as the starting node,
+    and returns a spanning tree of all nodes in the component where the total weight of the relationships is either minimized or maximized.
+
+.. py:function:: gds.spanningTree.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.spanningTree.stats(G: Graph, **config: Any) -> Series[Any]
+
+    The spanning tree algorithm visits all nodes that are in the same connected component as the starting node,
+    and returns a spanning tree of all nodes in the component
+    where the total weight of the relationships is either minimized or maximized.
+
+.. py:function:: gds.spanningTree.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.spanningTree.stream(G: Graph, **config: Any) -> DataFrame
+
+    The spanning tree algorithm visits all nodes that are in the same connected component as the starting node,
+    and returns a spanning tree of all nodes in the component
+    where the total weight of the relationships is either minimized or maximized.
+
+.. py:function:: gds.spanningTree.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.spanningTree.write(G: Graph, **config: Any) -> Series[Any]
+
+    The spanning tree algorithm visits all nodes that are in the same connected component as the starting node,
+    and returns a spanning tree of all nodes in the component
+    where the total weight of the relationships is either minimized or maximized.
+
+.. py:function:: gds.spanningTree.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.steinerTree.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    The steiner tree algorithm accepts a source node, as well as a list of target nodes.
+    It then attempts to find a spanning tree where there is a path from the source node to each target node,
+    such that the total weight of the relationships is as low as possible.
+
+.. py:function:: gds.steinerTree.stats(G: Graph, **config: Any) -> Series[Any]
+
+    The steiner tree algorithm accepts a source node, as well as a list of target nodes.
+    It then attempts to find a spanning tree where there is a path from the source node to each target node,
+    such that the total weight of the relationships is as low as possible.
+
+.. py:function:: gds.steinerTree.stream(G: Graph, **config: Any) -> DataFrame
+
+    The steiner tree algorithm accepts a source node, as well as a list of target nodes.
+    It then attempts to find a spanning tree where there is a path from the source node to each target node,
+    such that the total weight of the relationships is as low as possible.
+
+.. py:function:: gds.steinerTree.write(G: Graph, **config: Any) -> Series[Any]
+
+    The steiner tree algorithm accepts a source node, as well as a list of target nodes.
+    It then attempts to find a spanning tree where there is a path from the source node to each target node,
+    such that the total weight of the relationships is as low as possible.
+
 .. py:function:: gds.triangleCount.mutate(G: Graph, **config: Any) -> Series[Any]
 
     Triangle counting is a community detection graph algorithm that is used to
