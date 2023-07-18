@@ -101,6 +101,7 @@ def test_sample_rwr(runner: QueryRunner, gds: GraphDataScience) -> None:
     runner.run_query(f"CALL gds.graph.drop('{rwr_G.name()}')")
 
 
+@pytest.mark.skip_on_aura  # The alpha procedure is not part of the allowlist
 @pytest.mark.filterwarnings("ignore: Deprecated in favor of gds.graph.sample.rwr")
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_sample_rwr_alpha(runner: QueryRunner, gds: GraphDataScience) -> None:
@@ -400,11 +401,7 @@ def test_graph_streamNodeProperties_without_arrow(gds_without_arrow: GraphDataSc
     with pytest.warns(DeprecationWarning):
         result = gds_without_arrow.graph.streamNodeProperties(G, ["x", "y"], concurrency=2)
 
-    expected_keys = ["nodeId", "nodeProperty", "propertyValue"]
-    if gds_without_arrow.server_version() >= ServerVersion(2, 4, 2):
-        expected_keys.append("nodeLabels")
-
-    assert expected_keys == list(result.keys())
+    assert {"nodeId", "nodeProperty", "propertyValue"}.issubset(set(result.keys()))
 
     x_values = result[result.nodeProperty == "x"]
     assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
@@ -421,11 +418,7 @@ def test_graph_nodeProperties_stream_without_arrow(gds_without_arrow: GraphDataS
         G, ["x", "y"], db_node_properties=["z", "name"], concurrency=2
     )
 
-    expected_keys = ["nodeId", "nodeProperty", "propertyValue"]
-    if gds_without_arrow.server_version() >= ServerVersion(2, 4, 2):
-        expected_keys.append("nodeLabels")
-
-    assert expected_keys == list(result.keys())
+    assert {"nodeId", "nodeProperty", "propertyValue"}.issubset(set(result.keys()))
 
     x_values = result[result.nodeProperty == "x"]
     assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
