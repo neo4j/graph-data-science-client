@@ -12,6 +12,7 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
         model_name: str,
         feature_properties: List[str],
         target_property: str,
+        relationship_types: List[str],
         target_node_label: str = None,
         node_labels: List[str] = None,
     ) -> "Series[Any]":  # noqa: F821
@@ -20,6 +21,7 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
             "targetProperty": target_property,
             "job_type": "train",
             "nodeProperties": feature_properties + [target_property],
+            "relationshipTypes": relationship_types
         }
 
         if target_node_label:
@@ -31,10 +33,9 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
 
         # token and uri will be injected by arrow_query_runner
         self._query_runner.run_query(
-            "CALL gds.upload.graph($graph_name, $config)",
+            "CALL gds.upload.graph($config)",
             params={
-                "graph_name": graph_name,
-                "config": {"mlTrainingConfig": mlTrainingConfig, "modelName": model_name},
+                "config": {"mlTrainingConfig": mlTrainingConfig, "graphName": graph_name, "modelName": model_name},
             },
         )
 
@@ -43,6 +44,7 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
         graph_name: str,
         model_name: str,
         feature_properties: List[str],
+        relationship_types: List[str],
         target_node_label: str = None,
         node_labels: List[str] = None,
     ) -> "Series[Any]":  # noqa: F821
@@ -50,6 +52,7 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
             "featureProperties": feature_properties,
             "job_type": "predict",
             "nodeProperties": feature_properties,
+            "relationshipTypes": relationship_types
         }
         if target_node_label:
             mlConfigMap["targetNodeLabel"] = target_node_label
@@ -58,9 +61,8 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
 
         mlTrainingConfig = json.dumps(mlConfigMap)
         self._query_runner.run_query(
-            "CALL gds.upload.graph($graph_name, $config)",
+            "CALL gds.upload.graph($config)",
             params={
-                "graph_name": graph_name,
-                "config": {"mlTrainingConfig": mlTrainingConfig, "modelName": model_name},
+                "config": {"mlTrainingConfig": mlTrainingConfig, "graphName": graph_name, "modelName": model_name},
             },
         )  # type: ignore
