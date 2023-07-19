@@ -787,6 +787,38 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Constructs a random subgraph based on random walks with restarts.
 
+.. py:function:: gds.k1coloring.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    The K-1 Coloring algorithm assigns a color to every node in the graph.
+
+.. py:function:: gds.k1coloring.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.k1coloring.stats(G: Graph, **config: Any) -> Series[Any]
+
+    The K-1 Coloring algorithm assigns a color to every node in the graph.
+
+.. py:function:: gds.k1coloring.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.k1coloring.stream(G: Graph, **config: Any) -> DataFrame
+
+    The K-1 Coloring algorithm assigns a color to every node in the graph.
+
+.. py:function:: gds.k1coloring.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.k1coloring.write(G: Graph, **config: Any) -> Series[Any]
+
+    The K-1 Coloring algorithm assigns a color to every node in the graph.
+
+.. py:function:: gds.k1coloring.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.kcore.mutate(G: Graph, **config: Any) -> Series[Any]
 
     Computes the k-core values in a network
