@@ -45,6 +45,7 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
         model_name: str,
         feature_properties: List[str],
         relationship_types: List[str],
+        mutateProperty: str,
         target_node_label: str = None,
         node_labels: List[str] = None,
     ) -> "Series[Any]":  # noqa: F821
@@ -52,7 +53,8 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
             "featureProperties": feature_properties,
             "job_type": "predict",
             "nodeProperties": feature_properties,
-            "relationshipTypes": relationship_types
+            "relationshipTypes": relationship_types,
+            "mutateProperty": mutateProperty
         }
         if target_node_label:
             mlConfigMap["targetNodeLabel"] = target_node_label
