@@ -82,7 +82,7 @@ Their Cypher signatures map to Python in much the same way as `gds.graph.project
 == Projecting a graph using Cypher Projection
 
 The method `gds.graph.cypher.project` allows for projecting a graph using Cypher projection.
-Cypher projection is not a dediicated procedure; rather it requires writing a Cypher query that calls the `gds.graph.project` aggregation.
+Cypher projection is not a dedicated procedure; rather it requires writing a Cypher query that calls the `gds.graph.project` aggregation function.
 
 Read more about Cypher projection in the https://neo4j.com/docs/graph-data-science/current/management-ops/projections/graph-project-cypher-projection/[GDS manual].
 
@@ -90,7 +90,7 @@ The method `gds.graph.cypher.project` bridges the gap between <<getting-started-
 It takes as parameters a query string `query: str`, an optional string `database: Optional[str]` to override which database to target as well as an optional Cypher parameters dictionary as keywords args `**params: Any`.
 Unlike `gds.run_cypher` but very much like `gds.graph.project`, it returns a tuple of a `Graph` object and a pandas `Series` containing metadata from Cypher execution.
 
-The method does not modify the Cypher query in any, all projection configuration must be done in the query itself.
+The method does not modify the Cypher query in any way, all projection configuration must be done in the query itself.
 The method however verifies that the query only contains a single `RETURN gds.graph.project(...)` clause and that this clause appears at the end of the query.
 This means that this method cannot be used to project a graph together with other aggregation in Cypher, nor can the result row be renamed.
 If the provided query fails the validation, the fallback is to use `gds.run_cypher` together with `gds.graph.get` to achieve the same result.
