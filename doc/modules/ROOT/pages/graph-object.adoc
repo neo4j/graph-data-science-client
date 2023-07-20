@@ -86,8 +86,19 @@ Cypher projection is not a dedicated procedure; rather it requires writing a Cyp
 
 Read more about Cypher projection in the https://neo4j.com/docs/graph-data-science/current/management-ops/projections/graph-project-cypher-projection/[GDS manual].
 
-The method `gds.graph.cypher.project` bridges the gap between <<getting-started-minimal-example, `gds.run_cypher`>> and `gds.graph.get`.
-It takes as parameters a query string `query: str`, an optional string `database: Optional[str]` to override which database to target as well as an optional Cypher parameters dictionary as keywords args `**params: Any`.
+The method `gds.graph.cypher.project` bridges the gap between <<getting-started-minimal-example, `gds.run_cypher`>> and having to follow with `gds.graph.get`.
+
+=== Syntax
+.Cypher projection signature
+[opts="header",cols="2m,2m,1m,6", role="no-break"]
+|===
+| Name           | Type               |Default | Description
+| query          | str                | -      | The Cypher query to be executed. Must end with `RETURN gds.graph.project(...)`.
+| database       | Optional[str]      | None   | Overrides the target database. The default uses the database from the connection.
+| **params       | Any                | \{\}   | The query parameters as keyword args.
+|===
+
+
 Unlike `gds.run_cypher` but very much like `gds.graph.project`, it returns a tuple of a `Graph` object and a pandas `Series` containing metadata from Cypher execution.
 
 The method does not modify the Cypher query in any way, all projection configuration must be done in the query itself.
