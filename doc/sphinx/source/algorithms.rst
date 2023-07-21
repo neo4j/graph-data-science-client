@@ -687,6 +687,23 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     BFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth
     prior to moving on to the nodes at the next depth level."""
 
+.. py:function:: gds.closeness.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+
+.. py:function:: gds.closeness.stats(G: Graph, **config: Any) -> Series[Any]
+
+    Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+
+.. py:function:: gds.closeness.stream(G: Graph, **config: Any) -> DataFrame
+
+    Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+
+.. py:function:: gds.closeness.write(G: Graph, **config: Any) -> Series[Any]
+
+    Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+
+
 .. py:function:: gds.degree.mutate(G: Graph, **config: Any) -> Series[Any]
 
     Degree centrality measures the number of incoming and outgoing relationships from a node.
@@ -986,6 +1003,26 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.louvain.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.maxkcut.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    Approximate Maximum k-cut maps each node into one of k disjoint communities
+    trying to maximize the sum of weights of relationships between these communities.
+
+.. py:function:: gds.maxkcut.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Approximate Maximum k-cut maps each node into one of k disjoint communities
+    trying to maximize the sum of weights of relationships between these communities.
+
+.. py:function:: gds.maxkcut.stream(G: Graph, **config: Any) -> DataFrame
+
+    Approximate Maximum k-cut maps each node into one of k disjoint communities
+    trying to maximize the sum of weights of relationships between these communities.
+
+.. py:function:: gds.maxkcut.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Approximate Maximum k-cut maps each node into one of k disjoint communities
+    trying to maximize the sum of weights of relationships between these communities.
 
 .. py:function:: gds.nodeSimilarity.mutate(G: Graph, **config: Any) -> Series[Any]
 
