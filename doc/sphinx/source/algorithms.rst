@@ -940,6 +940,39 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.leiden.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    Leiden is a community detection algorithm, which guarantees that communities are well connected
+
+.. py:function:: gds.leiden.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.leiden.stats(G: Graph, **config: Any) -> Series[Any]
+
+    Executes the algorithm and returns result statistics without writing the result to Neo4j.
+
+.. py:function:: gds.leiden.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.leiden.stream(G: Graph, **config: Any) -> DataFrame
+
+    Leiden is a community detection algorithm, which guarantees that communities are well connected
+
+.. py:function:: gds.leiden.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.leiden.write(G: Graph, **config: Any) -> Series[Any]
+
+    Leiden is a community detection algorithm, which guarantees that communities are well connected
+
+.. py:function:: gds.leiden.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+
 .. py:function:: gds.localClusteringCoefficient.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The local clustering coefficient is a metric quantifying how connected the neighborhood of a node is.
