@@ -1004,6 +1004,26 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.maxkcut.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    Approximate Maximum k-cut maps each node into one of k disjoint communities
+    trying to maximize the sum of weights of relationships between these communities.
+
+.. py:function:: gds.maxkcut.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Approximate Maximum k-cut maps each node into one of k disjoint communities
+    trying to maximize the sum of weights of relationships between these communities.
+
+.. py:function:: gds.maxkcut.stream(G: Graph, **config: Any) -> DataFrame
+
+    Approximate Maximum k-cut maps each node into one of k disjoint communities
+    trying to maximize the sum of weights of relationships between these communities.
+
+.. py:function:: gds.maxkcut.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Approximate Maximum k-cut maps each node into one of k disjoint communities
+    trying to maximize the sum of weights of relationships between these communities.
+
 .. py:function:: gds.nodeSimilarity.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to. 
