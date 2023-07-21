@@ -146,7 +146,9 @@ class ArrowQueryRunner(QueryRunner):
 
     def close(self) -> None:
         self._fallback_query_runner.close()
-        self._flight_client.close()
+        # PyArrow 7 did not expose a close method yet
+        if hasattr(self._flight_client, "close"):
+            self._flight_client.close()
 
     def fallback_query_runner(self) -> QueryRunner:
         return self._fallback_query_runner
