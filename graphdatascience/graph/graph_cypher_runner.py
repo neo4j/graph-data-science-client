@@ -2,11 +2,11 @@ import re
 from itertools import chain, zip_longest
 from typing import Any, Optional
 
+from ..caller_base import CallerBase
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
+from .graph_create_result import GraphCreateResult
 from .graph_object import Graph
-from graphdatascience.caller_base import CallerBase
-from graphdatascience.graph.graph_create_result import GraphCreateResult
 
 
 class GraphCypherRunner(CallerBase):
@@ -41,15 +41,7 @@ class GraphCypherRunner(CallerBase):
 
         GraphCypherRunner._verify_query_ends_with_return_clause(self._namespace, query)
 
-        # 'rows' as argument for squeeze() means that we only squeeze a single row of a DataFrame
-        # into a Series. Without this, a single-column DataFrame would be squeezed into a scalar,
-        # and we cannot index that scalar with a string.
-        # This happens in our unit tests, where we mock the result of the query runner and don't
-        # want to mock additional data for squeeze() to work.
-        # However, there is a bug in pandas, where the typing definition rejects 'rows' as valid
-        # argument for squeeze(). The documentation also doesn't mention 'rows' at first, but lists
-        # an example with 'rows' further down, so we have to silence mypy ¯\_(ツ)_/¯
-        result = self._query_runner.run_query(query, params, database, False).squeeze("rows")  # type: ignore
+        result = self._query_runner.run_query(query, params, database, False).squeeze()
 
         try:
             graph_name = str(result["graphName"])
