@@ -1065,6 +1065,31 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.modularity.stream(G: Graph, **config: Any) -> DataFrame
 
+.. py:function:: gds.modularityOptimization.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    The Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity.
+
+.. py:function:: gds.modularityOptimization.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.modularityOptimization.stream(G: Graph, **config: Any) -> DataFrame
+
+    The Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity.
+
+.. py:function:: gds.modularityOptimization.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.modularityOptimization.write(G: Graph, **config: Any) -> Series[Any]
+
+    The Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity.
+
+.. py:function:: gds.modularityOptimization.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+
 .. py:function:: gds.nodeSimilarity.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to. 
