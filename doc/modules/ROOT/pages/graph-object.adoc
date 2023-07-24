@@ -107,7 +107,7 @@ This means that this method cannot be used to project a graph together with othe
 If the provided query fails the validation, the fallback is to use `gds.run_cypher` together with `gds.graph.get` to achieve the same result.
 
 
-[source,python,group=graph-project,role=nocollapse]
+[source,python,group=graph-cyhpher-project,role=nocollapse]
 ----
 # We put this simple graph in our database
 gds.run_cypher(
