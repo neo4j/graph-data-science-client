@@ -130,7 +130,7 @@ G, result = gds.graph.cypher.project(
     RETURN gds.graph.project($graph_name, n, m, {
         sourceNodeLabels: $label,
         targetNodeLabels: $label,
-        relationshipType: $rel_type,
+        relationshipType: $rel_type
     })
     """,                   #  Cypher query
     database="neo4j",      #  Target database
