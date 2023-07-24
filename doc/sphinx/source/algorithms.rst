@@ -1061,6 +1061,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Approximate Maximum k-cut maps each node into one of k disjoint communities
     trying to maximize the sum of weights of relationships between these communities.
 
+.. py:function:: gds.modularity.stats(G: Graph, **config: Any) -> Series[Any]
+
+.. py:function:: gds.modularity.stream(G: Graph, **config: Any) -> DataFrame
+
 .. py:function:: gds.nodeSimilarity.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to. 
