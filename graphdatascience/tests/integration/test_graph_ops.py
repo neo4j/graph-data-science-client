@@ -72,6 +72,18 @@ def test_project_graph_cypher_estimate(gds: GraphDataScience) -> None:
     assert result["requiredMemory"]
 
 
+def test_cypher_projection(gds: GraphDataScience) -> None:
+    G, result = gds.graph.cypher.project(
+        f"MATCH (n:Node) OPTIONAL MATCH (n)-->(m:Node) RETURN gds.graph.project('{GRAPH_NAME}', n, m)"
+    )
+
+    assert G.name() == GRAPH_NAME
+    assert result["graphName"] == GRAPH_NAME
+
+    result = gds.graph.exists(G.name())
+    assert result["exists"]
+
+
 def test_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 

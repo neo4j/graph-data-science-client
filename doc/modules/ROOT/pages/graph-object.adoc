@@ -69,7 +69,7 @@ For users who are https://neo4j.com/docs/graph-data-science/current/management-o
 
 In addition to those aforementioned there are five more methods that create graph objects:
 
-* `gds.graph.project.cypher`
+* `gds.graph.project.cypher` (This is the Legacy Cypher projection, see <<cypher-projection>> for the new Cypher projection)
 * `gds.beta.graph.subgraph`
 * `gds.beta.graph.generate`
 * `gds.graph.sample.rwr`
@@ -77,6 +77,70 @@ In addition to those aforementioned there are five more methods that create grap
 
 Their Cypher signatures map to Python in much the same way as `gds.graph.project` above.
 
+
+[[cypher-projection]]
+== Projecting a graph using Cypher Projection
+
+The method `gds.graph.cypher.project` allows for projecting a graph using Cypher projection.
+Cypher projection is not a dedicated procedure; rather it requires writing a Cypher query that calls the `gds.graph.project` aggregation function.
+
+Read more about Cypher projection in the https://neo4j.com/docs/graph-data-science/current/management-ops/projections/graph-project-cypher-projection/[GDS manual].
+
+The method `gds.graph.cypher.project` bridges the gap between <<getting-started-minimal-example, `gds.run_cypher`>> and having to follow with `gds.graph.get`.
+
+=== Syntax
+.Cypher projection signature
+[opts="header",cols="2m,2m,1m,6", role="no-break"]
+|===
+| Name           | Type               |Default | Description
+| query          | str                | -      | The Cypher query to be executed. Must end with `RETURN gds.graph.project(...)`.
+| database       | Optional[str]      | None   | Overrides the target database. The default uses the database from the connection.
+| **params       | Any                | \{\}   | The query parameters as keyword args.
+|===
+
+
+Unlike `gds.run_cypher` but very much like `gds.graph.project`, it returns a tuple of a `Graph` object and a pandas `Series` containing metadata from Cypher execution.
+
+The method does not modify the Cypher query in any way, all projection configuration must be done in the query itself.
+The method however verifies that the query only contains a single `RETURN gds.graph.project(...)` clause and that this clause appears at the end of the query.
+This means that this method cannot be used to project a graph together with other aggregation in Cypher, nor can the result row be renamed.
+If the provided query fails the validation, the fallback is to use `gds.run_cypher` together with `gds.graph.get` to achieve the same result.
+
+
+[source,python,group=graph-cyhpher-project,role=nocollapse]
+----
+# We put this simple graph in our database
+gds.run_cypher(
+  """
+  CREATE
+    (m: City {name: "Malmö"}),
+    (l: City {name: "London"}),
+    (s: City {name: "San Mateo"}),
+
+    (m)-[:FLY_TO]->(l),
+    (l)-[:FLY_TO]->(m),
+    (l)-[:FLY_TO]->(s),
+    (s)-[:FLY_TO]->(l)
+  """
+)
+
+G, result = gds.graph.cypher.project(
+    """
+    MATCH (n)-->(m)
+    RETURN gds.graph.project($graph_name, n, m, {
+        sourceNodeLabels: $label,
+        targetNodeLabels: $label,
+        relationshipType: $rel_type
+    })
+    """,                   #  Cypher query
+    database="neo4j",      #  Target database
+    graph_name="offices",  #  Query parameter
+    label="City",          #  Query parameter
+    rel_type="FLY_TO"      #  Query parameter
+)
+
+assert G.node_count() == result["nodeCount"]
+----
 
 [[construct]]
 == Constructing a graph from DataFrames

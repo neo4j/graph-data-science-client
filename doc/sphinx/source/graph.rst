@@ -57,6 +57,11 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.graph.cypher.project(query: str, database: Optional[str], **params: Any) -> GraphCreateResult
+
+    Use Cypher projection to creates a named graph in the catalog for use by algorithms.
+    The provided query must end with a `RETURN gds.graph.project(...)` call.
+
 .. py:function:: gds.graph.deleteRelationships(G: Graph, relationship_type: str) -> Series[Any]
 
     Delete the relationship type for a given graph stored in the graph-catalog.
