@@ -1130,6 +1130,50 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.nodeSimilarity.filtered.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    The Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
+    Two nodes are considered similar if they share many of the same neighbors.
+    The algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.
+    The filtered variant supports limiting which nodes to compare via source and target node filters.
+
+.. py:function:: gds.nodeSimilarity.filtered.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.nodeSimilarity.filtered.stats(G: Graph, **config: Any) -> Series[Any]
+
+    The Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
+    Two nodes are considered similar if they share many of the same neighbors.
+    The algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.
+    The filtered variant supports limiting which nodes to compare via source and target node filters.
+
+.. py:function:: gds.nodeSimilarity.filtered.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.nodeSimilarity.filtered.stream(G: Graph, **config: Any) -> DataFrame
+
+    The Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
+    Two nodes are considered similar if they share many of the same neighbors.
+    The algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.
+    The filtered variant supports limiting which nodes to compare via source and target node filters.
+
+.. py:function:: gds.nodeSimilarity.filtered.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.nodeSimilarity.filtered.write(G: Graph, **config: Any) -> Series[Any]
+
+    The Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
+    Two nodes are considered similar if they share many of the same neighbors.
+    The algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.
+    The filtered variant supports limiting which nodes to compare via source and target node filters.
+
+.. py:function:: gds.nodeSimilarity.filtered.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.pageRank.mutate(G: Graph, **config: Any) -> Series[Any]
 
 	Page Rank is an algorithm that measures the transitive influence or connectivity of nodes.
