@@ -38,7 +38,7 @@ def run_around_tests(
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 4, 0))
 def test_remote_projection(gds_with_cloud_setup: GraphDataScience) -> None:
     G, result = gds_with_cloud_setup.alpha.graph.project.remote(
-        GRAPH_NAME, "MATCH (n)-->(m) RETURN n as sourceNode, m as targetNode", "neo4j"
+        GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.arrow(n, m)", "neo4j"
     )
 
     assert G.name() == GRAPH_NAME
@@ -49,7 +49,7 @@ def test_remote_projection(gds_with_cloud_setup: GraphDataScience) -> None:
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 4, 0))
 def test_remote_write_back(gds_with_cloud_setup: GraphDataScience) -> None:
     G, result = gds_with_cloud_setup.alpha.graph.project.remote(
-        GRAPH_NAME, "MATCH (n)-->(m) RETURN n as sourceNode, m as targetNode", "neo4j"
+        GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.arrow(n, m)", "neo4j"
     )
 
     result = gds_with_cloud_setup.pageRank.write(G, writeProperty="score", remote=True)
