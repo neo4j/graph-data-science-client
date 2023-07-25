@@ -808,6 +808,42 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Constructs a random subgraph based on random walks with restarts.
 
+.. py:function:: gds.influenceMaximization.celf.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes 
+    that maximize the expected spread of influence in the network.
+
+.. py:function:: gds.influenceMaximization.celf.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.influenceMaximization.celf.stats(G: Graph, **config: Any) -> Series[Any]
+
+    Executes the algorithm and returns result statistics without writing the result to Neo4j.
+
+.. py:function:: gds.influenceMaximization.celf.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.influenceMaximization.celf.stream(G: Graph, **config: Any) -> DataFrame
+
+    The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes
+    that maximize the expected spread of influence in the network.
+
+.. py:function:: gds.influenceMaximization.celf.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes
+    that maximize the expected spread of influence in the network.
+
+.. py:function:: gds.influenceMaximization.celf.write(G: Graph, **config: Any) -> Series[Any]
+
+    The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes
+    that maximize the expected spread of influence in the network.
+
+.. py:function:: gds.influenceMaximization.celf.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.k1coloring.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The K-1 Coloring algorithm assigns a color to every node in the graph.
