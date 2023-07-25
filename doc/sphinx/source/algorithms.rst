@@ -1099,7 +1099,11 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.modularity.stats(G: Graph, **config: Any) -> Series[Any]
 
+.. py:function:: gds.modularity.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
 .. py:function:: gds.modularity.stream(G: Graph, **config: Any) -> DataFrame
+
+.. py:function:: gds.modularity.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
 .. py:function:: gds.modularityOptimization.mutate(G: Graph, **config: Any) -> Series[Any]
 
