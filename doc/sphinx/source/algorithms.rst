@@ -955,12 +955,20 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     KNN computes distances based on the similarity of node properties.
     Filtered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.
 
+ .. py:function:: gds.knn.filtered.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.knn.filtered.stats(G: Graph, **config: Any) -> Series[Any]
 
     The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance
     between two nodes is among the k nearest distances compared to other nodes.
     KNN computes distances based on the similarity of node properties.
     Filtered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.
+
+.. py:function:: gds.knn.filtered.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.knn.filtered.stream(G: Graph, **config: Any) -> DataFrame
 
@@ -969,12 +977,20 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     KNN computes distances based on the similarity of node properties.
     Filtered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.
 
+.. py:function:: gds.knn.filtered.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.knn.filtered.write(G: Graph, **config: Any) -> Series[Any]
 
     The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance
     between two nodes is among the k nearest distances compared to other nodes.
     KNN computes distances based on the similarity of node properties.
     Filtered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.
+
+.. py:function:: gds.knn.filtered.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.labelPropagation.mutate(G: Graph, **config: Any) -> Series[Any]
 
