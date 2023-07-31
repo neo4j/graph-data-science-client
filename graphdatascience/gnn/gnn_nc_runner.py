@@ -43,23 +43,15 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
         self,
         graph_name: str,
         model_name: str,
-        feature_properties: List[str],
-        relationship_types: List[str],
         mutateProperty: str,
-        target_node_label: str = None,
-        node_labels: List[str] = None,
+        predictedProbabilityProperty: str = None,
     ) -> "Series[Any]":  # noqa: F821
         mlConfigMap = {
-            "featureProperties": feature_properties,
             "job_type": "predict",
-            "nodeProperties": feature_properties,
-            "relationshipTypes": relationship_types,
             "mutateProperty": mutateProperty
         }
-        if target_node_label:
-            mlConfigMap["targetNodeLabel"] = target_node_label
-        if node_labels:
-            mlConfigMap["nodeLabels"] = node_labels
+        if predictedProbabilityProperty:
+            mlConfigMap["predictedProbabilityProperty"] = predictedProbabilityProperty
 
         mlTrainingConfig = json.dumps(mlConfigMap)
         self._query_runner.run_query(
