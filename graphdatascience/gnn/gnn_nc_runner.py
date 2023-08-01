@@ -8,7 +8,7 @@ from ..error.uncallable_namespace import UncallableNamespace
 class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
     def make_graph_sage_config(self, graph_sage_config):
         GRAPH_SAGE_DEFAULT_CONFIG = {"layer_config": {}, "num_neighbors": [25, 10], "dropout": 0.5,
-                                     "hidden_channels": 256}
+                                     "hidden_channels": 256, "learning_rate": 0.003}
         final_sage_config = GRAPH_SAGE_DEFAULT_CONFIG
         if graph_sage_config:
             bad_keys = []
