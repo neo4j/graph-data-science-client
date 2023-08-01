@@ -6,6 +6,21 @@ from ..error.uncallable_namespace import UncallableNamespace
 
 
 class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
+    def make_graph_sage_config(self, graph_sage_config):
+        GRAPH_SAGE_DEFAULT_CONFIG = {"layer_config": {}, "num_neighbors": [25, 10], "dropout": 0.5,
+                                     "hidden_channels": 256, "learning_rate": 0.003}
+        final_sage_config = GRAPH_SAGE_DEFAULT_CONFIG
+        if graph_sage_config:
+            bad_keys = []
+            for key in graph_sage_config:
+                if key not in GRAPH_SAGE_DEFAULT_CONFIG:
+                    bad_keys.append(key)
+            if len(bad_keys) > 0:
+                raise Exception(f"Argument graph_sage_config contains invalid keys {', '.join(bad_keys)}.")
+
+            final_sage_config.update(graph_sage_config)
+        return final_sage_config
+
     def train(
         self,
         graph_name: str,
@@ -15,13 +30,15 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
         relationship_types: List[str],
         target_node_label: str = None,
         node_labels: List[str] = None,
+        graph_sage_config = None
     ) -> "Series[Any]":  # noqa: F821
         mlConfigMap = {
             "featureProperties": feature_properties,
             "targetProperty": target_property,
             "job_type": "train",
             "nodeProperties": feature_properties + [target_property],
-            "relationshipTypes": relationship_types
+            "relationshipTypes": relationship_types,
+            "graph_sage_config": self.make_graph_sage_config(graph_sage_config)
         }
 
         if target_node_label:
