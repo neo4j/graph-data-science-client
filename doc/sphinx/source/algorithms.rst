@@ -703,6 +703,26 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
 
+.. py:function:: gds.closeness.harmonic.mutate(G: Graph, **config: Any) -> DataFrame
+
+    Harmonic centrality is a way of detecting nodes that are able to spread information
+    very efficiently through a graph.
+
+.. py:function:: gds.closeness.harmonic.stats(G: Graph, **config: Any) -> DataFrame
+
+    Harmonic centrality is a way of detecting nodes that are able to spread information
+    very efficiently through a graph.
+
+.. py:function:: gds.closeness.harmonic.stream(G: Graph, **config: Any) -> DataFrame
+
+    Harmonic centrality is a way of detecting nodes that are able to spread information
+    very efficiently through a graph.
+
+.. py:function:: gds.closeness.harmonic.write(G: Graph, **config: Any) -> Series[Any]
+
+    Harmonic centrality is a way of detecting nodes that are able to spread information
+    very efficiently through a graph.
+
 .. py:function:: gds.conductance.stream(G: Graph, **config: Any) -> DataFrame
 
     Evaluates a division of nodes into communities based on the proportion of relationships
