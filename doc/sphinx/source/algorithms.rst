@@ -844,6 +844,37 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.kmeans.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
+
+.. py:function:: gds.kmeans.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.kmeans.stats(G: Graph, **config: Any) -> Series[Any]
+
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
+
+.. py:function:: gds.kmeans.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.kmeans.stream(G: Graph, **config: Any) -> DataFrame
+
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
+
+.. py:function:: gds.kmeans.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.kmeans.write(G: Graph, **config: Any) -> Series[Any]
+
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
+
+.. py:function:: gds.kmeans.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
 .. py:function:: gds.k1coloring.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The K-1 Coloring algorithm assigns a color to every node in the graph.
