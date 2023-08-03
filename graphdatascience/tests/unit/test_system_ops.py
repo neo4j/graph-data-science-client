@@ -62,10 +62,16 @@ def test_backup(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     assert runner.last_params() == {"config": {"concurrency": 4}}
 
 
-def test_restore(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+def test_alpha_restore(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     gds.alpha.restore(concurrency=4)
 
     assert runner.last_query() == "CALL gds.alpha.restore($config)"
+    assert runner.last_params() == {"config": {"concurrency": 4}}
+
+def test_restore(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    gds.restore(concurrency=4)
+
+    assert runner.last_query() == "CALL gds.restore($config)"
     assert runner.last_params() == {"config": {"concurrency": 4}}
 
 
