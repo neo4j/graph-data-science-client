@@ -76,10 +76,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Harmonic centrality is a way of detecting nodes that are able to spread information
     very efficiently through a graph.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.closeness.harmonic.stream` instead.
+
 .. py:function:: gds.alpha.closeness.harmonic.write(G: Graph, **config: Any) -> Series[Any]
 
     Harmonic centrality is a way of detecting nodes that are able to spread information
     very efficiently through a graph.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.closeness.harmonic.write` instead.
 
 .. py:function:: gds.alpha.conductance.stream(G: Graph, **config: Any) -> DataFrame
 
@@ -448,33 +454,57 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.mutate` instead.
+
 .. py:function:: gds.beta.kmeans.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.mutate.estimate` instead.
 
 .. py:function:: gds.beta.kmeans.stats(G: Graph, **config: Any) -> Series[Any]
 
     The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.stats` instead.
+
 .. py:function:: gds.beta.kmeans.stats.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.stats.estimate` instead.
 
 .. py:function:: gds.beta.kmeans.stream(G: Graph, **config: Any) -> DataFrame
 
     The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.stream` instead.
+
 .. py:function:: gds.beta.kmeans.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.stream.estimate` instead.
 
 .. py:function:: gds.beta.kmeans.write(G: Graph, **config: Any) -> Series[Any]
 
     The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.write` instead.
+
 .. py:function:: gds.beta.kmeans.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.write.estimate` instead.
 
 .. py:function:: gds.beta.leiden.mutate(G: Graph, **config: Any) -> Series[Any]
 
@@ -713,6 +743,26 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
 
+.. py:function:: gds.closeness.harmonic.mutate(G: Graph, **config: Any) -> DataFrame
+
+    Harmonic centrality is a way of detecting nodes that are able to spread information
+    very efficiently through a graph.
+
+.. py:function:: gds.closeness.harmonic.stats(G: Graph, **config: Any) -> DataFrame
+
+    Harmonic centrality is a way of detecting nodes that are able to spread information
+    very efficiently through a graph.
+
+.. py:function:: gds.closeness.harmonic.stream(G: Graph, **config: Any) -> DataFrame
+
+    Harmonic centrality is a way of detecting nodes that are able to spread information
+    very efficiently through a graph.
+
+.. py:function:: gds.closeness.harmonic.write(G: Graph, **config: Any) -> Series[Any]
+
+    Harmonic centrality is a way of detecting nodes that are able to spread information
+    very efficiently through a graph.
+
 .. py:function:: gds.conductance.stream(G: Graph, **config: Any) -> DataFrame
 
     Evaluates a division of nodes into communities based on the proportion of relationships
@@ -854,6 +904,37 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.kmeans.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
+
+.. py:function:: gds.kmeans.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.kmeans.stats(G: Graph, **config: Any) -> Series[Any]
+
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
+
+.. py:function:: gds.kmeans.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.kmeans.stream(G: Graph, **config: Any) -> DataFrame
+
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
+
+.. py:function:: gds.kmeans.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.kmeans.write(G: Graph, **config: Any) -> Series[Any]
+
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
+
+.. py:function:: gds.kmeans.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
 .. py:function:: gds.k1coloring.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The K-1 Coloring algorithm assigns a color to every node in the graph.
