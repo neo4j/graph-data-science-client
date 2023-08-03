@@ -833,8 +833,15 @@ def test_graph_relationships_drop(gds: GraphDataScience) -> None:
     assert result["deletedRelationships"] == 3
 
 
-def test_graph_generate(gds: GraphDataScience) -> None:
+def test_beta_graph_generate(gds: GraphDataScience) -> None:
     G, result = gds.beta.graph.generate(GRAPH_NAME, 12, 2)
+
+    assert G.node_count() == 12
+    assert result["generateMillis"] >= 0
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
+def test_graph_generate(gds: GraphDataScience) -> None:
+    G, result = gds.graph.generate(GRAPH_NAME, 12, 2)
 
     assert G.node_count() == 12
     assert result["generateMillis"] >= 0

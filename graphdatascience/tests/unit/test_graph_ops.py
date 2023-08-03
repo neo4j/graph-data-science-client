@@ -621,10 +621,21 @@ def test_graph_relationships_stream(runner: CollectingQueryRunner, gds: GraphDat
     assert runner.last_params() == {"graph_name": "g", "relationship_types": ["REL_A"], "config": {}}
 
 
-def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+def test_beta_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     gds.beta.graph.generate("g", 1337, 42, orientation="NATURAL")
 
     assert runner.last_query() == "CALL gds.beta.graph.generate($graph_name, $node_count, $average_degree, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "node_count": 1337,
+        "average_degree": 42,
+        "config": {"orientation": "NATURAL"},
+    }
+
+def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    gds.graph.generate("g", 1337, 42, orientation="NATURAL")
+
+    assert runner.last_query() == "CALL gds.graph.generate($graph_name, $node_count, $average_degree, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "node_count": 1337,
