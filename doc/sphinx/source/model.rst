@@ -4,6 +4,9 @@ Listing of all model procedures in the Neo4j Graph Data Science Python Client AP
 These all assume that an object of :class:`.GraphDataScience` is available as `gds`.
 
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.backup` instead.
+
 .. py:function:: gds.alpha.backup(**config) -> DataFrame
 
     The back-up procedure persists graphs and models to disk
@@ -23,6 +26,9 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.alpha.model.store(model: Model, failIfUnsupportedType: bool = True) -> Series[Any]
 
     Store the selected model to disk.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.restore` instead.
 
 .. py:function:: gds.alpha.restore(**config: Any) -> DataFrame
 
