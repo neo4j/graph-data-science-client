@@ -4,7 +4,6 @@ import pytest
 
 from graphdatascience import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.server_version.server_version import ServerVersion
 
 GRAPH_NAME = "g"
 
@@ -187,12 +186,11 @@ def test_nonexisting_util_endpoint(gds: GraphDataScience) -> None:
         gds.util.askNodezzzzz()  # type: ignore
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 5, 0))  # from 2.5.0 there is no tiering in the proc name
 def test_auto_completion_false_positives(gds: GraphDataScience) -> None:
     # Using `alpha` prefix instead of `beta`
     with pytest.raises(SyntaxError, match="There is no 'gds.alpha.model.list' to call"):
         gds.alpha.model.list()  # type: ignore
 
-    # Without `beta` prefix
-    with pytest.raises(SyntaxError, match="There is no 'gds.graph.relationships.toUndirected' to call"):
-        gds.graph.relationships.toUndirected()  # type: ignore
+    # Without `graph` prefix
+    with pytest.raises(SyntaxError, match="There is no 'gds.toUndirected' to call"):
+        gds.toUndirected()
