@@ -84,10 +84,26 @@ def test_cypher_projection(gds: GraphDataScience) -> None:
     assert result["exists"]
 
 
-def test_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
+@pytest.mark.filterwarnings("ignore: Deprecated in favor of gds.graph.project.subgraph")
+def test_beta_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     sub_G, result = gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
+
+    assert sub_G.name() == "s"
+    assert result["graphName"] == "s"
+
+    result2 = gds.graph.list(sub_G)
+    assert result2["nodeCount"][0] == 2
+
+    runner.run_query(f"CALL gds.graph.drop('{sub_G.name()}')")
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
+def test_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
+    from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    sub_G, result = gds.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
 
     assert sub_G.name() == "s"
     assert result["graphName"] == "s"
