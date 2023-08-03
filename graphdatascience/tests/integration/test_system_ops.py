@@ -62,10 +62,19 @@ def test_list_defaults(gds: GraphDataScience) -> None:
     assert len(result) == 2
 
 
+@pytest.mark.filterwarnings("ignore: Deprecated in favor of gds.backup")
+@pytest.mark.enterprise
+@pytest.mark.skip_on_aura
+def test_alpha_backup(gds: GraphDataScience) -> None:
+    result = gds.alpha.backup(concurrency=4)
+
+    assert len(result) == 0
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 @pytest.mark.enterprise
 @pytest.mark.skip_on_aura
 def test_backup(gds: GraphDataScience) -> None:
-    result = gds.alpha.backup(concurrency=4)
+    result = gds.backup(concurrency=4)
 
     assert len(result) == 0
 

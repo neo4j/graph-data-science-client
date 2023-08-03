@@ -69,6 +69,12 @@ class DirectSystemEndpoints(CallerBase):
     @property
     def debug(self) -> DebugProcRunner:
         return DebugProcRunner(self._query_runner, f"{self._namespace}.debug", self._server_version)
+    
+    def backup(self, **config: Any) -> DataFrame:
+        self._namespace += ".backup"
+        query = f"CALL {self._namespace}($config)"
+
+        return self._query_runner.run_query(query, {"config": config})
 
 
 class SystemBetaEndpoints(CallerBase):
