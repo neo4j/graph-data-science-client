@@ -57,6 +57,7 @@ class ArrowQueryRunner(QueryRunner):
             params = {}
 
         new_endpoint_server_version = ServerVersion(2, 2, 0)
+        no_tier_in_namespace_server_version = ServerVersion(2, 5, 0)
 
         # We need to support the deprecated endpoints until they get removed on the server side
         if "gds.graph.streamNodeProperty" in query or "gds.graph.nodeProperty.stream" in query:
@@ -126,7 +127,11 @@ class ArrowQueryRunner(QueryRunner):
                     f"server version >= 2.2.0. The current version is {self._server_version}"
                 )
             else:
-                endpoint = "gds.beta.graph.relationships.stream"
+                endpoint = (
+                    "gds.beta.graph.relationships.stream"
+                    if self._server_version < no_tier_in_namespace_server_version
+                    else "gds.graph.relationships.stream"
+                )
 
             return self._run_arrow_property_get(graph_name, endpoint, {"relationship_types": relationship_types})
 

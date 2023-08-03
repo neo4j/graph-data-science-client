@@ -54,7 +54,7 @@ def test_project_graph_cypher_estimate(runner: CollectingQueryRunner, gds: Graph
     }
 
 
-def test_project_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+def test_project_beta_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project("g", "*", "*")
     gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
 
@@ -62,6 +62,24 @@ def test_project_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) 
         runner.last_query()
         == "CALL "
         + "gds.beta.graph.project.subgraph($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "s",
+        "from_graph_name": "g",
+        "node_filter": "n.x > 1",
+        "relationship_filter": "*",
+        "config": {"concurrency": 2},
+    }
+
+
+def test_project_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    from_G, _ = gds.graph.project("g", "*", "*")
+    gds.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
+
+    assert (
+        runner.last_query()
+        == "CALL "
+        + "gds.graph.project.subgraph($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)"
     )
     assert runner.last_params() == {
         "graph_name": "s",
@@ -603,10 +621,22 @@ def test_graph_relationships_stream(runner: CollectingQueryRunner, gds: GraphDat
     assert runner.last_params() == {"graph_name": "g", "relationship_types": ["REL_A"], "config": {}}
 
 
-def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+def test_beta_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     gds.beta.graph.generate("g", 1337, 42, orientation="NATURAL")
 
     assert runner.last_query() == "CALL gds.beta.graph.generate($graph_name, $node_count, $average_degree, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "node_count": 1337,
+        "average_degree": 42,
+        "config": {"orientation": "NATURAL"},
+    }
+
+
+def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    gds.graph.generate("g", 1337, 42, orientation="NATURAL")
+
+    assert runner.last_query() == "CALL gds.graph.generate($graph_name, $node_count, $average_degree, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "node_count": 1337,

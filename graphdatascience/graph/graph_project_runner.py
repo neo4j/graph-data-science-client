@@ -39,6 +39,19 @@ class GraphProjectRunner(IllegalAttrChecker):
     def cypher(self) -> "GraphProjectRunner":
         return GraphProjectRunner(self._query_runner, self._namespace + ".cypher", self._server_version)
 
+    @from_graph_type_check
+    def subgraph(
+        self,
+        graph_name: str,
+        from_G: Graph,
+        node_filter: str,
+        relationship_filter: str,
+        **config: Any,
+    ) -> GraphCreateResult:
+        # simple forward as the API did not change
+        runner = GraphProjectBetaRunner(self._query_runner, self._namespace, self._server_version)
+        return runner.subgraph(graph_name, from_G, node_filter, relationship_filter, **config)
+
 
 class GraphProjectBetaRunner(IllegalAttrChecker):
     @from_graph_type_check

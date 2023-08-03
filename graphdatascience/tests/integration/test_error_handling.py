@@ -191,6 +191,6 @@ def test_auto_completion_false_positives(gds: GraphDataScience) -> None:
     with pytest.raises(SyntaxError, match="There is no 'gds.alpha.model.list' to call"):
         gds.alpha.model.list()  # type: ignore
 
-    # Without `beta` prefix
-    with pytest.raises(SyntaxError, match="There is no 'gds.graph.relationships.toUndirected' to call"):
-        gds.graph.relationships.toUndirected()  # type: ignore
+    # Without `graph` prefix
+    with pytest.raises(SyntaxError, match="There is no 'gds.toUndirected' to call"):
+        gds.toUndirected()

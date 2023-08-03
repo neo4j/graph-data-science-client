@@ -6,6 +6,7 @@ from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
+from ..server_version.compatible_with import compatible_with
 from graphdatascience.server_version.server_version import ServerVersion
 
 
@@ -69,6 +70,20 @@ class DirectSystemEndpoints(CallerBase):
     @property
     def debug(self) -> DebugProcRunner:
         return DebugProcRunner(self._query_runner, f"{self._namespace}.debug", self._server_version)
+
+    @compatible_with("backup", min_inclusive=ServerVersion(2, 5, 0))
+    def backup(self, **config: Any) -> DataFrame:
+        namespace = self._namespace + ".backup"
+        query = f"CALL {namespace}($config)"
+
+        return self._query_runner.run_query(query, {"config": config})
+
+    @compatible_with("restore", min_inclusive=ServerVersion(2, 5, 0))
+    def restore(self, **config: Any) -> DataFrame:
+        namespace = self._namespace + ".restore"
+        query = f"CALL {namespace}($config)"
+
+        return self._query_runner.run_query(query, {"config": config})
 
 
 class SystemBetaEndpoints(CallerBase):

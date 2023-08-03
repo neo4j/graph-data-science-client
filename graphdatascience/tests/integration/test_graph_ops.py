@@ -84,10 +84,26 @@ def test_cypher_projection(gds: GraphDataScience) -> None:
     assert result["exists"]
 
 
-def test_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
+@pytest.mark.filterwarnings("ignore: Deprecated in favor of gds.graph.project.subgraph")
+def test_beta_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
     sub_G, result = gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
+
+    assert sub_G.name() == "s"
+    assert result["graphName"] == "s"
+
+    result2 = gds.graph.list(sub_G)
+    assert result2["nodeCount"][0] == 2
+
+    runner.run_query(f"CALL gds.graph.drop('{sub_G.name()}')")
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
+def test_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
+    from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    sub_G, result = gds.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
 
     assert sub_G.name() == "s"
     assert result["graphName"] == "s"
@@ -707,10 +723,19 @@ def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
-def test_graph_relationships_to_undirected(gds: GraphDataScience) -> None:
+def test_beta_graph_relationships_to_undirected(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "Node", ["REL", "REL2"])
 
     result = gds.beta.graph.relationships.toUndirected(G, "REL", "REL_UNDIRECTED")
+    assert result["relationshipsWritten"] == 6
+    assert "REL_UNDIRECTED" in G.relationship_types()
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
+def test_graph_relationships_to_undirected(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "Node", ["REL", "REL2"])
+
+    result = gds.graph.relationships.toUndirected(G, "REL", "REL_UNDIRECTED")
     assert result["relationshipsWritten"] == 6
     assert "REL_UNDIRECTED" in G.relationship_types()
 
@@ -817,8 +842,16 @@ def test_graph_relationships_drop(gds: GraphDataScience) -> None:
     assert result["deletedRelationships"] == 3
 
 
-def test_graph_generate(gds: GraphDataScience) -> None:
+def test_beta_graph_generate(gds: GraphDataScience) -> None:
     G, result = gds.beta.graph.generate(GRAPH_NAME, 12, 2)
+
+    assert G.node_count() == 12
+    assert result["generateMillis"] >= 0
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
+def test_graph_generate(gds: GraphDataScience) -> None:
+    G, result = gds.graph.generate(GRAPH_NAME, 12, 2)
 
     assert G.node_count() == 12
     assert result["generateMillis"] >= 0
