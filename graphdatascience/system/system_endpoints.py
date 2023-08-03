@@ -73,15 +73,15 @@ class DirectSystemEndpoints(CallerBase):
 
     @compatible_with("backup", min_inclusive=ServerVersion(2, 5, 0))
     def backup(self, **config: Any) -> DataFrame:
-        self._namespace += ".backup"
-        query = f"CALL {self._namespace}($config)"
+        namespace = self._namespace + ".backup"
+        query = f"CALL {namespace}($config)"
 
         return self._query_runner.run_query(query, {"config": config})
 
     @compatible_with("restore", min_inclusive=ServerVersion(2, 5, 0))
     def restore(self, **config: Any) -> DataFrame:
-        self._namespace += ".restore"
-        query = f"CALL {self._namespace}($config)"
+        namespace = self._namespace + ".restore"
+        query = f"CALL {namespace}($config)"
 
         return self._query_runner.run_query(query, {"config": config})
 
