@@ -1,3 +1,4 @@
+import warnings
 from functools import reduce
 from typing import Any, Dict, List, Type, Union
 
@@ -100,6 +101,13 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
             db_properties_df = self._query_runner.run_query(
                 self._build_query(db_node_properties), {"ids": unique_node_ids}
             )
+
+            # GDS uses the numeric id to resolve the node
+            warnings.filterwarnings(
+                "ignore",
+                message=r"^The query used a deprecated function: `id`\.",
+            )
+
             if "propertyValue" not in result.keys():
                 result = result.join(db_properties_df.set_index("nodeId"), on="nodeId")
             else:

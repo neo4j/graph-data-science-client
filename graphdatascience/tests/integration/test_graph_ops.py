@@ -55,7 +55,12 @@ def test_project_graph_native_estimate(gds: GraphDataScience) -> None:
 def test_project_graph_cypher(gds: GraphDataScience) -> None:
     node_query = "MATCH (n:Node) RETURN id(n) as id"
     relationship_query = "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
-    G, result = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
+
+    if gds.server_version() >= ServerVersion(2, 5, 0):
+        with pytest.warns(DeprecationWarning):
+            G, result = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
+    else:
+        G, result = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
 
     assert G.name() == GRAPH_NAME
     assert result["graphName"] == GRAPH_NAME
@@ -84,11 +89,14 @@ def test_cypher_projection(gds: GraphDataScience) -> None:
     assert result["exists"]
 
 
-@pytest.mark.filterwarnings("ignore: Deprecated in favor of gds.graph.filter")
 def test_beta_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    sub_G, result = gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
+    if gds.server_version() >= ServerVersion(2, 5, 0):
+        with pytest.warns(DeprecationWarning):
+            sub_G, result = gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
+    else:
+        sub_G, result = gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
 
     assert sub_G.name() == "s"
     assert result["graphName"] == "s"
@@ -130,7 +138,6 @@ def test_sample_rwr(runner: QueryRunner, gds: GraphDataScience) -> None:
 
 
 @pytest.mark.skip_on_aura  # The alpha procedure is not part of the allowlist
-@pytest.mark.filterwarnings("ignore: Deprecated in favor of gds.graph.sample.rwr")
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_sample_rwr_alpha(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
@@ -267,11 +274,16 @@ def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     runner.set_database(DB)
 
 
+@pytest.mark.filterwarnings("ignore: The query used a deprecated procedure.")
 @pytest.mark.skip_on_aura
-def test_graph_export_csv_estimate(gds: GraphDataScience) -> None:
+def test_beta_graph_export_csv_estimate(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    result = gds.beta.graph.export.csv.estimate(G, exportName="dummy")
+    if gds.server_version() >= ServerVersion(2, 5, 0):
+        with pytest.warns(DeprecationWarning):
+            result = gds.beta.graph.export.csv.estimate(G, exportName="dummy")
+    else:
+        result = gds.beta.graph.export.csv.estimate(G, exportName="dummy")
 
     assert result["nodeCount"] == 3
 
@@ -700,7 +712,7 @@ def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataSc
 def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
 
-    result = gds.beta.graph.relationships.stream(G, ["REL", "REL2"])
+    result = gds.graph.relationships.stream(G, ["REL", "REL2"])
 
     expected = gds.run_cypher("MATCH (n)-[r]->(m) RETURN id(n) AS src_id, id(m) AS trg_id, type(r) AS rel_type")
 
@@ -726,7 +738,12 @@ def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
 def test_beta_graph_relationships_to_undirected(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "Node", ["REL", "REL2"])
 
-    result = gds.beta.graph.relationships.toUndirected(G, "REL", "REL_UNDIRECTED")
+    if gds.server_version() >= ServerVersion(2, 5, 0):
+        with pytest.warns(DeprecationWarning):
+            result = gds.beta.graph.relationships.toUndirected(G, "REL", "REL_UNDIRECTED")
+    else:
+        result = gds.beta.graph.relationships.toUndirected(G, "REL", "REL_UNDIRECTED")
+
     assert result["relationshipsWritten"] == 6
     assert "REL_UNDIRECTED" in G.relationship_types()
 
@@ -843,7 +860,11 @@ def test_graph_relationships_drop(gds: GraphDataScience) -> None:
 
 
 def test_beta_graph_generate(gds: GraphDataScience) -> None:
-    G, result = gds.beta.graph.generate(GRAPH_NAME, 12, 2)
+    if gds.server_version() >= ServerVersion(2, 5, 0):
+        with pytest.warns(DeprecationWarning):
+            G, result = gds.beta.graph.generate(GRAPH_NAME, 12, 2)
+    else:
+        G, result = gds.beta.graph.generate(GRAPH_NAME, 12, 2)
 
     assert G.node_count() == 12
     assert result["generateMillis"] >= 0
