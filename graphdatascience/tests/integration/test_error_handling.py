@@ -187,7 +187,7 @@ def test_nonexisting_util_endpoint(gds: GraphDataScience) -> None:
         gds.util.askNodezzzzz()  # type: ignore
 
 
-@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 5, 0)) # from 2.5.0 there is no tiering in the proc name
+@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 5, 0))  # from 2.5.0 there is no tiering in the proc name
 def test_auto_completion_false_positives(gds: GraphDataScience) -> None:
     # Using `alpha` prefix instead of `beta`
     with pytest.raises(SyntaxError, match="There is no 'gds.alpha.model.list' to call"):

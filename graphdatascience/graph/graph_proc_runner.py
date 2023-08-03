@@ -8,8 +8,6 @@ import pandas as pd
 from multimethod import multimethod
 from pandas import DataFrame, Series, read_pickle
 
-from graphdatascience.graph.graph_create_result import GraphCreateResult
-
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.deprecation_warning import deprecation_warning
 from ..error.illegal_attr_checker import IllegalAttrChecker
@@ -29,6 +27,7 @@ from .graph_project_runner import GraphProjectRunner
 from .graph_sample_runner import GraphSampleRunner
 from .graph_type_check import graph_type_check, graph_type_check_optional
 from .ogb_loader import OGBLLoader, OGBNLoader
+from graphdatascience.graph.graph_create_result import GraphCreateResult
 from graphdatascience.graph.graph_cypher_runner import GraphCypherRunner
 
 Strings = Union[str, List[str]]
@@ -172,7 +171,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def cypher(self) -> GraphCypherRunner:
         self._namespace += ".project"
         return GraphCypherRunner(self._query_runner, self._namespace, self._server_version)
-    
+
     @compatible_with("generate", min_inclusive=ServerVersion(2, 5, 0))
     def generate(self, graph_name: str, node_count: int, average_degree: int, **config: Any) -> GraphCreateResult:
         self._namespace += ".generate"

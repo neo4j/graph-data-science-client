@@ -730,6 +730,7 @@ def test_beta_graph_relationships_to_undirected(gds: GraphDataScience) -> None:
     assert result["relationshipsWritten"] == 6
     assert "REL_UNDIRECTED" in G.relationship_types()
 
+
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_graph_relationships_to_undirected(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "Node", ["REL", "REL2"])
@@ -846,6 +847,7 @@ def test_beta_graph_generate(gds: GraphDataScience) -> None:
 
     assert G.node_count() == 12
     assert result["generateMillis"] >= 0
+
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_graph_generate(gds: GraphDataScience) -> None:

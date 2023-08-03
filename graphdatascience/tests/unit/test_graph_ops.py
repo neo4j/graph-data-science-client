@@ -632,6 +632,7 @@ def test_beta_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScienc
         "config": {"orientation": "NATURAL"},
     }
 
+
 def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     gds.graph.generate("g", 1337, 42, orientation="NATURAL")
 

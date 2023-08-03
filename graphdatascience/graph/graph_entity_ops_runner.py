@@ -258,7 +258,7 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
         params = {"graph_name": G.name(), "relationship_types": relationship_types, "config": config}
 
         return TopologyDataFrame(self._query_runner.run_query(query, params))
-    
+
     @property
     @compatible_with("toUndirected", min_inclusive=ServerVersion(2, 5, 0))
     def toUndirected(self) -> ToUndirectedRunner:
