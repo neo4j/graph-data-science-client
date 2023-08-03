@@ -28,6 +28,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     The restore procedure reads graphs and models from disk.
 
+.. py:function:: gds.backup(**config) -> DataFrame
+
+    The back-up procedure persists graphs and models to disk
+
 .. py:function:: gds.beta.model.drop(model: Model) -> Series[Any]
 
     Drops a loaded model and frees up the resources it occupies.
@@ -43,3 +47,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.model.get(model_name: str) -> Model
 
     Returns a model from the model catalog.
+
+.. py:function:: gds.restore(**config: Any) -> DataFrame
+
+    The restore procedure reads graphs and models from disk.

@@ -78,6 +78,14 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Exports a named graph into a new offline Neo4j database.
 
+.. py:function:: gds.graph.export.csv(G: Graph, **config: Any) -> Series[Any]
+
+    Exports a named graph to CSV files.
+
+.. py:function:: gds.graph.export.csv.estimate(G: Graph, **config: Any) -> "Series[Any]
+
+    Estimate the required disk space for exporting a named graph to CSV files.
+
 .. py:function:: gds.graph.list(G: Optional[Graph] = None) -> DataFrame
 
     Lists information about named graphs stored in the catalog.
@@ -111,6 +119,22 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.graph.project.estimate(node_projection: Any, relationship_projection: Any, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.graph.project.subgraph(graph_name: str,from_G: Graph,node_filter: str,relationship_filter: str,**config: Any,) -> GraphCreateResult
+
+    Creates a named graph in the catalog for use by algorithms.
+
+.. py:function:: gds.graph.relationships.stream(G: Graph, relationship_types: List[str] = ["*"], **config: Any) -> TopologyDataFrame
+
+    Streams the given relationship source/target pairs
+
+.. py:function:: gds.graph.relationships.toUndirected(G: Graph, query: str, relationship_type: str, mutate_relationship_type: str, **config: Any) -> Series[Any]
+
+    The ToUndirected procedure converts directed relationships to undirected relationships
+
+.. py:function:: gds.graph.relationships.toUndirected.estimate(G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
 
