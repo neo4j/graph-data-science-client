@@ -564,6 +564,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.scc.stream(G: Graph, **config: Any) -> DataFrame
+
+        The SCC algorithm finds sets of connected nodes in an directed graph,
+        where all nodes in the same set form a connected component.
+
+.. py:function:: gds.scc.write(G: Graph, **config: Any) -> Series[Any]
+
+        The SCC algorithm finds sets of connected nodes in an directed graph,
+        where all nodes in the same set form a connected component.
+
 .. py:function:: gds.beta.spanningTree.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The spanning tree algorithm visits all nodes that are in the same connected component as the starting node,
