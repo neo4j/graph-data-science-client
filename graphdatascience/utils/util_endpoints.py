@@ -1,3 +1,4 @@
+import warnings
 from typing import Any, Dict, List
 
 from pandas import DataFrame
@@ -5,11 +6,15 @@ from pandas import DataFrame
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from .util_proc_runner import UtilProcRunner
+from graphdatascience.error.cypher_warning_handler import (
+    filter_id_func_deprecation_warning,
+)
 from graphdatascience.server_version.server_version import ServerVersion
 
 
 class DirectUtilEndpoints(CallerBase):
     @client_only_endpoint("gds")
+    @filter_id_func_deprecation_warning()
     def find_node_id(self, labels: List[str] = [], properties: Dict[str, Any] = {}) -> int:
         """
         Find the node id of a node with the given labels and properties.
@@ -46,6 +51,7 @@ class DirectUtilEndpoints(CallerBase):
             query = "MATCH (n) RETURN id(n) AS id"
 
         node_match = self._query_runner.run_query(query, custom_error=False)
+
         if len(node_match) != 1:
             raise ValueError(f"Filter did not match with exactly one node: {node_match}")
 

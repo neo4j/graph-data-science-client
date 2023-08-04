@@ -13,6 +13,9 @@ from ..server_version.server_version import ServerVersion
 from ..utils.util_proc_runner import UtilProcRunner
 from .graph_object import Graph
 from .graph_type_check import graph_type_check
+from graphdatascience.error.cypher_warning_handler import (
+    filter_id_func_deprecation_warning,
+)
 
 Strings = Union[str, List[str]]
 
@@ -66,6 +69,7 @@ class GraphElementPropertyRunner(GraphEntityOpsBaseRunner):
 
 class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
+    @filter_id_func_deprecation_warning()
     def stream(
         self,
         G: Graph,
@@ -100,12 +104,6 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
             unique_node_ids = result["nodeId"].drop_duplicates().tolist()
             db_properties_df = self._query_runner.run_query(
                 self._build_query(db_node_properties), {"ids": unique_node_ids}
-            )
-
-            # GDS uses the numeric id to resolve the node
-            warnings.filterwarnings(
-                "ignore",
-                message=r"^The query used a deprecated function: `id`\.",
             )
 
             if "propertyValue" not in result.keys():

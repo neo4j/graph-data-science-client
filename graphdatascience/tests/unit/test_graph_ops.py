@@ -198,7 +198,6 @@ def test_graph_streamNodeProperties(runner: CollectingQueryRunner, gds: GraphDat
         "config": {"concurrency": 2},
     }
 
-
     gds.graph.streamNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
     assert runner.last_query() == "CALL gds.graph.streamNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
@@ -236,7 +235,6 @@ def test_graph_nodeProperties_stream(runner: CollectingQueryRunner, gds: GraphDa
 
 def test_graph_streamRelationshipProperty(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
-
 
     gds.graph.streamRelationshipProperty(G, "dummyProp", concurrency=2)
     assert (
@@ -306,7 +304,6 @@ def test_graph_streamRelationshipProperties(runner: CollectingQueryRunner, gds: 
     )
 
     runner.set__mock_result(result_df)
-
 
     gds.graph.streamRelationshipProperties(G, ["dummyProp"], concurrency=2)
     assert (
@@ -401,7 +398,6 @@ def test_graph_relationshipProperties_write(runner: CollectingQueryRunner, gds: 
 def test_graph_writeNodeProperties(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-
     gds.graph.writeNodeProperties(G, ["dummyProp"], concurrency=2)
     assert runner.last_query() == "CALL gds.graph.writeNodeProperties($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
@@ -410,7 +406,6 @@ def test_graph_writeNodeProperties(runner: CollectingQueryRunner, gds: GraphData
         "entities": ["*"],
         "config": {"concurrency": 2},
     }
-
 
     gds.graph.writeNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
     assert runner.last_query() == "CALL gds.graph.writeNodeProperties($graph_name, $properties, $entities, $config)"

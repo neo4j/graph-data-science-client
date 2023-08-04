@@ -2,9 +2,13 @@ from typing import Any, Dict, Optional
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
+from graphdatascience.error.cypher_warning_handler import (
+    filter_id_func_deprecation_warning,
+)
 
 
 class TopologicalLPAlphaRunner(UncallableNamespace, IllegalAttrChecker):
+    @filter_id_func_deprecation_warning()
     def _run_standard_function(self, node1: int, node2: int, config: Dict[str, Any]) -> float:
         query = f"""
         MATCH (n1) WHERE id(n1) = {node1}
@@ -31,6 +35,7 @@ class TopologicalLPAlphaRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".resourceAllocation"
         return self._run_standard_function(node1, node2, config)
 
+    @filter_id_func_deprecation_warning()
     def sameCommunity(self, node1: int, node2: int, communityProperty: Optional[str] = None) -> float:
         self._namespace += ".sameCommunity"
         community_property = f", '{communityProperty}'" if communityProperty else ""
