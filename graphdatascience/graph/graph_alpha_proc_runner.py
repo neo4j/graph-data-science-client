@@ -3,7 +3,7 @@ from typing import List, Optional, Union
 
 from pandas import DataFrame
 
-from ..error.client_only_endpoint import client_only_endpoint
+from ..error.client_only_endpoint import client_deprecated, client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..server_version.compatible_with import compatible_with
@@ -36,6 +36,7 @@ class GraphAlphaProcRunner(UncallableNamespace, IllegalAttrChecker):
         return GraphAlphaProjectRunner(self._query_runner, self._namespace, self._server_version)
 
     @client_only_endpoint("gds.alpha.graph")
+    @client_deprecated(old_endpoint="gds.alpha.graph.construct", new_endpoint="gds.graph.construct")
     @compatible_with("construct", min_inclusive=ServerVersion(2, 1, 0))
     def construct(
         self,
