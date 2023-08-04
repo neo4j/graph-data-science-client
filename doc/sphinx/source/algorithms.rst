@@ -593,6 +593,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.scaleProperties.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+.. py:function:: gds.scc.mutate(G: Graph, **config: Any) -> DataFrame
+
+            The SCC algorithm finds sets of connected nodes in an directed graph,
+            where all nodes in the same set form a connected component.
+
+.. py:function:: gds.scc.stats(G: Graph, **config: Any) -> Series[Any]
+
+            The SCC algorithm finds sets of connected nodes in an directed graph,
+            where all nodes in the same set form a connected component.
+
 
 .. py:function:: gds.scc.stream(G: Graph, **config: Any) -> DataFrame
 
@@ -762,6 +772,11 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Harmonic centrality is a way of detecting nodes that are able to spread information
     very efficiently through a graph.
+
+.. py:function:: gds.collapsePath.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    Collapse Path algorithm is a traversal algorithm capable of creating relationships between the start
+    and end nodes of a traversal
 
 .. py:function:: gds.conductance.stream(G: Graph, **config: Any) -> DataFrame
 

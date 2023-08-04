@@ -104,6 +104,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Estimate the required disk space for exporting a named graph to CSV files.
 
+.. py:function:: gds.graph.generate(graph_name: str, node_count: int, average_degree: int, **config: Any) -> GraphCreateResult
+
+    Computes a random graph, which will be stored in the graph catalog.
+
 .. py:function:: gds.graph.list(G: Optional[Graph] = None) -> DataFrame
 
     Lists information about named graphs stored in the catalog.
