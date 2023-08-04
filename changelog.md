@@ -3,6 +3,7 @@
 
 ## Breaking changes
 
+* Forward previously ignored Cypher warnings as Python warnings. This includes for instance deprecation warnings.
 
 ## New features
 
