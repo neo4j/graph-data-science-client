@@ -1,9 +1,7 @@
+import warnings
 from functools import wraps
 from logging import warning
-from typing import Any, Callable, Optional, TypeVar, cast
-import warnings
-
-from graphdatascience.server_version.server_version import ServerVersion
+from typing import Any, Callable, TypeVar, cast
 
 from ..caller_base import CallerBase
 
@@ -28,11 +26,6 @@ def client_only_endpoint(expected_namespace_prefix: str) -> Callable[[F], F]:
 
     return decorator
 
-F = TypeVar("F", bound=Callable[..., Any])
-
-
-class WithServerVersion:
-    _server_version: ServerVersion
 
 def client_deprecated(
     old_endpoint: str,
@@ -42,10 +35,10 @@ def client_deprecated(
         wraps(func)
 
         @wraps(func)
-        def wrapper(self: WithServerVersion, *args: Any, **kwargs: Any) -> Any:
+        def wrapper(self: CallerBase, *args: Any, **kwargs: Any) -> Any:
             warnings.warn(f"Deprecated `{old_endpoint}` in favor of `{new_endpoint}`", DeprecationWarning)
             return func(self, *args, **kwargs)
 
         return cast(F, wrapper)
 
-    return decorator 
+    return decorator
