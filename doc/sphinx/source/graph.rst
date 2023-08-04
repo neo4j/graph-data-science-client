@@ -48,7 +48,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Computes a random graph, which will be stored in the graph catalog.
 
 .. deprecated:: 2.5.0
-   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.graph.project.subgraph` instead.
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.graph.filter` instead.
 
 .. py:function:: gds.beta.graph.project.subgraph(graph_name: str,from_G: Graph,node_filter: str,relationship_filter: str,**config: Any,) -> GraphCreateResult
 

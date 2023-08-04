@@ -25,7 +25,11 @@ from .graph_export_runner import GraphExportRunner
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectRunner
 from .graph_sample_runner import GraphSampleRunner
-from .graph_type_check import graph_type_check, graph_type_check_optional
+from .graph_type_check import (
+    from_graph_type_check,
+    graph_type_check,
+    graph_type_check_optional,
+)
 from .ogb_loader import OGBLLoader, OGBNLoader
 from graphdatascience.graph.graph_create_result import GraphCreateResult
 from graphdatascience.graph.graph_cypher_runner import GraphCypherRunner
@@ -185,6 +189,29 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         }
 
         result = self._query_runner.run_query(query, params).squeeze()
+
+        return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
+
+    @from_graph_type_check
+    def filter(
+        self,
+        graph_name: str,
+        from_G: Graph,
+        node_filter: str,
+        relationship_filter: str,
+        **config: Any,
+    ) -> GraphCreateResult:
+        self._namespace += ".filter"
+        result = self._query_runner.run_query_with_logging(
+            f"CALL {self._namespace}($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)",
+            {
+                "graph_name": graph_name,
+                "from_graph_name": from_G.name(),
+                "node_filter": node_filter,
+                "relationship_filter": relationship_filter,
+                "config": config,
+            },
+        ).squeeze()
 
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
 
