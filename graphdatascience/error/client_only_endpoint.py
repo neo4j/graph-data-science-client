@@ -1,6 +1,5 @@
 import warnings
 from functools import wraps
-from logging import warning
 from typing import Any, Callable, TypeVar, cast
 
 from ..caller_base import CallerBase

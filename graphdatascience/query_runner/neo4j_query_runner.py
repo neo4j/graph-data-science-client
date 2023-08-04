@@ -124,7 +124,7 @@ class Neo4jQueryRunner(QueryRunner):
                 return
 
             if "deprecated" in notification["description"]:
-                warning = DeprecationWarning(notification["description"])
+                warning: Warning = DeprecationWarning(notification["description"])
             else:
                 warning = RuntimeWarning(notification["description"])
                 warnings.warn(warning)
