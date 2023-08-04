@@ -79,25 +79,10 @@ class Neo4jQueryRunner(QueryRunner):
 
             df = result.to_df()
 
-            # Forward Neo4j warnings
-            # (see https://neo4j.com/docs/status-codes/current/notifications/#notification-categories)
             notifications = result.consume().notifications
-
             if notifications:
                 for notification in notifications:
-                    severity = notification["severity"]
-                    if severity == "WARNING":
-                        # FIXME handle the field deprecations
-                        if "query used a deprecated field from a procedure" in notification["description"]:
-                            continue
-
-                        if "deprecated" in notification["description"]:
-                            warning = DeprecationWarning(notification["description"])
-                        else:
-                            warning = RuntimeWarning(notification["description"])
-                        warnings.warn(warning)
-                    if severity == "INFORMATION":
-                        self._logger.info(notification)
+                    self._forward_cypher_warnings(notification)
 
             return df
 
@@ -129,6 +114,22 @@ class Neo4jQueryRunner(QueryRunner):
                 raise future.exception()  # type: ignore
             else:
                 return future.result()
+
+    def _forward_cypher_warnings(self, notification: Dict[str, Any]) -> None:
+        # (see https://neo4j.com/docs/status-codes/current/notifications/ for more details)
+        severity = notification["severity"]
+        if severity == "WARNING":
+            # FIXME handle the field deprecations
+            if "query used a deprecated field from a procedure" in notification["description"]:
+                return
+
+            if "deprecated" in notification["description"]:
+                warning = DeprecationWarning(notification["description"])
+            else:
+                warning = RuntimeWarning(notification["description"])
+                warnings.warn(warning)
+            if severity == "INFORMATION":
+                self._logger.info(notification)
 
     def _log(self, job_id: str, future: "Future[Any]", database: Optional[str] = None) -> None:
         pbar = None
