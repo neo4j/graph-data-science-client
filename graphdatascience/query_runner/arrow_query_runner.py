@@ -1,6 +1,7 @@
 import base64
 import json
 import time
+import warnings
 from typing import Any, Dict, List, Optional, Tuple
 
 import pyarrow.flight as flight
@@ -46,6 +47,11 @@ class ArrowQueryRunner(QueryRunner):
 
         self._flight_client = flight.FlightClient(location, **client_options)
 
+    def warn_about_deprecation(self, old_endpoint: str, new_endpoint: str) -> None:
+        warnings.warn(
+            DeprecationWarning(f"The endpoint '{old_endpoint}' is deprecated. Please use '{new_endpoint}' instead.")
+        )
+
     def run_query(
         self,
         query: str,
@@ -60,7 +66,7 @@ class ArrowQueryRunner(QueryRunner):
         no_tier_in_namespace_server_version = ServerVersion(2, 5, 0)
 
         # We need to support the deprecated endpoints until they get removed on the server side
-        if "gds.graph.streamNodeProperty" in query or "gds.graph.nodeProperty.stream" in query:
+        if (old_endpoint := ("gds.graph.streamNodeProperty" in query)) or "gds.graph.nodeProperty.stream" in query:
             graph_name = params["graph_name"]
             property_name = params["properties"]
             node_labels = params["entities"]
@@ -69,11 +75,17 @@ class ArrowQueryRunner(QueryRunner):
                 endpoint = "gds.graph.streamNodeProperty"
             else:
                 endpoint = "gds.graph.nodeProperty.stream"
+                if old_endpoint:
+                    self.warn_about_deprecation(
+                        old_endpoint="gds.graph.streamNodeProperty", new_endpoint="gds.graph.nodeProperty.stream"
+                    )
 
             return self._run_arrow_property_get(
                 graph_name, endpoint, {"node_property": property_name, "node_labels": node_labels}
             )
-        elif "gds.graph.streamNodeProperties" in query or "gds.graph.nodeProperties.stream" in query:
+        elif "gds.graph.streamNodeProperties" in query or (
+            old_endpoint := ("gds.graph.nodeProperties.stream" in query)
+        ):
             graph_name = params["graph_name"]
             property_names = params["properties"]
             node_labels = params["entities"]
@@ -82,12 +94,18 @@ class ArrowQueryRunner(QueryRunner):
                 endpoint = "gds.graph.streamNodeProperties"
             else:
                 endpoint = "gds.graph.nodeProperties.stream"
+                if old_endpoint:
+                    self.warn_about_deprecation(
+                        old_endpoint="gds.graph.streamNodeProperties", new_endpoint="gds.graph.nodeProperties.stream"
+                    )
             return self._run_arrow_property_get(
                 graph_name,
                 endpoint,
                 {"node_properties": property_names, "node_labels": node_labels},
             )
-        elif "gds.graph.streamRelationshipProperty" in query or "gds.graph.relationshipProperty.stream" in query:
+        elif (
+            old_endpoint := ("gds.graph.streamRelationshipProperty" in query)
+        ) or "gds.graph.relationshipProperty.stream" in query:
             graph_name = params["graph_name"]
             property_name = params["properties"]
             relationship_types = params["entities"]
@@ -96,13 +114,19 @@ class ArrowQueryRunner(QueryRunner):
                 endpoint = "gds.graph.streamRelationshipProperty"
             else:
                 endpoint = "gds.graph.relationshipProperty.stream"
-
+                if old_endpoint:
+                    self.warn_about_deprecation(
+                        old_endpoint="gds.graph.streamRelationshipProperty",
+                        new_endpoint="gds.graph.relationshipProperty.stream",
+                    )
             return self._run_arrow_property_get(
                 graph_name,
                 endpoint,
                 {"relationship_property": property_name, "relationship_types": relationship_types},
             )
-        elif "gds.graph.streamRelationshipProperties" in query or "gds.graph.relationshipProperties.stream" in query:
+        elif (
+            old_endpoint := ("gds.graph.streamRelationshipProperties" in query)
+        ) or "gds.graph.relationshipProperties.stream" in query:
             graph_name = params["graph_name"]
             property_names = params["properties"]
             relationship_types = params["entities"]
@@ -111,13 +135,20 @@ class ArrowQueryRunner(QueryRunner):
                 endpoint = "gds.graph.streamRelationshipProperties"
             else:
                 endpoint = "gds.graph.relationshipProperties.stream"
+                if old_endpoint:
+                    self.warn_about_deprecation(
+                        old_endpoint="gds.graph.streamRelationshipProperties",
+                        new_endpoint="gds.graph.relationshipProperties.stream",
+                    )
 
             return self._run_arrow_property_get(
                 graph_name,
                 endpoint,
                 {"relationship_properties": property_names, "relationship_types": relationship_types},
             )
-        elif "gds.beta.graph.relationships.stream" in query:
+        elif (
+            old_endpoint := ("gds.beta.graph.relationships.stream" in query)
+        ) or "gds.graph.relationships.stream" in query:
             graph_name = params["graph_name"]
             relationship_types = params["relationship_types"]
 
@@ -127,11 +158,15 @@ class ArrowQueryRunner(QueryRunner):
                     f"server version >= 2.2.0. The current version is {self._server_version}"
                 )
             else:
-                endpoint = (
-                    "gds.beta.graph.relationships.stream"
-                    if self._server_version < no_tier_in_namespace_server_version
-                    else "gds.graph.relationships.stream"
-                )
+                if self._server_version < no_tier_in_namespace_server_version:
+                    endpoint = "gds.beta.graph.relationships.stream"
+                else:
+                    endpoint = "gds.graph.relationships.stream"
+                    if old_endpoint:
+                        self.warn_about_deprecation(
+                            old_endpoint="gds.beta.graph.relationships.stream",
+                            new_endpoint="gds.graph.relationships.stream",
+                        )
 
             return self._run_arrow_property_get(graph_name, endpoint, {"relationship_types": relationship_types})
 
