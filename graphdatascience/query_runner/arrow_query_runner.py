@@ -83,9 +83,7 @@ class ArrowQueryRunner(QueryRunner):
             return self._run_arrow_property_get(
                 graph_name, endpoint, {"node_property": property_name, "node_labels": node_labels}
             )
-        elif "gds.graph.streamNodeProperties" in query or (
-            old_endpoint := ("gds.graph.nodeProperties.stream" in query)
-        ):
+        elif (old_endpoint := ("gds.graph.streamNodeProperties" in query)) or "gds.graph.nodeProperties.stream" in query:
             graph_name = params["graph_name"]
             property_names = params["properties"]
             node_labels = params["entities"]

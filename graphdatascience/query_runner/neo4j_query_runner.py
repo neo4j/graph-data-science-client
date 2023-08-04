@@ -127,9 +127,9 @@ class Neo4jQueryRunner(QueryRunner):
                 warning: Warning = DeprecationWarning(notification["description"])
             else:
                 warning = RuntimeWarning(notification["description"])
-                warnings.warn(warning)
-            if severity == "INFORMATION":
-                self._logger.info(notification)
+            warnings.warn(warning)
+        elif severity == "INFORMATION":
+            self._logger.info(notification)
 
     def _log(self, job_id: str, future: "Future[Any]", database: Optional[str] = None) -> None:
         pbar = None
