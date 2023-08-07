@@ -1,5 +1,6 @@
 import json
 from typing import Any, List
+import time
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
@@ -7,8 +8,13 @@ from ..error.uncallable_namespace import UncallableNamespace
 
 class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
     def make_graph_sage_config(self, graph_sage_config):
-        GRAPH_SAGE_DEFAULT_CONFIG = {"layer_config": {}, "num_neighbors": [25, 10], "dropout": 0.5,
-                                     "hidden_channels": 256, "learning_rate": 0.003}
+        GRAPH_SAGE_DEFAULT_CONFIG = {
+            "layer_config": {},
+            "num_neighbors": [25, 10],
+            "dropout": 0.5,
+            "hidden_channels": 256,
+            "learning_rate": 0.003,
+        }
         final_sage_config = GRAPH_SAGE_DEFAULT_CONFIG
         if graph_sage_config:
             bad_keys = []
@@ -21,6 +27,21 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
             final_sage_config.update(graph_sage_config)
         return final_sage_config
 
+    def watch_logs(self, job_id: str, logging_interval: int = 5):
+        def get_logs(offset) -> "Series[Any]":  # noqa: F821
+            return self._query_runner.run_query(
+                "RETURN gds.remoteml.getLogs($job_id, $offset)", params={"job_id": job_id, "offset": offset}
+            ).squeeze()
+
+        received_logs = 0
+        training_done = False
+        while not training_done:
+            time.sleep(logging_interval)
+            for log in get_logs(offset=received_logs):
+                print(log)
+                received_logs += 1
+        return job_id
+
     def train(
         self,
         graph_name: str,
@@ -30,15 +51,15 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
         relationship_types: List[str],
         target_node_label: str = None,
         node_labels: List[str] = None,
-        graph_sage_config = None
-    ) -> "Series[Any]":  # noqa: F821
+        graph_sage_config=None,
+    ) -> str:
         mlConfigMap = {
             "featureProperties": feature_properties,
             "targetProperty": target_property,
             "job_type": "train",
             "nodeProperties": feature_properties + [target_property],
             "relationshipTypes": relationship_types,
-            "graph_sage_config": self.make_graph_sage_config(graph_sage_config)
+            "graph_sage_config": self.make_graph_sage_config(graph_sage_config),
         }
 
         if target_node_label:
@@ -49,12 +70,15 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
         mlTrainingConfig = json.dumps(mlConfigMap)
 
         # token and uri will be injected by arrow_query_runner
-        self._query_runner.run_query(
-            "CALL gds.upload.graph($config)",
+        job_id = self._query_runner.run_query(
+            "CALL gds.upload.graph($config) YIELD jobId",
             params={
                 "config": {"mlTrainingConfig": mlTrainingConfig, "graphName": graph_name, "modelName": model_name},
             },
-        )
+        ).jobId[0]
+
+        print(f"Started job with jobId={job_id}. Use `gds.gnn.nodeClassification.watch_logs` to track progress.")
+        return job_id
 
     def predict(
         self,
@@ -62,18 +86,19 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
         model_name: str,
         mutateProperty: str,
         predictedProbabilityProperty: str = None,
+        logging_interval=5,
     ) -> "Series[Any]":  # noqa: F821
-        mlConfigMap = {
-            "job_type": "predict",
-            "mutateProperty": mutateProperty
-        }
+        mlConfigMap = {"job_type": "predict", "mutateProperty": mutateProperty}
         if predictedProbabilityProperty:
             mlConfigMap["predictedProbabilityProperty"] = predictedProbabilityProperty
 
         mlTrainingConfig = json.dumps(mlConfigMap)
-        self._query_runner.run_query(
-            "CALL gds.upload.graph($config)",
+        job_id = self._query_runner.run_query(
+            "CALL gds.upload.graph($config) YIELD jobId",
             params={
                 "config": {"mlTrainingConfig": mlTrainingConfig, "graphName": graph_name, "modelName": model_name},
             },
-        )  # type: ignore
+        ).jobId[0]
+
+        print(f"Started job with jobId={job_id}. Use `gds.gnn.nodeClassification.watch_logs` to track progress.")
+        return job_id
