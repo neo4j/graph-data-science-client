@@ -19,6 +19,11 @@ def filter_id_func_deprecation_warning() -> Callable[[F], F]:
                 message=r"^The query used a deprecated function: `id`\.",
             )
 
+            warnings.filterwarnings(
+                "ignore",
+                message=r"^The query used a deprecated function. \('id' is no longer supported\)",
+            )
+
             return func(self, *args, **kwargs)
 
         return cast(F, wrapper)
