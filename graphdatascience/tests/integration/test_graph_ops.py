@@ -56,7 +56,7 @@ def test_project_graph_cypher(gds: GraphDataScience) -> None:
     node_query = "MATCH (n:Node) RETURN id(n) as id"
     relationship_query = "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
 
-    if gds.server_version() >= ServerVersion(2, 5, 0):
+    if gds.server_version() >= ServerVersion(2, 4, 0):
         with pytest.warns(DeprecationWarning):
             G, result = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
     else:
@@ -73,11 +73,7 @@ def test_project_graph_cypher_estimate(gds: GraphDataScience) -> None:
     node_query = "MATCH (n:Node) RETURN id(n) as id"
     relationship_query = "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
 
-    if gds.server_version() >= ServerVersion(2, 5, 0):
-        with pytest.warns(DeprecationWarning):
-            result = gds.graph.project.cypher.estimate(node_query, relationship_query)
-    else:
-        result = gds.graph.project.cypher.estimate(node_query, relationship_query)
+    result = gds.graph.project.cypher.estimate(node_query, relationship_query)
 
     assert result["requiredMemory"]
 
@@ -639,21 +635,20 @@ def test_graph_streamRelationshipProperties_without_arrow(gds_without_arrow: Gra
 def test_graph_relationshipProperties_stream_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
-    with pytest.warns(DeprecationWarning):
-        result = gds_without_arrow.graph.relationshipProperties.stream(G, ["relX", "relY"], concurrency=2)
+    result = gds_without_arrow.graph.relationshipProperties.stream(G, ["relX", "relY"], concurrency=2)
 
-        assert list(result.keys()) == [
-            "sourceNodeId",
-            "targetNodeId",
-            "relationshipType",
-            "relationshipProperty",
-            "propertyValue",
-        ]
+    assert list(result.keys()) == [
+        "sourceNodeId",
+        "targetNodeId",
+        "relationshipType",
+        "relationshipProperty",
+        "propertyValue",
+    ]
 
-        x_values = result[result.relationshipProperty == "relX"]
-        assert {e for e in x_values["propertyValue"]} == {4, 5, 6}
-        y_values = result[result.relationshipProperty == "relY"]
-        assert {e for e in y_values["propertyValue"]} == {5, 6, 7}
+    x_values = result[result.relationshipProperty == "relX"]
+    assert {e for e in x_values["propertyValue"]} == {4, 5, 6}
+    y_values = result[result.relationshipProperty == "relY"]
+    assert {e for e in y_values["propertyValue"]} == {5, 6, 7}
 
 
 def test_graph_streamRelationshipProperties_without_arrow_separate_property_columns(
@@ -677,21 +672,23 @@ def test_graph_relationshipProperties_stream_without_arrow_separate_property_col
 ) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
-    with pytest.warns(DeprecationWarning):
-        result = gds_without_arrow.graph.relationshipProperties.stream(
-            G, ["relX", "relY"], separate_property_columns=True, concurrency=2
-        )
+    result = gds_without_arrow.graph.relationshipProperties.stream(
+        G, ["relX", "relY"], separate_property_columns=True, concurrency=2
+    )
 
-        assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType", "relX", "relY"]
-        assert {e for e in result["relX"]} == {4, 5, 6}
-        assert {e for e in result["relY"]} == {5, 6, 7}
+    assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType", "relX", "relY"]
+    assert {e for e in result["relX"]} == {4, 5, 6}
+    assert {e for e in result["relY"]} == {5, 6, 7}
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
 
-    result = gds_without_arrow.graph.relationships.stream(G, ["REL", "REL2"])
+    if gds_without_arrow.server_version() >= ServerVersion(2, 5, 0):
+        result = gds_without_arrow.graph.relationships.stream(G, ["REL", "REL2"])
+    else:
+        result = gds_without_arrow.beta.graph.relationships.stream(G, ["REL", "REL2"])
 
     with pytest.raises(DeprecationWarning):
         expected = gds_without_arrow.run_cypher(
@@ -720,7 +717,10 @@ def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataSc
 def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
 
-    result = gds.graph.relationships.stream(G, ["REL", "REL2"])
+    if gds.server_version() >= ServerVersion(2, 5, 0):
+        result = gds.graph.relationships.stream(G, ["REL", "REL2"])
+    else:
+        result = gds.beta.graph.relationships.stream(G, ["REL", "REL2"])
 
     with pytest.raises(DeprecationWarning):
         expected = gds.run_cypher("MATCH (n)-[r]->(m) RETURN id(n) AS src_id, id(m) AS trg_id, type(r) AS rel_type")
