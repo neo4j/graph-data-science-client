@@ -144,3 +144,27 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.alpha.ml.oneHotEncoding(available_values: List[Any], selected_values: List[Any]) -> List[int]
 
     Return a list of selected values in a one hot encoding format.
+
+.. py:function:: gds.node2vec.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    The Node2Vec algorithm computes embeddings for nodes based on random walks.
+
+.. py:function:: gds.node2vec.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.node2vec.stream(G: Graph, **config: Any) -> DataFrame
+
+    The Node2Vec algorithm computes embeddings for nodes based on random walks.
+
+.. py:function:: gds.node2vec.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.node2vec.write(G: Graph, **config: Any) -> Series[Any]
+
+    The Node2Vec algorithm computes embeddings for nodes based on random walks.
+
+.. py:function:: gds.node2vec.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
