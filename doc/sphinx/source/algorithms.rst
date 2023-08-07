@@ -1535,11 +1535,19 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     It then attempts to find a spanning tree where there is a path from the source node to each target node,
     such that the total weight of the relationships is as low as possible.
 
+.. py:function:: gds.steinerTree.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.steinerTree.stats(G: Graph, **config: Any) -> Series[Any]
 
     The steiner tree algorithm accepts a source node, as well as a list of target nodes.
     It then attempts to find a spanning tree where there is a path from the source node to each target node,
     such that the total weight of the relationships is as low as possible.
+
+.. py:function:: gds.steinerTree.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.steinerTree.stream(G: Graph, **config: Any) -> DataFrame
 
@@ -1547,11 +1555,19 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     It then attempts to find a spanning tree where there is a path from the source node to each target node,
     such that the total weight of the relationships is as low as possible.
 
+.. py:function:: gds.steinerTree.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.steinerTree.write(G: Graph, **config: Any) -> Series[Any]
 
     The steiner tree algorithm accepts a source node, as well as a list of target nodes.
     It then attempts to find a spanning tree where there is a path from the source node to each target node,
     such that the total weight of the relationships is as low as possible.
+
+.. py:function:: gds.steinerTree.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.triangleCount.mutate(G: Graph, **config: Any) -> Series[Any]
 
