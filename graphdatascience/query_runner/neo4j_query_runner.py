@@ -119,9 +119,9 @@ class Neo4jQueryRunner(QueryRunner):
         # (see https://neo4j.com/docs/status-codes/current/notifications/ for more details)
         severity = notification["severity"]
         if severity == "WARNING":
-            # FIXME handle the field deprecations
             if "query used a deprecated field from a procedure" in notification["description"]:
-                return
+                # the client does not expose YIELD fields so we just log the warning for now
+                self._logger.warning(notification)
 
             if "deprecated" in notification["description"]:
                 warning: Warning = DeprecationWarning(notification["description"])
