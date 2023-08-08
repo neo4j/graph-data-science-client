@@ -86,8 +86,7 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
         model_name: str,
         mutateProperty: str,
         predictedProbabilityProperty: str = None,
-        logging_interval=5,
-    ) -> "Series[Any]":  # noqa: F821
+    ) -> str:
         mlConfigMap = {"job_type": "predict", "mutateProperty": mutateProperty}
         if predictedProbabilityProperty:
             mlConfigMap["predictedProbabilityProperty"] = predictedProbabilityProperty
