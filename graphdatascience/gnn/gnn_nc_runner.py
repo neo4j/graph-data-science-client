@@ -1,6 +1,6 @@
 import json
-from typing import Any, List
 import time
+from typing import Any, List
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
@@ -28,6 +28,9 @@ class GNNNodeClassificationRunner(UncallableNamespace, IllegalAttrChecker):
         return final_sage_config
 
     def watch_logs(self, job_id: str, logging_interval: int = 5):
+        print(f"Watching logs of job {job_id}.")
+        print("This needs to be interrupted manually in order to continue (for example when training is done).")
+
         def get_logs(offset) -> "Series[Any]":  # noqa: F821
             return self._query_runner.run_query(
                 "RETURN gds.remoteml.getLogs($job_id, $offset)", params={"job_id": job_id, "offset": offset}
