@@ -2,6 +2,8 @@ from typing import Any, Optional, Tuple
 
 from pandas import DataFrame, Series
 
+from graphdatascience.server_version import compatible_with
+
 from ..error.client_only_endpoint import client_only_endpoint
 from ..server_version.server_version import ServerVersion
 from .model import Model
@@ -23,6 +25,7 @@ class ModelProcRunner(ModelResolver):
         model_type = result["modelInfo"][0]["modelType"]
         return self._resolve_model(model_type, model_name)
 
+    @compatible_with("store", min_inclusive=ServerVersion(2, 5, 0))
     def store(self, model: Model, failIfUnsupportedType: bool = True) -> "Series[Any]":
         self._namespace += ".store"
 
@@ -34,6 +37,7 @@ class ModelProcRunner(ModelResolver):
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
+    @compatible_with("publish", min_inclusive=ServerVersion(2, 5, 0))
     def publish(self, model: Model) -> Model:
         self._namespace += ".publish"
 
@@ -47,6 +51,7 @@ class ModelProcRunner(ModelResolver):
 
         return self._resolve_model(model_type, model_name)
 
+    @compatible_with("load", min_inclusive=ServerVersion(2, 5, 0))
     def load(self, model_name: str) -> Tuple[Model, "Series[Any]"]:
         self._namespace += ".load"
 
@@ -60,6 +65,7 @@ class ModelProcRunner(ModelResolver):
 
         return proc_runner.get(result["modelName"]), result
 
+    @compatible_with("delete", min_inclusive=ServerVersion(2, 5, 0))
     def delete(self, model: Model) -> "Series[Any]":
         self._namespace += ".delete"
 
@@ -68,6 +74,7 @@ class ModelProcRunner(ModelResolver):
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
+    @compatible_with("list", min_inclusive=ServerVersion(2, 5, 0))
     def list(self, model: Optional[Model] = None) -> DataFrame:
         self._namespace += ".list"
 
@@ -80,6 +87,7 @@ class ModelProcRunner(ModelResolver):
 
         return self._query_runner.run_query(query, params)
 
+    @compatible_with("exists", min_inclusive=ServerVersion(2, 5, 0))
     def exists(self, model_name: str) -> "Series[Any]":
         self._namespace += ".exists"
 
@@ -88,6 +96,7 @@ class ModelProcRunner(ModelResolver):
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
+    @compatible_with("drop", min_inclusive=ServerVersion(2, 5, 0))
     def drop(self, model: Model) -> "Series[Any]":
         self._namespace += ".drop"
 
