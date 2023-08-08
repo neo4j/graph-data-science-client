@@ -35,7 +35,7 @@ def test_pageRank_mutate(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Non
 
     result = gds.pageRank.mutate(G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
     assert result["nodePropertiesWritten"] == 3
-    assert G.node_properties == ["rank"]
+    assert G.node_properties("__ALL__") == ["rank"]
 
 
 def test_pageRank_mutate_estimate(gds: GraphDataScience) -> None:

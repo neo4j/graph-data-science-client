@@ -103,9 +103,13 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         self._query_runner.set_server_version(self._server_version)
 
         if arrow and self._server_version >= ServerVersion(2, 1, 0):
-            yield_fields = "running, listenAddress" if self._server_version >= ServerVersion(2,2,1) else "running, advertisedListenAddress"
+            yield_fields = (
+                "running, listenAddress"
+                if self._server_version >= ServerVersion(2, 2, 1)
+                else "running, advertisedListenAddress"
+            )
             arrow_info: "Series[Any]" = self._query_runner.run_query(
-               f"CALL gds.debug.arrow() YIELD {yield_fields}", custom_error=False
+                f"CALL gds.debug.arrow() YIELD {yield_fields}", custom_error=False
             ).squeeze()
             listen_address: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])  # type: ignore
             if arrow_info["running"]:
