@@ -18,6 +18,7 @@
 ## Improvements
 
 * Improved endpoint returning graphs to be used in `with` clauses. The expression `with gds.graph.project(...)[0] as G` can now be simplified to `with gds.graph.project(...) AS G`.
+* Improve the error message if GDS is not correctly installed on the server
 
 
 ## Other changes

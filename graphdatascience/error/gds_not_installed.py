@@ -1,0 +1,2 @@
+class GdsNotFound(Exception):
+    pass
