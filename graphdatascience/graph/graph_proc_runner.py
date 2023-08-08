@@ -1,7 +1,6 @@
 import os
 import pathlib
 import sys
-from logging import warning
 from typing import Any, ContextManager, Dict, List, Optional, Union
 
 import pandas as pd
@@ -481,7 +480,6 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @graph_type_check
     def deleteRelationships(self, G: Graph, relationship_type: str) -> "Series[Any]":
-        warning("Deprecated in favor of `gds.relationships.drop`")
         self._namespace += ".deleteRelationships"
 
         query = f"CALL {self._namespace}($graph_name, $relationship_type)"
