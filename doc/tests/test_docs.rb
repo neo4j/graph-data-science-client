@@ -34,11 +34,11 @@ finally:
     res = gds.beta.pipeline.list()
     for pipeline_name in res["pipelineName"]:
         gds.pipeline.get(pipeline_name).drop(failIfMissing=True)
-    res = gds.beta.model.list()
+    res = gds.model.list()
     for model_info in res["modelInfo"]:
         model = gds.model.get(model_info["modelName"])
         if (model.stored()):
-            gds.alpha.model.delete(model)
+            gds.model.delete(model)
         if (model.exists()):
             model.drop(failIfMissing=True)
     gds.run_cypher("MATCH (n) DETACH DELETE (n)")

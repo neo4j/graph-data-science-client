@@ -42,7 +42,7 @@ def gs_model(gds: GraphDataScience, G: Graph, runner: Neo4jQueryRunner) -> Gener
 
     yield model
 
-    query = "CALL gds.beta.model.drop($name)"
+    query = "CALL gds.model.drop($name)"
     params = {"name": model.name()}
     runner.run_query(query, params)
 

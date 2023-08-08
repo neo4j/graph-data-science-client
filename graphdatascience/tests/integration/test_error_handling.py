@@ -108,18 +108,18 @@ def test_nonexisting_graph_project_endpoint(gds: GraphDataScience) -> None:
 
 
 def test_calling_model(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.beta.model' to call"):
-        gds.beta.model(42, 1337)
+    with pytest.raises(SyntaxError, match="There is no 'gds.model' to call"):
+        gds.model(42, 1337)
 
 
 def test_nonexisting_model_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.beta.model.bogus' to call"):
-        gds.beta.model.bogus(42, 1337)  # type: ignore
+    with pytest.raises(SyntaxError, match="There is no 'gds.model.bogus' to call"):
+        gds.model.bogus(42, 1337)  # type: ignore
 
 
 def test_calling_pipeline(gds: GraphDataScience) -> None:
     with pytest.raises(SyntaxError, match="There is no 'gds.beta.pipeline' to call"):
-        gds.beta.pipeline(42, 1337)
+        gds.pipeline(42, 1337)
 
 
 def test_nonexisting_pipeline_endpoint(gds: GraphDataScience) -> None:
@@ -188,8 +188,8 @@ def test_nonexisting_util_endpoint(gds: GraphDataScience) -> None:
 
 def test_auto_completion_false_positives(gds: GraphDataScience) -> None:
     # Using `alpha` prefix instead of `beta`
-    with pytest.raises(SyntaxError, match="There is no 'gds.alpha.model.list' to call"):
-        gds.alpha.model.list()  # type: ignore
+    with pytest.raises(SyntaxError, match="There is no 'gds.model.list' to call"):
+        gds.model.list()  # type: ignore
 
     # Without `graph` prefix
     with pytest.raises(SyntaxError, match="There is no 'gds.toUndirected' to call"):

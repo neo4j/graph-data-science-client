@@ -39,7 +39,7 @@ class DirectEndpoints(DirectSystemEndpoints, DirectUtilEndpoints, GraphEndpoints
 
 """
 This class should inherit endpoint classes that only expose calls of the `gds.beta` namespace.
-Example of such endpoints are: "gds.alpha.model.store" and "gds.alpha.listProgress".
+Example of such endpoints are: "gds.model.store" and "gds.alpha.listProgress".
 """
 
 
@@ -61,7 +61,7 @@ class AlphaEndpoints(
 
 """
 This class should inherit endpoint classes that only expose calls of the `gds.beta` namespace.
-Example of such endpoints are: "gds.beta.model.list" and "gds.beta.listProgress".
+Example of such endpoints are: "gds.model.list" and "gds.beta.listProgress".
 """
 
 

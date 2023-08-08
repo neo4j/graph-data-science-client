@@ -153,7 +153,7 @@ def test_train_unfiltered_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrain
     assert lp_model.name() == "m"
     assert result["configuration"]["modelName"] == "m"
 
-    query = "CALL gds.beta.model.drop($name)"
+    query = "CALL gds.model.drop($name)"
     params = {"name": lp_model.name()}
     runner.run_query(query, params)
 
@@ -183,7 +183,7 @@ def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
     assert lp_model.name() == "m"
     assert result["configuration"]["modelName"] == "m"
 
-    query = "CALL gds.beta.model.drop($name)"
+    query = "CALL gds.model.drop($name)"
     params = {"name": lp_model.name()}
     runner.run_query(query, params)
 
@@ -322,7 +322,7 @@ def test_train_nc_pipeline(runner: Neo4jQueryRunner, nc_pipe: NCTrainingPipeline
     assert nc_model.name() == "m"
     assert result["configuration"]["modelName"] == "m"
 
-    query = "CALL gds.beta.model.drop($name)"
+    query = "CALL gds.model.drop($name)"
     params = {"name": nc_model.name()}
     runner.run_query(query, params)
 
@@ -340,7 +340,7 @@ def test_train_nr_pipeline(runner: Neo4jQueryRunner, nr_pipe: NRTrainingPipeline
     assert nr_model.name() == "m"
     assert result["configuration"]["modelName"] == "m"
 
-    query = "CALL gds.beta.model.drop($name)"
+    query = "CALL gds.model.drop($name)"
     params = {"name": nr_model.name()}
     runner.run_query(query, params)
 

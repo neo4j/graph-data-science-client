@@ -6,7 +6,7 @@ from .model_resolver import ModelResolver
 class ModelProcRunner(ModelResolver):
     @client_only_endpoint("gds.model")
     def get(self, model_name: str) -> Model:
-        query = "CALL gds.beta.model.list($model_name)"
+        query = "CALL gds.model.list($model_name)"
         params = {"model_name": model_name}
         result = self._query_runner.run_query(query, params, custom_error=False)
 
