@@ -2,12 +2,11 @@ from typing import Any, Optional, Tuple
 
 from pandas import DataFrame, Series
 
-from graphdatascience.server_version import compatible_with
-
 from ..error.client_only_endpoint import client_only_endpoint
 from ..server_version.server_version import ServerVersion
 from .model import Model
 from .model_resolver import ModelResolver
+from graphdatascience.server_version.compatible_with import compatible_with
 
 
 class ModelProcRunner(ModelResolver):
