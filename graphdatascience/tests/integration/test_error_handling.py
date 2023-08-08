@@ -187,10 +187,6 @@ def test_nonexisting_util_endpoint(gds: GraphDataScience) -> None:
 
 
 def test_auto_completion_false_positives(gds: GraphDataScience) -> None:
-    # Using `alpha` prefix instead of `beta`
-    with pytest.raises(SyntaxError, match="There is no 'gds.model.list' to call"):
-        gds.model.list()  # type: ignore
-
     # Without `graph` prefix
     with pytest.raises(SyntaxError, match="There is no 'gds.toUndirected' to call"):
         gds.toUndirected()

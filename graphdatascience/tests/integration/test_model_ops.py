@@ -169,6 +169,7 @@ def gs_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     runner.run_query(query, params)
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_model_list(gds: GraphDataScience, lp_model: LPModel) -> None:
     result = gds.model.list()
 
@@ -176,10 +177,12 @@ def test_model_list(gds: GraphDataScience, lp_model: LPModel) -> None:
     assert result["modelInfo"][0]["modelName"] == lp_model.name()
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_model_exists(gds: GraphDataScience) -> None:
     assert not gds.model.exists("NOTHING")["exists"]
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 @pytest.mark.enterprise
 def test_model_publish(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
     assert not gs_model.shared()
@@ -194,6 +197,7 @@ def test_model_publish(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model
     runner.run_query(query, params)
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 @pytest.mark.model_store_location
 def test_model_load(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
     runner.run_query(f"CALL gds.model.store('{gs_model.name()}')")
@@ -207,6 +211,7 @@ def test_model_load(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: G
     runner.run_query(f"CALL gds.model.delete('{model.name()}')")
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 @pytest.mark.model_store_location
 def test_model_store(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
     model_name = gds.model.store(gs_model)["modelName"]
@@ -216,6 +221,7 @@ def test_model_store(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: 
     runner.run_query(f"CALL gds.model.delete('{model_name}')")
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 @pytest.mark.model_store_location
 def test_model_delete(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
     model_name = runner.run_query(f"CALL gds.model.store('{gs_model.name()}')")["modelName"][0]
@@ -228,6 +234,7 @@ def test_model_delete(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model:
     assert not res["exists"][0]
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_model_drop(gds: GraphDataScience, G: Graph) -> None:
     model, _ = gds.beta.graphSage.train(G, modelName="hello", featureProperties=["age"])
 
@@ -273,3 +280,12 @@ def test_model_get_graphsage(gds: GraphDataScience, gs_model: GraphSageModel) ->
     assert isinstance(model, GraphSageModel)
 
     model.drop()
+
+
+@pytest.mark.model_store_location
+def test_deprecated_model_Functions_still_work(gds: GraphDataScience, gs_model: GraphSageModel) -> None:
+    gds.beta.model.list()
+    gds.alpha.model.store(gs_model)
+    gds.beta.model.drop(gs_model)
+    gds.alpha.model.load(gs_model.name())
+    gds.alpha.model.delete(gs_model)
