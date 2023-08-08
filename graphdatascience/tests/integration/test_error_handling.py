@@ -118,7 +118,7 @@ def test_nonexisting_model_endpoint(gds: GraphDataScience) -> None:
 
 
 def test_calling_pipeline(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.beta.pipeline' to call"):
+    with pytest.raises(SyntaxError, match="There is no 'gds.pipeline' to call"):
         gds.pipeline(42, 1337)
 
 

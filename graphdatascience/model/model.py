@@ -21,7 +21,7 @@ class Model(ABC):
 
     def _list_info(self) -> DataFrame:
         name_space = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
-        query = f"CALL gds.{name_space}.model.list($name)"
+        query = f"CALL gds.{name_space}model.list($name)"
 
         params = {"name": self.name()}
 
@@ -140,7 +140,7 @@ class Model(ABC):
 
         """
         name_space = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
-        query = f"CALL gds.{name_space}exists($model_name) YIELD exists"
+        query = f"CALL gds.{name_space}model.exists($model_name) YIELD exists"
 
         params = {"model_name": self._name}
 
@@ -157,9 +157,8 @@ class Model(ABC):
             The result of the drop operation.
 
         """
-        query = "CALL gds.model.drop($model_name, $fail_if_missing)"
         name_space = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
-        query = f"CALL gds.{name_space}.model.drop($model_name, $fail_if_missing)"
+        query = f"CALL gds.{name_space}model.drop($model_name, $fail_if_missing)"
 
         params = {"model_name": self._name, "fail_if_missing": failIfMissing}
 

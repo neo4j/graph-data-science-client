@@ -10,6 +10,7 @@ from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbConnectionInfo,
 )
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
 URI_TLS = os.environ.get("NEO4J_URI", "bolt+ssc://localhost:7687")
@@ -126,7 +127,8 @@ def clean_up(gds: GraphDataScience) -> Generator[None, None, None]:
     for pipeline_name in res["pipelineName"]:
         gds.pipeline.get(pipeline_name).drop(failIfMissing=True)
 
-    res = gds.model.list()
+    res = gds.model.list() if gds.server_version() >= ServerVersion(2, 5, 0) else gds.beta.model.list()
+
     for model_info in res["modelInfo"]:
         model = gds.model.get(model_info["modelName"])
         if model.stored():

@@ -12,7 +12,7 @@ class ModelProcRunner(ModelResolver):
     @client_only_endpoint("gds.model")
     def get(self, model_name: str) -> Model:
         name_space = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
-        query = f"CALL gds.{name_space}.model.list($model_name)"
+        query = f"CALL gds.{name_space}model.list($model_name)"
 
         params = {"model_name": model_name}
         result = self._query_runner.run_query(query, params, custom_error=False)
