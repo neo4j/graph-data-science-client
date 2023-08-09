@@ -165,7 +165,7 @@ def gs_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     yield model
 
     namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
-    query = f"CALL gds.{namespace}model.drop($name)"
+    query = f"CALL gds.{namespace}model.drop($name, false)"
     params = {"name": model.name()}
     runner.run_query(query, params)
 
