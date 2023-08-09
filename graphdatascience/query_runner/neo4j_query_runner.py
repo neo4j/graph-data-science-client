@@ -77,7 +77,14 @@ class Neo4jQueryRunner(QueryRunner):
                 message=r"^pandas support is experimental and might be changed or removed in future versions$",
             )
 
-            return result.to_df()
+            df = result.to_df()
+
+            notifications = result.consume().notifications
+            if notifications:
+                for notification in notifications:
+                    self._forward_cypher_warnings(notification)
+
+            return df
 
     def run_query_with_logging(
         self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
@@ -107,6 +114,22 @@ class Neo4jQueryRunner(QueryRunner):
                 raise future.exception()  # type: ignore
             else:
                 return future.result()
+
+    def _forward_cypher_warnings(self, notification: Dict[str, Any]) -> None:
+        # (see https://neo4j.com/docs/status-codes/current/notifications/ for more details)
+        severity = notification["severity"]
+        if severity == "WARNING":
+            if "query used a deprecated field from a procedure" in notification["description"]:
+                # the client does not expose YIELD fields so we just skip these warnings for now
+                return
+
+            if "deprecated" in notification["description"]:
+                warning: Warning = DeprecationWarning(notification["description"])
+            else:
+                warning = RuntimeWarning(notification["description"])
+            warnings.warn(warning)
+        elif severity == "INFORMATION":
+            self._logger.info(notification)
 
     def _log(self, job_id: str, future: "Future[Any]", database: Optional[str] = None) -> None:
         pbar = None

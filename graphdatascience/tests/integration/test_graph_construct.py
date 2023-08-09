@@ -33,7 +33,7 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 
     # Runs after each test
     runner.run_query("MATCH (n) DETACH DELETE n")
-    runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
+    runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false) YIELD graphName")
 
 
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
