@@ -132,7 +132,7 @@ def clean_up(gds: GraphDataScience) -> Generator[None, None, None]:
     for model_info in res["modelInfo"]:
         model = gds.model.get(model_info["modelName"])
         if model.stored():
-            gds.model.delete(model)
+            model.delete(model)
         if model.exists():
             model.drop(failIfMissing=True)
 

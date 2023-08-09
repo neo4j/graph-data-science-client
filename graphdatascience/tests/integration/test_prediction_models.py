@@ -77,9 +77,7 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
         else:
             lp_model, _ = pipe.train(G, modelName="lp-model", concurrency=2)
     finally:
-        query = "CALL gds.beta.pipeline.drop($name)"
-        params = {"name": "pipe"}
-        runner.run_query(query, params)
+        pipe.drop()
 
     yield lp_model
 
