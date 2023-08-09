@@ -15,9 +15,9 @@ def test_listProgress(runner: CollectingQueryRunner, gds: GraphDataScience) -> N
 
 
 def test_systemMonitor(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    gds.alpha.systemMonitor()
+    gds.systemMonitor()
 
-    assert runner.last_query() == "CALL gds.alpha.systemMonitor()"
+    assert runner.last_query() == "CALL gds.systemMonitor()"
     assert runner.last_params() == {}
 
 
