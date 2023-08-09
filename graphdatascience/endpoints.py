@@ -39,7 +39,7 @@ class DirectEndpoints(DirectSystemEndpoints, DirectUtilEndpoints, GraphEndpoints
 
 """
 This class should inherit endpoint classes that only expose calls of the `gds.beta` namespace.
-Example of such endpoints: and "gds.alpha.listProgress".
+Example of such endpoints: "gds.alpha.listProgress".
 """
 
 
