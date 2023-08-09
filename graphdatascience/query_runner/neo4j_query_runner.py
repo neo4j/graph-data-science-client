@@ -137,8 +137,9 @@ class Neo4jQueryRunner(QueryRunner):
 
         while wait([future], timeout=self._LOG_POLLING_INTERVAL).not_done:
             try:
+                tier = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
                 progress = self.run_query(
-                    f"CALL gds.beta.listProgress('{job_id}') YIELD taskName, progress", database=database
+                    f"CALL gds.{tier}listProgress('{job_id}') YIELD taskName, progress", database=database
                 )
             except Exception as e:
                 # Do nothing if the procedure either:
