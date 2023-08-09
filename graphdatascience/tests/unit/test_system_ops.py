@@ -3,21 +3,21 @@ from graphdatascience.graph_data_science import GraphDataScience
 
 
 def test_listProgress(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    gds.beta.listProgress()
+    gds.listProgress()
 
-    assert runner.last_query() == "CALL gds.beta.listProgress()"
+    assert runner.last_query() == "CALL gds.listProgress()"
     assert runner.last_params() == {}
 
-    gds.beta.listProgress("myJobId")
+    gds.listProgress("myJobId")
 
-    assert runner.last_query() == "CALL gds.beta.listProgress($job_id)"
+    assert runner.last_query() == "CALL gds.listProgress($job_id)"
     assert runner.last_params() == {"job_id": "myJobId"}
 
 
 def test_systemMonitor(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    gds.alpha.systemMonitor()
+    gds.systemMonitor()
 
-    assert runner.last_query() == "CALL gds.alpha.systemMonitor()"
+    assert runner.last_query() == "CALL gds.systemMonitor()"
     assert runner.last_params() == {}
 
 

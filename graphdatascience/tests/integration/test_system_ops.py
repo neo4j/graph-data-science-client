@@ -4,8 +4,9 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_listProgress(gds: GraphDataScience) -> None:
-    result = gds.beta.listProgress()
+    result = gds.listProgress()
 
     assert len(result) >= 0
 
@@ -16,9 +17,10 @@ def test_userLog(gds: GraphDataScience) -> None:
     assert len(result) >= 0
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 @pytest.mark.enterprise
 def test_systemMonitor(gds: GraphDataScience) -> None:
-    result = gds.alpha.systemMonitor()
+    result = gds.systemMonitor()
 
     assert result["freeHeap"] >= 0
     assert len(result["ongoingGdsProcedures"]) >= 0
@@ -96,3 +98,10 @@ def test_restore(gds: GraphDataScience) -> None:
     result = gds.restore(concurrency=4)
 
     assert len(result) == 0
+
+
+@pytest.mark.filterwarnings("ignore: The query used a deprecated procedure")
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
+def test_deprecated_endpoints(gds: GraphDataScience) -> None:
+    gds.beta.listProgress()
+    gds.alpha.systemMonitor()
