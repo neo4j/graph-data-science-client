@@ -21,15 +21,26 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Set a limit; global by, default, but also optionally for a specific user
 
-.. py:function:: gds.alpha.systemMonitor() -> Series[Any]
 
+.. py:function:: gds.alpha.systemMonitor() -> Series[Any]
     Get an overview of the system's workload and available resources
+.. deprecated:: 2.5.0
+        Since GDS server version 2.5.0 you should use the endpoint :func:`gds.systemMonitor` instead.
 
 .. py:function:: gds.alpha.userLog() -> DataFrame
 
     Log warnings and hints for currently running tasks.
 
 .. py:function:: gds.beta.listProgress(job_id: Optional[str] = None) -> DataFrame
+    List progress events for currently running tasks.
+.. deprecated:: 2.5.0
+    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.listProgress` instead.   
+
+.. py:function:: gds.systemMonitor() -> Series[Any]
+
+    Get an overview of the system's workload and available resources
+
+.. py:function:: gds.listProgress(job_id: Optional[str] = None) -> DataFrame
 
     List progress events for currently running tasks.
 

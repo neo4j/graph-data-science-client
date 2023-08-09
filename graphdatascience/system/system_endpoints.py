@@ -85,6 +85,14 @@ class DirectSystemEndpoints(CallerBase):
 
         return self._query_runner.run_query(query, {"config": config})
 
+    @compatible_with("listProgress", min_inclusive=ServerVersion(2, 5, 0))
+    def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
+        return SystemBetaEndpoints(self._query_runner, self._namespace, self._server_version).listProgress(job_id)
+
+    @compatible_with("systemMonitor", min_inclusive=ServerVersion(2, 5, 0))
+    def systemMonitor(self) -> "Series[Any]":
+        return SystemAlphaEndpoints(self._query_runner, self._namespace, self._server_version).systemMonitor()
+
 
 class SystemBetaEndpoints(CallerBase):
     def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
