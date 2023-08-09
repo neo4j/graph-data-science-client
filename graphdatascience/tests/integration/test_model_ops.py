@@ -285,6 +285,7 @@ def test_model_get_graphsage(gds: GraphDataScience, gs_model: GraphSageModel) ->
 
 
 @pytest.mark.model_store_location
+@pytest.mark.filterwarnings("ignore: The query used a deprecated procedure.")
 def test_deprecated_model_Functions_still_work(gds: GraphDataScience, gs_model: GraphSageModel) -> None:
     gds.beta.model.list()
     gds.alpha.model.store(gs_model)
