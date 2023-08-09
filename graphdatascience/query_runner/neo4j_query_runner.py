@@ -82,7 +82,7 @@ class Neo4jQueryRunner(QueryRunner):
             notifications = result.consume().notifications
             if notifications:
                 for notification in notifications:
-                    self._forward_cypher_warnings(notification, query)
+                    self._forward_cypher_warnings(notification)
 
             return df
 
@@ -115,14 +115,12 @@ class Neo4jQueryRunner(QueryRunner):
             else:
                 return future.result()
 
-    def _forward_cypher_warnings(self, notification: Dict[str, Any], query: str) -> None:
+    def _forward_cypher_warnings(self, notification: Dict[str, Any]) -> None:
         # (see https://neo4j.com/docs/status-codes/current/notifications/ for more details)
         severity = notification["severity"]
         if severity == "WARNING":
             if "query used a deprecated field from a procedure" in notification["description"]:
-                # the client does not expose YIELD fields so we just log the warning for now
-                notification["query"] = query
-                self._logger.warning(notification)
+                # the client does not expose YIELD fields so we just skip these warnings for now
                 return
 
             if "deprecated" in notification["description"]:
