@@ -6,6 +6,7 @@ from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.model.graphsage_model import GraphSageModel
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 MODEL_NAME = "gs-model"
 
@@ -42,7 +43,8 @@ def gs_model(gds: GraphDataScience, G: Graph, runner: Neo4jQueryRunner) -> Gener
 
     yield model
 
-    query = "CALL gds.model.drop($name)"
+    namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
+    query = f"CALL gds.{namespace}model.drop($name)"
     params = {"name": model.name()}
     runner.run_query(query, params)
 

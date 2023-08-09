@@ -83,7 +83,8 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
 
     yield lp_model
 
-    query = "CALL gds.model.drop($name)"
+    namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
+    query = f"CALL gds.{namespace}model.drop($name)"
     params = {"name": lp_model.name()}
     runner.run_query(query, params)
 
@@ -120,9 +121,7 @@ def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
 
     yield nc_model
 
-    query = "CALL gds.model.drop($name)"
-    params = {"name": nc_model.name()}
-    runner.run_query(query, params)
+    nc_model.drop()
 
 
 @pytest.fixture
@@ -157,7 +156,8 @@ def nr_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
 
     yield nr_model
 
-    query = "CALL gds.model.drop($name)"
+    namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
+    query = f"CALL gds.{namespace}model.drop($name)"
     params = {"name": nr_model.name()}
     runner.run_query(query, params)
 

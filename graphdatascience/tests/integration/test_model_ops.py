@@ -164,7 +164,8 @@ def gs_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
 
     yield model
 
-    query = "CALL gds.model.drop($name, false)"
+    namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
+    query = f"CALL gds.{namespace}model.drop($name)"
     params = {"name": model.name()}
     runner.run_query(query, params)
 
@@ -192,7 +193,8 @@ def test_model_publish(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model
     assert shared_model.shared()
     assert isinstance(shared_model, GraphSageModel)
 
-    query = "CALL gds.model.drop($name)"
+    namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
+    query = f"CALL gds.{namespace}model.drop($name)"
     params = {"name": shared_model.name()}
     runner.run_query(query, params)
 
