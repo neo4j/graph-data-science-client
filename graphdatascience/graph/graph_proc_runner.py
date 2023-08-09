@@ -193,6 +193,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
 
     @from_graph_type_check
+    @compatible_with("filter", min_inclusive=ServerVersion(2, 5, 0))
     def filter(
         self,
         graph_name: str,

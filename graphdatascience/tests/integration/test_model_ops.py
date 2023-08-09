@@ -164,77 +164,86 @@ def gs_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
 
     yield model
 
-    query = "CALL gds.beta.model.drop($name, false)"
+    namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
+    query = f"CALL gds.{namespace}model.drop($name, false)"
     params = {"name": model.name()}
     runner.run_query(query, params)
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_model_list(gds: GraphDataScience, lp_model: LPModel) -> None:
-    result = gds.beta.model.list()
+    result = gds.model.list()
 
     assert len(result) == 1
     assert result["modelInfo"][0]["modelName"] == lp_model.name()
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_model_exists(gds: GraphDataScience) -> None:
-    assert not gds.beta.model.exists("NOTHING")["exists"]
+    assert not gds.model.exists("NOTHING")["exists"]
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 @pytest.mark.enterprise
 def test_model_publish(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
     assert not gs_model.shared()
 
-    shared_model = gds.alpha.model.publish(gs_model)
+    shared_model = gds.model.publish(gs_model)
 
     assert shared_model.shared()
     assert isinstance(shared_model, GraphSageModel)
 
-    query = "CALL gds.beta.model.drop($name)"
+    namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
+    query = f"CALL gds.{namespace}model.drop($name)"
     params = {"name": shared_model.name()}
     runner.run_query(query, params)
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 @pytest.mark.model_store_location
 def test_model_load(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
-    runner.run_query(f"CALL gds.alpha.model.store('{gs_model.name()}')")
-    runner.run_query(f"CALL gds.beta.model.drop('{gs_model.name()}')")
+    runner.run_query(f"CALL gds.model.store('{gs_model.name()}')")
+    runner.run_query(f"CALL gds.model.drop('{gs_model.name()}')")
 
-    model, result = gds.alpha.model.load(gs_model.name())
+    model, result = gds.model.load(gs_model.name())
     assert isinstance(model, GraphSageModel)
     assert result["loadMillis"] >= 0
 
-    runner.run_query(f"CALL gds.beta.model.drop('{gs_model.name()}')")
-    runner.run_query(f"CALL gds.alpha.model.delete('{model.name()}')")
+    runner.run_query(f"CALL gds.model.drop('{gs_model.name()}')")
+    runner.run_query(f"CALL gds.model.delete('{model.name()}')")
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 @pytest.mark.model_store_location
 def test_model_store(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
-    model_name = gds.alpha.model.store(gs_model)["modelName"]
+    model_name = gds.model.store(gs_model)["modelName"]
 
     # Should be deletable now
-    runner.run_query(f"CALL gds.beta.model.drop('{gs_model.name()}')")
-    runner.run_query(f"CALL gds.alpha.model.delete('{model_name}')")
+    runner.run_query(f"CALL gds.model.drop('{gs_model.name()}')")
+    runner.run_query(f"CALL gds.model.delete('{model_name}')")
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 @pytest.mark.model_store_location
 def test_model_delete(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
-    model_name = runner.run_query(f"CALL gds.alpha.model.store('{gs_model.name()}')")["modelName"][0]
+    model_name = runner.run_query(f"CALL gds.model.store('{gs_model.name()}')")["modelName"][0]
 
     model = gds.model.get(model_name)
-    runner.run_query(f"CALL gds.beta.model.drop('{gs_model.name()}')")
-    assert gds.alpha.model.delete(model)["deleteMillis"] >= 0
+    runner.run_query(f"CALL gds.model.drop('{gs_model.name()}')")
+    assert gds.model.delete(model)["deleteMillis"] >= 0
 
-    res = runner.run_query(f"CALL gds.beta.model.exists('{model_name}')")
+    res = runner.run_query(f"CALL gds.model.exists('{model_name}')")
     assert not res["exists"][0]
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_model_drop(gds: GraphDataScience, G: Graph) -> None:
     model, _ = gds.beta.graphSage.train(G, modelName="hello", featureProperties=["age"])
 
-    assert gds.beta.model.exists(model.name())["exists"]
+    assert gds.model.exists(model.name())["exists"]
 
-    assert gds.beta.model.drop(model)["modelInfo"]["modelName"] == model.name()
-    assert not gds.beta.model.exists(model.name())["exists"]
+    assert gds.model.drop(model)["modelInfo"]["modelName"] == model.name()
+    assert not gds.model.exists(model.name())["exists"]
 
 
 def test_model_get_lp_trained(gds: GraphDataScience, lp_model: LPModel) -> None:
@@ -273,3 +282,12 @@ def test_model_get_graphsage(gds: GraphDataScience, gs_model: GraphSageModel) ->
     assert isinstance(model, GraphSageModel)
 
     model.drop()
+
+
+@pytest.mark.model_store_location
+def test_deprecated_model_Functions_still_work(gds: GraphDataScience, gs_model: GraphSageModel) -> None:
+    gds.beta.model.list()
+    gds.alpha.model.store(gs_model)
+    gds.beta.model.drop(gs_model)
+    gds.alpha.model.load(gs_model.name())
+    gds.alpha.model.delete(gs_model)

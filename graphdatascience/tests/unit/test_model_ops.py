@@ -15,40 +15,40 @@ def model(runner: CollectingQueryRunner, server_version: ServerVersion) -> Model
 
 
 def test_store_model(runner: CollectingQueryRunner, gds: GraphDataScience, model: Model) -> None:
-    gds.alpha.model.store(model, False)
+    gds.model.store(model, False)
 
-    assert runner.last_query() == "CALL gds.alpha.model.store($model_name, $fail_flag)"
+    assert runner.last_query() == "CALL gds.model.store($model_name, $fail_flag)"
     assert runner.last_params() == {"model_name": MODEL_NAME, "fail_flag": False}
 
 
 def test_list_models(runner: CollectingQueryRunner, gds: GraphDataScience, model: Model) -> None:
-    gds.beta.model.list(model)
+    gds.model.list(model)
 
-    assert runner.last_query() == "CALL gds.beta.model.list($model_name)"
+    assert runner.last_query() == "CALL gds.model.list($model_name)"
     assert runner.last_params() == {"model_name": MODEL_NAME}
 
-    gds.beta.model.list()
+    gds.model.list()
 
-    assert runner.last_query() == "CALL gds.beta.model.list()"
+    assert runner.last_query() == "CALL gds.model.list()"
     assert runner.last_params() == {}
 
 
 def test_exists_model(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    gds.beta.model.exists("my_model")
+    gds.model.exists("my_model")
 
-    assert runner.last_query() == "CALL gds.beta.model.exists($model_name)"
+    assert runner.last_query() == "CALL gds.model.exists($model_name)"
     assert runner.last_params() == {"model_name": "my_model"}
 
 
 def test_drop_model(runner: CollectingQueryRunner, gds: GraphDataScience, model: Model) -> None:
-    gds.beta.model.drop(model)
+    gds.model.drop(model)
 
-    assert runner.last_query() == "CALL gds.beta.model.drop($model_name)"
+    assert runner.last_query() == "CALL gds.model.drop($model_name)"
     assert runner.last_params() == {"model_name": MODEL_NAME}
 
 
 def test_delete_model(runner: CollectingQueryRunner, gds: GraphDataScience, model: Model) -> None:
-    gds.alpha.model.delete(model)
+    gds.model.delete(model)
 
-    assert runner.last_query() == "CALL gds.alpha.model.delete($model_name)"
+    assert runner.last_query() == "CALL gds.model.delete($model_name)"
     assert runner.last_params() == {"model_name": MODEL_NAME}
