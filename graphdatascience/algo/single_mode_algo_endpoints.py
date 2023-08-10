@@ -1,7 +1,7 @@
 from ..caller_base import CallerBase
-from .algo_proc_runner import StreamModeRunner
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
+from .algo_proc_runner import StreamModeRunner
 
 
 # these algorithms have only one mode
