@@ -1606,6 +1606,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Triangle counting is a community detection graph algorithm that is used to
     determine the number of triangles passing through each node in the graph.
 
+.. py:function:: gds.triangles(G: Graph, **config: Any) -> DataFrame
+
+    Triangles streams the nodeIds of each triangle in the graph.
+
 .. py:function:: gds.wcc.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The WCC algorithm finds sets of connected nodes in an undirected graph,
