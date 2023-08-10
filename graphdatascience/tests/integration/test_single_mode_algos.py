@@ -41,7 +41,7 @@ def test_triangles(gds: GraphDataScience) -> None:
     assert len(result) == 1
 
 
-@pytest.mark.compatible_with(max_exlusive=ServerVersion(2, 5, 0))
+@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 5, 0))
 def test_alpha_triangles(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"orientation": "UNDIRECTED"}})
 
