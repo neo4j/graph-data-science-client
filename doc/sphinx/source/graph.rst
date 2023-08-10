@@ -108,6 +108,14 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Computes a random graph, which will be stored in the graph catalog.
 
+.. py:function:: gds.graph.graphProperty.drop(G: Graph, graph_property: str, **config: Any) -> Series[Any]
+
+    Removes a graph property from a projected graph.
+
+.. py:function:: gds.graph.graphProperty.stream(G: Graph, graph_property: str, **config: Any) -> DataFrame
+
+    Streams the given graph property.
+
 .. py:function:: gds.graph.list(G: Optional[Graph] = None) -> DataFrame
 
     Lists information about named graphs stored in the catalog.

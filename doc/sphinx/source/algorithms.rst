@@ -293,7 +293,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Triangles streams the nodeIds of each triangle in the graph.
 .. deprecated:: 2.5.0
-    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.listProgress` instead.
+    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.triangles` instead.
 
 .. py:function:: gds.articleRank.mutate(G: Graph, **config: Any) -> Series[Any]
 

@@ -17,7 +17,6 @@ def G(gds: GraphDataScience) -> Graph:
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_simple_mutate(runner: CollectingQueryRunner, gds: GraphDataScience, G: Graph) -> None:
     gds.triangles(G, maxDegree=2)
-
     assert runner.last_query() == "CALL gds.triangles($graph_name, $config)"
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
