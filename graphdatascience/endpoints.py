@@ -1,4 +1,4 @@
-from .algo.single_mode_algo_endpoints import SingleModeAlgoEndpoints
+from .algo.single_mode_algo_endpoints import SingleModeAlgoEndpoints, SingleModeAlphaAlgoEndpoints
 from .call_builder import IndirectAlphaCallBuilder, IndirectBetaCallBuilder
 from .graph.graph_endpoints import (
     GraphAlphaEndpoints,
@@ -32,7 +32,7 @@ the `gds` namespace. Example of such endpoints are: "graph" and "list".
 """
 
 
-class DirectEndpoints(DirectSystemEndpoints, DirectUtilEndpoints, GraphEndpoints, PipelineEndpoints, ModelEndpoints):
+class DirectEndpoints(SingleModeAlgoEndpoints,DirectSystemEndpoints, DirectUtilEndpoints, GraphEndpoints, PipelineEndpoints, ModelEndpoints):
     def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
         super().__init__(query_runner, namespace, server_version)
 
@@ -48,7 +48,7 @@ class AlphaEndpoints(
     PipelineAlphaEndpoints,
     TopologicalLPAlphaEndpoints,
     ModelAlphaEndpoints,
-    SingleModeAlgoEndpoints,
+    SingleModeAlphaAlgoEndpoints,
     SystemAlphaEndpoints,
     ConfigEndpoints,
 ):

@@ -2,6 +2,7 @@ import pytest
 
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 
 GRAPH_NAME = "g"
@@ -13,10 +14,11 @@ def G(gds: GraphDataScience) -> Graph:
     return G_
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_simple_mutate(runner: CollectingQueryRunner, gds: GraphDataScience, G: Graph) -> None:
-    gds.alpha.triangles(G, maxDegree=2)
+    gds.triangles(G, maxDegree=2)
 
-    assert runner.last_query() == "CALL gds.alpha.triangles($graph_name, $config)"
+    assert runner.last_query() == "CALL gds.triangles($graph_name, $config)"
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
         "config": {"maxDegree": 2},

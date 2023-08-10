@@ -86,7 +86,7 @@ EXAMPLE_SERVER_ENDPOINTS = [
     "gds.alpha.sllpa.write",
     "gds.alpha.sllpa.write.estimate",
     "gds.alpha.systemMonitor",
-    "gds.alpha.triangles",
+    "gds.triangles",
     "gds.alpha.userLog",
     "gds.articleRank.mutate",
     "gds.articleRank.mutate.estimate",
