@@ -6,6 +6,7 @@ from pandas import DataFrame, Series
 
 from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
+from .error.gds_not_installed import GdsNotFound
 from .error.unable_to_connect import UnableToConnectError
 from .error.uncallable_namespace import UncallableNamespace
 from .query_runner.arrow_query_runner import ArrowQueryRunner
@@ -92,6 +93,13 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         try:
             server_version_string = self._query_runner.run_query("RETURN gds.version()", custom_error=False).squeeze()
         except Exception as e:
+            if "Unknown function 'gds.version'" in str(e):
+                raise GdsNotFound(
+                    """The Graph Data Science library is not correctly installed on the Neo4j server.
+                    Please refer to https://neo4j.com/docs/graph-data-science/current/installation/.
+                    """
+                )
+
             raise UnableToConnectError(e)
         finally:
             # Some Python versions appear to not call __del__ of self._query_runner when an exception
