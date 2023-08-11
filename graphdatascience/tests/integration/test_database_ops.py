@@ -23,12 +23,12 @@ def test_switching_db(runner: Neo4jQueryRunner) -> None:
 
     MY_DB_NAME = "my-db"
     runner.run_query("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
-    runner.set_database(MY_DB_NAME)
-
-    post_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
-
     try:
-        assert post_count == 0
+        runner.set_database(MY_DB_NAME)
+
+        with pytest.raises(RuntimeWarning, match="One of the labels in your query is not available in the database"):
+            post_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
+            assert post_count == 0
     finally:
         runner.set_database(default_database)  # type: ignore
         runner.run_query("MATCH (n) DETACH DELETE n")
@@ -69,10 +69,10 @@ def test_run_query_with_db(runner: Neo4jQueryRunner) -> None:
     MY_DB_NAME = "my-db"
     runner.run_query("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
-    specified_db_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)["c"][0]
-
     try:
-        assert specified_db_count == 0
+        with pytest.raises(RuntimeWarning, match="One of the labels in your query is not available in the database"):
+            specified_db_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)["c"][0]
+            assert specified_db_count == 0
     finally:
         runner.run_query("MATCH (n) DETACH DELETE n")
         runner.run_query("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
@@ -90,12 +90,12 @@ def test_initialize_with_db(runner: Neo4jQueryRunner) -> None:
 
     gds_with_specified_db = GraphDataScience(URI, AUTH, database=MY_DB_NAME)
 
-    specified_db_count = gds_with_specified_db.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)[
-        "c"
-    ][0]
-
     try:
-        assert specified_db_count == 0
+        with pytest.raises(RuntimeWarning, match="One of the labels in your query is not available in the database"):
+            specified_db_count = gds_with_specified_db.run_cypher(
+                "MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME
+            )["c"][0]
+            assert specified_db_count == 0
     finally:
         runner.run_query("MATCH (n) DETACH DELETE n")
         runner.run_query("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})

@@ -153,9 +153,7 @@ def test_train_unfiltered_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrain
     assert lp_model.name() == "m"
     assert result["configuration"]["modelName"] == "m"
 
-    query = "CALL gds.beta.model.drop($name)"
-    params = {"name": lp_model.name()}
-    runner.run_query(query, params)
+    lp_model.drop()
 
 
 @pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
@@ -183,9 +181,7 @@ def test_train_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline
     assert lp_model.name() == "m"
     assert result["configuration"]["modelName"] == "m"
 
-    query = "CALL gds.beta.model.drop($name)"
-    params = {"name": lp_model.name()}
-    runner.run_query(query, params)
+    lp_model.drop()
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
@@ -322,9 +318,7 @@ def test_train_nc_pipeline(runner: Neo4jQueryRunner, nc_pipe: NCTrainingPipeline
     assert nc_model.name() == "m"
     assert result["configuration"]["modelName"] == "m"
 
-    query = "CALL gds.beta.model.drop($name)"
-    params = {"name": nc_model.name()}
-    runner.run_query(query, params)
+    nc_model.drop()
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
@@ -340,9 +334,7 @@ def test_train_nr_pipeline(runner: Neo4jQueryRunner, nr_pipe: NRTrainingPipeline
     assert nr_model.name() == "m"
     assert result["configuration"]["modelName"] == "m"
 
-    query = "CALL gds.beta.model.drop($name)"
-    params = {"name": nr_model.name()}
-    runner.run_query(query, params)
+    nr_model.drop()
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))

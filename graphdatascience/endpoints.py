@@ -1,4 +1,7 @@
-from .algo.single_mode_algo_endpoints import SingleModeAlgoEndpoints
+from .algo.single_mode_algo_endpoints import (
+    SingleModeAlgoEndpoints,
+    SingleModeAlphaAlgoEndpoints,
+)
 from .call_builder import IndirectAlphaCallBuilder, IndirectBetaCallBuilder
 from .graph.graph_endpoints import (
     GraphAlphaEndpoints,
@@ -32,14 +35,21 @@ the `gds` namespace. Example of such endpoints are: "graph" and "list".
 """
 
 
-class DirectEndpoints(DirectSystemEndpoints, DirectUtilEndpoints, GraphEndpoints, PipelineEndpoints, ModelEndpoints):
+class DirectEndpoints(
+    SingleModeAlgoEndpoints,
+    DirectSystemEndpoints,
+    DirectUtilEndpoints,
+    GraphEndpoints,
+    PipelineEndpoints,
+    ModelEndpoints,
+):
     def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
         super().__init__(query_runner, namespace, server_version)
 
 
 """
 This class should inherit endpoint classes that only expose calls of the `gds.beta` namespace.
-Example of such endpoints are: "gds.alpha.model.store" and "gds.alpha.listProgress".
+Example of such endpoints: "gds.alpha.listProgress".
 """
 
 
@@ -48,7 +58,7 @@ class AlphaEndpoints(
     PipelineAlphaEndpoints,
     TopologicalLPAlphaEndpoints,
     ModelAlphaEndpoints,
-    SingleModeAlgoEndpoints,
+    SingleModeAlphaAlgoEndpoints,
     SystemAlphaEndpoints,
     ConfigEndpoints,
 ):
@@ -61,7 +71,7 @@ class AlphaEndpoints(
 
 """
 This class should inherit endpoint classes that only expose calls of the `gds.beta` namespace.
-Example of such endpoints are: "gds.beta.model.list" and "gds.beta.listProgress".
+Example of such endpoints:  "gds.beta.listProgress".
 """
 
 

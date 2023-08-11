@@ -20,7 +20,9 @@ class Model(ABC):
         pass
 
     def _list_info(self) -> DataFrame:
-        query = "CALL gds.beta.model.list($name)"
+        name_space = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
+        query = f"CALL gds.{name_space}model.list($name)"
+
         params = {"name": self.name()}
 
         info = self._query_runner.run_query(query, params, custom_error=False)
@@ -137,7 +139,9 @@ class Model(ABC):
             True if the model exists, False otherwise.
 
         """
-        query = "CALL gds.beta.model.exists($model_name) YIELD exists"
+        name_space = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
+        query = f"CALL gds.{name_space}model.exists($model_name) YIELD exists"
+
         params = {"model_name": self._name}
 
         return self._query_runner.run_query(query, params, custom_error=False).squeeze()  # type: ignore
@@ -153,7 +157,9 @@ class Model(ABC):
             The result of the drop operation.
 
         """
-        query = "CALL gds.beta.model.drop($model_name, $fail_if_missing)"
+        name_space = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
+        query = f"CALL gds.{name_space}model.drop($model_name, $fail_if_missing)"
+
         params = {"model_name": self._name, "fail_if_missing": failIfMissing}
 
         return self._query_runner.run_query(query, params, custom_error=False).squeeze()  # type: ignore
