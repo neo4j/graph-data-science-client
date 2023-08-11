@@ -292,6 +292,8 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.alpha.triangles(G: Graph, **config: Any) -> DataFrame
 
     Triangles streams the nodeIds of each triangle in the graph.
+.. deprecated:: 2.5.0
+    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.triangles` instead.
 
 .. py:function:: gds.articleRank.mutate(G: Graph, **config: Any) -> Series[Any]
 
@@ -782,6 +784,14 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Evaluates a division of nodes into communities based on the proportion of relationships
     that cross community boundaries.
+
+.. py:function:: gds.dag.topologicalSort.stream(G: Graph, **config: Any) -> DataFrame
+
+    Returns a topological ordering of the nodes in a directed acyclic graph (DAG).
+
+.. py:function:: gds.dag.longestPath.stream(G: Graph, **config: Any) -> DataFrame
+
+    Finds the longest path that leads to a node in a directed acyclic graph (DAG).
 
 .. py:function:: gds.degree.mutate(G: Graph, **config: Any) -> Series[Any]
 

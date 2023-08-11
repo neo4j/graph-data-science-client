@@ -15,6 +15,7 @@ from ..server_version.server_version import ServerVersion
 from .graph_entity_ops_runner import (
     GraphElementPropertyRunner,
     GraphNodePropertiesRunner,
+    GraphPropertyRunner,
     GraphRelationshipPropertiesRunner,
     GraphRelationshipRunner,
     GraphRelationshipsRunner,
@@ -168,6 +169,12 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def project(self) -> GraphProjectRunner:
         self._namespace += ".project"
         return GraphProjectRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    @compatible_with("graphProperty", min_inclusive=ServerVersion(2, 5, 0))
+    def graphProperty(self) -> GraphPropertyRunner:
+        self._namespace += ".graphProperty"
+        return GraphPropertyRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def cypher(self) -> GraphCypherRunner:
