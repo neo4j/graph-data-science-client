@@ -785,6 +785,14 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Evaluates a division of nodes into communities based on the proportion of relationships
     that cross community boundaries.
 
+.. py:function:: gds.dag.topologicalSort.stream(G: Graph, **config: Any) -> DataFrame
+
+    Returns a topological ordering of the nodes in a directed acyclic graph (DAG).
+
+.. py:function:: gds.dag.longestPath.stream(G: Graph, **config: Any) -> DataFrame
+
+    Finds the longest path that leads to a node in a directed acyclic graph (DAG).
+
 .. py:function:: gds.degree.mutate(G: Graph, **config: Any) -> Series[Any]
 
     Degree centrality measures the number of incoming and outgoing relationships from a node.
