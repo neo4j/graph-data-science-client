@@ -116,9 +116,6 @@ Note that a user can tag the same artist multiple times with different `tagID`.
 The default is to load LastFM dataset as `undirected = True`.
 If loaded as directed, it will have half the relationships.
 
-The default is to load all tagging relationships as one `TAGGED` relationship type with `hetero_tag_rel = False`.
-If `hetero_tag_rel = True`, each `TAGGED` relationship will become a `TAGGED_$tagID` relationship, encoding tags with different ids as different relationship types.
-There are 9749 different tagIDs resulting in 9749 different relationship types.
 
 .Default LastFM graph statistics
 [opts="header",cols="3m,3m", role="no-break"]
