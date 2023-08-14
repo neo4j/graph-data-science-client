@@ -136,6 +136,8 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.alpha.kSpanningTree.write(G: Graph, **config: Any) -> Series[Any]
 
     The K-spanning tree algorithm starts from a root node and returns a spanning tree with exactly k nodes
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kSpanningTree.write` instead.
 
 .. py:function:: gds.alpha.knn.filtered.mutate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1107,6 +1109,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.knn.filtered.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.kSpanningTree.write(G: Graph, **config: Any) -> Series[Any]
+
+    The K-spanning tree algorithm starts from a root node and returns a spanning tree with exactly k nodes
 
 .. py:function:: gds.labelPropagation.mutate(G: Graph, **config: Any) -> Series[Any]
 
