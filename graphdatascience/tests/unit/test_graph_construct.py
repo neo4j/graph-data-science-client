@@ -262,3 +262,7 @@ def test_graph_alpha_construct_backward_compat(runner: CollectingQueryRunner, gd
 
     with pytest.warns(DeprecationWarning):
         gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2)
+
+def test_nodes_graph(gds: GraphDataScience) -> None:
+    gds.graph.construct("hello", nodes = DataFrame({"nodeId": [0, 1]}), concurrency=2)
+    gds.graph.construct("hello", nodes = DataFrame({"nodeId": [0, 1]}), relationships=[], concurrency=2)

@@ -395,7 +395,6 @@ def test_graph_construct_with_arrow_multiple_dfs(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.enterprise
-@pytest.mark.skip_on_aura  # Should not warn when targeting AuraDS
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_graph_construct_without_arrow_enterprise_warning(gds_without_arrow: GraphDataScience) -> None:
     nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
@@ -475,6 +474,26 @@ def test_graph_alpha_construct_backward_compat_without_arrow(gds_without_arrow: 
 
     with pytest.warns(DeprecationWarning):
         gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
+
+
+def test_nodes_only_with_out__arrow(gds_without_arrow: GraphDataScience) -> None:
+    nodes = DataFrame({"nodeId": [0], "labels": ["person"]})
+    relationships = DataFrame({"sourceNodeId": [], "targetNodeId": [], "relationshipType": []})
+
+    G = gds_without_arrow.graph.construct(graph_name="my_graph", nodes=nodes, relationships=relationships)
+
+    assert G.node_count() == 1
+    assert G.node_properties("person") == []
+
+@pytest.mark.enterprise
+def test_nodes_only(gds: GraphDataScience) -> None:
+    nodes = DataFrame({"nodeId": [0], "labels": ["person"]})
+    relationships = DataFrame({"sourceNodeId": [], "targetNodeId": [], "relationshipType": []})
+
+    G = gds.graph.construct(graph_name="my_graph", nodes=nodes, relationships=relationships)
+
+    assert G.node_count() == 1
+    assert G.node_properties("person") == []
 
 
 @pytest.mark.enterprise

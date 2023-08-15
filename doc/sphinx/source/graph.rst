@@ -5,7 +5,7 @@ This includes all the methods for projecting, deleting, and listing graphs, as w
 These all assume that an object of :class:`.GraphDataScience` is available as `gds`.
 
 
-.. py:function:: gds.graph.construct(graph_name: str, nodes: Union[DataFrame, List[DataFrame]], relationships: Union[DataFrame, List[DataFrame]], concurrency: int = 4, undirected_relationship_types: Optional[List[str]] = None) -> Graph
+.. py:function:: gds.graph.construct(graph_name: str, nodes: Union[DataFrame, List[DataFrame]], relationships: Union[DataFrame, List[DataFrame]] = None, concurrency: int = 4, undirected_relationship_types: Optional[List[str]] = None) -> Graph
 
     Constructs a new graph in the graph catalog, using the provided node and relationship data frames.
 
