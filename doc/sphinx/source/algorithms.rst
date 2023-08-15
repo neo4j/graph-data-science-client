@@ -66,10 +66,18 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.allShortestPaths.stream(G: Graph, **config: Any) -> DataFrame
+
+    The All Pairs Shortest Path (APSP) calculates the shortest (weighted) path
+    between all pairs of nodes.
+
 .. py:function:: gds.alpha.allShortestPaths.stream(G: Graph, **config: Any) -> DataFrame
 
     The All Pairs Shortest Path (APSP) calculates the shortest (weighted) path
     between all pairs of nodes.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.allShortestPaths.stream` instead.
 
 .. py:function:: gds.alpha.closeness.harmonic.stream(G: Graph, **config: Any) -> DataFrame
 
