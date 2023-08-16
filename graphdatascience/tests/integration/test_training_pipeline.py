@@ -87,10 +87,7 @@ def test_create_lp_pipeline(runner: Neo4jQueryRunner, gds: GraphDataScience) -> 
     assert pipe.name() == "hello"
     assert result["name"] == pipe.name()
 
-    query = "CALL gds.pipeline.exists($name)"
-    params = {"name": pipe.name()}
-    result2 = runner.run_query(query, params)
-    assert result2["exists"][0]
+    assert pipe.exists()
 
     pipe.drop()
 

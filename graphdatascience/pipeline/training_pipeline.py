@@ -193,7 +193,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         return auto_tuning_config
 
     def _list_info(self) -> DataFrame:
-        query = f"CALL gds{self._tier_namespace}.pipeline.list($name)"
+        query = f"CALL gds{self._tier_namespace()}.pipeline.list($name)"
         params = {"name": self.name()}
 
         info = self._query_runner.run_query(query, params, custom_error=False)
