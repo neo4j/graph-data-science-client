@@ -14,26 +14,26 @@ def pipeline(runner: CollectingQueryRunner, server_version: ServerVersion) -> LP
 
 
 def test_list_pipelines(runner: CollectingQueryRunner, gds: GraphDataScience, pipeline: LPTrainingPipeline) -> None:
-    gds.beta.pipeline.list(pipeline)
+    gds.pipeline.list(pipeline)
 
-    assert runner.last_query() == "CALL gds.beta.pipeline.list($pipeline_name)"
+    assert runner.last_query() == "CALL gds.pipeline.list($pipeline_name)"
     assert runner.last_params() == {"pipeline_name": PIPELINE_NAME}
 
-    gds.beta.pipeline.list()
+    gds.pipeline.list()
 
-    assert runner.last_query() == "CALL gds.beta.pipeline.list()"
+    assert runner.last_query() == "CALL gds.pipeline.list()"
     assert runner.last_params() == {}
 
 
 def test_exists_pipeline(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    gds.beta.pipeline.exists("my_pipeline")
+    gds.pipeline.exists("my_pipeline")
 
-    assert runner.last_query() == "CALL gds.beta.pipeline.exists($pipeline_name)"
+    assert runner.last_query() == "CALL gds.pipeline.exists($pipeline_name)"
     assert runner.last_params() == {"pipeline_name": "my_pipeline"}
 
 
 def test_drop_pipeline(runner: CollectingQueryRunner, gds: GraphDataScience, pipeline: LPTrainingPipeline) -> None:
-    gds.beta.pipeline.drop(pipeline)
+    gds.pipeline.drop(pipeline)
 
-    assert runner.last_query() == "CALL gds.beta.pipeline.drop($pipeline_name)"
+    assert runner.last_query() == "CALL gds.pipeline.drop($pipeline_name)"
     assert runner.last_params() == {"pipeline_name": PIPELINE_NAME}

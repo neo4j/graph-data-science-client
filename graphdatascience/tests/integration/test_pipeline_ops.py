@@ -16,9 +16,7 @@ def lp_pipe(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[LPTrai
 
     yield pipe
 
-    query = "CALL gds.beta.pipeline.drop($name)"
-    params = {"name": pipe.name()}
-    runner.run_query(query, params)
+    pipe.drop()
 
 
 @pytest.fixture
@@ -27,28 +25,34 @@ def nc_pipe(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[NCTrai
 
     yield pipe
 
-    query = "CALL gds.beta.pipeline.drop($name)"
-    params = {"name": pipe.name()}
-    runner.run_query(query, params)
+    pipe.drop()
 
 
 def test_pipeline_list(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> None:
-    result = gds.beta.pipeline.list()
+    result = gds.pipeline.list()
 
     assert len(result) == 1
     assert result["pipelineName"][0] == lp_pipe.name()
 
 
 def test_pipeline_exists(gds: GraphDataScience) -> None:
-    assert not gds.beta.pipeline.exists("NOTHING")["exists"]
+    assert not gds.pipeline.exists("NOTHING")["exists"]
 
 
 def test_pipeline_drop(gds: GraphDataScience) -> None:
     pipe, _ = gds.beta.pipeline.linkPrediction.create(PIPE_NAME)
-    assert gds.beta.pipeline.exists(pipe.name())["exists"]
+    assert gds.pipeline.exists(pipe.name())["exists"]
 
+    assert gds.pipeline.drop(pipe)["pipelineName"] == pipe.name()
+    assert not gds.pipeline.exists(pipe.name())["exists"]
+
+
+def test_pipeline_beta_endpoints(gds: GraphDataScience) -> None:
+    pipe = gds.lp_pipe(PIPE_NAME)
+
+    assert gds.beta.pipeline.exists(pipe.name())["exists"]
+    assert gds.beta.pipeline.list(pipe)["pipelineName"][0] == pipe.name()
     assert gds.beta.pipeline.drop(pipe)["pipelineName"] == pipe.name()
-    assert not gds.beta.pipeline.exists(pipe.name())["exists"]
 
 
 def test_pipeline_get_lp(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> None:

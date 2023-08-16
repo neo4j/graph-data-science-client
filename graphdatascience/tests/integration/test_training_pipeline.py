@@ -61,9 +61,7 @@ def lp_pipe(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[LPTrai
 
     yield pipe
 
-    query = "CALL gds.beta.pipeline.drop($name)"
-    params = {"name": pipe.name()}
-    runner.run_query(query, params)
+    pipe.drop()
 
 
 @pytest.fixture
@@ -72,9 +70,7 @@ def nc_pipe(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[NCTrai
 
     yield pipe
 
-    query = "CALL gds.beta.pipeline.drop($name)"
-    params = {"name": pipe.name()}
-    runner.run_query(query, params)
+    pipe.drop()
 
 
 @pytest.fixture
@@ -83,9 +79,7 @@ def nr_pipe(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[NRTrai
 
     yield pipe
 
-    query = "CALL gds.beta.pipeline.drop($name)"
-    params = {"name": pipe.name()}
-    runner.run_query(query, params)
+    pipe.drop()
 
 
 def test_create_lp_pipeline(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
@@ -93,27 +87,21 @@ def test_create_lp_pipeline(runner: Neo4jQueryRunner, gds: GraphDataScience) -> 
     assert pipe.name() == "hello"
     assert result["name"] == pipe.name()
 
-    query = "CALL gds.beta.pipeline.exists($name)"
+    query = "CALL gds.pipeline.exists($name)"
     params = {"name": pipe.name()}
     result2 = runner.run_query(query, params)
     assert result2["exists"][0]
 
-    query = "CALL gds.beta.pipeline.drop($name)"
-    params = {"name": pipe.name()}
-    runner.run_query(query, params)
+    pipe.drop()
 
 
 def test_add_node_property_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
     result = lp_pipe.addNodeProperty("pageRank", mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
     assert len(result["nodePropertySteps"]) == 1
 
-    query = "CALL gds.beta.pipeline.list($name)"
-    params = {"name": lp_pipe.name()}
-    pipeline_info = runner.run_query(query, params)["pipelineInfo"][0]
-
-    steps = pipeline_info["featurePipeline"]["nodePropertySteps"]
+    steps = lp_pipe.node_property_steps()
     assert len(steps) == 1
-    assert steps[0]["name"] == "gds.pageRank.mutate"
+    assert steps["name"][0] == "gds.pageRank.mutate"
 
 
 def test_add_feature_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
@@ -122,24 +110,16 @@ def test_add_feature_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPi
     result = lp_pipe.addFeature("l2", nodeProperties=["degree"])
     assert result["featureSteps"][0]["name"] == "L2"
 
-    query = "CALL gds.beta.pipeline.list($name)"
-    params = {"name": lp_pipe.name()}
-    pipeline_info = runner.run_query(query, params)["pipelineInfo"][0]
-
-    steps = pipeline_info["featurePipeline"]["featureSteps"]
+    steps = lp_pipe.feature_steps()
     assert len(steps) == 1
-    assert steps[0]["name"] == "L2"
+    assert steps["name"][0] == "L2"
 
 
 def test_configure_split_lp_pipeline(runner: Neo4jQueryRunner, lp_pipe: LPTrainingPipeline) -> None:
     result = lp_pipe.configureSplit(trainFraction=0.42)
     assert result["splitConfig"]["trainFraction"] == 0.42
 
-    query = "CALL gds.beta.pipeline.list($name)"
-    params = {"name": lp_pipe.name()}
-    pipeline_info = runner.run_query(query, params)["pipelineInfo"][0]
-
-    assert pipeline_info["splitConfig"]["trainFraction"] == 0.42
+    assert lp_pipe.split_config()["trainFraction"] == 0.42
 
 
 @pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 2, 0))
@@ -288,11 +268,7 @@ def test_select_features_nc_pipeline(runner: Neo4jQueryRunner, nc_pipe: NCTraini
     result = nc_pipe.selectFeatures("rank")
     assert result["featureProperties"][0] == "rank"
 
-    query = "CALL gds.beta.pipeline.list($name)"
-    params = {"name": nc_pipe.name()}
-    pipeline_info = runner.run_query(query, params)["pipelineInfo"][0]
-
-    steps = pipeline_info["featurePipeline"]["featureProperties"]
+    steps = nc_pipe.feature_properties()
     assert len(steps) == 1
     assert steps[0]["feature"] == "rank"
 

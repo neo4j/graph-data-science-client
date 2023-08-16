@@ -193,7 +193,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         return auto_tuning_config
 
     def _list_info(self) -> DataFrame:
-        query = "CALL gds.beta.pipeline.list($name)"
+        query = f"CALL gds{self._tier_namespace}.pipeline.list($name)"
         params = {"name": self.name()}
 
         info = self._query_runner.run_query(query, params, custom_error=False)
@@ -232,7 +232,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
             True if the pipeline exists, False otherwise.
 
         """
-        query = "CALL gds.beta.pipeline.exists($pipeline_name) YIELD exists"
+        query = f"CALL gds{self._tier_namespace()}.pipeline.exists($pipeline_name) YIELD exists"
         params = {"pipeline_name": self._name}
 
         return self._query_runner.run_query(query, params, custom_error=False)["exists"].squeeze()  # type: ignore
@@ -248,10 +248,13 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
             The result of the query.
 
         """
-        query = "CALL gds.beta.pipeline.drop($pipeline_name, $fail_if_missing)"
+        query = f"CALL gds{self._tier_namespace()}.pipeline.drop($pipeline_name, $fail_if_missing)"
         params = {"pipeline_name": self._name, "fail_if_missing": failIfMissing}
 
         return self._query_runner.run_query(query, params, custom_error=False).squeeze()  # type: ignore
+
+    def _tier_namespace(self) -> str:
+        return "" if self._server_version >= ServerVersion(2, 4, 0) else ".beta"
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}(name={self.name()}, type={self.type()})"

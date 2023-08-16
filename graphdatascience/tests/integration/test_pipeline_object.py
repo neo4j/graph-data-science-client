@@ -17,9 +17,7 @@ def pipe(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[LPTrainin
 
     yield pipe
 
-    query = "CALL gds.beta.pipeline.drop($name)"
-    params = {"name": pipe.name()}
-    runner.run_query(query, params)
+    pipe.drop()
 
 
 def test_pipeline_name(pipe: LPTrainingPipeline) -> None:

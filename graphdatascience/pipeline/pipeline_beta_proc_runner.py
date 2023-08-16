@@ -7,6 +7,7 @@ from ..error.uncallable_namespace import UncallableNamespace
 from ..model.pipeline_model import PipelineModel
 from .lp_pipeline_create_runner import LPPipelineCreateRunner
 from .nc_pipeline_create_runner import NCPipelineCreateRunner
+from .pipeline_proc_runner import PipelineProcRunner
 from .training_pipeline import TrainingPipeline
 
 
@@ -20,29 +21,10 @@ class PipelineBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
         return NCPipelineCreateRunner(self._query_runner, f"{self._namespace}.nodeClassification", self._server_version)
 
     def list(self, pipeline: Optional[TrainingPipeline[PipelineModel]] = None) -> DataFrame:
-        self._namespace += ".list"
-
-        if pipeline:
-            query = f"CALL {self._namespace}($pipeline_name)"
-            params = {"pipeline_name": pipeline.name()}
-        else:
-            query = f"CALL {self._namespace}()"
-            params = {}
-
-        return self._query_runner.run_query(query, params)
+        return PipelineProcRunner(self._query_runner, self._namespace, self._server_version).list(pipeline)
 
     def exists(self, pipeline_name: str) -> "Series[Any]":
-        self._namespace += ".exists"
-
-        query = f"CALL {self._namespace}($pipeline_name)"
-        params = {"pipeline_name": pipeline_name}
-
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return PipelineProcRunner(self._query_runner, self._namespace, self._server_version).exists(pipeline_name)
 
     def drop(self, pipeline: TrainingPipeline[PipelineModel]) -> "Series[Any]":
-        self._namespace += ".drop"
-
-        query = f"CALL {self._namespace}($pipeline_name)"
-        params = {"pipeline_name": pipeline.name()}
-
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return PipelineProcRunner(self._query_runner, self._namespace, self._server_version).drop(pipeline)
