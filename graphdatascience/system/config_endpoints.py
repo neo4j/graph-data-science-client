@@ -5,6 +5,8 @@ from pandas import DataFrame
 from graphdatascience.caller_base import CallerBase
 from graphdatascience.error.illegal_attr_checker import IllegalAttrChecker
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
+from graphdatascience.server_version.compatible_with import compatible_with
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 class ConfigProcRunner(IllegalAttrChecker, UncallableNamespace):
@@ -49,7 +51,14 @@ class ConfigIntermediateSteps(CallerBase):
         return ConfigProcRunner(self._query_runner, f"{self._namespace}.limits", self._server_version)
 
 
+class AlphaConfigEndpoints(CallerBase):
+    @property
+    def config(self) -> ConfigIntermediateSteps:
+        return ConfigIntermediateSteps(self._query_runner, f"{self._namespace}.config", self._server_version)
+
+
 class ConfigEndpoints(CallerBase):
     @property
+    @compatible_with("config", min_inclusive=ServerVersion(2, 5, 0))
     def config(self) -> ConfigIntermediateSteps:
         return ConfigIntermediateSteps(self._query_runner, f"{self._namespace}.config", self._server_version)

@@ -20,7 +20,7 @@ from .pipeline.pipeline_endpoints import (
 )
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
-from .system.config_endpoints import ConfigEndpoints
+from .system.config_endpoints import AlphaConfigEndpoints, ConfigEndpoints
 from .system.system_endpoints import (
     DirectSystemEndpoints,
     SystemAlphaEndpoints,
@@ -42,6 +42,7 @@ class DirectEndpoints(
     GraphEndpoints,
     PipelineEndpoints,
     ModelEndpoints,
+    ConfigEndpoints,
 ):
     def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
         super().__init__(query_runner, namespace, server_version)
@@ -60,7 +61,7 @@ class AlphaEndpoints(
     ModelAlphaEndpoints,
     SingleModeAlphaAlgoEndpoints,
     SystemAlphaEndpoints,
-    ConfigEndpoints,
+    AlphaConfigEndpoints,
 ):
     def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
         super().__init__(query_runner, namespace, server_version)
