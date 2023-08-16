@@ -61,4 +61,4 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
         raise ValueError(f"Unknown model type encountered: '{pipeline_type}'")
 
     def _tier_namespace(self) -> str:
-        return "" if self._server_version >= ServerVersion(2, 4, 0) else ".beta"
+        return "" if self._server_version >= ServerVersion(2, 5, 0) else ".beta"
