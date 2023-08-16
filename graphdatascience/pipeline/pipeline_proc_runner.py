@@ -10,11 +10,15 @@ from .lp_training_pipeline import LPTrainingPipeline
 from .nc_training_pipeline import NCTrainingPipeline
 from .nr_training_pipeline import NRTrainingPipeline
 from .training_pipeline import TrainingPipeline
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
     @client_only_endpoint("gds.pipeline")
     def get(self, pipeline_name: str) -> TrainingPipeline[PipelineModel]:
+        # as it was a client only endpoint, exists need
+        if self._server_version < ServerVersion(2, 5, 0):
+            self._namespace = "gds.beta.pipeline"
         result = self.exists(pipeline_name)
         if result["exists"]:
             return self._resolve_pipeline(result["pipelineType"], result["pipelineName"])
