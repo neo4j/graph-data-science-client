@@ -37,3 +37,16 @@ def test_drop_pipeline(runner: CollectingQueryRunner, gds: GraphDataScience, pip
 
     assert runner.last_query() == "CALL gds.pipeline.drop($pipeline_name)"
     assert runner.last_params() == {"pipeline_name": PIPELINE_NAME}
+
+
+def test_deprecated_pipeline_ops(
+    runner: CollectingQueryRunner, gds: GraphDataScience, pipeline: LPTrainingPipeline
+) -> None:
+    gds.beta.pipeline.drop(pipeline)
+    assert runner.last_query() == "CALL gds.beta.pipeline.drop($pipeline_name)"
+
+    gds.beta.pipeline.exists(pipeline.name())
+    assert runner.last_query() == "CALL gds.beta.pipeline.exists($pipeline_name)"
+
+    gds.beta.pipeline.list()
+    assert runner.last_query() == "CALL gds.beta.pipeline.list()"
