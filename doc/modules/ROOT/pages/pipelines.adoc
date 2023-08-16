@@ -538,10 +538,10 @@ For instance, supposing we have a pipeline object `pipe`, we could:
 
 [source,python,group=nr-pipe]
 ----
-exists_result = gds.beta.pipeline.exists(pipe.name())
+exists_result = gds.pipeline.exists(pipe.name())
 
 if exists_result["exists"]:
-	gds.beta.pipeline.drop(pipe)  # same as pipe.drop()
+	gds.pipeline.drop(pipe)  # same as pipe.drop()
 ----
 
 A pipeline object that has already been created and is present in the pipeline catalog can be retrieved calling the `get` method with its name.
@@ -549,13 +549,8 @@ For example, we can list from the catalog and use the first pipeline name we fin
 
 [source,python,group=nc-pipe]
 ----
-list_result = gds.beta.pipeline.list()
+list_result = gds.pipeline.list()
 first_pipeline_name = list_result["pipelineName"][0]
 pipe = gds.pipeline.get(first_pipeline_name)
 assert pipe.name() == "my-pipe"
 ----
-
-[NOTE]
-====
-The `get` method does not use any tier prefix because it is not associated to any tier. It only exists in the client and does not have a corresponding Cypher procedure.
-====

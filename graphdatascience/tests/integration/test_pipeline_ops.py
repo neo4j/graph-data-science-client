@@ -6,6 +6,7 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.pipeline.lp_training_pipeline import LPTrainingPipeline
 from graphdatascience.pipeline.nc_training_pipeline import NCTrainingPipeline
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 PIPE_NAME = "pipe"
 
@@ -16,9 +17,7 @@ def lp_pipe(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[LPTrai
 
     yield pipe
 
-    query = "CALL gds.beta.pipeline.drop($name)"
-    params = {"name": pipe.name()}
-    runner.run_query(query, params)
+    pipe.drop()
 
 
 @pytest.fixture
@@ -27,28 +26,38 @@ def nc_pipe(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[NCTrai
 
     yield pipe
 
-    query = "CALL gds.beta.pipeline.drop($name)"
-    params = {"name": pipe.name()}
-    runner.run_query(query, params)
+    pipe.drop()
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_pipeline_list(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> None:
-    result = gds.beta.pipeline.list()
+    result = gds.pipeline.list()
 
     assert len(result) == 1
     assert result["pipelineName"][0] == lp_pipe.name()
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_pipeline_exists(gds: GraphDataScience) -> None:
-    assert not gds.beta.pipeline.exists("NOTHING")["exists"]
+    assert not gds.pipeline.exists("NOTHING")["exists"]
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_pipeline_drop(gds: GraphDataScience) -> None:
     pipe, _ = gds.beta.pipeline.linkPrediction.create(PIPE_NAME)
-    assert gds.beta.pipeline.exists(pipe.name())["exists"]
+    assert gds.pipeline.exists(pipe.name())["exists"]
 
+    assert gds.pipeline.drop(pipe)["pipelineName"] == pipe.name()
+    assert not gds.pipeline.exists(pipe.name())["exists"]
+
+
+@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 5, 0))
+def test_pipeline_beta_endpoints(gds: GraphDataScience) -> None:
+    pipe = gds.lp_pipe(PIPE_NAME)
+
+    assert gds.beta.pipeline.exists(pipe.name())["exists"]
+    assert gds.beta.pipeline.list(pipe)["pipelineName"][0] == pipe.name()
     assert gds.beta.pipeline.drop(pipe)["pipelineName"] == pipe.name()
-    assert not gds.beta.pipeline.exists(pipe.name())["exists"]
 
 
 def test_pipeline_get_lp(gds: GraphDataScience, lp_pipe: LPTrainingPipeline) -> None:

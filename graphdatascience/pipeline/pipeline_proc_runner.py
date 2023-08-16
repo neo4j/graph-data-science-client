@@ -1,3 +1,7 @@
+from typing import Any, Optional
+
+from pandas import DataFrame, Series
+
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
@@ -11,15 +15,39 @@ from .training_pipeline import TrainingPipeline
 class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
     @client_only_endpoint("gds.pipeline")
     def get(self, pipeline_name: str) -> TrainingPipeline[PipelineModel]:
-        query = "CALL gds.beta.pipeline.list($pipeline_name)"
-        params = {"pipeline_name": pipeline_name}
-        result = self._query_runner.run_query(query, params, custom_error=False)
-
-        if len(result) == 0:
+        result = self.exists(pipeline_name)
+        if result["exists"]:
+            return self._resolve_pipeline(result["pipelineType"], result["pipelineName"])
+        else:
             raise ValueError(f"No pipeline named '{pipeline_name}' exists")
 
-        pipeline_type = result["pipelineType"][0]
-        return self._resolve_pipeline(pipeline_type, pipeline_name)
+    def list(self, pipeline: Optional[TrainingPipeline[PipelineModel]] = None) -> DataFrame:
+        self._namespace += ".list"
+
+        if pipeline:
+            query = f"CALL {self._namespace}($pipeline_name)"
+            params = {"pipeline_name": pipeline.name()}
+        else:
+            query = f"CALL {self._namespace}()"
+            params = {}
+
+        return self._query_runner.run_query(query, params)
+
+    def exists(self, pipeline_name: str) -> "Series[Any]":
+        self._namespace += ".exists"
+
+        query = f"CALL {self._namespace}($pipeline_name)"
+        params = {"pipeline_name": pipeline_name}
+
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+
+    def drop(self, pipeline: TrainingPipeline[PipelineModel]) -> "Series[Any]":
+        self._namespace += ".drop"
+
+        query = f"CALL {self._namespace}($pipeline_name)"
+        params = {"pipeline_name": pipeline.name()}
+
+        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
 
     def _resolve_pipeline(self, pipeline_type: str, pipeline_name: str) -> TrainingPipeline[PipelineModel]:
         if pipeline_type == "Node classification training pipeline":

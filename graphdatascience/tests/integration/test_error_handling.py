@@ -123,8 +123,8 @@ def test_calling_pipeline(gds: GraphDataScience) -> None:
 
 
 def test_nonexisting_pipeline_endpoint(gds: GraphDataScience) -> None:
-    with pytest.raises(SyntaxError, match="There is no 'gds.beta.pipeline.bogus' to call"):
-        gds.beta.pipeline.bogus(42, 1337)  # type: ignore
+    with pytest.raises(SyntaxError, match="There is no 'gds.pipeline.bogus' to call"):
+        gds.pipeline.bogus(42, 1337)  # type: ignore
 
 
 def test_calling_linkPrediction(gds: GraphDataScience) -> None:

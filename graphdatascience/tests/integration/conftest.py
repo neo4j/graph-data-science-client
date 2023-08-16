@@ -123,7 +123,7 @@ def clean_up(gds: GraphDataScience) -> Generator[None, None, None]:
     for graph_name in res["graphName"]:
         gds.graph.get(graph_name).drop(failIfMissing=True)
 
-    res = gds.beta.pipeline.list()
+    res = gds.pipeline.list() if gds.server_version() >= ServerVersion(2, 5, 0) else gds.beta.pipeline.list()
     for pipeline_name in res["pipelineName"]:
         gds.pipeline.get(pipeline_name).drop(failIfMissing=True)
 

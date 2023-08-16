@@ -217,10 +217,10 @@ method:
 [source, python, role=no-test]
 ----
 # List all pipelines
-gds.beta.pipeline.list()
+gds.pipeline.list()
 
 # Alternatively, get the details of a specific pipeline object
-gds.beta.pipeline.list(node_pipeline)
+gds.pipeline.list(node_pipeline)
 ----
 
 == Configuring the pipeline

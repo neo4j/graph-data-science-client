@@ -79,9 +79,7 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
         else:
             lp_model, _ = pipe.train(G, modelName="lp-model", concurrency=2)
     finally:
-        query = "CALL gds.beta.pipeline.drop($name)"
-        params = {"name": "pipelp"}
-        runner.run_query(query, params)
+        pipe.drop()
 
     yield lp_model
 
@@ -114,9 +112,7 @@ def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
         else:
             nc_model, _ = pipe.train(G, modelName="nc-model", targetProperty="age", metrics=["ACCURACY"])
     finally:
-        query = "CALL gds.beta.pipeline.drop($name)"
-        params = {"name": "pipenc"}
-        runner.run_query(query, params)
+        pipe.drop()
 
     yield nc_model
 
@@ -149,9 +145,7 @@ def nr_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
         else:
             nr_model, _ = pipe.train(G, modelName="nr_model", targetProperty="age", metrics=["MEAN_SQUARED_ERROR"])
     finally:
-        query = "CALL gds.beta.pipeline.drop($name)"
-        params = {"name": "pipenr"}
-        runner.run_query(query, params)
+        pipe.drop()
 
     yield nr_model
 

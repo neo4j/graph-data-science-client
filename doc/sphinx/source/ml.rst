@@ -93,17 +93,38 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Drops a pipeline and frees up the resources it occupies.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.pipeline.drop` instead.
+
 .. py:function:: gds.beta.pipeline.exists(pipeline_name: str) -> Series[Any]
 
     Checks if a given pipeline exists in the pipeline catalog.
 
-.. py:function:: gds.beta.pipeline.linkPrediction.create(name: str) -> Tuple[LPTrainingPipeline, Series[Any]]
-
-    Creates a link prediction pipeline in the pipeline catalog.
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.pipeline.exists` instead.
 
 .. py:function:: gds.beta.pipeline.list(pipeline: Optional[TrainingPipeline[PipelineModel]] = None) -> DataFrame
 
     Lists all pipelines contained in the pipeline catalog.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.pipeline.list` instead.
+
+.. py:function:: gds.pipeline.drop(pipeline: TrainingPipeline[PipelineModel]) -> Series[Any]
+
+    Drops a pipeline and frees up the resources it occupies.
+
+.. py:function:: gds.pipeline.exists(pipeline_name: str) -> Series[Any]
+
+    Checks if a given pipeline exists in the pipeline catalog.
+
+.. py:function:: gds.pipeline.list(pipeline: Optional[TrainingPipeline[PipelineModel]] = None) -> DataFrame
+
+    Lists all pipelines contained in the pipeline catalog.
+
+.. py:function:: gds.beta.pipeline.linkPrediction.create(name: str) -> Tuple[LPTrainingPipeline, Series[Any]]
+
+    Creates a link prediction pipeline in the pipeline catalog.
 
 .. py:function:: gds.beta.pipeline.nodeClassification.create(name: str) -> Tuple[NCTrainingPipeline, Series[Any]]
 
