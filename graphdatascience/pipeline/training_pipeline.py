@@ -254,7 +254,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         return self._query_runner.run_query(query, params, custom_error=False).squeeze()  # type: ignore
 
     def _tier_namespace(self) -> str:
-        return "" if self._server_version >= ServerVersion(2, 4, 0) else ".beta"
+        return "" if self._server_version >= ServerVersion(2, 5, 0) else ".beta"
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}(name={self.name()}, type={self.type()})"

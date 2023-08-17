@@ -1,5 +1,8 @@
+import pytest
+
 from .conftest import CollectingQueryRunner
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 def test_listProgress(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
@@ -35,17 +38,19 @@ def test_userLog(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     assert runner.last_params() == {}
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_set_defaults(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    gds.alpha.config.defaults.set("concurrency", 2, "bob")
+    gds.config.defaults.set("concurrency", 2, "bob")
 
-    assert runner.last_query() == "CALL gds.alpha.config.defaults.set($key, $value, $username)"
+    assert runner.last_query() == "CALL gds.config.defaults.set($key, $value, $username)"
     assert runner.last_params() == {"key": "concurrency", "value": 2, "username": "bob"}
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_list_defaults(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    gds.alpha.config.defaults.list(username="bob", key="concurrency")
+    gds.config.defaults.list(username="bob", key="concurrency")
 
-    assert runner.last_query() == "CALL gds.alpha.config.defaults.list($config)"
+    assert runner.last_query() == "CALL gds.config.defaults.list($config)"
     assert runner.last_params() == {"config": {"username": "bob", "key": "concurrency"}}
 
 

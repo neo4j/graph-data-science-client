@@ -49,17 +49,19 @@ def test_license_state(gds: GraphDataScience) -> None:
     assert gds.license.state()["isLicensed"] in [True, False]
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 @pytest.mark.skip_on_aura
 def test_set_defaults(gds: GraphDataScience) -> None:
-    gds.alpha.config.defaults.set("option1", 2, "")
+    gds.config.defaults.set("option1", 2, "")
     assert True
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 @pytest.mark.skip_on_aura
 def test_list_defaults(gds: GraphDataScience) -> None:
-    gds.alpha.config.defaults.set("option1", 2, "")
-    gds.alpha.config.defaults.set("option2", 2, "")
-    result = gds.alpha.config.defaults.list(username="")
+    gds.config.defaults.set("option1", 2, "")
+    gds.config.defaults.set("option2", 2, "")
+    result = gds.config.defaults.list(username="")
 
     assert len(result) == 2
 

@@ -8,19 +8,41 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.alpha.config.defaults.list(key: Optional[str] = None, username: Optional[str] = None) -> DataFrame
 
     List defaults; global by default, but also optionally for a specific user and/ or key
+.. deprecated:: 2.5.0
+        Since GDS server version 2.5.0 you should use the endpoint :func:`gds.config.defaults.list` instead.
 
 .. py:function:: gds.alpha.config.defaults.set(key: str, value: Any, username: Optional[str] = None) -> None
 
     Set a default; global by, default, but also optionally for a specific user
+    .. deprecated:: 2.5.0
+            Since GDS server version 2.5.0 you should use the endpoint :func:`gds.config.defaults.set` instead.
 
 .. py:function:: gds.alpha.config.limits.list(key: Optional[str] = None, username: Optional[str] = None) -> DataFrame
 
     List limits; global by default, but also optionally for a specific user and/ or key
+.. deprecated:: 2.5.0
+        Since GDS server version 2.5.0 you should use the endpoint :func:`gds.config.limits.list` instead.
 
 .. py:function:: gds.alpha.config.limits.set(key: str, value: Any, username: Optional[str] = None) -> None
 
     Set a limit; global by, default, but also optionally for a specific user
+.. deprecated:: 2.5.0
+        Since GDS server version 2.5.0 you should use the endpoint :func:`gds.config.limits.set` instead.
+.. py:function:: gds.config.defaults.list(key: Optional[str] = None, username: Optional[str] = None) -> DataFrame
 
+    List defaults; global by default, but also optionally for a specific user and/ or key
+
+.. py:function:: gds.config.defaults.set(key: str, value: Any, username: Optional[str] = None) -> None
+
+    Set a default; global by, default, but also optionally for a specific user
+
+.. py:function:: gds.config.limits.list(key: Optional[str] = None, username: Optional[str] = None) -> DataFrame
+
+    List limits; global by default, but also optionally for a specific user and/ or key
+
+.. py:function:: gds.config.limits.set(key: str, value: Any, username: Optional[str] = None) -> None
+
+    Set a limit; global by, default, but also optionally for a specific user
 
 .. py:function:: gds.alpha.systemMonitor() -> Series[Any]
     Get an overview of the system's workload and available resources
