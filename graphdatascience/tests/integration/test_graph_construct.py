@@ -480,10 +480,14 @@ def test_nodes_only_without__arrow(gds_without_arrow: GraphDataScience) -> None:
     nodes = DataFrame({"nodeId": [0], "labels": ["person"]})
     relationships = DataFrame({"sourceNodeId": [], "targetNodeId": [], "relationshipType": []})
 
-    G = gds_without_arrow.graph.construct(graph_name="my_graph", nodes=nodes, relationships=relationships)
+    with pytest.warns(UserWarning):
+        G = gds_without_arrow.graph.construct(graph_name="my_graph", nodes=nodes, relationships=relationships)
 
-    assert G.node_count() == 1
-    assert G.node_properties("person") == []
+    try:
+        assert G.node_count() == 1
+        assert G.node_properties("person") == []
+    finally:
+        G.drop()
 
 
 @pytest.mark.enterprise

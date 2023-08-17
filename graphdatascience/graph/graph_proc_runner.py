@@ -64,7 +64,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         # Filter empty dataframes
         nodes = [df for df in nodes if not df.empty]
-        relationships = [df for df in relationships if not df is None and not df.empty]
+        relationships = [df for df in relationships if df is not None and not df.empty]
 
         errors = []
 
