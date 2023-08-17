@@ -46,22 +46,6 @@ class Neo4jQueryRunner(QueryRunner):
         self._verify_connectivity()
 
         with self._driver.session(database=database) as session:
-            if self._NEO4J_DRIVER_VERSION == ServerVersion(4, 4, 6):
-                warnings.filterwarnings(
-                    "ignore",
-                    message=r"^The 'update_routing_table_timeout' config key is deprecated$",
-                )
-
-            if self._NEO4J_DRIVER_VERSION >= ServerVersion(5, 0, 0):
-                warnings.filterwarnings(
-                    "ignore",
-                    message=r"^ssl.OP_NO_SSL\*/ssl.OP_NO_TLS\* options are deprecated$",
-                )
-                warnings.filterwarnings(
-                    "ignore",
-                    message=r"^`id` is deprecated, use `element_id` instead$",
-                )
-
             try:
                 result = session.run(query, params)
             except Exception as e:
