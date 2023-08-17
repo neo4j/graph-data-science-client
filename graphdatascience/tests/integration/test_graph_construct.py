@@ -476,7 +476,7 @@ def test_graph_alpha_construct_backward_compat_without_arrow(gds_without_arrow: 
         gds_without_arrow.alpha.graph.construct("hello", nodes, relationships)
 
 
-def test_nodes_only_with_out__arrow(gds_without_arrow: GraphDataScience) -> None:
+def test_nodes_only_without__arrow(gds_without_arrow: GraphDataScience) -> None:
     nodes = DataFrame({"nodeId": [0], "labels": ["person"]})
     relationships = DataFrame({"sourceNodeId": [], "targetNodeId": [], "relationshipType": []})
 
@@ -484,6 +484,7 @@ def test_nodes_only_with_out__arrow(gds_without_arrow: GraphDataScience) -> None
 
     assert G.node_count() == 1
     assert G.node_properties("person") == []
+
 
 @pytest.mark.enterprise
 def test_nodes_only(gds: GraphDataScience) -> None:
