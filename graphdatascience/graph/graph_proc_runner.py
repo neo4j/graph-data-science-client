@@ -55,12 +55,20 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         self,
         graph_name: str,
         nodes: Union[DataFrame, List[DataFrame]],
-        relationships: Union[DataFrame, List[DataFrame]],
+        relationships: Optional[Union[DataFrame, List[DataFrame]]] = None,
         concurrency: int = 4,
         undirected_relationship_types: Optional[List[str]] = None,
     ) -> Graph:
         nodes = nodes if isinstance(nodes, List) else [nodes]
-        relationships = relationships if isinstance(relationships, List) else [relationships]
+
+        if isinstance(relationships, DataFrame):
+            relationships = [relationships]
+        elif relationships is None:
+            relationships = []
+
+        # Filter empty dataframes
+        nodes = [df for df in nodes if not df.empty]
+        relationships = [df for df in relationships if not df.empty]
 
         errors = []
 
