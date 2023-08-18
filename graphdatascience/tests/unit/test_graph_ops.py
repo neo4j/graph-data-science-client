@@ -497,12 +497,12 @@ def test_graph_relationship_write(runner: CollectingQueryRunner, gds: GraphDataS
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 3, 0)])
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 5, 0)])
 def test_graph_nodeLabel_write(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    gds.alpha.graph.nodeLabel.write(G, "TestLabel", nodeFilter="n.score > 1.0")
-    assert runner.last_query() == "CALL gds.alpha.graph.nodeLabel.write($graph_name, $node_label, $config)"
+    gds.graph.nodeLabel.write(G, "TestLabel", nodeFilter="n.score > 1.0")
+    assert runner.last_query() == "CALL gds.graph.nodeLabel.write($graph_name, $node_label, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "node_label": "TestLabel",
@@ -510,12 +510,12 @@ def test_graph_nodeLabel_write(runner: CollectingQueryRunner, gds: GraphDataScie
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 3, 0)])
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 5, 0)])
 def test_graph_nodeLabel_mutate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
-    gds.alpha.graph.nodeLabel.mutate(G, "TestLabel", nodeFilter="n.score > 1.0")
-    assert runner.last_query() == "CALL gds.alpha.graph.nodeLabel.mutate($graph_name, $node_label, $config)"
+    gds.graph.nodeLabel.mutate(G, "TestLabel", nodeFilter="n.score > 1.0")
+    assert runner.last_query() == "CALL gds.graph.nodeLabel.mutate($graph_name, $node_label, $config)"
     assert runner.last_params() == {
         "graph_name": "g",
         "node_label": "TestLabel",

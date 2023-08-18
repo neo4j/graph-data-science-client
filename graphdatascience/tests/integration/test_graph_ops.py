@@ -815,15 +815,22 @@ def test_graph_relationship_write(gds: GraphDataScience) -> None:
 def test_graph_nodeLabel_write(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    result = gds.alpha.graph.nodeLabel.write(G, "FilteredNode", nodeFilter="n.x > 1", concurrency=2)
+    if gds._server_version < ServerVersion(2, 5, 0):
+        result = gds.alpha.graph.nodeLabel.write(G, "FilteredNode", nodeFilter="n.x > 1", concurrency=2)
+    else:
+        result = gds.graph.nodeLabel.write(G, "FilteredNode", nodeFilter="n.x > 1", concurrency=2)
+
     assert result["nodeLabelsWritten"] == 2
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
 def test_graph_nodeLabel_mutate(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+    if gds._server_version < ServerVersion(2, 5, 0):
+        result = gds.alpha.graph.nodeLabel.mutate(G, "FilteredNode", nodeFilter="n.x > 1", concurrency=2)
+    else:
+        result = gds.graph.nodeLabel.mutate(G, "FilteredNode", nodeFilter="n.x > 1", concurrency=2)
 
-    result = gds.alpha.graph.nodeLabel.mutate(G, "FilteredNode", nodeFilter="n.x > 1", concurrency=2)
     assert result["nodeLabelsWritten"] == 2
 
 
