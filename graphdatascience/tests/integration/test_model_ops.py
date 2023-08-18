@@ -164,12 +164,35 @@ def gs_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     runner.run_query(query, params)
 
 
+@pytest.mark.model_store_location
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
+def test_beta_alpha_endpoints_25(gds: GraphDataScience, lp_model: LPModel) -> None:
+    with pytest.raises(DeprecationWarning):
+        gds.beta.model.list(lp_model)
+        gds.beta.model.exists(lp_model.name())
+        gds.alpha.model.store(lp_model)
+        gds.beta.model.drop(lp_model)
+        gds.alpha.model.load(lp_model.name())
+        gds.alpha.model.publish(lp_model)
+
+
+@pytest.mark.model_store_location
+@pytest.mark.compatible_with(max_exclusive=ServerVersion(2, 5, 0))
+def test_beta_alpha_endpoints_24(gds: GraphDataScience, lp_model: LPModel) -> None:
+    gds.beta.model.list(lp_model)
+    gds.beta.model.exists(lp_model.name())
+    gds.alpha.model.store(lp_model)
+    gds.beta.model.drop(lp_model)
+    gds.alpha.model.load(lp_model.name())
+    gds.alpha.model.publish(lp_model)
+
+
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_model_list(gds: GraphDataScience, lp_model: LPModel) -> None:
     result = gds.model.list()
 
     assert len(result) == 1
-    assert result["modelInfo"][0]["modelName"] == lp_model.name()
+    assert result["modelName"][0] == lp_model.name()
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
@@ -236,7 +259,7 @@ def test_model_drop(gds: GraphDataScience, G: Graph) -> None:
 
     assert gds.model.exists(model.name())["exists"]
 
-    assert gds.model.drop(model)["modelInfo"]["modelName"] == model.name()
+    assert gds.model.drop(model)["modelName"] == model.name()
     assert not gds.model.exists(model.name())["exists"]
 
 

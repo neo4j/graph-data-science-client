@@ -56,7 +56,14 @@ def test_model_exists(gs_model: GraphSageModel) -> None:
 def test_model_drop(gds: GraphDataScience, G: Graph) -> None:
     model, _ = gds.beta.graphSage.train(G, modelName="gs-model", featureProperties=["age"])
 
-    assert model.drop()["modelInfo"]["modelName"] == model.name()
+    model_type = model.type()
+    model_published = model.shared()
+    drop_result = model.drop()
+    if gds.server_version() >= ServerVersion(2, 5, 0):
+        assert drop_result["modelName"] == model.name()
+        assert drop_result["modelType"] == model_type
+        assert drop_result["published"] == model_published
+    assert drop_result["modelInfo"]["modelName"] == model.name()
 
     assert not model.exists()
 
@@ -97,6 +104,11 @@ def test_model_creation_time(gs_model: GraphSageModel) -> None:
 
 def test_model_shared(gs_model: GraphSageModel) -> None:
     assert not gs_model.shared()
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
+def test_model_published(gs_model: GraphSageModel) -> None:
+    assert not gs_model.published()
 
 
 def test_model_metrics(gs_model: GraphSageModel) -> None:
