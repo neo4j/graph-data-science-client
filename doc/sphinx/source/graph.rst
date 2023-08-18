@@ -22,12 +22,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Streams the given graph property.
 
 .. py:function:: gds.alpha.graph.nodeLabel.mutate(G: Graph, node_label: str, **config: Any) -> Series[Any]
-
     Mutates the in-memory graph with the given node Label.
 
-.. py:function:: gds.alpha.graph.nodeLabel.write(G: Graph, node_label: str, **config: Any) -> Series[Any]
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.graph.nodeLabel.mutate` instead.
 
+.. py:function:: gds.alpha.graph.nodeLabel.write(G: Graph, node_label: str, **config: Any) -> Series[Any]
     Writes the given node Label to an online Neo4j database.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.graph.nodeLabel.write` instead.
 
 .. deprecated:: 2.5.0
    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.graph.export.csv` instead.
@@ -243,3 +247,9 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.find_node_id(labels: List[str] = [], properties: Dict[str, Any] = {}) -> int
 
     Finds a node id by its labels and properties.
+
+.. py:function:: gds.graph.nodeLabel.mutate(G: Graph, node_label: str, **config: Any) -> Series[Any]
+    Mutates the in-memory graph with the given node Label.
+
+.. py:function:: gds.graph.nodeLabel.write(G: Graph, node_label: str, **config: Any) -> Series[Any]
+    Writes the given node Label to an online Neo4j database.
