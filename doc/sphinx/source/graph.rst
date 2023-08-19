@@ -232,6 +232,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Loads the IMDB dataset into a named graph in the catalog for use by algorithms.
 
+.. py:function:: gds.graph.load_lastfm(graph_name: str = "lastfm", undirected: bool = True) -> Graph
+
+    Loads the LastFM dataset into a named graph in the catalog for use by algorithms.
+
 .. py:function:: gds.graph.ogbn.load(dataset_name: str, dataset_root_path: str = "dataset", graph_name: Optional[str] = None, concurrency: int = 4) -> Graph
 
     Loads a OGBN dataset into a named graph in the catalog for use by algorithms.

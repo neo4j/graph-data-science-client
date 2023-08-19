@@ -156,6 +156,34 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
 
+    @client_only_endpoint("gds.graph")
+    def load_lastfm(self, graph_name: str = "lastfm", undirected: bool = True) -> Any:
+        if self._server_version < ServerVersion(2, 3, 0):
+            raise ValueError("The LastFM2K dataset loading is only supported by GDS 2.3 or later.")
+
+        with self._path("graphdatascience.resources.lastfm", "user_nodes.pkl") as nodes_resource:
+            user_nodes = read_pickle(nodes_resource, compression="gzip")
+        with self._path("graphdatascience.resources.lastfm", "artist_nodes.pkl") as nodes_resource:
+            artist_nodes = read_pickle(nodes_resource, compression="gzip")
+
+        with self._path("graphdatascience.resources.lastfm", "user_friend_df_directed.pkl") as rels_resource:
+            user_friend_df_directed = read_pickle(rels_resource, compression="gzip")
+        with self._path("graphdatascience.resources.lastfm", "user_listen_artist_rels.pkl") as rels_resource:
+            user_listen_artist_rels = read_pickle(rels_resource, compression="gzip")
+        with self._path("graphdatascience.resources.lastfm", "user_tag_artist_rels.pkl") as rels_resource:
+            user_tag_artist_rels = read_pickle(rels_resource, compression="gzip")
+
+        nodes = [user_nodes, artist_nodes]
+        rels = [user_friend_df_directed, user_listen_artist_rels, user_tag_artist_rels]
+
+        # Default undirected for usage in GDS ML pipelines
+        if undirected:
+            undirected_relationship_types = ["LISTEN_TO", "TAGGED", "IS_FRIEND"]
+        else:
+            undirected_relationship_types = []
+
+        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
+
     @property
     def sample(self) -> GraphSampleRunner:
         self._namespace += ".sample"
