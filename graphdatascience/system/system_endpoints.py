@@ -93,6 +93,10 @@ class DirectSystemEndpoints(CallerBase):
     def systemMonitor(self) -> "Series[Any]":
         return SystemAlphaEndpoints(self._query_runner, self._namespace, self._server_version).systemMonitor()
 
+    @compatible_with("userLog", min_inclusive=ServerVersion(2, 5, 0))
+    def userLog(self) -> DataFrame:
+        return SystemAlphaEndpoints(self._query_runner, self._namespace, self._server_version).userLog()
+
 
 class SystemBetaEndpoints(CallerBase):
     def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
