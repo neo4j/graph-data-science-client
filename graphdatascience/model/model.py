@@ -26,8 +26,15 @@ class Model(ABC):
         else:
             query = """
                     CALL gds.model.list($name)
-                    YIELD modelName, modelType, modelInfo, creationTime, trainConfig, graphSchema, loaded, stored, published
-                    RETURN modelName, modelType, modelInfo {.*, modelName: modelName, modelType: modelType} AS modelInfo, creationTime, trainConfig, graphSchema, loaded, stored, published, published AS shared 
+                    YIELD
+                      modelName, modelType, modelInfo,
+                      creationTime, trainConfig, graphSchema,
+                      loaded, stored, published
+                    RETURN
+                      modelName, modelType,
+                      modelInfo {.*, modelName: modelName, modelType: modelType} AS modelInfo,
+                      creationTime, trainConfig, graphSchema,
+                      loaded, stored, published, published AS shared
                     """
 
         params = {"name": self.name()}
@@ -180,8 +187,15 @@ class Model(ABC):
         else:
             query = """
                     CALL gds.model.drop($model_name, $fail_if_missing)
-                    YIELD modelName, modelType, modelInfo, creationTime, trainConfig, graphSchema, loaded, stored, published
-                    RETURN modelName, modelType, modelInfo {.*, modelName: modelName, modelType: modelType} AS modelInfo, creationTime, trainConfig, graphSchema, loaded, stored, published, published AS shared 
+                    YIELD
+                      modelName, modelType, modelInfo,
+                      creationTime, trainConfig, graphSchema,
+                      loaded, stored, published
+                    RETURN
+                      modelName, modelType,
+                      modelInfo {.*, modelName: modelName, modelType: modelType} AS modelInfo,
+                      creationTime, trainConfig, graphSchema,
+                      loaded, stored, published, published AS shared
                     """
 
         params = {"model_name": self._name, "fail_if_missing": failIfMissing}
