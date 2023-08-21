@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from typing import Any, Generator, Optional
 
+import pandas
 import pytest
 from neo4j import Driver, GraphDatabase
 
@@ -127,10 +128,14 @@ def clean_up(gds: GraphDataScience) -> Generator[None, None, None]:
     for pipeline_name in res["pipelineName"]:
         gds.pipeline.get(pipeline_name).drop(failIfMissing=True)
 
-    res = gds.model.list() if gds.server_version() >= ServerVersion(2, 5, 0) else gds.beta.model.list()
+    if gds.server_version() >= ServerVersion(2, 5, 0):
+        model_names = gds.model.list()["modelName"]
+    else:
+        r = gds.beta.model.list()["modelInfo"].apply(pandas.Series)
+        model_names = [] if r.empty else r["modelName"]  # type: ignore
 
-    for model_info in res["modelInfo"]:
-        model = gds.model.get(model_info["modelName"])
+    for model_name in model_names:
+        model = gds.model.get(model_name)
         if model.stored():
             if gds.server_version() >= ServerVersion(2, 5, 0):
                 gds.model.delete(model)

@@ -6,6 +6,7 @@ from pandas import DataFrame, Series
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
 from ..query_runner.query_runner import QueryRunner
+from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
 
 
@@ -20,8 +21,21 @@ class Model(ABC):
         pass
 
     def _list_info(self) -> DataFrame:
-        name_space = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
-        query = f"CALL gds.{name_space}model.list($name)"
+        if self._server_version < ServerVersion(2, 5, 0):
+            query = "CALL gds.beta.model.list($name)"
+        else:
+            query = """
+                    CALL gds.model.list($name)
+                    YIELD
+                      modelName, modelType, modelInfo,
+                      creationTime, trainConfig, graphSchema,
+                      loaded, stored, published
+                    RETURN
+                      modelName, modelType,
+                      modelInfo {.*, modelName: modelName, modelType: modelType} AS modelInfo,
+                      creationTime, trainConfig, graphSchema,
+                      loaded, stored, published, published AS shared
+                    """
 
         params = {"name": self.name()}
 
@@ -121,6 +135,17 @@ class Model(ABC):
         """
         return self._list_info()["shared"].squeeze()  # type: ignore
 
+    @compatible_with("published", min_inclusive=ServerVersion(2, 5, 0))
+    def published(self) -> bool:
+        """
+        Check whether the model is published.
+
+        Returns:
+            True if the model is published, False otherwise.
+
+        """
+        return self._list_info()["published"].squeeze()  # type: ignore
+
     def model_info(self) -> "Series[Any]":
         """
         Get the model info of the model.
@@ -157,8 +182,21 @@ class Model(ABC):
             The result of the drop operation.
 
         """
-        name_space = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
-        query = f"CALL gds.{name_space}model.drop($model_name, $fail_if_missing)"
+        if self._server_version < ServerVersion(2, 5, 0):
+            query = "CALL gds.beta.model.drop($model_name, $fail_if_missing)"
+        else:
+            query = """
+                    CALL gds.model.drop($model_name, $fail_if_missing)
+                    YIELD
+                      modelName, modelType, modelInfo,
+                      creationTime, trainConfig, graphSchema,
+                      loaded, stored, published
+                    RETURN
+                      modelName, modelType,
+                      modelInfo {.*, modelName: modelName, modelType: modelType} AS modelInfo,
+                      creationTime, trainConfig, graphSchema,
+                      loaded, stored, published, published AS shared
+                    """
 
         params = {"model_name": self._name, "fail_if_missing": failIfMissing}
 

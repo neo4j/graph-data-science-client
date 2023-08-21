@@ -12,8 +12,10 @@ from graphdatascience.server_version.compatible_with import compatible_with
 class ModelProcRunner(ModelResolver):
     @client_only_endpoint("gds.model")
     def get(self, model_name: str) -> Model:
-        name_space = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
-        query = f"CALL gds.{name_space}model.list($model_name)"
+        if self._server_version < ServerVersion(2, 5, 0):
+            query = "CALL gds.beta.model.list($model_name) YIELD modelInfo RETURN modelInfo.modelType AS modelType"
+        else:
+            query = "CALL gds.model.list($model_name) YIELD modelType"
 
         params = {"model_name": model_name}
         result = self._query_runner.run_query(query, params, custom_error=False)
@@ -21,7 +23,7 @@ class ModelProcRunner(ModelResolver):
         if len(result) == 0:
             raise ValueError(f"No loaded model named '{model_name}' exists")
 
-        model_type = result["modelInfo"][0]["modelType"]
+        model_type = str(result["modelType"].squeeze())
         return self._resolve_model(model_type, model_name)
 
     @compatible_with("store", min_inclusive=ServerVersion(2, 5, 0))
@@ -45,8 +47,8 @@ class ModelProcRunner(ModelResolver):
 
         result = self._query_runner.run_query(query, params)
 
-        model_name = result["modelInfo"][0]["modelName"]
-        model_type = result["modelInfo"][0]["modelType"]
+        model_name = result["modelName"][0]
+        model_type = result["modelType"][0]
 
         return self._resolve_model(model_type, model_name)
 
