@@ -11,8 +11,9 @@ def test_listProgress(gds: GraphDataScience) -> None:
     assert len(result) >= 0
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_userLog(gds: GraphDataScience) -> None:
-    result = gds.alpha.userLog()
+    result = gds.userLog()
 
     assert len(result) >= 0
 

@@ -31,10 +31,11 @@ def test_sysInfo(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     assert runner.last_params() == {}
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_userLog(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    gds.alpha.userLog()
+    gds.userLog()
 
-    assert runner.last_query() == "CALL gds.alpha.userLog()"
+    assert runner.last_query() == "CALL gds.userLog()"
     assert runner.last_params() == {}
 
 

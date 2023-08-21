@@ -50,8 +50,9 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
         Since GDS server version 2.5.0 you should use the endpoint :func:`gds.systemMonitor` instead.
 
 .. py:function:: gds.alpha.userLog() -> DataFrame
-
     Log warnings and hints for currently running tasks.
+    .. deprecated:: 2.5.0
+            Since GDS server version 2.5.0 you should use the endpoint :func:`gds.userLog` instead.
 
 .. py:function:: gds.beta.listProgress(job_id: Optional[str] = None) -> DataFrame
     List progress events for currently running tasks.
@@ -101,3 +102,6 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.is_licensed() -> bool
 
     Return True if the graph data science library is licensed.
+
+.. py:function:: gds.userLog() -> DataFrame
+    Log warnings and hints for currently running tasks.
