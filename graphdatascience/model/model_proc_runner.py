@@ -23,7 +23,7 @@ class ModelProcRunner(ModelResolver):
         if len(result) == 0:
             raise ValueError(f"No loaded model named '{model_name}' exists")
 
-        model_type = result["modelType"].squeeze()
+        model_type = str(result["modelType"].squeeze())
         return self._resolve_model(model_type, model_name)
 
     @compatible_with("store", min_inclusive=ServerVersion(2, 5, 0))
