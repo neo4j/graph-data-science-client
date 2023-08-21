@@ -47,8 +47,8 @@ class ModelProcRunner(ModelResolver):
 
         result = self._query_runner.run_query(query, params)
 
-        model_name = result["modelInfo"][0]["modelName"]
-        model_type = result["modelInfo"][0]["modelType"]
+        model_name = result["modelName"][0]
+        model_type = result["modelType"][0]
 
         return self._resolve_model(model_type, model_name)
 
