@@ -51,10 +51,9 @@ class Neo4jQueryRunner(QueryRunner):
 
         self._verify_connectivity()
 
-        with self._driver.session(database=database) as session:
+        with self._driver.session(database=database, bookmarks=self.bookmarks()) as session:
             try:
                 result = session.run(query, params)
-                self._last_bookmarks = session.last_bookmarks()
             except Exception as e:
                 if custom_error:
                     self.handle_driver_exception(session, e)
@@ -69,6 +68,7 @@ class Neo4jQueryRunner(QueryRunner):
             )
 
             df = result.to_df()
+            self._last_bookmarks = session.last_bookmarks()
 
             notifications = result.consume().notifications
             if notifications:
