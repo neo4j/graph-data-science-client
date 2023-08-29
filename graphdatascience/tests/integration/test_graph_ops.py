@@ -73,7 +73,11 @@ def test_project_graph_cypher_estimate(gds: GraphDataScience) -> None:
     node_query = "MATCH (n:Node) RETURN id(n) as id"
     relationship_query = "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
 
-    result = gds.graph.project.cypher.estimate(node_query, relationship_query)
+    if gds.server_version() >= ServerVersion(2, 5, 0):
+        with pytest.warns(DeprecationWarning):
+            result = gds.graph.project.cypher.estimate(node_query, relationship_query)
+    else:
+        result = gds.graph.project.cypher.estimate(node_query, relationship_query)
 
     assert result["requiredMemory"]
 
