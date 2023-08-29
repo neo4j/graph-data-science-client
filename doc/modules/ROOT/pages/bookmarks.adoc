@@ -3,8 +3,6 @@
 Bookmarks ensure that when executing queries in a Neo4j cluster, previous or parallel running queries are fully propagated through the cluster.
 By passing one or multiple bookmarks along with a query, the server will make sure that the query does not get executed before the represented state(s) have been established.
 
-In the `GraphDataScience` object bookmarks can be managed through:
-
 .Example of using bookmarks inside GDS
 [source, python]
 ----
@@ -28,4 +26,4 @@ result = gds.run_cypher("MATCH (p:Person) RETURN p.name, p.pagerank")
 G.drop()
 ----
 
-For more details see the https://neo4j.com/docs/python-manual/current/bookmarks/[Neo4j Python driver]. 
+For more details about bookmarks, see the https://neo4j.com/docs/python-manual/current/bookmarks/[Neo4j Python driver]. 
