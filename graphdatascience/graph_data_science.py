@@ -165,6 +165,14 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         self._query_runner.set_database(database)
 
     def set_bookmarks(self, bookmarks: Bookmarks) -> None:
+        """
+        Set Neo4j bookmarks to require a certain state before the next query gets executed
+
+        Parameters
+        ----------
+        bookmarks: Bookmarks
+            The Neo4j bookmarks defining the required state
+        """
         self._query_runner.set_bookmarks(bookmarks)
 
     def database(self) -> Optional[str]:
@@ -178,9 +186,24 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         return self._query_runner.database()
 
     def bookmarks(self) -> Optional[Bookmarks]:
+        """
+        Get the Neo4j bookmarks defining the currently required states for queries to execute
+
+        Returns
+        -------
+        The (possibly None) Neo4j bookmarks defining the currently required state
+        """
         return self._query_runner.bookmarks()
 
     def last_bookmarks(self) -> Optional[Bookmarks]:
+        """
+        Get the Neo4j bookmarks defining the state following the most recently called query
+
+
+        Returns
+        -------
+        The (possibly None) Neo4j bookmarks defining the state following the most recently called query
+        """
         return self._query_runner.last_bookmarks()
 
     def run_cypher(
