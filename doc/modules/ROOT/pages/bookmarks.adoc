@@ -1,0 +1,31 @@
+= Coordinate parallel transactions
+
+Bookmarks ensure that when executing queries in a Neo4j cluster, previous or parallel running queries are fully propagated through the cluster.
+By passing one or multiple bookmarks along with a query, the server will make sure that the query does not get executed before the represented state(s) have been established.
+
+In the `GraphDataScience` object bookmarks can be managed through:
+
+.Example of using bookmarks inside GDS
+[source, python]
+----
+# If you ran queries through Neo4j driver before you can pass bookmarks in the constructor
+gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD), bookmarks=None)
+
+gds.run_cypher("""CREATE (:Person {name: "Alice"})-[:KNOWS]->(:Person {name: "Bob"})""")
+
+# Make sure the next queries will be executed after the CREATE query is fully propagated through the cluster
+gds.set_bookmarks(gds.last_bookmarks())
+
+G, _ = gds.graph.project("myGraph", "Person", "KNOWS")
+
+gds.pageRank.write(G, writeProperty="pagerank")
+
+# Make sure the next queries will be executed after the pageRank scores were written back to the cluster
+gds.set_bookmarks(gds.last_bookmarks())
+
+result = gds.run_cypher("MATCH (p:Person) RETURN p.name, p.pagerank")
+
+G.drop()
+----
+
+For more details see the https://neo4j.com/docs/python-manual/current/bookmarks/[Neo4j Python driver]. 
