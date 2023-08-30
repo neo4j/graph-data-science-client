@@ -14,8 +14,8 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.alpha.config.defaults.set(key: str, value: Any, username: Optional[str] = None) -> None
 
     Set a default; global by, default, but also optionally for a specific user
-    .. deprecated:: 2.5.0
-            Since GDS server version 2.5.0 you should use the endpoint :func:`gds.config.defaults.set` instead.
+.. deprecated:: 2.5.0
+    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.config.defaults.set` instead.
 
 .. py:function:: gds.alpha.config.limits.list(key: Optional[str] = None, username: Optional[str] = None) -> DataFrame
 
