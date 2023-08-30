@@ -200,6 +200,12 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         return qr.run_query(query, params, database, False)
 
     def driver_config(self) -> Dict[str, Any]:
+        """
+        Get the configuration used to create the Neo4j driver.
+
+        Returns:
+            The configuration as a dictionary.
+        """
         return self._config
 
     @classmethod
