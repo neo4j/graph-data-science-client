@@ -153,9 +153,24 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         return IndirectCallBuilder(self._query_runner, f"gds.{attr}", self._server_version)
 
     def set_database(self, database: str) -> None:
+        """
+        Set the database on which queries are run against.
+
+        Parameters
+        -------
+        database: str
+            The name of the database to run queries against.
+        """
         self._query_runner.set_database(database)
 
     def database(self) -> Optional[str]:
+        """
+        Get the database on which queries are run against.
+
+        Returns:
+            The name of the database.
+
+        """
         return self._query_runner.database()
 
     def run_cypher(
@@ -173,9 +188,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         database: str
             the database on which to run the query
 
-        Returns
-        -------
-        The query result as a DataFrame
+        Returns:
+            The query result as a DataFrame
         """
         qr = self._query_runner
 
@@ -208,6 +222,9 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         )
 
     def close(self) -> None:
+        """
+        Close the GraphDataScience object and release any resources held by it.
+        """
         self._query_runner.close()
 
     @classmethod
