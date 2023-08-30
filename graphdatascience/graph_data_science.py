@@ -154,7 +154,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def set_database(self, database: str) -> None:
         """
-        Set the database on which queries are run against.
+        Set the database which queries are run against.
 
         Parameters
         -------
@@ -165,7 +165,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def database(self) -> Optional[str]:
         """
-        Get the database on which queries are run against.
+        Get the database which queries are run against.
 
         Returns:
             The name of the database.
