@@ -201,7 +201,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def driver_config(self) -> Dict[str, Any]:
         """
-        Get the configuration used to create the Neo4j driver.
+        Get the configuration used to create the underlying driver used to make queries to Neo4j.
 
         Returns:
             The configuration as a dictionary.
