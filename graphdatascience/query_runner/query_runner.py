@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 
-from neo4j import Bookmarks
 from pandas import DataFrame
 
 from ..server_version.server_version import ServerVersion
@@ -29,7 +28,7 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
-    def set_bookmarks(self, bookmarks: Optional[Bookmarks]) -> None:
+    def set_bookmarks(self, bookmarks: Optional[Any]) -> None:
         pass
 
     def close(self) -> None:
@@ -46,11 +45,11 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
-    def bookmarks(self) -> Optional[Bookmarks]:
+    def bookmarks(self) -> Optional[Any]:
         pass
 
     @abstractmethod
-    def last_bookmarks(self) -> Optional[Bookmarks]:
+    def last_bookmarks(self) -> Optional[Any]:
         pass
 
     def set_server_version(self, _: ServerVersion) -> None:

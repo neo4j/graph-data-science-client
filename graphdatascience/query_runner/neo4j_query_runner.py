@@ -27,14 +27,14 @@ class Neo4jQueryRunner(QueryRunner):
         driver: neo4j.Driver,
         database: Optional[str] = neo4j.DEFAULT_DATABASE,
         auto_close: bool = False,
-        bookmarks: Optional[neo4j.Bookmarks] = None,
+        bookmarks: Optional[Any] = None,
     ):
         self._driver = driver
         self._auto_close = auto_close
         self._database = database
         self._logger = logging.getLogger()
         self._bookmarks = bookmarks
-        self._last_bookmarks: Optional[neo4j.Bookmarks] = None
+        self._last_bookmarks: Optional[Any] = None
 
     def run_query(
         self,
@@ -160,7 +160,7 @@ class Neo4jQueryRunner(QueryRunner):
     def set_database(self, database: str) -> None:
         self._database = database
 
-    def set_bookmarks(self, bookmarks: Optional[neo4j.Bookmarks]) -> None:
+    def set_bookmarks(self, bookmarks: Optional[Any]) -> None:
         self._bookmarks = bookmarks
 
     def close(self) -> None:
@@ -169,10 +169,10 @@ class Neo4jQueryRunner(QueryRunner):
     def database(self) -> Optional[str]:
         return self._database
 
-    def bookmarks(self) -> Optional[neo4j.Bookmarks]:
+    def bookmarks(self) -> Optional[Any]:
         return self._bookmarks
 
-    def last_bookmarks(self) -> Optional[neo4j.Bookmarks]:
+    def last_bookmarks(self) -> Optional[Any]:
         return self._last_bookmarks
 
     def __del__(self) -> None:

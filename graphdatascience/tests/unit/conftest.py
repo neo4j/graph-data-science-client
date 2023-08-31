@@ -1,7 +1,6 @@
 from typing import Any, Dict, Generator, List, Optional
 
 import pytest
-from neo4j import Bookmarks
 from pandas import DataFrame
 
 from graphdatascience import QueryRunner
@@ -46,16 +45,16 @@ class CollectingQueryRunner(QueryRunner):
     def set_database(self, _: str) -> None:
         pass
 
-    def set_bookmarks(self, _: Optional[Bookmarks]) -> None:
+    def set_bookmarks(self, _: Optional[Any]) -> None:
         pass
 
     def database(self) -> str:
         return "dummy"
 
-    def bookmarks(self) -> Optional[Bookmarks]:
+    def bookmarks(self) -> Optional[Any]:
         return None
 
-    def last_bookmarks(self) -> Optional[Bookmarks]:
+    def last_bookmarks(self) -> Optional[Any]:
         return None
 
     def create_graph_constructor(
