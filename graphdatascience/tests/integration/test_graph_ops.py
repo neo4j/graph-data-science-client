@@ -1,4 +1,5 @@
 from typing import Generator
+import warnings
 
 import numpy as np
 import pytest
@@ -726,7 +727,7 @@ def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
     else:
         result = gds.beta.graph.relationships.stream(G, ["REL", "REL2"])
 
-    with pytest.raises(DeprecationWarning):
+    with pytest.warns(DeprecationWarning):
         expected = gds.run_cypher("MATCH (n)-[r]->(m) RETURN id(n) AS src_id, id(m) AS trg_id, type(r) AS rel_type")
 
         assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType"]
