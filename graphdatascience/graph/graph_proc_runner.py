@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 from multimethod import multimethod
-from pandas import DataFrame, Series, read_parquet, read_pickle
+from pandas import DataFrame, Series, read_parquet
 
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
@@ -42,6 +42,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def _path(package: str, resource: str) -> pathlib.Path:
         if sys.version_info >= (3, 9):
             from importlib.resources import files
+
             # files() returns a Traversable, but usages require a Path object
             return pathlib.Path(str(files(package) / resource))
         else:
@@ -106,8 +107,8 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @client_only_endpoint("gds.graph")
     def load_cora(self, graph_name: str = "cora", undirected: bool = False) -> Graph:
-        nodes = read_pickle(self._path("graphdatascience.resources.cora", "cora_nodes_gzip.pkl"), compression="gzip")
-        rels = read_pickle(self._path("graphdatascience.resources.cora", "cora_rels_gzip.pkl"), compression="gzip")
+        nodes = read_parquet(self._path("graphdatascience.resources.cora", "cora_nodes.parquet.gzip"))
+        rels = read_parquet(self._path("graphdatascience.resources.cora", "cora_rels.parquet.gzip"))
 
         undirected_relationship_types = ["*"] if undirected else []
 
