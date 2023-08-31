@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 from typing import Any, Generator, Optional
 
-import pandas
 import pytest
 from neo4j import Driver, GraphDatabase
 
@@ -131,8 +130,7 @@ def clean_up(gds: GraphDataScience) -> Generator[None, None, None]:
     if gds.server_version() >= ServerVersion(2, 5, 0):
         model_names = gds.model.list()["modelName"]
     else:
-        r = gds.beta.model.list()["modelInfo"].apply(pandas.Series)
-        model_names = [] if r.empty else r["modelName"]  # type: ignore
+        model_names = gds.beta.model.list()["modelInfo"].apply(func=lambda row: row["modelName"])
 
     for model_name in model_names:
         model = gds.model.get(model_name)
