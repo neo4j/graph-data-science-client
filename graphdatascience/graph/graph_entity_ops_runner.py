@@ -25,7 +25,7 @@ class TopologyDataFrame(DataFrame):
         return TopologyDataFrame
 
     def by_rel_type(self) -> Dict[str, List[List[int]]]:
-        gb = self.groupby("relationshipType")
+        gb = self.groupby("relationshipType", observed=True)
 
         output = {}
         for rel_type, indices in gb.groups.items():
