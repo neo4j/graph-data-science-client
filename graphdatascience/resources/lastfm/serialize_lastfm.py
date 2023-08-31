@@ -97,28 +97,23 @@ artist_df["rawId"] = artist_df["nodeId"]
 artist_df["labels"] = "Artist"
 
 
-artist_df.to_pickle(
-    "artist_nodes.pkl",
-    protocol=4,
+artist_df.to_parquet(
+    "artist_nodes.parquet.gzip",
     compression="gzip",
 )
-user_df.to_pickle(
-    "user_nodes.pkl",
-    protocol=4,
+user_df.to_parquet(
+    "user_nodes.parquet.gzip",
     compression="gzip",
 )
-user_artist_df.to_pickle(
-    "user_listen_artist_rels.pkl",
-    protocol=4,
+user_artist_df.to_parquet(
+    "user_listen_artist_rels.parquet.gzip",
     compression="gzip",
 )
-user_tag_artist_df.to_pickle(
-    "user_tag_artist_rels.pkl",
-    protocol=4,
+user_tag_artist_df.to_parquet(
+    "user_tag_artist_rels.parquet.gzip",
     compression="gzip",
 )
-user_friend_df_directed.to_pickle(
-    "user_friend_df_directed.pkl",
-    protocol=4,
+user_friend_df_directed.to_parquet(
+    "user_friend_df_directed.parquet.gzip",
     compression="gzip",
 )

@@ -49,27 +49,26 @@ actors_df = other_nodes_with_features[(other_nodes_with_features["nodeId"] >= 69
 actors_df["labels"] = "Actor"
 actors_df.reset_index(drop=True, inplace=True)
 
-movie_nodes_with_features.to_pickle(
-    "/FILE_LOC/imdb_movies_with_genre_gzip.pkl",
+movie_nodes_with_features.to_parquet(
+    "/FILE_LOC/imdb_movies_with_genre.parquet.gzip",
     protocol=4,
     compression="gzip",
 )
 
-unlabeled_movies_df.to_pickle(
-    "/FILE_LOC/imdb_movies_without_genre_gzip.pkl",
+unlabeled_movies_df.to_parquet(
+    "/FILE_LOC/imdb_movies_without_genre.parquet.gzip",
     protocol=4,
     compression="gzip",
 )
 
-directors_df.to_pickle(
-    "/FILE_LOC/imdb_directors_gzip.pkl",
+directors_df.to_parquet(
+    "/FILE_LOC/imdb_directors.parquet.gzip",
     protocol=4,
     compression="gzip",
 )
 
-actors_df.to_pickle(
-    "/FILE_LOC/imdb_actors_gzip.pkl",
-    protocol=4,
+actors_df.to_parquet(
+    "/FILE_LOC/imdb_actors.parquet.gzip",
     compression="gzip",
 )
 
@@ -91,14 +90,13 @@ edge_list[3]["relationshipType"] = "ACTED_IN"
 edge_list[1].reset_index(drop=True, inplace=True)
 edge_list[3].reset_index(drop=True, inplace=True)
 
-edge_list[1].to_pickle(
-    "/FILE_LOC/imdb_directed_in_rels_gzip.pkl",
+edge_list[1].to_parquet(
+    "/FILE_LOC/imdb_directed_in_rels.parquet.gzip",
     protocol=4,
     compression="gzip",
 )
 
-edge_list[3].to_pickle(
-    "/FILE_LOC/imdb_acted_in_rels_gzip.pkl",
-    protocol=4,
+edge_list[3].to_parquet(
+    "/FILE_LOC/imdb_acted_in.parquet.gzip",
     compression="gzip",
 )

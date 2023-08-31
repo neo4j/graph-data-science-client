@@ -1,5 +1,4 @@
 from typing import Generator
-import warnings
 
 import numpy as np
 import pytest
