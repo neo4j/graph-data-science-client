@@ -113,33 +113,57 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.mutate` instead.
+
 .. py:function:: gds.alpha.hits.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.mutate.estimate` instead.
 
 .. py:function:: gds.alpha.hits.stats(G: Graph, **config: Any) -> Series[Any]
 
     Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.stats` instead.
+
 .. py:function:: gds.alpha.hits.stats.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.stats.estimate` instead.
 
 .. py:function:: gds.alpha.hits.stream(G: Graph, **config: Any) -> DataFrame
 
     Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.stream` instead.
+
 .. py:function:: gds.alpha.hits.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.stream.estimate` instead.
 
 .. py:function:: gds.alpha.hits.write(G: Graph, **config: Any) -> Series[Any]
 
     Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.write` instead.
+
 .. py:function:: gds.alpha.hits.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.write.estimate` instead.
 
 .. py:function:: gds.alpha.kSpanningTree.write(G: Graph, **config: Any) -> Series[Any]
 
@@ -271,33 +295,57 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.mutate` instead.
+
 .. py:function:: gds.alpha.sllpa.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.mutate.estimate` instead.
 
 .. py:function:: gds.alpha.sllpa.stats(G: Graph, **config: Any) -> Series[Any]
 
     The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.stats` instead.
+
 .. py:function:: gds.alpha.sllpa.stats.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.stats.estimate` instead.
 
 .. py:function:: gds.alpha.sllpa.stream(G: Graph, **config: Any) -> DataFrame
 
     The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.stream` instead.
+
 .. py:function:: gds.alpha.sllpa.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.stream.estimate` instead.
 
 .. py:function:: gds.alpha.sllpa.write(G: Graph, **config: Any) -> Series[Any]
 
     The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.write` instead.
+
 .. py:function:: gds.alpha.sllpa.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.write.estimate` instead.
 
 .. py:function:: gds.alpha.triangles(G: Graph, **config: Any) -> DataFrame
 
@@ -902,6 +950,38 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     -> GraphCreateResult
 
     Constructs a random subgraph based on random walks with restarts.
+
+.. py:function:: gds.hits.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
+
+.. py:function:: gds.hits.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.hits.stats(G: Graph, **config: Any) -> Series[Any]
+
+    Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
+
+.. py:function:: gds.hits.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.hits.stream(G: Graph, **config: Any) -> DataFrame
+
+    Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
+
+.. py:function:: gds.hits.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.hits.write(G: Graph, **config: Any) -> Series[Any]
+
+    Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
+
+.. py:function:: gds.hits.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.influenceMaximization.celf.mutate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1513,6 +1593,38 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.shortestPath.yens.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
 	Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.sllpa.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.
+
+.. py:function:: gds.sllpa.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.sllpa.stats(G: Graph, **config: Any) -> Series[Any]
+
+    The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.
+
+.. py:function:: gds.sllpa.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.sllpa.stream(G: Graph, **config: Any) -> DataFrame
+
+    The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.
+
+.. py:function:: gds.sllpa.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.sllpa.write(G: Graph, **config: Any) -> Series[Any]
+
+    The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.
+
+.. py:function:: gds.sllpa.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.spanningTree.mutate(G: Graph, **config: Any) -> Series[Any]
 
