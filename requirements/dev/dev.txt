@@ -8,5 +8,5 @@ pandas-stubs == 2.0.2.230605
 pytest == 7.4.0
 pytest-annotate == 1.0.5
 tox == 4.4.8
-types-setuptools == 67.8.0.0
+types-setuptools == 68.1.0.1
 sphinx == 7.1.1
