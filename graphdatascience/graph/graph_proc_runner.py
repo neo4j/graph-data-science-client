@@ -51,7 +51,8 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         else:
             from importlib.resources import path
 
-            return path(package, resource)
+            # we dont want to use a context manager here, so we need to call __enter__ manually
+            return path(package, resource).__enter__()
 
     @client_only_endpoint("gds.graph")
     @compatible_with("construct", min_inclusive=ServerVersion(2, 1, 0))
@@ -110,7 +111,8 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @client_only_endpoint("gds.graph")
     def load_cora(self, graph_name: str = "cora", undirected: bool = False) -> Graph:
-        nodes = read_parquet(self._path("graphdatascience.resources.cora", "cora_nodes.parquet.gzip"))
+        file = self._path("graphdatascience.resources.cora", "cora_nodes.parquet.gzip")
+        nodes = read_parquet(file)
 
         if is_neo4j_4_driver:
             # features is read as an ndarray which was not supported in neo4j 4
