@@ -105,33 +105,57 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.mutate` instead.
+
 .. py:function:: gds.alpha.hits.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.mutate.estimate` instead.
 
 .. py:function:: gds.alpha.hits.stats(G: Graph, **config: Any) -> Series[Any]
 
     Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.stats` instead.
+
 .. py:function:: gds.alpha.hits.stats.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.stats.estimate` instead.
 
 .. py:function:: gds.alpha.hits.stream(G: Graph, **config: Any) -> DataFrame
 
     Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.stream` instead.
+
 .. py:function:: gds.alpha.hits.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.stream.estimate` instead.
 
 .. py:function:: gds.alpha.hits.write(G: Graph, **config: Any) -> Series[Any]
 
     Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.write` instead.
+
 .. py:function:: gds.alpha.hits.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.write.estimate` instead.
 
 .. py:function:: gds.alpha.kSpanningTree.write(G: Graph, **config: Any) -> Series[Any]
 
@@ -857,6 +881,38 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     -> GraphCreateResult
 
     Constructs a random subgraph based on random walks with restarts.
+
+.. py:function:: gds.hits.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
+
+.. py:function:: gds.hits.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.hits.stats(G: Graph, **config: Any) -> Series[Any]
+
+    Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
+
+.. py:function:: gds.hits.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.hits.stream(G: Graph, **config: Any) -> DataFrame
+
+    Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
+
+.. py:function:: gds.hits.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.hits.write(G: Graph, **config: Any) -> Series[Any]
+
+    Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
+
+.. py:function:: gds.hits.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.influenceMaximization.celf.mutate(G: Graph, **config: Any) -> Series[Any]
 
