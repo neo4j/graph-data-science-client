@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 from multimethod import multimethod
+from neo4j import __version__ as neo4j_driver_version
 from pandas import DataFrame, Series, read_parquet
 
 from ..error.client_only_endpoint import client_only_endpoint
@@ -35,6 +36,8 @@ from graphdatascience.graph.graph_create_result import GraphCreateResult
 from graphdatascience.graph.graph_cypher_runner import GraphCypherRunner
 
 Strings = Union[str, List[str]]
+
+is_neo4j_4_driver = int(neo4j_driver_version.split(".")[0]) == 4
 
 
 class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
@@ -108,6 +111,11 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     @client_only_endpoint("gds.graph")
     def load_cora(self, graph_name: str = "cora", undirected: bool = False) -> Graph:
         nodes = read_parquet(self._path("graphdatascience.resources.cora", "cora_nodes.parquet.gzip"))
+
+        if is_neo4j_4_driver:
+            # features is read as an ndarray which was not supported in neo4j 4
+            nodes["features"] = nodes["features"].apply(lambda x: x.tolist())
+
         rels = read_parquet(self._path("graphdatascience.resources.cora", "cora_rels.parquet.gzip"))
 
         undirected_relationship_types = ["*"] if undirected else []
@@ -137,7 +145,11 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         node_dfs = []
         for n in nodes:
             resource = self._path(package, f"imdb_{n}.parquet.gzip")
-            node_dfs.append(read_parquet(resource))
+            df = read_parquet(resource)
+            if is_neo4j_4_driver:
+                # features is read as an ndarray which was not supported in neo4j 4
+                df["plot_keywords"] = df["plot_keywords"].apply(lambda x: x.tolist())
+            node_dfs.append(df)
 
         rel_dfs = []
         for r in rels:
