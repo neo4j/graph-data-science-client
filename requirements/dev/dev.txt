@@ -4,7 +4,7 @@ flake8 == 6.1.0
 isort == 5.12.0
 mypy == 1.4.1
 nbconvert == 7.6.0
-pandas-stubs == 2.0.2.230605
+pandas-stubs == 2.0.3.230814
 pytest == 7.4.0
 pytest-annotate == 1.0.5
 tox == 4.4.8
