@@ -31,6 +31,5 @@ nodes = pd.DataFrame().assign(
 
 relationships = pd.DataFrame().assign(sourceNodeId=cites[0], targetNodeId=cites[1], relationshipType="CITES")
 
-# protocol 4 to work with python 3.7
-nodes.to_pickle("./cora_nodes_gzip_2.pkl", protocol=4, compression="gzip")
-relationships.to_pickle("./cora_rels_gzip_2.pkl", protocol=4, compression="gzip")
+nodes.to_parquet("./cora_nodes.parquet.gzip", compression="gzip")
+relationships.to_parquet("./cora_rels.parquet.gzip", compression="gzip")

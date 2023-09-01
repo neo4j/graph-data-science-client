@@ -167,7 +167,7 @@ def gs_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
 @pytest.mark.model_store_location
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_beta_alpha_endpoints_25(gds: GraphDataScience, lp_model: LPModel) -> None:
-    with pytest.raises(DeprecationWarning):
+    with pytest.warns(DeprecationWarning):
         gds.beta.model.list(lp_model)
         gds.beta.model.exists(lp_model.name())
         gds.alpha.model.store(lp_model)

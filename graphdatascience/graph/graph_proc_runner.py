@@ -1,11 +1,12 @@
 import os
 import pathlib
 import sys
-from typing import Any, ContextManager, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 from multimethod import multimethod
-from pandas import DataFrame, Series, read_pickle
+from neo4j import __version__ as neo4j_driver_version
+from pandas import DataFrame, Series, read_parquet
 
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
@@ -36,19 +37,22 @@ from graphdatascience.graph.graph_cypher_runner import GraphCypherRunner
 
 Strings = Union[str, List[str]]
 
+is_neo4j_4_driver = int(neo4j_driver_version.split(".")[0]) == 4
+
 
 class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     @staticmethod
-    def _path(package: str, resource: str) -> ContextManager[pathlib.Path]:
+    def _path(package: str, resource: str) -> pathlib.Path:
         if sys.version_info >= (3, 9):
-            import os.path
-            from importlib.resources import as_file, files
+            from importlib.resources import files
 
-            return as_file(files(package) / os.path.normpath(resource))
+            # files() returns a Traversable, but usages require a Path object
+            return pathlib.Path(str(files(package) / resource))
         else:
             from importlib.resources import path
 
-            return path(package, resource)
+            # we dont want to use a context manager here, so we need to call __enter__ manually
+            return path(package, resource).__enter__()
 
     @client_only_endpoint("gds.graph")
     @compatible_with("construct", min_inclusive=ServerVersion(2, 1, 0))
@@ -107,11 +111,14 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @client_only_endpoint("gds.graph")
     def load_cora(self, graph_name: str = "cora", undirected: bool = False) -> Graph:
-        with self._path("graphdatascience.resources.cora", "cora_nodes_gzip.pkl") as nodes_resource:
-            nodes = read_pickle(nodes_resource, compression="gzip")
+        file = self._path("graphdatascience.resources.cora", "cora_nodes.parquet.gzip")
+        nodes = read_parquet(file)
 
-        with self._path("graphdatascience.resources.cora", "cora_rels_gzip.pkl") as rels_resource:
-            rels = read_pickle(rels_resource, compression="gzip")
+        if is_neo4j_4_driver:
+            # features is read as an ndarray which was not supported in neo4j 4
+            nodes["features"] = nodes["features"].apply(lambda x: x.tolist())
+
+        rels = read_parquet(self._path("graphdatascience.resources.cora", "cora_rels.parquet.gzip"))
 
         undirected_relationship_types = ["*"] if undirected else []
 
@@ -122,8 +129,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         nodes = pd.DataFrame({"nodeId": range(1, 35)})
         nodes["labels"] = "Person"
 
-        with self._path("graphdatascience.resources.karate", "karate_club_gzip.pkl") as rels_resource:
-            rels = read_pickle(rels_resource, compression="gzip")
+        rels = read_parquet(self._path("graphdatascience.resources.karate", "karate_club.parquet.gzip"))
 
         undirected_relationship_types = ["*"] if undirected else []
 
@@ -134,47 +140,50 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         if self._server_version < ServerVersion(2, 3, 0):
             raise ValueError("The IMDB dataset loading is only supported by GDS 2.3 or later.")
 
-        with self._path("graphdatascience.resources.imdb", "imdb_movies_with_genre_gzip.pkl") as nodes_resource:
-            movies_with_genre = read_pickle(nodes_resource, compression="gzip")
-        with self._path("graphdatascience.resources.imdb", "imdb_movies_without_genre_gzip.pkl") as nodes_resource:
-            movies_without_genre = read_pickle(nodes_resource, compression="gzip")
-        with self._path("graphdatascience.resources.imdb", "imdb_actors_gzip.pkl") as nodes_resource:
-            actors = read_pickle(nodes_resource, compression="gzip")
-        with self._path("graphdatascience.resources.imdb", "imdb_directors_gzip.pkl") as nodes_resource:
-            directors = read_pickle(nodes_resource, compression="gzip")
+        package = "graphdatascience.resources.imdb"
+        nodes = ["movies_with_genre", "movies_without_genre", "actors", "directors"]
+        rels = ["acted_in", "directed_in"]
 
-        with self._path("graphdatascience.resources.imdb", "imdb_acted_in_rels_gzip.pkl") as rels_resource:
-            acted_in_rels = read_pickle(rels_resource, compression="gzip")
-        with self._path("graphdatascience.resources.imdb", "imdb_directed_in_rels_gzip.pkl") as rels_resource:
-            directed_in_rels = read_pickle(rels_resource, compression="gzip")
+        node_dfs = []
+        for n in nodes:
+            resource = self._path(package, f"imdb_{n}.parquet.gzip")
+            df = read_parquet(resource)
+            if is_neo4j_4_driver:
+                # features is read as an ndarray which was not supported in neo4j 4
+                df["plot_keywords"] = df["plot_keywords"].apply(lambda x: x.tolist())
+            node_dfs.append(df)
 
-        nodes = [movies_with_genre, movies_without_genre, actors, directors]
-        rels = [acted_in_rels, directed_in_rels]
+        rel_dfs = []
+        for r in rels:
+            resource = self._path(package, f"imdb_{r}.parquet.gzip")
+            rel_dfs.append(read_parquet(resource))
 
         # Default undirected which matches raw data
         undirected_relationship_types = ["*"] if undirected else []
 
-        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
+        return self.construct(
+            graph_name, node_dfs, rel_dfs, undirected_relationship_types=undirected_relationship_types
+        )
 
     @client_only_endpoint("gds.graph")
     def load_lastfm(self, graph_name: str = "lastfm", undirected: bool = True) -> Any:
         if self._server_version < ServerVersion(2, 3, 0):
             raise ValueError("The LastFM2K dataset loading is only supported by GDS 2.3 or later.")
 
-        with self._path("graphdatascience.resources.lastfm", "user_nodes.pkl") as nodes_resource:
-            user_nodes = read_pickle(nodes_resource, compression="gzip")
-        with self._path("graphdatascience.resources.lastfm", "artist_nodes.pkl") as nodes_resource:
-            artist_nodes = read_pickle(nodes_resource, compression="gzip")
+        nodes = ["user_nodes", "artist_nodes"]
+        rels = ["user_friend_df_directed", "user_listen_artist_rels", "user_tag_artist_rels"]
 
-        with self._path("graphdatascience.resources.lastfm", "user_friend_df_directed.pkl") as rels_resource:
-            user_friend_df_directed = read_pickle(rels_resource, compression="gzip")
-        with self._path("graphdatascience.resources.lastfm", "user_listen_artist_rels.pkl") as rels_resource:
-            user_listen_artist_rels = read_pickle(rels_resource, compression="gzip")
-        with self._path("graphdatascience.resources.lastfm", "user_tag_artist_rels.pkl") as rels_resource:
-            user_tag_artist_rels = read_pickle(rels_resource, compression="gzip")
+        package = "graphdatascience.resources.lastfm"
 
-        nodes = [user_nodes, artist_nodes]
-        rels = [user_friend_df_directed, user_listen_artist_rels, user_tag_artist_rels]
+        node_dfs = []
+        for n in nodes:
+            resource = self._path(package, f"{n}.parquet.gzip")
+            node_dfs.append(read_parquet(resource))
+
+        rel_dfs = []
+        for r in rels:
+            resource = self._path(package, f"{r}.parquet.gzip")
+            rel_dfs.append(read_parquet(resource))
 
         # Default undirected for usage in GDS ML pipelines
         if undirected:
@@ -182,7 +191,9 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         else:
             undirected_relationship_types = []
 
-        return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
+        return self.construct(
+            graph_name, node_dfs, rel_dfs, undirected_relationship_types=undirected_relationship_types
+        )
 
     @property
     def sample(self) -> GraphSampleRunner:

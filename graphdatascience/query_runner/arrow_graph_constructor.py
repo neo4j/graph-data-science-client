@@ -1,6 +1,7 @@
 import concurrent
 import json
 import math
+import warnings
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional
 
@@ -66,6 +67,15 @@ class ArrowGraphConstructor(GraphConstructor):
         for df in dfs:
             num_rows = df.shape[0]
             num_batches = math.ceil(num_rows / self._min_batch_size)
+
+            # pandas 2.1.0 deprecates swapaxes, but numpy did not catch up yet.
+            warnings.filterwarnings(
+                "ignore",
+                message=(
+                    r"^'DataFrame.swapaxes' is deprecated and will be removed in a future version. "
+                    + r"Please use 'DataFrame.transpose' instead.$"
+                ),
+            )
             partitioned_dfs += numpy.array_split(df, num_batches)  # type: ignore
 
         return partitioned_dfs
