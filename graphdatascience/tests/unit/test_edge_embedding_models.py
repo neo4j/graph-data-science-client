@@ -224,3 +224,17 @@ def test_distmult_predict_write(runner: CollectingQueryRunner, distmult_M: Simpl
         "threshold": THRESHOLD,
         "write_relationship_type": WRITE_MUTATE_REL_TYPE,
     }
+
+
+def test_transe_getters(transe_M: SimpleEdgeEmbeddingModel) -> None:
+    assert transe_M.scoring_fuction() == "transe"
+    assert transe_M.graph_name() == GRAPH_NAME
+    assert transe_M.node_embedding_property() == NODE_PROP
+    assert transe_M.relationship_type_embeddings() == {REL_TYPE: REL_TYPE_EMBEDDING}
+
+
+def test_distmult_getters(distmult_M: SimpleEdgeEmbeddingModel) -> None:
+    assert distmult_M.scoring_fuction() == "distmult"
+    assert distmult_M.graph_name() == GRAPH_NAME
+    assert distmult_M.node_embedding_property() == NODE_PROP
+    assert distmult_M.relationship_type_embeddings() == {REL_TYPE: REL_TYPE_EMBEDDING}

@@ -133,3 +133,15 @@ class SimpleEdgeEmbeddingModel:
                 "write_relationship_type": write_relationship_type,
             },
         ).squeeze()
+
+    def scoring_fuction(self) -> str:
+        return self._scoring_function
+
+    def graph_name(self) -> str:
+        return self._graph_name
+
+    def node_embedding_property(self) -> str:
+        return self._node_embedding_property
+
+    def relationship_type_embeddings(self) -> Dict[str, List[float]]:
+        return self._relationship_type_embeddings
