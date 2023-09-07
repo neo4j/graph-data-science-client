@@ -1,6 +1,6 @@
 // DO NOT EDIT - AsciiDoc file generated automatically
 
-= Load data to a projected graph via graph construction
+= Load data via graph construction
 
 
 https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/load-data-via-graph-construction.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open

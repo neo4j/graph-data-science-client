@@ -1,4 +1,4 @@
-= The Neo4j Graph Data Science Client Manual v{docs-version}
+= Neo4j Graph Data Science Client v{docs-version}
 :description: This manual documents how to use the dedicated Python Client v{docs-version} for the Neo4j Graph Data Science library.
 
 :toc: left

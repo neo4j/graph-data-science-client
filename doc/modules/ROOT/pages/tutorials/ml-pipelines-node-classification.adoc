@@ -1,6 +1,6 @@
 // DO NOT EDIT - AsciiDoc file generated automatically
 
-= Machine learning pipelines: Node classification
+= ML pipelines: Node classification
 
 
 https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/ml-pipelines-node-classification.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
