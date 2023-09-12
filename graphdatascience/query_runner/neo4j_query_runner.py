@@ -68,7 +68,11 @@ class Neo4jQueryRunner(QueryRunner):
             )
 
             df = result.to_df()
-            self._last_bookmarks = session.last_bookmarks()
+
+            if self._NEO4J_DRIVER_VERSION < ServerVersion(5, 0, 0):
+                self._last_bookmarks = [session.last_bookmark()]
+            else:
+                self._last_bookmarks = session.last_bookmarks()
 
             notifications = result.consume().notifications
             if notifications:
