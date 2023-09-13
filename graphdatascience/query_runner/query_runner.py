@@ -27,6 +27,10 @@ class QueryRunner(ABC):
     def set_database(self, database: str) -> None:
         pass
 
+    @abstractmethod
+    def set_bookmarks(self, bookmarks: Optional[Any]) -> None:
+        pass
+
     def close(self) -> None:
         pass
 
@@ -38,6 +42,14 @@ class QueryRunner(ABC):
 
     @abstractmethod
     def database(self) -> Optional[str]:
+        pass
+
+    @abstractmethod
+    def bookmarks(self) -> Optional[Any]:
+        pass
+
+    @abstractmethod
+    def last_bookmarks(self) -> Optional[Any]:
         pass
 
     def set_server_version(self, _: ServerVersion) -> None:

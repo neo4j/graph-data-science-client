@@ -40,6 +40,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
         aura_db_connection_info: Optional[AuraDbConnectionInfo] = None,
+        bookmarks: Optional[Any] = None,
     ):
         """
         Construct a new GraphDataScience object.
@@ -65,6 +66,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_tls_root_certs : Optional[bytes], default None
             PEM-encoded certificates that are used for the connecting to the
             Arrow Flight server.
+        bookmarks : Optional[Any], default None
+            The Neo4j bookmarks to require a certain state before the next query gets executed.
         """
 
         if isinstance(endpoint, str):
@@ -75,7 +78,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
             driver = GraphDatabase.driver(endpoint, auth=auth, **self._config)
 
-            self._query_runner = Neo4jQueryRunner(driver, auto_close=True)
+            self._query_runner = Neo4jQueryRunner(driver, auto_close=True, bookmarks=bookmarks)
 
         elif isinstance(endpoint, QueryRunner):
             if arrow:
@@ -85,7 +88,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
         else:
             driver = endpoint
-            self._query_runner = Neo4jQueryRunner(driver, auto_close=False)
+            self._query_runner = Neo4jQueryRunner(driver, auto_close=False, bookmarks=bookmarks)
 
         if database:
             self._query_runner.set_database(database)
@@ -163,6 +166,17 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         """
         self._query_runner.set_database(database)
 
+    def set_bookmarks(self, bookmarks: Any) -> None:
+        """
+        Set Neo4j bookmarks to require a certain state before the next query gets executed
+
+        Parameters
+        ----------
+        bookmarks: Bookmark(s)
+            The Neo4j bookmarks defining the required state
+        """
+        self._query_runner.set_bookmarks(bookmarks)
+
     def database(self) -> Optional[str]:
         """
         Get the database which queries are run against.
@@ -172,6 +186,26 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
         """
         return self._query_runner.database()
+
+    def bookmarks(self) -> Optional[Any]:
+        """
+        Get the Neo4j bookmarks defining the currently required states for queries to execute
+
+        Returns
+        -------
+        The (possibly None) Neo4j bookmarks defining the currently required state
+        """
+        return self._query_runner.bookmarks()
+
+    def last_bookmarks(self) -> Optional[Any]:
+        """
+        Get the Neo4j bookmarks defining the state following the most recently called query
+
+        Returns
+        -------
+        The (possibly None) Neo4j bookmarks defining the state following the most recently called query
+        """
+        return self._query_runner.last_bookmarks()
 
     def run_cypher(
         self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
@@ -217,6 +251,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow: bool = True,
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
+        bookmarks: Optional[Any] = None,
     ) -> "GraphDataScience":
         return cls(
             driver,
@@ -225,6 +260,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow=arrow,
             arrow_disable_server_verification=arrow_disable_server_verification,
             arrow_tls_root_certs=arrow_tls_root_certs,
+            bookmarks=bookmarks,
         )
 
     def close(self) -> None:

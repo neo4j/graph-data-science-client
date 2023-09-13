@@ -181,8 +181,17 @@ class ArrowQueryRunner(QueryRunner):
     def set_database(self, database: str) -> None:
         self._fallback_query_runner.set_database(database)
 
+    def set_bookmarks(self, bookmarks: Optional[Any]) -> None:
+        self._fallback_query_runner.set_bookmarks(bookmarks)
+
     def database(self) -> Optional[str]:
         return self._fallback_query_runner.database()
+
+    def bookmarks(self) -> Optional[Any]:
+        return self._fallback_query_runner.bookmarks()
+
+    def last_bookmarks(self) -> Optional[Any]:
+        return self._fallback_query_runner.last_bookmarks()
 
     def close(self) -> None:
         self._fallback_query_runner.close()

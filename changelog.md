@@ -9,6 +9,8 @@
 * New method `gds.graph.cypher.project` to project a graph using Cypher projection.
   More details can be found in the user guide.
 * Added new LastFM dataset through `gds.graph.load_lastfm()`
+* Expose bookmarks to synchronize queries in a Neo4j cluster.
+
 
 ## Bug fixes
 
@@ -26,6 +28,6 @@
 
 ## Other changes
 
-* Dropped Python 3.7 support which is EOL.
+* Dropped support for Python 3.7 which is EOL.
 
 

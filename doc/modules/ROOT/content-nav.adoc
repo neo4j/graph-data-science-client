@@ -6,6 +6,7 @@
 ** xref:pipelines.adoc[]
 ** xref:model-object.adoc[]
 ** xref:common-datasets.adoc[]
+** xref:bookmarks.adoc[]
 ** xref:tutorials/tutorials.adoc[]
 *** xref:tutorials/load-data-via-graph-construction.adoc[]
 *** xref:tutorials/fastrp-and-knn.adoc[]

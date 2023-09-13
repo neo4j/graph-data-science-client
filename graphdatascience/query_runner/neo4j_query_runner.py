@@ -23,12 +23,18 @@ class Neo4jQueryRunner(QueryRunner):
     _NEO4J_DRIVER_VERSION = ServerVersion.from_string(neo4j.__version__)
 
     def __init__(
-        self, driver: neo4j.Driver, database: Optional[str] = neo4j.DEFAULT_DATABASE, auto_close: bool = False
+        self,
+        driver: neo4j.Driver,
+        database: Optional[str] = neo4j.DEFAULT_DATABASE,
+        auto_close: bool = False,
+        bookmarks: Optional[Any] = None,
     ):
         self._driver = driver
         self._auto_close = auto_close
         self._database = database
         self._logger = logging.getLogger()
+        self._bookmarks = bookmarks
+        self._last_bookmarks: Optional[Any] = None
 
     def run_query(
         self,
@@ -45,7 +51,7 @@ class Neo4jQueryRunner(QueryRunner):
 
         self._verify_connectivity()
 
-        with self._driver.session(database=database) as session:
+        with self._driver.session(database=database, bookmarks=self.bookmarks()) as session:
             try:
                 result = session.run(query, params)
             except Exception as e:
@@ -62,6 +68,11 @@ class Neo4jQueryRunner(QueryRunner):
             )
 
             df = result.to_df()
+
+            if self._NEO4J_DRIVER_VERSION < ServerVersion(5, 0, 0):
+                self._last_bookmarks = [session.last_bookmark()]
+            else:
+                self._last_bookmarks = session.last_bookmarks()
 
             notifications = result.consume().notifications
             if notifications:
@@ -153,11 +164,20 @@ class Neo4jQueryRunner(QueryRunner):
     def set_database(self, database: str) -> None:
         self._database = database
 
+    def set_bookmarks(self, bookmarks: Optional[Any]) -> None:
+        self._bookmarks = bookmarks
+
     def close(self) -> None:
         self._driver.close()
 
     def database(self) -> Optional[str]:
         return self._database
+
+    def bookmarks(self) -> Optional[Any]:
+        return self._bookmarks
+
+    def last_bookmarks(self) -> Optional[Any]:
+        return self._last_bookmarks
 
     def __del__(self) -> None:
         if self._auto_close:

@@ -37,7 +37,7 @@ from graphdatascience.graph.graph_cypher_runner import GraphCypherRunner
 
 Strings = Union[str, List[str]]
 
-is_neo4j_4_driver = int(neo4j_driver_version.split(".")[0]) == 4
+is_neo4j_4_driver = ServerVersion.from_string(neo4j_driver_version) < ServerVersion(5, 0, 0)
 
 
 class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):

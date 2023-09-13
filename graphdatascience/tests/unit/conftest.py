@@ -45,8 +45,17 @@ class CollectingQueryRunner(QueryRunner):
     def set_database(self, _: str) -> None:
         pass
 
+    def set_bookmarks(self, _: Optional[Any]) -> None:
+        pass
+
     def database(self) -> str:
         return "dummy"
+
+    def bookmarks(self) -> Optional[Any]:
+        return None
+
+    def last_bookmarks(self) -> Optional[Any]:
+        return None
 
     def create_graph_constructor(
         self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
