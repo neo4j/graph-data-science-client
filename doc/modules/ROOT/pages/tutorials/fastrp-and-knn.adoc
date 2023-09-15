@@ -1,6 +1,6 @@
 // DO NOT EDIT - AsciiDoc file generated automatically
 
-= Recommendation app (kNN on FastR)
+= Recommendations using kNN & FastRP embeddings
 
 
 https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/fastrp-and-knn.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open

@@ -1,6 +1,6 @@
 // DO NOT EDIT - AsciiDoc file generated automatically
 
-= Node Regression, (Sub)Graph Sample
+= ML pipelines: Node Regression, Subgraph & Sampling
 
 
 https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/node-regression-with-subgraph-and-graph-sample.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open

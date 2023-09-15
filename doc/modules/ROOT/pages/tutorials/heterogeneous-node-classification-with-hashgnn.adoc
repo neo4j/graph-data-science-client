@@ -1,6 +1,6 @@
 // DO NOT EDIT - AsciiDoc file generated automatically
 
-= Heterogeneous Node Classification
+= Heterogeneous NC: HashGNN & Autotuning
 
 
 https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/heterogeneous-node-classification-with-hashgnn.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
