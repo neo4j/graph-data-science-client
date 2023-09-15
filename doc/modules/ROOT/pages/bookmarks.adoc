@@ -8,7 +8,8 @@ When using the GDS client, any query following a call to `gds.set_bookmarks()` i
 .Example of using bookmarks with GDS
 [source, python]
 ----
-# If you ran queries through Neo4j driver before you can pass bookmarks in the constructor
+# Use the `bookmarks` parameter to set any existing bookmarks, for example
+# after running a query through the Neo4j driver. The default value is `None`.
 gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD), bookmarks=None)
 
 gds.run_cypher("""
