@@ -1,7 +1,9 @@
 = Coordinate parallel transactions
 
-Bookmarks ensure that when executing queries in a Neo4j cluster, previous or parallel running queries are fully propagated through the cluster.
-By passing one or multiple bookmarks along with a query, the server will make sure that the query does not get executed before the represented state(s) have been established.
+A bookmark is a marker representing a state of the database.
+Bookmarks are useful when subsequent transactions in a cluster need to be coordinated, for example when you need to read data right after writing it.
+
+When using the GDS client, any query following a call to `gds.set_bookmarks()` is not executed until the bookmarked transactions are propagated across the cluster.
 
 .Example of using bookmarks with GDS
 [source, python]
