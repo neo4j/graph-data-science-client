@@ -81,7 +81,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Removes node properties from a projected graph.
 
-.. py:function:: gds.graph.nodeProperties.stream(G: Graph,relationship_properties: List[str],relationship_types: Strings = ["*"],separate_property_columns: bool = False,**config: Any,) -> DataFrame
+.. py:function:: gds.graph.nodeProperties.stream(G: Graph,relationship_properties: List[str],relationship_types: Strings = ["*"],separate_property_columns: bool = False, db_node_properties: List[str] = [], **config: Any,) -> DataFrame
 
     Streams the given node properties.
 
