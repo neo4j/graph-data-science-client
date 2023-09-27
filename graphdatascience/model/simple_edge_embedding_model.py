@@ -9,6 +9,10 @@ NodeFilter = Union[int, List[int], str]
 
 
 class SimpleEdgeEmbeddingModel:
+    """
+    A class whose instances represent a model for computing and producing knowledge graph style relationship embeddings.
+    """
+
     def __init__(
         self,
         scoring_function: str,
@@ -32,6 +36,18 @@ class SimpleEdgeEmbeddingModel:
         relationship_type: str,
         top_k: int,
     ) -> DataFrame:
+        """
+        Compute and stream relationship embeddings
+
+        Args:
+            source_node_filter: The specification of source nodes to consider
+            target_node_filter: The specification of target nodes to consider
+            relationship_type: The name of the relationship type whose embedding will be used in the computation
+            top_k: How many relationship embeddings to return for each source node
+
+        Returns:
+            The `top_k` highest scoring relationship embeddings to any target node, for each source node
+        """
         return self._query_runner.run_query(
             """
             CALL gds.ml.kge.predict.stream(
@@ -66,6 +82,20 @@ class SimpleEdgeEmbeddingModel:
         mutate_relationship_type: str,
         mutate_property: str,
     ) -> "Series[Any]":
+        """
+        Compute relationship embeddings and add them to graph projection under a new relationship type
+
+        Args:
+            source_node_filter: The specification of source nodes to consider
+            target_node_filter: The specification of target nodes to consider
+            relationship_type: The name of the relationship type whose embedding will be used in the computation
+            top_k: How many relationship embeddings to add for each source node
+            mutate_relationship_type: The name of the new relationship type hosting the predicted relationship embeddings # noqa: E501
+            mutate_property: The name of the property on the new relationships which will store the model prediction score # noqa: E501
+
+        Returns:
+            A `pandas.Series` object with metadata about the performed computation and mutation
+        """
         return self._query_runner.run_query(  # type: ignore
             """
             CALL gds.ml.kge.predict.mutate(
@@ -104,6 +134,20 @@ class SimpleEdgeEmbeddingModel:
         write_relationship_type: str,
         write_property: str,
     ) -> "Series[Any]":
+        """
+        Compute relationship embeddings and write them back to the database under a new relationship type
+
+        Args:
+            source_node_filter: The specification of source nodes to consider
+            target_node_filter: The specification of target nodes to consider
+            relationship_type: The name of the relationship type whose embedding will be used in the computation
+            top_k: How many relationship embeddings to add for each source node
+            write_relationship_type: The name of the new relationship type hosting the predicted relationship embeddings
+            write_property: The name of the property on the new relationships which will store the model prediction score # noqa: E501
+
+        Returns:
+            A `pandas.Series` object with metadata about the performed computation and write-back
+        """
         return self._query_runner.run_query(  # type: ignore
             """
             CALL gds.ml.kge.predict.write(
