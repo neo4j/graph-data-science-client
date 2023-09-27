@@ -10,7 +10,9 @@ NodeFilter = Union[int, List[int], str]
 
 class SimpleRelEmbeddingModel:
     """
-    A class whose instances represent a model for computing and producing knowledge graph style relationship embeddings.
+    A class whose instances represent a model for computing and ranking pairwise distance between nodes
+    according to knowledge graph style metrics. It may also produce new relationships based on these
+    rankings.
     """
 
     def __init__(
@@ -43,10 +45,10 @@ class SimpleRelEmbeddingModel:
             source_node_filter: The specification of source nodes to consider
             target_node_filter: The specification of target nodes to consider
             relationship_type: The name of the relationship type whose embedding will be used in the computation
-            top_k: How many relationship embeddings to return for each source node
+            top_k: How many target nodes to return for each source node
 
         Returns:
-            The `top_k` highest scoring relationship embeddings to any target node, for each source node
+            The `top_k` highest scoring target nodes for each source node, along with the score for the node pair
         """
         return self._query_runner.run_query(
             """
@@ -89,9 +91,11 @@ class SimpleRelEmbeddingModel:
             source_node_filter: The specification of source nodes to consider
             target_node_filter: The specification of target nodes to consider
             relationship_type: The name of the relationship type whose embedding will be used in the computation
-            top_k: How many relationship embeddings to add for each source node
-            mutate_relationship_type: The name of the new relationship type hosting the predicted relationship embeddings # noqa: E501
-            mutate_property: The name of the property on the new relationships which will store the model prediction score # noqa: E501
+            top_k: How many relationships to add for each source node
+            mutate_relationship_type: The name of the new relationship type hosting the predicted relationship
+                embeddings
+            mutate_property: The name of the property on the new relationships which will store the model prediction
+                score
 
         Returns:
             A `pandas.Series` object with metadata about the performed computation and mutation
@@ -141,9 +145,10 @@ class SimpleRelEmbeddingModel:
             source_node_filter: The specification of source nodes to consider
             target_node_filter: The specification of target nodes to consider
             relationship_type: The name of the relationship type whose embedding will be used in the computation
-            top_k: How many relationship embeddings to add for each source node
+            top_k: How many relationships to add for each source node
             write_relationship_type: The name of the new relationship type hosting the predicted relationship embeddings
-            write_property: The name of the property on the new relationships which will store the model prediction score # noqa: E501
+            write_property: The name of the property on the new relationships which will store the model prediction
+                score
 
         Returns:
             A `pandas.Series` object with metadata about the performed computation and write-back

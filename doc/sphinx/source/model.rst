@@ -85,3 +85,23 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.model.list(model: Optional[Model] = None) -> DataFrame
 
     Lists all models contained in the model catalog.
+
+.. py:function:: gds.model.transe.create(G: Graph, node_embedding_property: str, relationship_type_embeddings: Dict[str, List[float]) -> SimpleRelEmbeddingModel
+
+    Create a TransE relationship embedding model
+
+    :param G: The `Graph` object representing the graph projection the model is trained on
+    :param node_embedding_property: The name of the node property under which the TransE embeddings are stored
+    :param relationship_type_embeddings: A dictionary mapping relationship type names to the model's relationship type embeddings
+
+    :returns: A relationship embedding model that can be used to predict new node pair based on the TransE metric
+
+.. py:function:: gds.model.distmult.create(G: Graph, node_embedding_property: str, relationship_type_embeddings: Dict[str, List[float]) -> SimpleRelEmbeddingModel
+
+    Create a DistMult relationship embedding model
+
+    :param G: The `Graph` object representing the graph projection the model is trained on
+    :param node_embedding_property: The name of the node property under which the DistMult embeddings are stored
+    :param relationship_type_embeddings: A dictionary mapping relationship type names to the model's relationship type embeddings
+
+    :returns: A relationship embedding model that can be used to predict new node pair based on the DistMult metric
