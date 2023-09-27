@@ -8,7 +8,7 @@ from ..server_version.server_version import ServerVersion
 NodeFilter = Union[int, List[int], str]
 
 
-class SimpleEdgeEmbeddingModel:
+class SimpleRelEmbeddingModel:
     """
     A class whose instances represent a model for computing and producing knowledge graph style relationship embeddings.
     """

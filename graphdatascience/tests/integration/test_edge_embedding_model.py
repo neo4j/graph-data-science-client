@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.graph_data_science import GraphDataScience
-from graphdatascience.model.simple_edge_embedding_model import SimpleEdgeEmbeddingModel
+from graphdatascience.model.simple_rel_embedding_model import SimpleRelEmbeddingModel
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 GRAPH_NAME = "g"
@@ -42,7 +42,7 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 
 
 @pytest.fixture
-def transe_M(gds: GraphDataScience) -> Generator[SimpleEdgeEmbeddingModel, None, None]:
+def transe_M(gds: GraphDataScience) -> Generator[SimpleRelEmbeddingModel, None, None]:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "z"}, "Node2": {"properties": "z"}}, "REL")
 
     yield gds.model.transe.create(G, NODE_PROP, {REL_TYPE: REL_TYPE_EMBEDDING})
@@ -51,7 +51,7 @@ def transe_M(gds: GraphDataScience) -> Generator[SimpleEdgeEmbeddingModel, None,
 
 
 @pytest.fixture
-def distmult_M(gds: GraphDataScience) -> Generator[SimpleEdgeEmbeddingModel, None, None]:
+def distmult_M(gds: GraphDataScience) -> Generator[SimpleRelEmbeddingModel, None, None]:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "z"}, "Node2": {"properties": "z"}}, "REL")
 
     yield gds.model.distmult.create(G, NODE_PROP, {REL_TYPE: REL_TYPE_EMBEDDING})
@@ -59,38 +59,38 @@ def distmult_M(gds: GraphDataScience) -> Generator[SimpleEdgeEmbeddingModel, Non
     G.drop()
 
 
-def test_transe_predict_stream(transe_M: SimpleEdgeEmbeddingModel) -> None:
+def test_transe_predict_stream(transe_M: SimpleRelEmbeddingModel) -> None:
     result = transe_M.predict_stream(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K)
     assert result.shape[0] == 2
 
 
-def test_distmult_predict_stream(distmult_M: SimpleEdgeEmbeddingModel) -> None:
+def test_distmult_predict_stream(distmult_M: SimpleRelEmbeddingModel) -> None:
     result = distmult_M.predict_stream(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K)
     assert result.shape[0] == 2
 
 
-def test_transe_predict_mutate(transe_M: SimpleEdgeEmbeddingModel) -> None:
+def test_transe_predict_mutate(transe_M: SimpleRelEmbeddingModel) -> None:
     result = transe_M.predict_mutate(
         SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
     )
     assert result["relationshipsWritten"] == 2
 
 
-def test_distmult_predict_mutate(distmult_M: SimpleEdgeEmbeddingModel) -> None:
+def test_distmult_predict_mutate(distmult_M: SimpleRelEmbeddingModel) -> None:
     result = distmult_M.predict_mutate(
         SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
     )
     assert result["relationshipsWritten"] == 2
 
 
-def test_transe_predict_write(transe_M: SimpleEdgeEmbeddingModel) -> None:
+def test_transe_predict_write(transe_M: SimpleRelEmbeddingModel) -> None:
     result = transe_M.predict_write(
         SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
     )
     assert result["relationshipsWritten"] == 2
 
 
-def test_distmult_predict_write(distmult_M: SimpleEdgeEmbeddingModel) -> None:
+def test_distmult_predict_write(distmult_M: SimpleRelEmbeddingModel) -> None:
     result = distmult_M.predict_write(
         SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
     )

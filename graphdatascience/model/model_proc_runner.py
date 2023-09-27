@@ -6,7 +6,7 @@ from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..graph.graph_object import Graph
-from ..model.simple_edge_embedding_model import SimpleEdgeEmbeddingModel
+from ..model.simple_rel_embedding_model import SimpleRelEmbeddingModel
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
 from .model import Model
@@ -16,8 +16,8 @@ from .model_resolver import ModelResolver
 class DistMultCreator(UncallableNamespace, IllegalAttrChecker):
     def create(
         self, G: Graph, node_embedding_property: str, relationship_type_embeddings: Dict[str, List[float]]
-    ) -> SimpleEdgeEmbeddingModel:
-        return SimpleEdgeEmbeddingModel(
+    ) -> SimpleRelEmbeddingModel:
+        return SimpleRelEmbeddingModel(
             "distmult",
             self._query_runner,
             self._server_version,
@@ -30,8 +30,8 @@ class DistMultCreator(UncallableNamespace, IllegalAttrChecker):
 class TransECreator(UncallableNamespace, IllegalAttrChecker):
     def create(
         self, G: Graph, node_embedding_property: str, relationship_type_embeddings: Dict[str, List[float]]
-    ) -> SimpleEdgeEmbeddingModel:
-        return SimpleEdgeEmbeddingModel(
+    ) -> SimpleRelEmbeddingModel:
+        return SimpleRelEmbeddingModel(
             "transe",
             self._query_runner,
             self._server_version,

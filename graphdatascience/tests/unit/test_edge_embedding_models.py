@@ -2,7 +2,7 @@ import pytest
 
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
-from graphdatascience.model.simple_edge_embedding_model import SimpleEdgeEmbeddingModel
+from graphdatascience.model.simple_rel_embedding_model import SimpleRelEmbeddingModel
 from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 
 GRAPH_NAME = "g"
@@ -23,16 +23,16 @@ def G(gds: GraphDataScience) -> Graph:
 
 
 @pytest.fixture
-def transe_M(gds: GraphDataScience, G: Graph) -> SimpleEdgeEmbeddingModel:
+def transe_M(gds: GraphDataScience, G: Graph) -> SimpleRelEmbeddingModel:
     return gds.model.transe.create(G, NODE_PROP, {REL_TYPE: REL_TYPE_EMBEDDING})
 
 
 @pytest.fixture
-def distmult_M(gds: GraphDataScience, G: Graph) -> SimpleEdgeEmbeddingModel:
+def distmult_M(gds: GraphDataScience, G: Graph) -> SimpleRelEmbeddingModel:
     return gds.model.distmult.create(G, NODE_PROP, {REL_TYPE: REL_TYPE_EMBEDDING})
 
 
-def test_transe_predict_stream(runner: CollectingQueryRunner, transe_M: SimpleEdgeEmbeddingModel) -> None:
+def test_transe_predict_stream(runner: CollectingQueryRunner, transe_M: SimpleRelEmbeddingModel) -> None:
     _ = transe_M.predict_stream(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K)
 
     assert runner.last_query() == (
@@ -61,7 +61,7 @@ def test_transe_predict_stream(runner: CollectingQueryRunner, transe_M: SimpleEd
     }
 
 
-def test_distmult_predict_stream(runner: CollectingQueryRunner, distmult_M: SimpleEdgeEmbeddingModel) -> None:
+def test_distmult_predict_stream(runner: CollectingQueryRunner, distmult_M: SimpleRelEmbeddingModel) -> None:
     _ = distmult_M.predict_stream(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K)
 
     assert runner.last_query() == (
@@ -90,7 +90,7 @@ def test_distmult_predict_stream(runner: CollectingQueryRunner, distmult_M: Simp
     }
 
 
-def test_transe_predict_mutate(runner: CollectingQueryRunner, transe_M: SimpleEdgeEmbeddingModel) -> None:
+def test_transe_predict_mutate(runner: CollectingQueryRunner, transe_M: SimpleRelEmbeddingModel) -> None:
     _ = transe_M.predict_mutate(
         SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
     )
@@ -125,7 +125,7 @@ def test_transe_predict_mutate(runner: CollectingQueryRunner, transe_M: SimpleEd
     }
 
 
-def test_distmult_predict_mutate(runner: CollectingQueryRunner, distmult_M: SimpleEdgeEmbeddingModel) -> None:
+def test_distmult_predict_mutate(runner: CollectingQueryRunner, distmult_M: SimpleRelEmbeddingModel) -> None:
     _ = distmult_M.predict_mutate(
         SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
     )
@@ -160,7 +160,7 @@ def test_distmult_predict_mutate(runner: CollectingQueryRunner, distmult_M: Simp
     }
 
 
-def test_transe_predict_write(runner: CollectingQueryRunner, transe_M: SimpleEdgeEmbeddingModel) -> None:
+def test_transe_predict_write(runner: CollectingQueryRunner, transe_M: SimpleRelEmbeddingModel) -> None:
     _ = transe_M.predict_write(
         SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
     )
@@ -195,7 +195,7 @@ def test_transe_predict_write(runner: CollectingQueryRunner, transe_M: SimpleEdg
     }
 
 
-def test_distmult_predict_write(runner: CollectingQueryRunner, distmult_M: SimpleEdgeEmbeddingModel) -> None:
+def test_distmult_predict_write(runner: CollectingQueryRunner, distmult_M: SimpleRelEmbeddingModel) -> None:
     _ = distmult_M.predict_write(
         SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
     )
@@ -230,14 +230,14 @@ def test_distmult_predict_write(runner: CollectingQueryRunner, distmult_M: Simpl
     }
 
 
-def test_transe_getters(transe_M: SimpleEdgeEmbeddingModel) -> None:
+def test_transe_getters(transe_M: SimpleRelEmbeddingModel) -> None:
     assert transe_M.scoring_fuction() == "transe"
     assert transe_M.graph_name() == GRAPH_NAME
     assert transe_M.node_embedding_property() == NODE_PROP
     assert transe_M.relationship_type_embeddings() == {REL_TYPE: REL_TYPE_EMBEDDING}
 
 
-def test_distmult_getters(distmult_M: SimpleEdgeEmbeddingModel) -> None:
+def test_distmult_getters(distmult_M: SimpleRelEmbeddingModel) -> None:
     assert distmult_M.scoring_fuction() == "distmult"
     assert distmult_M.graph_name() == GRAPH_NAME
     assert distmult_M.node_embedding_property() == NODE_PROP
