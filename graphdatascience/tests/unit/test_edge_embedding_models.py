@@ -10,6 +10,7 @@ NODE_PROP = "dummy_prop"
 REL_TYPE = "dummy_type"
 REL_TYPE_EMBEDDING = [1.0, 2.0, 3.0]
 WRITE_MUTATE_REL_TYPE = "another_dummy_type"
+WRITE_MUTATE_PROPERTY = "another_dummy_prop"
 SOURCE_NODE_FILTER = "dummy_source_spec"
 TARGET_NODE_FILTER = "dummy_target_spec"
 TOP_K = 10
@@ -90,7 +91,9 @@ def test_distmult_predict_stream(runner: CollectingQueryRunner, distmult_M: Simp
 
 
 def test_transe_predict_mutate(runner: CollectingQueryRunner, transe_M: SimpleEdgeEmbeddingModel) -> None:
-    _ = transe_M.predict_mutate(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE)
+    _ = transe_M.predict_mutate(
+        SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
+    )
 
     assert runner.last_query() == (
         """
@@ -103,7 +106,8 @@ def test_transe_predict_mutate(runner: CollectingQueryRunner, transe_M: SimpleEd
                     relationshipTypeEmbedding: $relationship_type_embedding,
                     scoringFunction: $scoring_function,
                     topK: $top_k,
-                    mutateRelationshipType: $mutate_relationship_type
+                    mutateRelationshipType: $mutate_relationship_type,
+                    mutateProperty: $mutate_property
                 }
             )
             """
@@ -117,11 +121,14 @@ def test_transe_predict_mutate(runner: CollectingQueryRunner, transe_M: SimpleEd
         "scoring_function": "transe",
         "top_k": TOP_K,
         "mutate_relationship_type": WRITE_MUTATE_REL_TYPE,
+        "mutate_property": WRITE_MUTATE_PROPERTY,
     }
 
 
 def test_distmult_predict_mutate(runner: CollectingQueryRunner, distmult_M: SimpleEdgeEmbeddingModel) -> None:
-    _ = distmult_M.predict_mutate(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE)
+    _ = distmult_M.predict_mutate(
+        SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
+    )
 
     assert runner.last_query() == (
         """
@@ -134,7 +141,8 @@ def test_distmult_predict_mutate(runner: CollectingQueryRunner, distmult_M: Simp
                     relationshipTypeEmbedding: $relationship_type_embedding,
                     scoringFunction: $scoring_function,
                     topK: $top_k,
-                    mutateRelationshipType: $mutate_relationship_type
+                    mutateRelationshipType: $mutate_relationship_type,
+                    mutateProperty: $mutate_property
                 }
             )
             """
@@ -148,11 +156,14 @@ def test_distmult_predict_mutate(runner: CollectingQueryRunner, distmult_M: Simp
         "scoring_function": "distmult",
         "top_k": TOP_K,
         "mutate_relationship_type": WRITE_MUTATE_REL_TYPE,
+        "mutate_property": WRITE_MUTATE_PROPERTY,
     }
 
 
 def test_transe_predict_write(runner: CollectingQueryRunner, transe_M: SimpleEdgeEmbeddingModel) -> None:
-    _ = transe_M.predict_write(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE)
+    _ = transe_M.predict_write(
+        SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
+    )
 
     assert runner.last_query() == (
         """
@@ -165,7 +176,8 @@ def test_transe_predict_write(runner: CollectingQueryRunner, transe_M: SimpleEdg
                     relationshipTypeEmbedding: $relationship_type_embedding,
                     scoringFunction: $scoring_function,
                     topK: $top_k,
-                    writeRelationshipType: $write_relationship_type
+                    writeRelationshipType: $write_relationship_type,
+                    writeProperty: $write_property
                 }
             )
             """
@@ -179,11 +191,14 @@ def test_transe_predict_write(runner: CollectingQueryRunner, transe_M: SimpleEdg
         "scoring_function": "transe",
         "top_k": TOP_K,
         "write_relationship_type": WRITE_MUTATE_REL_TYPE,
+        "write_property": WRITE_MUTATE_PROPERTY,
     }
 
 
 def test_distmult_predict_write(runner: CollectingQueryRunner, distmult_M: SimpleEdgeEmbeddingModel) -> None:
-    _ = distmult_M.predict_write(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE)
+    _ = distmult_M.predict_write(
+        SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
+    )
 
     assert runner.last_query() == (
         """
@@ -196,7 +211,8 @@ def test_distmult_predict_write(runner: CollectingQueryRunner, distmult_M: Simpl
                     relationshipTypeEmbedding: $relationship_type_embedding,
                     scoringFunction: $scoring_function,
                     topK: $top_k,
-                    writeRelationshipType: $write_relationship_type
+                    writeRelationshipType: $write_relationship_type,
+                    writeProperty: $write_property
                 }
             )
             """
@@ -210,6 +226,7 @@ def test_distmult_predict_write(runner: CollectingQueryRunner, distmult_M: Simpl
         "scoring_function": "distmult",
         "top_k": TOP_K,
         "write_relationship_type": WRITE_MUTATE_REL_TYPE,
+        "write_property": WRITE_MUTATE_PROPERTY,
     }
 
 

@@ -12,7 +12,7 @@ NODE_PROP = "z"
 REL_TYPE = "REL"
 REL_TYPE_EMBEDDING = [1.0, 2.0, 3.0]
 WRITE_MUTATE_REL_TYPE = "another_dummy_type"
-WRITE_PROP = "dummy_score_prop"
+WRITE_MUTATE_PROPERTY = "another_dummy_prop"
 SOURCE_NODE_FILTER = "Node"
 TARGET_NODE_FILTER = "Node2"
 TOP_K = 10
@@ -70,20 +70,28 @@ def test_distmult_predict_stream(distmult_M: SimpleEdgeEmbeddingModel) -> None:
 
 
 def test_transe_predict_mutate(transe_M: SimpleEdgeEmbeddingModel) -> None:
-    result = transe_M.predict_mutate(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE)
+    result = transe_M.predict_mutate(
+        SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
+    )
     assert result["relationshipsWritten"] == 2
 
 
 def test_distmult_predict_mutate(distmult_M: SimpleEdgeEmbeddingModel) -> None:
-    result = distmult_M.predict_mutate(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE)
+    result = distmult_M.predict_mutate(
+        SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
+    )
     assert result["relationshipsWritten"] == 2
 
 
-# def test_transe_predict_write(transe_M: SimpleEdgeEmbeddingModel) -> None:
-#     result = transe_M.predict_write(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE)
-#     assert result["relationshipsWritten"] == 2
+def test_transe_predict_write(transe_M: SimpleEdgeEmbeddingModel) -> None:
+    result = transe_M.predict_write(
+        SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
+    )
+    assert result["relationshipsWritten"] == 2
 
 
-# def test_distmult_predict_write(distmult_M: SimpleEdgeEmbeddingModel) -> None:
-#     result = distmult_M.predict_write(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE)
-#     assert result["relationshipsWritten"] == 2
+def test_distmult_predict_write(distmult_M: SimpleEdgeEmbeddingModel) -> None:
+    result = distmult_M.predict_write(
+        SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
+    )
+    assert result["relationshipsWritten"] == 2

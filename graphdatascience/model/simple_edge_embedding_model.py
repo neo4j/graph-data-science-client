@@ -64,6 +64,7 @@ class SimpleEdgeEmbeddingModel:
         relationship_type: str,
         top_k: int,
         mutate_relationship_type: str,
+        mutate_property: str,
     ) -> "Series[Any]":
         return self._query_runner.run_query(  # type: ignore
             """
@@ -76,7 +77,8 @@ class SimpleEdgeEmbeddingModel:
                     relationshipTypeEmbedding: $relationship_type_embedding,
                     scoringFunction: $scoring_function,
                     topK: $top_k,
-                    mutateRelationshipType: $mutate_relationship_type
+                    mutateRelationshipType: $mutate_relationship_type,
+                    mutateProperty: $mutate_property
                 }
             )
             """,
@@ -89,6 +91,7 @@ class SimpleEdgeEmbeddingModel:
                 "scoring_function": self._scoring_function,
                 "top_k": top_k,
                 "mutate_relationship_type": mutate_relationship_type,
+                "mutate_property": mutate_property,
             },
         ).squeeze()
 
@@ -99,6 +102,7 @@ class SimpleEdgeEmbeddingModel:
         relationship_type: str,
         top_k: int,
         write_relationship_type: str,
+        write_property: str,
     ) -> "Series[Any]":
         return self._query_runner.run_query(  # type: ignore
             """
@@ -111,7 +115,8 @@ class SimpleEdgeEmbeddingModel:
                     relationshipTypeEmbedding: $relationship_type_embedding,
                     scoringFunction: $scoring_function,
                     topK: $top_k,
-                    writeRelationshipType: $write_relationship_type
+                    writeRelationshipType: $write_relationship_type,
+                    writeProperty: $write_property
                 }
             )
             """,
@@ -124,6 +129,7 @@ class SimpleEdgeEmbeddingModel:
                 "scoring_function": self._scoring_function,
                 "top_k": top_k,
                 "write_relationship_type": write_relationship_type,
+                "write_property": write_property,
             },
         ).squeeze()
 
