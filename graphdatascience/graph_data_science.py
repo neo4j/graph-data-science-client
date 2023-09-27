@@ -183,7 +183,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
         Returns:
             The name of the database.
-
         """
         return self._query_runner.database()
 

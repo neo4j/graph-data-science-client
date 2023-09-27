@@ -5,6 +5,8 @@ from pandas import DataFrame, Series
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
 
+NodeFilter = Union[int, List[int], str]
+
 
 class SimpleEdgeEmbeddingModel:
     def __init__(
@@ -25,8 +27,8 @@ class SimpleEdgeEmbeddingModel:
 
     def predict_stream(
         self,
-        source_node_filter: Union[str, List[int]],
-        target_node_filter: Union[str, List[int]],
+        source_node_filter: NodeFilter,
+        target_node_filter: NodeFilter,
         relationship_type: str,
         top_k: int,
     ) -> DataFrame:
@@ -57,8 +59,8 @@ class SimpleEdgeEmbeddingModel:
 
     def predict_mutate(
         self,
-        source_node_filter: Union[str, List[int]],
-        target_node_filter: Union[str, List[int]],
+        source_node_filter: NodeFilter,
+        target_node_filter: NodeFilter,
         relationship_type: str,
         top_k: int,
         mutate_relationship_type: str,
@@ -92,8 +94,8 @@ class SimpleEdgeEmbeddingModel:
 
     def predict_write(
         self,
-        source_node_filter: Union[str, List[int]],
-        target_node_filter: Union[str, List[int]],
+        source_node_filter: NodeFilter,
+        target_node_filter: NodeFilter,
         relationship_type: str,
         top_k: int,
         write_relationship_type: str,
@@ -126,13 +128,37 @@ class SimpleEdgeEmbeddingModel:
         ).squeeze()
 
     def scoring_fuction(self) -> str:
+        """
+        Get the name of the scoring function the model is using
+
+        Returns:
+            The name of the scoring function the model is using
+        """
         return self._scoring_function
 
     def graph_name(self) -> str:
+        """
+        Get the name of the graph the model is based on
+
+        Returns:
+            The name of the graph the model is based on
+        """
         return self._graph_name
 
     def node_embedding_property(self) -> str:
+        """
+        Get the name of the node property storing embeddings in the graph
+
+        Returns:
+            The name of the node property storing embeddings in the graph
+        """
         return self._node_embedding_property
 
     def relationship_type_embeddings(self) -> Dict[str, List[float]]:
+        """
+        Get the relationship type embeddings of the model
+
+        Returns:
+            The relationship type embeddings of the model
+        """
         return self._relationship_type_embeddings
