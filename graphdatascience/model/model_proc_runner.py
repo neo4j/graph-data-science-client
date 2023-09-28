@@ -14,6 +14,8 @@ from .model_resolver import ModelResolver
 
 
 class DistMultCreator(UncallableNamespace, IllegalAttrChecker):
+    @compatible_with("create", min_inclusive=ServerVersion(2, 5, 0))
+    @client_only_endpoint("gds.model.distmult")
     def create(
         self, G: Graph, node_embedding_property: str, relationship_type_embeddings: Dict[str, List[float]]
     ) -> SimpleRelEmbeddingModel:
@@ -28,6 +30,8 @@ class DistMultCreator(UncallableNamespace, IllegalAttrChecker):
 
 
 class TransECreator(UncallableNamespace, IllegalAttrChecker):
+    @compatible_with("create", min_inclusive=ServerVersion(2, 5, 0))
+    @client_only_endpoint("gds.model.transe")
     def create(
         self, G: Graph, node_embedding_property: str, relationship_type_embeddings: Dict[str, List[float]]
     ) -> SimpleRelEmbeddingModel:
@@ -140,8 +144,10 @@ class ModelProcRunner(ModelResolver):
 
     @property
     def transe(self) -> TransECreator:
+        self._namespace += ".transe"
         return TransECreator(self._query_runner, self._namespace, self._server_version)
 
     @property
     def distmult(self) -> DistMultCreator:
+        self._namespace += ".distmult"
         return DistMultCreator(self._query_runner, self._namespace, self._server_version)
