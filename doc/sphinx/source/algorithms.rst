@@ -653,26 +653,38 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.scaleProperties.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
-.. py:function:: gds.scc.mutate(G: Graph, **config: Any) -> DataFrame
 
-            The SCC algorithm finds sets of connected nodes in an directed graph,
-            where all nodes in the same set form a connected component.
+.. py:function:: gds.scc.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.
+
+.. py:function:: gds.scc.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for SCC.
 
 .. py:function:: gds.scc.stats(G: Graph, **config: Any) -> Series[Any]
 
-            The SCC algorithm finds sets of connected nodes in an directed graph,
-            where all nodes in the same set form a connected component.
+    The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.
 
+.. py:function:: gds.scc.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for SCC.
 
 .. py:function:: gds.scc.stream(G: Graph, **config: Any) -> DataFrame
 
-        The SCC algorithm finds sets of connected nodes in an directed graph,
-        where all nodes in the same set form a connected component.
+    The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.
+
+.. py:function:: gds.scc.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for SCC.
 
 .. py:function:: gds.scc.write(G: Graph, **config: Any) -> Series[Any]
 
-        The SCC algorithm finds sets of connected nodes in an directed graph,
-        where all nodes in the same set form a connected component.
+    The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.
+
+.. py:function:: gds.scc.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for SCC.
 
 .. py:function:: gds.beta.spanningTree.mutate(G: Graph, **config: Any) -> Series[Any]
 
