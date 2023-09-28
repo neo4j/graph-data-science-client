@@ -14,6 +14,7 @@ WRITE_MUTATE_PROPERTY = "another_dummy_prop"
 SOURCE_NODE_FILTER = "dummy_source_spec"
 TARGET_NODE_FILTER = "dummy_target_spec"
 TOP_K = 10
+CONCURRENCY = 10
 
 
 @pytest.fixture
@@ -33,7 +34,7 @@ def distmult_M(gds: GraphDataScience, G: Graph) -> SimpleRelEmbeddingModel:
 
 
 def test_transe_predict_stream(runner: CollectingQueryRunner, transe_M: SimpleRelEmbeddingModel) -> None:
-    _ = transe_M.predict_stream(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K)
+    _ = transe_M.predict_stream(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, concurrency=CONCURRENCY)
 
     assert runner.last_query() == (
         """
@@ -45,7 +46,8 @@ def test_transe_predict_stream(runner: CollectingQueryRunner, transe_M: SimpleRe
                     nodeEmbeddingProperty: $node_embedding_property,
                     relationshipTypeEmbedding: $relationship_type_embedding,
                     scoringFunction: $scoring_function,
-                    topK: $top_k
+                    topK: $top_k,
+concurrency: $concurrency
                 }
             )
             """
@@ -58,6 +60,7 @@ def test_transe_predict_stream(runner: CollectingQueryRunner, transe_M: SimpleRe
         "relationship_type_embedding": REL_TYPE_EMBEDDING,
         "scoring_function": "transe",
         "top_k": TOP_K,
+        "concurrency": CONCURRENCY,
     }
 
 
@@ -127,7 +130,13 @@ def test_transe_predict_mutate(runner: CollectingQueryRunner, transe_M: SimpleRe
 
 def test_distmult_predict_mutate(runner: CollectingQueryRunner, distmult_M: SimpleRelEmbeddingModel) -> None:
     _ = distmult_M.predict_mutate(
-        SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
+        SOURCE_NODE_FILTER,
+        TARGET_NODE_FILTER,
+        REL_TYPE,
+        TOP_K,
+        WRITE_MUTATE_REL_TYPE,
+        WRITE_MUTATE_PROPERTY,
+        concurrency=CONCURRENCY,
     )
 
     assert runner.last_query() == (
@@ -142,7 +151,8 @@ def test_distmult_predict_mutate(runner: CollectingQueryRunner, distmult_M: Simp
                     scoringFunction: $scoring_function,
                     topK: $top_k,
                     mutateRelationshipType: $mutate_relationship_type,
-                    mutateProperty: $mutate_property
+                    mutateProperty: $mutate_property,
+concurrency: $concurrency
                 }
             )
             """
@@ -157,12 +167,19 @@ def test_distmult_predict_mutate(runner: CollectingQueryRunner, distmult_M: Simp
         "top_k": TOP_K,
         "mutate_relationship_type": WRITE_MUTATE_REL_TYPE,
         "mutate_property": WRITE_MUTATE_PROPERTY,
+        "concurrency": CONCURRENCY,
     }
 
 
 def test_transe_predict_write(runner: CollectingQueryRunner, transe_M: SimpleRelEmbeddingModel) -> None:
     _ = transe_M.predict_write(
-        SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
+        SOURCE_NODE_FILTER,
+        TARGET_NODE_FILTER,
+        REL_TYPE,
+        TOP_K,
+        WRITE_MUTATE_REL_TYPE,
+        WRITE_MUTATE_PROPERTY,
+        concurrency=CONCURRENCY,
     )
 
     assert runner.last_query() == (
@@ -177,7 +194,8 @@ def test_transe_predict_write(runner: CollectingQueryRunner, transe_M: SimpleRel
                     scoringFunction: $scoring_function,
                     topK: $top_k,
                     writeRelationshipType: $write_relationship_type,
-                    writeProperty: $write_property
+                    writeProperty: $write_property,
+concurrency: $concurrency
                 }
             )
             """
@@ -192,6 +210,7 @@ def test_transe_predict_write(runner: CollectingQueryRunner, transe_M: SimpleRel
         "top_k": TOP_K,
         "write_relationship_type": WRITE_MUTATE_REL_TYPE,
         "write_property": WRITE_MUTATE_PROPERTY,
+        "concurrency": CONCURRENCY,
     }
 
 
@@ -231,14 +250,14 @@ def test_distmult_predict_write(runner: CollectingQueryRunner, distmult_M: Simpl
 
 
 def test_transe_getters(transe_M: SimpleRelEmbeddingModel) -> None:
-    assert transe_M.scoring_fuction() == "transe"
+    assert transe_M.scoring_function() == "transe"
     assert transe_M.graph_name() == GRAPH_NAME
     assert transe_M.node_embedding_property() == NODE_PROP
     assert transe_M.relationship_type_embeddings() == {REL_TYPE: REL_TYPE_EMBEDDING}
 
 
 def test_distmult_getters(distmult_M: SimpleRelEmbeddingModel) -> None:
-    assert distmult_M.scoring_fuction() == "distmult"
+    assert distmult_M.scoring_function() == "distmult"
     assert distmult_M.graph_name() == GRAPH_NAME
     assert distmult_M.node_embedding_property() == NODE_PROP
     assert distmult_M.relationship_type_embeddings() == {REL_TYPE: REL_TYPE_EMBEDDING}

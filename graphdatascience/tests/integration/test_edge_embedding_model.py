@@ -16,6 +16,7 @@ WRITE_MUTATE_PROPERTY = "another_dummy_prop"
 SOURCE_NODE_FILTER = "Node"
 TARGET_NODE_FILTER = "Node2"
 TOP_K = 10
+CONCURRENCY = 2
 
 
 @pytest.fixture(autouse=True)
@@ -65,13 +66,19 @@ def test_transe_predict_stream(transe_M: SimpleRelEmbeddingModel) -> None:
 
 
 def test_distmult_predict_stream(distmult_M: SimpleRelEmbeddingModel) -> None:
-    result = distmult_M.predict_stream(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K)
+    result = distmult_M.predict_stream(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, concurrency=CONCURRENCY)
     assert result.shape[0] == 2
 
 
 def test_transe_predict_mutate(transe_M: SimpleRelEmbeddingModel) -> None:
     result = transe_M.predict_mutate(
-        SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
+        SOURCE_NODE_FILTER,
+        TARGET_NODE_FILTER,
+        REL_TYPE,
+        TOP_K,
+        WRITE_MUTATE_REL_TYPE,
+        WRITE_MUTATE_PROPERTY,
+        concurrency=CONCURRENCY,
     )
     assert result["relationshipsWritten"] == 2
 
@@ -92,6 +99,12 @@ def test_transe_predict_write(transe_M: SimpleRelEmbeddingModel) -> None:
 
 def test_distmult_predict_write(distmult_M: SimpleRelEmbeddingModel) -> None:
     result = distmult_M.predict_write(
-        SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
+        SOURCE_NODE_FILTER,
+        TARGET_NODE_FILTER,
+        REL_TYPE,
+        TOP_K,
+        WRITE_MUTATE_REL_TYPE,
+        WRITE_MUTATE_PROPERTY,
+        concurrency=CONCURRENCY,
     )
     assert result["relationshipsWritten"] == 2

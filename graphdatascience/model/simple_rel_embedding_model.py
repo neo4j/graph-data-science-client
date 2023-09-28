@@ -1,3 +1,4 @@
+import os
 from typing import Any, Dict, List, Union
 
 from pandas import DataFrame, Series
@@ -37,6 +38,7 @@ class SimpleRelEmbeddingModel:
         target_node_filter: NodeFilter,
         relationship_type: str,
         top_k: int,
+        **general_config: Any,
     ) -> DataFrame:
         """
         Compute and stream relationship embeddings
@@ -46,22 +48,29 @@ class SimpleRelEmbeddingModel:
             target_node_filter: The specification of target nodes to consider
             relationship_type: The name of the relationship type whose embedding will be used in the computation
             top_k: How many target nodes to return for each source node
+            general_config: General algorithm keyword parameters such as 'concurrency'
 
         Returns:
             The `top_k` highest scoring target nodes for each source node, along with the score for the node pair
         """
+
+        if general_config:
+            general_config_str = f",{os.linesep}{f',{os.linesep}'.join([f'{k}: ${k}' for k in general_config.keys()])}"
+        else:
+            general_config_str = ""
+
         return self._query_runner.run_query(
-            """
+            f"""
             CALL gds.ml.kge.predict.stream(
                 $graph_name,
-                {
+                {{
                     sourceNodeFilter: $source_node_filter,
                     targetNodeFilter: $target_node_filter,
                     nodeEmbeddingProperty: $node_embedding_property,
                     relationshipTypeEmbedding: $relationship_type_embedding,
                     scoringFunction: $scoring_function,
-                    topK: $top_k
-                }
+                    topK: $top_k{general_config_str}
+                }}
             )
             """,
             {
@@ -72,6 +81,7 @@ class SimpleRelEmbeddingModel:
                 "relationship_type_embedding": self._relationship_type_embeddings[relationship_type],
                 "scoring_function": self._scoring_function,
                 "top_k": top_k,
+                **general_config,
             },
         )
 
@@ -83,6 +93,7 @@ class SimpleRelEmbeddingModel:
         top_k: int,
         mutate_relationship_type: str,
         mutate_property: str,
+        **general_config: Any,
     ) -> "Series[Any]":
         """
         Compute relationship embeddings and add them to graph projection under a new relationship type
@@ -96,15 +107,22 @@ class SimpleRelEmbeddingModel:
                 embeddings
             mutate_property: The name of the property on the new relationships which will store the model prediction
                 score
+            general_config: General algorithm keyword parameters such as 'concurrency'
 
         Returns:
             A `pandas.Series` object with metadata about the performed computation and mutation
         """
+
+        if general_config:
+            general_config_str = f",{os.linesep}{f',{os.linesep}'.join([f'{k}: ${k}' for k in general_config.keys()])}"
+        else:
+            general_config_str = ""
+
         return self._query_runner.run_query(  # type: ignore
-            """
+            f"""
             CALL gds.ml.kge.predict.mutate(
                 $graph_name,
-                {
+                {{
                     sourceNodeFilter: $source_node_filter,
                     targetNodeFilter: $target_node_filter,
                     nodeEmbeddingProperty: $node_embedding_property,
@@ -112,8 +130,8 @@ class SimpleRelEmbeddingModel:
                     scoringFunction: $scoring_function,
                     topK: $top_k,
                     mutateRelationshipType: $mutate_relationship_type,
-                    mutateProperty: $mutate_property
-                }
+                    mutateProperty: $mutate_property{general_config_str}
+                }}
             )
             """,
             {
@@ -126,6 +144,7 @@ class SimpleRelEmbeddingModel:
                 "top_k": top_k,
                 "mutate_relationship_type": mutate_relationship_type,
                 "mutate_property": mutate_property,
+                **general_config,
             },
         ).squeeze()
 
@@ -137,6 +156,7 @@ class SimpleRelEmbeddingModel:
         top_k: int,
         write_relationship_type: str,
         write_property: str,
+        **general_config: Any,
     ) -> "Series[Any]":
         """
         Compute relationship embeddings and write them back to the database under a new relationship type
@@ -149,15 +169,22 @@ class SimpleRelEmbeddingModel:
             write_relationship_type: The name of the new relationship type hosting the predicted relationship embeddings
             write_property: The name of the property on the new relationships which will store the model prediction
                 score
+            general_config: General algorithm keyword parameters such as 'concurrency'
 
         Returns:
             A `pandas.Series` object with metadata about the performed computation and write-back
         """
+
+        if general_config:
+            general_config_str = f",{os.linesep}{f',{os.linesep}'.join([f'{k}: ${k}' for k in general_config.keys()])}"
+        else:
+            general_config_str = ""
+
         return self._query_runner.run_query(  # type: ignore
-            """
+            f"""
             CALL gds.ml.kge.predict.write(
                 $graph_name,
-                {
+                {{
                     sourceNodeFilter: $source_node_filter,
                     targetNodeFilter: $target_node_filter,
                     nodeEmbeddingProperty: $node_embedding_property,
@@ -165,8 +192,8 @@ class SimpleRelEmbeddingModel:
                     scoringFunction: $scoring_function,
                     topK: $top_k,
                     writeRelationshipType: $write_relationship_type,
-                    writeProperty: $write_property
-                }
+                    writeProperty: $write_property{general_config_str}
+                }}
             )
             """,
             {
@@ -179,10 +206,11 @@ class SimpleRelEmbeddingModel:
                 "top_k": top_k,
                 "write_relationship_type": write_relationship_type,
                 "write_property": write_property,
+                **general_config,
             },
         ).squeeze()
 
-    def scoring_fuction(self) -> str:
+    def scoring_function(self) -> str:
         """
         Get the name of the scoring function the model is using
 
