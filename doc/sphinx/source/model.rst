@@ -90,9 +90,9 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Create a TransE relationship embedding model
 
-    :param G: The `Graph` object representing the graph projection the model is trained on
+    :param G: The `Graph` object representing the graph the model is trained on
     :param node_embedding_property: The name of the node property under which the TransE embeddings are stored
-    :param relationship_type_embeddings: A dictionary mapping relationship type names to the model's relationship type embeddings
+    :param relationship_type_embeddings: A dictionary mapping relationship type names to the TransE model's relationship type embeddings
 
     :returns: A relationship embedding model that can be used to predict new node pair based on the TransE metric
 
@@ -100,8 +100,8 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Create a DistMult relationship embedding model
 
-    :param G: The `Graph` object representing the graph projection the model is trained on
+    :param G: The `Graph` object representing the graph the model is trained on
     :param node_embedding_property: The name of the node property under which the DistMult embeddings are stored
-    :param relationship_type_embeddings: A dictionary mapping relationship type names to the model's relationship type embeddings
+    :param relationship_type_embeddings: A dictionary mapping relationship type names to the DistMult model's relationship type embeddings
 
     :returns: A relationship embedding model that can be used to predict new node pair based on the DistMult metric

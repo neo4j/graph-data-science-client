@@ -103,8 +103,7 @@ class SimpleRelEmbeddingModel:
             target_node_filter: The specification of target nodes to consider
             relationship_type: The name of the relationship type whose embedding will be used in the computation
             top_k: How many relationships to add for each source node
-            mutate_relationship_type: The name of the new relationship type hosting the predicted relationship
-                embeddings
+            mutate_relationship_type: The name of the new relationship type for the predicted relationships
             mutate_property: The name of the property on the new relationships which will store the model prediction
                 score
             general_config: General algorithm keyword parameters such as 'concurrency'
@@ -166,7 +165,7 @@ class SimpleRelEmbeddingModel:
             target_node_filter: The specification of target nodes to consider
             relationship_type: The name of the relationship type whose embedding will be used in the computation
             top_k: How many relationships to add for each source node
-            write_relationship_type: The name of the new relationship type hosting the predicted relationship embeddings
+            write_relationship_type: The name of the new relationship type for the predicted relationships
             write_property: The name of the property on the new relationships which will store the model prediction
                 score
             general_config: General algorithm keyword parameters such as 'concurrency'

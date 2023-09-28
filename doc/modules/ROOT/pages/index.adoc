@@ -39,6 +39,7 @@ This manual is divided into the following chapters:
 * xref:pipelines.adoc[Machine learning pipelines]
 * xref:model-object.adoc[The model object]
 * xref:common-datasets.adoc[Datasets]
+* xref:rel-embedding-models.adoc[Datasets]
 * xref:tutorials/tutorials.adoc[Tutorials]
 * xref:known-limitations.adoc[Known limitations]
 
