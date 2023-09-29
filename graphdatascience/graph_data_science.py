@@ -103,12 +103,12 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                     """
                 )
 
-            raise UnableToConnectError(e)
-        finally:
             # Some Python versions appear to not call __del__ of self._query_runner when an exception
             # is raised, so we have to close the driver manually.
             if isinstance(endpoint, str):
                 driver.close()
+
+            raise UnableToConnectError(e)
 
         self._server_version = ServerVersion.from_string(server_version_string)
         self._query_runner.set_server_version(self._server_version)
