@@ -339,6 +339,7 @@ def test_graph_streamNodeProperty_with_arrow_no_db() -> None:
 def test_graph_nodeProperty_stream_with_arrow_no_db() -> None:
     gds = GraphDataScience(URI, auth=AUTH)
     if not isinstance(gds._query_runner, ArrowQueryRunner):
+        gds.close()
         pytest.skip("Arrow server not enabled")
 
     assert not gds.database()
@@ -346,6 +347,7 @@ def test_graph_nodeProperty_stream_with_arrow_no_db() -> None:
 
     with pytest.raises(ValueError):
         gds.graph.nodeProperty.stream(G, "x", concurrency=2)
+    gds.close()
 
 
 def test_graph_streamNodeProperty_without_arrow(gds_without_arrow: GraphDataScience) -> None:

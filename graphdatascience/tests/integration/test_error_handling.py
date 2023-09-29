@@ -53,6 +53,7 @@ def test_suggest_correct_algo_endpoint(gds: GraphDataScience) -> None:
 def test_suggest_with_wrong_endpoint(gds: GraphDataScience) -> None:
     with pytest.raises(SyntaxError, match="There is no 'gds.bersion' to call"):
         gds.bersion()
+    gds.close()
 
 
 def test_no_suggestive_cypher_exception(gds: GraphDataScience) -> None:
