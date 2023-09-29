@@ -97,16 +97,16 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             server_version_string = self._query_runner.run_query("RETURN gds.version()", custom_error=False).squeeze()
         except Exception as e:
             if "Unknown function 'gds.version'" in str(e):
+                # Some Python versions appear to not call __del__ of self._query_runner when an exception
+                # is raised, so we have to close the driver manually.
+                if isinstance(endpoint, str):
+                    driver.close()
+
                 raise GdsNotFound(
                     """The Graph Data Science library is not correctly installed on the Neo4j server.
                     Please refer to https://neo4j.com/docs/graph-data-science/current/installation/.
                     """
                 )
-
-            # Some Python versions appear to not call __del__ of self._query_runner when an exception
-            # is raised, so we have to close the driver manually.
-            if isinstance(endpoint, str):
-                driver.close()
 
             raise UnableToConnectError(e)
 
