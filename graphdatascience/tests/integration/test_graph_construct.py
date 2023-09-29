@@ -497,6 +497,7 @@ def test_graph_construct_with_arrow_abort(gds: GraphDataScience) -> None:
 def test_graph_construct_with_arrow_no_db() -> None:
     gds = GraphDataScience(URI, auth=AUTH)
     if not isinstance(gds._query_runner, ArrowQueryRunner):
+        gds.close()
         pytest.skip("Arrow server not enabled")
 
     assert not gds.database()
@@ -506,6 +507,7 @@ def test_graph_construct_with_arrow_no_db() -> None:
 
     with pytest.raises(ValueError):
         gds.graph.construct("hello", nodes, relationships)
+    gds.close() # explicitly close the driver to avoid driver leakage warning (only for some versions?)
 
 
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
