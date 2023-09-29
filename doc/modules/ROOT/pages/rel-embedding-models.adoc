@@ -77,7 +77,7 @@ The `SimpleRelEmbeddingModel.predict_mutate` method adds the predicted relations
 Each such relationship will have a property, specified via the `mutateProperty` parameter, representing the output from running the KGE model scoring function on the node pair and relationship type.
 The method returns a `pandas.Series` with metadata about the computation:
 
-.Fields of the `pandas.Series` object returned by `.predict_mutate` 
+.Fields of the `pandas.Series` object returned by `.predict_mutate`
 [opts="header",cols="1m,1m,3", role="no-break"]
 |===
 | Name                 | Type           |
@@ -152,7 +152,7 @@ Part of this will be having a `Graph` which represents a projection containing K
 
 So we start by introducing a small road-network graph with some inhabitants:
 
-[source,python,group=transe-model]
+[source,python,group=transe-model,min-server-version=2.5.0]
 ----
 gds.run_cypher(
   """
@@ -200,7 +200,7 @@ The `"emb"` node property here contains the TransE node embeddings we will use i
 
 Using our graph `G` and our precomputed relationship type embeddings we can now construct a TransE relationship embedding model.
 
-[source,python,group=transe-model]
+[source,python,group=transe-model,min-server-version=2.5.0]
 ----
 transe_model = gds.model.transe.create(
     G, "emb", {"ROAD": [0.88355126, 0.15116676, 0.24225456], "LIVES_IN": [0.94185368, 0.60460752, 0.92028837]}
@@ -217,7 +217,7 @@ With our model created we can start predicting new relationships of our graphs.
 
 Let's have our model predict where our three inhabitants of interest might be likely to move in the future, and mutate our GDS projection represented by `G` with these new relationships.
 
-[source,python,group=transe-model]
+[source,python,group=transe-model,min-server-version=2.5.0]
 ----
 result = transe_model.predict_mutate(
 	"Person", "City", "LIVES_IN", 1, "MIGHT_MOVE", "likeliness_score"
