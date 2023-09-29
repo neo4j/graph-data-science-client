@@ -507,7 +507,7 @@ def test_graph_construct_with_arrow_no_db() -> None:
 
     with pytest.raises(ValueError):
         gds.graph.construct("hello", nodes, relationships)
-    gds.close() # explicitly close the driver to avoid driver leakage warning (only for some versions?)
+    gds.close()  # explicitly close the driver to avoid driver leakage warning (only for some versions?)
 
 
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
