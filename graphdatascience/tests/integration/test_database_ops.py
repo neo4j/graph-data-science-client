@@ -99,6 +99,7 @@ def test_initialize_with_db(runner: Neo4jQueryRunner) -> None:
     finally:
         runner.run_query("MATCH (n) DETACH DELETE n")
         runner.run_query("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+        gds_with_specified_db.close()
 
 
 def test_from_neo4j_driver(neo4j_driver: Driver) -> None:
@@ -110,6 +111,7 @@ def test_from_neo4j_credentials() -> None:
     gds = GraphDataScience(URI, auth=AUTH)
     assert len(gds.list()) > 10
     assert gds.driver_config()["user_agent"] == f"neo4j-graphdatascience-v{__version__}"
+    gds.close()
 
 
 def test_aurads_rejects_bolt() -> None:
@@ -163,6 +165,7 @@ def test_no_db_explicitly_set() -> None:
     gds = GraphDataScience(URI, AUTH)
     result = gds.run_cypher("CALL gds.list()")
     assert len(result) > 10
+    gds.close()
 
 
 def test_warning_when_logging_fails(runner: Neo4jQueryRunner) -> None:
