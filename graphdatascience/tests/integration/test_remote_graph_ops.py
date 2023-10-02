@@ -52,6 +52,6 @@ def test_remote_write_back(gds_with_cloud_setup: GraphDataScience) -> None:
         GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.arrow(n, m)", "neo4j"
     )
 
-    result = gds_with_cloud_setup.pageRank.write(G, writeProperty="score", remote=True)
+    result = gds_with_cloud_setup.pageRank.write(G, writeProperty="score")
 
     assert result["nodePropertiesWritten"] == 3
