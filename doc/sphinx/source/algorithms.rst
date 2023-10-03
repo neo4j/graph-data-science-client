@@ -1379,6 +1379,14 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.modularityOptimization.stats(G: Graph, **config: Any) -> Series[Any]
+
+    The Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity.
+
+.. py:function:: gds.modularityOptimization.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.modularityOptimization.stream(G: Graph, **config: Any) -> DataFrame
 
     The Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity.
