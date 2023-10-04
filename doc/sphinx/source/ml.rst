@@ -49,17 +49,29 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hashgnn.mutate` instead.
+
 .. py:function:: gds.beta.hashgnn.mutate(G: Graph, **config: Any) -> Series[Any]
 
     HashGNN creates node embeddings by hashing and message passing.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hashgnn.mutate.estimate` instead.
 
 .. py:function:: gds.beta.hashgnn.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
 
     HashGNN creates node embeddings by hashing and message passing.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hashgnn.stream` instead.
+
 .. py:function:: gds.beta.hashgnn.stream(G: Graph, **config: Any) -> DataFrame
 
     HashGNN creates node embeddings by hashing and message passing.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hashgnn.stream.estimate` instead.
 
 .. py:function:: gds.beta.hashgnn.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -165,6 +177,22 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.alpha.ml.oneHotEncoding(available_values: List[Any], selected_values: List[Any]) -> List[int]
 
     Return a list of selected values in a one hot encoding format.
+
+.. py:function:: gds.beta.hashgnn.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    HashGNN creates node embeddings by hashing and message passing.
+
+.. py:function:: gds.beta.hashgnn.mutate.estimate(G: Graph, **config: Any) -> DataFrame
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.beta.hashgnn.stream(G: Graph, **config: Any) -> DataFrame
+
+    HashGNN creates node embeddings by hashing and message passing.
+
+.. py:function:: gds.beta.hashgnn.stream.estimate(G: Graph, **config: Any) -> DataFrame
+
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.node2vec.mutate(G: Graph, **config: Any) -> Series[Any]
 
