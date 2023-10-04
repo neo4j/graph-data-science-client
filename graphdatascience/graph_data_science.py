@@ -280,6 +280,3 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         config["max_connection_lifetime"] = 60 * 8  # 8 minutes
         config["keep_alive"] = True
         config["max_connection_pool_size"] = 50
-
-    def __del__(self):  # type: ignore
-        self._query_runner.close()
