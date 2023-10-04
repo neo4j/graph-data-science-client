@@ -77,25 +77,43 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     HashGNN creates node embeddings by hashing and message passing.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.node2vec.mutate` instead.
+
 .. py:function:: gds.beta.node2vec.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The Node2Vec algorithm computes embeddings for nodes based on random walks.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.node2vec.mutate.estimate` instead.
 
 .. py:function:: gds.beta.node2vec.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.node2vec.stream` instead.
+
 .. py:function:: gds.beta.node2vec.stream(G: Graph, **config: Any) -> DataFrame
 
     The Node2Vec algorithm computes embeddings for nodes based on random walks.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.node2vec.stream.estimate` instead.
 
 .. py:function:: gds.beta.node2vec.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.node2vec.write` instead.
+
 .. py:function:: gds.beta.node2vec.write(G: Graph, **config: Any) -> Series[Any]
 
     The Node2Vec algorithm computes embeddings for nodes based on random walks.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.node2vec.write.estimate` instead.
 
 .. py:function:: gds.beta.node2vec.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
