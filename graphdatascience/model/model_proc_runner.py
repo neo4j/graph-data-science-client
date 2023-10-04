@@ -1,12 +1,48 @@
-from typing import Any, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from pandas import DataFrame, Series
 
 from ..error.client_only_endpoint import client_only_endpoint
+from ..error.illegal_attr_checker import IllegalAttrChecker
+from ..error.uncallable_namespace import UncallableNamespace
+from ..graph.graph_object import Graph
+from ..model.simple_rel_embedding_model import SimpleRelEmbeddingModel
+from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
 from .model import Model
 from .model_resolver import ModelResolver
-from graphdatascience.server_version.compatible_with import compatible_with
+
+
+class DistMultCreator(UncallableNamespace, IllegalAttrChecker):
+    @compatible_with("create", min_inclusive=ServerVersion(2, 5, 0))
+    @client_only_endpoint("gds.model.distmult")
+    def create(
+        self, G: Graph, node_embedding_property: str, relationship_type_embeddings: Dict[str, List[float]]
+    ) -> SimpleRelEmbeddingModel:
+        return SimpleRelEmbeddingModel(
+            "distmult",
+            self._query_runner,
+            self._server_version,
+            G.name(),
+            node_embedding_property,
+            relationship_type_embeddings,
+        )
+
+
+class TransECreator(UncallableNamespace, IllegalAttrChecker):
+    @compatible_with("create", min_inclusive=ServerVersion(2, 5, 0))
+    @client_only_endpoint("gds.model.transe")
+    def create(
+        self, G: Graph, node_embedding_property: str, relationship_type_embeddings: Dict[str, List[float]]
+    ) -> SimpleRelEmbeddingModel:
+        return SimpleRelEmbeddingModel(
+            "transe",
+            self._query_runner,
+            self._server_version,
+            G.name(),
+            node_embedding_property,
+            relationship_type_embeddings,
+        )
 
 
 class ModelProcRunner(ModelResolver):
@@ -105,3 +141,13 @@ class ModelProcRunner(ModelResolver):
         params = {"model_name": model.name()}
 
         return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+
+    @property
+    def transe(self) -> TransECreator:
+        self._namespace += ".transe"
+        return TransECreator(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def distmult(self) -> DistMultCreator:
+        self._namespace += ".distmult"
+        return DistMultCreator(self._query_runner, self._namespace, self._server_version)

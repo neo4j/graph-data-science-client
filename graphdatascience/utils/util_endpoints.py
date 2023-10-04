@@ -24,7 +24,6 @@ class DirectUtilEndpoints(CallerBase):
 
         Returns:
             The node id of the node with the given labels and properties.
-
         """
         label_match = None
         if labels:
@@ -62,7 +61,6 @@ class DirectUtilEndpoints(CallerBase):
 
         Returns:
             The version of the GDS library.
-
         """
         namespace = self._namespace + ".version"
         result = self._query_runner.run_query(f"RETURN {namespace}() as version", custom_error=False).squeeze()
@@ -86,7 +84,6 @@ class DirectUtilEndpoints(CallerBase):
 
         Returns:
             A DataFrame containing all available GDS procedures.
-
         """
         namespace = self._namespace + ".list"
         return self._query_runner.run_query(f"CALL {namespace}()", custom_error=False)
@@ -107,7 +104,6 @@ class IndirectUtilAlphaEndpoints(CallerBase):
 
         Returns:
             The one hot encoded values.
-
         """
         namespace = self._namespace + ".oneHotEncoding"
 

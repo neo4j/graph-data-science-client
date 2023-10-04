@@ -28,6 +28,7 @@ This API reference manual lists all available endpoints in the Neo4j Graph Data 
    model/node-classification-model
    model/node-regression-model
    model/graphsage-model
+   model/simple_rel_embedding_model
    misc
    server_version
 

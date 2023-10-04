@@ -1,4 +1,4 @@
-= The model object
+= Model objects from the model catalog
 
 Models of the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog] are represented as `Model` objects in the Python client, similar to how there are xref:graph-object.adoc[graph objects].
 `Model` objects are typically constructed from training a xref:pipelines.adoc[pipeline] or a xref:model-object.adoc#model-object-graphsage[GraphSAGE model], in which case a reference to the trained model in the form of a `Model` object is returned.
