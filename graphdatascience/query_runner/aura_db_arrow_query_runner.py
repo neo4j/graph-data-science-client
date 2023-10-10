@@ -66,10 +66,9 @@ class AuraDbArrowQueryRunner(QueryRunner):
             params["host"] = aura_db_arrow_endpoint
             params["config"] = {"useEncryption": False}
 
-        elif ".write" in query and "config" in params and "remote" in params["config"] and params["config"]["remote"]:
+        elif ".write" in query and self.is_remote_projected_graph(params["graph_name"]):
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
             host, port_string = aura_db_arrow_endpoint.split(":")
-            del params["config"]["remote"]
             params["config"]["arrowConnectionInfo"] = {
                 "hostname": host,
                 "port": int(port_string),
@@ -78,6 +77,13 @@ class AuraDbArrowQueryRunner(QueryRunner):
             }
 
         return self._fallback_query_runner.run_query(query, params, database, custom_error)
+
+    def is_remote_projected_graph(self, graph_name: str) -> bool:
+        database_location: str = self._fallback_query_runner.run_query(
+            "CALL gds.graph.list($graph_name) YIELD databaseLocation RETURN databaseLocation",
+            {"graph_name": graph_name},
+        ).squeeze()
+        return database_location == "remote"
 
     def set_database(self, database: str) -> None:
         self._fallback_query_runner.set_database(database)
