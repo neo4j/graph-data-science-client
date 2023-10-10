@@ -80,7 +80,8 @@ class AuraDbArrowQueryRunner(QueryRunner):
 
     def is_remote_projected_graph(self, graph_name: str) -> bool:
         database_location: str = self._fallback_query_runner.run_query(
-            f"CALL gds.graph.list('{graph_name}') YIELD databaseLocation RETURN databaseLocation"
+            "CALL gds.graph.list($graph_name) YIELD databaseLocation RETURN databaseLocation",
+            {"graph_name": graph_name},
         ).squeeze()
         return database_location == "remote"
 
