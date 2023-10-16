@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import List, Tuple, Type
 
@@ -30,11 +31,12 @@ class AuraSessions:
         gds_pw = create_details.password
         url = create_details.connection_url
 
-        # FIXME we need to wait for the instance to be ready
+        self._aura_api.wait_for_instance_running(create_details.id)
 
         return self._construct_client(gds_url=url, gds_user=gds_user, gds_pw=gds_pw)
 
     def delete_gds(self, session_name: str) -> None:
+        # FIXME resolve the id
         self._aura_api.delete_instance(session_name)
 
     def list_sessions(self) -> List[SessionInfo]:

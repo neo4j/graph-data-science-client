@@ -129,25 +129,42 @@ class AuraApi:
             headers={"Authorization": f"Bearer {self.__token()}"},
         )
 
-        # TODO if the instance_id does not exist, we get a 404
         response.raise_for_status()
 
         raw_data = response.json()["data"]
 
         return [InstanceDetails.fromJson(i) for i in raw_data]
 
-    def list_instance(self, instance_id: str) -> InstanceSpecificDetails:
+    def list_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.get(
             f"{AuraApi.base_uri}/instances/{instance_id}",
             headers={"Authorization": f"Bearer {self.__token()}"},
         )
 
-        # TODO if the instance_id does not exist, we get a 404
+        if response.status_code == 404:
+            return None
+
         response.raise_for_status()
 
         raw_data = response.json()["data"]
 
         return InstanceSpecificDetails.fromJson(raw_data)
+
+    def wait_for_instance_running(self, instance_id: str) -> bool:
+        MAX_WAIT_TIME = 600
+        sleep_time = 5
+        while sleep_time < MAX_WAIT_TIME:
+            instance = self.list_instance(instance_id)
+            if instance is None or instance.status == "DELETING":
+                return False
+            if instance.status == "RUNNING":
+                return True
+            self._logger.debug(
+                f"Instance {instance_id} is not running yet, but {instance.status}. Retry in {sleep_time} seconds."
+            )
+            time.sleep(sleep_time)
+
+        return False
 
     def _get_tenant_id(self) -> str:
         response = req.get(
