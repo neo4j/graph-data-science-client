@@ -1,6 +1,7 @@
 import logging
 import time
 from dataclasses import dataclass
+from typing import Any, List, Optional
 
 import requests as req
 
@@ -11,7 +12,7 @@ class AuraApi:
 
     def __init__(self, client_id: str, client_secret: str) -> None:
         self._credentials = (client_id, client_secret)
-        self._token = None
+        self._token: Optional["AuraAuthToken"] = None
         self._logger = logging.getLogger()
 
     def __token(self) -> str:
@@ -51,7 +52,7 @@ class AuraApi:
 
         return InstanceSpecificDetails.fromJson(response.json()["data"])
 
-    def list_instances(self, instance_id: str = None) -> ["InstanceDetails"]:
+    def list_instances(self, instance_id: Optional[str] = None) -> List["InstanceDetails"]:
         maybe_instance_id = f"/{instance_id}" if instance_id else ""
 
         response = req.get(
@@ -65,7 +66,7 @@ class AuraApi:
         raw_data = response.json()["data"]
 
         if instance_id:
-            return InstanceSpecificDetails.fromJson(raw_data)
+            return [InstanceSpecificDetails.fromJson(raw_data)]
         else:
             return [InstanceDetails.fromJson(i) for i in raw_data]
 
@@ -80,7 +81,7 @@ class AuraApi:
 
         assert len(raw_data) == 1
 
-        return raw_data[0]["id"]
+        return raw_data[0]["id"]  # type: ignore
 
     def _update_token(self) -> "AuraAuthToken":
         data = {
@@ -103,9 +104,10 @@ class AuraAuthToken:
     expires_in: int
     token_type: str
 
-    def __init__(self, json: dict) -> None:
+    def __init__(self, json: dict[str, Any]) -> None:
         self.access_token = json["access_token"]
-        self.expires_at = int(time.time()) + json["expires_in"]
+        expires_in: int = json["expires_in"]
+        self.expires_at = int(time.time()) + expires_in
         self.token_type = json["token_type"]
 
     def is_expired(self) -> bool:
@@ -120,7 +122,7 @@ class InstanceDetails:
     cloud_provider: str
 
     @classmethod
-    def fromJson(cls, json: dict) -> "InstanceDetails":
+    def fromJson(cls, json: dict[str, Any]) -> "InstanceDetails":
         return cls(
             id=json["id"],
             name=json["name"],
@@ -136,7 +138,7 @@ class InstanceSpecificDetails(InstanceDetails):
     memory: str
 
     @classmethod
-    def fromJson(cls, json: dict) -> "InstanceSpecificDetails":
+    def fromJson(cls, json: dict[str, Any]) -> "InstanceSpecificDetails":
         return cls(
             id=json["id"],
             name=json["name"],
@@ -155,7 +157,7 @@ class InstanceCreateDetails(InstanceDetails):
     connection_url: str
 
     @classmethod
-    def fromJson(cls, json: dict) -> "InstanceCreateDetails":
+    def fromJson(cls, json: dict[str, Any]) -> "InstanceCreateDetails":
         return cls(
             id=json["id"],
             name=json.get("name", ""),
