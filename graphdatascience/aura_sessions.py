@@ -1,13 +1,12 @@
+from __future__ import annotations
 from dataclasses import dataclass
-from typing import List, Tuple, Type, TypeVar
+from typing import List, Tuple, Type
 
 from graphdatascience import GraphDataScience
 from graphdatascience.aura_api import AuraApi
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbConnectionInfo,
 )
-
-AURA_SESSIONS = TypeVar("AURA_SESSIONS", bound="AuraSessions")
 
 
 @dataclass
@@ -53,5 +52,5 @@ class AuraSessions:
         )
 
     @classmethod
-    def _instance_name(cls: Type[AURA_SESSIONS], session_name: str) -> str:
+    def _instance_name(cls: Type[AuraSessions], session_name: str) -> str:
         return f"{AuraSessions.GDS_SESSION_NAME_PREFIX}{session_name}"

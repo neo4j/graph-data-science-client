@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import time
 from dataclasses import dataclass
@@ -14,7 +16,7 @@ class InstanceDetails:
     cloud_provider: str
 
     @classmethod
-    def fromJson(cls, json: dict[str, Any]) -> "InstanceDetails":
+    def fromJson(cls, json: dict[str, Any]) -> InstanceDetails:
         return cls(
             id=json["id"],
             name=json["name"],
@@ -30,7 +32,7 @@ class InstanceSpecificDetails(InstanceDetails):
     memory: str
 
     @classmethod
-    def fromJson(cls, json: dict[str, Any]) -> "InstanceSpecificDetails":
+    def fromJson(cls, json: dict[str, Any]) -> InstanceSpecificDetails:
         return cls(
             id=json["id"],
             name=json["name"],
@@ -49,7 +51,7 @@ class InstanceCreateDetails(InstanceDetails):
     connection_url: str
 
     @classmethod
-    def fromJson(cls, json: dict[str, Any]) -> "InstanceCreateDetails":
+    def fromJson(cls, json: dict[str, Any]) -> InstanceCreateDetails:
         return cls(
             id=json["id"],
             name=json.get("name", ""),
