@@ -13,3 +13,4 @@ You can find the notebooks here:
 * xref:tutorials/ml-pipelines-node-classification.adoc[]
 * xref:tutorials/node-regression-with-subgraph-and-graph-sample.adoc[]
 * xref:tutorials/heterogeneous-node-classification-with-hashgnn.adoc[]
+* xref:tutorials/kge-predict-transe-pyg-train.adoc[]

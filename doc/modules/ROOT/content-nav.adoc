@@ -16,6 +16,7 @@
 *** xref:tutorials/community-detection.adoc[]
 *** xref:tutorials/ml-pipelines-node-classification.adoc[]
 *** xref:tutorials/node-regression-with-subgraph-and-graph-sample.adoc[]
+*** xref:tutorials/kge-predict-transe-pyg-train.adoc[]
 *** xref:tutorials/heterogeneous-node-classification-with-hashgnn.adoc[]
 ** xref:known-limitations.adoc[]
 ** link:{neo4j-docs-base-uri}/graph-data-science-client/{page-version}/api/[API Reference]
