@@ -6,114 +6,6 @@ from typing import Any, List, Optional
 import requests as req
 
 
-class AuraApi:
-    # FIXME allow to insert other for dev purpose
-    base_uri = "https://api.neo4j.io/v1"
-
-    def __init__(self, client_id: str, client_secret: str) -> None:
-        self._credentials = (client_id, client_secret)
-        self._token: Optional["AuraAuthToken"] = None
-        self._logger = logging.getLogger()
-
-    def __token(self) -> str:
-        if self._token is None:
-            self._token = self._update_token()
-        return self._token.access_token
-
-    def create_instance(self, name: str) -> "InstanceCreateDetails":
-        # TODO should give more control here
-        data = {
-            "name": name,
-            "memory": "8GB",
-            "version": "5",
-            "region": "europe-west1",
-            "type": "professional-ds",
-            "tenant_id": self._get_tenant_id(),
-            "cloud_provider": "gcp",
-        }
-
-        response = req.post(
-            "https://api.neo4j.io/v1/instances",
-            json=data,
-            headers={"Authorization": f"Bearer {self.__token()}"},
-        )
-
-        response.raise_for_status()
-
-        return InstanceCreateDetails.fromJson(response.json()["data"])
-
-    def delete_instance(self, instance_id: str) -> "InstanceDetails":
-        response = req.delete(
-            f"{AuraApi.base_uri}/instances/{instance_id}",
-            headers={"Authorization": f"Bearer {self.__token()}"},
-        )
-
-        response.raise_for_status()
-
-        return InstanceSpecificDetails.fromJson(response.json()["data"])
-
-    def list_instances(self, instance_id: Optional[str] = None) -> List["InstanceDetails"]:
-        maybe_instance_id = f"/{instance_id}" if instance_id else ""
-
-        response = req.get(
-            f"{AuraApi.base_uri}/instances{maybe_instance_id}",
-            headers={"Authorization": f"Bearer {self.__token()}"},
-        )
-
-        # TODO if the instance_id does not exist, we get a 404
-        response.raise_for_status()
-
-        raw_data = response.json()["data"]
-
-        if instance_id:
-            return [InstanceSpecificDetails.fromJson(raw_data)]
-        else:
-            return [InstanceDetails.fromJson(i) for i in raw_data]
-
-    def _get_tenant_id(self) -> str:
-        response = req.get(
-            f"{AuraApi.base_uri}/tenants",
-            headers={"Authorization": f"Bearer {self.__token()}"},
-        )
-        response.raise_for_status()
-
-        raw_data = response.json()["data"]
-
-        assert len(raw_data) == 1
-
-        return raw_data[0]["id"]  # type: ignore
-
-    def _update_token(self) -> "AuraAuthToken":
-        data = {
-            "grant_type": "client_credentials",
-        }
-
-        self._logger.debug("Updating oauth token")
-
-        response = req.post(
-            "https://api.neo4j.io/oauth/token", data=data, auth=(self._credentials[0], self._credentials[1])
-        )
-
-        response.raise_for_status()
-
-        return AuraAuthToken(response.json())
-
-
-class AuraAuthToken:
-    access_token: str
-    expires_in: int
-    token_type: str
-
-    def __init__(self, json: dict[str, Any]) -> None:
-        self.access_token = json["access_token"]
-        expires_in: int = json["expires_in"]
-        self.expires_at = int(time.time()) + expires_in
-        self.token_type = json["token_type"]
-
-    def is_expired(self) -> bool:
-        return self.expires_at >= int(time.time())
-
-
 @dataclass(repr=True)
 class InstanceDetails:
     id: str
@@ -167,3 +59,118 @@ class InstanceCreateDetails(InstanceDetails):
             username=json["username"],
             connection_url=json["connection_url"],
         )
+
+
+class AuraApi:
+    # FIXME allow to insert other for dev purpose
+    base_uri = "https://api.neo4j.io/v1"
+
+    class AuraAuthToken:
+        access_token: str
+        expires_in: int
+        token_type: str
+
+        def __init__(self, json: dict[str, Any]) -> None:
+            self.access_token = json["access_token"]
+            expires_in: int = json["expires_in"]
+            self.expires_at = int(time.time()) + expires_in
+            self.token_type = json["token_type"]
+
+        def is_expired(self) -> bool:
+            return self.expires_at >= int(time.time())
+
+    def __init__(self, client_id: str, client_secret: str) -> None:
+        self._credentials = (client_id, client_secret)
+        self._token: Optional[AuraApi.AuraAuthToken] = None
+        self._logger = logging.getLogger()
+
+    def __token(self) -> str:
+        if self._token is None:
+            self._token = self._update_token()
+        return self._token.access_token
+
+    def create_instance(self, name: str) -> InstanceCreateDetails:
+        # TODO should give more control here
+        data = {
+            "name": name,
+            "memory": "8GB",
+            "version": "5",
+            "region": "europe-west1",
+            "type": "professional-ds",
+            "tenant_id": self._get_tenant_id(),
+            "cloud_provider": "gcp",
+        }
+
+        response = req.post(
+            "https://api.neo4j.io/v1/instances",
+            json=data,
+            headers={"Authorization": f"Bearer {self.__token()}"},
+        )
+
+        response.raise_for_status()
+
+        return InstanceCreateDetails.fromJson(response.json()["data"])
+
+    def delete_instance(self, instance_id: str) -> InstanceSpecificDetails:
+        response = req.delete(
+            f"{AuraApi.base_uri}/instances/{instance_id}",
+            headers={"Authorization": f"Bearer {self.__token()}"},
+        )
+
+        response.raise_for_status()
+
+        return InstanceSpecificDetails.fromJson(response.json()["data"])
+
+    def list_instances(self) -> List[InstanceDetails]:
+        response = req.get(
+            f"{AuraApi.base_uri}/instances",
+            headers={"Authorization": f"Bearer {self.__token()}"},
+        )
+
+        # TODO if the instance_id does not exist, we get a 404
+        response.raise_for_status()
+
+        raw_data = response.json()["data"]
+
+        return [InstanceDetails.fromJson(i) for i in raw_data]
+
+    def list_instance(self, instance_id: str) -> InstanceSpecificDetails:
+        response = req.get(
+            f"{AuraApi.base_uri}/instances/{instance_id}",
+            headers={"Authorization": f"Bearer {self.__token()}"},
+        )
+
+        # TODO if the instance_id does not exist, we get a 404
+        response.raise_for_status()
+
+        raw_data = response.json()["data"]
+
+        return InstanceSpecificDetails.fromJson(raw_data)
+
+    def _get_tenant_id(self) -> str:
+        response = req.get(
+            f"{AuraApi.base_uri}/tenants",
+            headers={"Authorization": f"Bearer {self.__token()}"},
+        )
+        response.raise_for_status()
+
+        raw_data = response.json()["data"]
+
+        assert len(raw_data) == 1
+
+        return raw_data[0]["id"]  # type: ignore
+
+    def _update_token(self) -> AuraAuthToken:
+        data = {
+            "grant_type": "client_credentials",
+        }
+
+        self._logger.debug("Updating oauth token")
+
+        response = req.post(
+            "https://api.neo4j.io/oauth/token", data=data, auth=(self._credentials[0], self._credentials[1])
+        )
+
+        response.raise_for_status()
+
+        return AuraApi.AuraAuthToken(response.json())
