@@ -23,12 +23,12 @@ from graphdatascience.query_runner.aura_db_arrow_query_runner import (
 
 class FakeAuraApi(AuraApi):
     def __init__(self, existing_instances: Optional[List[InstanceSpecificDetails]] = None) -> None:
+        super().__init__("", "")
         if existing_instances is None:
             existing_instances = []
         self._instances = {details.id: details for details in existing_instances}
         self.id_counter = 0
         self.time = 0
-        self._logger = logging.getLogger()
 
     def create_instance(self, name: str) -> InstanceCreateDetails:
         create_details = InstanceCreateDetails(
@@ -71,6 +71,9 @@ class FakeAuraApi(AuraApi):
             return old_instance
         else:
             return None
+
+    def wait_for_instance_running(self, instance_id: str, sleep_time: float = 0.2) -> bool:
+        return super().wait_for_instance_running(instance_id, 0.0001)
 
 
 @pytest.fixture

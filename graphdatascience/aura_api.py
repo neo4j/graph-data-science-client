@@ -65,7 +65,8 @@ class InstanceCreateDetails(InstanceDetails):
 
 class AuraApi:
     # FIXME allow to insert other for dev purpose
-    base_uri = "https://api.neo4j.io/v1"
+    BASE_URI_V1 = "https://api.neo4j.io/v1"
+    MAX_WAIT_TIME = 300
 
     class AuraAuthToken:
         access_token: str
@@ -115,7 +116,7 @@ class AuraApi:
 
     def delete_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.delete(
-            f"{AuraApi.base_uri}/instances/{instance_id}",
+            f"{AuraApi.BASE_URI_V1}/instances/{instance_id}",
             headers={"Authorization": f"Bearer {self.__token()}"},
         )
 
@@ -128,7 +129,7 @@ class AuraApi:
 
     def list_instances(self) -> List[InstanceDetails]:
         response = req.get(
-            f"{AuraApi.base_uri}/instances",
+            f"{AuraApi.BASE_URI_V1}/instances",
             headers={"Authorization": f"Bearer {self.__token()}"},
         )
 
@@ -140,7 +141,7 @@ class AuraApi:
 
     def list_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.get(
-            f"{AuraApi.base_uri}/instances/{instance_id}",
+            f"{AuraApi.BASE_URI_V1}/instances/{instance_id}",
             headers={"Authorization": f"Bearer {self.__token()}"},
         )
 
@@ -153,10 +154,8 @@ class AuraApi:
 
         return InstanceSpecificDetails.fromJson(raw_data)
 
-    def wait_for_instance_running(self, instance_id: str) -> bool:
-        MAX_WAIT_TIME = 600
-        sleep_time = 5
-        while sleep_time < MAX_WAIT_TIME:
+    def wait_for_instance_running(self, instance_id: str, sleep_time: float = 0.2) -> bool:
+        while sleep_time < AuraApi.MAX_WAIT_TIME:
             instance = self.list_instance(instance_id)
             if instance is None or instance.status == "DELETING":
                 return False
@@ -171,7 +170,7 @@ class AuraApi:
 
     def _get_tenant_id(self) -> str:
         response = req.get(
-            f"{AuraApi.base_uri}/tenants",
+            f"{AuraApi.BASE_URI_V1}/tenants",
             headers={"Authorization": f"Bearer {self.__token()}"},
         )
         response.raise_for_status()
