@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Any, List, Optional
 
 import requests as req
+from requests import HTTPError
 
 
 @dataclass(repr=True)
@@ -82,10 +83,11 @@ class AuraApi:
         def is_expired(self) -> bool:
             return self.expires_at >= int(time.time())
 
-    def __init__(self, client_id: str, client_secret: str) -> None:
+    def __init__(self, tenant_id: Optional[str], client_id: str, client_secret: str) -> None:
         self._credentials = (client_id, client_secret)
         self._token: Optional[AuraApi.AuraAuthToken] = None
         self._logger = logging.getLogger()
+        self._tenant_id = tenant_id or self._get_tenant_id()
 
     def _auth_token(self) -> str:
         if self._token is None or self._token.is_expired():
@@ -99,8 +101,8 @@ class AuraApi:
             "memory": "8GB",
             "version": "5",
             "region": "europe-west1",
-            "type": "professional-ds",
-            "tenant_id": self._get_tenant_id(),
+            "type": "enterprise-ds",
+            "tenant_id": self._tenant_id,
             "cloud_provider": "gcp",
         }
 
@@ -110,7 +112,11 @@ class AuraApi:
             headers={"Authorization": f"Bearer {self._auth_token()}"},
         )
 
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError as e:
+            print(response.json())
+            raise e
 
         return InstanceCreateDetails.fromJson(response.json()["data"])
 
@@ -177,7 +183,10 @@ class AuraApi:
 
         raw_data = response.json()["data"]
 
-        assert len(raw_data) == 1
+        if len(raw_data) != 1:
+            raise RuntimeError(
+                f"This account has access to multiple tenants `{raw_data}`. Please specify which one to use."
+            )
 
         return raw_data[0]["id"]  # type: ignore
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Tuple, Type
+from typing import List, Optional, Tuple, Type
 
 from graphdatascience import GraphDataScience
 from graphdatascience.aura_api import AuraApi
@@ -18,9 +18,16 @@ class SessionInfo:
 class AuraSessions:
     GDS_SESSION_NAME_PREFIX = "gds-session-"
 
-    def __init__(self, db_credentials: AuraDbConnectionInfo, aura_api_client_auth: Tuple[str, str]) -> None:
+    def __init__(
+        self,
+        db_credentials: AuraDbConnectionInfo,
+        aura_api_client_auth: Tuple[str, str],
+        tenant_id: Optional[str] = None,
+    ) -> None:
         self._db_credentials = db_credentials
-        self._aura_api = AuraApi(aura_api_client_auth[0], aura_api_client_auth[1])
+        self._aura_api = AuraApi(
+            tenant_id=tenant_id, client_id=aura_api_client_auth[0], client_secret=aura_api_client_auth[1]
+        )
 
     # TODO wrapper around it for closable?
     # TODO add session_password
