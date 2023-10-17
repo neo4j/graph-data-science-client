@@ -1,5 +1,4 @@
 import dataclasses
-import logging
 import re
 from dataclasses import asdict
 from typing import Any, List, Optional
@@ -131,7 +130,7 @@ def test_create_duplicate_session(mocker: MockerFixture, aura_api: AuraApi) -> N
     assert sessions.list_sessions() == [SessionInfo("my-session")]
 
 
-def test_delete_session():
+def test_delete_session() -> None:
     db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""))
 
@@ -162,7 +161,7 @@ def test_delete_session():
     assert sessions.list_sessions() == [SessionInfo("other")]
 
 
-def test_delete_nonexisting_session():
+def test_delete_nonexisting_session() -> None:
     db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""))
 
@@ -184,7 +183,7 @@ def test_delete_nonexisting_session():
     assert sessions.list_sessions() == [SessionInfo("one")]
 
 
-def test_delete_nonunique_session():
+def test_delete_nonunique_session() -> None:
     db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""))
 

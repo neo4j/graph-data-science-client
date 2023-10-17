@@ -165,7 +165,6 @@ def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
 
 
 def test_list_missing_instance(requests_mock: Mocker) -> None:
-    # happy case
     api = AuraApi("", "", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
