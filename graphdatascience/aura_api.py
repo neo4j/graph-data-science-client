@@ -41,7 +41,7 @@ class InstanceSpecificDetails(InstanceDetails):
             cloud_provider=json["cloud_provider"],
             status=json["status"],
             connection_url=json.get("connection_url", ""),
-            memory=json["memory"],
+            memory=json.get("memory", ""),
         )
 
 
@@ -83,7 +83,7 @@ class AuraApi:
         def is_expired(self) -> bool:
             return self.expires_at >= int(time.time())
 
-    def __init__(self, tenant_id: Optional[str], client_id: str, client_secret: str) -> None:
+    def __init__(self, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> None:
         self._credentials = (client_id, client_secret)
         self._token: Optional[AuraApi.AuraAuthToken] = None
         self._logger = logging.getLogger()
@@ -137,6 +137,7 @@ class AuraApi:
         response = req.get(
             f"{AuraApi.BASE_URI_V1}/instances",
             headers={"Authorization": f"Bearer {self._auth_token()}"},
+            params={"tenantId": self._tenant_id},
         )
 
         response.raise_for_status()
