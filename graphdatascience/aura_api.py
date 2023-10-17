@@ -87,9 +87,9 @@ class AuraApi:
         self._token: Optional[AuraApi.AuraAuthToken] = None
         self._logger = logging.getLogger()
 
-    def __token(self) -> str:
-        if self._token is None:
-            self._token = self._update_token()
+    def _auth_token(self) -> str:
+        if self._token is None or self._token.is_expired():
+            self._token = self.__update_token()
         return self._token.access_token
 
     def create_instance(self, name: str) -> InstanceCreateDetails:
@@ -107,7 +107,7 @@ class AuraApi:
         response = req.post(
             "https://api.neo4j.io/v1/instances",
             json=data,
-            headers={"Authorization": f"Bearer {self.__token()}"},
+            headers={"Authorization": f"Bearer {self._auth_token()}"},
         )
 
         response.raise_for_status()
@@ -117,7 +117,7 @@ class AuraApi:
     def delete_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.delete(
             f"{AuraApi.BASE_URI_V1}/instances/{instance_id}",
-            headers={"Authorization": f"Bearer {self.__token()}"},
+            headers={"Authorization": f"Bearer {self._auth_token()}"},
         )
 
         if response.status_code == 404:
@@ -130,7 +130,7 @@ class AuraApi:
     def list_instances(self) -> List[InstanceDetails]:
         response = req.get(
             f"{AuraApi.BASE_URI_V1}/instances",
-            headers={"Authorization": f"Bearer {self.__token()}"},
+            headers={"Authorization": f"Bearer {self._auth_token()}"},
         )
 
         response.raise_for_status()
@@ -142,7 +142,7 @@ class AuraApi:
     def list_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.get(
             f"{AuraApi.BASE_URI_V1}/instances/{instance_id}",
-            headers={"Authorization": f"Bearer {self.__token()}"},
+            headers={"Authorization": f"Bearer {self._auth_token()}"},
         )
 
         if response.status_code == 404:
@@ -171,7 +171,7 @@ class AuraApi:
     def _get_tenant_id(self) -> str:
         response = req.get(
             f"{AuraApi.BASE_URI_V1}/tenants",
-            headers={"Authorization": f"Bearer {self.__token()}"},
+            headers={"Authorization": f"Bearer {self._auth_token()}"},
         )
         response.raise_for_status()
 
@@ -181,7 +181,7 @@ class AuraApi:
 
         return raw_data[0]["id"]  # type: ignore
 
-    def _update_token(self) -> AuraAuthToken:
+    def __update_token(self) -> AuraAuthToken:
         data = {
             "grant_type": "client_credentials",
         }

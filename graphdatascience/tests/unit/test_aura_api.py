@@ -73,3 +73,20 @@ def test_delete_that_fails(requests_mock: Mocker):
 
     with pytest.raises(HTTPError, match="Internal Server Error"):
         api.delete_instance("id0")
+
+def test_auth_token(requests_mock):
+    requests_mock.post(
+        "https://api.neo4j.io/oauth/token",
+        json={"access_token": "very_short_token", "expires_in": 1, "token_type": "Bearer"},
+    )
+
+    api = AuraApi("", "")
+
+    assert api._auth_token() == "very_short_token"
+
+    requests_mock.post(
+        "https://api.neo4j.io/oauth/token",
+        json={"access_token": "longer_token", "expires_in": 3600, "token_type": "Bearer"},
+    )
+
+    assert api._auth_token() == "longer_token"
