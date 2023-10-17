@@ -87,7 +87,7 @@ class AuraApi:
         self._credentials = (client_id, client_secret)
         self._token: Optional[AuraApi.AuraAuthToken] = None
         self._logger = logging.getLogger()
-        self._tenant_id = tenant_id or self._get_tenant_id()
+        self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
 
     def _auth_token(self) -> str:
         if self._token is None or self._token.is_expired():

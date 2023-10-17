@@ -22,7 +22,7 @@ from graphdatascience.query_runner.aura_db_arrow_query_runner import (
 
 class FakeAuraApi(AuraApi):
     def __init__(self, existing_instances: Optional[List[InstanceSpecificDetails]] = None) -> None:
-        super().__init__("", "")
+        super().__init__("", "", "tenant_id")
         if existing_instances is None:
             existing_instances = []
         self._instances = {details.id: details for details in existing_instances}
@@ -45,8 +45,8 @@ class FakeAuraApi(AuraApi):
             name=create_details.name,
             tenant_id=create_details.tenant_id,
             cloud_provider=create_details.cloud_provider,
-            status="CREATING",
-            connection_url=create_details.connection_url,
+            status="creating",
+            connection_url="gds-url",
             memory="",
         )
 
@@ -66,7 +66,7 @@ class FakeAuraApi(AuraApi):
 
         if matched_instances:
             old_instance = matched_instances
-            self._instances[instance_id] = dataclasses.replace(old_instance, status="RUNNING")
+            self._instances[instance_id] = dataclasses.replace(old_instance, status="running")
             return old_instance
         else:
             return None
@@ -81,7 +81,9 @@ def aura_api() -> AuraApi:
 
 
 def test_list_session(requests_mock: Mocker) -> None:
-    sessions = AuraSessions(db_credentials=AuraDbConnectionInfo("", ("", "")), aura_api_client_auth=("", ""))
+    sessions = AuraSessions(
+        db_credentials=AuraDbConnectionInfo("", ("", "")), aura_api_client_auth=("", ""), tenant_id="placeholder"
+    )
 
     db_instance = InstanceDetails(id="id", name="Instance01", tenant_id="tenant_id", cloud_provider="cloud_provider")
     gds_instance = InstanceDetails(
@@ -101,7 +103,7 @@ def test_list_session(requests_mock: Mocker) -> None:
 
 def test_create_session(mocker: MockerFixture, gds: GraphDataScience, aura_api: AuraApi) -> None:
     db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
-    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""))
+    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
     sessions._aura_api = aura_api
 
     def assert_credentials(*args: List[Any], **kwargs: dict[str, Any]) -> GraphDataScience:
@@ -117,7 +119,7 @@ def test_create_session(mocker: MockerFixture, gds: GraphDataScience, aura_api: 
 
 def test_create_duplicate_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
-    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""))
+    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
     sessions._aura_api = aura_api
 
     mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: None)
@@ -132,7 +134,7 @@ def test_create_duplicate_session(mocker: MockerFixture, aura_api: AuraApi) -> N
 
 def test_delete_session() -> None:
     db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
-    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""))
+    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
 
     existing_instances = [
         InstanceSpecificDetails(
@@ -163,7 +165,7 @@ def test_delete_session() -> None:
 
 def test_delete_nonexisting_session() -> None:
     db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
-    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""))
+    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
 
     existing_instances = [
         InstanceSpecificDetails(
@@ -185,7 +187,7 @@ def test_delete_nonexisting_session() -> None:
 
 def test_delete_nonunique_session() -> None:
     db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
-    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""))
+    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
 
     existing_instances = [
         InstanceSpecificDetails(
