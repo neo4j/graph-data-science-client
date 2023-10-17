@@ -157,9 +157,9 @@ class AuraApi:
     def wait_for_instance_running(self, instance_id: str, sleep_time: float = 0.2) -> bool:
         while sleep_time < AuraApi.MAX_WAIT_TIME:
             instance = self.list_instance(instance_id)
-            if instance is None or instance.status == "DELETING":
+            if instance is None or instance.status in ["deleting", "destroying"]:
                 return False
-            if instance.status == "RUNNING":
+            if instance.status == "running":
                 return True
             self._logger.debug(
                 f"Instance {instance_id} is not running yet, but {instance.status}. Retry in {sleep_time} seconds."
