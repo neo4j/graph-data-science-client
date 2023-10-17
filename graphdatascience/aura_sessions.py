@@ -25,13 +25,15 @@ class AuraSessions:
     # TODO wrapper around it for closable?
     # TODO add session_password
     def create_gds(self, session_name: str) -> GraphDataScience:
-        create_details = self._aura_api.create_instance(session_name)
+        if session_name in [session.name for session in self.list_sessions()]:
+            raise RuntimeError(f"Session with name `{session_name}` already exists.")
+
+        create_details = self._aura_api.create_instance(AuraSessions._instance_name(session_name))
+        self._aura_api.wait_for_instance_running(create_details.id)
 
         gds_user = create_details.username
         gds_pw = create_details.password
         url = create_details.connection_url
-
-        self._aura_api.wait_for_instance_running(create_details.id)
 
         return self._construct_client(gds_url=url, gds_user=gds_user, gds_pw=gds_pw)
 
@@ -67,7 +69,7 @@ class AuraSessions:
         all_instances = self._aura_api.list_instances()
 
         return [
-            SessionInfo(instance.name)
+            SessionInfo(instance.name.removeprefix(AuraSessions.GDS_SESSION_NAME_PREFIX))
             for instance in all_instances
             if instance.name.startswith(AuraSessions.GDS_SESSION_NAME_PREFIX)
         ]

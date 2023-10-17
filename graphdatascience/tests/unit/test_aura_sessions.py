@@ -97,28 +97,38 @@ def test_list_session(requests_mock: Mocker) -> None:
         "https://api.neo4j.io/v1/instances", json={"data": [asdict(i) for i in [db_instance, gds_instance]]}
     )
 
-    assert sessions.list_sessions() == [SessionInfo("gds-session-my-session-name")]
+    assert sessions.list_sessions() == [SessionInfo("my-session-name")]
 
 
-def test_create_session_(mocker: MockerFixture, gds: GraphDataScience, aura_api: AuraApi) -> None:
+def test_create_session(mocker: MockerFixture, gds: GraphDataScience, aura_api: AuraApi) -> None:
     db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""))
     sessions._aura_api = aura_api
 
-    gds_user = "gds-user"
-    gds_pw = "gds-pw"
-    gds_url = "gds-url"
-
     def assert_credentials(*args: List[Any], **kwargs: dict[str, Any]) -> GraphDataScience:
-        assert kwargs == {"gds_url": gds_url, "gds_user": gds_user, "gds_pw": gds_pw}
+        assert kwargs == {"gds_url": "gds-url", "gds_user": "gds-user", "gds_pw": "gds-pw"}
         return gds
 
     mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", assert_credentials)
 
-    gds = sessions.create_gds("my-session")
+    sessions.create_gds("my-session")
 
-    expected_instance_name = "gds-session-my-session"
-    sessions.list_sessions() == [SessionInfo(expected_instance_name)]
+    assert sessions.list_sessions() == [SessionInfo("my-session")]
+
+
+def test_create_duplicate_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
+    db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
+    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""))
+    sessions._aura_api = aura_api
+
+    mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: None)
+
+    sessions.create_gds("my-session")
+
+    with pytest.raises(RuntimeError, match=re.escape("Session with name `my-session` already exists")):
+        sessions.create_gds("my-session")
+
+    assert sessions.list_sessions() == [SessionInfo("my-session")]
 
 
 def test_delete_session():
