@@ -35,9 +35,33 @@ class AuraSessions:
 
         return self._construct_client(gds_url=url, gds_user=gds_user, gds_pw=gds_pw)
 
-    def delete_gds(self, session_name: str) -> None:
-        # FIXME resolve the id
-        self._aura_api.delete_instance(session_name)
+    def delete_gds(self, session_name: str) -> bool:
+        """
+        Delete a GDS session.
+        Args:
+            session_name: the name of the session to delete
+
+        Returns:
+            True iff a session was deleted as a result of this call.
+        """
+        instance_name = AuraSessions._instance_name(session_name)
+
+        candidate_instances = [i for i in self._aura_api.list_instances() if i.name == instance_name]
+
+        if len(candidate_instances) > 1:
+            candidate_names = [
+                (i.id, i.name.removeprefix(AuraSessions.GDS_SESSION_NAME_PREFIX)) for i in candidate_instances
+            ]
+            session_name = instance_name.removeprefix(AuraSessions.GDS_SESSION_NAME_PREFIX)
+            raise RuntimeError(
+                f"Expected to find exactly one instance with name `{session_name}`, but found `{candidate_names}`"
+            )
+
+        if len(candidate_instances) == 1:
+            candidate = candidate_instances[0]
+            return self._aura_api.delete_instance(candidate.id) is not None
+
+        return False
 
     def list_sessions(self) -> List[SessionInfo]:
         all_instances = self._aura_api.list_instances()

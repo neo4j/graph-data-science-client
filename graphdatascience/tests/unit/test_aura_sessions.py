@@ -1,5 +1,6 @@
 import dataclasses
 import logging
+import re
 from dataclasses import asdict
 from typing import Any, List, Optional
 
@@ -20,7 +21,7 @@ from graphdatascience.query_runner.aura_db_arrow_query_runner import (
 )
 
 
-class CollectingAuraApi(AuraApi):
+class FakeAuraApi(AuraApi):
     def __init__(self, existing_instances: Optional[List[InstanceSpecificDetails]] = None) -> None:
         if existing_instances is None:
             existing_instances = []
@@ -74,7 +75,7 @@ class CollectingAuraApi(AuraApi):
 
 @pytest.fixture
 def aura_api() -> AuraApi:
-    return CollectingAuraApi()
+    return FakeAuraApi()
 
 
 def test_list_session(requests_mock: Mocker) -> None:
@@ -115,3 +116,94 @@ def test_create_session_(mocker: MockerFixture, gds: GraphDataScience, aura_api:
 
     expected_instance_name = "gds-session-my-session"
     sessions.list_sessions() == [SessionInfo(expected_instance_name)]
+
+
+def test_delete_session():
+    db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
+    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""))
+
+    existing_instances = [
+        InstanceSpecificDetails(
+            id="id42",
+            name=AuraSessions._instance_name("one"),
+            tenant_id="tenant_id",
+            cloud_provider="cloud_provider",
+            status="RUNNING",
+            connection_url="",
+            memory="",
+        ),
+        InstanceSpecificDetails(
+            id="id1",
+            name=AuraSessions._instance_name("other"),
+            tenant_id="tenant_id",
+            cloud_provider="cloud_provider",
+            status="RUNNING",
+            connection_url="",
+            memory="",
+        ),
+    ]
+
+    sessions._aura_api = FakeAuraApi(existing_instances=existing_instances)
+
+    assert sessions.delete_gds("one")
+    assert sessions.list_sessions() == [SessionInfo("other")]
+
+
+def test_delete_nonexisting_session():
+    db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
+    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""))
+
+    existing_instances = [
+        InstanceSpecificDetails(
+            id="id42",
+            name=AuraSessions._instance_name("one"),
+            tenant_id="tenant_id",
+            cloud_provider="cloud_provider",
+            status="RUNNING",
+            connection_url="",
+            memory="",
+        ),
+    ]
+
+    sessions._aura_api = FakeAuraApi(existing_instances=existing_instances)
+
+    assert sessions.delete_gds("other") is False
+    assert sessions.list_sessions() == [SessionInfo("one")]
+
+
+def test_delete_nonunique_session():
+    db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
+    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""))
+
+    existing_instances = [
+        InstanceSpecificDetails(
+            id="id42",
+            name=AuraSessions._instance_name("one"),
+            tenant_id="",
+            cloud_provider="",
+            status="RUNNING",
+            connection_url="",
+            memory="",
+        ),
+        InstanceSpecificDetails(
+            id="id43",
+            name=AuraSessions._instance_name("one"),
+            tenant_id="",
+            cloud_provider="",
+            status="RUNNING",
+            connection_url="",
+            memory="",
+        ),
+    ]
+
+    sessions._aura_api = FakeAuraApi(existing_instances=existing_instances)
+
+    with pytest.raises(
+        RuntimeError,
+        match=re.escape(
+            "Expected to find exactly one instance with name `one`, but found `[('id42', 'one'), ('id43', 'one')]`"
+        ),
+    ):
+        sessions.delete_gds("one")
+
+    assert sessions.list_sessions() == [SessionInfo("one"), SessionInfo("one")]

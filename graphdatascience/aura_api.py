@@ -113,11 +113,14 @@ class AuraApi:
 
         return InstanceCreateDetails.fromJson(response.json()["data"])
 
-    def delete_instance(self, instance_id: str) -> InstanceSpecificDetails:
+    def delete_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.delete(
             f"{AuraApi.base_uri}/instances/{instance_id}",
             headers={"Authorization": f"Bearer {self.__token()}"},
         )
+
+        if response.status_code == 404:
+            return None
 
         response.raise_for_status()
 
