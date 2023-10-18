@@ -8,17 +8,6 @@
 :toclevels: 2
 :env-docs: true
 
-ifdef::backend-html5[(C) {copyright}]
-ifndef::backend-pdf[]
-
-License: link:{common-license-page-uri}[Creative Commons 4.0]
-endif::[]
-ifdef::backend-pdf[]
-(C) {copyright}
-
-License: <<license, Creative Commons 4.0>>
-endif::[]
-
 
 To help users of https://neo4j.com/docs/graph-data-science/current/[Neo4j Graph Data Science] who work with Python as their primary language and environment, we offer the official Graph Data Science (GDS) Python Client package called `graphdatascience`.
 It enables users to write pure Python code to project graphs, run algorithms, use machine learning pipelines, and train machine learning models with GDS.
@@ -32,3 +21,8 @@ Additionally, the client-specific graph, model, and pipeline objects offer conve
 
 The source code of the GDS Python client is available at https://github.com/neo4j/graph-data-science-client[GitHub].
 If you have a suggestion on how we can improve the library or want to report a problem, you can create a https://github.com/neo4j/graph-data-science-client/issues/new[new issue].
+
+// Make this depending on the backend if PDF needs to be generated
+(C) {copyright}
+
+License: link:{common-license-page-uri}[Creative Commons 4.0]
