@@ -8,6 +8,8 @@ from typing import Any, List, Optional
 import requests as req
 from requests import HTTPError
 
+from .version import __version__
+
 
 @dataclass(repr=True)
 class InstanceDetails:
@@ -89,11 +91,6 @@ class AuraApi:
         self._logger = logging.getLogger()
         self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
 
-    def _auth_token(self) -> str:
-        if self._token is None or self._token.is_expired():
-            self._token = self.__update_token()
-        return self._token.access_token
-
     def create_instance(self, name: str) -> InstanceCreateDetails:
         # TODO should give more control here
         data = {
@@ -109,7 +106,7 @@ class AuraApi:
         response = req.post(
             "https://api.neo4j.io/v1/instances",
             json=data,
-            headers={"Authorization": f"Bearer {self._auth_token()}"},
+            headers=self._get_request_headers(),
         )
 
         try:
@@ -123,7 +120,7 @@ class AuraApi:
     def delete_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.delete(
             f"{AuraApi.BASE_URI_V1}/instances/{instance_id}",
-            headers={"Authorization": f"Bearer {self._auth_token()}"},
+            headers=self._get_request_headers(),
         )
 
         if response.status_code == 404:
@@ -136,7 +133,7 @@ class AuraApi:
     def list_instances(self) -> List[InstanceDetails]:
         response = req.get(
             f"{AuraApi.BASE_URI_V1}/instances",
-            headers={"Authorization": f"Bearer {self._auth_token()}"},
+            headers=self._get_request_headers(),
             params={"tenantId": self._tenant_id},
         )
 
@@ -149,7 +146,7 @@ class AuraApi:
     def list_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.get(
             f"{AuraApi.BASE_URI_V1}/instances/{instance_id}",
-            headers={"Authorization": f"Bearer {self._auth_token()}"},
+            headers=self._get_request_headers(),
         )
 
         if response.status_code == 404:
@@ -178,7 +175,7 @@ class AuraApi:
     def _get_tenant_id(self) -> str:
         response = req.get(
             f"{AuraApi.BASE_URI_V1}/tenants",
-            headers={"Authorization": f"Bearer {self._auth_token()}"},
+            headers=self._get_request_headers(),
         )
         response.raise_for_status()
 
@@ -191,7 +188,15 @@ class AuraApi:
 
         return raw_data[0]["id"]  # type: ignore
 
-    def __update_token(self) -> AuraAuthToken:
+    def _get_request_headers(self) -> dict[str, str]:
+        return {"Authorization": f"Bearer {self._auth_token()}", "User-agent": f"neo4j-graphdatascience-v{__version__}"}
+
+    def _auth_token(self) -> str:
+        if self._token is None or self._token.is_expired():
+            self._token = self._update_token()
+        return self._token.access_token
+
+    def _update_token(self) -> AuraAuthToken:
         data = {
             "grant_type": "client_credentials",
         }
