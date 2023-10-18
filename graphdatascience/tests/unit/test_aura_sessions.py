@@ -106,13 +106,18 @@ def test_create_session(mocker: MockerFixture, gds: GraphDataScience, aura_api: 
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
     sessions._aura_api = aura_api
 
-    def assert_credentials(*args: List[Any], **kwargs: dict[str, Any]) -> GraphDataScience:
-        assert kwargs == {"gds_url": "gds-url", "gds_user": "gds-user", "gds_pw": "gds-pw"}
+    def assert_db_credentials(*args: List[Any], **kwargs: dict[str, Any]) -> GraphDataScience:
+        assert kwargs == {"gds_url": "gds-url", "gds_user": "gds-user", "initial_pw": "gds-pw", "new_pw": "my-password"}
         return gds
 
-    mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", assert_credentials)
+    def assert_gds_credentials(*args: List[Any], **kwargs: dict[str, Any]) -> GraphDataScience:
+        assert kwargs == {"gds_url": "gds-url", "gds_user": "gds-user", "gds_pw": "my-password"}
+        return gds
 
-    sessions.create_gds("my-session")
+    mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", assert_gds_credentials)
+    mocker.patch("graphdatascience.aura_sessions.AuraSessions._change_initial_pw", assert_db_credentials)
+
+    sessions.create_gds("my-session", "my-password")
 
     assert sessions.list_sessions() == [SessionInfo("my-session")]
 
@@ -123,11 +128,12 @@ def test_create_duplicate_session(mocker: MockerFixture, aura_api: AuraApi) -> N
     sessions._aura_api = aura_api
 
     mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: None)
+    mocker.patch("graphdatascience.aura_sessions.AuraSessions._change_initial_pw", lambda *args, **kwargs: None)
 
-    sessions.create_gds("my-session")
+    sessions.create_gds("my-session", "my-password")
 
     with pytest.raises(RuntimeError, match=re.escape("Session with name `my-session` already exists")):
-        sessions.create_gds("my-session")
+        sessions.create_gds("my-session", "my-password")
 
     assert sessions.list_sessions() == [SessionInfo("my-session")]
 

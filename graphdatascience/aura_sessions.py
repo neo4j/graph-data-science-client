@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import List, Optional, Tuple, Type
 
+from neo4j import GraphDatabase
+
 from graphdatascience import GraphDataScience
 from graphdatascience.aura_api import AuraApi
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
@@ -30,8 +32,10 @@ class AuraSessions:
         )
 
     # TODO wrapper around it for closable?
-    # TODO add session_password
-    def create_gds(self, session_name: str) -> GraphDataScience:
+    def create_gds(self, session_name: str, session_password: str) -> GraphDataScience:
+        if len(session_password) < 8:
+            raise ValueError("Password must be at least 8 characters long.")
+
         if session_name in [session.name for session in self.list_sessions()]:
             raise RuntimeError(f"Session with name `{session_name}` already exists.")
 
@@ -39,10 +43,13 @@ class AuraSessions:
         self._aura_api.wait_for_instance_running(create_details.id)
 
         gds_user = create_details.username
-        gds_pw = create_details.password
         url = create_details.connection_url
 
-        return self._construct_client(gds_url=url, gds_user=gds_user, gds_pw=gds_pw)
+        self._change_initial_pw(
+            gds_url=url, gds_user=gds_user, initial_pw=create_details.password, new_pw=session_password
+        )
+
+        return self._construct_client(gds_url=url, gds_user=gds_user, gds_pw=session_password)
 
     def delete_gds(self, session_name: str) -> bool:
         """
@@ -80,6 +87,14 @@ class AuraSessions:
             for instance in all_instances
             if instance.name.startswith(AuraSessions.GDS_SESSION_NAME_PREFIX)
         ]
+
+    def _change_initial_pw(self, gds_url: str, gds_user: str, initial_pw: str, new_pw: str) -> None:
+        with GraphDatabase.driver(gds_url, auth=(gds_user, initial_pw)) as driver:
+            driver.execute_query(
+                "ALTER CURRENT USER SET PASSWORD FROM $old_pw TO $new_pw",
+                parameters_={"old_pw": initial_pw, "new_pw": new_pw},
+                database_="system",
+            )
 
     def _construct_client(self, gds_url: str, gds_user: str, gds_pw: str) -> GraphDataScience:
         return GraphDataScience(
