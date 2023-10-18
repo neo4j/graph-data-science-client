@@ -1,4 +1,4 @@
-* xref:index.adoc[]
+* xref:index.adoc[Introduction]
 * xref:installation.adoc[]
 * xref:getting-started.adoc[]
 * xref:graph-object.adoc[]
