@@ -23,7 +23,6 @@ The Python client supports the following versions of the other three components:
 .5+<.^| >= 4.4.2, < 6.0.0
 
 .1+<.^| 1.8
-.5+<.^| >= 4.4.2, < 6.0.0
 
 .1+<.^| 1.7
 .1+<.^| >= 2.3, < 2.5
