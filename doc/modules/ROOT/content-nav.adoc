@@ -1,22 +1,21 @@
-* xref:index.adoc[]
-** xref:installation.adoc[]
-** xref:getting-started.adoc[]
-** xref:graph-object.adoc[]
-** xref:algorithms.adoc[]
-** xref:pipelines.adoc[]
-** xref:model-object.adoc[]
-** xref:common-datasets.adoc[]
-** xref:rel-embedding-models.adoc[]
-** xref:bookmarks.adoc[]
-** xref:tutorials/tutorials.adoc[]
-*** xref:tutorials/load-data-via-graph-construction.adoc[]
-*** xref:tutorials/fastrp-and-knn.adoc[]
-*** xref:tutorials/import-sample-export-gnn.adoc[]
-*** xref:tutorials/centrality-algorithms.adoc[]
-*** xref:tutorials/community-detection.adoc[]
-*** xref:tutorials/ml-pipelines-node-classification.adoc[]
-*** xref:tutorials/node-regression-with-subgraph-and-graph-sample.adoc[]
-*** xref:tutorials/kge-predict-transe-pyg-train.adoc[]
-*** xref:tutorials/heterogeneous-node-classification-with-hashgnn.adoc[]
-** xref:known-limitations.adoc[]
-** link:{neo4j-docs-base-uri}/graph-data-science-client/{page-version}/api/[API Reference]
+* xref:index.adoc[Introduction]
+* xref:installation.adoc[]
+* xref:getting-started.adoc[]
+* xref:graph-object.adoc[]
+* xref:algorithms.adoc[]
+* xref:pipelines.adoc[]
+* xref:model-object.adoc[]
+* xref:common-datasets.adoc[]
+* xref:rel-embedding-models.adoc[]
+* xref:bookmarks.adoc[]
+
+* xref:tutorials/tutorials.adoc[]
+// https://docs.antora.org/antora/latest/navigation/include-lists/
++
+--
+include::partial$tutorial-list.adoc[]
+--
+
+* xref:known-limitations.adoc[]
+
+* link:{neo4j-docs-base-uri}/graph-data-science-client/{page-version}/api/[API Reference]
