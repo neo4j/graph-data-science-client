@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import time
 from dataclasses import dataclass
 from typing import Any, List, Optional
@@ -68,7 +69,12 @@ class InstanceCreateDetails(InstanceDetails):
 
 class AuraApi:
     # FIXME allow to insert other for dev purpose
-    BASE_URI_V1 = "https://api.neo4j.io/v1"
+    DEV_ENV = os.environ.get("AURA_ENV")
+    BASE_URI = (
+        "https://api.neo4j.io"
+        if not os.environ.get("AURA_ENV")
+        else f"https://api-{os.environ.get('AURA_ENV')}.neo4j-dev.io"
+    )
     MAX_WAIT_TIME = 300
 
     class AuraAuthToken:
@@ -98,13 +104,14 @@ class AuraApi:
             "memory": "8GB",
             "version": "5",
             "region": "europe-west1",
-            "type": "enterprise-ds",
+            # TODO should be figured out from the tenant details in the future
+            "type": "enterprise-ds" if not AuraApi.DEV_ENV else "professional-ds",
             "tenant_id": self._tenant_id,
             "cloud_provider": "gcp",
         }
 
         response = req.post(
-            "https://api.neo4j.io/v1/instances",
+            f"{AuraApi.BASE_URI}/v1/instances",
             json=data,
             headers=self._get_request_headers(),
         )
@@ -119,7 +126,7 @@ class AuraApi:
 
     def delete_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.delete(
-            f"{AuraApi.BASE_URI_V1}/instances/{instance_id}",
+            f"{AuraApi.BASE_URI}/v1/instances/{instance_id}",
             headers=self._get_request_headers(),
         )
 
@@ -132,7 +139,7 @@ class AuraApi:
 
     def list_instances(self) -> List[InstanceDetails]:
         response = req.get(
-            f"{AuraApi.BASE_URI_V1}/instances",
+            f"{AuraApi.BASE_URI}/v1/instances",
             headers=self._get_request_headers(),
             params={"tenantId": self._tenant_id},
         )
@@ -145,7 +152,7 @@ class AuraApi:
 
     def list_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.get(
-            f"{AuraApi.BASE_URI_V1}/instances/{instance_id}",
+            f"{AuraApi.BASE_URI}/v1/instances/{instance_id}",
             headers=self._get_request_headers(),
         )
 
@@ -174,7 +181,7 @@ class AuraApi:
 
     def _get_tenant_id(self) -> str:
         response = req.get(
-            f"{AuraApi.BASE_URI_V1}/tenants",
+            f"{AuraApi.BASE_URI}/v1/tenants",
             headers=self._get_request_headers(),
         )
         response.raise_for_status()
@@ -204,7 +211,7 @@ class AuraApi:
         self._logger.debug("Updating oauth token")
 
         response = req.post(
-            "https://api.neo4j.io/oauth/token", data=data, auth=(self._credentials[0], self._credentials[1])
+            f"{AuraApi.BASE_URI}/oauth/token", data=data, auth=(self._credentials[0], self._credentials[1])
         )
 
         response.raise_for_status()

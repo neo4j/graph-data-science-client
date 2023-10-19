@@ -35,9 +35,9 @@ class FakeAuraApi(AuraApi):
             name=name,
             tenant_id="tenant_id",
             cloud_provider="cloud_provider",
-            username="gds-user",
-            password="gds-pw",
-            connection_url="gds-url",
+            username="neo4j",
+            password="fake-pw",
+            connection_url="fake-url",
         )
 
         specific_details = InstanceSpecificDetails(
@@ -46,7 +46,7 @@ class FakeAuraApi(AuraApi):
             tenant_id=create_details.tenant_id,
             cloud_provider=create_details.cloud_provider,
             status="creating",
-            connection_url="gds-url",
+            connection_url="fake-url",
             memory="",
         )
 
@@ -107,18 +107,15 @@ def test_create_session(mocker: MockerFixture, gds: GraphDataScience, aura_api: 
     sessions._aura_api = aura_api
 
     def assert_db_credentials(*args: List[Any], **kwargs: dict[str, Any]) -> GraphDataScience:
-        assert kwargs == {"gds_url": "gds-url", "gds_user": "gds-user", "initial_pw": "gds-pw", "new_pw": "my-password"}
+        assert kwargs == {"gds_url": "fake-url", "gds_user": "neo4j", "initial_pw": "fake-pw", "new_pw": "my-password"}
         return gds
 
-    def assert_gds_credentials(*args: List[Any], **kwargs: dict[str, Any]) -> GraphDataScience:
-        assert kwargs == {"gds_url": "gds-url", "gds_user": "gds-user", "gds_pw": "my-password"}
-        return gds
-
-    mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", assert_gds_credentials)
+    mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client",  lambda *args, **kwargs: kwargs)
     mocker.patch("graphdatascience.aura_sessions.AuraSessions._change_initial_pw", assert_db_credentials)
 
-    sessions.create_gds("my-session", "my-password")
+    gds_credentials = sessions.create_gds("my-session", "my-password")
 
+    assert gds_credentials == {"gds_url": "fake-url", "gds_user": "neo4j", "gds_pw": "my-password"}
     assert sessions.list_sessions() == [SessionInfo("my-session")]
 
 
@@ -136,6 +133,20 @@ def test_create_duplicate_session(mocker: MockerFixture, aura_api: AuraApi) -> N
         sessions.create_gds("my-session", "my-password")
 
     assert sessions.list_sessions() == [SessionInfo("my-session")]
+
+
+def test_connect_to_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
+    db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
+    sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
+    sessions._aura_api = aura_api
+
+    mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: kwargs)
+    mocker.patch("graphdatascience.aura_sessions.AuraSessions._change_initial_pw", lambda *args, **kwargs: None)
+
+    sessions.create_gds("my-session", "my-password")
+    gds_args = sessions.connect("my-session", "my-password")
+
+    assert gds_args == {"gds_pw": "my-password", "gds_url": "fake-url", "gds_user": "neo4j"}
 
 
 def test_delete_session() -> None:

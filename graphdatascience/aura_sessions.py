@@ -51,6 +51,27 @@ class AuraSessions:
 
         return self._construct_client(gds_url=url, gds_user=gds_user, gds_pw=session_password)
 
+    def connect(self, session_name: str, session_password: str) -> GraphDataScience:
+        instance_name = AuraSessions._instance_name(session_name)
+        matched_instances = [
+            instance.id for instance in self._aura_api.list_instances() if instance.name == instance_name
+        ]
+
+        if len(matched_instances) != 1:
+            raise ValueError("TODO")
+
+        instance_details = self._aura_api.list_instance(matched_instances[0])
+
+        if instance_details:
+            gds_url = instance_details.connection_url
+        else:
+            raise RuntimeError(
+                f"Unable to get connection information for session `{session_name}`. Does it still exist?"
+            )
+
+        # Hardcoded neo4j user as sessions are always created with this user
+        return self._construct_client(gds_url=gds_url, gds_user="neo4j", gds_pw=session_password)
+
     def delete_gds(self, session_name: str) -> bool:
         """
         Delete a GDS session.
