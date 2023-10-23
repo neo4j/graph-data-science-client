@@ -89,6 +89,19 @@ def test_project_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) 
     }
 
 
+def test_project_remote(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    gds.graph.project.remote("g", "RETURN gds.graph.project.remote(0, 1, null)")
+
+    assert runner.last_query() == "CALL gds.graph.project.remote($graph_name, $query, $token, $host, $remote_database, $config)"
+    # injection of token and host into the params is done by the actual query runner
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "query": "RETURN gds.graph.project.remote(0, 1, null)",
+        "remote_database": "neo4j",
+        "config": {},
+    }
+
+
 def test_graph_list(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     gds.graph.list()
 

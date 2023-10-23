@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from pandas import Series
@@ -6,6 +8,8 @@ from ..error.illegal_attr_checker import IllegalAttrChecker
 from .graph_object import Graph
 from .graph_type_check import from_graph_type_check
 from graphdatascience.graph.graph_create_result import GraphCreateResult
+from graphdatascience.server_version.compatible_with import compatible_with
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 class GraphProjectRunner(IllegalAttrChecker):
@@ -36,8 +40,12 @@ class GraphProjectRunner(IllegalAttrChecker):
         return result.squeeze()  # type: ignore
 
     @property
-    def cypher(self) -> "GraphProjectRunner":
+    def cypher(self) -> GraphProjectRunner:
         return GraphProjectRunner(self._query_runner, self._namespace + ".cypher", self._server_version)
+
+    @property
+    def remote(self) -> GraphProjectRemoteRunner:
+        return GraphProjectRemoteRunner(self._query_runner, self._namespace + ".remote", self._server_version)
 
 
 class GraphProjectBetaRunner(IllegalAttrChecker):
@@ -62,4 +70,13 @@ class GraphProjectBetaRunner(IllegalAttrChecker):
             },
         ).squeeze()
 
+        return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
+
+
+class GraphProjectRemoteRunner(IllegalAttrChecker):
+    @compatible_with("remote", min_inclusive=ServerVersion(2, 6, 0))
+    def __call__(self, graph_name: str, query: str, remote_database: str = "neo4j", **config: Any) -> GraphCreateResult:
+        procedure_query = f"CALL {self._namespace}($graph_name, $query, $token, $host, $remote_database, $config)"
+        params = {"graph_name": graph_name, "query": query, "remote_database": remote_database, "config": config}
+        result = self._query_runner.run_query(procedure_query, params).squeeze()
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
