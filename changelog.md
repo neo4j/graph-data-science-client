@@ -6,7 +6,7 @@
 
 ## New features
 
-* Add gds.graph.project.remote endpoint for projecting graphs from AuraDB instances
+* Add gds.graph.project.remoteDb endpoint for projecting graphs from AuraDB instances
 
 
 ## Bug fixes

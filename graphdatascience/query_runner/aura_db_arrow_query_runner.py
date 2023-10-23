@@ -16,6 +16,8 @@ class AuraDbConnectionInfo(NamedTuple):
 
 
 class AuraDbArrowQueryRunner(QueryRunner):
+    GDS_REMOTE_PROJECTION_PROC_NAME = "gds.graph.project.remoteDb"
+
     def __init__(self, fallback_query_runner: QueryRunner, aura_db_connection_info: AuraDbConnectionInfo):
         self._fallback_query_runner = fallback_query_runner
 
@@ -60,7 +62,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
         if params is None:
             params = {}
 
-        if "gds.graph.project.remote" in query:
+        if AuraDbArrowQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME in query:
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
             params["token"] = token
             params["host"] = aura_db_arrow_endpoint

@@ -44,8 +44,8 @@ class GraphProjectRunner(IllegalAttrChecker):
         return GraphProjectRunner(self._query_runner, self._namespace + ".cypher", self._server_version)
 
     @property
-    def remote(self) -> GraphProjectRemoteRunner:
-        return GraphProjectRemoteRunner(self._query_runner, self._namespace + ".remote", self._server_version)
+    def remoteDb(self) -> GraphProjectRemoteRunner:
+        return GraphProjectRemoteRunner(self._query_runner, self._namespace + ".remoteDb", self._server_version)
 
 
 class GraphProjectBetaRunner(IllegalAttrChecker):
@@ -74,7 +74,7 @@ class GraphProjectBetaRunner(IllegalAttrChecker):
 
 
 class GraphProjectRemoteRunner(IllegalAttrChecker):
-    @compatible_with("remote", min_inclusive=ServerVersion(2, 6, 0))
+    @compatible_with("remoteDb", min_inclusive=ServerVersion(2, 6, 0))
     def __call__(self, graph_name: str, query: str, remote_database: str = "neo4j", **config: Any) -> GraphCreateResult:
         procedure_query = f"CALL {self._namespace}($graph_name, $query, $token, $host, $remote_database, $config)"
         params = {"graph_name": graph_name, "query": query, "remote_database": remote_database, "config": config}
