@@ -68,7 +68,6 @@ class InstanceCreateDetails(InstanceDetails):
 
 
 class AuraApi:
-    # FIXME allow to insert other for dev purpose
     DEV_ENV = os.environ.get("AURA_ENV")
     BASE_URI = (
         "https://api.neo4j.io"

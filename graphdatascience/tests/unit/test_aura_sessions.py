@@ -233,7 +233,7 @@ def test_delete_nonunique_session() -> None:
         RuntimeError,
         match=re.escape(
             "Expected to find exactly one Aura instance with name `gds-session-one`,"
-            "but found `[('id42', 'gds-session-one'), ('id43', 'gds-session-one')]`"
+            " but found `[('id42', 'gds-session-one'), ('id43', 'gds-session-one')]`."
         ),
     ):
         sessions.delete_gds("one")
