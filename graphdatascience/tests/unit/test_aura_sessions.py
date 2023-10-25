@@ -1,7 +1,7 @@
 import dataclasses
 import re
 from dataclasses import asdict
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import pytest
 from pytest_mock import MockerFixture
@@ -106,7 +106,7 @@ def test_create_session(mocker: MockerFixture, gds: GraphDataScience, aura_api: 
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
     sessions._aura_api = aura_api
 
-    def assert_db_credentials(*args: List[Any], **kwargs: dict[str, Any]) -> GraphDataScience:
+    def assert_db_credentials(*args: List[Any], **kwargs: Dict[str, Any]) -> GraphDataScience:
         assert kwargs == {"gds_url": "fake-url", "gds_user": "neo4j", "initial_pw": "fake-pw", "new_pw": "my-password"}
         return gds
 
