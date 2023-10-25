@@ -110,7 +110,7 @@ def test_create_session(mocker: MockerFixture, gds: GraphDataScience, aura_api: 
         assert kwargs == {"gds_url": "fake-url", "gds_user": "neo4j", "initial_pw": "fake-pw", "new_pw": "my-password"}
         return gds
 
-    mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client",  lambda *args, **kwargs: kwargs)
+    mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: kwargs)
     mocker.patch("graphdatascience.aura_sessions.AuraSessions._change_initial_pw", assert_db_credentials)
 
     gds_credentials = sessions.create_gds("my-session", "my-password")
@@ -232,7 +232,8 @@ def test_delete_nonunique_session() -> None:
     with pytest.raises(
         RuntimeError,
         match=re.escape(
-            "Expected to find exactly one instance with name `one`, but found `[('id42', 'one'), ('id43', 'one')]`"
+            "Expected to find exactly one Aura instance with name `gds-session-one`,"
+            "but found `[('id42', 'gds-session-one'), ('id43', 'gds-session-one')]`"
         ),
     ):
         sessions.delete_gds("one")

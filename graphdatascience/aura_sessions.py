@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional, Tuple, Type
+from typing import List, Optional, Tuple
 
 from neo4j import GraphDatabase
 
 from graphdatascience import GraphDataScience
-from graphdatascience.aura_api import AuraApi
+from graphdatascience.aura_api import AuraApi, InstanceDetails
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbConnectionInfo,
 )
@@ -86,12 +86,9 @@ class AuraSessions:
         candidate_instances = [i for i in self._aura_api.list_instances() if i.name == instance_name]
 
         if len(candidate_instances) > 1:
-            candidate_names = [
-                (i.id, i.name.removeprefix(AuraSessions.GDS_SESSION_NAME_PREFIX)) for i in candidate_instances
-            ]
-            session_name = instance_name.removeprefix(AuraSessions.GDS_SESSION_NAME_PREFIX)
+            candidates = [(i.id, i.name) for i in candidate_instances]
             raise RuntimeError(
-                f"Expected to find exactly one instance with name `{session_name}`, but found `{candidate_names}`"
+                f"Expected to find exactly one Aura instance with name `{instance_name}`, but found `{candidates}`."
             )
 
         if len(candidate_instances) == 1:
@@ -104,7 +101,7 @@ class AuraSessions:
         all_instances = self._aura_api.list_instances()
 
         return [
-            SessionInfo(instance.name.removeprefix(AuraSessions.GDS_SESSION_NAME_PREFIX))
+            SessionInfo(AuraSessions._session_name(instance))
             for instance in all_instances
             if instance.name.startswith(AuraSessions.GDS_SESSION_NAME_PREFIX)
         ]
@@ -123,5 +120,10 @@ class AuraSessions:
         )
 
     @classmethod
-    def _instance_name(cls: Type[AuraSessions], session_name: str) -> str:
+    def _instance_name(cls, session_name: str) -> str:
         return f"{AuraSessions.GDS_SESSION_NAME_PREFIX}{session_name}"
+
+    @classmethod
+    def _session_name(cls, instance: InstanceDetails) -> str:
+        # str.removeprefix is only available in Python 3.9+
+        return instance.name[len(AuraSessions.GDS_SESSION_NAME_PREFIX) :]  # noqa: E203 (black vs flake8 conflict)
