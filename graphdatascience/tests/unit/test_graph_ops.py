@@ -90,9 +90,12 @@ def test_project_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) 
 
 
 def test_project_remote(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    gds.graph.project.remote("g", "RETURN gds.graph.project.remote(0, 1, null)")
+    gds.graph.project.remoteDb("g", "RETURN gds.graph.project.remote(0, 1, null)")
 
-    assert runner.last_query() == "CALL gds.graph.project.remote($graph_name, $query, $token, $host, $remote_database, $config)"
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.project.remoteDb($graph_name, $query, $token, $host, $remote_database, $config)"
+    )
     # injection of token and host into the params is done by the actual query runner
     assert runner.last_params() == {
         "graph_name": "g",
