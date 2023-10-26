@@ -2,8 +2,8 @@ from pathlib import Path
 from typing import Any
 
 import nbformat
-from nbconvert.preprocessors.execute import ExecutePreprocessor
 from nbclient.exceptions import CellExecutionError
+from nbconvert.preprocessors.execute import ExecutePreprocessor
 
 VERSION_CELL_TAG = "verify-version"
 
