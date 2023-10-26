@@ -18,6 +18,7 @@ do
     --stdout \
     --ClearOutputPreprocessor.enabled=True \
     --ClearMetadataPreprocessor.enabled=True \
+    --ClearMetadataPreprocessor.preserve_cell_metadata_mask='tags' \
     --log-level CRITICAL \
     $f)
 
