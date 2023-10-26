@@ -4,6 +4,8 @@ from typing import Any
 import nbformat
 from nbconvert.preprocessors import CellExecutionError, ExecutePreprocessor
 
+VERSION_CELL_TAG = "verify-version"
+
 
 class GdsExecutePreprocessor(ExecutePreprocessor):
     def __init__(self, **kw: Any):
@@ -36,15 +38,15 @@ for notebook_filename in notebook_files:
 
         # Check if the GDS version matches
         # ep.execute_cell
-        version_verify_cell_index = [
-            idx for idx, cell in enumerate(nb["cells"]) if "version-verify" in cell["metadata"].get("tags", [])
+        verify_version_cell_index = [
+            idx for idx, cell in enumerate(nb["cells"]) if VERSION_CELL_TAG in cell["metadata"].get("tags", [])
         ]
-        if not version_verify_cell_index or len(version_verify_cell_index) > 1:
+        if not verify_version_cell_index or len(verify_version_cell_index) > 1:
             raise ValueError(
-                f"Notebook {notebook_filename} does not have a cell tagged with 'version-verify'."
+                f"Notebook {notebook_filename} does not have a cell tagged with '{VERSION_CELL_TAG}'."
                 "Required to run the notebook only against compatible versions."
             )
-        ep.init_notebook(version_verify_cell_index[0])
+        ep.init_notebook(verify_version_cell_index[0])
         # run the notebook
         ep.preprocess(nb)
     print(f"Finished executing notebook {notebook_filename}")
