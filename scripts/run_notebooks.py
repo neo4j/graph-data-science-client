@@ -30,7 +30,7 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
 
 examples_path = Path("examples")
 notebook_files = [f for f in examples_path.iterdir() if f.is_file()]
-ep = GdsExecutePreprocessor(timeout=600, kernel_name="python")
+ep = GdsExecutePreprocessor(kernel_name="python3")
 
 for notebook_filename in notebook_files:
     print(f"Executing notebook {notebook_filename}")
