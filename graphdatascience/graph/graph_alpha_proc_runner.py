@@ -8,7 +8,6 @@ from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
-from .graph_alpha_project_runner import GraphAlphaProjectRunner
 from .graph_entity_ops_runner import GraphLabelRunner, GraphPropertyRunner
 from .graph_object import Graph
 from .graph_sample_runner import GraphAlphaSampleRunner
@@ -29,11 +28,6 @@ class GraphAlphaProcRunner(UncallableNamespace, IllegalAttrChecker):
     def nodeLabel(self) -> GraphLabelRunner:
         self._namespace += ".nodeLabel"
         return GraphLabelRunner(self._query_runner, self._namespace, self._server_version)
-
-    @property
-    def project(self) -> GraphAlphaProjectRunner:
-        self._namespace += ".project"
-        return GraphAlphaProjectRunner(self._query_runner, self._namespace, self._server_version)
 
     @client_only_endpoint("gds.alpha.graph")
     @client_deprecated(old_endpoint="gds.alpha.graph.construct", new_endpoint="gds.graph.construct")

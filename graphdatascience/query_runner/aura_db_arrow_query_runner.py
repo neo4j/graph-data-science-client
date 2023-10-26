@@ -16,6 +16,8 @@ class AuraDbConnectionInfo(NamedTuple):
 
 
 class AuraDbArrowQueryRunner(QueryRunner):
+    GDS_REMOTE_PROJECTION_PROC_NAME = "gds.graph.project.remoteDb"
+
     def __init__(self, fallback_query_runner: QueryRunner, aura_db_connection_info: AuraDbConnectionInfo):
         self._fallback_query_runner = fallback_query_runner
 
@@ -26,7 +28,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
         self._driver = GraphDatabase.driver(aura_db_endpoint, auth=auth, **config)
         arrow_info: "Series[Any]" = (
             Neo4jQueryRunner(self._driver, auto_close=True)
-            .run_query("CALL gds.debug.arrow.plugin()", custom_error=False)
+            .run_query("CALL internal.arrow.status()", custom_error=False)
             .squeeze()
         )
 
@@ -60,7 +62,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
         if params is None:
             params = {}
 
-        if "gds.alpha.graph.project.remote" in query:
+        if AuraDbArrowQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME in query:
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
             params["token"] = token
             params["host"] = aura_db_arrow_endpoint
