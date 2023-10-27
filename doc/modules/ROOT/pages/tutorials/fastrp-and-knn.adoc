@@ -69,6 +69,13 @@ if os.environ.get("NEO4J_USER") and os.environ.get("NEO4J_PASSWORD"):
 gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH)
 ----
 
+[source, python, role=no-test]
+----
+from graphdatascience.server_version.server_version import ServerVersion
+
+assert gds.server_version() >= ServerVersion(1, 8, 0)
+----
+
 == Example graph creation
 
 We now create a graph of products and customers in the database. The

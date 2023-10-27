@@ -64,6 +64,13 @@ the `neo4j+s` protocol. The client should also include the
 # gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB, aura_ds=True)
 ----
 
+[source, python, role=no-test]
+----
+from graphdatascience.server_version.server_version import ServerVersion
+
+assert gds.server_version() >= ServerVersion(2, 1, 0)
+----
+
 We also import `pandas` to create a Pandas `DataFrame` from the original
 data source.
 

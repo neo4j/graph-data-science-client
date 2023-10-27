@@ -61,6 +61,13 @@ if os.environ.get("NEO4J_USER") and os.environ.get("NEO4J_PASSWORD"):
 gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 ----
 
+[source, python, role=no-test]
+----
+from graphdatascience.server_version.server_version import ServerVersion
+
+assert gds.server_version() >= ServerVersion(2, 3, 0)
+----
+
 == Loading the IMDB dataset
 
 Next we use the `graphdatascience`
