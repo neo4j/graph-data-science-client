@@ -11,7 +11,7 @@
 
 ## Bug fixes
 
-* 
+* Fixed a bug which caused an exception to be raised when running `gds.license.state` targeting an AuraDS instance.
 
 
 ## Improvements

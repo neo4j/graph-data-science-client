@@ -1,3 +1,4 @@
+import re
 from typing import Any, Optional
 
 from pandas import DataFrame, Series
@@ -29,7 +30,14 @@ class LicenseProcRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".state"
         query = f"CALL {self._namespace}()"
 
-        return self._query_runner.run_query(query).squeeze()  # type: ignore
+        try:
+            return self._query_runner.run_query(query).squeeze()  # type: ignore
+        except Exception as e:
+            # AuraDS does not have `gds.license.state`, but is always GDS EE.
+            if re.match(r"There is no procedure with the name `gds.*` registered for this database instance", str(e)):
+                return Series({"edition": "Licensed", "details": "AuraDS"})
+            else:
+                raise e
 
 
 class DirectSystemEndpoints(CallerBase):
@@ -53,10 +61,7 @@ class DirectSystemEndpoints(CallerBase):
             isLicensed: bool = self._query_runner.run_query(query, custom_error=False).squeeze()
         except Exception as e:
             # AuraDS does not have `gds.debug.sysInfo`, but is always GDS EE.
-            if (
-                "There is no procedure with the name `gds.debug.sysInfo` "
-                "registered for this database instance." in str(e)
-            ):
+            if re.match(r"There is no procedure with the name `gds.*` registered for this database instance", str(e)):
                 isLicensed = True
             else:
                 raise e
