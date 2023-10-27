@@ -1,29 +1,16 @@
 #!/bin/bash
 
-DOC_DIR=doc/modules/ROOT/pages/tutorials
-NB_DIR=examples
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o xtrace
 
-for notebook in ${NB_DIR}/*.ipynb
-do
-  docfile=$(basename ${notebook} | cut -d. -f1)
-  echo "${notebook} -> ${DOC_DIR}/${docfile}.adoc"
+${PWD}/scripts/nb2doc/convert.sh
 
-  NB=$(cat $notebook)
-  FORMATTED_NB=$(jupyter nbconvert \
-    --clear-output \
-    --stdout \
-    --to asciidoc \
-    --template=scripts/nb2doc/asciidoc-template \
-    --ASCIIDocExporter.file_extension=.adoc \
-    --no-prompt \
-    --ClearMetadataPreprocessor.enabled=True \
-    --log-level CRITICAL \
-    $notebook)
-
-  if [[ "$FORMATTED_NB" != "$NB" ]];
+if ! git diff --quiet doc/modules/ROOT/pages/tutorials/;
   then
-    echo "Run convert.sh to update docs"
+    echo "Please run /scripts/nb2doc/convert.sh to update docs"
     exit 1
-  fi
-done
+fi
+
 
