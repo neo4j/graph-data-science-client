@@ -86,6 +86,13 @@ print(gds.version())
 
 [source, python, role=no-test]
 ----
+from graphdatascience.server_version.server_version import ServerVersion
+
+assert gds.server_version() >= ServerVersion(2, 1, 0)
+----
+
+[source, python, role=no-test]
+----
 # Importing the dataset
 
 # The dataset is sourced from this GitHub repository
