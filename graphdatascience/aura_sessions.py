@@ -117,18 +117,18 @@ class AuraSessions:
             endpoint=gds_url, auth=(gds_user, gds_pw), aura_ds=True, aura_db_connection_info=self._db_credentials
         )
 
-    @staticmethod
-    def _fail_ambiguous_session(session_name: str, instances: List[InstanceDetails]) -> None:
-        candidates = [(i.id, AuraSessions._session_name(i)) for i in instances]
+    @classmethod
+    def _fail_ambiguous_session(cls, session_name: str, instances: List[InstanceDetails]) -> None:
+        candidates = [(i.id, cls._session_name(i)) for i in instances]
         raise RuntimeError(
             f"Expected to find exactly one GDS session with name `{session_name}`, but found `{candidates}`."
         )
 
     @classmethod
     def _instance_name(cls, session_name: str) -> str:
-        return f"{AuraSessions.GDS_SESSION_NAME_PREFIX}{session_name}"
+        return f"{cls.GDS_SESSION_NAME_PREFIX}{session_name}"
 
     @classmethod
     def _session_name(cls, instance: InstanceDetails) -> str:
         # str.removeprefix is only available in Python 3.9+
-        return instance.name[len(AuraSessions.GDS_SESSION_NAME_PREFIX) :]  # noqa: E203 (black vs flake8 conflict)
+        return instance.name[len(cls.GDS_SESSION_NAME_PREFIX) :]  # noqa: E203 (black vs flake8 conflict)
