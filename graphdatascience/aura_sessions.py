@@ -55,13 +55,13 @@ class AuraSessions:
     def connect(self, session_name: str, session_password: str) -> GraphDataScience:
         instance_name = AuraSessions._instance_name(session_name)
         matched_instances = [
-            instance.id for instance in self._aura_api.list_instances() if instance.name == instance_name
+            instance for instance in self._aura_api.list_instances() if instance.name == instance_name
         ]
 
         if len(matched_instances) != 1:
-            raise ValueError("TODO")
+            self._fail_ambiguous_session(session_name, matched_instances)
 
-        instance_details = self._aura_api.list_instance(matched_instances[0])
+        instance_details = self._aura_api.list_instance(matched_instances[0].id)
 
         if instance_details:
             gds_url = instance_details.connection_url
@@ -118,6 +118,13 @@ class AuraSessions:
     def _construct_client(self, gds_url: str, gds_user: str, gds_pw: str) -> GraphDataScience:
         return GraphDataScience(
             endpoint=gds_url, auth=(gds_user, gds_pw), aura_ds=True, aura_db_connection_info=self._db_credentials
+        )
+
+    @staticmethod
+    def _fail_ambiguous_session(session_name: str, instances: List[InstanceDetails]) -> None:
+        candidates = [(i.id, AuraSessions._session_name(i)) for i in instances]
+        raise RuntimeError(
+            f"Expected to find exactly one GDS session with name `{session_name}`, but found `{candidates}`."
         )
 
     @classmethod
