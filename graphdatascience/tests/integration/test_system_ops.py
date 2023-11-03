@@ -41,11 +41,13 @@ def test_debug_arrow(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.enterprise
+@pytest.mark.skip_on_aura
 def test_is_licensed(gds: GraphDataScience) -> None:
     assert gds.is_licensed()
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
+@pytest.mark.skip_on_aura
 def test_license_state(gds: GraphDataScience) -> None:
     assert gds.license.state()["isLicensed"] in [True, False]
 
