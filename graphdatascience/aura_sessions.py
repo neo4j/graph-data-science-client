@@ -87,10 +87,7 @@ class AuraSessions:
         candidate_instances = [i for i in self._aura_api.list_instances() if i.name == instance_name]
 
         if len(candidate_instances) > 1:
-            candidates = [(i.id, i.name) for i in candidate_instances]
-            raise RuntimeError(
-                f"Expected to find exactly one Aura instance with name `{instance_name}`, but found `{candidates}`."
-            )
+            self._fail_ambiguous_session(session_name, candidate_instances)
 
         if len(candidate_instances) == 1:
             candidate = candidate_instances[0]
