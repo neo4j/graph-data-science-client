@@ -31,7 +31,6 @@ class AuraSessions:
             tenant_id=tenant_id, client_id=aura_api_client_auth[0], client_secret=aura_api_client_auth[1]
         )
 
-    # TODO wrapper around it for closable?
     def create_gds(self, session_name: str, session_password: str) -> GraphDataScience:
         if len(session_password) < 8:
             raise ValueError("Password must be at least 8 characters long.")
