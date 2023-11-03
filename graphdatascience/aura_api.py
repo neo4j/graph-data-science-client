@@ -112,7 +112,7 @@ class AuraApi:
         response = req.post(
             f"{AuraApi.BASE_URI}/v1/instances",
             json=data,
-            headers=self._get_request_headers(),
+            headers=self._build_header(),
         )
 
         try:
@@ -126,7 +126,7 @@ class AuraApi:
     def delete_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.delete(
             f"{AuraApi.BASE_URI}/v1/instances/{instance_id}",
-            headers=self._get_request_headers(),
+            headers=self._build_header(),
         )
 
         if response.status_code == 404:
@@ -139,7 +139,7 @@ class AuraApi:
     def list_instances(self) -> List[InstanceDetails]:
         response = req.get(
             f"{AuraApi.BASE_URI}/v1/instances",
-            headers=self._get_request_headers(),
+            headers=self._build_header(),
             params={"tenantId": self._tenant_id},
         )
 
@@ -152,7 +152,7 @@ class AuraApi:
     def list_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.get(
             f"{AuraApi.BASE_URI}/v1/instances/{instance_id}",
-            headers=self._get_request_headers(),
+            headers=self._build_header(),
         )
 
         if response.status_code == 404:
@@ -181,7 +181,7 @@ class AuraApi:
     def _get_tenant_id(self) -> str:
         response = req.get(
             f"{AuraApi.BASE_URI}/v1/tenants",
-            headers=self._get_request_headers(),
+            headers=self._build_header(),
         )
         response.raise_for_status()
 
@@ -194,7 +194,7 @@ class AuraApi:
 
         return raw_data[0]["id"]  # type: ignore
 
-    def _get_request_headers(self) -> dict[str, str]:
+    def _build_header(self) -> dict[str, str]:
         return {"Authorization": f"Bearer {self._auth_token()}", "User-agent": f"neo4j-graphdatascience-v{__version__}"}
 
     def _auth_token(self) -> str:
