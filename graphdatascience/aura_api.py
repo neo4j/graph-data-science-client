@@ -74,7 +74,6 @@ class AuraApi:
         if not os.environ.get("AURA_ENV")
         else f"https://api-{os.environ.get('AURA_ENV')}.neo4j-dev.io"
     )
-    MAX_WAIT_TIME = 300
 
     class AuraAuthToken:
         access_token: str
@@ -164,19 +163,28 @@ class AuraApi:
 
         return InstanceSpecificDetails.fromJson(raw_data)
 
-    def wait_for_instance_running(self, instance_id: str, sleep_time: float = 0.2) -> bool:
-        while sleep_time < AuraApi.MAX_WAIT_TIME:
+    def wait_for_instance_running(
+        self, instance_id: str, sleep_time: float = 0.2, max_sleep_time: float = 300
+    ) -> Optional[str]:
+        waited_time = 0.0
+        while waited_time <= max_sleep_time:
             instance = self.list_instance(instance_id)
-            if instance is None or instance.status in ["deleting", "destroying"]:
-                return False
-            if instance.status == "running":
-                return True
-            self._logger.debug(
-                f"Instance {instance_id} is not running yet, but {instance.status}. Retry in {sleep_time} seconds."
-            )
+            if instance is None:
+                return "Instance is not found -- please retry"
+            elif instance.status in ["deleting", "destroying"]:
+                return "Instance is being deleted"
+            elif instance.status == "running":
+                return None
+            else:
+                self._logger.debug(
+                    f"Instance `{instance_id}` is not yet running. "
+                    f"Current status: {instance.status}. "
+                    f"Retrying in {sleep_time} seconds..."
+                )
+            waited_time += sleep_time
             time.sleep(sleep_time)
 
-        return False
+        return f"Instance is not running after waiting for {waited_time} seconds"
 
     def _get_tenant_id(self) -> str:
         response = req.get(

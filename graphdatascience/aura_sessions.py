@@ -40,7 +40,9 @@ class AuraSessions:
             raise RuntimeError(f"Session with name `{session_name}` already exists.")
 
         create_details = self._aura_api.create_instance(AuraSessions._instance_name(session_name))
-        self._aura_api.wait_for_instance_running(create_details.id)
+        wait_result = self._aura_api.wait_for_instance_running(create_details.id)
+        if wait_result is not None:
+            raise RuntimeError(f"Failed to create session `{session_name}`: {wait_result}")
 
         gds_user = create_details.username
         gds_url = create_details.connection_url

@@ -21,13 +21,16 @@ from graphdatascience.query_runner.aura_db_arrow_query_runner import (
 
 
 class FakeAuraApi(AuraApi):
-    def __init__(self, existing_instances: Optional[List[InstanceSpecificDetails]] = None) -> None:
+    def __init__(
+        self, existing_instances: Optional[List[InstanceSpecificDetails]] = None, status_after_creating: str = "running"
+    ) -> None:
         super().__init__("", "", "tenant_id")
         if existing_instances is None:
             existing_instances = []
         self._instances = {details.id: details for details in existing_instances}
         self.id_counter = 0
         self.time = 0
+        self._status_after_creating = status_after_creating
 
     def create_instance(self, name: str) -> InstanceCreateDetails:
         create_details = InstanceCreateDetails(
@@ -66,13 +69,15 @@ class FakeAuraApi(AuraApi):
 
         if matched_instances:
             old_instance = matched_instances
-            self._instances[instance_id] = dataclasses.replace(old_instance, status="running")
+            self._instances[instance_id] = dataclasses.replace(old_instance, status=self._status_after_creating)
             return old_instance
         else:
             return None
 
-    def wait_for_instance_running(self, instance_id: str, sleep_time: float = 0.2) -> bool:
-        return super().wait_for_instance_running(instance_id, 0.0001)
+    def wait_for_instance_running(
+        self, instance_id: str, sleep_time: float = 0.2, max_sleep_time: float = 300
+    ) -> Optional[str]:
+        return super().wait_for_instance_running(instance_id, sleep_time=0.0001, max_sleep_time=0.001)
 
 
 @pytest.fixture
@@ -239,3 +244,19 @@ def test_delete_nonunique_session() -> None:
         sessions.delete_gds("one")
 
     assert sessions.list_sessions() == [SessionInfo("one"), SessionInfo("one")]
+
+
+def test_create_immediate_delete() -> None:
+    sessions = AuraSessions(AuraDbConnectionInfo("", ("", "")), aura_api_client_auth=("", ""), tenant_id="foo")
+    sessions._aura_api = FakeAuraApi(status_after_creating="deleting")
+
+    with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is being deleted"):
+        sessions.create_gds("one", "12345678")
+
+
+def test_create_waiting_forever() -> None:
+    sessions = AuraSessions(AuraDbConnectionInfo("", ("", "")), aura_api_client_auth=("", ""), tenant_id="foo")
+    sessions._aura_api = FakeAuraApi(status_after_creating="updating")
+
+    with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is not running after waiting"):
+        sessions.create_gds("one", "12345678")

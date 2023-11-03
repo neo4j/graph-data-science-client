@@ -1,4 +1,7 @@
+import logging
+
 import pytest
+from _pytest.logging import LogCaptureFixture
 from requests import HTTPError
 from requests_mock import Mocker
 
@@ -184,3 +187,93 @@ def mock_auth_token(requests_mock: Mocker) -> None:
         "https://api.neo4j.io/oauth/token",
         json={"access_token": "very_short_token", "expires_in": 500, "token_type": "Bearer"},
     )
+
+
+def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> None:
+    mock_auth_token(requests_mock)
+    requests_mock.get(
+        "https://api.neo4j.io/v1/instances/id0",
+        json={
+            "data": {
+                "status": "creating",
+                "cloud_provider": None,
+                "connection_url": None,
+                "id": None,
+                "name": None,
+                "region": None,
+                "tenant_id": None,
+                "type": None,
+            }
+        },
+    )
+
+    api = AuraApi("", "", tenant_id="some-tenant")
+
+    with caplog.at_level(logging.DEBUG):
+        assert "Instance is not running after waiting for 0.8" in api.wait_for_instance_running(  # type: ignore
+            "id0", max_sleep_time=0.7
+        )
+
+    assert "Instance `id0` is not yet running. Current status: creating. Retrying in 0.2 seconds..." in caplog.text
+
+
+def test_wait_for_instance_running(requests_mock: Mocker) -> None:
+    mock_auth_token(requests_mock)
+    requests_mock.get(
+        "https://api.neo4j.io/v1/instances/id0",
+        json={
+            "data": {
+                "status": "running",
+                "cloud_provider": None,
+                "connection_url": None,
+                "id": None,
+                "name": None,
+                "region": None,
+                "tenant_id": None,
+                "type": None,
+            }
+        },
+    )
+
+    api = AuraApi("", "", tenant_id="some-tenant")
+
+    assert api.wait_for_instance_running("id0") is None
+
+
+def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
+    mock_auth_token(requests_mock)
+    requests_mock.get(
+        "https://api.neo4j.io/v1/instances/id0",
+        json={
+            "data": {
+                "status": "deleting",
+                "cloud_provider": None,
+                "connection_url": None,
+                "id": None,
+                "name": None,
+                "region": None,
+                "tenant_id": None,
+                "type": None,
+            }
+        },
+    )
+    requests_mock.get(
+        "https://api.neo4j.io/v1/instances/id1",
+        json={
+            "data": {
+                "status": "destroying",
+                "cloud_provider": None,
+                "connection_url": None,
+                "id": None,
+                "name": None,
+                "region": None,
+                "tenant_id": None,
+                "type": None,
+            }
+        },
+    )
+
+    api = AuraApi("", "", tenant_id="some-tenant")
+
+    assert "Instance is being deleted" in api.wait_for_instance_running("id0")  # type: ignore
+    assert "Instance is being deleted" in api.wait_for_instance_running("id1")  # type: ignore
