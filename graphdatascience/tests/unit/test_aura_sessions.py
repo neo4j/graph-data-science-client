@@ -158,34 +158,40 @@ def test_connect_to_missing_session(aura_api: AuraApi) -> None:
     sessions = AuraSessions(AuraDbConnectionInfo("", ("", "")), aura_api_client_auth=("", ""), tenant_id="foo")
     sessions._aura_api = aura_api
 
-    with pytest.raises(RuntimeError, match=re.escape("Expected to find exactly one GDS session with name `my-session`")):
+    with pytest.raises(
+        RuntimeError, match=re.escape("Expected to find exactly one GDS session with name `my-session`")
+    ):
         sessions.connect("my-session", "my-password")
 
 
 def test_connect_to_duplicate_session() -> None:
     sessions = AuraSessions(AuraDbConnectionInfo("", ("", "")), aura_api_client_auth=("", ""), tenant_id="foo")
-    sessions._aura_api = FakeAuraApi(existing_instances=[
-        InstanceSpecificDetails(
-            id="id42",
-            name=AuraSessions._instance_name("one"),
-            tenant_id="",
-            cloud_provider="",
-            status="RUNNING",
-            connection_url="",
-            memory="",
-        ),
-        InstanceSpecificDetails(
-            id="id43",
-            name=AuraSessions._instance_name("one"),
-            tenant_id="",
-            cloud_provider="",
-            status="RUNNING",
-            connection_url="",
-            memory="",
-        ),
-    ])
+    sessions._aura_api = FakeAuraApi(
+        existing_instances=[
+            InstanceSpecificDetails(
+                id="id42",
+                name=AuraSessions._instance_name("one"),
+                tenant_id="",
+                cloud_provider="",
+                status="RUNNING",
+                connection_url="",
+                memory="",
+            ),
+            InstanceSpecificDetails(
+                id="id43",
+                name=AuraSessions._instance_name("one"),
+                tenant_id="",
+                cloud_provider="",
+                status="RUNNING",
+                connection_url="",
+                memory="",
+            ),
+        ]
+    )
 
-    with pytest.raises(RuntimeError, match=re.escape("Expected to find exactly one GDS session with name `my-session`")):
+    with pytest.raises(
+        RuntimeError, match=re.escape("Expected to find exactly one GDS session with name `my-session`")
+    ):
         sessions.connect("my-session", "my-password")
 
 

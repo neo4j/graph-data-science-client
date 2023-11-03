@@ -54,9 +54,7 @@ class AuraSessions:
 
     def connect(self, session_name: str, session_password: str) -> GraphDataScience:
         instance_name = AuraSessions._instance_name(session_name)
-        matched_instances = [
-            instance for instance in self._aura_api.list_instances() if instance.name == instance_name
-        ]
+        matched_instances = [instance for instance in self._aura_api.list_instances() if instance.name == instance_name]
 
         if len(matched_instances) != 1:
             self._fail_ambiguous_session(session_name, matched_instances)
