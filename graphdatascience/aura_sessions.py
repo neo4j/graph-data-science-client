@@ -43,13 +43,13 @@ class AuraSessions:
         self._aura_api.wait_for_instance_running(create_details.id)
 
         gds_user = create_details.username
-        url = create_details.connection_url
+        gds_url = create_details.connection_url
 
         self._change_initial_pw(
-            gds_url=url, gds_user=gds_user, initial_pw=create_details.password, new_pw=session_password
+            gds_url=gds_url, gds_user=gds_user, initial_pw=create_details.password, new_pw=session_password
         )
 
-        return self._construct_client(gds_url=url, gds_user=gds_user, gds_pw=session_password)
+        return self._construct_client(gds_url=gds_url, gds_user=gds_user, gds_pw=session_password)
 
     def connect(self, session_name: str, session_password: str) -> GraphDataScience:
         instance_name = AuraSessions._instance_name(session_name)
