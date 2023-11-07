@@ -145,7 +145,7 @@ assert G.node_count() == result["nodeCount"]
 [[construct]]
 == Constructing a graph from DataFrames
 
-In addition to projecting a graph from the Neo4j database, it is also possible to create in-memory graphs directly from pandas `DataFrame` objects.
+In addition to projecting a graph from the Neo4j database, it is also possible to create graphs directly from pandas `DataFrame` objects.
 
 === Syntax
 .Graph construct signature
@@ -192,7 +192,7 @@ G = gds.graph.construct(
 assert "REL" in G.relationship_types()
 ----
 
-The above example creates an in-memory graph from two `DataFrame` objects, one for nodes and one for relationships.
+The above example creates a graph from two `DataFrame` objects, one for nodes and one for relationships.
 The projected graph is equivalent to a graph that the following Cypher query would create in a Neo4j database:
 
 [source,cypher]
