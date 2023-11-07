@@ -6,9 +6,7 @@ set -o pipefail
 set -o xtrace
 
 # TODO: remove
-echo $(ls -a)
-
-exit
+echo $(ls -lad .git)
 
 ${PWD}/scripts/nb2doc/convert.sh
 
