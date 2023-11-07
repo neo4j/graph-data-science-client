@@ -7,10 +7,11 @@ set -o xtrace
 
 # TODO: remove
 echo $(ls -lad .git)
+echo $(which git)
 
 ${PWD}/scripts/nb2doc/convert.sh
 
-if ! git diff --quiet doc/modules/ROOT/pages/tutorials/;
+if ! $(which git) diff --quiet doc/modules/ROOT/pages/tutorials/;
   then
     echo "Please run /scripts/nb2doc/convert.sh to update docs"
     exit 1
