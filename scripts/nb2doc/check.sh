@@ -5,7 +5,10 @@ set -o nounset
 set -o pipefail
 set -o xtrace
 
-./convert.sh
+# TODO: remove
+ls -lah
+
+${PWD}/scripts/nb2doc/convert.sh
 
 if ! git diff --quiet doc/modules/ROOT/pages/tutorials/;
   then
