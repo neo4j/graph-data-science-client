@@ -277,3 +277,8 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
 
     assert "Instance is being deleted" in api.wait_for_instance_running("id0")  # type: ignore
     assert "Instance is being deleted" in api.wait_for_instance_running("id1")  # type: ignore
+
+
+def test_extract_id() -> None:
+    assert AuraApi.extract_id("neo4j+ssc://000fc8c8-envgdssync.databases.neo4j-dev.io") == "000fc8c8"
+    assert AuraApi.extract_id("neo4j+ssc://02f1bff5.databases.neo4j.io") == "02f1bff5"

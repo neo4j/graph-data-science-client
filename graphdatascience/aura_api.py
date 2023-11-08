@@ -5,6 +5,7 @@ import os
 import time
 from dataclasses import dataclass
 from typing import Any, List, Optional
+from urllib.parse import urlparse
 
 import requests as req
 from requests import HTTPError
@@ -91,7 +92,16 @@ class AuraApi:
         self._logger = logging.getLogger()
         self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
 
-    def create_instance(self, name: str) -> InstanceCreateDetails:
+    @classmethod
+    def extract_id(cls, uri: str) -> str:
+        host = urlparse(uri).hostname
+
+        if not host:
+            raise RuntimeError(f"Could not parse the uri {uri}.")
+
+        return host.split(".")[0].split("-")[0]
+
+    def create_instance(self, name: str, cloud_provider: str) -> InstanceCreateDetails:
         # TODO should give more control here
         data = {
             "name": name,
@@ -101,7 +111,7 @@ class AuraApi:
             # TODO should be figured out from the tenant details in the future
             "type": "enterprise-ds" if not AuraApi.DEV_ENV else "professional-ds",
             "tenant_id": self._tenant_id,
-            "cloud_provider": "gcp",
+            "cloud_provider": cloud_provider,
         }
 
         response = req.post(
