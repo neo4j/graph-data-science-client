@@ -36,6 +36,10 @@ ep = GdsExecutePreprocessor(kernel_name="python3")
 for notebook_filename in notebook_files:
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"{now}: Executing notebook {notebook_filename}", flush=True)
+    if "aura-only-features" in notebook_filename.name:
+        print("Skipping test of Aura only notebook")
+        continue
+
     with open(notebook_filename) as f:
         nb = nbformat.read(f, as_version=4)  # type: ignore
 
