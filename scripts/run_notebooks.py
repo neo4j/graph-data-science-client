@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -33,7 +34,8 @@ notebook_files = [f for f in examples_path.iterdir() if f.is_file()]
 ep = GdsExecutePreprocessor(kernel_name="python3")
 
 for notebook_filename in notebook_files:
-    print(f"Executing notebook {notebook_filename}")
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"{now}: Executing notebook {notebook_filename}", flush=True)
     with open(notebook_filename) as f:
         nb = nbformat.read(f, as_version=4)  # type: ignore
 
