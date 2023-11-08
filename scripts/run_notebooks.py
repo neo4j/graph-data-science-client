@@ -1,11 +1,10 @@
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import nbformat
 from nbclient.exceptions import CellExecutionError
 from nbconvert.preprocessors.execute import ExecutePreprocessor
-
-from datetime import datetime
 
 VERSION_CELL_TAG = "verify-version"
 
@@ -35,7 +34,7 @@ notebook_files = [f for f in examples_path.iterdir() if f.is_file()]
 ep = GdsExecutePreprocessor(kernel_name="python3")
 
 for notebook_filename in notebook_files:
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"{now} Executing notebook {notebook_filename}")
     with open(notebook_filename) as f:
         nb = nbformat.read(f, as_version=4)  # type: ignore
