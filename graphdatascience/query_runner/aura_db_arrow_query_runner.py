@@ -25,32 +25,34 @@ class AuraDbArrowQueryRunner(QueryRunner):
         self._auth = auth
 
         config: Dict[str, Any] = {"max_connection_lifetime": 60}
-        self._driver = GraphDatabase.driver(aura_db_endpoint, auth=auth, **config)
-        arrow_info: "Series[Any]" = (
-            Neo4jQueryRunner(self._driver, auto_close=True)
-            .run_query("CALL internal.arrow.status()", custom_error=False)
-            .squeeze()
-        )
+        with GraphDatabase.driver(aura_db_endpoint, auth=auth, **config) as driver:
+            arrow_info: "Series[Any]" = (
+                Neo4jQueryRunner(driver, auto_close=True)
+                .run_query("CALL internal.arrow.status()", custom_error=False)
+                .squeeze()
+            )
 
-        if not arrow_info.get("running"):
-            raise RuntimeError(f"The Arrow Server is not running at `{aura_db_endpoint}`")
-        listen_address: Optional[str] = arrow_info.get("advertisedListenAddress")  # type: ignore
-        if not listen_address:
-            raise ConnectionError("Did not retrieve connection info from database")
+            if not arrow_info.get("running"):
+                raise RuntimeError(f"The Arrow Server is not running at `{aura_db_endpoint}`")
+            listen_address: Optional[str] = arrow_info.get("advertisedListenAddress")  # type: ignore
+            if not listen_address:
+                raise ConnectionError("Did not retrieve connection info from database")
 
-        host, port_string = listen_address.split(":")
+            host, port_string = listen_address.split(":")
 
-        self._auth_pair_middleware = AuthPairInterceptingMiddleware()
-        client_options: Dict[str, Any] = {
-            "middleware": [AuthPairInterceptingMiddlewareFactory(self._auth_pair_middleware)],
-            "disable_server_verification": True,
-        }
-        location = (
-            flight.Location.for_grpc_tls(host, int(port_string))
-            if self._driver.encrypted
-            else flight.Location.for_grpc_tcp(host, int(port_string))
-        )
-        self._client = flight.FlightClient(location, **client_options)
+            self._auth_pair_middleware = AuthPairInterceptingMiddleware()
+            client_options: Dict[str, Any] = {
+                "middleware": [AuthPairInterceptingMiddlewareFactory(self._auth_pair_middleware)],
+                "disable_server_verification": True,
+            }
+
+            self._encrypted = driver.encrypted
+            location = (
+                flight.Location.for_grpc_tls(host, int(port_string))
+                if self._encrypted
+                else flight.Location.for_grpc_tcp(host, int(port_string))
+            )
+            self._client = flight.FlightClient(location, **client_options)
 
     def run_query(
         self,
@@ -66,6 +68,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
             params["token"] = token
             params["host"] = aura_db_arrow_endpoint
+            params["config"] = {"useEncryption": self._encrypted}
 
         elif ".write" in query and self.is_remote_projected_graph(params["graph_name"]):
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
@@ -74,6 +77,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
                 "hostname": host,
                 "port": int(port_string),
                 "bearerToken": token,
+                "useEncryption": self._encrypted,
             }
 
         return self._fallback_query_runner.run_query(query, params, database, custom_error)
@@ -109,7 +113,6 @@ class AuraDbArrowQueryRunner(QueryRunner):
 
     def close(self) -> None:
         self._client.close()
-        self._driver.close()
         self._fallback_query_runner.close()
 
     def _get_or_request_auth_pair(self) -> Tuple[str, str]:
