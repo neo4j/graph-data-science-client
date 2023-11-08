@@ -33,7 +33,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
         )
 
         if not arrow_info.get("running"):
-            raise RuntimeError("The plugin arrow server for AuraDB is not running")
+            raise RuntimeError(f"The Arrow Server is not running at `{aura_db_endpoint}`")
         listen_address: Optional[str] = arrow_info.get("advertisedListenAddress")  # type: ignore
         if not listen_address:
             raise ConnectionError("Did not retrieve connection info from database")
@@ -74,7 +74,6 @@ class AuraDbArrowQueryRunner(QueryRunner):
                 "hostname": host,
                 "port": int(port_string),
                 "bearerToken": token,
-                "useEncryption": False,
             }
 
         return self._fallback_query_runner.run_query(query, params, database, custom_error)
