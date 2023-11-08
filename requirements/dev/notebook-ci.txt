@@ -5,8 +5,8 @@ nbconvert == 7.9.2
 setuptools == 68.0.0
 jupyter == 1.0.0
 scipy == 1.10.1
-typing_extensions == 4.7.1
-torch==2.0.1
+typing_extensions == 4.8.0
+torch==2.1.0
 torch-scatter==2.1.1
 torch-sparse==0.6.17
 torch-geometric==2.3.1
