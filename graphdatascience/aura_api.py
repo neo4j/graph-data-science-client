@@ -69,11 +69,7 @@ class InstanceCreateDetails(InstanceDetails):
 
 class AuraApi:
     DEV_ENV = os.environ.get("AURA_ENV")
-    BASE_URI = (
-        "https://api.neo4j.io"
-        if not os.environ.get("AURA_ENV")
-        else f"https://api-{os.environ.get('AURA_ENV')}.neo4j-dev.io"
-    )
+    BASE_URI = "https://api.neo4j.io" if not DEV_ENV else f"https://api-{os.environ.get('AURA_ENV')}.neo4j-dev.io"
 
     class AuraAuthToken:
         access_token: str
