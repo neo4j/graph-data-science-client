@@ -16,9 +16,7 @@
 
 ## Improvements
 
-* 
+* Expose user facing custom types so that they can be directly imported from `graphdatascience`.
+
 
 ## Other changes
-
-* 
-
