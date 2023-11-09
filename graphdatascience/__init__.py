@@ -16,6 +16,7 @@ from .version import __version__
 
 __all__ = [
     "GraphDataScience",
+    "AuraSessions",
     "QueryRunner",
     "__version__",
     "ServerVersion",
