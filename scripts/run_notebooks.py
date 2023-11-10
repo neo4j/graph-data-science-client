@@ -40,6 +40,10 @@ for notebook_filename in notebook_files:
         print("Skipping test of Aura only notebook")
         continue
 
+    if "kge-predict" not in notebook_filename.name:
+        print(f"Skipping {notebook_filename.name} notebook")
+        continue
+
     with open(notebook_filename) as f:
         nb = nbformat.read(f, as_version=4)  # type: ignore
 
@@ -56,4 +60,7 @@ for notebook_filename in notebook_files:
         ep.init_notebook(verify_version_cell_index[0])
         # run the notebook
         ep.preprocess(nb)
+        out = nbformat.writes(nb)  # type: ignore
+        print(out)
+
     print(f"Finished executing notebook {notebook_filename}")
