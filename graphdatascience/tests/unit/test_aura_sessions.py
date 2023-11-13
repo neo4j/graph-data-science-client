@@ -32,7 +32,7 @@ class FakeAuraApi(AuraApi):
         self.time = 0
         self._status_after_creating = status_after_creating
 
-    def create_instance(self, name: str, cloud_provider: str) -> InstanceCreateDetails:
+    def create_instance(self, name: str, cloud_provider: str, region: str) -> InstanceCreateDetails:
         create_details = InstanceCreateDetails(
             id=f"ffff{self.id_counter}",
             name=name,
@@ -41,6 +41,8 @@ class FakeAuraApi(AuraApi):
             username="neo4j",
             password="fake-pw",
             connection_url="fake-url",
+            type="",
+            region=region,
         )
 
         specific_details = InstanceSpecificDetails(
@@ -51,6 +53,8 @@ class FakeAuraApi(AuraApi):
             status="creating",
             connection_url="fake-url",
             memory="",
+            type="",
+            region=region,
         )
 
         self.id_counter += 1
@@ -107,7 +111,7 @@ def test_list_session(requests_mock: Mocker) -> None:
 
 
 def test_create_session(mocker: MockerFixture, gds: GraphDataScience, aura_api: AuraApi) -> None:
-    aura_api.create_instance("test", "aws")
+    aura_api.create_instance("test", "aws", "leipzig-1")
 
     db_credentials = AuraDbConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", ("dbuser", "db_pw"))
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
@@ -124,11 +128,14 @@ def test_create_session(mocker: MockerFixture, gds: GraphDataScience, aura_api: 
 
     assert gds_credentials == {"gds_url": "fake-url", "gds_user": "neo4j", "gds_pw": "my-password"}
     assert sessions.list_sessions() == [SessionInfo("my-session")]
-    assert aura_api.list_instance("ffff1").cloud_provider == "aws"  # type: ignore
+
+    instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
+    assert instance_details.cloud_provider == "aws"
+    assert instance_details.region == "leipzig-1"
 
 
 def test_create_duplicate_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    aura_api.create_instance("test", "aws")
+    aura_api.create_instance("test", "aws", "leipzig-1")
 
     db_credentials = AuraDbConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", ("dbuser", "db_pw"))
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
@@ -146,7 +153,7 @@ def test_create_duplicate_session(mocker: MockerFixture, aura_api: AuraApi) -> N
 
 
 def test_connect_to_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    aura_api.create_instance("test", "aws")
+    aura_api.create_instance("test", "aws", "leipzig-1")
 
     db_credentials = AuraDbConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", ("dbuser", "db_pw"))
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
@@ -183,6 +190,8 @@ def test_connect_to_duplicate_session() -> None:
                 status="RUNNING",
                 connection_url="",
                 memory="",
+                type="",
+                region="",
             ),
             InstanceSpecificDetails(
                 id="id43",
@@ -192,6 +201,8 @@ def test_connect_to_duplicate_session() -> None:
                 status="RUNNING",
                 connection_url="",
                 memory="",
+                type="",
+                region="",
             ),
         ]
     )
@@ -215,6 +226,8 @@ def test_delete_session() -> None:
             status="RUNNING",
             connection_url="",
             memory="",
+            type="",
+            region="",
         ),
         InstanceSpecificDetails(
             id="id1",
@@ -224,6 +237,8 @@ def test_delete_session() -> None:
             status="RUNNING",
             connection_url="",
             memory="",
+            type="",
+            region="",
         ),
     ]
 
@@ -246,6 +261,8 @@ def test_delete_nonexisting_session() -> None:
             status="RUNNING",
             connection_url="",
             memory="",
+            type="",
+            region="",
         ),
     ]
 
@@ -268,6 +285,8 @@ def test_delete_nonunique_session() -> None:
             status="RUNNING",
             connection_url="",
             memory="",
+            type="",
+            region="",
         ),
         InstanceSpecificDetails(
             id="id43",
@@ -277,6 +296,8 @@ def test_delete_nonunique_session() -> None:
             status="RUNNING",
             connection_url="",
             memory="",
+            type="",
+            region="",
         ),
     ]
 
@@ -296,7 +317,7 @@ def test_delete_nonunique_session() -> None:
 
 def test_create_immediate_delete(aura_api: AuraApi) -> None:
     aura_api = FakeAuraApi(status_after_creating="deleting")
-    aura_api.create_instance("test", "aws")
+    aura_api.create_instance("test", "aws", "leipzig-1")
     sessions = AuraSessions(
         AuraDbConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", ("", "")),
         aura_api_client_auth=("", ""),
@@ -310,7 +331,7 @@ def test_create_immediate_delete(aura_api: AuraApi) -> None:
 
 def test_create_waiting_forever() -> None:
     aura_api = FakeAuraApi(status_after_creating="updating")
-    aura_api.create_instance("test", "aws")
+    aura_api.create_instance("test", "aws", "leipzig-1")
     sessions = AuraSessions(
         AuraDbConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", ("", "")),
         aura_api_client_auth=("", ""),
