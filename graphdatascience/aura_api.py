@@ -35,6 +35,8 @@ class InstanceSpecificDetails(InstanceDetails):
     status: str
     connection_url: str
     memory: str
+    type: str
+    region: str
 
     @classmethod
     def fromJson(cls, json: dict[str, Any]) -> InstanceSpecificDetails:
@@ -46,6 +48,8 @@ class InstanceSpecificDetails(InstanceDetails):
             status=json["status"],
             connection_url=json.get("connection_url", ""),
             memory=json.get("memory", ""),
+            type=json["type"],
+            region=json["region"],
         )
 
 
@@ -54,6 +58,8 @@ class InstanceCreateDetails(InstanceDetails):
     password: str
     username: str
     connection_url: str
+    type: str
+    region: str
 
     @classmethod
     def fromJson(cls, json: dict[str, Any]) -> InstanceCreateDetails:
@@ -65,6 +71,8 @@ class InstanceCreateDetails(InstanceDetails):
             password=json["password"],
             username=json["username"],
             connection_url=json["connection_url"],
+            type=json["type"],
+            region=json["region"],
         )
 
 
@@ -101,13 +109,13 @@ class AuraApi:
 
         return host.split(".")[0].split("-")[0]
 
-    def create_instance(self, name: str, cloud_provider: str) -> InstanceCreateDetails:
+    def create_instance(self, name: str, cloud_provider: str, region: str) -> InstanceCreateDetails:
         # TODO should give more control here
         data = {
             "name": name,
             "memory": "8GB",
             "version": "5",
-            "region": "europe-west1",
+            "region": region,
             # TODO should be figured out from the tenant details in the future
             "type": "enterprise-ds" if not AuraApi.DEV_ENV else "professional-ds",
             "tenant_id": self._tenant_id,

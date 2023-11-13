@@ -34,7 +34,15 @@ def test_delete_instance(requests_mock: Mocker) -> None:
     result = api.delete_instance("id0")
 
     assert result == InstanceSpecificDetails(
-        id="id0", name="", tenant_id="", cloud_provider="", status="deleting", connection_url="", memory=""
+        id="id0",
+        name="",
+        tenant_id="",
+        cloud_provider="",
+        status="deleting",
+        connection_url="",
+        memory="",
+        region="",
+        type="",
     )
 
 
@@ -139,6 +147,9 @@ def test_list_instance(requests_mock: Mocker) -> None:
     result = api.list_instance("id0")
 
     assert result and result.id == "2f49c2b3"
+    assert result.cloud_provider == "gcp"
+    assert result.region == "europe-west1"
+    assert result.type == "enterprise-db"
 
 
 def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
