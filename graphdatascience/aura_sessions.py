@@ -38,7 +38,13 @@ class AuraSessions:
         if session_name in [session.name for session in self.list_sessions()]:
             raise RuntimeError(f"Session with name `{session_name}` already exists.")
 
-        create_details = self._aura_api.create_instance(AuraSessions._instance_name(session_name))
+        db_instance_id = AuraApi.extract_id(self._db_credentials.uri)
+        db_instance = self._aura_api.list_instance(db_instance_id)
+        if not db_instance:
+            raise ValueError(f"Could not find Aura instance with the uri `{self._db_credentials.uri}`")
+        cloud_provider = db_instance.cloud_provider
+
+        create_details = self._aura_api.create_instance(AuraSessions._instance_name(session_name), cloud_provider)
         wait_result = self._aura_api.wait_for_instance_running(create_details.id)
         if wait_result is not None:
             raise RuntimeError(f"Failed to create session `{session_name}`: {wait_result}")

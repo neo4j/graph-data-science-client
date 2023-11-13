@@ -32,12 +32,12 @@ class FakeAuraApi(AuraApi):
         self.time = 0
         self._status_after_creating = status_after_creating
 
-    def create_instance(self, name: str) -> InstanceCreateDetails:
+    def create_instance(self, name: str, cloud_provider: str) -> InstanceCreateDetails:
         create_details = InstanceCreateDetails(
-            id=f"id-{self.id_counter}",
+            id=f"ffff{self.id_counter}",
             name=name,
             tenant_id="tenant_id",
-            cloud_provider="cloud_provider",
+            cloud_provider=cloud_provider,
             username="neo4j",
             password="fake-pw",
             connection_url="fake-url",
@@ -107,7 +107,9 @@ def test_list_session(requests_mock: Mocker) -> None:
 
 
 def test_create_session(mocker: MockerFixture, gds: GraphDataScience, aura_api: AuraApi) -> None:
-    db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
+    aura_api.create_instance("test", "aws")
+
+    db_credentials = AuraDbConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", ("dbuser", "db_pw"))
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
     sessions._aura_api = aura_api
 
@@ -122,10 +124,13 @@ def test_create_session(mocker: MockerFixture, gds: GraphDataScience, aura_api: 
 
     assert gds_credentials == {"gds_url": "fake-url", "gds_user": "neo4j", "gds_pw": "my-password"}
     assert sessions.list_sessions() == [SessionInfo("my-session")]
+    assert aura_api.list_instance("ffff1").cloud_provider == "aws"  # type: ignore
 
 
 def test_create_duplicate_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
+    aura_api.create_instance("test", "aws")
+
+    db_credentials = AuraDbConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", ("dbuser", "db_pw"))
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
     sessions._aura_api = aura_api
 
@@ -141,7 +146,9 @@ def test_create_duplicate_session(mocker: MockerFixture, aura_api: AuraApi) -> N
 
 
 def test_connect_to_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    db_credentials = AuraDbConnectionInfo("db-uri", ("dbuser", "db_pw"))
+    aura_api.create_instance("test", "aws")
+
+    db_credentials = AuraDbConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", ("dbuser", "db_pw"))
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
     sessions._aura_api = aura_api
 
@@ -287,17 +294,29 @@ def test_delete_nonunique_session() -> None:
     assert sessions.list_sessions() == [SessionInfo("one"), SessionInfo("one")]
 
 
-def test_create_immediate_delete() -> None:
-    sessions = AuraSessions(AuraDbConnectionInfo("", ("", "")), aura_api_client_auth=("", ""), tenant_id="foo")
-    sessions._aura_api = FakeAuraApi(status_after_creating="deleting")
+def test_create_immediate_delete(aura_api: AuraApi) -> None:
+    aura_api = FakeAuraApi(status_after_creating="deleting")
+    aura_api.create_instance("test", "aws")
+    sessions = AuraSessions(
+        AuraDbConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", ("", "")),
+        aura_api_client_auth=("", ""),
+        tenant_id="foo",
+    )
+    sessions._aura_api = aura_api
 
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is being deleted"):
         sessions.create_gds("one", "12345678")
 
 
 def test_create_waiting_forever() -> None:
-    sessions = AuraSessions(AuraDbConnectionInfo("", ("", "")), aura_api_client_auth=("", ""), tenant_id="foo")
-    sessions._aura_api = FakeAuraApi(status_after_creating="updating")
+    aura_api = FakeAuraApi(status_after_creating="updating")
+    aura_api.create_instance("test", "aws")
+    sessions = AuraSessions(
+        AuraDbConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", ("", "")),
+        aura_api_client_auth=("", ""),
+        tenant_id="foo",
+    )
+    sessions._aura_api = aura_api
 
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is not running after waiting"):
         sessions.create_gds("one", "12345678")
