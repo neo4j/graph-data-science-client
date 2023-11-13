@@ -282,3 +282,13 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
 def test_extract_id() -> None:
     assert AuraApi.extract_id("neo4j+ssc://000fc8c8-envgdssync.databases.neo4j-dev.io") == "000fc8c8"
     assert AuraApi.extract_id("neo4j+ssc://02f1bff5.databases.neo4j.io") == "02f1bff5"
+
+
+@pytest.mark.parametrize(
+    "uri",
+    ["", "some.neo4j.io", "02f1bff5"],
+    ids=["empty string", "invalid", "id-only"],
+)
+def test_failing_extract_id(uri: str) -> None:
+    with pytest.raises(RuntimeError, match="Could not parse the uri"):
+        AuraApi.extract_id(uri)

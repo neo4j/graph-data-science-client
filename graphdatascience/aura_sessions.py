@@ -41,7 +41,7 @@ class AuraSessions:
         db_instance_id = AuraApi.extract_id(self._db_credentials.uri)
         db_instance = self._aura_api.list_instance(db_instance_id)
         if not db_instance:
-            raise ValueError(f"Could not find Aura instance with the url {self._db_credentials.uri}")
+            raise ValueError(f"Could not find Aura instance with the uri `{self._db_credentials.uri}`")
         cloud_provider = db_instance.cloud_provider
 
         create_details = self._aura_api.create_instance(AuraSessions._instance_name(session_name), cloud_provider)

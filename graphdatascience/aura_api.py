@@ -92,12 +92,12 @@ class AuraApi:
         self._logger = logging.getLogger()
         self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
 
-    @classmethod
-    def extract_id(cls, uri: str) -> str:
+    @staticmethod
+    def extract_id(uri: str) -> str:
         host = urlparse(uri).hostname
 
         if not host:
-            raise RuntimeError(f"Could not parse the uri {uri}.")
+            raise RuntimeError(f"Could not parse the uri `{uri}`.")
 
         return host.split(".")[0].split("-")[0]
 
