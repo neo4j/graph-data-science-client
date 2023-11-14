@@ -5,7 +5,11 @@ from _pytest.logging import LogCaptureFixture
 from requests import HTTPError
 from requests_mock import Mocker
 
-from graphdatascience.aura_api import AuraApi, InstanceSpecificDetails
+from graphdatascience.aura_api import (
+    AuraApi,
+    InstanceCreateDetails,
+    InstanceSpecificDetails,
+)
 
 
 def test_delete_instance(requests_mock: Mocker) -> None:
@@ -303,3 +307,13 @@ def test_extract_id() -> None:
 def test_failing_extract_id(uri: str) -> None:
     with pytest.raises(RuntimeError, match="Could not parse the uri"):
         AuraApi.extract_id(uri)
+
+
+def test_parse_create_details():
+    InstanceCreateDetails.from_json({"id": "1", "username": "mats", "password": "1234", "connection_url": "url"})
+    with pytest.raises(RuntimeError, match="Missing required field"):
+        InstanceCreateDetails.from_json({"id": "1", "username": "mats", "password": "1234"})
+    # too much is fine
+    InstanceCreateDetails.from_json(
+        {"id": "1", "username": "mats", "password": "1234", "connection_url": "url", "region": "fooo"}
+    )
