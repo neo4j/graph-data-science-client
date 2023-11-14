@@ -71,7 +71,7 @@ class InstanceCreateDetails(InstanceDetails):
             password=json["password"],
             username=json["username"],
             connection_url=json["connection_url"],
-            type=json["type"],
+            type=json.get("type", ""),
             region=json["region"],
         )
 
