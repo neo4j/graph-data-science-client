@@ -1,11 +1,8 @@
-neo4j >= 4.4.2, < 6.0
-pyarrow >= 11.0, < 13.0
-pytest
-nbconvert == 7.9.2
-setuptools == 68.0.0
-jupyter == 1.0.0
+nbconvert==7.11.0
+nbformat==5.9.2
+nbclient==0.9.0
+ipykernel==6.26.0
 scipy == 1.10.1
-typing_extensions == 4.8.0
 torch==2.1.0
 torch-scatter==2.1.1
 torch-sparse==0.6.17
