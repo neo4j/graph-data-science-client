@@ -38,7 +38,7 @@ class SimpleRelEmbeddingModel:
         target_node_filter: NodeFilter,
         relationship_type: str,
         top_k: int,
-        **general_config: Any,
+        **general_config: Dict[str, Any],
     ) -> DataFrame:
         """
         Compute and stream relationship embeddings
@@ -54,35 +54,20 @@ class SimpleRelEmbeddingModel:
             The `top_k` highest scoring target nodes for each source node, along with the score for the node pair
         """
 
-        if general_config:
-            general_config_str = f",{os.linesep}{f',{os.linesep}'.join([f'{k}: ${k}' for k in general_config.keys()])}"
-        else:
-            general_config_str = ""
+        config = {
+            "source_node_filter": source_node_filter,
+            "target_node_filter": target_node_filter,
+            "node_embedding_property": self._node_embedding_property,
+            "relationship_type_embedding": self._relationship_type_embeddings[relationship_type],
+            "scoring_function": self._scoring_function,
+            "top_k": top_k,
+            **general_config,
+        }
 
         return self._query_runner.call_procedure(
             endpoint="gds.ml.kge.predict.stream",
-            body=f"""
-                $graph_name,
-                {{
-                    sourceNodeFilter: $source_node_filter,
-                    targetNodeFilter: $target_node_filter,
-                    nodeEmbeddingProperty: $node_embedding_property,
-                    relationshipTypeEmbedding: $relationship_type_embedding,
-                    scoringFunction: $scoring_function,
-                    topK: $top_k{general_config_str}
-                }}
-            )
-            """,
-            params={
-                "graph_name": self._graph_name,
-                "source_node_filter": source_node_filter,
-                "target_node_filter": target_node_filter,
-                "node_embedding_property": self._node_embedding_property,
-                "relationship_type_embedding": self._relationship_type_embeddings[relationship_type],
-                "scoring_function": self._scoring_function,
-                "top_k": top_k,
-                **general_config,
-            },
+            body="$graph_name, $config",
+            params={"graph_name": self._graph_name, "config": config},
         )
 
     def predict_mutate(
@@ -112,39 +97,22 @@ class SimpleRelEmbeddingModel:
             A `pandas.Series` object with metadata about the performed computation and mutation
         """
 
-        if general_config:
-            general_config_str = f",{os.linesep}{f',{os.linesep}'.join([f'{k}: ${k}' for k in general_config.keys()])}"
-        else:
-            general_config_str = ""
+        config = {
+            "source_node_filter": source_node_filter,
+            "target_node_filter": target_node_filter,
+            "node_embedding_property": self._node_embedding_property,
+            "relationship_type_embedding": self._relationship_type_embeddings[relationship_type],
+            "scoring_function": self._scoring_function,
+            "top_k": top_k,
+            "mutate_relationship_type": mutate_relationship_type,
+            "mutate_property": mutate_property,
+            **general_config,
+        }
 
         return self._query_runner.call_procedure(  # type: ignore
             endpoint="gds.ml.kge.predict.mutate",
-            body=f"""
-                $graph_name,
-                {{
-                    sourceNodeFilter: $source_node_filter,
-                    targetNodeFilter: $target_node_filter,
-                    nodeEmbeddingProperty: $node_embedding_property,
-                    relationshipTypeEmbedding: $relationship_type_embedding,
-                    scoringFunction: $scoring_function,
-                    topK: $top_k,
-                    mutateRelationshipType: $mutate_relationship_type,
-                    mutateProperty: $mutate_property{general_config_str}
-                }}
-            )
-            """,
-            params={
-                "graph_name": self._graph_name,
-                "source_node_filter": source_node_filter,
-                "target_node_filter": target_node_filter,
-                "node_embedding_property": self._node_embedding_property,
-                "relationship_type_embedding": self._relationship_type_embeddings[relationship_type],
-                "scoring_function": self._scoring_function,
-                "top_k": top_k,
-                "mutate_relationship_type": mutate_relationship_type,
-                "mutate_property": mutate_property,
-                **general_config,
-            },
+            body="$graph_name, $config",
+            params={"graph_name": self._graph_name, "config": config},
         ).squeeze()
 
     def predict_write(
@@ -174,39 +142,22 @@ class SimpleRelEmbeddingModel:
             A `pandas.Series` object with metadata about the performed computation and write-back
         """
 
-        if general_config:
-            general_config_str = f",{os.linesep}{f',{os.linesep}'.join([f'{k}: ${k}' for k in general_config.keys()])}"
-        else:
-            general_config_str = ""
+        config = {
+            "source_node_filter": source_node_filter,
+            "target_node_filter": target_node_filter,
+            "node_embedding_property": self._node_embedding_property,
+            "relationship_type_embedding": self._relationship_type_embeddings[relationship_type],
+            "scoring_function": self._scoring_function,
+            "top_k": top_k,
+            "write_relationship_type": write_relationship_type,
+            "write_property": write_property,
+            **general_config,
+        }
 
         return self._query_runner.call_procedure(  # type: ignore
             endpoint="gds.ml.kge.predict.write",
-            body=f"""
-                $graph_name,
-                {{
-                    sourceNodeFilter: $source_node_filter,
-                    targetNodeFilter: $target_node_filter,
-                    nodeEmbeddingProperty: $node_embedding_property,
-                    relationshipTypeEmbedding: $relationship_type_embedding,
-                    scoringFunction: $scoring_function,
-                    topK: $top_k,
-                    writeRelationshipType: $write_relationship_type,
-                    writeProperty: $write_property{general_config_str}
-                }}
-            )
-            """,
-            params={
-                "graph_name": self._graph_name,
-                "source_node_filter": source_node_filter,
-                "target_node_filter": target_node_filter,
-                "node_embedding_property": self._node_embedding_property,
-                "relationship_type_embedding": self._relationship_type_embeddings[relationship_type],
-                "scoring_function": self._scoring_function,
-                "top_k": top_k,
-                "write_relationship_type": write_relationship_type,
-                "write_property": write_property,
-                **general_config,
-            },
+            body="$graph_name, $config",
+            params={"graph_name": self._graph_name, "config": config},
         ).squeeze()
 
     def scoring_function(self) -> str:

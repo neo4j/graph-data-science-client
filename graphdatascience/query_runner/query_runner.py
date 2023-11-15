@@ -14,7 +14,6 @@ class EndpointType(Enum):
 
 
 class QueryRunner(ABC):
-
     def call_function(
         self,
         endpoint: str,
