@@ -103,11 +103,11 @@ class AuraApi:
 
         return host.split(".")[0].split("-")[0]
 
-    def create_instance(self, name: str, cloud_provider: str, region: str) -> InstanceCreateDetails:
+    def create_instance(self, name: str, memory: str, cloud_provider: str, region: str) -> InstanceCreateDetails:
         # TODO should give more control here
         data = {
             "name": name,
-            "memory": "8GB",
+            "memory": memory,
             "version": "5",
             "region": region,
             # TODO should be figured out from the tenant details in the future

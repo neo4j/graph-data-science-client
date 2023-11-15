@@ -80,6 +80,35 @@ def test_delete_that_fails(requests_mock: Mocker) -> None:
         api.delete_instance("id0")
 
 
+def test_create_instance(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+    requests_mock.post(
+        "https://api.neo4j.io/v1/instances",
+        json={
+            "data": {
+                "id": "id0",
+                "tenant_id": "some-tenant",
+                "cloud_provider": "aws",
+                "username": "neo4j",
+                "password": "fake-pw",
+                "connection_url": "fake-url",
+                "type": "",
+                "region": "leipzig-1",
+            }
+        },
+    )
+
+    api.create_instance("name", "16GB", "gcp", "leipzig-1")
+
+    requested_data = requests_mock.request_history[1].json()
+    assert requested_data["name"] == "name"
+    assert requested_data["memory"] == "16GB"
+    assert requested_data["cloud_provider"] == "gcp"
+    assert requested_data["region"] == "leipzig-1"
+
+
 def test_auth_token(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
 

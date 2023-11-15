@@ -31,7 +31,7 @@ class AuraSessions:
             tenant_id=tenant_id, client_id=aura_api_client_auth[0], client_secret=aura_api_client_auth[1]
         )
 
-    def create_gds(self, session_name: str, session_password: str) -> GraphDataScience:
+    def create_gds(self, session_name: str, session_password: str, memory: str = "8GB") -> GraphDataScience:
         if len(session_password) < 8:
             raise ValueError("Password must be at least 8 characters long.")
 
@@ -44,7 +44,7 @@ class AuraSessions:
             raise ValueError(f"Could not find Aura instance with the uri `{self._db_credentials.uri}`")
 
         create_details = self._aura_api.create_instance(
-            AuraSessions._instance_name(session_name), db_instance.cloud_provider, db_instance.region
+            AuraSessions._instance_name(session_name), memory, db_instance.cloud_provider, db_instance.region
         )
         wait_result = self._aura_api.wait_for_instance_running(create_details.id)
         if wait_result is not None:
