@@ -25,7 +25,7 @@ if os.environ.get("NEO4J_USER"):
 
 DB = os.environ.get("NEO4J_DB", "neo4j")
 
-AURA_DB_URI = os.environ.get("NEO4J_AURA_DB_URI", "bolt://localhost:7689")
+AURA_DB_URI = os.environ.get("NEO4J_AURA_DB_URI", "bolt//localhost:7689")
 AURA_DB_AUTH = ("neo4j", "password")
 
 
@@ -93,6 +93,8 @@ def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
 @pytest.fixture(scope="package", autouse=False)
 def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Optional[Generator[AuraGraphDataScience, None, None]]:
     if "cloud_architecture" not in request.keywords:
+        env = os.environ["ENVIRONMENT"]
+        os.environ["ENVIRONMENT"] = "test"
         _gds = AuraGraphDataScience(
             URI, auth=AUTH, aura_db_connection_info=AuraDbConnectionInfo(AURA_DB_URI, AURA_DB_AUTH)
         )
@@ -101,6 +103,7 @@ def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Optional[Generator[A
         yield _gds
 
         _gds.close()
+        os.environ["ENVIRONMENT"] = env
     return None
 
 

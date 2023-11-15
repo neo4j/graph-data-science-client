@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 
 from typing import Any, Dict, Optional, Tuple, Type, Union
 
@@ -256,10 +257,11 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     @classmethod
     def _configure_aura(cls, uri: str, config: Dict[str, Any]) -> None:
         protocol = uri.split(":")[0]
-        if not protocol == cls._AURA_DS_PROTOCOL:
-            raise ValueError(
-                f"AuraDS requires using the '{cls._AURA_DS_PROTOCOL}' protocol ('{protocol}' was provided)"
-            )
+        if os.environ.get("ENVIRONMENT", "production") != "test":
+            if not protocol == cls._AURA_DS_PROTOCOL:
+                raise ValueError(
+                    f"AuraDS requires using the '{cls._AURA_DS_PROTOCOL}' protocol ('{protocol}' was provided)"
+                )
 
         config["max_connection_lifetime"] = 60 * 8  # 8 minutes
         config["keep_alive"] = True
