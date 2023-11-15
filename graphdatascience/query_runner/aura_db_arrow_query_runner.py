@@ -93,7 +93,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
                 "useEncryption": self._encrypted,
             }
 
-        return self._fallback_query_runner.call_endpoint(endpoint, params, yields, database, logging, custom_error)
+        return self._gds_query_runner.call_endpoint(endpoint, params, yields, database, logging, custom_error)
 
     def is_remote_projected_graph(self, graph_name: str) -> bool:
         database_location: str = self._gds_query_runner.call_procedure(
