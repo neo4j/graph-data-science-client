@@ -309,7 +309,7 @@ def test_failing_extract_id(uri: str) -> None:
         AuraApi.extract_id(uri)
 
 
-def test_parse_create_details():
+def test_parse_create_details() -> None:
     InstanceCreateDetails.from_json({"id": "1", "username": "mats", "password": "1234", "connection_url": "url"})
     with pytest.raises(RuntimeError, match="Missing required field"):
         InstanceCreateDetails.from_json({"id": "1", "username": "mats", "password": "1234"})
