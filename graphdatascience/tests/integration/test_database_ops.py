@@ -16,23 +16,23 @@ GRAPH_NAME = "g"
 @pytest.mark.skip_on_aura
 def test_switching_db(runner: Neo4jQueryRunner) -> None:
     default_database = runner.database()
-    runner.run_query("CREATE (a: Node)")
+    runner.run_cypher("CREATE (a: Node)")
 
-    pre_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
+    pre_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
     assert pre_count == 1
 
     MY_DB_NAME = "my-db"
-    runner.run_query("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+    runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
     try:
         runner.set_database(MY_DB_NAME)
 
         with pytest.raises(RuntimeWarning, match="One of the labels in your query is not available in the database"):
-            post_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
+            post_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
             assert post_count == 0
     finally:
         runner.set_database(default_database)  # type: ignore
-        runner.run_query("MATCH (n) DETACH DELETE n")
-        runner.run_query("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+        runner.run_cypher("MATCH (n) DETACH DELETE n")
+        runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
 
 @pytest.mark.skip_on_aura
@@ -61,32 +61,32 @@ def test_switching_db_and_use_graph(gds: GraphDataScience) -> None:
 
 @pytest.mark.skip_on_aura
 def test_run_query_with_db(runner: Neo4jQueryRunner) -> None:
-    runner.run_query("CREATE (a: Node)")
+    runner.run_cypher("CREATE (a: Node)")
 
-    default_db_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
+    default_db_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
     assert default_db_count == 1
 
     MY_DB_NAME = "my-db"
-    runner.run_query("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+    runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
     try:
         with pytest.raises(RuntimeWarning, match="One of the labels in your query is not available in the database"):
-            specified_db_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)["c"][0]
+            specified_db_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)["c"][0]
             assert specified_db_count == 0
     finally:
-        runner.run_query("MATCH (n) DETACH DELETE n")
-        runner.run_query("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+        runner.run_cypher("MATCH (n) DETACH DELETE n")
+        runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
 
 @pytest.mark.skip_on_aura
 def test_initialize_with_db(runner: Neo4jQueryRunner) -> None:
-    runner.run_query("CREATE (a: Node)")
+    runner.run_cypher("CREATE (a: Node)")
 
-    default_db_count = runner.run_query("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
+    default_db_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
     assert default_db_count == 1
 
     MY_DB_NAME = "my-db"
-    runner.run_query("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+    runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
     gds_with_specified_db = GraphDataScience(URI, AUTH, database=MY_DB_NAME)
 
@@ -97,8 +97,8 @@ def test_initialize_with_db(runner: Neo4jQueryRunner) -> None:
             )["c"][0]
             assert specified_db_count == 0
     finally:
-        runner.run_query("MATCH (n) DETACH DELETE n")
-        runner.run_query("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+        runner.run_cypher("MATCH (n) DETACH DELETE n")
+        runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
         gds_with_specified_db.close()
 
 
@@ -179,14 +179,14 @@ def test_bookmarks(runner: Neo4jQueryRunner) -> None:
     runner.set_bookmarks(None)
     assert runner.bookmarks() is None
 
-    _ = runner.run_query("CREATE (a: Node)")
+    _ = runner.run_cypher("CREATE (a: Node)")
     assert runner.last_bookmarks() is not None
 
     runner.set_bookmarks(runner.last_bookmarks())
     assert runner.bookmarks() == runner.last_bookmarks()
 
-    _ = runner.run_query("CREATE (b: Node)")
+    _ = runner.run_cypher("CREATE (b: Node)")
     assert runner.bookmarks() != runner.last_bookmarks()
 
-    runner.run_query("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n")
     runner.set_bookmarks(None)

@@ -45,8 +45,12 @@ class GraphAlphaProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         errors = []
 
-        exists = self._query_runner.run_query(
-            f"CALL gds.graph.exists('{graph_name}') YIELD exists", custom_error=False
+        exists = self._query_runner.call_procedure(
+            endpoint="gds.graph.exists",
+            yields=["exists"],
+            body="$graph_name",
+            params={"graph_name": graph_name},
+            custom_error=False,
         ).squeeze()
 
         # compare against True as (1) unit tests return None here and (2) numpys True does not work with `is True`.

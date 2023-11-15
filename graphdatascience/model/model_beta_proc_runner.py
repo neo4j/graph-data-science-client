@@ -12,26 +12,26 @@ class ModelBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".list"
 
         if model:
-            query = f"CALL {self._namespace}($model_name)"
+            body = "$model_name"
             params = {"model_name": model.name()}
         else:
-            query = f"CALL {self._namespace}()"
+            body = None
             params = {}
 
-        return self._query_runner.run_query(query, params)
+        return self._query_runner.call_procedure(endpoint=self._namespace, body=body, params=params)
 
     def exists(self, model_name: str) -> "Series[Any]":
         self._namespace += ".exists"
-
-        query = f"CALL {self._namespace}($model_name)"
         params = {"model_name": model_name}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(
+            endpoint=self._namespace, body="$model_name", params=params
+        ).squeeze()  # type: ignore
 
     def drop(self, model: Model) -> "Series[Any]":
         self._namespace += ".drop"
-
-        query = f"CALL {self._namespace}($model_name)"
         params = {"model_name": model.name()}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.run_cypher(
+            endpoint=self._namespace, body="$model_name", params=params
+        ).squeeze()  # type: ignore

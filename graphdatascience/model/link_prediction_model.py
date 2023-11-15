@@ -30,8 +30,8 @@ class LPModel(PipelineModel):
     :func:`LPTrainingPipeline.train() <graphdatascience.pipeline.lp_training_pipeline.LPTrainingPipeline.train>`.
     """
 
-    def _query_prefix(self) -> str:
-        return "CALL gds.beta.pipeline.linkPrediction.predict."
+    def _endpoint_prefix(self) -> str:
+        return "gds.beta.pipeline.linkPrediction.predict."
 
     def link_features(self) -> List[LinkFeature]:
         """

@@ -11,8 +11,7 @@ class LPPipelineCreateRunner(UncallableNamespace, IllegalAttrChecker):
     def create(self, name: str) -> Tuple[LPTrainingPipeline, "Series[Any]"]:
         self._namespace += ".create"
 
-        query = f"CALL {self._namespace}($name)"
         params = {"name": name}
-        result = self._query_runner.run_query(query, params).squeeze()
+        result = self._query_runner.call_procedure(endpoint=self._namespace, body="$name", params=params).squeeze()
 
         return LPTrainingPipeline(name, self._query_runner, self._server_version), result

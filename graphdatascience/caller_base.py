@@ -13,7 +13,12 @@ class CallerBase(ABC):
         self._server_version = server_version
 
     def _raise_suggestive_error_message(self, requested_endpoint: str) -> NoReturn:
-        list_result = self._query_runner.run_query("CALL gds.list() YIELD name", custom_error=False)
+        list_result = self._query_runner.call_procedure(
+            endpoint="gds.list",
+            yields=["name"],
+            body="$graph_name, $config",
+            custom_error=False,
+        )
         all_endpoints = list_result["name"].tolist()
 
         raise SyntaxError(generate_suggestive_error_message(requested_endpoint, all_endpoints))

@@ -29,29 +29,27 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".list"
 
         if pipeline:
-            query = f"CALL {self._namespace}($pipeline_name)"
+            body = "$pipeline_name"
             params = {"pipeline_name": pipeline.name()}
         else:
-            query = f"CALL {self._namespace}()"
+            body = None
             params = {}
 
-        return self._query_runner.run_query(query, params)
+        return self._query_runner.call_procedure(endpoint=self._namespace, body=body, params=params)
 
     def exists(self, pipeline_name: str) -> "Series[Any]":
         self._namespace += ".exists"
 
-        query = f"CALL {self._namespace}($pipeline_name)"
-        params = {"pipeline_name": pipeline_name}
-
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(
+            endpoint=self._namespace, body="$pipeline_name", params={"pipeline_name": pipeline_name}
+        ).squeeze()  # type: ignore
 
     def drop(self, pipeline: TrainingPipeline[PipelineModel]) -> "Series[Any]":
         self._namespace += ".drop"
 
-        query = f"CALL {self._namespace}($pipeline_name)"
-        params = {"pipeline_name": pipeline.name()}
-
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(
+            endpoint=self._namespace, body="$pipeline_name", params={"pipeline_name": pipeline.name()}
+        ).squeeze()  # type: ignore
 
     def _resolve_pipeline(self, pipeline_type: str, pipeline_name: str) -> TrainingPipeline[PipelineModel]:
         if pipeline_type == "Node classification training pipeline":

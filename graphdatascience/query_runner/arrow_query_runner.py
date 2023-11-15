@@ -11,7 +11,7 @@ from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from ..server_version.server_version import ServerVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .graph_constructor import GraphConstructor
-from .query_runner import QueryRunner
+from .query_runner import EndpointType, QueryRunner
 from graphdatascience.server_version.compatible_with import (
     IncompatibleServerVersionError,
 )
@@ -52,9 +52,21 @@ class ArrowQueryRunner(QueryRunner):
             DeprecationWarning(f"The endpoint '{old_endpoint}' is deprecated. Please use '{new_endpoint}' instead.")
         )
 
-    def run_query(
+    def run_cypher(
         self,
         query: str,
+        params: Optional[Dict[str, Any]] = None,
+        database: Optional[str] = None,
+        custom_error: bool = True,
+    ) -> DataFrame:
+        return self._fallback_query_runner.run_cypher(query, params, database, custom_error)
+
+    def call_endpoint(
+        self,
+        type: EndpointType,
+        endpoint: str,
+        yields: Optional[List[str]] = None,
+        body: Optional[str] = None,
         params: Optional[Dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
@@ -66,7 +78,9 @@ class ArrowQueryRunner(QueryRunner):
         no_tier_in_namespace_server_version = ServerVersion(2, 5, 0)
 
         # We need to support the deprecated endpoints until they get removed on the server side
-        if (old_endpoint := ("gds.graph.streamNodeProperty" in query)) or "gds.graph.nodeProperty.stream" in query:
+        if (
+            old_endpoint := ("gds.graph.streamNodeProperty" == endpoint)
+        ) or "gds.graph.nodeProperty.stream" == endpoint:
             graph_name = params["graph_name"]
             property_name = params["properties"]
             node_labels = params["entities"]
@@ -84,8 +98,8 @@ class ArrowQueryRunner(QueryRunner):
                 graph_name, endpoint, {"node_property": property_name, "node_labels": node_labels}
             )
         elif (
-            old_endpoint := ("gds.graph.streamNodeProperties" in query)
-        ) or "gds.graph.nodeProperties.stream" in query:
+            old_endpoint := ("gds.graph.streamNodeProperties" == endpoint)
+        ) or "gds.graph.nodeProperties.stream" == endpoint:
             graph_name = params["graph_name"]
             property_names = params["properties"]
             node_labels = params["entities"]
@@ -104,8 +118,8 @@ class ArrowQueryRunner(QueryRunner):
                 {"node_properties": property_names, "node_labels": node_labels},
             )
         elif (
-            old_endpoint := ("gds.graph.streamRelationshipProperty" in query)
-        ) or "gds.graph.relationshipProperty.stream" in query:
+            old_endpoint := ("gds.graph.streamRelationshipProperty" == endpoint)
+        ) or "gds.graph.relationshipProperty.stream" == endpoint:
             graph_name = params["graph_name"]
             property_name = params["properties"]
             relationship_types = params["entities"]
@@ -125,8 +139,8 @@ class ArrowQueryRunner(QueryRunner):
                 {"relationship_property": property_name, "relationship_types": relationship_types},
             )
         elif (
-            old_endpoint := ("gds.graph.streamRelationshipProperties" in query)
-        ) or "gds.graph.relationshipProperties.stream" in query:
+            old_endpoint := ("gds.graph.streamRelationshipProperties" == endpoint)
+        ) or "gds.graph.relationshipProperties.stream" == endpoint:
             graph_name = params["graph_name"]
             property_names = params["properties"]
             relationship_types = params["entities"]
@@ -147,8 +161,8 @@ class ArrowQueryRunner(QueryRunner):
                 {"relationship_properties": property_names, "relationship_types": relationship_types},
             )
         elif (
-            old_endpoint := ("gds.beta.graph.relationships.stream" in query)
-        ) or "gds.graph.relationships.stream" in query:
+            old_endpoint := ("gds.beta.graph.relationships.stream" == endpoint)
+        ) or "gds.graph.relationships.stream" == endpoint:
             graph_name = params["graph_name"]
             relationship_types = params["relationship_types"]
 
@@ -170,13 +184,13 @@ class ArrowQueryRunner(QueryRunner):
 
             return self._run_arrow_property_get(graph_name, endpoint, {"relationship_types": relationship_types})
 
-        return self._fallback_query_runner.run_query(query, params, database, custom_error)
+        return self._fallback_query_runner.call_endpoint(type, endpoint, yields, body, params, database, custom_error)
 
-    def run_query_with_logging(
+    def run_cypher_with_logging(
         self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
     ) -> DataFrame:
         # For now there's no logging support with Arrow queries.
-        return self._fallback_query_runner.run_query_with_logging(query, params, database)
+        return self._fallback_query_runner.run_cypher_with_logging(query, params, database)
 
     def set_database(self, database: str) -> None:
         self._fallback_query_runner.set_database(database)

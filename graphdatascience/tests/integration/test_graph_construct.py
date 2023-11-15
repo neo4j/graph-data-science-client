@@ -16,7 +16,7 @@ GRAPH_NAME = "g"
 @pytest.fixture(autouse=True)
 def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     # Runs before each test
-    runner.run_query(
+    runner.run_cypher(
         """
         CREATE
         (a: Node {x: 1, y: 2, z: [42]}),
@@ -32,8 +32,8 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     yield  # Test runs here
 
     # Runs after each test
-    runner.run_query("MATCH (n) DETACH DELETE n")
-    runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false) YIELD graphName")
+    runner.run_cypher("MATCH (n) DETACH DELETE n")
+    runner.run_cypher(f"CALL gds.graph.drop('{GRAPH_NAME}', false) YIELD graphName")
 
 
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")

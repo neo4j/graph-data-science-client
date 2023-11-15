@@ -29,7 +29,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         return self._name
 
     @abstractmethod
-    def _query_prefix(self) -> str:
+    def _endpoint_prefix(self) -> str:
         pass
 
     @abstractmethod
@@ -48,13 +48,14 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
             The result of the query.
 
         """
-        query = f"{self._query_prefix()}addNodeProperty($pipeline_name, $procedure_name, $config)"
+        endpoint = f"{self._endpoint_prefix()}addNodeProperty"
+        body = "$pipeline_name, $procedure_name, $config"
         params = {
             "pipeline_name": self.name(),
             "procedure_name": procedure_name,
             "config": config,
         }
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
 
     @staticmethod
     def _expand_ranges(config: Dict[str, Any]) -> Dict[str, Any]:
@@ -74,11 +75,12 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
             The result of the query.
 
         """
-        query_prefix = self._query_prefix().replace("beta", "alpha")
-        query = f"{query_prefix}configureAutoTuning($pipeline_name, $config)"
+        query_prefix = self._endpoint_prefix().replace("beta", "alpha")
+        endpoint = f"{query_prefix}configureAutoTuning"
+        body = "$pipeline_name, $config"
         params = {"pipeline_name": self.name(), "config": config}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
 
     @graph_type_check
     def train(self, G: Graph, **config: Any) -> Tuple[MODEL_TYPE, "Series[Any]"]:
@@ -93,14 +95,14 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
             A tuple containing the trained model and the result of the query.
 
         """
-        query = f"{self._query_prefix()}train($graph_name, $config)"
+        query = f"CALL {self._endpoint_prefix()}train($graph_name, $config)"
         config["pipeline"] = self.name()
         params = {
             "graph_name": G.name(),
             "config": config,
         }
 
-        result = self._query_runner.run_query_with_logging(query, params).squeeze()
+        result = self._query_runner.run_cypher_with_logging(query, params).squeeze()
 
         return (
             self._create_trained_model(config["modelName"], self._query_runner),
@@ -120,14 +122,15 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
             The result of the query.
 
         """
-        query = f"{self._query_prefix()}train.estimate($graph_name, $config)"
+        endpoint = f"{self._endpoint_prefix()}train.estimate"
+        body = "$graph_name, $config"
         config["pipeline"] = self.name()
         params = {
             "graph_name": G.name(),
             "config": config,
         }
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
 
     def configureSplit(self, **config: Any) -> "Series[Any]":
         """
@@ -140,10 +143,11 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
             The result of the query.
 
         """
-        query = f"{self._query_prefix()}configureSplit($pipeline_name, $config)"
+        endpoint = f"{self._endpoint_prefix()}configureSplit"
+        body = "$pipeline_name, $config"
         params = {"pipeline_name": self.name(), "config": config}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
 
     def node_property_steps(self) -> DataFrame:
         """
@@ -193,10 +197,11 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         return auto_tuning_config
 
     def _list_info(self) -> DataFrame:
-        query = f"CALL gds{self._tier_namespace()}.pipeline.list($name)"
+        endpoint = f"gds{self._tier_namespace()}.pipeline.list"
+        body = "$name"
         params = {"name": self.name()}
 
-        info = self._query_runner.run_query(query, params, custom_error=False)
+        info = self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params, custom_error=False)
 
         if len(info) == 0:
             raise ValueError(f"There is no '{self.name()}' in the pipeline catalog")
@@ -232,10 +237,15 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
             True if the pipeline exists, False otherwise.
 
         """
-        query = f"CALL gds{self._tier_namespace()}.pipeline.exists($pipeline_name) YIELD exists"
-        params = {"pipeline_name": self._name}
-
-        return self._query_runner.run_query(query, params, custom_error=False)["exists"].squeeze()  # type: ignore
+        return self._query_runner.call_procedure(
+            endpoint=f"CALL gds{self._tier_namespace()}.pipeline.exists",
+            body="$pipeline_name",
+            params={"pipeline_name": self._name},
+            yields=["exists"],
+            custom_error=False,
+        )[
+            "exists"
+        ].squeeze()  # type: ignore
 
     def drop(self, failIfMissing: bool = False) -> "Series[Any]":
         """
@@ -248,10 +258,12 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
             The result of the query.
 
         """
-        query = f"CALL gds{self._tier_namespace()}.pipeline.drop($pipeline_name, $fail_if_missing)"
-        params = {"pipeline_name": self._name, "fail_if_missing": failIfMissing}
-
-        return self._query_runner.run_query(query, params, custom_error=False).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(
+            endpoint=f"CALL gds{self._tier_namespace()}.pipeline.drop",
+            body="$pipeline_name, $fail_if_missing",
+            params={"pipeline_name": self._name, "fail_if_missing": failIfMissing},
+            custom_error=False,
+        ).squeeze()  # type: ignore
 
     def _tier_namespace(self) -> str:
         return "" if self._server_version >= ServerVersion(2, 5, 0) else ".beta"

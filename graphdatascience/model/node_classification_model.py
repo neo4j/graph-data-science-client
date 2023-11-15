@@ -14,8 +14,8 @@ class NCModel(PipelineModel):
     :func:`NCTrainingPipeline.train() <graphdatascience.pipeline.nc_training_pipeline.NCTrainingPipeline.train>`.
     """
 
-    def _query_prefix(self) -> str:
-        return "CALL gds.beta.pipeline.nodeClassification.predict."
+    def _endpoint_prefix(self) -> str:
+        return "gds.beta.pipeline.nodeClassification.predict."
 
     @graph_type_check
     def predict_write(self, G: Graph, **config: Any) -> "Series[Any]":
@@ -30,11 +30,11 @@ class NCModel(PipelineModel):
             The result of the write operation.
 
         """
-        query = f"{self._query_prefix()}write($graph_name, $config)"
+        query = f"CALL {self._endpoint_prefix()}write($graph_name, $config)"
         config["modelName"] = self.name()
         params = {"graph_name": G.name(), "config": config}
 
-        return self._query_runner.run_query_with_logging(query, params).squeeze()  # type: ignore
+        return self._query_runner.run_cypher_with_logging(query, params).squeeze()  # type: ignore
 
     @graph_type_check
     def predict_write_estimate(self, G: Graph, **config: Any) -> "Series[Any]":

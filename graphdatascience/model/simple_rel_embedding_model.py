@@ -59,9 +59,9 @@ class SimpleRelEmbeddingModel:
         else:
             general_config_str = ""
 
-        return self._query_runner.run_query(
-            f"""
-            CALL gds.ml.kge.predict.stream(
+        return self._query_runner.call_procedure(
+            endpoint="gds.ml.kge.predict.stream",
+            body=f"""
                 $graph_name,
                 {{
                     sourceNodeFilter: $source_node_filter,
@@ -73,7 +73,7 @@ class SimpleRelEmbeddingModel:
                 }}
             )
             """,
-            {
+            params={
                 "graph_name": self._graph_name,
                 "source_node_filter": source_node_filter,
                 "target_node_filter": target_node_filter,
@@ -117,9 +117,9 @@ class SimpleRelEmbeddingModel:
         else:
             general_config_str = ""
 
-        return self._query_runner.run_query(  # type: ignore
-            f"""
-            CALL gds.ml.kge.predict.mutate(
+        return self._query_runner.call_procedure(  # type: ignore
+            endpoint="gds.ml.kge.predict.mutate",
+            body=f"""
                 $graph_name,
                 {{
                     sourceNodeFilter: $source_node_filter,
@@ -133,7 +133,7 @@ class SimpleRelEmbeddingModel:
                 }}
             )
             """,
-            {
+            params={
                 "graph_name": self._graph_name,
                 "source_node_filter": source_node_filter,
                 "target_node_filter": target_node_filter,
@@ -179,9 +179,9 @@ class SimpleRelEmbeddingModel:
         else:
             general_config_str = ""
 
-        return self._query_runner.run_query(  # type: ignore
-            f"""
-            CALL gds.ml.kge.predict.write(
+        return self._query_runner.call_procedure(  # type: ignore
+            endpoint="gds.ml.kge.predict.write",
+            body=f"""
                 $graph_name,
                 {{
                     sourceNodeFilter: $source_node_filter,
@@ -195,7 +195,7 @@ class SimpleRelEmbeddingModel:
                 }}
             )
             """,
-            {
+            params={
                 "graph_name": self._graph_name,
                 "source_node_filter": source_node_filter,
                 "target_node_filter": target_node_filter,

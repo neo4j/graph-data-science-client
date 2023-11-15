@@ -24,10 +24,11 @@ class NRTrainingPipeline(TrainingPipeline[NRModel]):
             The result of the query.
 
         """
-        query = f"{self._query_prefix()}addLinearRegression($pipeline_name, $config)"
+        endpoint = f"{self._endpoint_prefix()}addLinearRegression"
+        body = "$pipeline_name, $config"
         params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
 
     def addRandomForest(self, **config: Any) -> "Series[Any]":
         """
@@ -40,10 +41,11 @@ class NRTrainingPipeline(TrainingPipeline[NRModel]):
             The result of the query.
 
         """
-        query = f"{self._query_prefix()}addRandomForest($pipeline_name, $config)"
+        endpoint = f"{self._endpoint_prefix()}addRandomForest"
+        body = "$pipeline_name, $config"
         params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
 
     def selectFeatures(self, node_properties: Union[str, List[str]]) -> "Series[Any]":
         """
@@ -56,10 +58,11 @@ class NRTrainingPipeline(TrainingPipeline[NRModel]):
             The result of the query.
 
         """
-        query = f"{self._query_prefix()}selectFeatures($pipeline_name, $node_properties)"
+        endpoint = f"{self._endpoint_prefix()}selectFeatures"
+        body = "$pipeline_name, $node_properties"
         params = {"pipeline_name": self.name(), "node_properties": node_properties}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
 
     def feature_properties(self) -> "Series[Any]":
         """
@@ -73,8 +76,8 @@ class NRTrainingPipeline(TrainingPipeline[NRModel]):
         feature_properties: "Series[Any]" = Series(pipeline_info["featurePipeline"]["featureProperties"], dtype=object)
         return feature_properties
 
-    def _query_prefix(self) -> str:
-        return "CALL gds.alpha.pipeline.nodeRegression."
+    def _endpoint_prefix(self) -> str:
+        return "gds.alpha.pipeline.nodeRegression."
 
     def _create_trained_model(self, name: str, query_runner: QueryRunner) -> NRModel:
         return NRModel(name, query_runner, self._server_version)

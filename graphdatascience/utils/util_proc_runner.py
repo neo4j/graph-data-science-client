@@ -19,9 +19,9 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         """
         self._namespace += ".asNode"
-        result = self._query_runner.run_query(f"RETURN {self._namespace}({node_id}) AS node")
+        result = self._query_runner.call_function(endpoint=self._namespace, body=str(node_id))
 
-        return result["node"].squeeze()
+        return result[0].squeeze()
 
     def asNodes(self, node_ids: List[int]) -> List[Any]:
         """
@@ -35,9 +35,11 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         """
         self._namespace += ".asNodes"
-        result = self._query_runner.run_query(f"RETURN {self._namespace}({node_ids}) AS nodes")
+        result = self._query_runner.call_function(
+            endpoint=self._namespace, body="$node_ids", params={"node_ids": node_ids}
+        )
 
-        return result["nodes"].squeeze()  # type: ignore
+        return result[0].squeeze()  # type: ignore
 
     @graph_type_check
     def nodeProperty(self, G: Graph, node_id: int, property_key: str, node_label: str = "*") -> Any:
@@ -56,13 +58,13 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
         """
         self._namespace += ".nodeProperty"
 
-        query = f"RETURN {self._namespace}($graph_name, $node_id, $property_key, $node_label) as property"
+        body = "$graph_name, $node_id, $property_key, $node_label"
         params = {
             "graph_name": G.name(),
             "node_id": node_id,
             "property_key": property_key,
             "node_label": node_label,
         }
-        result = self._query_runner.run_query(query, params)
+        result = self._query_runner.call_function(endpoint=self._namespace, body=body, params=params)
 
-        return result["property"].squeeze()
+        return result[0].squeeze()

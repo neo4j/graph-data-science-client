@@ -94,7 +94,9 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             self._query_runner.set_database(database)
 
         try:
-            server_version_string = self._query_runner.run_query("RETURN gds.version()", custom_error=False).squeeze()
+            server_version_string = self._query_runner.call_function(
+                endpoint="gds.version", custom_error=False
+            ).squeeze()
         except Exception as e:
             if "Unknown function 'gds.version'" in str(e):
                 # Some Python versions appear to not call __del__ of self._query_runner when an exception
@@ -114,13 +116,12 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         self._query_runner.set_server_version(self._server_version)
 
         if arrow and self._server_version >= ServerVersion(2, 1, 0):
-            yield_fields = (
-                "running, listenAddress"
-                if self._server_version >= ServerVersion(2, 2, 1)
-                else "running, advertisedListenAddress"
+            yield_fields = ["running"]
+            yield_fields += (
+                "listenAddress" if self._server_version >= ServerVersion(2, 2, 1) else "advertisedListenAddress"
             )
-            arrow_info: "Series[Any]" = self._query_runner.run_query(
-                f"CALL gds.debug.arrow() YIELD {yield_fields}", custom_error=False
+            arrow_info: "Series[Any]" = self._query_runner.call_procedure(
+                endpoint="gds.debug.arrow", yields=yield_fields, custom_error=False
             ).squeeze()
             listen_address: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])  # type: ignore
             if arrow_info["running"]:
@@ -230,7 +231,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         if isinstance(self._query_runner, ArrowQueryRunner):
             qr = self._query_runner.fallback_query_runner()
 
-        return qr.run_query(query, params, database, False)
+        return qr.run_cypher(query, params, database, False)
 
     def driver_config(self) -> Dict[str, Any]:
         """

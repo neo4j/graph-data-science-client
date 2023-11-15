@@ -18,10 +18,13 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
         Returns:
             The result of the query.
         """
-        query = f"{self._query_prefix()}addLogisticRegression($pipeline_name, $config)"
         params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(
+            endpoint=f"{self._endpoint_prefix()}addLogisticRegression",
+            body="$pipeline_name, $config",
+            params=params,
+        ).squeeze()  # type: ignore
 
     def addRandomForest(self, **config: Any) -> "Series[Any]":
         """
@@ -34,13 +37,14 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
             The result of the query.
 
         """
-        query_prefix = self._query_prefix()
+        endpoint_prefix = self._endpoint_prefix()
         if self._server_version < ServerVersion(2, 4, 0):
-            query_prefix = self._query_prefix().replace("beta", "alpha")
-        query = f"{query_prefix}addRandomForest($pipeline_name, $config)"
+            endpoint_prefix = self._endpoint_prefix().replace("beta", "alpha")
         params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(
+            endpoint=f"{endpoint_prefix}addRandomForest", body="$pipeline_name, $config", params=params
+        ).squeeze()  # type: ignore
 
     def addMLP(self, **config: Any) -> "Series[Any]":
         """
@@ -53,8 +57,9 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
             The result of the query.
 
         """
-        query_prefix = self._query_prefix().replace("beta", "alpha")
-        query = f"{query_prefix}addMLP($pipeline_name, $config)"
+        endpoint_prefix = self._endpoint_prefix().replace("beta", "alpha")
         params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(
+            endpoint=f"{endpoint_prefix}addMLP", body="$pipeline_name, $config", params=params
+        ).squeeze()  # type: ignore

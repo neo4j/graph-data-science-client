@@ -54,7 +54,8 @@ class ModelProcRunner(ModelResolver):
             query = "CALL gds.model.list($model_name) YIELD modelType"
 
         params = {"model_name": model_name}
-        result = self._query_runner.run_query(query, params, custom_error=False)
+        # FIXME use call procedure + do post processing on the client side
+        result = self._query_runner.run_cypher(query, params, custom_error=False)
 
         if len(result) == 0:
             raise ValueError(f"No loaded model named '{model_name}' exists")
@@ -66,22 +67,23 @@ class ModelProcRunner(ModelResolver):
     def store(self, model: Model, failIfUnsupportedType: bool = True) -> "Series[Any]":
         self._namespace += ".store"
 
-        query = f"CALL {self._namespace}($model_name, $fail_flag)"
-        params = {
-            "model_name": model.name(),
-            "fail_flag": failIfUnsupportedType,
-        }
-
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(
+            endpoint=self._namespace,
+            body="$model_name, $fail_flag",
+            params={
+                "model_name": model.name(),
+                "fail_flag": failIfUnsupportedType,
+            },
+        ).squeeze()  # type: ignore
 
     @compatible_with("publish", min_inclusive=ServerVersion(2, 5, 0))
     def publish(self, model: Model) -> Model:
         self._namespace += ".publish"
 
-        query = f"CALL {self._namespace}($model_name)"
+        body = "$model_name"
         params = {"model_name": model.name()}
 
-        result = self._query_runner.run_query(query, params)
+        result = self._query_runner.call_procedure(endpoint=self._namespace, body=body, params=params)
 
         model_name = result["modelName"][0]
         model_type = result["modelType"][0]
@@ -92,10 +94,10 @@ class ModelProcRunner(ModelResolver):
     def load(self, model_name: str) -> Tuple[Model, "Series[Any]"]:
         self._namespace += ".load"
 
-        query = f"CALL {self._namespace}($model_name)"
+        body = "$model_name"
         params = {"model_name": model_name}
 
-        result = self._query_runner.run_query(query, params).squeeze()
+        result = self._query_runner.call_procedure(endpoint=self._namespace, body=body, params=params).squeeze()
 
         self._namespace = "gds.model"
         proc_runner = ModelProcRunner(self._query_runner, self._namespace, self._server_version)
@@ -105,42 +107,38 @@ class ModelProcRunner(ModelResolver):
     @compatible_with("delete", min_inclusive=ServerVersion(2, 5, 0))
     def delete(self, model: Model) -> "Series[Any]":
         self._namespace += ".delete"
-
-        query = f"CALL {self._namespace}($model_name)"
-        params = {"model_name": model.name()}
-
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(
+            endpoint=self._namespace, body="$model_name", params={"model_name": model.name()}
+        ).squeeze()  # type: ignore
 
     @compatible_with("list", min_inclusive=ServerVersion(2, 5, 0))
     def list(self, model: Optional[Model] = None) -> DataFrame:
         self._namespace += ".list"
 
         if model:
-            query = f"CALL {self._namespace}($model_name)"
+            body = "$model_name"
             params = {"model_name": model.name()}
         else:
-            query = f"CALL {self._namespace}()"
+            body = None
             params = {}
 
-        return self._query_runner.run_query(query, params)
+        return self._query_runner.call_procedure(endpoint=self._namespace, body=body, params=params)
 
     @compatible_with("exists", min_inclusive=ServerVersion(2, 5, 0))
     def exists(self, model_name: str) -> "Series[Any]":
         self._namespace += ".exists"
 
-        query = f"CALL {self._namespace}($model_name)"
-        params = {"model_name": model_name}
-
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(
+            endpoint=self._namespace, body="$model_name", params={"model_name": model_name}
+        ).squeeze()  # type: ignore
 
     @compatible_with("drop", min_inclusive=ServerVersion(2, 5, 0))
     def drop(self, model: Model) -> "Series[Any]":
         self._namespace += ".drop"
 
-        query = f"CALL {self._namespace}($model_name)"
-        params = {"model_name": model.name()}
-
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(
+            endpoint=self._namespace, body="$model_name", params={"model_name": model.name()}
+        ).squeeze()  # type: ignore
 
     @property
     def transe(self) -> TransECreator:

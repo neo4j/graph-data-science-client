@@ -104,7 +104,7 @@ class CypherGraphConstructor(GraphConstructor):
 
     def _should_warn_about_arrow_missing(self) -> bool:
         try:
-            license: str = self._query_runner.run_query(
+            license: str = self._query_runner.run_cypher(
                 "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value", custom_error=False
             ).squeeze()
             should_warn = license == "Licensed"
@@ -211,7 +211,7 @@ class CypherGraphConstructor(GraphConstructor):
                 "undirectedRelationshipTypes": self._undirected_relationship_types,
             }
 
-            self._query_runner.run_query(
+            self._query_runner.run_cypher(
                 query,
                 {
                     "data": combined_df.values.tolist(),
@@ -373,7 +373,7 @@ class CypherGraphConstructor(GraphConstructor):
             node_query, nodes = self._node_query(node_df)
             relationship_query, relationships = self._relationship_query(relationship_df)
 
-            self._query_runner.run_query(
+            self._query_runner.run_cypher(
                 query,
                 {
                     "graph_name": self._graph_name,

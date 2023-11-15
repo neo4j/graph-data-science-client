@@ -39,7 +39,7 @@ class RWRRunner(IllegalAttrChecker):
             "config": config,
         }
 
-        result = self._query_runner.run_query_with_logging(query, params).squeeze()
+        result = self._query_runner.run_cypher_with_logging(query, params).squeeze()
 
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
 
@@ -55,15 +55,16 @@ class CNARWRunner(IllegalAttrChecker):
             "config": config,
         }
 
-        result = self._query_runner.run_query_with_logging(query, params).squeeze()
+        result = self._query_runner.run_cypher_with_logging(query, params).squeeze()
 
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
 
     def estimate(self, from_G: Graph, **config: Any) -> "Series[Any]":
         self._namespace += ".estimate"
-        result = self._query_runner.run_query(
-            f"CALL {self._namespace}($from_graph_name, $config)",
-            {
+        result = self._query_runner.call_procedure(
+            endpoint=self._namespace,
+            body="$from_graph_name, $config",
+            params={
                 "from_graph_name": from_G.name(),
                 "config": config,
             },

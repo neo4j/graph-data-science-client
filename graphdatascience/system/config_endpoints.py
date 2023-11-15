@@ -14,15 +14,14 @@ class ConfigProcRunner(IllegalAttrChecker, UncallableNamespace):
         self._namespace += ".set"
 
         params = {"key": key, "value": value}
+        body = "$key, $value"
 
         # Checking for explicit None as '' is a valid user
         if username is not None:
-            query = f"CALL {self._namespace}($key, $value, $username)"
+            body += ", $username"
             params["username"] = username
-        else:
-            query = f"CALL {self._namespace}($key, $value)"
 
-        self._query_runner.run_query(query, params)
+        self._query_runner.call_procedure(endpoint=self._namespace, body=body, params=params)
 
     def list(self, key: Optional[str] = None, username: Optional[str] = None) -> DataFrame:
         self._namespace += ".list"
@@ -35,10 +34,9 @@ class ConfigProcRunner(IllegalAttrChecker, UncallableNamespace):
         if username is not None:
             config["username"] = username
 
-        query = f"CALL {self._namespace}($config)"
         params = {"config": config}
 
-        return self._query_runner.run_query(query, params)
+        return self._query_runner.call_procedure(endpoint=self._namespace, body="$config", params=params)
 
 
 class ConfigIntermediateSteps(CallerBase):

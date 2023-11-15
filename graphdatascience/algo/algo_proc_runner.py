@@ -12,16 +12,20 @@ from ..model.graphsage_model import GraphSageModel
 class AlgoProcRunner(IllegalAttrChecker, ABC):
     @graph_type_check
     def _run_procedure(self, G: Graph, config: Dict[str, Any], with_logging: bool = True) -> DataFrame:
-        query = f"CALL {self._namespace}($graph_name, $config)"
-
-        params: Dict[str, Any] = {}
-        params["graph_name"] = G.name()
-        params["config"] = config
+        params: Dict[str, Any] = {
+            "graph_name": G.name(),
+            "config": config,
+        }
 
         if with_logging:
-            return self._query_runner.run_query_with_logging(query, params)
+            query = f"CALL {self._namespace}($graph_name, $config)"
+            return self._query_runner.run_cypher_with_logging(query, params)
         else:
-            return self._query_runner.run_query(query, params)
+            return self._query_runner.call_procedure(
+                endpoint=self._namespace,
+                body="$graph_name, $config",
+                params=params,
+            )
 
     @graph_type_check
     def estimate(self, G: Graph, **config: Any) -> "Series[Any]":

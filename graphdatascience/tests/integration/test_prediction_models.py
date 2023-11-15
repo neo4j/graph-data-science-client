@@ -15,7 +15,7 @@ from graphdatascience.server_version.server_version import ServerVersion
 
 @pytest.fixture
 def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None, None]:
-    runner.run_query(
+    runner.run_cypher(
         """
         CREATE
         (a: Node {age: 2}),
@@ -46,7 +46,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
     yield G
 
-    runner.run_query("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n")
     G.drop()
 
 
@@ -84,7 +84,7 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
     query = f"CALL gds.{namespace}model.drop($name)"
     params = {"name": lp_model.name()}
-    runner.run_query(query, params)
+    runner.run_cypher(query, params)
 
 
 @pytest.fixture
@@ -153,7 +153,7 @@ def nr_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
     query = f"CALL gds.{namespace}model.drop($name)"
     params = {"name": nr_model.name()}
-    runner.run_query(query, params)
+    runner.run_cypher(query, params)
 
 
 def test_predict_stream_lp_model(lp_model: LPModel, G: Graph) -> None:

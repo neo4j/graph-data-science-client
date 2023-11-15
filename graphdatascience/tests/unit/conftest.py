@@ -9,6 +9,7 @@ from graphdatascience.query_runner.cypher_graph_constructor import (
     CypherGraphConstructor,
 )
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
+from graphdatascience.query_runner.query_runner import EndpointType
 from graphdatascience.server_version.server_version import ServerVersion
 
 # Should mirror the latest GDS server version under development.
@@ -22,7 +23,29 @@ class CollectingQueryRunner(QueryRunner):
         self.params: List[Dict[str, Any]] = []
         self._server_version = server_version
 
-    def run_query(
+    # FIXME: avoid copy of Neo4j Query runner impl (could have different mocks per endpoint now)
+    def call_endpoint(
+        self,
+        type: EndpointType,
+        endpoint: str,
+        yields: Optional[List[str]] = None,
+        body: Optional[str] = None,
+        params: Optional[Dict[str, Any]] = None,
+        database: Optional[str] = None,
+        custom_error: bool = True,
+    ) -> DataFrame:
+        call_keyword = "CALL" if type == EndpointType.PROCEDURE else "RETURN"
+
+        if yields is not None and type == EndpointType.FUNCTION:
+            raise ValueError("Functions cannot yield results")
+        body = body if body else ""
+
+        yields_clause = "" if yields is None else " YIELD " + ", ".join(yields)
+        query = f"{call_keyword} {endpoint}({body}){yields_clause}"
+
+        return self.run_cypher(query, params, database, custom_error)
+
+    def run_cypher(
         self, query: str, params: Optional[Dict[str, Any]] = None, db: Optional[str] = None, custom_error: bool = True
     ) -> DataFrame:
         if params is None:

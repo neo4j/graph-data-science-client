@@ -12,7 +12,7 @@ GRAPH_NAME = "g"
 
 @pytest.fixture(scope="class", autouse=True)
 def setup_module(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
-    runner.run_query(
+    runner.run_cypher(
         """
         CREATE
         (a: Node {x: 1}),
@@ -28,7 +28,7 @@ def setup_module(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 
     yield
 
-    runner.run_query("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n")
 
 
 @pytest.fixture

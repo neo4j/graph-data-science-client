@@ -48,7 +48,7 @@ class DirectUtilEndpoints(CallerBase):
         else:
             query = "MATCH (n) RETURN id(n) AS id"
 
-        node_match = self._query_runner.run_query(query, custom_error=False)
+        node_match = self._query_runner.run_cypher(query, custom_error=False)
 
         if len(node_match) != 1:
             raise ValueError(f"Filter did not match with exactly one node: {node_match}")
@@ -63,7 +63,7 @@ class DirectUtilEndpoints(CallerBase):
             The version of the GDS library.
         """
         namespace = self._namespace + ".version"
-        result = self._query_runner.run_query(f"RETURN {namespace}() as version", custom_error=False).squeeze()
+        result = self._query_runner.call_function(endpoint=namespace, custom_error=False).squeeze()
 
         return result  # type: ignore
 
@@ -86,7 +86,7 @@ class DirectUtilEndpoints(CallerBase):
             A DataFrame containing all available GDS procedures.
         """
         namespace = self._namespace + ".list"
-        return self._query_runner.run_query(f"CALL {namespace}()", custom_error=False)
+        return self._query_runner.call_procedure(endpoint=namespace, custom_error=False)
 
     @property
     def util(self) -> UtilProcRunner:
@@ -107,11 +107,11 @@ class IndirectUtilAlphaEndpoints(CallerBase):
         """
         namespace = self._namespace + ".oneHotEncoding"
 
-        query = f"RETURN {namespace}($available_values, $selected_values) AS embedding"
+        body = "$available_values, $selected_values"
         params = {
             "available_values": available_values,
             "selected_values": selected_values,
         }
-        result = self._query_runner.run_query(query, params)
+        result = self._query_runner.call_function(endpoint=namespace, body=body, params=params)
 
-        return result["embedding"].squeeze()  # type: ignore
+        return result[0].squeeze()  # type: ignore

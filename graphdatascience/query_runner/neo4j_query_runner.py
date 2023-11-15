@@ -15,7 +15,7 @@ from ..error.unable_to_connect import UnableToConnectError
 from ..server_version.server_version import ServerVersion
 from .cypher_graph_constructor import CypherGraphConstructor
 from .graph_constructor import GraphConstructor
-from .query_runner import QueryRunner
+from .query_runner import EndpointType, QueryRunner
 
 
 class Neo4jQueryRunner(QueryRunner):
@@ -36,7 +36,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._bookmarks = bookmarks
         self._last_bookmarks: Optional[Any] = None
 
-    def run_query(
+    def run_cypher(
         self,
         query: str,
         params: Optional[Dict[str, Any]] = None,
@@ -81,14 +81,35 @@ class Neo4jQueryRunner(QueryRunner):
 
             return df
 
-    def run_query_with_logging(
+    def call_endpoint(
+        self,
+        type: EndpointType,
+        endpoint: str,
+        yields: Optional[List[str]] = None,
+        body: Optional[str] = None,
+        params: Optional[Dict[str, Any]] = None,
+        database: Optional[str] = None,
+        custom_error: bool = True,
+    ) -> DataFrame:
+        call_keyword = "CALL" if type == EndpointType.PROCEDURE else "RETURN"
+
+        if yields is not None and type == EndpointType.FUNCTION:
+            raise ValueError("Functions cannot yield results")
+        body = body if body else ""
+
+        yields_clause = "" if yields is None else " YIELD " + ", ".join(yields)
+        query = f"{call_keyword} {endpoint}({body}){yields_clause}"
+
+        return self.run_cypher(query, params, database, custom_error)
+
+    def run_cypher_with_logging(
         self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
     ) -> DataFrame:
         if params is None:
             params = {}
 
         if self._server_version < ServerVersion(2, 1, 0):
-            return self.run_query(query, params, database)
+            return self.run_cypher(query, params, database)
 
         if "config" in params:
             if "jobId" in params["config"]:
@@ -101,7 +122,7 @@ class Neo4jQueryRunner(QueryRunner):
             params["config"] = {"jobId": job_id}
 
         with ThreadPoolExecutor() as executor:
-            future = executor.submit(self.run_query, query, params, database)
+            future = executor.submit(self.run_cypher, query, params, database)
 
             self._log(job_id, future, database)
 
@@ -133,7 +154,7 @@ class Neo4jQueryRunner(QueryRunner):
         while wait([future], timeout=self._LOG_POLLING_INTERVAL).not_done:
             try:
                 tier = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
-                progress = self.run_query(
+                progress = self.run_cypher(
                     f"CALL gds.{tier}listProgress('{job_id}') YIELD taskName, progress", database=database
                 )
             except Exception as e:

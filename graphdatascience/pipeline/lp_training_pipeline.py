@@ -24,14 +24,15 @@ class LPTrainingPipeline(ClassificationTrainingPipeline[LPModel]):
         Returns:
             The result of the query.
         """
-        query = f"{self._query_prefix()}addFeature($pipeline_name, $feature_type, $config)"
+        endpoint = f"{self._endpoint_prefix()}addFeature"
+        body = "$pipeline_name, $feature_type, $config"
         params = {
             "pipeline_name": self.name(),
             "feature_type": feature_type,
             "config": config,
         }
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
 
     def feature_steps(self) -> DataFrame:
         """
@@ -44,8 +45,8 @@ class LPTrainingPipeline(ClassificationTrainingPipeline[LPModel]):
         pipeline_info = self._list_info()["pipelineInfo"][0]
         return DataFrame(pipeline_info["featurePipeline"]["featureSteps"])
 
-    def _query_prefix(self) -> str:
-        return "CALL gds.beta.pipeline.linkPrediction."
+    def _endpoint_prefix(self) -> str:
+        return "gds.beta.pipeline.linkPrediction."
 
     def _create_trained_model(self, name: str, query_runner: QueryRunner) -> LPModel:
         return LPModel(name, query_runner, self._server_version)

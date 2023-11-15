@@ -13,8 +13,8 @@ class GraphSageModel(Model):
     Construct this using :func:`gds.beta.graphSage.train()`.
     """
 
-    def _query_prefix(self) -> str:
-        return "CALL gds.beta.graphSage."
+    def _endpoint_prefix(self) -> str:
+        return "gds.beta.graphSage."
 
     @graph_type_check
     def predict_write(self, G: Graph, **config: Any) -> "Series[Any]":
@@ -29,11 +29,11 @@ class GraphSageModel(Model):
             The result of the write operation.
 
         """
-        query = f"{self._query_prefix()}write($graph_name, $config)"
+        query = f"{self._endpoint_prefix()}write($graph_name, $config)"
         config["modelName"] = self.name()
         params = {"graph_name": G.name(), "config": config}
 
-        return self._query_runner.run_query_with_logging(query, params).squeeze()  # type: ignore
+        return self._query_runner.run_cypher_with_logging(query, params).squeeze()  # type: ignore
 
     @graph_type_check
     def predict_write_estimate(self, G: Graph, **config: Any) -> "Series[Any]":

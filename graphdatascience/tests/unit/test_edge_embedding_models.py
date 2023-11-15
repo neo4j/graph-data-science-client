@@ -47,7 +47,7 @@ def test_transe_predict_stream(runner: CollectingQueryRunner, transe_M: SimpleRe
                     relationshipTypeEmbedding: $relationship_type_embedding,
                     scoringFunction: $scoring_function,
                     topK: $top_k,
-concurrency: $concurrency
+                    concurrency: $concurrency
                 }
             )
             """

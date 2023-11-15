@@ -13,7 +13,7 @@ GRAPH_NAME = "g"
 @fixture(autouse=True)
 def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     # Runs before each test
-    runner.run_query(
+    runner.run_cypher(
         """
         CREATE
         (a: Node),
@@ -28,8 +28,8 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     yield  # Test runs here
 
     # Runs after each test
-    runner.run_query("MATCH (n) DETACH DELETE n")
-    runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}')")
+    runner.run_cypher("MATCH (n) DETACH DELETE n")
+    runner.run_cypher(f"CALL gds.graph.drop('{GRAPH_NAME}')")
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))

@@ -43,10 +43,13 @@ class Graph:
     def _graph_info(self, yields: List[str] = []) -> "Series[Any]":
         yield_db = "database" in yields
         yields_with_db = yields if yield_db else yields + ["database"]
-        yield_suffix = "" if len(yields) == 0 else " YIELD " + ", ".join(yields_with_db)
 
-        info = self._query_runner.run_query(
-            f"CALL gds.graph.list($graph_name){yield_suffix}", {"graph_name": self._name}, custom_error=False
+        info = self._query_runner.call_procedure(
+            endpoint="gds.graph.list",
+            body="$graph_name",
+            params={"graph_name": self._name},
+            yields=yields_with_db,
+            custom_error=False,
         )
 
         if len(info) == 0:
@@ -173,9 +176,10 @@ class Graph:
         Returns:
             whether the graph exists
         """
-        result = self._query_runner.run_query(
-            "CALL gds.graph.exists($graph_name)",
-            {"graph_name": self._name},
+        result = self._query_runner.call_procedure(
+            endpoint="gds.graph.exists",
+            body="$graph_name",
+            params={"graph_name": self._name},
             custom_error=False,
         )
         return result.squeeze()["exists"]  # type: ignore
@@ -189,9 +193,10 @@ class Graph:
             the result of the drop operation
 
         """
-        result = self._query_runner.run_query(
-            "CALL gds.graph.drop($graph_name, $fail_if_missing)",
-            {"graph_name": self._name, "fail_if_missing": failIfMissing},
+        result = self._query_runner.call_procedure(
+            endpoint="gds.graph.drop",
+            body="$graph_name, $fail_if_missing",
+            params={"graph_name": self._name, "fail_if_missing": failIfMissing},
             custom_error=False,
         )
 

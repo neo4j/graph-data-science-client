@@ -10,7 +10,7 @@ from graphdatascience.server_version.server_version import ServerVersion
 
 @pytest.fixture(autouse=True)
 def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None, None]:
-    runner.run_query(
+    runner.run_cypher(
         """
         CREATE
         (a:Location {name: 'A', population: 1337}),
@@ -39,17 +39,17 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
     yield G
 
     G.drop()
-    runner.run_query("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n")
 
 
 def test_find_node_id(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     id = gds.find_node_id(["Location"], {"name": "A"})
-    res = runner.run_query(f"MATCH(n) WHERE id(n) = {id} RETURN n")
+    res = runner.run_cypher(f"MATCH(n) WHERE id(n) = {id} RETURN n")
     assert len(res) == 1
     assert res["n"][0]["name"] == "A"
 
     id = gds.find_node_id(["Location"], {"name": 2})
-    res = runner.run_query(f"MATCH(n) WHERE id(n) = {id} RETURN n")
+    res = runner.run_cypher(f"MATCH(n) WHERE id(n) = {id} RETURN n")
     assert len(res) == 1
     assert res["n"][0]["name"] == 2
 

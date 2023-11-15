@@ -14,7 +14,7 @@ from graphdatascience.server_version.server_version import ServerVersion
 
 class GraphProjectRunner(IllegalAttrChecker):
     def __call__(self, graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> GraphCreateResult:
-        result = self._query_runner.run_query_with_logging(
+        result = self._query_runner.run_cypher_with_logging(
             f"CALL {self._namespace}($graph_name, $node_spec, $relationship_spec, $config)",
             {
                 "graph_name": graph_name,
@@ -28,9 +28,10 @@ class GraphProjectRunner(IllegalAttrChecker):
 
     def estimate(self, node_projection: Any, relationship_projection: Any, **config: Any) -> "Series[Any]":
         self._namespace += ".estimate"
-        result = self._query_runner.run_query(
-            f"CALL {self._namespace}($node_spec, $relationship_spec, $config)",
-            {
+        result = self._query_runner.call_procedure(
+            endpoint=self._namespace,
+            body="$node_spec, $relationship_spec, $config",
+            params={
                 "node_spec": node_projection,
                 "relationship_spec": relationship_projection,
                 "config": config,
@@ -59,7 +60,7 @@ class GraphProjectBetaRunner(IllegalAttrChecker):
         **config: Any,
     ) -> GraphCreateResult:
         self._namespace += ".subgraph"
-        result = self._query_runner.run_query_with_logging(
+        result = self._query_runner.run_cypher_with_logging(
             f"CALL {self._namespace}($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)",
             {
                 "graph_name": graph_name,
@@ -76,7 +77,11 @@ class GraphProjectBetaRunner(IllegalAttrChecker):
 class GraphProjectRemoteRunner(IllegalAttrChecker):
     @compatible_with("remoteDb", min_inclusive=ServerVersion(2, 6, 0))
     def __call__(self, graph_name: str, query: str, remote_database: str = "neo4j", **config: Any) -> GraphCreateResult:
-        procedure_query = f"CALL {self._namespace}($graph_name, $query, $token, $host, $remote_database, $config)"
+        body = "$graph_name, $query, $token, $host, $remote_database, $config"
         params = {"graph_name": graph_name, "query": query, "remote_database": remote_database, "config": config}
-        result = self._query_runner.run_query(procedure_query, params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint=self._namespace,
+            body=body,
+            params=params,
+        ).squeeze()
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)

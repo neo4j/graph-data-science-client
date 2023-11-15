@@ -17,7 +17,7 @@ class Model(ABC):
         self._server_version = server_version
 
     @abstractmethod
-    def _query_prefix(self) -> str:
+    def _endpoint_prefix(self) -> str:
         pass
 
     def _list_info(self) -> DataFrame:
@@ -39,7 +39,8 @@ class Model(ABC):
 
         params = {"name": self.name()}
 
-        info = self._query_runner.run_query(query, params, custom_error=False)
+        # FIXME use call procedure + do post processing on the client side
+        info = self._query_runner.run_cypher(query, params, custom_error=False)
 
         if len(info) == 0:
             raise ValueError(f"There is no '{self.name()}' in the model catalog")
@@ -47,11 +48,16 @@ class Model(ABC):
         return info
 
     def _estimate_predict(self, predict_mode: str, graph_name: str, config: Dict[str, Any]) -> "Series[Any]":
-        query = f"{self._query_prefix()}{predict_mode}.estimate($graph_name, $config)"
+        endpoint = f"{self._endpoint_prefix()}{predict_mode}.estimate"
+        body = "$graph_name, $config"
         config["modelName"] = self.name()
         params = {"graph_name": graph_name, "config": config}
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(
+            endpoint=endpoint,
+            body=body,
+            params=params,
+        ).squeeze()  # type: ignore
 
     def name(self) -> str:
         """
@@ -165,11 +171,15 @@ class Model(ABC):
 
         """
         name_space = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
-        query = f"CALL gds.{name_space}model.exists($model_name) YIELD exists"
+        endpoint = f"CALL gds.{name_space}model.exists($model_name) YIELD exists"
+        body = "$model_name"
+        yields = ["exists"]
 
         params = {"model_name": self._name}
 
-        return self._query_runner.run_query(query, params, custom_error=False).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(
+            endpoint=endpoint, body=body, params=params, yields=yields, custom_error=False
+        ).squeeze()  # type: ignore
 
     def drop(self, failIfMissing: bool = False) -> "Series[Any]":
         """
@@ -199,8 +209,8 @@ class Model(ABC):
                     """
 
         params = {"model_name": self._name, "fail_if_missing": failIfMissing}
-
-        return self._query_runner.run_query(query, params, custom_error=False).squeeze()  # type: ignore
+        # FIXME use call procedure + do post processing on the client side
+        return self._query_runner.run_cypher(query, params, custom_error=False).squeeze()  # type: ignore
 
     def metrics(self) -> "Series[Any]":
         """
@@ -227,11 +237,11 @@ class Model(ABC):
             The prediction results as DataFrame.
 
         """
-        query = f"{self._query_prefix()}stream($graph_name, $config)"
+        query = f"CALL {self._endpoint_prefix()}stream($graph_name, $config)"
         config["modelName"] = self.name()
         params = {"graph_name": G.name(), "config": config}
 
-        return self._query_runner.run_query_with_logging(query, params)
+        return self._query_runner.run_cypher_with_logging(query, params)
 
     @graph_type_check
     def predict_stream_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
@@ -261,11 +271,11 @@ class Model(ABC):
             The result of mutate operation.
 
         """
-        query = f"{self._query_prefix()}mutate($graph_name, $config)"
+        query = f"CALL {self._endpoint_prefix()}mutate($graph_name, $config)"
         config["modelName"] = self.name()
         params = {"graph_name": G.name(), "config": config}
 
-        return self._query_runner.run_query_with_logging(query, params).squeeze()  # type: ignore
+        return self._query_runner.run_cypher_with_logging(query, params).squeeze()  # type: ignore
 
     @graph_type_check
     def predict_mutate_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
