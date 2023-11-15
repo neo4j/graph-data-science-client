@@ -111,7 +111,7 @@ class AuraApi:
             "version": "5",
             "region": region,
             # TODO should be figured out from the tenant details in the future
-            "type": "enterprise-ds" if not AuraApi.DEV_ENV else "professional-ds",
+            "type": self._instance_type(),
             "tenant_id": self._tenant_id,
             "cloud_provider": cloud_provider,
         }
@@ -194,6 +194,16 @@ class AuraApi:
 
         return f"Instance is not running after waiting for {waited_time} seconds"
 
+    def list_available_memory_configurations(self) -> list[str]:
+        response = req.get(f"{AuraApi.BASE_URI}/v1/tenants/{self._tenant_id}")
+        raw_data = response.json()["data"]
+
+        return [
+            configuration["memory"]
+            for configuration in raw_data["instance_configurations"]
+            if configuration["type"] == self._instance_type()
+        ]
+
     def _get_tenant_id(self) -> str:
         response = req.get(
             f"{AuraApi.BASE_URI}/v1/tenants",
@@ -232,3 +242,6 @@ class AuraApi:
         response.raise_for_status()
 
         return AuraApi.AuraAuthToken(response.json())
+
+    def _instance_type(self) -> str:
+        return "enterprise-ds" if not AuraApi.DEV_ENV else "professional-ds"

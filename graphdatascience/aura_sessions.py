@@ -43,6 +43,13 @@ class AuraSessions:
         if not db_instance:
             raise ValueError(f"Could not find Aura instance with the uri `{self._db_credentials.uri}`")
 
+        available_memory_configurations = self._aura_api.list_available_memory_configurations()
+        if memory not in available_memory_configurations:
+            raise ValueError(
+                (f"Memory configuration `{memory}` is not available. "
+                 f"Available configurations are: {available_memory_configurations}")
+            )
+
         create_details = self._aura_api.create_instance(
             AuraSessions._instance_name(session_name), memory, db_instance.cloud_provider, db_instance.region
         )
