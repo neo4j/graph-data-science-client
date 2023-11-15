@@ -5,7 +5,6 @@ from pandas import DataFrame
 
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .server_version.server_version import ServerVersion
-from .version import __version__
 from graphdatascience import GraphDataScience
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbArrowQueryRunner,
@@ -43,15 +42,15 @@ class AuraGraphDataScience(GraphDataScience):
         gds_query_runner = self._query_runner
 
         driver = GraphDatabase.driver(aura_db_connection_info.uri, auth=aura_db_connection_info.auth, **self._config)
-        db_query_runner = Neo4jQueryRunner(driver, auto_close=True, bookmarks=bookmarks)
-        db_query_runner.set_server_version(self._server_version)
+        self._db_query_runner = Neo4jQueryRunner(driver, auto_close=True, bookmarks=bookmarks)
+        self._db_query_runner.set_server_version(self._server_version)
 
         if database:
-            db_query_runner.set_database(database)
+            self._db_query_runner.set_database(database)
 
         if self._server_version >= ServerVersion(2, 6, 0):
             self._query_runner = AuraDbArrowQueryRunner(
-                gds_query_runner, db_query_runner, driver.encrypted, aura_db_connection_info
+                gds_query_runner, self._db_query_runner, driver.encrypted, aura_db_connection_info
             )
         else:
             raise RuntimeError(
@@ -78,4 +77,4 @@ class AuraGraphDataScience(GraphDataScience):
             The query result as a DataFrame
         """
         # This will avoid calling valid gds procedures through a raw string
-        return self._query_runner._db_query_runner.run_query(query, params, database, False)
+        return self._db_query_runner.run_query(query, params, database, False)
