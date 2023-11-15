@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from typing import Any, Dict, Optional, Tuple, Type, Union
 
 from neo4j import Driver, GraphDatabase
@@ -16,10 +15,6 @@ from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
 from .version import __version__
-from graphdatascience.query_runner.aura_db_arrow_query_runner import (
-    AuraDbArrowQueryRunner,
-    AuraDbConnectionInfo,
-)
 
 
 class GraphDataScience(DirectEndpoints, UncallableNamespace):
@@ -39,7 +34,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow: bool = True,
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
-        aura_db_connection_info: Optional[AuraDbConnectionInfo] = None,
         bookmarks: Optional[Any] = None,
     ):
         """
@@ -131,14 +125,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                     driver.encrypted,
                     arrow_disable_server_verification,
                     arrow_tls_root_certs,
-                )
-        if aura_db_connection_info:
-            if self._server_version >= ServerVersion(2, 4, 0):
-                self._query_runner = AuraDbArrowQueryRunner(self._query_runner, aura_db_connection_info)
-            else:
-                warnings.warn(
-                    f"AuraDB connection info was provided but GDS version {self._server_version} \
-                        does not support connecting to AuraDB"
                 )
 
         super().__init__(self._query_runner, "gds", self._server_version)
