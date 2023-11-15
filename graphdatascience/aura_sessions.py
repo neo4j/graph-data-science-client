@@ -46,8 +46,10 @@ class AuraSessions:
         available_memory_configurations = self._aura_api.list_available_memory_configurations()
         if memory not in available_memory_configurations:
             raise ValueError(
-                (f"Memory configuration `{memory}` is not available. "
-                 f"Available configurations are: {available_memory_configurations}")
+                (
+                    f"Memory configuration `{memory}` is not available. "
+                    f"Available configurations are: {available_memory_configurations}"
+                )
             )
 
         create_details = self._aura_api.create_instance(
