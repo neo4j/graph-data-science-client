@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 import logging
 import os
 import time
@@ -54,26 +55,19 @@ class InstanceSpecificDetails(InstanceDetails):
 
 
 @dataclass(repr=True)
-class InstanceCreateDetails(InstanceDetails):
-    password: str
+class InstanceCreateDetails:
+    id: str
     username: str
+    password: str
     connection_url: str
-    type: str
-    region: str
 
     @classmethod
-    def fromJson(cls, json: dict[str, Any]) -> InstanceCreateDetails:
-        return cls(
-            id=json["id"],
-            name=json.get("name", ""),
-            tenant_id=json["tenant_id"],
-            cloud_provider=json["cloud_provider"],
-            password=json["password"],
-            username=json["username"],
-            connection_url=json["connection_url"],
-            type=json["type"],
-            region=json["region"],
-        )
+    def from_json(cls, json: dict[str, Any]) -> InstanceCreateDetails:
+        fields = dataclasses.fields(cls)
+        if any(f.name not in json for f in fields):
+            raise RuntimeError(f"Missing required field. Expected `{[f.name for f in fields]}` but got `{json}`")
+
+        return cls(**{f.name: json[f.name] for f in fields})
 
 
 class AuraApi:
@@ -134,7 +128,7 @@ class AuraApi:
             print(response.json())
             raise e
 
-        return InstanceCreateDetails.fromJson(response.json()["data"])
+        return InstanceCreateDetails.from_json(response.json()["data"])
 
     def delete_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.delete(

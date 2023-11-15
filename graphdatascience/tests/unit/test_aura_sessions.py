@@ -35,26 +35,21 @@ class FakeAuraApi(AuraApi):
     def create_instance(self, name: str, cloud_provider: str, region: str) -> InstanceCreateDetails:
         create_details = InstanceCreateDetails(
             id=f"ffff{self.id_counter}",
-            name=name,
-            tenant_id="tenant_id",
-            cloud_provider=cloud_provider,
             username="neo4j",
             password="fake-pw",
             connection_url="fake-url",
-            type="",
-            region=region,
         )
 
         specific_details = InstanceSpecificDetails(
             id=create_details.id,
-            name=create_details.name,
-            tenant_id=create_details.tenant_id,
-            cloud_provider=create_details.cloud_provider,
             status="creating",
             connection_url="fake-url",
             memory="",
             type="",
             region=region,
+            name=name,
+            tenant_id=self._tenant_id,
+            cloud_provider=cloud_provider,
         )
 
         self.id_counter += 1
