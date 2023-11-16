@@ -40,12 +40,12 @@ def test_transe_predict_stream(runner: CollectingQueryRunner, transe_M: SimpleRe
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
         "config": {
-            "source_node_filter": SOURCE_NODE_FILTER,
-            "target_node_filter": TARGET_NODE_FILTER,
-            "node_embedding_property": NODE_PROP,
-            "relationship_type_embedding": REL_TYPE_EMBEDDING,
-            "scoring_function": "transe",
-            "top_k": TOP_K,
+            "sourceNodeFilter": SOURCE_NODE_FILTER,
+            "targetNodeFilter": TARGET_NODE_FILTER,
+            "nodeEmbeddingProperty": NODE_PROP,
+            "relationshipTypeEmbedding": REL_TYPE_EMBEDDING,
+            "scoringFunction": "transe",
+            "topK": TOP_K,
             "concurrency": CONCURRENCY,
         },
     }
@@ -58,12 +58,12 @@ def test_distmult_predict_stream(runner: CollectingQueryRunner, distmult_M: Simp
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
         "config": {
-            "source_node_filter": SOURCE_NODE_FILTER,
-            "target_node_filter": TARGET_NODE_FILTER,
-            "node_embedding_property": NODE_PROP,
-            "relationship_type_embedding": REL_TYPE_EMBEDDING,
-            "scoring_function": "distmult",
-            "top_k": TOP_K,
+            "sourceNodeFilter": SOURCE_NODE_FILTER,
+            "targetNodeFilter": TARGET_NODE_FILTER,
+            "nodeEmbeddingProperty": NODE_PROP,
+            "relationshipTypeEmbedding": REL_TYPE_EMBEDDING,
+            "scoringFunction": "distmult",
+            "topK": TOP_K,
         },
     }
 
@@ -77,14 +77,14 @@ def test_transe_predict_mutate(runner: CollectingQueryRunner, transe_M: SimpleRe
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
         "config": {
-            "source_node_filter": SOURCE_NODE_FILTER,
-            "target_node_filter": TARGET_NODE_FILTER,
-            "node_embedding_property": NODE_PROP,
-            "relationship_type_embedding": REL_TYPE_EMBEDDING,
-            "scoring_function": "transe",
-            "top_k": TOP_K,
-            "mutate_property": WRITE_MUTATE_PROPERTY,
-            "mutate_relationship_type": WRITE_MUTATE_REL_TYPE,
+            "sourceNodeFilter": SOURCE_NODE_FILTER,
+            "targetNodeFilter": TARGET_NODE_FILTER,
+            "nodeEmbeddingProperty": NODE_PROP,
+            "relationshipTypeEmbedding": REL_TYPE_EMBEDDING,
+            "scoringFunction": "transe",
+            "topK": TOP_K,
+            "mutateProperty": WRITE_MUTATE_PROPERTY,
+            "mutateRelationshipType": WRITE_MUTATE_REL_TYPE,
         },
     }
 
@@ -104,14 +104,14 @@ def test_distmult_predict_mutate(runner: CollectingQueryRunner, distmult_M: Simp
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
         "config": {
-            "source_node_filter": SOURCE_NODE_FILTER,
-            "target_node_filter": TARGET_NODE_FILTER,
-            "node_embedding_property": NODE_PROP,
-            "relationship_type_embedding": REL_TYPE_EMBEDDING,
-            "scoring_function": "distmult",
-            "top_k": TOP_K,
-            "mutate_property": WRITE_MUTATE_PROPERTY,
-            "mutate_relationship_type": WRITE_MUTATE_REL_TYPE,
+            "sourceNodeFilter": SOURCE_NODE_FILTER,
+            "targetNodeFilter": TARGET_NODE_FILTER,
+            "nodeEmbeddingProperty": NODE_PROP,
+            "relationshipTypeEmbedding": REL_TYPE_EMBEDDING,
+            "scoringFunction": "distmult",
+            "topK": TOP_K,
+            "mutateProperty": WRITE_MUTATE_PROPERTY,
+            "mutateRelationshipType": WRITE_MUTATE_REL_TYPE,
             "concurrency": CONCURRENCY,
         },
     }
@@ -132,14 +132,14 @@ def test_transe_predict_write(runner: CollectingQueryRunner, transe_M: SimpleRel
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
         "config": {
-            "source_node_filter": SOURCE_NODE_FILTER,
-            "target_node_filter": TARGET_NODE_FILTER,
-            "node_embedding_property": NODE_PROP,
-            "relationship_type_embedding": REL_TYPE_EMBEDDING,
-            "scoring_function": "transe",
-            "top_k": TOP_K,
-            "write_property": WRITE_MUTATE_PROPERTY,
-            "write_relationship_type": WRITE_MUTATE_REL_TYPE,
+            "sourceNodeFilter": SOURCE_NODE_FILTER,
+            "targetNodeFilter": TARGET_NODE_FILTER,
+            "nodeEmbeddingProperty": NODE_PROP,
+            "relationshipTypeEmbedding": REL_TYPE_EMBEDDING,
+            "scoringFunction": "transe",
+            "topK": TOP_K,
+            "writeProperty": WRITE_MUTATE_PROPERTY,
+            "writeRelationshipType": WRITE_MUTATE_REL_TYPE,
             "concurrency": CONCURRENCY,
         },
     }
@@ -154,14 +154,14 @@ def test_distmult_predict_write(runner: CollectingQueryRunner, distmult_M: Simpl
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
         "config": {
-            "source_node_filter": SOURCE_NODE_FILTER,
-            "target_node_filter": TARGET_NODE_FILTER,
-            "node_embedding_property": NODE_PROP,
-            "relationship_type_embedding": REL_TYPE_EMBEDDING,
-            "scoring_function": "distmult",
-            "top_k": TOP_K,
-            "write_relationship_type": WRITE_MUTATE_REL_TYPE,
-            "write_property": WRITE_MUTATE_PROPERTY,
+            "sourceNodeFilter": SOURCE_NODE_FILTER,
+            "targetNodeFilter": TARGET_NODE_FILTER,
+            "nodeEmbeddingProperty": NODE_PROP,
+            "relationshipTypeEmbedding": REL_TYPE_EMBEDDING,
+            "scoringFunction": "distmult",
+            "topK": TOP_K,
+            "writeRelationshipType": WRITE_MUTATE_REL_TYPE,
+            "writeProperty": WRITE_MUTATE_PROPERTY,
         },
     }
 
