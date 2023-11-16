@@ -118,7 +118,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         if arrow and self._server_version >= ServerVersion(2, 1, 0):
             yield_fields = ["running"]
             yield_fields += (
-                "listenAddress" if self._server_version >= ServerVersion(2, 2, 1) else "advertisedListenAddress"
+                ["listenAddress"] if self._server_version >= ServerVersion(2, 2, 1) else ["advertisedListenAddress"]
             )
             arrow_info: "Series[Any]" = self._query_runner.call_procedure(
                 endpoint="gds.debug.arrow", yields=yield_fields, custom_error=False
