@@ -73,13 +73,13 @@ class DirectSystemEndpoints(CallerBase):
 
     @compatible_with("backup", min_inclusive=ServerVersion(2, 5, 0))
     def backup(self, **config: Any) -> DataFrame:
-        self._namespace += ".backup"
-        return self._query_runner.call_procedure(endpoint=self._namespace, body="$config", params={"config": config})
+        namespace = self._namespace + ".backup"
+        return self._query_runner.call_procedure(endpoint=namespace, body="$config", params={"config": config})
 
     @compatible_with("restore", min_inclusive=ServerVersion(2, 5, 0))
     def restore(self, **config: Any) -> DataFrame:
-        self._namespace += ".restore"
-        return self._query_runner.call_procedure(endpoint=self._namespace, body="$config", params={"config": config})
+        namespace = self._namespace + ".restore"
+        return self._query_runner.call_procedure(endpoint=namespace, body="$config", params={"config": config})
 
     @compatible_with("listProgress", min_inclusive=ServerVersion(2, 5, 0))
     def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
