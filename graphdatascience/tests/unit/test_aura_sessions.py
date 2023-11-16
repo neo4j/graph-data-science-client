@@ -78,7 +78,7 @@ class FakeAuraApi(AuraApi):
     ) -> Optional[str]:
         return super().wait_for_instance_running(instance_id, sleep_time=0.0001, max_sleep_time=0.001)
 
-    def list_available_memory_configurations(self) -> list[str]:
+    def list_available_memory_configurations(self) -> List[str]:
         return ["4GB", "8GB", "16GB", "32GB"]
 
 
