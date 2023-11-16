@@ -83,8 +83,8 @@ def test_transe_predict_mutate(runner: CollectingQueryRunner, transe_M: SimpleRe
             "relationship_type_embedding": REL_TYPE_EMBEDDING,
             "scoring_function": "transe",
             "top_k": TOP_K,
-            'mutate_property': WRITE_MUTATE_PROPERTY,
-            'mutate_relationship_type': WRITE_MUTATE_REL_TYPE,
+            "mutate_property": WRITE_MUTATE_PROPERTY,
+            "mutate_relationship_type": WRITE_MUTATE_REL_TYPE,
         },
     }
 
@@ -110,11 +110,12 @@ def test_distmult_predict_mutate(runner: CollectingQueryRunner, distmult_M: Simp
             "relationship_type_embedding": REL_TYPE_EMBEDDING,
             "scoring_function": "distmult",
             "top_k": TOP_K,
-            'mutate_property': WRITE_MUTATE_PROPERTY,
-            'mutate_relationship_type': WRITE_MUTATE_REL_TYPE,
+            "mutate_property": WRITE_MUTATE_PROPERTY,
+            "mutate_relationship_type": WRITE_MUTATE_REL_TYPE,
             "concurrency": CONCURRENCY,
         },
     }
+
 
 def test_transe_predict_write(runner: CollectingQueryRunner, transe_M: SimpleRelEmbeddingModel) -> None:
     _ = transe_M.predict_write(
@@ -137,8 +138,8 @@ def test_transe_predict_write(runner: CollectingQueryRunner, transe_M: SimpleRel
             "relationship_type_embedding": REL_TYPE_EMBEDDING,
             "scoring_function": "transe",
             "top_k": TOP_K,
-            'write_property': WRITE_MUTATE_PROPERTY,
-            'write_relationship_type': WRITE_MUTATE_REL_TYPE,
+            "write_property": WRITE_MUTATE_PROPERTY,
+            "write_relationship_type": WRITE_MUTATE_REL_TYPE,
             "concurrency": CONCURRENCY,
         },
     }
@@ -159,8 +160,8 @@ def test_distmult_predict_write(runner: CollectingQueryRunner, distmult_M: Simpl
             "relationship_type_embedding": REL_TYPE_EMBEDDING,
             "scoring_function": "distmult",
             "top_k": TOP_K,
-            'write_relationship_type': WRITE_MUTATE_REL_TYPE,
-            'write_property': WRITE_MUTATE_PROPERTY,
+            "write_relationship_type": WRITE_MUTATE_REL_TYPE,
+            "write_property": WRITE_MUTATE_PROPERTY,
         },
     }
 

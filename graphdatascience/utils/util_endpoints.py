@@ -114,4 +114,4 @@ class IndirectUtilAlphaEndpoints(CallerBase):
         }
         result = self._query_runner.call_function(endpoint=namespace, body=body, params=params)
 
-        return result[0].squeeze()  # type: ignore
+        return result.iat[0, 0]  # type: ignore

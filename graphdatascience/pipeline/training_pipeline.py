@@ -238,7 +238,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
 
         """
         return self._query_runner.call_procedure(
-            endpoint=f"CALL gds{self._tier_namespace()}.pipeline.exists",
+            endpoint=f"gds{self._tier_namespace()}.pipeline.exists",
             body="$pipeline_name",
             params={"pipeline_name": self._name},
             yields=["exists"],
@@ -259,7 +259,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
 
         """
         return self._query_runner.call_procedure(
-            endpoint=f"CALL gds{self._tier_namespace()}.pipeline.drop",
+            endpoint=f"gds{self._tier_namespace()}.pipeline.drop",
             body="$pipeline_name, $fail_if_missing",
             params={"pipeline_name": self._name, "fail_if_missing": failIfMissing},
             custom_error=False,
