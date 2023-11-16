@@ -1,11 +1,11 @@
+from __future__ import annotations
+
 from types import TracebackType
-from typing import Any, NamedTuple, Optional, Type, TypeVar
+from typing import Any, NamedTuple, Optional, Type
 
 from pandas import Series
 
 from .graph_object import Graph
-
-TGraphCreateResult = TypeVar("TGraphCreateResult", bound="GraphCreateResult")
 
 
 class GraphCreateResult(NamedTuple):
@@ -16,7 +16,7 @@ class GraphCreateResult(NamedTuple):
     graph: Graph
     result: "Series[Any]"
 
-    def __enter__(self: TGraphCreateResult) -> Graph:
+    def __enter__(self: GraphCreateResult) -> Graph:
         return self.graph
 
     def __exit__(

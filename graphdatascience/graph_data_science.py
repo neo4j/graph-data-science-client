@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import warnings
-from typing import Any, Dict, Optional, Tuple, Type, TypeVar, Union
+from typing import Any, Dict, Optional, Tuple, Type, Union
 
 from neo4j import Driver, GraphDatabase
 from pandas import DataFrame, Series
@@ -18,8 +20,6 @@ from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbArrowQueryRunner,
     AuraDbConnectionInfo,
 )
-
-GDS = TypeVar("GDS", bound="GraphDataScience")
 
 
 class GraphDataScience(DirectEndpoints, UncallableNamespace):
@@ -244,7 +244,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
     @classmethod
     def from_neo4j_driver(
-        cls: Type[GDS],
+        cls: Type[GraphDataScience],
         driver: Driver,
         auth: Optional[Tuple[str, str]] = None,
         database: Optional[str] = None,

@@ -1,13 +1,13 @@
+from __future__ import annotations
+
 from types import TracebackType
-from typing import Any, List, Optional, Type, TypeVar, Union
+from typing import Any, List, Optional, Type, Union
 
 from pandas import Series
 
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
 from graphdatascience.call_parameters import CallParameters
-
-TGraph = TypeVar("TGraph", bound="Graph")
 
 
 class Graph:
@@ -23,7 +23,7 @@ class Graph:
         self._db = query_runner.database()
         self._server_version = server_version
 
-    def __enter__(self: TGraph) -> TGraph:
+    def __enter__(self: Graph) -> Graph:
         return self
 
     def __exit__(
