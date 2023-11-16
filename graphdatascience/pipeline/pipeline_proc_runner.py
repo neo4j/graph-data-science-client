@@ -40,16 +40,16 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
     def exists(self, pipeline_name: str) -> "Series[Any]":
         self._namespace += ".exists"
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace, body="$pipeline_name", params={"pipeline_name": pipeline_name}
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     def drop(self, pipeline: TrainingPipeline[PipelineModel]) -> "Series[Any]":
         self._namespace += ".drop"
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace, body="$pipeline_name", params={"pipeline_name": pipeline.name()}
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     def _resolve_pipeline(self, pipeline_type: str, pipeline_name: str) -> TrainingPipeline[PipelineModel]:
         if pipeline_type == "Node classification training pipeline":

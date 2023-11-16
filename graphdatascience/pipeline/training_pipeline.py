@@ -258,12 +258,12 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
             The result of the query.
 
         """
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=f"gds{self._tier_namespace()}.pipeline.drop",
             body="$pipeline_name, $fail_if_missing",
             params={"pipeline_name": self._name, "fail_if_missing": failIfMissing},
             custom_error=False,
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     def _tier_namespace(self) -> str:
         return "" if self._server_version >= ServerVersion(2, 5, 0) else ".beta"

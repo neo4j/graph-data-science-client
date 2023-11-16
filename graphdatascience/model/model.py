@@ -53,11 +53,11 @@ class Model(ABC):
         config["modelName"] = self.name()
         params = {"graph_name": graph_name, "config": config}
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=endpoint,
             body=body,
             params=params,
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     def name(self) -> str:
         """
@@ -177,9 +177,9 @@ class Model(ABC):
 
         params = {"model_name": self._name}
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=endpoint, body=body, params=params, yields=yields, custom_error=False
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     def drop(self, failIfMissing: bool = False) -> "Series[Any]":
         """

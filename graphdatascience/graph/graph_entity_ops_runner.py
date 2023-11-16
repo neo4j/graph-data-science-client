@@ -142,11 +142,11 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
             "config": config,
         }
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
             body="$graph_name, $properties, $config",
             params=params,
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
 
 class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
@@ -197,11 +197,11 @@ class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
             "config": config,
         }
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
             body="$graph_name, $relationship_type, $relationship_properties, $config",
             params=params,
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
 
 class GraphRelationshipRunner(GraphEntityOpsBaseRunner):
@@ -216,11 +216,11 @@ class GraphRelationshipRunner(GraphEntityOpsBaseRunner):
             "config": config,
         }
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
             body="$graph_name, $relationship_type, $relationship_property, $config",
             params=params,
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
 
 class ToUndirectedRunner(IllegalAttrChecker):
@@ -234,11 +234,11 @@ class ToUndirectedRunner(IllegalAttrChecker):
         }
 
         params = {"graph_name": G.name(), "config": actual_config}
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
             body="$graph_name, $config",
             params=params,
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     @graph_type_check
     def __call__(self, G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any) -> "Series[Any]":
@@ -265,9 +265,9 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
             "relationship_type": relationship_type,
         }
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace, body="$graph_name, $relationship_type", params=params
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     @compatible_with("stream", min_inclusive=ServerVersion(2, 5, 0))
     @graph_type_check
@@ -346,9 +346,9 @@ class GraphLabelRunner(GraphEntityOpsBaseRunner):
             "config": config,
         }
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace, body=body, params=params
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     @compatible_with("mutate", min_inclusive=ServerVersion(2, 3, 0))
     @graph_type_check
@@ -361,6 +361,6 @@ class GraphLabelRunner(GraphEntityOpsBaseRunner):
             "config": config,
         }
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace, body=body, params=params
-        ).squeeze()  # type: ignore
+        ).squeeze()

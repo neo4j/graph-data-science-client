@@ -20,11 +20,11 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
         """
         params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=f"{self._endpoint_prefix()}addLogisticRegression",
             body="$pipeline_name, $config",
             params=params,
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     def addRandomForest(self, **config: Any) -> "Series[Any]":
         """
@@ -42,9 +42,9 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
             endpoint_prefix = self._endpoint_prefix().replace("beta", "alpha")
         params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=f"{endpoint_prefix}addRandomForest", body="$pipeline_name, $config", params=params
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     def addMLP(self, **config: Any) -> "Series[Any]":
         """
@@ -60,6 +60,6 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
         endpoint_prefix = self._endpoint_prefix().replace("beta", "alpha")
         params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=f"{endpoint_prefix}addMLP", body="$pipeline_name, $config", params=params
-        ).squeeze()  # type: ignore
+        ).squeeze()

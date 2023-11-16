@@ -15,11 +15,11 @@ class ModelAlphaProcRunner(ModelResolver):
             "fail_flag": failIfUnsupportedType,
         }
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
             body="$model_name, $fail_flag",
             params=params,
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     def publish(self, model: Model) -> Model:
         self._namespace += ".publish"
@@ -47,6 +47,6 @@ class ModelAlphaProcRunner(ModelResolver):
 
     def delete(self, model: Model) -> "Series[Any]":
         self._namespace += ".delete"
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace, body="$model_name", params={"model_name": model.name()}
-        ).squeeze()  # type: ignore
+        ).squeeze()

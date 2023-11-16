@@ -67,14 +67,14 @@ class ModelProcRunner(ModelResolver):
     def store(self, model: Model, failIfUnsupportedType: bool = True) -> "Series[Any]":
         self._namespace += ".store"
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
             body="$model_name, $fail_flag",
             params={
                 "model_name": model.name(),
                 "fail_flag": failIfUnsupportedType,
             },
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     @compatible_with("publish", min_inclusive=ServerVersion(2, 5, 0))
     def publish(self, model: Model) -> Model:
@@ -107,9 +107,9 @@ class ModelProcRunner(ModelResolver):
     @compatible_with("delete", min_inclusive=ServerVersion(2, 5, 0))
     def delete(self, model: Model) -> "Series[Any]":
         self._namespace += ".delete"
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace, body="$model_name", params={"model_name": model.name()}
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     @compatible_with("list", min_inclusive=ServerVersion(2, 5, 0))
     def list(self, model: Optional[Model] = None) -> DataFrame:
@@ -128,17 +128,17 @@ class ModelProcRunner(ModelResolver):
     def exists(self, model_name: str) -> "Series[Any]":
         self._namespace += ".exists"
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace, body="$model_name", params={"model_name": model_name}
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     @compatible_with("drop", min_inclusive=ServerVersion(2, 5, 0))
     def drop(self, model: Model) -> "Series[Any]":
         self._namespace += ".drop"
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace, body="$model_name", params={"model_name": model.name()}
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     @property
     def transe(self) -> TransECreator:

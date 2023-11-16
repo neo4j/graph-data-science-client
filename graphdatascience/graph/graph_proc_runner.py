@@ -522,11 +522,11 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             "config": config,
         }
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
             body=body,
             params=params,
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     @multimethod
     def removeNodeProperties(self) -> None:
@@ -549,11 +549,11 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             "config": config,
         }
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
             body=body,
             params=params,
-        ).squeeze()  # type: ignore
+        ).squeeze()
 
     @removeNodeProperties.register
     @compatible_with("removeNodeProperties", max_exclusive=ServerVersion(2, 1, 0))
@@ -579,8 +579,8 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             "relationship_type": relationship_type,
         }
 
-        return self._query_runner.call_procedure(
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
             body=body,
             params=params,
-        ).squeeze()  # type: ignore
+        ).squeeze()

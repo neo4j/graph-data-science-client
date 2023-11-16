@@ -1,4 +1,3 @@
-import os
 from typing import Any, Dict, List, Union
 
 from pandas import DataFrame, Series
@@ -38,7 +37,7 @@ class SimpleRelEmbeddingModel:
         target_node_filter: NodeFilter,
         relationship_type: str,
         top_k: int,
-        **general_config: Dict[str, Any],
+        **general_config: Any,
     ) -> DataFrame:
         """
         Compute and stream relationship embeddings
