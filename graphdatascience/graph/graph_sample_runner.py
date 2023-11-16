@@ -33,12 +33,12 @@ class RWRRunner(IllegalAttrChecker):
     @compatible_with("construct", min_inclusive=ServerVersion(2, 2, 0))
     @from_graph_type_check
     def __call__(self, graph_name: str, from_G: Graph, **config: Any) -> GraphCreateResult:
-        query = f"CALL {self._namespace}($graph_name, $from_graph_name, $config)"
-        params = {
-            "graph_name": graph_name,
-            "from_graph_name": from_G.name(),
-            "config": config,
-        }
+        params = CallParameters(
+            graph_name=graph_name,
+            from_graph_name=from_G.name(),
+            config=config,
+        )
+        query = f"CALL {self._namespace}({params.placeholder_str()})"
 
         result = self._query_runner.run_cypher_with_logging(query, params).squeeze()
 

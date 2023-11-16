@@ -15,14 +15,15 @@ from graphdatascience.server_version.server_version import ServerVersion
 
 class GraphProjectRunner(IllegalAttrChecker):
     def __call__(self, graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> GraphCreateResult:
+        params = CallParameters(
+            graph_name=graph_name,
+            node_spec=node_spec,
+            relationship_spec=relationship_spec,
+            config=config,
+        )
         result = self._query_runner.run_cypher_with_logging(
-            f"CALL {self._namespace}($graph_name, $node_spec, $relationship_spec, $config)",
-            {
-                "graph_name": graph_name,
-                "node_spec": node_spec,
-                "relationship_spec": relationship_spec,
-                "config": config,
-            },
+            f"CALL {self._namespace}({params.placeholder_str()})",
+            params=params,
         ).squeeze()
 
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
@@ -60,15 +61,16 @@ class GraphProjectBetaRunner(IllegalAttrChecker):
         **config: Any,
     ) -> GraphCreateResult:
         self._namespace += ".subgraph"
+        params = CallParameters(
+            graph_name=graph_name,
+            from_graph_name=from_G.name(),
+            node_filter=node_filter,
+            relationship_filter=relationship_filter,
+            config=config,
+        )
         result = self._query_runner.run_cypher_with_logging(
-            f"CALL {self._namespace}($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)",
-            {
-                "graph_name": graph_name,
-                "from_graph_name": from_G.name(),
-                "node_filter": node_filter,
-                "relationship_filter": relationship_filter,
-                "config": config,
-            },
+            f"CALL {self._namespace}({params.placeholder_str()})",
+            params=params,
         ).squeeze()
 
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
@@ -78,7 +80,14 @@ class GraphProjectRemoteRunner(IllegalAttrChecker):
     @compatible_with("remoteDb", min_inclusive=ServerVersion(2, 6, 0))
     def __call__(self, graph_name: str, query: str, remote_database: str = "neo4j", **config: Any) -> GraphCreateResult:
         placeholder = "<>"  # host and token will be added by query runner
-        params = CallParameters(graph_name=graph_name, query=query, token=placeholder, host=placeholder, remote_database=remote_database, config=config)
+        params = CallParameters(
+            graph_name=graph_name,
+            query=query,
+            token=placeholder,
+            host=placeholder,
+            remote_database=remote_database,
+            config=config,
+        )
         result = self._query_runner.call_procedure(
             endpoint=self._namespace,
             params=params,
