@@ -1,5 +1,4 @@
-from collections import OrderedDict
-from typing import Any
+from typing import Any, OrderedDict
 
 
 class CallParameters(OrderedDict[str, Any]):
