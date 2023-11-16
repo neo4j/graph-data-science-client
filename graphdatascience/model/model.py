@@ -171,7 +171,7 @@ class Model(ABC):
 
         """
         name_space = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
-        endpoint = f"gds.{name_space}model.exists($model_name) YIELD exists"
+        endpoint = f"gds.{name_space}model.exists"
         body = "$model_name"
         yields = ["exists"]
 

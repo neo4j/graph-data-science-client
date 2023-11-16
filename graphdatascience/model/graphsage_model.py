@@ -29,7 +29,7 @@ class GraphSageModel(Model):
             The result of the write operation.
 
         """
-        query = f"{self._endpoint_prefix()}write($graph_name, $config)"
+        query = f"CALL {self._endpoint_prefix()}write($graph_name, $config)"
         config["modelName"] = self.name()
         params = {"graph_name": G.name(), "config": config}
 

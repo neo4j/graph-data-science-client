@@ -16,7 +16,6 @@ class CallerBase(ABC):
         list_result = self._query_runner.call_procedure(
             endpoint="gds.list",
             yields=["name"],
-            body="$graph_name, $config",
             custom_error=False,
         )
         all_endpoints = list_result["name"].tolist()

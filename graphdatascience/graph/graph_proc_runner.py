@@ -379,7 +379,6 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         entities: Strings,
         config: Dict[str, Any],
     ) -> DataFrame:
-        query = f"CALL {self._namespace}($graph_name, $properties, $entities, $config)"
         params = {
             "graph_name": G.name(),
             "properties": properties,
@@ -387,7 +386,11 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             "config": config,
         }
 
-        return self._query_runner.run_cypher(query, params)
+        return self._query_runner.call_procedure(
+            endpoint=self._namespace,
+            body="$graph_name, $properties, $entities, $config",
+            params=params,
+        )
 
     @property
     def nodeProperty(self) -> GraphElementPropertyRunner:

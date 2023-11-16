@@ -32,6 +32,6 @@ class ModelBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".drop"
         params = {"model_name": model.name()}
 
-        return self._query_runner.run_cypher(  # type: ignore
+        return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace, body="$model_name", params=params
         ).squeeze()

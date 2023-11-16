@@ -54,12 +54,12 @@ class SimpleRelEmbeddingModel:
         """
 
         config = {
-            "source_node_filter": source_node_filter,
-            "target_node_filter": target_node_filter,
-            "node_embedding_property": self._node_embedding_property,
-            "relationship_type_embedding": self._relationship_type_embeddings[relationship_type],
-            "scoring_function": self._scoring_function,
-            "top_k": top_k,
+            "sourceNodeFilter": source_node_filter,
+            "targetNodeFilter": target_node_filter,
+            "nodeEmbeddingProperty": self._node_embedding_property,
+            "relationshipTypeEmbedding": self._relationship_type_embeddings[relationship_type],
+            "scoringFunction": self._scoring_function,
+            "topK": top_k,
             **general_config,
         }
 
@@ -97,14 +97,14 @@ class SimpleRelEmbeddingModel:
         """
 
         config = {
-            "source_node_filter": source_node_filter,
-            "target_node_filter": target_node_filter,
-            "node_embedding_property": self._node_embedding_property,
-            "relationship_type_embedding": self._relationship_type_embeddings[relationship_type],
-            "scoring_function": self._scoring_function,
-            "top_k": top_k,
-            "mutate_relationship_type": mutate_relationship_type,
-            "mutate_property": mutate_property,
+            "sourceNodeFilter": source_node_filter,
+            "targetNodeFilter": target_node_filter,
+            "nodeEmbeddingProperty": self._node_embedding_property,
+            "relationshipTypeEmbedding": self._relationship_type_embeddings[relationship_type],
+            "scoringFunction": self._scoring_function,
+            "topK": top_k,
+            "mutateRelationshipType": mutate_relationship_type,
+            "mutateProperty": mutate_property,
             **general_config,
         }
 
@@ -142,14 +142,14 @@ class SimpleRelEmbeddingModel:
         """
 
         config = {
-            "source_node_filter": source_node_filter,
-            "target_node_filter": target_node_filter,
-            "node_embedding_property": self._node_embedding_property,
-            "relationship_type_embedding": self._relationship_type_embeddings[relationship_type],
-            "scoring_function": self._scoring_function,
-            "top_k": top_k,
-            "write_relationship_type": write_relationship_type,
-            "write_property": write_property,
+            "sourceNodeFilter": source_node_filter,
+            "targetNodeFilter": target_node_filter,
+            "nodeEmbeddingProperty": self._node_embedding_property,
+            "relationshipTypeEmbedding": self._relationship_type_embeddings[relationship_type],
+            "scoringFunction": self._scoring_function,
+            "topK": top_k,
+            "writeRelationshipType": write_relationship_type,
+            "writeProperty": write_property,
             **general_config,
         }
 
