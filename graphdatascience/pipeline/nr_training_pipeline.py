@@ -5,6 +5,7 @@ from pandas import Series
 from ..model.node_regression_model import NRModel
 from ..query_runner.query_runner import QueryRunner
 from .training_pipeline import TrainingPipeline
+from graphdatascience.call_parameters import CallParameters
 
 
 class NRTrainingPipeline(TrainingPipeline[NRModel]):
@@ -25,10 +26,9 @@ class NRTrainingPipeline(TrainingPipeline[NRModel]):
 
         """
         endpoint = f"{self._endpoint_prefix()}addLinearRegression"
-        body = "$pipeline_name, $config"
-        params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
+        params = CallParameters(pipeline_name=self.name(), config=self._expand_ranges(config))
 
-        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
     def addRandomForest(self, **config: Any) -> "Series[Any]":
         """
@@ -42,10 +42,9 @@ class NRTrainingPipeline(TrainingPipeline[NRModel]):
 
         """
         endpoint = f"{self._endpoint_prefix()}addRandomForest"
-        body = "$pipeline_name, $config"
-        params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
+        params = CallParameters(pipeline_name=self.name(), config=self._expand_ranges(config))
 
-        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
     def selectFeatures(self, node_properties: Union[str, List[str]]) -> "Series[Any]":
         """
@@ -59,10 +58,9 @@ class NRTrainingPipeline(TrainingPipeline[NRModel]):
 
         """
         endpoint = f"{self._endpoint_prefix()}selectFeatures"
-        body = "$pipeline_name, $node_properties"
-        params = {"pipeline_name": self.name(), "node_properties": node_properties}
+        params = CallParameters(pipeline_name=self.name(), node_properties=node_properties)
 
-        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
     def feature_properties(self) -> "Series[Any]":
         """

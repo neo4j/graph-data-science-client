@@ -8,6 +8,7 @@ from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..server_version.compatible_with import compatible_with
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.server_version.server_version import ServerVersion
 
 
@@ -74,12 +75,12 @@ class DirectSystemEndpoints(CallerBase):
     @compatible_with("backup", min_inclusive=ServerVersion(2, 5, 0))
     def backup(self, **config: Any) -> DataFrame:
         namespace = self._namespace + ".backup"
-        return self._query_runner.call_procedure(endpoint=namespace, body="$config", params={"config": config})
+        return self._query_runner.call_procedure(endpoint=namespace, params=CallParameters(config=config))
 
     @compatible_with("restore", min_inclusive=ServerVersion(2, 5, 0))
     def restore(self, **config: Any) -> DataFrame:
         namespace = self._namespace + ".restore"
-        return self._query_runner.call_procedure(endpoint=namespace, body="$config", params={"config": config})
+        return self._query_runner.call_procedure(endpoint=namespace, params=CallParameters(config=config))
 
     @compatible_with("listProgress", min_inclusive=ServerVersion(2, 5, 0))
     def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
@@ -98,14 +99,11 @@ class SystemBetaEndpoints(CallerBase):
     def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
         self._namespace += ".listProgress"
 
+        params = CallParameters()
         if job_id:
-            body = "$job_id"
-            params = {"job_id": job_id}
-        else:
-            body = None
-            params = {}
+            params["job_id"] = job_id
 
-        return self._query_runner.call_procedure(endpoint=self._namespace, body=body, params=params)
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=params)
 
 
 class SystemAlphaEndpoints(CallerBase):
@@ -119,8 +117,8 @@ class SystemAlphaEndpoints(CallerBase):
 
     def backup(self, **config: Any) -> DataFrame:
         self._namespace += ".backup"
-        return self._query_runner.call_procedure(endpoint=self._namespace, body="$config", params={"config": config})
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=CallParameters(config=config))
 
     def restore(self, **config: Any) -> DataFrame:
         self._namespace += ".restore"
-        return self._query_runner.call_procedure(endpoint=self._namespace, body="$config", params={"config": config})
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=CallParameters(config=config))

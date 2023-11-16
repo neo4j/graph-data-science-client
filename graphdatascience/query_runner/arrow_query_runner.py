@@ -8,6 +8,7 @@ import pyarrow.flight as flight
 from pandas import DataFrame
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 
+from ..call_parameters import CallParameters
 from ..server_version.server_version import ServerVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .graph_constructor import GraphConstructor
@@ -65,14 +66,13 @@ class ArrowQueryRunner(QueryRunner):
         self,
         type: EndpointType,
         endpoint: str,
+        params: Optional[CallParameters] = None,
         yields: Optional[List[str]] = None,
-        body: Optional[str] = None,
-        params: Optional[Dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
     ) -> DataFrame:
         if params is None:
-            params = {}
+            params = CallParameters()
 
         new_endpoint_server_version = ServerVersion(2, 2, 0)
         no_tier_in_namespace_server_version = ServerVersion(2, 5, 0)
@@ -184,7 +184,7 @@ class ArrowQueryRunner(QueryRunner):
 
             return self._run_arrow_property_get(graph_name, endpoint, {"relationship_types": relationship_types})
 
-        return self._fallback_query_runner.call_endpoint(type, endpoint, yields, body, params, database, custom_error)
+        return self._fallback_query_runner.call_endpoint(type, endpoint, params, yields, database, custom_error)
 
     def run_cypher_with_logging(
         self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None

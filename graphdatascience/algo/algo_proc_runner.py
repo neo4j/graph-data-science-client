@@ -7,23 +7,20 @@ from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
 from ..model.graphsage_model import GraphSageModel
+from graphdatascience.call_parameters import CallParameters
 
 
 class AlgoProcRunner(IllegalAttrChecker, ABC):
     @graph_type_check
     def _run_procedure(self, G: Graph, config: Dict[str, Any], with_logging: bool = True) -> DataFrame:
-        params: Dict[str, Any] = {
-            "graph_name": G.name(),
-            "config": config,
-        }
+        params = CallParameters(graph_name=G.name(), config=config)
 
         if with_logging:
-            query = f"CALL {self._namespace}($graph_name, $config)"
-            return self._query_runner.run_cypher_with_logging(query, params)
+            query = f"CALL {self._namespace}({params.placeholder_str()})"
+            return self._query_runner.run_cypher_with_logging(query, params=params)
         else:
             return self._query_runner.call_procedure(
                 endpoint=self._namespace,
-                body="$graph_name, $config",
                 params=params,
             )
 

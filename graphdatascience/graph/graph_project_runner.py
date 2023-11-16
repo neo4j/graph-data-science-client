@@ -7,6 +7,7 @@ from pandas import Series
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from .graph_object import Graph
 from .graph_type_check import from_graph_type_check
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.graph_create_result import GraphCreateResult
 from graphdatascience.server_version.compatible_with import compatible_with
 from graphdatascience.server_version.server_version import ServerVersion
@@ -30,12 +31,11 @@ class GraphProjectRunner(IllegalAttrChecker):
         self._namespace += ".estimate"
         result = self._query_runner.call_procedure(
             endpoint=self._namespace,
-            body="$node_spec, $relationship_spec, $config",
-            params={
-                "node_spec": node_projection,
-                "relationship_spec": relationship_projection,
-                "config": config,
-            },
+            params=CallParameters(
+                node_spec=node_projection,
+                relationship_spec=relationship_projection,
+                config=config,
+            ),
         )
 
         return result.squeeze()  # type: ignore
@@ -77,11 +77,10 @@ class GraphProjectBetaRunner(IllegalAttrChecker):
 class GraphProjectRemoteRunner(IllegalAttrChecker):
     @compatible_with("remoteDb", min_inclusive=ServerVersion(2, 6, 0))
     def __call__(self, graph_name: str, query: str, remote_database: str = "neo4j", **config: Any) -> GraphCreateResult:
-        body = "$graph_name, $query, $token, $host, $remote_database, $config"
-        params = {"graph_name": graph_name, "query": query, "remote_database": remote_database, "config": config}
+        placeholder = "<>"  # host and token will be added by query runner
+        params = CallParameters(graph_name=graph_name, query=query, token=placeholder, host=placeholder, remote_database=remote_database, config=config)
         result = self._query_runner.call_procedure(
             endpoint=self._namespace,
-            body=body,
             params=params,
         ).squeeze()
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)

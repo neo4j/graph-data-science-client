@@ -10,6 +10,7 @@ import neo4j
 from pandas import DataFrame
 from tqdm.auto import tqdm
 
+from ..call_parameters import CallParameters
 from ..error.endpoint_suggester import generate_suggestive_error_message
 from ..error.unable_to_connect import UnableToConnectError
 from ..server_version.server_version import ServerVersion
@@ -85,20 +86,21 @@ class Neo4jQueryRunner(QueryRunner):
         self,
         type: EndpointType,
         endpoint: str,
+        params: Optional[CallParameters] = None,
         yields: Optional[List[str]] = None,
-        body: Optional[str] = None,
-        params: Optional[Dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
     ) -> DataFrame:
+        if params is None:
+            params = CallParameters()
+
         call_keyword = "CALL" if type == EndpointType.PROCEDURE else "RETURN"
 
         if yields is not None and type == EndpointType.FUNCTION:
             raise ValueError("Functions cannot yield results")
-        body = body if body else ""
 
         yields_clause = "" if yields is None else " YIELD " + ", ".join(yields)
-        query = f"{call_keyword} {endpoint}({body}){yields_clause}"
+        query = f"{call_keyword} {endpoint}({params.placeholder_str()}){yields_clause}"
 
         return self.run_cypher(query, params, database, custom_error)
 

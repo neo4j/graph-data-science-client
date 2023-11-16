@@ -8,6 +8,7 @@ from ..graph.graph_type_check import graph_type_check
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
+from graphdatascience.call_parameters import CallParameters
 
 
 class Model(ABC):
@@ -49,13 +50,11 @@ class Model(ABC):
 
     def _estimate_predict(self, predict_mode: str, graph_name: str, config: Dict[str, Any]) -> "Series[Any]":
         endpoint = f"{self._endpoint_prefix()}{predict_mode}.estimate"
-        body = "$graph_name, $config"
         config["modelName"] = self.name()
-        params = {"graph_name": graph_name, "config": config}
+        params = CallParameters(graph_name=graph_name, config=config)
 
         return self._query_runner.call_procedure(  # type: ignore
             endpoint=endpoint,
-            body=body,
             params=params,
         ).squeeze()
 
@@ -172,13 +171,12 @@ class Model(ABC):
         """
         name_space = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
         endpoint = f"gds.{name_space}model.exists"
-        body = "$model_name"
         yields = ["exists"]
 
-        params = {"model_name": self._name}
+        params = CallParameters(model_name=self._name)
 
         return self._query_runner.call_procedure(  # type: ignore
-            endpoint=endpoint, body=body, params=params, yields=yields, custom_error=False
+            endpoint=endpoint, params=params, yields=yields, custom_error=False
         ).squeeze()
 
     def drop(self, failIfMissing: bool = False) -> "Series[Any]":

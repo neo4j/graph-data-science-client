@@ -5,6 +5,7 @@ from pandas import DataFrame
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from .util_proc_runner import UtilProcRunner
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.error.cypher_warning_handler import (
     filter_id_func_deprecation_warning,
 )
@@ -107,11 +108,10 @@ class IndirectUtilAlphaEndpoints(CallerBase):
         """
         namespace = self._namespace + ".oneHotEncoding"
 
-        body = "$available_values, $selected_values"
-        params = {
-            "available_values": available_values,
-            "selected_values": selected_values,
-        }
-        result = self._query_runner.call_function(endpoint=namespace, body=body, params=params)
+        params = CallParameters(
+            available_values=available_values,
+            selected_values=selected_values,
+        )
+        result = self._query_runner.call_function(endpoint=namespace, params=params)
 
         return result.iat[0, 0]  # type: ignore

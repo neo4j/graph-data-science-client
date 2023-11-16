@@ -6,6 +6,7 @@ from pandas import Series
 from ..model.node_classification_model import NCModel
 from ..pipeline.classification_training_pipeline import ClassificationTrainingPipeline
 from ..query_runner.query_runner import QueryRunner
+from graphdatascience.call_parameters import CallParameters
 
 
 class NCTrainingPipeline(ClassificationTrainingPipeline[NCModel], ABC):
@@ -26,10 +27,9 @@ class NCTrainingPipeline(ClassificationTrainingPipeline[NCModel], ABC):
 
         """
         endpoint = f"{self._endpoint_prefix()}selectFeatures"
-        body = "$pipeline_name, $node_properties"
-        params = {"pipeline_name": self.name(), "node_properties": node_properties}
+        params = CallParameters(pipeline_name=self.name(), node_properties=node_properties)
 
-        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
     def feature_properties(self) -> "Series[Any]":
         """

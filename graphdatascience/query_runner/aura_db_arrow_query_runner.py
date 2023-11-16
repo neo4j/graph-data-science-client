@@ -5,6 +5,7 @@ from pandas import DataFrame, Series
 from pyarrow import flight
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 
+from ..call_parameters import CallParameters
 from .query_runner import EndpointType, QueryRunner
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
@@ -67,14 +68,13 @@ class AuraDbArrowQueryRunner(QueryRunner):
         self,
         type: EndpointType,
         endpoint: str,
+        params: Optional[CallParameters] = None,
         yields: Optional[List[str]] = None,
-        body: Optional[str] = None,
-        params: Optional[Dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
     ) -> DataFrame:
         if params is None:
-            params = {}
+            params = CallParameters()
 
         if AuraDbArrowQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME == endpoint:
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
@@ -92,14 +92,13 @@ class AuraDbArrowQueryRunner(QueryRunner):
                 "useEncryption": self._encrypted,
             }
 
-        return self._fallback_query_runner.call_endpoint(type, endpoint, yields, body, params, database, custom_error)
+        return self._fallback_query_runner.call_endpoint(type, endpoint, params, yields, database, custom_error)
 
     def is_remote_projected_graph(self, graph_name: str) -> bool:
         database_location: str = self._fallback_query_runner.call_procedure(
             endpoint="gds.graph.list",
-            body="$graph_name",
             yields=["databaseLocation"],
-            params={"graph_name": graph_name},
+            params=CallParameters(graph_name=graph_name),
         ).squeeze()
         return database_location == "remote"
 

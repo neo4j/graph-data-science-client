@@ -8,6 +8,7 @@ from ..graph.graph_type_check import graph_type_check
 from ..model.pipeline_model import PipelineModel
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
+from graphdatascience.call_parameters import CallParameters
 
 MODEL_TYPE = TypeVar("MODEL_TYPE", bound=PipelineModel, covariant=True)
 
@@ -49,13 +50,12 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
 
         """
         endpoint = f"{self._endpoint_prefix()}addNodeProperty"
-        body = "$pipeline_name, $procedure_name, $config"
-        params = {
-            "pipeline_name": self.name(),
-            "procedure_name": procedure_name,
-            "config": config,
-        }
-        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
+        params = CallParameters(
+            pipeline_name=self.name(),
+            procedure_name=procedure_name,
+            config=config,
+        )
+        return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
     @staticmethod
     def _expand_ranges(config: Dict[str, Any]) -> Dict[str, Any]:
@@ -77,10 +77,9 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         """
         query_prefix = self._endpoint_prefix().replace("beta", "alpha")
         endpoint = f"{query_prefix}configureAutoTuning"
-        body = "$pipeline_name, $config"
-        params = {"pipeline_name": self.name(), "config": config}
+        params = CallParameters(pipeline_name=self.name(), config=config)
 
-        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
     @graph_type_check
     def train(self, G: Graph, **config: Any) -> Tuple[MODEL_TYPE, "Series[Any]"]:
@@ -95,12 +94,12 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
             A tuple containing the trained model and the result of the query.
 
         """
-        query = f"CALL {self._endpoint_prefix()}train($graph_name, $config)"
         config["pipeline"] = self.name()
-        params = {
-            "graph_name": G.name(),
-            "config": config,
-        }
+        params = CallParameters(
+            graph_name=G.name(),
+            config=config,
+        )
+        query = f"CALL {self._endpoint_prefix()}train({params.placeholder_str()})"
 
         result = self._query_runner.run_cypher_with_logging(query, params).squeeze()
 
@@ -123,14 +122,13 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
 
         """
         endpoint = f"{self._endpoint_prefix()}train.estimate"
-        body = "$graph_name, $config"
         config["pipeline"] = self.name()
-        params = {
-            "graph_name": G.name(),
-            "config": config,
-        }
+        params = CallParameters(
+            graph_name=G.name(),
+            config=config,
+        )
 
-        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
     def configureSplit(self, **config: Any) -> "Series[Any]":
         """
@@ -144,10 +142,9 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
 
         """
         endpoint = f"{self._endpoint_prefix()}configureSplit"
-        body = "$pipeline_name, $config"
-        params = {"pipeline_name": self.name(), "config": config}
+        params = CallParameters(pipeline_name=self.name(), config=config)
 
-        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
     def node_property_steps(self) -> DataFrame:
         """
@@ -198,10 +195,9 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
 
     def _list_info(self) -> DataFrame:
         endpoint = f"gds{self._tier_namespace()}.pipeline.list"
-        body = "$name"
-        params = {"name": self.name()}
+        params = CallParameters(name=self.name())
 
-        info = self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params, custom_error=False)
+        info = self._query_runner.call_procedure(endpoint=endpoint, params=params, custom_error=False)
 
         if len(info) == 0:
             raise ValueError(f"There is no '{self.name()}' in the pipeline catalog")
@@ -239,8 +235,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         """
         return self._query_runner.call_procedure(
             endpoint=f"gds{self._tier_namespace()}.pipeline.exists",
-            body="$pipeline_name",
-            params={"pipeline_name": self._name},
+            params=CallParameters(name=self.name()),
             yields=["exists"],
             custom_error=False,
         )[
@@ -260,8 +255,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         """
         return self._query_runner.call_procedure(  # type: ignore
             endpoint=f"gds{self._tier_namespace()}.pipeline.drop",
-            body="$pipeline_name, $fail_if_missing",
-            params={"pipeline_name": self._name, "fail_if_missing": failIfMissing},
+            params=CallParameters(name=self.name(), failIfMissing=failIfMissing),
             custom_error=False,
         ).squeeze()
 

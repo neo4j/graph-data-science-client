@@ -10,6 +10,7 @@ from .lp_training_pipeline import LPTrainingPipeline
 from .nc_training_pipeline import NCTrainingPipeline
 from .nr_training_pipeline import NRTrainingPipeline
 from .training_pipeline import TrainingPipeline
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.server_version.server_version import ServerVersion
 
 
@@ -28,27 +29,24 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
     def list(self, pipeline: Optional[TrainingPipeline[PipelineModel]] = None) -> DataFrame:
         self._namespace += ".list"
 
+        params = CallParameters()
         if pipeline:
-            body = "$pipeline_name"
-            params = {"pipeline_name": pipeline.name()}
-        else:
-            body = None
-            params = {}
+            params["pipeline_name"] = pipeline.name()
 
-        return self._query_runner.call_procedure(endpoint=self._namespace, body=body, params=params)
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=params)
 
     def exists(self, pipeline_name: str) -> "Series[Any]":
         self._namespace += ".exists"
 
         return self._query_runner.call_procedure(  # type: ignore
-            endpoint=self._namespace, body="$pipeline_name", params={"pipeline_name": pipeline_name}
+            endpoint=self._namespace, params=CallParameters(pipeline_name=pipeline_name)
         ).squeeze()
 
     def drop(self, pipeline: TrainingPipeline[PipelineModel]) -> "Series[Any]":
         self._namespace += ".drop"
 
         return self._query_runner.call_procedure(  # type: ignore
-            endpoint=self._namespace, body="$pipeline_name", params={"pipeline_name": pipeline.name()}
+            endpoint=self._namespace, params=CallParameters(pipeline_name=pipeline.name())
         ).squeeze()
 
     def _resolve_pipeline(self, pipeline_type: str, pipeline_name: str) -> TrainingPipeline[PipelineModel]:

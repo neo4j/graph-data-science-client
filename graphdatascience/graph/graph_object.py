@@ -5,6 +5,7 @@ from pandas import Series
 
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
+from graphdatascience.call_parameters import CallParameters
 
 TGraph = TypeVar("TGraph", bound="Graph")
 
@@ -46,8 +47,7 @@ class Graph:
 
         info = self._query_runner.call_procedure(
             endpoint="gds.graph.list",
-            body="$graph_name",
-            params={"graph_name": self._name},
+            params=CallParameters(graph_name=self._name),
             yields=yields_with_db,
             custom_error=False,
         )
@@ -178,8 +178,7 @@ class Graph:
         """
         result = self._query_runner.call_procedure(
             endpoint="gds.graph.exists",
-            body="$graph_name",
-            params={"graph_name": self._name},
+            params=CallParameters(graph_name=self._name),
             custom_error=False,
         )
         return result.squeeze()["exists"]  # type: ignore
@@ -195,8 +194,7 @@ class Graph:
         """
         result = self._query_runner.call_procedure(
             endpoint="gds.graph.drop",
-            body="$graph_name, $fail_if_missing",
-            params={"graph_name": self._name, "fail_if_missing": failIfMissing},
+            params=CallParameters(graph_name=self._name, failIfMissing=failIfMissing),
             custom_error=False,
         )
 

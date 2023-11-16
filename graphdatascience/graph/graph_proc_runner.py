@@ -32,6 +32,7 @@ from .graph_type_check import (
     graph_type_check_optional,
 )
 from .ogb_loader import OGBLLoader, OGBNLoader
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.graph_create_result import GraphCreateResult
 from graphdatascience.graph.graph_cypher_runner import GraphCypherRunner
 
@@ -79,8 +80,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         exists = self._query_runner.call_procedure(
             endpoint="gds.graph.exists",
-            body="$graph_name",
-            params={"graph_name": graph_name},
+            params=CallParameters(graph_name=graph_name),
             yields=["exists"],
             custom_error=False,
         ).squeeze()
@@ -242,17 +242,12 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     @compatible_with("generate", min_inclusive=ServerVersion(2, 5, 0))
     def generate(self, graph_name: str, node_count: int, average_degree: int, **config: Any) -> GraphCreateResult:
         self._namespace += ".generate"
-
-        params = {
-            "graph_name": graph_name,
-            "node_count": node_count,
-            "average_degree": average_degree,
-            "config": config,
-        }
+        params = CallParameters(
+            graph_name=graph_name, node_count=node_count, average_degree=average_degree, config=config
+        )
 
         result = self._query_runner.call_procedure(
             endpoint=self._namespace,
-            body="$graph_name, $node_count, $average_degree, $config",
             params=params,
         ).squeeze()
 
@@ -269,15 +264,16 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         **config: Any,
     ) -> GraphCreateResult:
         self._namespace += ".filter"
+        params = CallParameters(
+            graph_name=graph_name,
+            from_graph_name=from_G.name(),
+            node_filter=node_filter,
+            relationship_filter=relationship_filter,
+            config=config,
+        )
         result = self._query_runner.run_cypher_with_logging(
-            f"CALL {self._namespace}($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)",
-            {
-                "graph_name": graph_name,
-                "from_graph_name": from_G.name(),
-                "node_filter": node_filter,
-                "relationship_filter": relationship_filter,
-                "config": config,
-            },
+            f"CALL {self._namespace}({params.placeholder_str()})",
+            params=params,
         ).squeeze()
 
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
@@ -307,20 +303,16 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     ) -> Optional["Series[Any]"]:
         self._namespace += ".drop"
 
-        params = {
-            "graph_name": G.name(),
-            "fail_if_missing": failIfMissing,
-            "db_name": dbName,
-        }
+        params = CallParameters(
+            graph_name=G.name(),
+            fail_if_missing=failIfMissing,
+            db_name=dbName,
+        )
         if username:
-            body = "$graph_name, $fail_if_missing, $db_name, $username"
             params["username"] = username
-        else:
-            body = "$graph_name, $fail_if_missing, $db_name"
 
         result = self._query_runner.call_procedure(
             endpoint=self._namespace,
-            body=body,
             params=params,
         )
         if not result.empty:
@@ -332,8 +324,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".exists"
         result = self._query_runner.call_procedure(
             endpoint=self._namespace,
-            body="$graph_name",
-            params={"graph_name": graph_name},
+            params=CallParameters(graph_name=graph_name),
         )
 
         return result.squeeze()  # type: ignore
@@ -342,16 +333,12 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def list(self, G: Optional[Graph] = None) -> DataFrame:
         self._namespace += ".list"
 
+        params = CallParameters()
         if G:
-            body = "$graph_name"
-            params = {"graph_name": G.name()}
-        else:
-            body = ""
-            params = {}
+            params["graph_name"] = G.name()
 
         return self._query_runner.call_procedure(
             endpoint=self._namespace,
-            body=body,
             params=params,
         )
 
@@ -359,8 +346,7 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def get(self, graph_name: str) -> Graph:
         result = self._query_runner.call_procedure(
             endpoint="gds.graph.list",
-            body="$graph_name",
-            params={"graph_name": graph_name},
+            params=CallParameters(graph_name=graph_name),
             yields=["graphName"],
             custom_error=False,
         )
@@ -379,16 +365,15 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         entities: Strings,
         config: Dict[str, Any],
     ) -> DataFrame:
-        params = {
-            "graph_name": G.name(),
-            "properties": properties,
-            "entities": entities,
-            "config": config,
-        }
+        params = CallParameters(
+            graph_name=G.name(),
+            properties=properties,
+            entities=entities,
+            config=config,
+        )
 
         return self._query_runner.call_procedure(
             endpoint=self._namespace,
-            body="$graph_name, $properties, $entities, $config",
             params=params,
         )
 
@@ -517,17 +502,15 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         **config: Any,
     ) -> "Series[Any]":
         self._namespace += ".writeRelationship"
-        body = "$graph_name, $relationship_type, $relationship_property, $config"
-        params = {
-            "graph_name": G.name(),
-            "relationship_type": relationship_type,
-            "relationship_property": relationship_property,
-            "config": config,
-        }
+        params = CallParameters(
+            graph_name=G.name(),
+            relationship_type=relationship_type,
+            relationship_property=relationship_property,
+            config=config,
+        )
 
         return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
-            body=body,
             params=params,
         ).squeeze()
 
@@ -544,17 +527,14 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         **config: Any,
     ) -> Series:  # type: ignore
         self._namespace += ".removeNodeProperties"
-
-        body = "$graph_name, $properties, $config"
-        params = {
-            "graph_name": G.name(),
-            "properties": node_properties,
-            "config": config,
-        }
+        params = CallParameters(
+            graph_name=G.name(),
+            properties=node_properties,
+            config=config,
+        )
 
         return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
-            body=body,
             params=params,
         ).squeeze()
 
@@ -576,14 +556,12 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def deleteRelationships(self, G: Graph, relationship_type: str) -> "Series[Any]":
         self._namespace += ".deleteRelationships"
 
-        body = "$graph_name, $relationship_type"
-        params = {
-            "graph_name": G.name(),
-            "relationship_type": relationship_type,
-        }
+        params = CallParameters(
+            graph_name=G.name(),
+            relationship_type=relationship_type,
+        )
 
         return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
-            body=body,
             params=params,
         ).squeeze()

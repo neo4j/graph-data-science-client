@@ -7,6 +7,7 @@ from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
 from .graph_object import Graph
 from .graph_type_check import from_graph_type_check
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.graph_create_result import GraphCreateResult
 
 
@@ -48,12 +49,12 @@ class CNARWRunner(IllegalAttrChecker):
     @compatible_with("construct", min_inclusive=ServerVersion(2, 4, 0))
     @from_graph_type_check
     def __call__(self, graph_name: str, from_G: Graph, **config: Any) -> GraphCreateResult:
-        query = f"CALL {self._namespace}($graph_name, $from_graph_name, $config)"
-        params = {
-            "graph_name": graph_name,
-            "from_graph_name": from_G.name(),
-            "config": config,
-        }
+        params = CallParameters(
+            graph_name=graph_name,
+            from_graph_name=from_G.name(),
+            config=config,
+        )
+        query = f"CALL {self._namespace}({params.placeholder_str()})"
 
         result = self._query_runner.run_cypher_with_logging(query, params).squeeze()
 
@@ -63,11 +64,10 @@ class CNARWRunner(IllegalAttrChecker):
         self._namespace += ".estimate"
         result = self._query_runner.call_procedure(
             endpoint=self._namespace,
-            body="$from_graph_name, $config",
-            params={
-                "from_graph_name": from_G.name(),
-                "config": config,
-            },
+            params=CallParameters(
+                from_graph_name=from_G.name(),
+                config=config,
+            ),
         )
 
         return result.squeeze()  # type: ignore

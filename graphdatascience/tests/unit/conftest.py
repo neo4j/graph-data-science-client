@@ -4,6 +4,7 @@ import pytest
 from pandas import DataFrame
 
 from graphdatascience import QueryRunner
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.cypher_graph_constructor import (
     CypherGraphConstructor,
@@ -28,20 +29,21 @@ class CollectingQueryRunner(QueryRunner):
         self,
         type: EndpointType,
         endpoint: str,
+        params: Optional[CallParameters] = None,
         yields: Optional[List[str]] = None,
-        body: Optional[str] = None,
-        params: Optional[Dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
     ) -> DataFrame:
+        if params is None:
+            params = CallParameters()
+
         call_keyword = "CALL" if type == EndpointType.PROCEDURE else "RETURN"
 
         if yields is not None and type == EndpointType.FUNCTION:
             raise ValueError("Functions cannot yield results")
-        body = body if body else ""
 
         yields_clause = "" if yields is None else " YIELD " + ", ".join(yields)
-        query = f"{call_keyword} {endpoint}({body}){yields_clause}"
+        query = f"{call_keyword} {endpoint}({params.placeholder_str()}){yields_clause}"
 
         return self.run_cypher(query, params, database, custom_error)
 
@@ -52,7 +54,7 @@ class CollectingQueryRunner(QueryRunner):
             params = {}
 
         self.queries.append(query)
-        self.params.append(params)
+        self.params.append(dict(params.items()))
 
         # This "mock" lets us initialize the GDS object without issues.
         return (

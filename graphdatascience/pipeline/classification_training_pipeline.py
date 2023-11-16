@@ -5,6 +5,7 @@ from pandas import Series
 
 from ..server_version.server_version import ServerVersion
 from .training_pipeline import MODEL_TYPE, TrainingPipeline
+from graphdatascience.call_parameters import CallParameters
 
 
 class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
@@ -18,11 +19,10 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
         Returns:
             The result of the query.
         """
-        params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
+        params = CallParameters(pipeline_name=self.name(), config=self._expand_ranges(config))
 
         return self._query_runner.call_procedure(  # type: ignore
             endpoint=f"{self._endpoint_prefix()}addLogisticRegression",
-            body="$pipeline_name, $config",
             params=params,
         ).squeeze()
 
@@ -40,10 +40,10 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
         endpoint_prefix = self._endpoint_prefix()
         if self._server_version < ServerVersion(2, 4, 0):
             endpoint_prefix = self._endpoint_prefix().replace("beta", "alpha")
-        params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
+        params = CallParameters(pipeline_name=self.name(), config=self._expand_ranges(config))
 
         return self._query_runner.call_procedure(  # type: ignore
-            endpoint=f"{endpoint_prefix}addRandomForest", body="$pipeline_name, $config", params=params
+            endpoint=f"{endpoint_prefix}addRandomForest", params=params
         ).squeeze()
 
     def addMLP(self, **config: Any) -> "Series[Any]":
@@ -58,8 +58,8 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
 
         """
         endpoint_prefix = self._endpoint_prefix().replace("beta", "alpha")
-        params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
+        params = CallParameters(pipeline_name=self.name(), config=self._expand_ranges(config))
 
         return self._query_runner.call_procedure(  # type: ignore
-            endpoint=f"{endpoint_prefix}addMLP", body="$pipeline_name, $config", params=params
+            endpoint=f"{endpoint_prefix}addMLP", params=params
         ).squeeze()

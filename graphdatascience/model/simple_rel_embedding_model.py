@@ -2,6 +2,7 @@ from typing import Any, Dict, List, Union
 
 from pandas import DataFrame, Series
 
+from ..call_parameters import CallParameters
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
 
@@ -65,8 +66,7 @@ class SimpleRelEmbeddingModel:
 
         return self._query_runner.call_procedure(
             endpoint="gds.ml.kge.predict.stream",
-            body="$graph_name, $config",
-            params={"graph_name": self._graph_name, "config": config},
+            params=CallParameters(graph_name=self._graph_name, config=config),
         )
 
     def predict_mutate(
@@ -110,8 +110,7 @@ class SimpleRelEmbeddingModel:
 
         return self._query_runner.call_procedure(  # type: ignore
             endpoint="gds.ml.kge.predict.mutate",
-            body="$graph_name, $config",
-            params={"graph_name": self._graph_name, "config": config},
+            params=CallParameters(graph_name=self._graph_name, config=config),
         ).squeeze()
 
     def predict_write(
@@ -155,8 +154,7 @@ class SimpleRelEmbeddingModel:
 
         return self._query_runner.call_procedure(  # type: ignore
             endpoint="gds.ml.kge.predict.write",
-            body="$graph_name, $config",
-            params={"graph_name": self._graph_name, "config": config},
+            params=CallParameters(graph_name=self._graph_name, config=config),
         ).squeeze()
 
     def scoring_function(self) -> str:

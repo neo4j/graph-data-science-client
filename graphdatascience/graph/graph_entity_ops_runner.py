@@ -12,6 +12,7 @@ from ..server_version.server_version import ServerVersion
 from ..utils.util_proc_runner import UtilProcRunner
 from .graph_object import Graph
 from .graph_type_check import graph_type_check
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.error.cypher_warning_handler import (
     filter_id_func_deprecation_warning,
 )
@@ -48,16 +49,15 @@ class GraphEntityOpsBaseRunner(UncallableNamespace, IllegalAttrChecker):
         entities: Strings,
         config: Dict[str, Any],
     ) -> DataFrame:
-        params = {
-            "graph_name": G.name(),
-            "properties": properties,
-            "entities": entities,
-            "config": config,
-        }
+        params = CallParameters(
+            graph_name=G.name(),
+            properties=properties,
+            entities=entities,
+            config=config,
+        )
 
         return self._query_runner.call_procedure(
             endpoint=self._namespace,
-            body="$graph_name, $properties, $entities, $config",
             params=params,
         )
 
@@ -136,15 +136,14 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
     @graph_type_check
     def drop(self, G: Graph, node_properties: List[str], **config: Any) -> "Series[Any]":
         self._namespace += ".drop"
-        params = {
-            "graph_name": G.name(),
-            "properties": node_properties,
-            "config": config,
-        }
+        params = CallParameters(
+            graph_name=G.name(),
+            properties=node_properties,
+            config=config,
+        )
 
         return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
-            body="$graph_name, $properties, $config",
             params=params,
         ).squeeze()
 
@@ -190,16 +189,15 @@ class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
         **config: Any,
     ) -> "Series[Any]":
         self._namespace += ".write"
-        params = {
-            "graph_name": G.name(),
-            "relationship_type": relationship_type,
-            "relationship_properties": relationship_properties,
-            "config": config,
-        }
+        params = CallParameters(
+            graph_name=G.name(),
+            relationship_type=relationship_type,
+            relationship_properties=relationship_properties,
+            config=config,
+        )
 
         return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
-            body="$graph_name, $relationship_type, $relationship_properties, $config",
             params=params,
         ).squeeze()
 
@@ -209,16 +207,15 @@ class GraphRelationshipRunner(GraphEntityOpsBaseRunner):
     @graph_type_check
     def write(self, G: Graph, relationship_type: str, relationship_property: str = "", **config: Any) -> "Series[Any]":
         self._namespace += ".write"
-        params = {
-            "graph_name": G.name(),
-            "relationship_type": relationship_type,
-            "relationship_property": relationship_property,
-            "config": config,
-        }
+        params = CallParameters(
+            graph_name=G.name(),
+            relationship_type=relationship_type,
+            relationship_property=relationship_property,
+            config=config,
+        )
 
         return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
-            body="$graph_name, $relationship_type, $relationship_property, $config",
             params=params,
         ).squeeze()
 
@@ -233,10 +230,9 @@ class ToUndirectedRunner(IllegalAttrChecker):
             "mutateRelationshipType": mutate_relationship_type,
         }
 
-        params = {"graph_name": G.name(), "config": actual_config}
+        params = CallParameters(graph_name=G.name(), config=actual_config)
         return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace,
-            body="$graph_name, $config",
             params=params,
         ).squeeze()
 
@@ -260,23 +256,19 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
         relationship_type: str,
     ) -> "Series[Any]":
         self._namespace += ".drop"
-        params = {
-            "graph_name": G.name(),
-            "relationship_type": relationship_type,
-        }
+        params = CallParameters(
+            graph_name=G.name(),
+            relationship_type=relationship_type,
+        )
 
-        return self._query_runner.call_procedure(  # type: ignore
-            endpoint=self._namespace, body="$graph_name, $relationship_type", params=params
-        ).squeeze()
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()  # type: ignore
 
     @compatible_with("stream", min_inclusive=ServerVersion(2, 5, 0))
     @graph_type_check
     def stream(self, G: Graph, relationship_types: List[str] = ["*"], **config: Any) -> TopologyDataFrame:
         self._namespace += ".stream"
-        params = {"graph_name": G.name(), "relationship_types": relationship_types, "config": config}
-        result = self._query_runner.call_procedure(
-            endpoint=self._namespace, body="$graph_name, $relationship_types, $config", params=params
-        )
+        params = CallParameters(graph_name=G.name(), relationship_types=relationship_types, config=config)
+        result = self._query_runner.call_procedure(endpoint=self._namespace, params=params)
 
         return TopologyDataFrame(result)
 
@@ -292,10 +284,9 @@ class GraphRelationshipsBetaRunner(GraphEntityOpsBaseRunner):
     @graph_type_check
     def stream(self, G: Graph, relationship_types: List[str] = ["*"], **config: Any) -> TopologyDataFrame:
         self._namespace += ".stream"
-        body = "$graph_name, $relationship_types, $config"
-        params = {"graph_name": G.name(), "relationship_types": relationship_types, "config": config}
+        params = CallParameters(graph_name=G.name(), relationship_types=relationship_types, config=config)
 
-        return TopologyDataFrame(self._query_runner.call_procedure(endpoint=self._namespace, body=body, params=params))
+        return TopologyDataFrame(self._query_runner.call_procedure(endpoint=self._namespace, params=params))
 
     @property
     @compatible_with("toUndirected", min_inclusive=ServerVersion(2, 3, 0))
@@ -314,10 +305,9 @@ class GraphPropertyRunner(UncallableNamespace, IllegalAttrChecker):
         **config: Any,
     ) -> DataFrame:
         self._namespace += ".stream"
-        body = "$graph_name, $graph_property, $config"
-        params = {"graph_name": G.name(), "graph_property": graph_property, "config": config}
+        params = CallParameters(graph_name=G.name(), graph_property=graph_property, config=config)
 
-        return self._query_runner.call_procedure(endpoint=self._namespace, body=body, params=params)
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=params)
 
     @compatible_with("drop", min_inclusive=ServerVersion(2, 2, 0))
     @graph_type_check
@@ -328,10 +318,9 @@ class GraphPropertyRunner(UncallableNamespace, IllegalAttrChecker):
         **config: Any,
     ) -> "Series[Any]":
         self._namespace += ".drop"
-        body = "$graph_name, $graph_property, $config"
-        params = {"graph_name": G.name(), "graph_property": graph_property, "config": config}
+        params = CallParameters(graph_name=G.name(), graph_property=graph_property, config=config)
 
-        return self._query_runner.call_procedure(endpoint=self._namespace, body=body, params=params)  # type: ignore
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=params)  # type: ignore
 
 
 class GraphLabelRunner(GraphEntityOpsBaseRunner):
@@ -339,28 +328,14 @@ class GraphLabelRunner(GraphEntityOpsBaseRunner):
     @graph_type_check
     def write(self, G: Graph, node_label: str, **config: Any) -> "Series[Any]":
         self._namespace += ".write"
-        body = "$graph_name, $node_label, $config"
-        params = {
-            "graph_name": G.name(),
-            "node_label": node_label,
-            "config": config,
-        }
+        params = CallParameters(graph_name=G.name(), node_label=node_label, config=config)
 
-        return self._query_runner.call_procedure(  # type: ignore
-            endpoint=self._namespace, body=body, params=params
-        ).squeeze()
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()  # type: ignore
 
     @compatible_with("mutate", min_inclusive=ServerVersion(2, 3, 0))
     @graph_type_check
     def mutate(self, G: Graph, node_label: str, **config: Any) -> "Series[Any]":
         self._namespace += ".mutate"
-        body = "$graph_name, $node_label, $config"
-        params = {
-            "graph_name": G.name(),
-            "node_label": node_label,
-            "config": config,
-        }
+        params = CallParameters(graph_name=G.name(), node_label=node_label, config=config)
 
-        return self._query_runner.call_procedure(  # type: ignore
-            endpoint=self._namespace, body=body, params=params
-        ).squeeze()
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()  # type: ignore

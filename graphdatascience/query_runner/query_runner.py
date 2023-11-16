@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional
 
 from pandas import DataFrame
 
+from ..call_parameters import CallParameters
 from ..server_version.server_version import ServerVersion
 from .graph_constructor import GraphConstructor
 
@@ -17,9 +18,8 @@ class QueryRunner(ABC):
     def call_function(
         self,
         endpoint: str,
+        params: Optional[CallParameters] = None,
         yields: Optional[List[str]] = None,
-        body: Optional[str] = None,
-        params: Optional[Dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
     ) -> DataFrame:
@@ -27,7 +27,6 @@ class QueryRunner(ABC):
             type=EndpointType.FUNCTION,
             endpoint=endpoint,
             yields=yields,
-            body=body,
             params=params,
             database=database,
             custom_error=custom_error,
@@ -36,9 +35,8 @@ class QueryRunner(ABC):
     def call_procedure(
         self,
         endpoint: str,
+        params: Optional[CallParameters] = None,
         yields: Optional[List[str]] = None,
-        body: Optional[str] = None,
-        params: Optional[Dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
     ) -> DataFrame:
@@ -46,7 +44,6 @@ class QueryRunner(ABC):
             type=EndpointType.PROCEDURE,
             endpoint=endpoint,
             yields=yields,
-            body=body,
             params=params,
             database=database,
             custom_error=custom_error,
@@ -57,9 +54,8 @@ class QueryRunner(ABC):
         self,
         type: EndpointType,
         endpoint: str,
+        params: Optional[CallParameters],
         yields: Optional[List[str]] = None,
-        body: Optional[str] = None,
-        params: Optional[Dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
     ) -> DataFrame:

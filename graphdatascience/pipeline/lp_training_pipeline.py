@@ -5,6 +5,7 @@ from pandas import DataFrame, Series
 from ..model.link_prediction_model import LPModel
 from ..query_runner.query_runner import QueryRunner
 from .classification_training_pipeline import ClassificationTrainingPipeline
+from graphdatascience.call_parameters import CallParameters
 
 
 class LPTrainingPipeline(ClassificationTrainingPipeline[LPModel]):
@@ -25,14 +26,11 @@ class LPTrainingPipeline(ClassificationTrainingPipeline[LPModel]):
             The result of the query.
         """
         endpoint = f"{self._endpoint_prefix()}addFeature"
-        body = "$pipeline_name, $feature_type, $config"
-        params = {
-            "pipeline_name": self.name(),
-            "feature_type": feature_type,
-            "config": config,
-        }
+        params = CallParameters(
+            pipeline_name=self.name(), feature_type=feature_type, config=self._expand_ranges(config)
+        )
 
-        return self._query_runner.call_procedure(endpoint=endpoint, body=body, params=params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
     def feature_steps(self) -> DataFrame:
         """
