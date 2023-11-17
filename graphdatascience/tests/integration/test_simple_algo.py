@@ -113,3 +113,21 @@ def test_fastRP_write_estimate(gds: GraphDataScience) -> None:
     result = gds.fastRP.write.estimate(G, writeProperty="embedding", embeddingDimension=4, randomSeed=42)
 
     assert result["requiredMemory"]
+
+
+def test_nodeSimilarity_stream_with_arrow(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
+
+    result = gds.nodeSimilarity.stream(G, similarityCutoff=0, stream_with_arrow=True)
+
+    assert len(result) == 2
+    assert result["propertyValue"][0] == 0.5
+
+
+def test_fastRP_stream_with_arrow(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
+
+    result = gds.fastRP.stream(G, stream_with_arrow=True, embeddingDimension=32)
+
+    assert len(result) == 3
+    assert len(result["propertyValue"][0]) == 32
