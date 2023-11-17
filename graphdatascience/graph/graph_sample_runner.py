@@ -38,9 +38,8 @@ class RWRRunner(IllegalAttrChecker):
             from_graph_name=from_G.name(),
             config=config,
         )
-        query = f"CALL {self._namespace}({params.placeholder_str()})"
 
-        result = self._query_runner.run_cypher_with_logging(query, params).squeeze()
+        result = self._query_runner.call_procedure(endpoint=self._namespace, params=params, logging=True).squeeze()
 
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
 
@@ -54,9 +53,7 @@ class CNARWRunner(IllegalAttrChecker):
             from_graph_name=from_G.name(),
             config=config,
         )
-        query = f"CALL {self._namespace}({params.placeholder_str()})"
-
-        result = self._query_runner.run_cypher_with_logging(query, params).squeeze()
+        result = self._query_runner.call_procedure(endpoint=self._namespace, params=params, logging=True).squeeze()
 
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
 

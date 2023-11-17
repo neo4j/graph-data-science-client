@@ -69,6 +69,7 @@ class ArrowQueryRunner(QueryRunner):
         params: Optional[CallParameters] = None,
         yields: Optional[List[str]] = None,
         database: Optional[str] = None,
+        logging: bool = False,
         custom_error: bool = True,
     ) -> DataFrame:
         if params is None:
@@ -184,13 +185,9 @@ class ArrowQueryRunner(QueryRunner):
 
             return self._run_arrow_property_get(graph_name, endpoint, {"relationship_types": relationship_types})
 
-        return self._fallback_query_runner.call_endpoint(type, endpoint, params, yields, database, custom_error)
-
-    def run_cypher_with_logging(
-        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
-    ) -> DataFrame:
-        # For now there's no logging support with Arrow queries.
-        return self._fallback_query_runner.run_cypher_with_logging(query, params, database)
+        return self._fallback_query_runner.call_endpoint(
+            type, endpoint, params, yields, database, logging, custom_error
+        )
 
     def set_database(self, database: str) -> None:
         self._fallback_query_runner.set_database(database)

@@ -89,6 +89,7 @@ class Neo4jQueryRunner(QueryRunner):
         params: Optional[CallParameters] = None,
         yields: Optional[List[str]] = None,
         database: Optional[str] = None,
+        logging: bool = False,
         custom_error: bool = True,
     ) -> DataFrame:
         if params is None:
@@ -102,7 +103,10 @@ class Neo4jQueryRunner(QueryRunner):
         yields_clause = "" if yields is None else " YIELD " + ", ".join(yields)
         query = f"{call_keyword} {endpoint}({params.placeholder_str()}){yields_clause}"
 
-        return self.run_cypher(query, params, database, custom_error)
+        if logging:
+            return self.run_cypher_with_logging(query, params, database)
+        else:
+            return self.run_cypher(query, params, database, custom_error)
 
     def run_cypher_with_logging(
         self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None

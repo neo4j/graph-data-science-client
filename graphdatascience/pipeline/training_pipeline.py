@@ -99,9 +99,9 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
             graph_name=G.name(),
             config=config,
         )
-        query = f"CALL {self._endpoint_prefix()}train({params.placeholder_str()})"
+        endpoint = f"{self._endpoint_prefix()}train"
 
-        result = self._query_runner.run_cypher_with_logging(query, params).squeeze()
+        result = self._query_runner.call_procedure(endpoint=endpoint, params=params, logging=True).squeeze()
 
         return (
             self._create_trained_model(config["modelName"], self._query_runner),

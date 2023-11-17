@@ -32,6 +32,7 @@ class CollectingQueryRunner(QueryRunner):
         params: Optional[CallParameters] = None,
         yields: Optional[List[str]] = None,
         database: Optional[str] = None,
+        logging: bool = False,
         custom_error: bool = True,
     ) -> DataFrame:
         if params is None:

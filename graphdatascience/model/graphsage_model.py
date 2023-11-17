@@ -5,6 +5,7 @@ from pandas import Series
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
 from .model import Model
+from graphdatascience.call_parameters import CallParameters
 
 
 class GraphSageModel(Model):
@@ -29,11 +30,13 @@ class GraphSageModel(Model):
             The result of the write operation.
 
         """
-        query = f"CALL {self._endpoint_prefix()}write($graph_name, $config)"
+        endpoint = self._endpoint_prefix() + "write"
         config["modelName"] = self.name()
-        params = {"graph_name": G.name(), "config": config}
+        params = CallParameters(graph_name=G.name(), config=config)
 
-        return self._query_runner.run_cypher_with_logging(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(  # type: ignore
+            endpoint=endpoint, params=params, logging=True
+        ).squeeze()
 
     @graph_type_check
     def predict_write_estimate(self, G: Graph, **config: Any) -> "Series[Any]":

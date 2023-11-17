@@ -235,11 +235,11 @@ class Model(ABC):
             The prediction results as DataFrame.
 
         """
-        query = f"CALL {self._endpoint_prefix()}stream($graph_name, $config)"
+        endpoint = f"{self._endpoint_prefix()}stream"
         config["modelName"] = self.name()
-        params = {"graph_name": G.name(), "config": config}
+        params = CallParameters(graph_name=G.name(), config=config)
 
-        return self._query_runner.run_cypher_with_logging(query, params)
+        return self._query_runner.call_procedure(endpoint=endpoint, params=params, logging=True)
 
     @graph_type_check
     def predict_stream_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
@@ -269,11 +269,13 @@ class Model(ABC):
             The result of mutate operation.
 
         """
-        query = f"CALL {self._endpoint_prefix()}mutate($graph_name, $config)"
+        endpoint = f"{self._endpoint_prefix()}mutate"
         config["modelName"] = self.name()
-        params = {"graph_name": G.name(), "config": config}
+        params = CallParameters(graph_name=G.name(), config=config)
 
-        return self._query_runner.run_cypher_with_logging(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(  # type: ignore
+            endpoint=endpoint, params=params, logging=True
+        ).squeeze()
 
     @graph_type_check
     def predict_mutate_estimate(self, G: Graph, **config: Any) -> "Series[Any]":

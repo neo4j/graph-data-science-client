@@ -15,14 +15,7 @@ class AlgoProcRunner(IllegalAttrChecker, ABC):
     def _run_procedure(self, G: Graph, config: Dict[str, Any], with_logging: bool = True) -> DataFrame:
         params = CallParameters(graph_name=G.name(), config=config)
 
-        if with_logging:
-            query = f"CALL {self._namespace}({params.placeholder_str()})"
-            return self._query_runner.run_cypher_with_logging(query, params=params)
-        else:
-            return self._query_runner.call_procedure(
-                endpoint=self._namespace,
-                params=params,
-            )
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=params, logging=with_logging)
 
     @graph_type_check
     def estimate(self, G: Graph, **config: Any) -> "Series[Any]":

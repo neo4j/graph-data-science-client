@@ -38,6 +38,7 @@ class QueryRunner(ABC):
         params: Optional[CallParameters] = None,
         yields: Optional[List[str]] = None,
         database: Optional[str] = None,
+        logging: bool = False,
         custom_error: bool = True,
     ) -> DataFrame:
         return self.call_endpoint(
@@ -57,6 +58,7 @@ class QueryRunner(ABC):
         params: Optional[CallParameters],
         yields: Optional[List[str]] = None,
         database: Optional[str] = None,
+        logging: bool = False,
         custom_error: bool = True,
     ) -> DataFrame:
         pass
@@ -70,11 +72,6 @@ class QueryRunner(ABC):
         custom_error: bool = True,
     ) -> DataFrame:
         pass
-
-    def run_cypher_with_logging(
-        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
-    ) -> DataFrame:
-        return self.run_cypher(query, params, database, True)
 
     @abstractmethod
     def set_database(self, database: str) -> None:

@@ -271,8 +271,9 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             relationship_filter=relationship_filter,
             config=config,
         )
-        result = self._query_runner.run_cypher_with_logging(
-            f"CALL {self._namespace}({params.placeholder_str()})",
+        result = self._query_runner.call_procedure(
+            endpoint=self._namespace,
+            logging=True,
             params=params,
         ).squeeze()
 
