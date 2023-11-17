@@ -12,7 +12,7 @@ from ..call_parameters import CallParameters
 from ..server_version.server_version import ServerVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .graph_constructor import GraphConstructor
-from .query_runner import EndpointType, QueryRunner
+from .query_runner import QueryRunner
 from graphdatascience.server_version.compatible_with import (
     IncompatibleServerVersionError,
 )
@@ -62,9 +62,8 @@ class ArrowQueryRunner(QueryRunner):
     ) -> DataFrame:
         return self._fallback_query_runner.run_cypher(query, params, database, custom_error)
 
-    def call_endpoint(
+    def call_procedure(
         self,
-        type: EndpointType,
         endpoint: str,
         params: Optional[CallParameters] = None,
         yields: Optional[List[str]] = None,
@@ -185,9 +184,7 @@ class ArrowQueryRunner(QueryRunner):
 
             return self._run_arrow_property_get(graph_name, endpoint, {"relationship_types": relationship_types})
 
-        return self._fallback_query_runner.call_endpoint(
-            type, endpoint, params, yields, database, logging, custom_error
-        )
+        return self._fallback_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
 
     def set_database(self, database: str) -> None:
         self._fallback_query_runner.set_database(database)

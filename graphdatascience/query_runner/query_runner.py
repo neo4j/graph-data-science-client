@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pandas import DataFrame
@@ -9,53 +8,12 @@ from ..server_version.server_version import ServerVersion
 from .graph_constructor import GraphConstructor
 
 
-class EndpointType(Enum):
-    PROCEDURE = "PROCEDURE"
-    FUNCTION = "FUNCTION"
-
-
 class QueryRunner(ABC):
-    def call_function(
-        self,
-        endpoint: str,
-        params: Optional[CallParameters] = None,
-        yields: Optional[List[str]] = None,
-        database: Optional[str] = None,
-        custom_error: bool = True,
-    ) -> DataFrame:
-        return self.call_endpoint(
-            type=EndpointType.FUNCTION,
-            endpoint=endpoint,
-            yields=yields,
-            params=params,
-            database=database,
-            custom_error=custom_error,
-        )
-
+    @abstractmethod
     def call_procedure(
         self,
         endpoint: str,
         params: Optional[CallParameters] = None,
-        yields: Optional[List[str]] = None,
-        database: Optional[str] = None,
-        logging: bool = False,
-        custom_error: bool = True,
-    ) -> DataFrame:
-        return self.call_endpoint(
-            type=EndpointType.PROCEDURE,
-            endpoint=endpoint,
-            yields=yields,
-            params=params,
-            database=database,
-            custom_error=custom_error,
-        )
-
-    @abstractmethod
-    def call_endpoint(
-        self,
-        type: EndpointType,
-        endpoint: str,
-        params: Optional[CallParameters],
         yields: Optional[List[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,

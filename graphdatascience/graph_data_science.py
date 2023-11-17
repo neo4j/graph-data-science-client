@@ -94,9 +94,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             self._query_runner.set_database(database)
 
         try:
-            server_version_string = self._query_runner.call_function(
-                endpoint="gds.version", custom_error=False
-            ).squeeze()
+            server_version_string = self._query_runner.run_cypher("RETURN gds.version()").squeeze()
         except Exception as e:
             if "Unknown function 'gds.version'" in str(e):
                 # Some Python versions appear to not call __del__ of self._query_runner when an exception

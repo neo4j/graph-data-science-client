@@ -16,7 +16,7 @@ from ..error.unable_to_connect import UnableToConnectError
 from ..server_version.server_version import ServerVersion
 from .cypher_graph_constructor import CypherGraphConstructor
 from .graph_constructor import GraphConstructor
-from .query_runner import EndpointType, QueryRunner
+from .query_runner import QueryRunner
 
 
 class Neo4jQueryRunner(QueryRunner):
@@ -82,9 +82,8 @@ class Neo4jQueryRunner(QueryRunner):
 
             return df
 
-    def call_endpoint(
+    def call_procedure(
         self,
-        type: EndpointType,
         endpoint: str,
         params: Optional[CallParameters] = None,
         yields: Optional[List[str]] = None,
@@ -95,13 +94,8 @@ class Neo4jQueryRunner(QueryRunner):
         if params is None:
             params = CallParameters()
 
-        call_keyword = "CALL" if type == EndpointType.PROCEDURE else "RETURN"
-
-        if yields is not None and type == EndpointType.FUNCTION:
-            raise ValueError("Functions cannot yield results")
-
         yields_clause = "" if yields is None else " YIELD " + ", ".join(yields)
-        query = f"{call_keyword} {endpoint}({params.placeholder_str()}){yields_clause}"
+        query = f"CALL {endpoint}({params.placeholder_str()}){yields_clause}"
 
         if logging:
             return self.run_cypher_with_logging(query, params, database)

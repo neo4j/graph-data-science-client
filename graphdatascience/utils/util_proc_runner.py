@@ -4,7 +4,6 @@ from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
-from graphdatascience.call_parameters import CallParameters
 
 
 class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
@@ -20,7 +19,7 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         """
         self._namespace += ".asNode"
-        result = self._query_runner.call_function(endpoint=self._namespace, params=CallParameters(node_id=node_id))
+        result = self._query_runner.run_cypher(f"RETURN {self._namespace}({node_id}) AS node")
 
         return result.iat[0, 0]
 
@@ -36,7 +35,7 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         """
         self._namespace += ".asNodes"
-        result = self._query_runner.call_function(endpoint=self._namespace, params=CallParameters(node_ids=node_ids))
+        result = self._query_runner.run_cypher(f"RETURN {self._namespace}({node_ids}) AS nodes")
 
         return result.iat[0, 0]  # type: ignore
 
@@ -57,12 +56,13 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
         """
         self._namespace += ".nodeProperty"
 
-        params = CallParameters(
-            graph_name=G.name(),
-            node_id=node_id,
-            property_key=property_key,
-            node_label=node_label,
-        )
-        result = self._query_runner.call_function(endpoint=self._namespace, params=params)
+        query = f"RETURN {self._namespace}($graph_name, $node_id, $property_key, $node_label) as property"
+        params = {
+            "graph_name": G.name(),
+            "node_id": node_id,
+            "property_key": property_key,
+            "node_label": node_label,
+        }
+        result = self._query_runner.run_cypher(query, params)
 
         return result.iat[0, 0]

@@ -6,7 +6,7 @@ from pyarrow import flight
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 
 from ..call_parameters import CallParameters
-from .query_runner import EndpointType, QueryRunner
+from .query_runner import QueryRunner
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
@@ -64,9 +64,8 @@ class AuraDbArrowQueryRunner(QueryRunner):
     ) -> DataFrame:
         return self._fallback_query_runner.run_cypher(query, params, database, custom_error)
 
-    def call_endpoint(
+    def call_procedure(
         self,
-        type: EndpointType,
         endpoint: str,
         params: Optional[CallParameters] = None,
         yields: Optional[List[str]] = None,
@@ -93,9 +92,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
                 "useEncryption": self._encrypted,
             }
 
-        return self._fallback_query_runner.call_endpoint(
-            type, endpoint, params, yields, database, logging, custom_error
-        )
+        return self._fallback_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
 
     def is_remote_projected_graph(self, graph_name: str) -> bool:
         database_location: str = self._fallback_query_runner.call_procedure(

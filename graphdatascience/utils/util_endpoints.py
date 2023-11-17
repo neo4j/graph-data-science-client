@@ -63,10 +63,8 @@ class DirectUtilEndpoints(CallerBase):
         Returns:
             The version of the GDS library.
         """
-        namespace = self._namespace + ".version"
-        result = self._query_runner.call_function(endpoint=namespace, custom_error=False).squeeze()
-
-        return result  # type: ignore
+        query = f"RETURN {self._namespace}.version()"
+        return self._query_runner.run_cypher(query).squeeze()  # type: ignore
 
     @client_only_endpoint("gds")
     def server_version(self) -> ServerVersion:
@@ -112,6 +110,7 @@ class IndirectUtilAlphaEndpoints(CallerBase):
             available_values=available_values,
             selected_values=selected_values,
         )
-        result = self._query_runner.call_function(endpoint=namespace, params=params)
+        query = f"RETURN {namespace}($available_values, $selected_values) AS encoded"
+        result = self._query_runner.run_cypher(query=query, params=params)
 
         return result.iat[0, 0]  # type: ignore
