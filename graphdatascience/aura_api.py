@@ -195,7 +195,10 @@ class AuraApi:
         return f"Instance is not running after waiting for {waited_time} seconds"
 
     def list_available_memory_configurations(self) -> List[str]:
-        response = req.get(f"{AuraApi.BASE_URI}/v1/tenants/{self._tenant_id}")
+        response = req.get(
+            f"{AuraApi.BASE_URI}/v1/tenants/{self._tenant_id}",
+            headers=self._build_header(),
+        )
         raw_data = response.json()["data"]
 
         return [
