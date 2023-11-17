@@ -5,7 +5,6 @@ from typing import List, Optional, Tuple
 
 from neo4j import GraphDatabase
 
-from graphdatascience import GraphDataScience
 from graphdatascience.aura_api import AuraApi, InstanceDetails
 from graphdatascience.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
@@ -32,7 +31,7 @@ class AuraSessions:
             tenant_id=tenant_id, client_id=aura_api_client_auth[0], client_secret=aura_api_client_auth[1]
         )
 
-    def create_gds(self, session_name: str, session_password: str, memory: str = "8GB") -> GraphDataScience:
+    def create_gds(self, session_name: str, session_password: str, memory: str = "8GB") -> AuraGraphDataScience:
         if len(session_password) < 8:
             raise ValueError("Password must be at least 8 characters long.")
 
@@ -69,7 +68,7 @@ class AuraSessions:
 
         return self._construct_client(gds_url=gds_url, gds_user=gds_user, gds_pw=session_password)
 
-    def connect(self, session_name: str, session_password: str) -> GraphDataScience:
+    def connect(self, session_name: str, session_password: str) -> AuraGraphDataScience:
         instance_name = AuraSessions._instance_name(session_name)
         matched_instances = [instance for instance in self._aura_api.list_instances() if instance.name == instance_name]
 
@@ -127,7 +126,7 @@ class AuraSessions:
                 database_="system",
             )
 
-    def _construct_client(self, gds_url: str, gds_user: str, gds_pw: str) -> GraphDataScience:
+    def _construct_client(self, gds_url: str, gds_user: str, gds_pw: str) -> AuraGraphDataScience:
         return AuraGraphDataScience(
             endpoint=gds_url, auth=(gds_user, gds_pw), aura_db_connection_info=self._db_credentials
         )

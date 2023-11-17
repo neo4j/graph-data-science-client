@@ -5,7 +5,7 @@ import warnings
 from typing import Any, Dict, List, Optional, Tuple
 
 import pyarrow.flight as flight
-from pandas import DataFrame
+from pandas import DataFrame, Series
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 
 from ..call_parameters import CallParameters
@@ -19,6 +19,37 @@ from graphdatascience.server_version.compatible_with import (
 
 
 class ArrowQueryRunner(QueryRunner):
+    @staticmethod
+    def create(
+        server_version: ServerVersion,
+        fallback_query_runner: QueryRunner,
+        auth: Optional[Tuple[str, str]] = None,
+        encrypted: bool = False,
+        disable_server_verification: bool = False,
+        tls_root_certs: Optional[bytes] = None,
+    ) -> "QueryRunner":
+        yield_fields = (
+            ["running", "listenAddress"]
+            if server_version >= ServerVersion(2, 2, 1)
+            else ["running", "advertisedListenAddress"]
+        )
+        arrow_info: "Series[Any]" = fallback_query_runner.call_procedure(
+            endpoint="gds.debug.arrow", yields=yield_fields, custom_error=False
+        ).squeeze()
+        listen_address: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])  # type: ignore
+        if arrow_info["running"]:
+            return ArrowQueryRunner(
+                listen_address,
+                fallback_query_runner,
+                server_version,
+                auth,
+                encrypted,
+                disable_server_verification,
+                tls_root_certs,
+            )
+        else:
+            return fallback_query_runner
+
     def __init__(
         self,
         uri: str,
@@ -185,6 +216,15 @@ class ArrowQueryRunner(QueryRunner):
             return self._run_arrow_property_get(graph_name, endpoint, {"relationship_types": relationship_types})
 
         return self._fallback_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
+
+    def server_version(self) -> ServerVersion:
+        return self._fallback_query_runner.server_version()
+
+    def driver_config(self) -> Dict[str, Any]:
+        return self._fallback_query_runner.driver_config()
+
+    def encrypted(self) -> bool:
+        return self._fallback_query_runner.encrypted()
 
     def set_database(self, database: str) -> None:
         self._fallback_query_runner.set_database(database)
