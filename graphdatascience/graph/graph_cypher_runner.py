@@ -41,7 +41,7 @@ class GraphCypherRunner(CallerBase):
 
         GraphCypherRunner._verify_query_ends_with_return_clause(self._namespace, query)
 
-        result = self._query_runner.run_query(query, params, database, False).squeeze()
+        result = self._query_runner.run_cypher(query, params, database, False).squeeze()
 
         try:
             graph_name = str(result["graphName"])

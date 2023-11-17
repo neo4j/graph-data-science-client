@@ -8,7 +8,7 @@ from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 @pytest.fixture(autouse=True)
 def create_graph(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
-    runner.run_query(
+    runner.run_cypher(
         """
         CREATE
         (a: Node {x: 3, y: 20}),
@@ -25,7 +25,7 @@ def create_graph(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 
     yield
 
-    runner.run_query("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n")
 
 
 @pytest.fixture

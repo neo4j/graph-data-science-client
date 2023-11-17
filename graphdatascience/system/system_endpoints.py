@@ -8,30 +8,26 @@ from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..server_version.compatible_with import compatible_with
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.server_version.server_version import ServerVersion
 
 
 class DebugProcRunner(UncallableNamespace, IllegalAttrChecker):
     def sysInfo(self) -> "Series[Any]":
         self._namespace += ".sysInfo"
-        query = f"CALL {self._namespace}()"
-
-        return self._query_runner.run_query(query).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
 
     def arrow(self) -> "Series[Any]":
         self._namespace += ".arrow"
-        query = f"CALL {self._namespace}()"
-
-        return self._query_runner.run_query(query).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
 
 
 class LicenseProcRunner(UncallableNamespace, IllegalAttrChecker):
     def state(self) -> "Series[Any]":
         self._namespace += ".state"
-        query = f"CALL {self._namespace}()"
 
         try:
-            return self._query_runner.run_query(query).squeeze()  # type: ignore
+            return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
         except Exception as e:
             # AuraDS does not have `gds.license.state`, but is always GDS EE.
             if re.match(r"There is no procedure with the name `gds.*` registered for this database instance", str(e)):
@@ -58,7 +54,7 @@ class DirectSystemEndpoints(CallerBase):
             """
 
         try:
-            isLicensed: bool = self._query_runner.run_query(query, custom_error=False).squeeze()
+            isLicensed: bool = self._query_runner.run_cypher(query, custom_error=False).squeeze()
         except Exception as e:
             # AuraDS does not have `gds.debug.sysInfo`, but is always GDS EE.
             if re.match(r"There is no procedure with the name `gds.*` registered for this database instance", str(e)):
@@ -79,16 +75,12 @@ class DirectSystemEndpoints(CallerBase):
     @compatible_with("backup", min_inclusive=ServerVersion(2, 5, 0))
     def backup(self, **config: Any) -> DataFrame:
         namespace = self._namespace + ".backup"
-        query = f"CALL {namespace}($config)"
-
-        return self._query_runner.run_query(query, {"config": config})
+        return self._query_runner.call_procedure(endpoint=namespace, params=CallParameters(config=config))
 
     @compatible_with("restore", min_inclusive=ServerVersion(2, 5, 0))
     def restore(self, **config: Any) -> DataFrame:
         namespace = self._namespace + ".restore"
-        query = f"CALL {namespace}($config)"
-
-        return self._query_runner.run_query(query, {"config": config})
+        return self._query_runner.call_procedure(endpoint=namespace, params=CallParameters(config=config))
 
     @compatible_with("listProgress", min_inclusive=ServerVersion(2, 5, 0))
     def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
@@ -107,37 +99,26 @@ class SystemBetaEndpoints(CallerBase):
     def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
         self._namespace += ".listProgress"
 
+        params = CallParameters()
         if job_id:
-            query = f"CALL {self._namespace}($job_id)"
-            params = {"job_id": job_id}
-        else:
-            query = f"CALL {self._namespace}()"
-            params = {}
+            params["job_id"] = job_id
 
-        return self._query_runner.run_query(query, params)
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=params)
 
 
 class SystemAlphaEndpoints(CallerBase):
     def userLog(self) -> DataFrame:
         self._namespace += ".userLog"
-        query = f"CALL {self._namespace}()"
-
-        return self._query_runner.run_query(query)
+        return self._query_runner.call_procedure(endpoint=self._namespace)
 
     def systemMonitor(self) -> "Series[Any]":
         self._namespace += ".systemMonitor"
-        query = f"CALL {self._namespace}()"
-
-        return self._query_runner.run_query(query).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
 
     def backup(self, **config: Any) -> DataFrame:
         self._namespace += ".backup"
-        query = f"CALL {self._namespace}($config)"
-
-        return self._query_runner.run_query(query, {"config": config})
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=CallParameters(config=config))
 
     def restore(self, **config: Any) -> DataFrame:
         self._namespace += ".restore"
-        query = f"CALL {self._namespace}($config)"
-
-        return self._query_runner.run_query(query, {"config": config})
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=CallParameters(config=config))

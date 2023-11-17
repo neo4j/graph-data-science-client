@@ -7,6 +7,7 @@ from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
 from .graph_object import Graph
 from .graph_type_check import from_graph_type_check
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.graph_create_result import GraphCreateResult
 
 
@@ -32,14 +33,13 @@ class RWRRunner(IllegalAttrChecker):
     @compatible_with("construct", min_inclusive=ServerVersion(2, 2, 0))
     @from_graph_type_check
     def __call__(self, graph_name: str, from_G: Graph, **config: Any) -> GraphCreateResult:
-        query = f"CALL {self._namespace}($graph_name, $from_graph_name, $config)"
-        params = {
-            "graph_name": graph_name,
-            "from_graph_name": from_G.name(),
-            "config": config,
-        }
+        params = CallParameters(
+            graph_name=graph_name,
+            from_graph_name=from_G.name(),
+            config=config,
+        )
 
-        result = self._query_runner.run_query_with_logging(query, params).squeeze()
+        result = self._query_runner.call_procedure(endpoint=self._namespace, params=params, logging=True).squeeze()
 
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
 
@@ -48,25 +48,23 @@ class CNARWRunner(IllegalAttrChecker):
     @compatible_with("construct", min_inclusive=ServerVersion(2, 4, 0))
     @from_graph_type_check
     def __call__(self, graph_name: str, from_G: Graph, **config: Any) -> GraphCreateResult:
-        query = f"CALL {self._namespace}($graph_name, $from_graph_name, $config)"
-        params = {
-            "graph_name": graph_name,
-            "from_graph_name": from_G.name(),
-            "config": config,
-        }
-
-        result = self._query_runner.run_query_with_logging(query, params).squeeze()
+        params = CallParameters(
+            graph_name=graph_name,
+            from_graph_name=from_G.name(),
+            config=config,
+        )
+        result = self._query_runner.call_procedure(endpoint=self._namespace, params=params, logging=True).squeeze()
 
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
 
     def estimate(self, from_G: Graph, **config: Any) -> "Series[Any]":
         self._namespace += ".estimate"
-        result = self._query_runner.run_query(
-            f"CALL {self._namespace}($from_graph_name, $config)",
-            {
-                "from_graph_name": from_G.name(),
-                "config": config,
-            },
+        result = self._query_runner.call_procedure(
+            endpoint=self._namespace,
+            params=CallParameters(
+                from_graph_name=from_G.name(),
+                config=config,
+            ),
         )
 
         return result.squeeze()  # type: ignore

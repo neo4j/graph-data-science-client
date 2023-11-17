@@ -3,6 +3,7 @@ from typing import List, Optional, Union
 
 from pandas import DataFrame
 
+from ..call_parameters import CallParameters
 from ..error.client_only_endpoint import client_deprecated, client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
@@ -45,8 +46,11 @@ class GraphAlphaProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         errors = []
 
-        exists = self._query_runner.run_query(
-            f"CALL gds.graph.exists('{graph_name}') YIELD exists", custom_error=False
+        exists = self._query_runner.call_procedure(
+            endpoint="gds.graph.exists",
+            yields=["exists"],
+            params=CallParameters(graph_name=graph_name),
+            custom_error=False,
         ).squeeze()
 
         # compare against True as (1) unit tests return None here and (2) numpys True does not work with `is True`.

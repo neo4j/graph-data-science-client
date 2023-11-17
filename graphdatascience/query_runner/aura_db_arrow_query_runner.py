@@ -5,6 +5,7 @@ from pandas import DataFrame, Series
 from pyarrow import flight
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 
+from ..call_parameters import CallParameters
 from .query_runner import QueryRunner
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
@@ -28,7 +29,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
         with GraphDatabase.driver(aura_db_endpoint, auth=auth, **config) as driver:
             arrow_info: "Series[Any]" = (
                 Neo4jQueryRunner(driver, auto_close=True)
-                .run_query("CALL internal.arrow.status()", custom_error=False)
+                .call_procedure(endpoint="internal.arrow.status", custom_error=False)
                 .squeeze()
             )
 
@@ -54,23 +55,34 @@ class AuraDbArrowQueryRunner(QueryRunner):
             )
             self._client = flight.FlightClient(location, **client_options)
 
-    def run_query(
+    def run_cypher(
         self,
         query: str,
         params: Optional[Dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
     ) -> DataFrame:
-        if params is None:
-            params = {}
+        return self._fallback_query_runner.run_cypher(query, params, database, custom_error)
 
-        if AuraDbArrowQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME in query:
+    def call_procedure(
+        self,
+        endpoint: str,
+        params: Optional[CallParameters] = None,
+        yields: Optional[List[str]] = None,
+        database: Optional[str] = None,
+        logging: bool = False,
+        custom_error: bool = True,
+    ) -> DataFrame:
+        if params is None:
+            params = CallParameters()
+
+        if AuraDbArrowQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME == endpoint:
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
             params["token"] = token
             params["host"] = aura_db_arrow_endpoint
             params["config"] = {"useEncryption": self._encrypted}
 
-        elif ".write" in query and self.is_remote_projected_graph(params["graph_name"]):
+        elif endpoint.endswith(".write") and self.is_remote_projected_graph(params["graph_name"]):
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
             host, port_string = aura_db_arrow_endpoint.split(":")
             params["config"]["arrowConnectionInfo"] = {
@@ -80,12 +92,13 @@ class AuraDbArrowQueryRunner(QueryRunner):
                 "useEncryption": self._encrypted,
             }
 
-        return self._fallback_query_runner.run_query(query, params, database, custom_error)
+        return self._fallback_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
 
     def is_remote_projected_graph(self, graph_name: str) -> bool:
-        database_location: str = self._fallback_query_runner.run_query(
-            "CALL gds.graph.list($graph_name) YIELD databaseLocation RETURN databaseLocation",
-            {"graph_name": graph_name},
+        database_location: str = self._fallback_query_runner.call_procedure(
+            endpoint="gds.graph.list",
+            yields=["databaseLocation"],
+            params=CallParameters(graph_name=graph_name),
         ).squeeze()
         return database_location == "remote"
 

@@ -11,7 +11,7 @@ GRAPH_NAME = "g"
 @fixture(autouse=True)
 def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     # Runs before each test
-    runner.run_query(
+    runner.run_cypher(
         """
         CREATE
         (a: Node),
@@ -26,8 +26,8 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     yield  # Test runs here
 
     # Runs after each test
-    runner.run_query("MATCH (n) DETACH DELETE n")
-    runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}')")
+    runner.run_cypher("MATCH (n) DETACH DELETE n")
+    runner.run_cypher(f"CALL gds.graph.drop('{GRAPH_NAME}')")
 
 
 def test_pageRank_mutate(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
@@ -95,7 +95,7 @@ def test_fastRP_write(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     result = gds.fastRP.write(G, writeProperty="embedding", embeddingDimension=4, randomSeed=42)
     assert result["nodePropertiesWritten"] == 3
 
-    embeddings = runner.run_query(
+    embeddings = runner.run_cypher(
         """
         MATCH(n:Node)
         RETURN n.embedding as embedding

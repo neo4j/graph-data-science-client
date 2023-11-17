@@ -5,6 +5,7 @@ from ..error.uncallable_namespace import UncallableNamespace
 from .graph_export_runner import GraphExportCsvEndpoints
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectBetaRunner
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.graph_create_result import GraphCreateResult
 from graphdatascience.graph.graph_entity_ops_runner import GraphRelationshipsBetaRunner
 
@@ -30,14 +31,13 @@ class GraphBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
     def generate(self, graph_name: str, node_count: int, average_degree: int, **config: Any) -> GraphCreateResult:
         self._namespace += ".generate"
 
-        query = f"CALL {self._namespace}($graph_name, $node_count, $average_degree, $config)"
-        params = {
-            "graph_name": graph_name,
-            "node_count": node_count,
-            "average_degree": average_degree,
-            "config": config,
-        }
+        params = CallParameters(
+            graph_name=graph_name,
+            node_count=node_count,
+            average_degree=average_degree,
+            config=config,
+        )
 
-        result = self._query_runner.run_query(query, params).squeeze()
+        result = self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()
 
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)

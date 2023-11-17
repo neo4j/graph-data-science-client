@@ -6,6 +6,7 @@ from pandas import Series
 from ..model.node_classification_model import NCModel
 from ..pipeline.classification_training_pipeline import ClassificationTrainingPipeline
 from ..query_runner.query_runner import QueryRunner
+from graphdatascience.call_parameters import CallParameters
 
 
 class NCTrainingPipeline(ClassificationTrainingPipeline[NCModel], ABC):
@@ -25,10 +26,10 @@ class NCTrainingPipeline(ClassificationTrainingPipeline[NCModel], ABC):
             The result of the query.
 
         """
-        query = f"{self._query_prefix()}selectFeatures($pipeline_name, $node_properties)"
-        params = {"pipeline_name": self.name(), "node_properties": node_properties}
+        endpoint = f"{self._endpoint_prefix()}selectFeatures"
+        params = CallParameters(pipeline_name=self.name(), node_properties=node_properties)
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
     def feature_properties(self) -> "Series[Any]":
         """
@@ -42,8 +43,8 @@ class NCTrainingPipeline(ClassificationTrainingPipeline[NCModel], ABC):
         feature_properties: "Series[Any]" = Series(pipeline_info["featurePipeline"]["featureProperties"], dtype=object)
         return feature_properties
 
-    def _query_prefix(self) -> str:
-        return "CALL gds.beta.pipeline.nodeClassification."
+    def _endpoint_prefix(self) -> str:
+        return "gds.beta.pipeline.nodeClassification."
 
     def _create_trained_model(self, name: str, query_runner: QueryRunner) -> NCModel:
         return NCModel(name, query_runner, self._server_version)

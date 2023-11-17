@@ -11,7 +11,7 @@ GRAPH_NAME = "g"
 @pytest.fixture(autouse=True)
 def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     # Runs before each test
-    runner.run_query(
+    runner.run_cypher(
         """
         CREATE
         (a: Node),
@@ -26,8 +26,8 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     yield  # Test runs here
 
     # Runs after each test
-    runner.run_query("MATCH (n) DETACH DELETE n")
-    runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
+    runner.run_cypher("MATCH (n) DETACH DELETE n")
+    runner.run_cypher(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
 
 
 def test_bogus_algo(gds: GraphDataScience) -> None:

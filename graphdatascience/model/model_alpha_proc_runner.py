@@ -5,27 +5,27 @@ from pandas import Series
 from .model import Model
 from .model_proc_runner import ModelProcRunner
 from .model_resolver import ModelResolver
+from graphdatascience.call_parameters import CallParameters
 
 
 class ModelAlphaProcRunner(ModelResolver):
     def store(self, model: Model, failIfUnsupportedType: bool = True) -> "Series[Any]":
         self._namespace += ".store"
+        params = CallParameters(
+            model_name=model.name(),
+            fail_flag=failIfUnsupportedType,
+        )
 
-        query = f"CALL {self._namespace}($model_name, $fail_flag)"
-        params = {
-            "model_name": model.name(),
-            "fail_flag": failIfUnsupportedType,
-        }
-
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(  # type: ignore
+            endpoint=self._namespace,
+            params=params,
+        ).squeeze()
 
     def publish(self, model: Model) -> Model:
         self._namespace += ".publish"
+        params = CallParameters(model_name=model.name())
 
-        query = f"CALL {self._namespace}($model_name)"
-        params = {"model_name": model.name()}
-
-        result = self._query_runner.run_query(query, params)
+        result = self._query_runner.call_procedure(endpoint=self._namespace, params=params)
 
         model_name = result["modelInfo"][0]["modelName"]
         model_type = result["modelInfo"][0]["modelType"]
@@ -34,11 +34,9 @@ class ModelAlphaProcRunner(ModelResolver):
 
     def load(self, model_name: str) -> Tuple[Model, "Series[Any]"]:
         self._namespace += ".load"
+        params = CallParameters(model_name=model_name)
 
-        query = f"CALL {self._namespace}($model_name)"
-        params = {"model_name": model_name}
-
-        result = self._query_runner.run_query(query, params).squeeze()
+        result = self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()
 
         self._namespace = "gds.model"
         proc_runner = ModelProcRunner(self._query_runner, self._namespace, self._server_version)
@@ -47,8 +45,5 @@ class ModelAlphaProcRunner(ModelResolver):
 
     def delete(self, model: Model) -> "Series[Any]":
         self._namespace += ".delete"
-
-        query = f"CALL {self._namespace}($model_name)"
-        params = {"model_name": model.name()}
-
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        params = CallParameters(model_name=model.name())
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()  # type: ignore

@@ -1,7 +1,6 @@
-import re
-from typing import Type, TypeVar
+from __future__ import annotations
 
-SV = TypeVar("SV", bound="ServerVersion")
+import re
 
 
 class InvalidServerVersionError(Exception):
@@ -19,14 +18,14 @@ class ServerVersion:
         self.patch = patch
 
     @classmethod
-    def from_string(cls: Type[SV], version: str) -> SV:
+    def from_string(cls, version: str) -> ServerVersion:
         server_version_match = re.search(r"^(\d+)\.(\d+)\.(\d+)", version)
         if not server_version_match:
             raise InvalidServerVersionError(f"{version} is not a valid GDS library version")
 
         return cls(*map(int, server_version_match.groups()))
 
-    def __lt__(self, other: SV) -> bool:
+    def __lt__(self, other: ServerVersion) -> bool:
         if self.major != other.major:
             return self.major < other.major
 
@@ -38,7 +37,7 @@ class ServerVersion:
 
         return False
 
-    def __ge__(self, other: SV) -> bool:
+    def __ge__(self, other: ServerVersion) -> bool:
         return not self.__lt__(other)
 
     def __str__(self) -> str:

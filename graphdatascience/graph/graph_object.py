@@ -1,12 +1,13 @@
+from __future__ import annotations
+
 from types import TracebackType
-from typing import Any, List, Optional, Type, TypeVar, Union
+from typing import Any, List, Optional, Type, Union
 
 from pandas import Series
 
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
-
-TGraph = TypeVar("TGraph", bound="Graph")
+from graphdatascience.call_parameters import CallParameters
 
 
 class Graph:
@@ -22,7 +23,7 @@ class Graph:
         self._db = query_runner.database()
         self._server_version = server_version
 
-    def __enter__(self: TGraph) -> TGraph:
+    def __enter__(self: Graph) -> Graph:
         return self
 
     def __exit__(
@@ -43,10 +44,12 @@ class Graph:
     def _graph_info(self, yields: List[str] = []) -> "Series[Any]":
         yield_db = "database" in yields
         yields_with_db = yields if yield_db else yields + ["database"]
-        yield_suffix = "" if len(yields) == 0 else " YIELD " + ", ".join(yields_with_db)
 
-        info = self._query_runner.run_query(
-            f"CALL gds.graph.list($graph_name){yield_suffix}", {"graph_name": self._name}, custom_error=False
+        info = self._query_runner.call_procedure(
+            endpoint="gds.graph.list",
+            params=CallParameters(graph_name=self._name),
+            yields=yields_with_db,
+            custom_error=False,
         )
 
         if len(info) == 0:
@@ -173,9 +176,9 @@ class Graph:
         Returns:
             whether the graph exists
         """
-        result = self._query_runner.run_query(
-            "CALL gds.graph.exists($graph_name)",
-            {"graph_name": self._name},
+        result = self._query_runner.call_procedure(
+            endpoint="gds.graph.exists",
+            params=CallParameters(graph_name=self._name),
             custom_error=False,
         )
         return result.squeeze()["exists"]  # type: ignore
@@ -189,9 +192,9 @@ class Graph:
             the result of the drop operation
 
         """
-        result = self._query_runner.run_query(
-            "CALL gds.graph.drop($graph_name, $fail_if_missing)",
-            {"graph_name": self._name, "fail_if_missing": failIfMissing},
+        result = self._query_runner.call_procedure(
+            endpoint="gds.graph.drop",
+            params=CallParameters(graph_name=self._name, failIfMissing=failIfMissing),
             custom_error=False,
         )
 

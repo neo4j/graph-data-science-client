@@ -10,6 +10,7 @@ import neo4j
 from pandas import DataFrame
 from tqdm.auto import tqdm
 
+from ..call_parameters import CallParameters
 from ..error.endpoint_suggester import generate_suggestive_error_message
 from ..error.unable_to_connect import UnableToConnectError
 from ..server_version.server_version import ServerVersion
@@ -36,7 +37,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._bookmarks = bookmarks
         self._last_bookmarks: Optional[Any] = None
 
-    def run_query(
+    def run_cypher(
         self,
         query: str,
         params: Optional[Dict[str, Any]] = None,
@@ -81,14 +82,34 @@ class Neo4jQueryRunner(QueryRunner):
 
             return df
 
-    def run_query_with_logging(
+    def call_procedure(
+        self,
+        endpoint: str,
+        params: Optional[CallParameters] = None,
+        yields: Optional[List[str]] = None,
+        database: Optional[str] = None,
+        logging: bool = False,
+        custom_error: bool = True,
+    ) -> DataFrame:
+        if params is None:
+            params = CallParameters()
+
+        yields_clause = "" if yields is None else " YIELD " + ", ".join(yields)
+        query = f"CALL {endpoint}({params.placeholder_str()}){yields_clause}"
+
+        if logging:
+            return self.run_cypher_with_logging(query, params, database)
+        else:
+            return self.run_cypher(query, params, database, custom_error)
+
+    def run_cypher_with_logging(
         self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
     ) -> DataFrame:
         if params is None:
             params = {}
 
         if self._server_version < ServerVersion(2, 1, 0):
-            return self.run_query(query, params, database)
+            return self.run_cypher(query, params, database)
 
         if "config" in params:
             if "jobId" in params["config"]:
@@ -101,7 +122,7 @@ class Neo4jQueryRunner(QueryRunner):
             params["config"] = {"jobId": job_id}
 
         with ThreadPoolExecutor() as executor:
-            future = executor.submit(self.run_query, query, params, database)
+            future = executor.submit(self.run_cypher, query, params, database)
 
             self._log(job_id, future, database)
 
@@ -133,7 +154,7 @@ class Neo4jQueryRunner(QueryRunner):
         while wait([future], timeout=self._LOG_POLLING_INTERVAL).not_done:
             try:
                 tier = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
-                progress = self.run_query(
+                progress = self.run_cypher(
                     f"CALL gds.{tier}listProgress('{job_id}') YIELD taskName, progress", database=database
                 )
             except Exception as e:

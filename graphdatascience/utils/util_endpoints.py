@@ -5,6 +5,7 @@ from pandas import DataFrame
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from .util_proc_runner import UtilProcRunner
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.error.cypher_warning_handler import (
     filter_id_func_deprecation_warning,
 )
@@ -48,7 +49,7 @@ class DirectUtilEndpoints(CallerBase):
         else:
             query = "MATCH (n) RETURN id(n) AS id"
 
-        node_match = self._query_runner.run_query(query, custom_error=False)
+        node_match = self._query_runner.run_cypher(query, custom_error=False)
 
         if len(node_match) != 1:
             raise ValueError(f"Filter did not match with exactly one node: {node_match}")
@@ -62,10 +63,8 @@ class DirectUtilEndpoints(CallerBase):
         Returns:
             The version of the GDS library.
         """
-        namespace = self._namespace + ".version"
-        result = self._query_runner.run_query(f"RETURN {namespace}() as version", custom_error=False).squeeze()
-
-        return result  # type: ignore
+        query = f"RETURN {self._namespace}.version()"
+        return self._query_runner.run_cypher(query).squeeze()  # type: ignore
 
     @client_only_endpoint("gds")
     def server_version(self) -> ServerVersion:
@@ -86,7 +85,7 @@ class DirectUtilEndpoints(CallerBase):
             A DataFrame containing all available GDS procedures.
         """
         namespace = self._namespace + ".list"
-        return self._query_runner.run_query(f"CALL {namespace}()", custom_error=False)
+        return self._query_runner.call_procedure(endpoint=namespace, custom_error=False)
 
     @property
     def util(self) -> UtilProcRunner:
@@ -107,11 +106,11 @@ class IndirectUtilAlphaEndpoints(CallerBase):
         """
         namespace = self._namespace + ".oneHotEncoding"
 
-        query = f"RETURN {namespace}($available_values, $selected_values) AS embedding"
-        params = {
-            "available_values": available_values,
-            "selected_values": selected_values,
-        }
-        result = self._query_runner.run_query(query, params)
+        params = CallParameters(
+            available_values=available_values,
+            selected_values=selected_values,
+        )
+        query = f"RETURN {namespace}($available_values, $selected_values) AS encoded"
+        result = self._query_runner.run_cypher(query=query, params=params)
 
-        return result["embedding"].squeeze()  # type: ignore
+        return result.iat[0, 0]  # type: ignore

@@ -10,8 +10,8 @@ class NRModel(PipelineModel):
     :func:`NRTrainingPipeline.train() <graphdatascience.pipeline.nr_training_pipeline.NRTrainingPipeline.train>`.
     """
 
-    def _query_prefix(self) -> str:
-        return "CALL gds.alpha.pipeline.nodeRegression.predict."
+    def _endpoint_prefix(self) -> str:
+        return "gds.alpha.pipeline.nodeRegression.predict."
 
     def feature_properties(self) -> List[str]:
         """

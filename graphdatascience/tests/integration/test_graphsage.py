@@ -12,7 +12,7 @@ MODEL_NAME = "gs"
 
 @pytest.fixture
 def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None, None]:
-    runner.run_query(
+    runner.run_cypher(
         """
         CREATE
         (a: Node {x: 3}),
@@ -30,7 +30,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
     yield G
 
-    runner.run_query("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n")
     G.drop()
 
 
@@ -52,7 +52,7 @@ def test_graphsage_train(model: GraphSageModel) -> None:
 def test_graphsage_write(G: Graph, model: GraphSageModel, runner: Neo4jQueryRunner) -> None:
     model.predict_write(G, writeProperty="gs")
 
-    result = runner.run_query("MATCH (n:Node) RETURN size(n.gs) AS embeddingDim")
+    result = runner.run_cypher("MATCH (n:Node) RETURN size(n.gs) AS embeddingDim")
     assert len(result) == G.node_count()
     assert result["embeddingDim"][0] == 20
 

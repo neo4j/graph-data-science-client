@@ -99,6 +99,8 @@ def test_project_remote(runner: CollectingQueryRunner, gds: GraphDataScience) ->
     # injection of token and host into the params is done by the actual query runner
     assert runner.last_params() == {
         "graph_name": "g",
+        "token": "<>",
+        "host": "<>",
         "query": "RETURN gds.graph.project.remote(0, 1, null)",
         "remote_database": "neo4j",
         "config": {},

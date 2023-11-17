@@ -5,6 +5,7 @@ from pandas import Series
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
 from .pipeline_model import PipelineModel
+from graphdatascience.call_parameters import CallParameters
 
 
 class NCModel(PipelineModel):
@@ -14,8 +15,8 @@ class NCModel(PipelineModel):
     :func:`NCTrainingPipeline.train() <graphdatascience.pipeline.nc_training_pipeline.NCTrainingPipeline.train>`.
     """
 
-    def _query_prefix(self) -> str:
-        return "CALL gds.beta.pipeline.nodeClassification.predict."
+    def _endpoint_prefix(self) -> str:
+        return "gds.beta.pipeline.nodeClassification.predict."
 
     @graph_type_check
     def predict_write(self, G: Graph, **config: Any) -> "Series[Any]":
@@ -30,11 +31,13 @@ class NCModel(PipelineModel):
             The result of the write operation.
 
         """
-        query = f"{self._query_prefix()}write($graph_name, $config)"
+        endpoint = f"{self._endpoint_prefix()}write"
         config["modelName"] = self.name()
-        params = {"graph_name": G.name(), "config": config}
+        params = CallParameters(graph_name=G.name(), config=config)
 
-        return self._query_runner.run_query_with_logging(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(  # type: ignore
+            endpoint=endpoint, params=params, logging=True
+        ).squeeze()
 
     @graph_type_check
     def predict_write_estimate(self, G: Graph, **config: Any) -> "Series[Any]":

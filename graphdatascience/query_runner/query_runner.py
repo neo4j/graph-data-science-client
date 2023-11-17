@@ -3,13 +3,26 @@ from typing import Any, Dict, List, Optional
 
 from pandas import DataFrame
 
+from ..call_parameters import CallParameters
 from ..server_version.server_version import ServerVersion
 from .graph_constructor import GraphConstructor
 
 
 class QueryRunner(ABC):
     @abstractmethod
-    def run_query(
+    def call_procedure(
+        self,
+        endpoint: str,
+        params: Optional[CallParameters] = None,
+        yields: Optional[List[str]] = None,
+        database: Optional[str] = None,
+        logging: bool = False,
+        custom_error: bool = True,
+    ) -> DataFrame:
+        pass
+
+    @abstractmethod
+    def run_cypher(
         self,
         query: str,
         params: Optional[Dict[str, Any]] = None,
@@ -17,11 +30,6 @@ class QueryRunner(ABC):
         custom_error: bool = True,
     ) -> DataFrame:
         pass
-
-    def run_query_with_logging(
-        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
-    ) -> DataFrame:
-        return self.run_query(query, params, database, True)
 
     @abstractmethod
     def set_database(self, database: str) -> None:

@@ -5,6 +5,7 @@ from pandas import Series
 
 from ..server_version.server_version import ServerVersion
 from .training_pipeline import MODEL_TYPE, TrainingPipeline
+from graphdatascience.call_parameters import CallParameters
 
 
 class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
@@ -18,10 +19,12 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
         Returns:
             The result of the query.
         """
-        query = f"{self._query_prefix()}addLogisticRegression($pipeline_name, $config)"
-        params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
+        params = CallParameters(pipeline_name=self.name(), config=self._expand_ranges(config))
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(  # type: ignore
+            endpoint=f"{self._endpoint_prefix()}addLogisticRegression",
+            params=params,
+        ).squeeze()
 
     def addRandomForest(self, **config: Any) -> "Series[Any]":
         """
@@ -34,13 +37,14 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
             The result of the query.
 
         """
-        query_prefix = self._query_prefix()
+        endpoint_prefix = self._endpoint_prefix()
         if self._server_version < ServerVersion(2, 4, 0):
-            query_prefix = self._query_prefix().replace("beta", "alpha")
-        query = f"{query_prefix}addRandomForest($pipeline_name, $config)"
-        params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
+            endpoint_prefix = self._endpoint_prefix().replace("beta", "alpha")
+        params = CallParameters(pipeline_name=self.name(), config=self._expand_ranges(config))
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(  # type: ignore
+            endpoint=f"{endpoint_prefix}addRandomForest", params=params
+        ).squeeze()
 
     def addMLP(self, **config: Any) -> "Series[Any]":
         """
@@ -53,8 +57,9 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
             The result of the query.
 
         """
-        query_prefix = self._query_prefix().replace("beta", "alpha")
-        query = f"{query_prefix}addMLP($pipeline_name, $config)"
-        params = {"pipeline_name": self.name(), "config": self._expand_ranges(config)}
+        endpoint_prefix = self._endpoint_prefix().replace("beta", "alpha")
+        params = CallParameters(pipeline_name=self.name(), config=self._expand_ranges(config))
 
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        return self._query_runner.call_procedure(  # type: ignore
+            endpoint=f"{endpoint_prefix}addMLP", params=params
+        ).squeeze()

@@ -14,7 +14,7 @@ def run_around_tests(
     auradb_runner: Neo4jQueryRunner, gds_with_cloud_setup: GraphDataScience
 ) -> Generator[None, None, None]:
     # Runs before each test
-    auradb_runner.run_query(
+    auradb_runner.run_cypher(
         """
         CREATE
         (a: Node {x: 1, y: 2, z: [42], name: "nodeA"}),
@@ -30,8 +30,8 @@ def run_around_tests(
     yield  # Test runs here
 
     # Runs after each test
-    auradb_runner.run_query("MATCH (n) DETACH DELETE n")
-    gds_with_cloud_setup._query_runner.run_query(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
+    auradb_runner.run_cypher("MATCH (n) DETACH DELETE n")
+    gds_with_cloud_setup._query_runner.run_cypher(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
 
 
 @pytest.mark.cloud_architecture

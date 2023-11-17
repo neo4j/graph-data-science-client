@@ -4,6 +4,7 @@ import pytest
 from pandas import DataFrame
 
 from graphdatascience import QueryRunner
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.cypher_graph_constructor import (
     CypherGraphConstructor,
@@ -22,14 +23,31 @@ class CollectingQueryRunner(QueryRunner):
         self.params: List[Dict[str, Any]] = []
         self._server_version = server_version
 
-    def run_query(
+    def call_procedure(
+        self,
+        endpoint: str,
+        params: Optional[CallParameters] = None,
+        yields: Optional[List[str]] = None,
+        database: Optional[str] = None,
+        logging: bool = False,
+        custom_error: bool = True,
+    ) -> DataFrame:
+        if params is None:
+            params = CallParameters()
+
+        yields_clause = "" if yields is None else " YIELD " + ", ".join(yields)
+        query = f"CALL {endpoint}({params.placeholder_str()}){yields_clause}"
+
+        return self.run_cypher(query, params, database, custom_error)
+
+    def run_cypher(
         self, query: str, params: Optional[Dict[str, Any]] = None, db: Optional[str] = None, custom_error: bool = True
     ) -> DataFrame:
         if params is None:
             params = {}
 
         self.queries.append(query)
-        self.params.append(params)
+        self.params.append(dict(params.items()))
 
         # This "mock" lets us initialize the GDS object without issues.
         return (

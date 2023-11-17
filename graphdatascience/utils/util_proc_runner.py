@@ -19,9 +19,9 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         """
         self._namespace += ".asNode"
-        result = self._query_runner.run_query(f"RETURN {self._namespace}({node_id}) AS node")
+        result = self._query_runner.run_cypher(f"RETURN {self._namespace}({node_id}) AS node")
 
-        return result["node"].squeeze()
+        return result.iat[0, 0]
 
     def asNodes(self, node_ids: List[int]) -> List[Any]:
         """
@@ -35,9 +35,9 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         """
         self._namespace += ".asNodes"
-        result = self._query_runner.run_query(f"RETURN {self._namespace}({node_ids}) AS nodes")
+        result = self._query_runner.run_cypher(f"RETURN {self._namespace}({node_ids}) AS nodes")
 
-        return result["nodes"].squeeze()  # type: ignore
+        return result.iat[0, 0]  # type: ignore
 
     @graph_type_check
     def nodeProperty(self, G: Graph, node_id: int, property_key: str, node_label: str = "*") -> Any:
@@ -63,6 +63,6 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
             "property_key": property_key,
             "node_label": node_label,
         }
-        result = self._query_runner.run_query(query, params)
+        result = self._query_runner.run_cypher(query, params)
 
-        return result["property"].squeeze()
+        return result.iat[0, 0]

@@ -2,6 +2,7 @@ from typing import Any, Dict
 
 from pandas import Series
 
+from ..call_parameters import CallParameters
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from .graph_object import Graph
@@ -15,10 +16,8 @@ class GraphExportCsvRunner(IllegalAttrChecker):
 
     @graph_type_check
     def _export_call(self, G: Graph, config: Dict[str, Any]) -> "Series[Any]":
-        query = f"CALL {self._namespace}($graph_name, $config)"
-        params = {"graph_name": G.name(), "config": config}
-
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        params = CallParameters(graph_name=G.name(), config=config)
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()  # type: ignore
 
     @graph_type_check
     def estimate(self, G: Graph, **config: Any) -> "Series[Any]":
@@ -41,10 +40,8 @@ class GraphExportRunner(IllegalAttrChecker):
 
     @graph_type_check
     def _export_call(self, G: Graph, config: Dict[str, Any]) -> "Series[Any]":
-        query = f"CALL {self._namespace}($graph_name, $config)"
-        params = {"graph_name": G.name(), "config": config}
-
-        return self._query_runner.run_query(query, params).squeeze()  # type: ignore
+        params = CallParameters(graph_name=G.name(), config=config)
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()  # type: ignore
 
     @property
     def csv(self) -> GraphExportCsvRunner:

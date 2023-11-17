@@ -7,21 +7,15 @@ from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
 from ..model.graphsage_model import GraphSageModel
+from graphdatascience.call_parameters import CallParameters
 
 
 class AlgoProcRunner(IllegalAttrChecker, ABC):
     @graph_type_check
     def _run_procedure(self, G: Graph, config: Dict[str, Any], with_logging: bool = True) -> DataFrame:
-        query = f"CALL {self._namespace}($graph_name, $config)"
+        params = CallParameters(graph_name=G.name(), config=config)
 
-        params: Dict[str, Any] = {}
-        params["graph_name"] = G.name()
-        params["config"] = config
-
-        if with_logging:
-            return self._query_runner.run_query_with_logging(query, params)
-        else:
-            return self._query_runner.run_query(query, params)
+        return self._query_runner.call_procedure(endpoint=self._namespace, params=params, logging=with_logging)
 
     @graph_type_check
     def estimate(self, G: Graph, **config: Any) -> "Series[Any]":

@@ -15,7 +15,7 @@ PIPE_NAME = "pipe"
 
 @pytest.fixture
 def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None, None]:
-    runner.run_query(
+    runner.run_cypher(
         """
         CREATE
         (a: Node {age: 12, fraudster: 0}),
@@ -51,7 +51,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
     yield G
 
-    runner.run_query("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n")
     G.drop()
 
 

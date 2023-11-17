@@ -13,7 +13,7 @@ MODEL_NAME = "gs-model"
 
 @pytest.fixture
 def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None, None]:
-    runner.run_query(
+    runner.run_cypher(
         """
         CREATE
         (a: Node {age: 2}),
@@ -33,7 +33,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
     yield G
 
-    runner.run_query("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n")
     G.drop()
 
 
@@ -46,7 +46,7 @@ def gs_model(gds: GraphDataScience, G: Graph, runner: Neo4jQueryRunner) -> Gener
     namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
     query = f"CALL gds.{namespace}model.drop($name)"
     params = {"name": model.name()}
-    runner.run_query(query, params)
+    runner.run_cypher(query, params)
 
 
 def test_model_exists(gs_model: GraphSageModel) -> None:

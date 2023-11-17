@@ -36,60 +36,35 @@ def distmult_M(gds: GraphDataScience, G: Graph) -> SimpleRelEmbeddingModel:
 def test_transe_predict_stream(runner: CollectingQueryRunner, transe_M: SimpleRelEmbeddingModel) -> None:
     _ = transe_M.predict_stream(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, concurrency=CONCURRENCY)
 
-    assert runner.last_query() == (
-        """
-            CALL gds.ml.kge.predict.stream(
-                $graph_name,
-                {
-                    sourceNodeFilter: $source_node_filter,
-                    targetNodeFilter: $target_node_filter,
-                    nodeEmbeddingProperty: $node_embedding_property,
-                    relationshipTypeEmbedding: $relationship_type_embedding,
-                    scoringFunction: $scoring_function,
-                    topK: $top_k,
-concurrency: $concurrency
-                }
-            )
-            """
-    )
+    assert runner.last_query() == "CALL gds.ml.kge.predict.stream($graph_name, $config)"
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
-        "source_node_filter": SOURCE_NODE_FILTER,
-        "target_node_filter": TARGET_NODE_FILTER,
-        "node_embedding_property": NODE_PROP,
-        "relationship_type_embedding": REL_TYPE_EMBEDDING,
-        "scoring_function": "transe",
-        "top_k": TOP_K,
-        "concurrency": CONCURRENCY,
+        "config": {
+            "sourceNodeFilter": SOURCE_NODE_FILTER,
+            "targetNodeFilter": TARGET_NODE_FILTER,
+            "nodeEmbeddingProperty": NODE_PROP,
+            "relationshipTypeEmbedding": REL_TYPE_EMBEDDING,
+            "scoringFunction": "transe",
+            "topK": TOP_K,
+            "concurrency": CONCURRENCY,
+        },
     }
 
 
 def test_distmult_predict_stream(runner: CollectingQueryRunner, distmult_M: SimpleRelEmbeddingModel) -> None:
     _ = distmult_M.predict_stream(SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K)
 
-    assert runner.last_query() == (
-        """
-            CALL gds.ml.kge.predict.stream(
-                $graph_name,
-                {
-                    sourceNodeFilter: $source_node_filter,
-                    targetNodeFilter: $target_node_filter,
-                    nodeEmbeddingProperty: $node_embedding_property,
-                    relationshipTypeEmbedding: $relationship_type_embedding,
-                    scoringFunction: $scoring_function,
-                    topK: $top_k
-                }
-            )
-            """
-    )
+    assert runner.last_query() == "CALL gds.ml.kge.predict.stream($graph_name, $config)"
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
-        "source_node_filter": SOURCE_NODE_FILTER,
-        "target_node_filter": TARGET_NODE_FILTER,
-        "node_embedding_property": NODE_PROP,
-        "relationship_type_embedding": REL_TYPE_EMBEDDING,
-        "scoring_function": "distmult",
-        "top_k": TOP_K,
+        "config": {
+            "sourceNodeFilter": SOURCE_NODE_FILTER,
+            "targetNodeFilter": TARGET_NODE_FILTER,
+            "nodeEmbeddingProperty": NODE_PROP,
+            "relationshipTypeEmbedding": REL_TYPE_EMBEDDING,
+            "scoringFunction": "distmult",
+            "topK": TOP_K,
+        },
     }
 
 
@@ -98,33 +73,19 @@ def test_transe_predict_mutate(runner: CollectingQueryRunner, transe_M: SimpleRe
         SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
     )
 
-    assert runner.last_query() == (
-        """
-            CALL gds.ml.kge.predict.mutate(
-                $graph_name,
-                {
-                    sourceNodeFilter: $source_node_filter,
-                    targetNodeFilter: $target_node_filter,
-                    nodeEmbeddingProperty: $node_embedding_property,
-                    relationshipTypeEmbedding: $relationship_type_embedding,
-                    scoringFunction: $scoring_function,
-                    topK: $top_k,
-                    mutateRelationshipType: $mutate_relationship_type,
-                    mutateProperty: $mutate_property
-                }
-            )
-            """
-    )
+    assert runner.last_query() == "CALL gds.ml.kge.predict.mutate($graph_name, $config)"
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
-        "source_node_filter": SOURCE_NODE_FILTER,
-        "target_node_filter": TARGET_NODE_FILTER,
-        "node_embedding_property": NODE_PROP,
-        "relationship_type_embedding": REL_TYPE_EMBEDDING,
-        "scoring_function": "transe",
-        "top_k": TOP_K,
-        "mutate_relationship_type": WRITE_MUTATE_REL_TYPE,
-        "mutate_property": WRITE_MUTATE_PROPERTY,
+        "config": {
+            "sourceNodeFilter": SOURCE_NODE_FILTER,
+            "targetNodeFilter": TARGET_NODE_FILTER,
+            "nodeEmbeddingProperty": NODE_PROP,
+            "relationshipTypeEmbedding": REL_TYPE_EMBEDDING,
+            "scoringFunction": "transe",
+            "topK": TOP_K,
+            "mutateProperty": WRITE_MUTATE_PROPERTY,
+            "mutateRelationshipType": WRITE_MUTATE_REL_TYPE,
+        },
     }
 
 
@@ -139,35 +100,20 @@ def test_distmult_predict_mutate(runner: CollectingQueryRunner, distmult_M: Simp
         concurrency=CONCURRENCY,
     )
 
-    assert runner.last_query() == (
-        """
-            CALL gds.ml.kge.predict.mutate(
-                $graph_name,
-                {
-                    sourceNodeFilter: $source_node_filter,
-                    targetNodeFilter: $target_node_filter,
-                    nodeEmbeddingProperty: $node_embedding_property,
-                    relationshipTypeEmbedding: $relationship_type_embedding,
-                    scoringFunction: $scoring_function,
-                    topK: $top_k,
-                    mutateRelationshipType: $mutate_relationship_type,
-                    mutateProperty: $mutate_property,
-concurrency: $concurrency
-                }
-            )
-            """
-    )
+    assert runner.last_query() == "CALL gds.ml.kge.predict.mutate($graph_name, $config)"
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
-        "source_node_filter": SOURCE_NODE_FILTER,
-        "target_node_filter": TARGET_NODE_FILTER,
-        "node_embedding_property": NODE_PROP,
-        "relationship_type_embedding": REL_TYPE_EMBEDDING,
-        "scoring_function": "distmult",
-        "top_k": TOP_K,
-        "mutate_relationship_type": WRITE_MUTATE_REL_TYPE,
-        "mutate_property": WRITE_MUTATE_PROPERTY,
-        "concurrency": CONCURRENCY,
+        "config": {
+            "sourceNodeFilter": SOURCE_NODE_FILTER,
+            "targetNodeFilter": TARGET_NODE_FILTER,
+            "nodeEmbeddingProperty": NODE_PROP,
+            "relationshipTypeEmbedding": REL_TYPE_EMBEDDING,
+            "scoringFunction": "distmult",
+            "topK": TOP_K,
+            "mutateProperty": WRITE_MUTATE_PROPERTY,
+            "mutateRelationshipType": WRITE_MUTATE_REL_TYPE,
+            "concurrency": CONCURRENCY,
+        },
     }
 
 
@@ -182,35 +128,20 @@ def test_transe_predict_write(runner: CollectingQueryRunner, transe_M: SimpleRel
         concurrency=CONCURRENCY,
     )
 
-    assert runner.last_query() == (
-        """
-            CALL gds.ml.kge.predict.write(
-                $graph_name,
-                {
-                    sourceNodeFilter: $source_node_filter,
-                    targetNodeFilter: $target_node_filter,
-                    nodeEmbeddingProperty: $node_embedding_property,
-                    relationshipTypeEmbedding: $relationship_type_embedding,
-                    scoringFunction: $scoring_function,
-                    topK: $top_k,
-                    writeRelationshipType: $write_relationship_type,
-                    writeProperty: $write_property,
-concurrency: $concurrency
-                }
-            )
-            """
-    )
+    assert runner.last_query() == "CALL gds.ml.kge.predict.write($graph_name, $config)"
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
-        "source_node_filter": SOURCE_NODE_FILTER,
-        "target_node_filter": TARGET_NODE_FILTER,
-        "node_embedding_property": NODE_PROP,
-        "relationship_type_embedding": REL_TYPE_EMBEDDING,
-        "scoring_function": "transe",
-        "top_k": TOP_K,
-        "write_relationship_type": WRITE_MUTATE_REL_TYPE,
-        "write_property": WRITE_MUTATE_PROPERTY,
-        "concurrency": CONCURRENCY,
+        "config": {
+            "sourceNodeFilter": SOURCE_NODE_FILTER,
+            "targetNodeFilter": TARGET_NODE_FILTER,
+            "nodeEmbeddingProperty": NODE_PROP,
+            "relationshipTypeEmbedding": REL_TYPE_EMBEDDING,
+            "scoringFunction": "transe",
+            "topK": TOP_K,
+            "writeProperty": WRITE_MUTATE_PROPERTY,
+            "writeRelationshipType": WRITE_MUTATE_REL_TYPE,
+            "concurrency": CONCURRENCY,
+        },
     }
 
 
@@ -219,33 +150,19 @@ def test_distmult_predict_write(runner: CollectingQueryRunner, distmult_M: Simpl
         SOURCE_NODE_FILTER, TARGET_NODE_FILTER, REL_TYPE, TOP_K, WRITE_MUTATE_REL_TYPE, WRITE_MUTATE_PROPERTY
     )
 
-    assert runner.last_query() == (
-        """
-            CALL gds.ml.kge.predict.write(
-                $graph_name,
-                {
-                    sourceNodeFilter: $source_node_filter,
-                    targetNodeFilter: $target_node_filter,
-                    nodeEmbeddingProperty: $node_embedding_property,
-                    relationshipTypeEmbedding: $relationship_type_embedding,
-                    scoringFunction: $scoring_function,
-                    topK: $top_k,
-                    writeRelationshipType: $write_relationship_type,
-                    writeProperty: $write_property
-                }
-            )
-            """
-    )
+    assert runner.last_query() == "CALL gds.ml.kge.predict.write($graph_name, $config)"
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
-        "source_node_filter": SOURCE_NODE_FILTER,
-        "target_node_filter": TARGET_NODE_FILTER,
-        "node_embedding_property": NODE_PROP,
-        "relationship_type_embedding": REL_TYPE_EMBEDDING,
-        "scoring_function": "distmult",
-        "top_k": TOP_K,
-        "write_relationship_type": WRITE_MUTATE_REL_TYPE,
-        "write_property": WRITE_MUTATE_PROPERTY,
+        "config": {
+            "sourceNodeFilter": SOURCE_NODE_FILTER,
+            "targetNodeFilter": TARGET_NODE_FILTER,
+            "nodeEmbeddingProperty": NODE_PROP,
+            "relationshipTypeEmbedding": REL_TYPE_EMBEDDING,
+            "scoringFunction": "distmult",
+            "topK": TOP_K,
+            "writeRelationshipType": WRITE_MUTATE_REL_TYPE,
+            "writeProperty": WRITE_MUTATE_PROPERTY,
+        },
     }
 
 
