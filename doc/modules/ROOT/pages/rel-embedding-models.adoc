@@ -38,11 +38,11 @@ The `SimpleRelEmbeddingModel` represents a relationship embedding model based on
 It has three methods for predicting new relationships.
 The computation of inferring new embeddings is the same, but how the new relationships are handled after that differs.
 
-The three methods are:
+This class has three methods are:
 
-* `SimpleRelEmbeddingModel.predict_stream` for streaming back the predicted relationships,
-* `SimpleRelEmbeddingModel.predict_mutate` for adding the relationships to the projected graph,
-* `SimpleRelEmbeddingModel.predict_write` for writing back the relationships to the Neo4j database.
+* `predict_stream` for streaming back the predicted relationships,
+* `predict_mutate` for adding the relationships to the projected graph,
+* `predict_write` for writing back the relationships to the Neo4j database.
 
 Since the prediction parts of the computations in these methods are the same, the methods share a set of parameters:
 
@@ -53,11 +53,12 @@ Since the prediction parts of the computations in these methods are the same, th
 | Name               | Type                       |
 | source_node_filter | Union[str, int, list[int]] | The specification of source nodes to consider. Either a node label, a node ID, or a list of node IDs
 | target_node_filter | Union[str, int, list[int]] | The specification of source nodes to consider. Either a node label, a node ID, or a list of node IDs
+| relationshipTypes  | str or list[str]           | Relationship types for which the algorithm will be executed
 | top_k              | int                        | How many relationships to produce for each source node. The target nodes with the highest `top_k` scores will be kept for each source node
 | general_config     | **dict[str, Any]           | General GDS algorithm configuration as optional keyword parameters
 |===
 
-In particular, the general algorithm configuration parameters supported as keyword parameters for this algorithm are `concurrency`, `nodeLabels`, `relationshipTypes`, `jobId` and `logProgress`.
+In particular, the general algorithm configuration parameters supported as keyword parameters for this algorithm are `concurrency`, `jobId` and `logProgress`.
 You can read more about them https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/#algorithms-syntax-configuration-parameters[here] in the GDS manual.
 
 Let us now outline the differences between these prediction methods.
@@ -65,7 +66,7 @@ Let us now outline the differences between these prediction methods.
 
 === Streaming predicted relationships
 
-The `SimpleRelEmbeddingModel.predict_stream` method returns a `pandas.DataFrame` which contains three columns: `sourceNodeId`, `targetNodeId` and `score`.
+The `predict_stream` method returns a `pandas.DataFrame` which contains three columns: `sourceNodeId`, `targetNodeId` and `score`.
 These refer to the source node ID, the target node ID, and the score from running the KGE model scoring function on the node pair and relationship type, respectively.
 
 There are no extra parameters to this method other than the ones outlined xref:rel-embedding-models.adoc#rel-emb-predict-shared-params[above].
@@ -73,9 +74,19 @@ There are no extra parameters to this method other than the ones outlined xref:r
 
 === Mutating graph projection with predicted relationships
 
-The `SimpleRelEmbeddingModel.predict_mutate` method adds the predicted relationships to the graph projection under a new type specified via the `mutate_relationship_type` parameter.
+The `predict_mutate` method adds the predicted relationships to the graph projection under a new type specified via the `mutate_relationship_type` parameter.
 Each such relationship will have a property, specified via the `mutateProperty` parameter, representing the output from running the KGE model scoring function on the node pair and relationship type.
 The method returns a `pandas.Series` with metadata about the computation:
+
+In addition to the shared parameters outlined xref:rel-embedding-models.adoc#rel-emb-predict-shared-params[above], this method takes two more positional parameters, after the `top_k` parameter, in order:
+
+.Input parameters specific to `.predict_mutate`
+[opts="header",cols="3m,1m,7", role="no-break"]
+|===
+| Name                     | Type |
+| mutate_relationship_type | str  | The name of the new relationship type for the predicted relationships
+| mutate_property          | str  | The name of the property on the new relationships which will store the model prediction score
+|===
 
 .Fields of the `pandas.Series` object returned by `.predict_mutate`
 [opts="header",cols="1m,1m,3", role="no-break"]
@@ -89,33 +100,11 @@ The method returns a `pandas.Series` with metadata about the computation:
 | configuration        | dict[str, Any] | The configuration used for running the algorithm
 |===
 
-In addition to the shared parameters outlined xref:rel-embedding-models.adoc#rel-emb-predict-shared-params[above], this method takes two more positional parameters, after the `top_k` parameter, in order:
-
-.Input parameters specific to `.predict_mutate`
-[opts="header",cols="3m,1m,7", role="no-break"]
-|===
-| Name                     | Type |
-| mutate_relationship_type | str  | The name of the new relationship type for the predicted relationships
-| mutate_property          | str  | The name of the property on the new relationships which will store the model prediction score
-|===
-
 
 === Writing back predicted relationships to database
 
-The `SimpleRelEmbeddingModel.predict_write` method writes back the predicted relationships to the Neo4j database under a new type specified via the `write_relationship_type` parameter.
+The `predict_write` method writes back the predicted relationships to the Neo4j database under a new type specified via the `write_relationship_type` parameter.
 Each such relationship will have a property, specified via the `writeProperty` parameter, representing the output from running the KGE model scoring function on the node pair and relationship type.
-The method returns a `pandas.Series` with metadata about the computation:
-
-.Fields of the `pandas.Series` object returned by `.predict_write` 
-[opts="header",cols="1m,1m,3", role="no-break"]
-|===
-| Name                 | Type           |
-| relationshipsWritten | int            | The number of relationships created
-| writeMillis          | int            | Milliseconds for writing result data back the Neo4j database
-| preProcessingMillis  | int            | Milliseconds for preprocessing the data
-| computeMillis        | int            | Milliseconds for running the prediction algorithm
-| configuration        | dict[str, Any] | The configuration used for running the algorithm
-|===
 
 In addition to the shared parameters outlined xref:rel-embedding-models.adoc#rel-emb-predict-shared-params[above], this method takes two more positional parameters, after the `top_k` parameter, in order:
 
@@ -125,6 +114,19 @@ In addition to the shared parameters outlined xref:rel-embedding-models.adoc#rel
 | Name                     | Type |
 | write_relationship_type  | str  | The name of the new relationship type for the predicted relationships
 | write_property           | str  | The name of the property on the new relationships which will store the model prediction score
+|===
+
+The method returns a `pandas.Series` with metadata about the computation:
+
+.Fields of the `pandas.Series` object returned by `.predict_write`
+[opts="header",cols="1m,1m,3", role="no-break"]
+|===
+| Name                 | Type           |
+| relationshipsWritten | int            | The number of relationships created
+| writeMillis          | int            | Milliseconds for writing result data back the Neo4j database
+| preProcessingMillis  | int            | Milliseconds for preprocessing the data
+| computeMillis        | int            | Milliseconds for running the prediction algorithm
+| configuration        | dict[str, Any] | The configuration used for running the algorithm
 |===
 
 
@@ -184,9 +186,9 @@ gds.run_cypher(
   """
 )
 G, project_result = gds.graph.project(
-    "road_graph",
-    {"City": {"properties": ["emb"]}, "Person": {"properties": ["emb"]}},
-    ["ROAD", "LIVES_IN"]
+    graph_name="road_graph",
+    node_spec={"City": {"properties": ["emb"]}, "Person": {"properties": ["emb"]}},
+    relationship_spec=["ROAD", "LIVES_IN"]
 )
 
 # Sanity check
@@ -203,8 +205,12 @@ Using our graph `G` and our precomputed relationship type embeddings we can now 
 [source,python,group=transe-model,min-server-version=2.5.0]
 ----
 transe_model = gds.model.transe.create(
-    G, "emb", {"ROAD": [0.88355126, 0.15116676, 0.24225456], "LIVES_IN": [0.94185368, 0.60460752, 0.92028837]}
-)
+    G,
+    node_embedding_property="emb",
+    relationship_type_embeddings={
+        "ROAD": [0.88355126, 0.15116676, 0.24225456],
+        "LIVES_IN": [0.94185368, 0.60460752, 0.92028837]
+    }
 
 # Sanity check
 assert transe_model.scoring_function() == "transe"
@@ -220,7 +226,12 @@ Let's have our model predict where our three inhabitants of interest might be li
 [source,python,group=transe-model,min-server-version=2.5.0]
 ----
 result = transe_model.predict_mutate(
-	"Person", "City", "LIVES_IN", 1, "MIGHT_MOVE", "likeliness_score"
+    source_node_filter="Person",
+    target_node_filter="City",
+    relationship_type="LIVES_IN",
+    top_k=1,
+    write_relationship_type="MIGHT_MOVE",
+    write_property="likeliness_score"
 )
 
 # Let us make sure the number of new relationships makes sense
