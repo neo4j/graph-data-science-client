@@ -28,8 +28,10 @@ def run_around_tests(gds_with_cloud_setup: AuraGraphDataScience) -> Generator[No
 
     # Runs after each test
     gds_with_cloud_setup.run_cypher("MATCH (n) DETACH DELETE n")
-    graph = gds_with_cloud_setup.graph.get(GRAPH_NAME)
-    graph.drop(failIfMissing=False)
+
+    res = gds_with_cloud_setup.graph.list()
+    for graph_name in res["graphName"]:
+        gds_with_cloud_setup.graph.get(graph_name).drop(failIfMissing=True)
 
 
 @pytest.mark.cloud_architecture
