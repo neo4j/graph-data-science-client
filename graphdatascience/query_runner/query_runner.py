@@ -32,18 +32,6 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
-    def server_version(self) -> ServerVersion:
-        pass
-
-    @abstractmethod
-    def driver_config(self) -> Dict[str, Any]:
-        pass
-
-    @abstractmethod
-    def encrypted(self) -> bool:
-        pass
-
-    @abstractmethod
     def set_database(self, database: str) -> None:
         pass
 

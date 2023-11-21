@@ -54,15 +54,6 @@ class CollectingQueryRunner(QueryRunner):
             self._mock_result if self._mock_result is not None else DataFrame([{"version": str(self._server_version)}])
         )
 
-    def server_version(self) -> ServerVersion:
-        return self._server_version
-
-    def driver_config(self) -> Dict[str, Any]:
-        return {}
-
-    def encrypted(self) -> bool:
-        return False
-
     def last_query(self) -> str:
         return self.queries[-1]
 

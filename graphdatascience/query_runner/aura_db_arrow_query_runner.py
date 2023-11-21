@@ -7,7 +7,6 @@ from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from ..call_parameters import CallParameters
 from .query_runner import QueryRunner
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
-from graphdatascience.server_version.server_version import ServerVersion
 
 
 class AuraDbConnectionInfo(NamedTuple):
@@ -104,15 +103,6 @@ class AuraDbArrowQueryRunner(QueryRunner):
         ).squeeze()
         return database_location == "remote"
 
-    def server_version(self) -> ServerVersion:
-        return self._db_query_runner.server_version()
-
-    def driver_config(self) -> Dict[str, Any]:
-        return self._db_query_runner.driver_config()
-
-    def encrypted(self) -> bool:
-        return self._db_query_runner.encrypted()
-
     def set_database(self, database: str) -> None:
         self._db_query_runner.set_database(database)
 
@@ -136,7 +126,6 @@ class AuraDbArrowQueryRunner(QueryRunner):
     def close(self) -> None:
         self._client.close()
         self._gds_query_runner.close()
-        self._db_query_runner.close()
 
     def _get_or_request_auth_pair(self) -> Tuple[str, str]:
         self._client.authenticate_basic_token(self._auth[0], self._auth[1])

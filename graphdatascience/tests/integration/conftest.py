@@ -93,6 +93,7 @@ def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
 @pytest.fixture(scope="package", autouse=False)
 def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Optional[Generator[AuraGraphDataScience, None, None]]:
     if "cloud_architecture" not in request.keywords:
+        os.environ["ENVIRONMENT"] = "test"
         _gds = AuraGraphDataScience(
             URI, auth=AUTH, aura_db_connection_info=AuraDbConnectionInfo(AURA_DB_URI, AURA_DB_AUTH)
         )
