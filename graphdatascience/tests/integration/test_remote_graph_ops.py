@@ -2,19 +2,16 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import GraphDataScience
-from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
 
 GRAPH_NAME = "g"
 
 
 @pytest.fixture(autouse=True, scope="class")
-def run_around_tests(
-    auradb_runner: Neo4jQueryRunner, gds_with_cloud_setup: GraphDataScience
-) -> Generator[None, None, None]:
+def run_around_tests(gds_with_cloud_setup: AuraGraphDataScience) -> Generator[None, None, None]:
     # Runs before each test
-    auradb_runner.run_cypher(
+    gds_with_cloud_setup.run_cypher(
         """
         CREATE
         (a: Node {x: 1, y: 2, z: [42], name: "nodeA"}),
@@ -30,13 +27,16 @@ def run_around_tests(
     yield  # Test runs here
 
     # Runs after each test
-    auradb_runner.run_cypher("MATCH (n) DETACH DELETE n")
-    gds_with_cloud_setup._query_runner.run_cypher(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
+    gds_with_cloud_setup.run_cypher("MATCH (n) DETACH DELETE n")
+
+    res = gds_with_cloud_setup.graph.list()
+    for graph_name in res["graphName"]:
+        gds_with_cloud_setup.graph.get(graph_name).drop(failIfMissing=True)
 
 
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 6, 0))
-def test_remote_projection(gds_with_cloud_setup: GraphDataScience) -> None:
+def test_remote_projection(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project.remoteDb(
         GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)", "neo4j"
     )
@@ -47,7 +47,7 @@ def test_remote_projection(gds_with_cloud_setup: GraphDataScience) -> None:
 
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 6, 0))
-def test_remote_write_back(gds_with_cloud_setup: GraphDataScience) -> None:
+def test_remote_write_back(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project.remoteDb(
         GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)", "neo4j"
     )

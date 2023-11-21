@@ -12,3 +12,4 @@ types-setuptools == 68.1.0.1
 sphinx == 7.2.6
 requests_mock == 1.11.0
 pytest_mock == 3.12.0
+types-requests

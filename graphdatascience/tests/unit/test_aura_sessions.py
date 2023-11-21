@@ -14,7 +14,6 @@ from graphdatascience.aura_api import (
     InstanceSpecificDetails,
 )
 from graphdatascience.aura_sessions import AuraSessions, SessionInfo
-from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbConnectionInfo,
 )
@@ -108,16 +107,15 @@ def test_list_session(requests_mock: Mocker) -> None:
     assert sessions.list_sessions() == [SessionInfo("my-session-name")]
 
 
-def test_create_session(mocker: MockerFixture, gds: GraphDataScience, aura_api: AuraApi) -> None:
+def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
 
     db_credentials = AuraDbConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", ("dbuser", "db_pw"))
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
     sessions._aura_api = aura_api
 
-    def assert_db_credentials(*args: List[Any], **kwargs: Dict[str, Any]) -> GraphDataScience:
+    def assert_db_credentials(*args: List[Any], **kwargs: Dict[str, Any]) -> None:
         assert kwargs == {"gds_url": "fake-url", "gds_user": "neo4j", "initial_pw": "fake-pw", "new_pw": "my-password"}
-        return gds
 
     mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: kwargs)
     mocker.patch("graphdatascience.aura_sessions.AuraSessions._change_initial_pw", assert_db_credentials)
@@ -133,7 +131,7 @@ def test_create_session(mocker: MockerFixture, gds: GraphDataScience, aura_api: 
     assert instance_details.memory == "16GB"
 
 
-def test_create_default_session(mocker: MockerFixture, gds: GraphDataScience, aura_api: AuraApi) -> None:
+def test_create_default_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
 
     db_credentials = AuraDbConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", ("dbuser", "db_pw"))
@@ -150,7 +148,7 @@ def test_create_default_session(mocker: MockerFixture, gds: GraphDataScience, au
     assert instance_details.memory == "8GB"
 
 
-def test_invalid_memory_configuration(mocker: MockerFixture, gds: GraphDataScience, aura_api: AuraApi) -> None:
+def test_invalid_memory_configuration(mocker: MockerFixture, aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
 
     db_credentials = AuraDbConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", ("dbuser", "db_pw"))

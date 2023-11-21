@@ -5,6 +5,7 @@ from typing import Any, Generator, Optional
 import pytest
 from neo4j import Driver, GraphDatabase
 
+from graphdatascience.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbConnectionInfo,
@@ -45,18 +46,6 @@ def runner(neo4j_driver: Driver) -> Generator[Neo4jQueryRunner, None, None]:
     yield _runner
 
     _runner.close()
-
-
-@pytest.fixture(scope="package", autouse=False)
-def auradb_runner() -> Generator[Neo4jQueryRunner, None, None]:
-    driver = GraphDatabase.driver(AURA_DB_URI, auth=AURA_DB_AUTH)
-
-    _runner = Neo4jQueryRunner(driver)
-    _runner.set_database(DB)
-
-    yield _runner
-
-    driver.close()
 
 
 @pytest.fixture(scope="package")
@@ -102,10 +91,11 @@ def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
 
 
 @pytest.fixture(scope="package", autouse=False)
-def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Optional[Generator[GraphDataScience, None, None]]:
+def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Optional[Generator[AuraGraphDataScience, None, None]]:
     if "cloud_architecture" not in request.keywords:
-        _gds = GraphDataScience(
-            URI, auth=AUTH, arrow=True, aura_db_connection_info=AuraDbConnectionInfo(AURA_DB_URI, AURA_DB_AUTH)
+        os.environ["ENVIRONMENT"] = "test"
+        _gds = AuraGraphDataScience(
+            URI, auth=AUTH, aura_db_connection_info=AuraDbConnectionInfo(AURA_DB_URI, AURA_DB_AUTH)
         )
         _gds.set_database(DB)
 

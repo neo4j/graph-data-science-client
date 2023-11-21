@@ -7,6 +7,7 @@ from neo4j import GraphDatabase
 
 from graphdatascience import GraphDataScience
 from graphdatascience.aura_api import AuraApi, InstanceDetails
+from graphdatascience.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbConnectionInfo,
 )
@@ -127,8 +128,8 @@ class AuraSessions:
             )
 
     def _construct_client(self, gds_url: str, gds_user: str, gds_pw: str) -> GraphDataScience:
-        return GraphDataScience(
-            endpoint=gds_url, auth=(gds_user, gds_pw), aura_ds=True, aura_db_connection_info=self._db_credentials
+        return AuraGraphDataScience(
+            endpoint=gds_url, auth=(gds_user, gds_pw), aura_db_connection_info=self._db_credentials
         )
 
     @classmethod
