@@ -1,21 +1,17 @@
 from __future__ import annotations
 
-import os
 from typing import Any, Dict, Optional, Tuple, Type, Union
 
-from neo4j import Driver, GraphDatabase
-from pandas import DataFrame, Series
+from neo4j import Driver
+from pandas import DataFrame
 
 from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
-from .error.gds_not_installed import GdsNotFound
-from .error.unable_to_connect import UnableToConnectError
 from .error.uncallable_namespace import UncallableNamespace
 from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
-from .version import __version__
 
 
 class GraphDataScience(DirectEndpoints, UncallableNamespace):
@@ -23,8 +19,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     Primary API class for the Neo4j Graph Data Science Python Client.
     Always bind this object to a variable called `gds`.
     """
-
-    _AURA_DS_PROTOCOL = "neo4j+s"
 
     def __init__(
         self,
@@ -65,68 +59,18 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             The Neo4j bookmarks to require a certain state before the next query gets executed.
         """
 
-        if isinstance(endpoint, str):
-            self._config: Dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
-
-            if aura_ds:
-                self._configure_aura(endpoint, self._config)
-
-            driver = GraphDatabase.driver(endpoint, auth=auth, **self._config)
-
-            self._query_runner = Neo4jQueryRunner(driver, auto_close=True, bookmarks=bookmarks)
-
-        elif isinstance(endpoint, QueryRunner):
-            if arrow:
-                raise ValueError("Arrow cannot be used if the QueryRunner is provided directly")
-
-            self._query_runner = endpoint
-
-        else:
-            driver = endpoint
-            self._query_runner = Neo4jQueryRunner(driver, auto_close=False, bookmarks=bookmarks)
-
-        if database:
-            self._query_runner.set_database(database)
-
-        try:
-            server_version_string = self._query_runner.run_cypher("RETURN gds.version()").squeeze()
-        except Exception as e:
-            if "Unknown function 'gds.version'" in str(e):
-                # Some Python versions appear to not call __del__ of self._query_runner when an exception
-                # is raised, so we have to close the driver manually.
-                if isinstance(endpoint, str):
-                    driver.close()
-
-                raise GdsNotFound(
-                    """The Graph Data Science library is not correctly installed on the Neo4j server.
-                    Please refer to https://neo4j.com/docs/graph-data-science/current/installation/.
-                    """
-                )
-
-            raise UnableToConnectError(e)
-
-        self._server_version = ServerVersion.from_string(server_version_string)
-        self._query_runner.set_server_version(self._server_version)
+        self._query_runner = Neo4jQueryRunner.create(endpoint, auth, aura_ds, database, bookmarks, arrow)
+        self._server_version = self._query_runner.server_version()
 
         if arrow and self._server_version >= ServerVersion(2, 1, 0):
-            yield_fields = ["running"]
-            yield_fields += (
-                ["listenAddress"] if self._server_version >= ServerVersion(2, 2, 1) else ["advertisedListenAddress"]
+            self._query_runner = ArrowQueryRunner.create(
+                self._server_version,
+                self._query_runner,
+                auth,
+                self._query_runner.encrypted(),
+                arrow_disable_server_verification,
+                arrow_tls_root_certs,
             )
-            arrow_info: "Series[Any]" = self._query_runner.call_procedure(
-                endpoint="gds.debug.arrow", yields=yield_fields, custom_error=False
-            ).squeeze()
-            listen_address: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])  # type: ignore
-            if arrow_info["running"]:
-                self._query_runner = ArrowQueryRunner(
-                    listen_address,
-                    self._query_runner,
-                    self._server_version,
-                    auth,
-                    driver.encrypted,
-                    arrow_disable_server_verification,
-                    arrow_tls_root_certs,
-                )
 
         super().__init__(self._query_runner, "gds", self._server_version)
 
@@ -225,7 +169,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         Returns:
             The configuration as a dictionary.
         """
-        return self._config
+        return self._query_runner.driver_config()
 
     @classmethod
     def from_neo4j_driver(
@@ -253,16 +197,3 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         Close the GraphDataScience object and release any resources held by it.
         """
         self._query_runner.close()
-
-    @classmethod
-    def _configure_aura(cls, uri: str, config: Dict[str, Any]) -> None:
-        protocol = uri.split(":")[0]
-        if os.environ.get("ENVIRONMENT", "production") != "test":
-            if not protocol == cls._AURA_DS_PROTOCOL:
-                raise ValueError(
-                    f"AuraDS requires using the '{cls._AURA_DS_PROTOCOL}' protocol ('{protocol}' was provided)"
-                )
-
-        config["max_connection_lifetime"] = 60 * 8  # 8 minutes
-        config["keep_alive"] = True
-        config["max_connection_pool_size"] = 50

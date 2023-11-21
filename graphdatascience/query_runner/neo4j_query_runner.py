@@ -3,7 +3,7 @@ import re
 import time
 import warnings
 from concurrent.futures import Future, ThreadPoolExecutor, wait
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple, Union
 from uuid import uuid4
 
 import neo4j
@@ -14,28 +14,84 @@ from ..call_parameters import CallParameters
 from ..error.endpoint_suggester import generate_suggestive_error_message
 from ..error.unable_to_connect import UnableToConnectError
 from ..server_version.server_version import ServerVersion
+from ..version import __version__
 from .cypher_graph_constructor import CypherGraphConstructor
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
+from graphdatascience.error.gds_not_installed import GdsNotFound
 
 
 class Neo4jQueryRunner(QueryRunner):
+    _AURA_DS_PROTOCOL = "neo4j+s"
     _LOG_POLLING_INTERVAL = 0.5
     _NEO4J_DRIVER_VERSION = ServerVersion.from_string(neo4j.__version__)
+
+    @staticmethod
+    def create(
+        endpoint: Union[str, neo4j.Driver, QueryRunner],
+        auth: Optional[Tuple[str, str]] = None,
+        aura_ds: bool = False,
+        database: Optional[str] = None,
+        bookmarks: Optional[Any] = None,
+        arrow: bool = True,
+    ) -> "QueryRunner":
+        query_runner: "QueryRunner"
+        if isinstance(endpoint, str):
+            config: Dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
+
+            if aura_ds:
+                Neo4jQueryRunner._configure_aura(endpoint, config)
+
+            driver = neo4j.GraphDatabase.driver(endpoint, auth=auth, **config)
+
+            query_runner = Neo4jQueryRunner(driver, auto_close=True, bookmarks=bookmarks, config=config)
+
+        elif isinstance(endpoint, QueryRunner):
+            if arrow:
+                raise ValueError("Arrow cannot be used if the QueryRunner is provided directly")
+
+            query_runner = endpoint
+
+        else:
+            driver = endpoint
+            query_runner = Neo4jQueryRunner(driver, auto_close=False, bookmarks=bookmarks)
+
+        if database:
+            query_runner.set_database(database)
+
+        return query_runner
+
+    @staticmethod
+    def _configure_aura(uri: str, config: Dict[str, Any]) -> None:
+        protocol = uri.split(":")[0]
+        if not protocol == Neo4jQueryRunner._AURA_DS_PROTOCOL:
+            raise ValueError(
+                (
+                    f"AuraDS requires using the '{Neo4jQueryRunner._AURA_DS_PROTOCOL}'"
+                    f" protocol ('{protocol}' was provided)",
+                )
+            )
+
+        config["max_connection_lifetime"] = 60 * 8  # 8 minutes
+        config["keep_alive"] = True
+        config["max_connection_pool_size"] = 50
 
     def __init__(
         self,
         driver: neo4j.Driver,
+        config: Dict[str, Any] = {},
         database: Optional[str] = neo4j.DEFAULT_DATABASE,
         auto_close: bool = False,
         bookmarks: Optional[Any] = None,
     ):
         self._driver = driver
+        self._config = config
         self._auto_close = auto_close
         self._database = database
         self._logger = logging.getLogger()
         self._bookmarks = bookmarks
         self._last_bookmarks: Optional[Any] = None
+        self._server_version = self.server_version()
 
     def run_cypher(
         self,
@@ -131,6 +187,35 @@ class Neo4jQueryRunner(QueryRunner):
             else:
                 return future.result()
 
+    def server_version(self) -> ServerVersion:
+        if hasattr(self, "_server_version"):
+            return self._server_version
+
+        try:
+            server_version_string = self.run_cypher("RETURN gds.version()", custom_error=False).squeeze()
+            return ServerVersion.from_string(server_version_string)
+        except Exception as e:
+            if "Unknown function 'gds.version'" in str(e):
+                # Some Python versions appear to not call __del__ of self._query_runner when an exception
+                # is raised, so we have to close the driver manually.
+                self._driver.close()
+                # if isinstance(endpoint, str):
+                #    driver.close()
+
+                raise GdsNotFound(
+                    """The Graph Data Science library is not correctly installed on the Neo4j server.
+                    Please refer to https://neo4j.com/docs/graph-data-science/current/installation/.
+                    """
+                )
+
+            raise UnableToConnectError(e)
+
+    def encrypted(self) -> bool:
+        return self._driver.encrypted
+
+    def driver_config(self) -> Dict[str, Any]:
+        return self._config
+
     def _forward_cypher_warnings(self, notification: Dict[str, Any]) -> None:
         # (see https://neo4j.com/docs/status-codes/current/notifications/ for more details)
         severity = notification["severity"]
@@ -210,9 +295,6 @@ class Neo4jQueryRunner(QueryRunner):
         return CypherGraphConstructor(
             self, graph_name, concurrency, undirected_relationship_types, self._server_version
         )
-
-    def set_server_version(self, server_version: ServerVersion) -> None:
-        self._server_version = server_version
 
     @staticmethod
     def handle_driver_exception(session: neo4j.Session, e: Exception) -> None:
