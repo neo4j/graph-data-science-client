@@ -11,7 +11,7 @@ GRAPH_NAME = "g"
 @pytest.fixture(autouse=True, scope="class")
 def run_around_tests(gds_with_cloud_setup: AuraGraphDataScience) -> Generator[None, None, None]:
     # Runs before each test
-    auradb_runner.run_cypher(
+    gds_with_cloud_setup.run_cypher(
         """
         CREATE
         (a: Node {x: 1, y: 2, z: [42], name: "nodeA"}),

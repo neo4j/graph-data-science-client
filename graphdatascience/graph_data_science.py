@@ -1,6 +1,6 @@
 from __future__ import annotations
-import os
 
+import os
 from typing import Any, Dict, Optional, Tuple, Type, Union
 
 from neo4j import Driver, GraphDatabase

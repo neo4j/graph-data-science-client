@@ -77,4 +77,4 @@ class AuraGraphDataScience(GraphDataScience):
             The query result as a DataFrame
         """
         # This will avoid calling valid gds procedures through a raw string
-        return self._db_query_runner.run_query(query, params, database, False)
+        return self._db_query_runner.run_cypher(query, params, database, False)
