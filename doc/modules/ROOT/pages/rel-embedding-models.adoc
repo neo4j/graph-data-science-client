@@ -211,6 +211,7 @@ transe_model = gds.model.transe.create(
         "ROAD": [0.88355126, 0.15116676, 0.24225456],
         "LIVES_IN": [0.94185368, 0.60460752, 0.92028837]
     }
+)
 
 # Sanity check
 assert transe_model.scoring_function() == "transe"
@@ -230,8 +231,8 @@ result = transe_model.predict_mutate(
     target_node_filter="City",
     relationship_type="LIVES_IN",
     top_k=1,
-    write_relationship_type="MIGHT_MOVE",
-    write_property="likeliness_score"
+    mutate_relationship_type="MIGHT_MOVE",
+    mutate_property="likeliness_score"
 )
 
 # Let us make sure the number of new relationships makes sense
