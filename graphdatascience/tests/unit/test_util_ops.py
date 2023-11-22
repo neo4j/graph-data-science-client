@@ -3,10 +3,7 @@ from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 
 
 def test_version(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    gds.version()
-
-    assert runner.last_query() == "RETURN gds.version()"
-    assert runner.last_params() == {}
+    assert gds.version() == f"{gds._server_version}"
 
 
 def test_list(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
