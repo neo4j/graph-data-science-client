@@ -64,7 +64,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
         if arrow and self._server_version >= ServerVersion(2, 1, 0):
             self._query_runner = ArrowQueryRunner.create(
-                self._server_version,
                 self._query_runner,
                 auth,
                 self._query_runner.encrypted(),

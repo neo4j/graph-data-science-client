@@ -26,25 +26,29 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         endpoint: str,
         auth: Tuple[str, str],
         aura_db_connection_info: AuraDbConnectionInfo,
-        database: Optional[str] = None,
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
     ):
-        gds_query_runner = Neo4jQueryRunner.create(endpoint, auth, aura_ds=True)
-        self._driver_config = gds_query_runner.driver_config()
+        gds_query_runner = ArrowQueryRunner.create(
+            Neo4jQueryRunner.create(endpoint, auth, aura_ds=True),
+            auth,
+            True,
+            arrow_disable_server_verification,
+            arrow_tls_root_certs
+        )
+
+        gds_query_runner.set_database("neo4j")
+
         self._server_version = gds_query_runner.server_version()
 
-        if self._server_version >= ServerVersion(2, 1, 0):
-            gds_query_runner = ArrowQueryRunner.create(
-                self._server_version,
-                gds_query_runner,
-                auth,
-                gds_query_runner.encrypted(),
-                arrow_disable_server_verification,
-                arrow_tls_root_certs,
+        if self._server_version < ServerVersion(2, 6, 0):
+            raise RuntimeError(
+                f"AuraDB connection info was provided but GDS version {self._server_version} \
+                    does not support connecting to AuraDB"
             )
 
+        self._driver_config = gds_query_runner.driver_config()
         driver = GraphDatabase.driver(
             aura_db_connection_info.uri, auth=aura_db_connection_info.auth, **self._driver_config
         )
@@ -52,18 +56,9 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             driver, auto_close=True, bookmarks=bookmarks, server_version=self._server_version
         )
 
-        if database:
-            self._db_query_runner.set_database(database)
-
-        if self._server_version >= ServerVersion(2, 6, 0):
-            self._query_runner = AuraDbArrowQueryRunner(
-                gds_query_runner, self._db_query_runner, driver.encrypted, aura_db_connection_info
-            )
-        else:
-            raise RuntimeError(
-                f"AuraDB connection info was provided but GDS version {self._server_version} \
-                    does not support connecting to AuraDB"
-            )
+        self._query_runner = AuraDbArrowQueryRunner(
+            gds_query_runner, self._db_query_runner, driver.encrypted, aura_db_connection_info
+        )
 
         super().__init__(self._query_runner, "gds", self._server_version)
 
