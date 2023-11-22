@@ -65,6 +65,8 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
                     does not support connecting to AuraDB"
             )
 
+        super().__init__(self._query_runner, "gds", self._server_version)
+
     def run_cypher(
         self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
     ) -> DataFrame:
