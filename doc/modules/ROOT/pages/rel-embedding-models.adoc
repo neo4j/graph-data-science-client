@@ -38,7 +38,7 @@ The `SimpleRelEmbeddingModel` represents a relationship embedding model based on
 It has three methods for predicting new relationships.
 The computation of inferring new embeddings is the same, but how the new relationships are handled after that differs.
 
-This class has three methods are:
+This class has three methods:
 
 * `predict_stream` for streaming back the predicted relationships,
 * `predict_mutate` for adding the relationships to the projected graph,
