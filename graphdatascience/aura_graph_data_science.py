@@ -35,7 +35,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             auth,
             True,
             arrow_disable_server_verification,
-            arrow_tls_root_certs
+            arrow_tls_root_certs,
         )
 
         gds_query_runner.set_database("neo4j")
