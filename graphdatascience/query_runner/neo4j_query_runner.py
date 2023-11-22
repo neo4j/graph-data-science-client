@@ -83,6 +83,7 @@ class Neo4jQueryRunner(QueryRunner):
         database: Optional[str] = neo4j.DEFAULT_DATABASE,
         auto_close: bool = False,
         bookmarks: Optional[Any] = None,
+        server_version: Optional[ServerVersion] = None,
     ):
         self._driver = driver
         self._config = config
@@ -91,7 +92,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._logger = logging.getLogger()
         self._bookmarks = bookmarks
         self._last_bookmarks: Optional[Any] = None
-        self._server_version = self.server_version()
+        self._server_version = server_version if server_version else self.server_version()
 
     def run_cypher(
         self,

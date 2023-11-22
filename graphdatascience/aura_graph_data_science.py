@@ -48,8 +48,9 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         driver = GraphDatabase.driver(
             aura_db_connection_info.uri, auth=aura_db_connection_info.auth, **self._driver_config
         )
-        self._db_query_runner = Neo4jQueryRunner(driver, auto_close=True, bookmarks=bookmarks)
-        self._db_query_runner.set_server_version(self._server_version)
+        self._db_query_runner = Neo4jQueryRunner(
+            driver, auto_close=True, bookmarks=bookmarks, server_version=self._server_version
+        )
 
         if database:
             self._db_query_runner.set_database(database)
