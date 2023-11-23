@@ -53,7 +53,7 @@ Since the prediction parts of the computations in these methods are the same, th
 | Name               | Type                       |
 | source_node_filter | Union[str, int, list[int]] | The specification of source nodes to consider. Either a node label, a node ID, or a list of node IDs
 | target_node_filter | Union[str, int, list[int]] | The specification of source nodes to consider. Either a node label, a node ID, or a list of node IDs
-| relationshipTypes  | str or list[str]           | Relationship types for which the algorithm will be executed
+| relationship_type  | str                        | The name of the relationship type whose embedding will be used in the computation
 | top_k              | int                        | How many relationships to produce for each source node. The target nodes with the highest `top_k` scores will be kept for each source node
 | general_config     | **dict[str, Any]           | General GDS algorithm configuration as optional keyword parameters
 |===
