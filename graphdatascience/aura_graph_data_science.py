@@ -38,8 +38,6 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_tls_root_certs,
         )
 
-        gds_query_runner.set_database("neo4j")
-
         self._server_version = gds_query_runner.server_version()
 
         if self._server_version < ServerVersion(2, 6, 0):
@@ -55,6 +53,12 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         self._db_query_runner = Neo4jQueryRunner(
             driver, auto_close=True, bookmarks=bookmarks, server_version=self._server_version
         )
+
+        # we need to explicitly set these as the default value is None
+        # which signals the driver to use the default configured database
+        # from the dbms.
+        gds_query_runner.set_database("neo4j")
+        self._db_query_runner.set_database("neo4j")
 
         self._query_runner = AuraDbArrowQueryRunner(
             gds_query_runner, self._db_query_runner, driver.encrypted, aura_db_connection_info

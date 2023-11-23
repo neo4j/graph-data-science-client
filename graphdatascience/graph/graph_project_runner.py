@@ -80,14 +80,14 @@ class GraphProjectBetaRunner(IllegalAttrChecker):
 
 class GraphProjectRemoteRunner(IllegalAttrChecker):
     @compatible_with("remoteDb", min_inclusive=ServerVersion(2, 6, 0))
-    def __call__(self, graph_name: str, query: str, remote_database: str = "neo4j", **config: Any) -> GraphCreateResult:
+    def __call__(self, graph_name: str, query: str, **config: Any) -> GraphCreateResult:
         placeholder = "<>"  # host and token will be added by query runner
         params = CallParameters(
             graph_name=graph_name,
             query=query,
             token=placeholder,
             host=placeholder,
-            remote_database=remote_database,
+            remote_database=self._query_runner.database(),
             config=config,
         )
         result = self._query_runner.call_procedure(
