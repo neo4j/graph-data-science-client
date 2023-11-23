@@ -4,7 +4,6 @@ import pytest
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.model.simple_rel_embedding_model import SimpleRelEmbeddingModel
-from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 
 GRAPH_NAME = "g"
@@ -21,9 +20,9 @@ CONCURRENCY = 2
 
 
 @pytest.fixture(autouse=True)
-def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
+def run_around_tests(gds: GraphDataScience) -> Generator[None, None, None]:
     # Runs before each test
-    runner.run_cypher(
+    gds.run_cypher(
         """
         CREATE
         (a: Node {x: 1, y: 2, z: [42.1, 131.0, 12.99]}),
@@ -39,8 +38,8 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     yield  # Test runs here
 
     # Runs after each test
-    runner.run_cypher("MATCH (n) DETACH DELETE n")
-    runner.run_cypher(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
+    gds.run_cypher("MATCH (n) DETACH DELETE n")
+    gds.graph.drop(GRAPH_NAME)
 
 
 @pytest.fixture

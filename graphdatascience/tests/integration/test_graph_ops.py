@@ -6,7 +6,6 @@ from pandas import Series
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
-from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.tests.integration.conftest import AUTH, DB, URI
@@ -15,9 +14,9 @@ GRAPH_NAME = "g"
 
 
 @pytest.fixture(autouse=True)
-def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
+def run_around_tests(gds: GraphDataScience) -> Generator[None, None, None]:
     # Runs before each test
-    runner.run_cypher(
+    gds.run_cypher(
         """
         CREATE
         (a: Node {x: 1, y: 2, z: [42], name: "nodeA"}),
@@ -33,8 +32,8 @@ def run_around_tests(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
     yield  # Test runs here
 
     # Runs after each test
-    runner.run_cypher("MATCH (n) DETACH DELETE n")
-    runner.run_cypher(f"CALL gds.graph.drop('{GRAPH_NAME}', false)")
+    gds.run_cypher("MATCH (n) DETACH DELETE n")
+    gds.graph.drop(GRAPH_NAME, failIfMissing=False)
 
 
 def test_project_graph_native(gds: GraphDataScience) -> None:
@@ -109,7 +108,7 @@ def test_beta_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> No
     result2 = gds.graph.list(sub_G)
     assert result2["nodeCount"][0] == 2
 
-    runner.run_cypher(f"CALL gds.graph.drop('{sub_G.name()}')")
+    gds.graph.drop(sub_G)
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
@@ -124,7 +123,7 @@ def test_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
     result2 = gds.graph.list(sub_G)
     assert result2["nodeCount"][0] == 2
 
-    runner.run_cypher(f"CALL gds.graph.drop('{sub_G.name()}')")
+    gds.graph.drop(sub_G)
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 4, 0))
@@ -139,7 +138,7 @@ def test_sample_rwr(runner: QueryRunner, gds: GraphDataScience) -> None:
     result2 = gds.graph.list(rwr_G)
     assert result2["nodeCount"][0] == 2
 
-    runner.run_cypher(f"CALL gds.graph.drop('{rwr_G.name()}')")
+    gds.graph.drop(rwr_G)
 
 
 @pytest.mark.skip_on_aura  # The alpha procedure is not part of the allowlist
@@ -159,7 +158,7 @@ def test_sample_rwr_alpha(runner: QueryRunner, gds: GraphDataScience) -> None:
     result2 = gds.graph.list(rwr_G)
     assert result2["nodeCount"][0] == 2
 
-    runner.run_cypher(f"CALL gds.graph.drop('{rwr_G.name()}')")
+    gds.graph.drop(rwr_G)
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 4, 0))
@@ -174,7 +173,7 @@ def test_sample_cnarw(runner: QueryRunner, gds: GraphDataScience) -> None:
     result2 = gds.graph.list(cnarw_G)
     assert result2["nodeCount"][0] == 2
 
-    runner.run_cypher(f"CALL gds.graph.drop('{cnarw_G.name()}')")
+    gds.graph.drop(cnarw_G)
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 4, 0))
@@ -253,7 +252,7 @@ def test_graph_type_check(gds: GraphDataScience) -> None:
             "To resolve a graph name string into a `Graph` object, please use `gds.graph.get`"
         ),
     ):
-        gds.graph.drop(G.name(), True)  # type: ignore
+        gds.graph.list(G.name())  # type: ignore
 
     result = gds.graph.drop(G, True)
     assert result is not None
