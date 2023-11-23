@@ -71,9 +71,6 @@ class InstanceCreateDetails:
 
 
 class AuraApi:
-    DEV_ENV = os.environ.get("AURA_ENV")
-    BASE_URI = "https://api.neo4j.io" if not DEV_ENV else f"https://api-{os.environ.get('AURA_ENV')}.neo4j-dev.io"
-
     class AuraAuthToken:
         access_token: str
         expires_in: int
@@ -89,6 +86,8 @@ class AuraApi:
             return self.expires_at >= int(time.time())
 
     def __init__(self, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> None:
+        self._dev_env = os.environ.get("AURA_ENV")
+        self._base_uri = "https://api.neo4j.io" if not self._dev_env else f"https://api-{self._dev_env}.neo4j-dev.io"
         self._credentials = (client_id, client_secret)
         self._token: Optional[AuraApi.AuraAuthToken] = None
         self._logger = logging.getLogger()
@@ -117,7 +116,7 @@ class AuraApi:
         }
 
         response = req.post(
-            f"{AuraApi.BASE_URI}/v1/instances",
+            f"{self._base_uri}/v1/instances",
             json=data,
             headers=self._build_header(),
         )
@@ -132,7 +131,7 @@ class AuraApi:
 
     def delete_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.delete(
-            f"{AuraApi.BASE_URI}/v1/instances/{instance_id}",
+            f"{self._base_uri}/v1/instances/{instance_id}",
             headers=self._build_header(),
         )
 
@@ -145,7 +144,7 @@ class AuraApi:
 
     def list_instances(self) -> List[InstanceDetails]:
         response = req.get(
-            f"{AuraApi.BASE_URI}/v1/instances",
+            f"{self._base_uri}/v1/instances",
             headers=self._build_header(),
             params={"tenantId": self._tenant_id},
         )
@@ -158,7 +157,7 @@ class AuraApi:
 
     def list_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = req.get(
-            f"{AuraApi.BASE_URI}/v1/instances/{instance_id}",
+            f"{self._base_uri}/v1/instances/{instance_id}",
             headers=self._build_header(),
         )
 
@@ -196,7 +195,7 @@ class AuraApi:
 
     def _get_tenant_id(self) -> str:
         response = req.get(
-            f"{AuraApi.BASE_URI}/v1/tenants",
+            f"{self._base_uri}/v1/tenants",
             headers=self._build_header(),
         )
         response.raise_for_status()
@@ -226,7 +225,7 @@ class AuraApi:
         self._logger.debug("Updating oauth token")
 
         response = req.post(
-            f"{AuraApi.BASE_URI}/oauth/token", data=data, auth=(self._credentials[0], self._credentials[1])
+            f"{self._base_uri}/oauth/token", data=data, auth=(self._credentials[0], self._credentials[1])
         )
 
         response.raise_for_status()
@@ -234,4 +233,4 @@ class AuraApi:
         return AuraApi.AuraAuthToken(response.json())
 
     def _instance_type(self) -> str:
-        return "enterprise-ds" if not AuraApi.DEV_ENV else "professional-ds"
+        return "enterprise-ds" if not self._dev_env else "professional-ds"
