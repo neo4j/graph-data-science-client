@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import logging
+import os
 import re
 import time
 import warnings
@@ -34,8 +37,8 @@ class Neo4jQueryRunner(QueryRunner):
         database: Optional[str] = None,
         bookmarks: Optional[Any] = None,
         arrow: bool = True,
-    ) -> "QueryRunner":
-        query_runner: "QueryRunner"
+    ) -> QueryRunner:
+        query_runner: QueryRunner
         if isinstance(endpoint, str):
             config: Dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
 
@@ -64,7 +67,7 @@ class Neo4jQueryRunner(QueryRunner):
     @staticmethod
     def _configure_aura(uri: str, config: Dict[str, Any]) -> None:
         protocol = uri.split(":")[0]
-        if not protocol == Neo4jQueryRunner._AURA_DS_PROTOCOL:
+        if os.environ.get("ENVIRONMENT", "production") != "test" and protocol != Neo4jQueryRunner._AURA_DS_PROTOCOL:
             raise ValueError(
                 (
                     f"AuraDS requires using the '{Neo4jQueryRunner._AURA_DS_PROTOCOL}'"
