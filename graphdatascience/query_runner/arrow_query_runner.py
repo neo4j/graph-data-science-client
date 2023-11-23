@@ -21,13 +21,14 @@ from graphdatascience.server_version.compatible_with import (
 class ArrowQueryRunner(QueryRunner):
     @staticmethod
     def create(
-        server_version: ServerVersion,
         fallback_query_runner: QueryRunner,
         auth: Optional[Tuple[str, str]] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
     ) -> "QueryRunner":
+        server_version = fallback_query_runner.server_version()
+
         yield_fields = (
             ["running", "listenAddress"]
             if server_version >= ServerVersion(2, 2, 1)

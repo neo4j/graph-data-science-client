@@ -63,8 +63,7 @@ class DirectUtilEndpoints(CallerBase):
         Returns:
             The version of the GDS library.
         """
-        query = f"RETURN {self._namespace}.version()"
-        return self._query_runner.run_cypher(query).squeeze()  # type: ignore
+        return f"{self._server_version}"
 
     @client_only_endpoint("gds")
     def server_version(self) -> ServerVersion:

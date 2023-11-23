@@ -102,7 +102,7 @@ def test_project_remote(runner: CollectingQueryRunner, gds: GraphDataScience) ->
         "token": "<>",
         "host": "<>",
         "query": "RETURN gds.graph.project.remote(0, 1, null)",
-        "remote_database": "neo4j",
+        "remote_database": "dummy",
         "config": {},
     }
 
@@ -683,4 +683,23 @@ def test_graph_sample_cnarw(runner: CollectingQueryRunner, gds: GraphDataScience
         "graph_name": "s",
         "from_graph_name": "g",
         "config": {"samplingRatio": 0.9, "concurrency": 7},
+    }
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 6, 0))
+def test_remote_projection_on_specific_database(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    gds.set_database("bar")
+    G, _ = gds.graph.project.remoteDb("g", "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
+
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.project.remoteDb($graph_name, $query, $token, $host, $remote_database, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "token": "<>",
+        "host": "<>",
+        "query": "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)",
+        "remote_database": "bar",
+        "config": {},
     }

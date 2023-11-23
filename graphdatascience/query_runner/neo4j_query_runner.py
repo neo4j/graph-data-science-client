@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import re
 import time
@@ -34,13 +36,13 @@ class Neo4jQueryRunner(QueryRunner):
         database: Optional[str] = None,
         bookmarks: Optional[Any] = None,
         arrow: bool = True,
-    ) -> "QueryRunner":
-        query_runner: "QueryRunner"
+    ) -> QueryRunner:
+        query_runner: QueryRunner
         if isinstance(endpoint, str):
             config: Dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
 
             if aura_ds:
-                Neo4jQueryRunner._configure_aura(endpoint, config)
+                Neo4jQueryRunner._configure_aura(config)
 
             driver = neo4j.GraphDatabase.driver(endpoint, auth=auth, **config)
 
@@ -62,16 +64,7 @@ class Neo4jQueryRunner(QueryRunner):
         return query_runner
 
     @staticmethod
-    def _configure_aura(uri: str, config: Dict[str, Any]) -> None:
-        protocol = uri.split(":")[0]
-        if not protocol == Neo4jQueryRunner._AURA_DS_PROTOCOL:
-            raise ValueError(
-                (
-                    f"AuraDS requires using the '{Neo4jQueryRunner._AURA_DS_PROTOCOL}'"
-                    f" protocol ('{protocol}' was provided)",
-                )
-            )
-
+    def _configure_aura(config: Dict[str, Any]) -> None:
         config["max_connection_lifetime"] = 60 * 8  # 8 minutes
         config["keep_alive"] = True
         config["max_connection_pool_size"] = 50
@@ -83,6 +76,7 @@ class Neo4jQueryRunner(QueryRunner):
         database: Optional[str] = neo4j.DEFAULT_DATABASE,
         auto_close: bool = False,
         bookmarks: Optional[Any] = None,
+        server_version: Optional[ServerVersion] = None,
     ):
         self._driver = driver
         self._config = config
@@ -91,7 +85,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._logger = logging.getLogger()
         self._bookmarks = bookmarks
         self._last_bookmarks: Optional[Any] = None
-        self._server_version = self.server_version()
+        self._server_version = server_version if server_version else self.server_version()
 
     def run_cypher(
         self,

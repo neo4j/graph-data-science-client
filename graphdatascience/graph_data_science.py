@@ -58,13 +58,14 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         bookmarks : Optional[Any], default None
             The Neo4j bookmarks to require a certain state before the next query gets executed.
         """
+        if aura_ds:
+            GraphDataScience._validate_endpoint(endpoint)
 
         self._query_runner = Neo4jQueryRunner.create(endpoint, auth, aura_ds, database, bookmarks, arrow)
         self._server_version = self._query_runner.server_version()
 
         if arrow and self._server_version >= ServerVersion(2, 1, 0):
             self._query_runner = ArrowQueryRunner.create(
-                self._server_version,
                 self._query_runner,
                 auth,
                 self._query_runner.encrypted(),
@@ -191,6 +192,18 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_tls_root_certs=arrow_tls_root_certs,
             bookmarks=bookmarks,
         )
+
+    @staticmethod
+    def _validate_endpoint(endpoint: Union[str, Driver, QueryRunner]) -> None:
+        if isinstance(endpoint, str):
+            protocol = endpoint.split(":")[0]
+            if protocol != Neo4jQueryRunner._AURA_DS_PROTOCOL:
+                raise ValueError(
+                    (
+                        f"AuraDS requires using the '{Neo4jQueryRunner._AURA_DS_PROTOCOL}'"
+                        f" protocol ('{protocol}' was provided)",
+                    )
+                )
 
     def close(self) -> None:
         """

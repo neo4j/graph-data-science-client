@@ -38,7 +38,7 @@ def run_around_tests(gds_with_cloud_setup: AuraGraphDataScience) -> Generator[No
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 6, 0))
 def test_remote_projection(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project.remoteDb(
-        GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)", "neo4j"
+        GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)"
     )
 
     assert G.name() == GRAPH_NAME
@@ -49,7 +49,7 @@ def test_remote_projection(gds_with_cloud_setup: AuraGraphDataScience) -> None:
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 6, 0))
 def test_remote_write_back(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project.remoteDb(
-        GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)", "neo4j"
+        GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)"
     )
 
     result = gds_with_cloud_setup.pageRank.write(G, writeProperty="score")

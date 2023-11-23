@@ -22,6 +22,7 @@ class CollectingQueryRunner(QueryRunner):
         self.queries: List[str] = []
         self.params: List[Dict[str, Any]] = []
         self._server_version = server_version
+        self._database = "dummy"
 
     def call_procedure(
         self,
@@ -69,14 +70,14 @@ class CollectingQueryRunner(QueryRunner):
     def last_params(self) -> Dict[str, Any]:
         return self.params[-1]
 
-    def set_database(self, _: str) -> None:
-        pass
+    def set_database(self, database: str) -> None:
+        self._database = database
 
     def set_bookmarks(self, _: Optional[Any]) -> None:
         pass
 
     def database(self) -> str:
-        return "dummy"
+        return self._database
 
     def bookmarks(self) -> Optional[Any]:
         return None
