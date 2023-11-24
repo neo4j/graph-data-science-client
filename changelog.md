@@ -17,6 +17,7 @@
 ## Improvements
 
 * Expose user facing custom types so that they can be directly imported from `graphdatascience`.
+* Allow dropping graphs through `gds.graph.drop` by name and not only based on `Graph` objects.
 
 
 ## Other changes

@@ -294,18 +294,20 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace += ".ogbl"
         return OGBLLoader(self._query_runner, self._namespace, self._server_version)
 
-    @graph_type_check
     def drop(
         self,
-        G: Graph,
+        graph: Union[Graph, str],
         failIfMissing: bool = False,
         dbName: str = "",
         username: Optional[str] = None,
     ) -> Optional["Series[Any]"]:
         self._namespace += ".drop"
 
+        if isinstance(graph, Graph):
+            graph = graph.name()
+
         params = CallParameters(
-            graph_name=G.name(),
+            graph_name=graph,
             fail_if_missing=failIfMissing,
             db_name=dbName,
         )
