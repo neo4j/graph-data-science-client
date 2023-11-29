@@ -74,6 +74,3 @@ class QueryRunner(ABC):
 
     def set_server_version(self, _: ServerVersion) -> None:
         pass
-
-    def support_local_projections(self) -> bool:
-        return True

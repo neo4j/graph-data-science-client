@@ -142,9 +142,6 @@ class AuraDbArrowQueryRunner(QueryRunner):
         self._client.authenticate_basic_token(self._auth[0], self._auth[1])
         return (self._auth_pair_middleware.token(), self._auth_pair_middleware.endpoint())
 
-    def support_local_projections(self) -> bool:
-        return False
-
 
 class AuthPairInterceptingMiddlewareFactory(ClientMiddlewareFactory):  # type: ignore
     def __init__(self, middleware: "AuthPairInterceptingMiddleware", *args: Any, **kwargs: Any) -> None:

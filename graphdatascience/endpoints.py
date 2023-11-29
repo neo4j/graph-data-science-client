@@ -3,11 +3,7 @@ from .algo.single_mode_algo_endpoints import (
     SingleModeAlphaAlgoEndpoints,
 )
 from .call_builder import IndirectAlphaCallBuilder, IndirectBetaCallBuilder
-from .graph.graph_endpoints import (
-    GraphAlphaEndpoints,
-    GraphBetaEndpoints,
-    GraphEndpoints,
-)
+from .graph.graph_endpoints import GraphAlphaEndpoints, GraphBetaEndpoints
 from .model.model_endpoints import (
     ModelAlphaEndpoints,
     ModelBetaEndpoints,
@@ -39,7 +35,6 @@ class DirectEndpoints(
     SingleModeAlgoEndpoints,
     DirectSystemEndpoints,
     DirectUtilEndpoints,
-    GraphEndpoints,
     PipelineEndpoints,
     ModelEndpoints,
     ConfigEndpoints,

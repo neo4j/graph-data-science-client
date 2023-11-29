@@ -2,6 +2,7 @@ import pytest
 from pandas import DataFrame
 
 from .conftest import CollectingQueryRunner
+from graphdatascience.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -89,8 +90,8 @@ def test_project_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) 
     }
 
 
-def test_project_remote(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    gds.graph.project.remoteDb("g", "RETURN gds.graph.project.remote(0, 1, null)")
+def test_project_remote(runner: CollectingQueryRunner, aura_gds: AuraGraphDataScience) -> None:
+    aura_gds.graph.project("g", "RETURN gds.graph.project.remote(0, 1, null)")
 
     assert (
         runner.last_query()
@@ -687,9 +688,9 @@ def test_graph_sample_cnarw(runner: CollectingQueryRunner, gds: GraphDataScience
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 6, 0))
-def test_remote_projection_on_specific_database(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    gds.set_database("bar")
-    G, _ = gds.graph.project.remoteDb("g", "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
+def test_remote_projection_on_specific_database(runner: CollectingQueryRunner, aura_gds: AuraGraphDataScience) -> None:
+    aura_gds.set_database("bar")
+    G, _ = aura_gds.graph.project("g", "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
 
     assert (
         runner.last_query()

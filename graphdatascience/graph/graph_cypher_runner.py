@@ -7,7 +7,6 @@ from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
 from .graph_create_result import GraphCreateResult
 from .graph_object import Graph
-from graphdatascience.error.local_only_endpoint import local_projection
 
 
 class GraphCypherRunner(CallerBase):
@@ -16,7 +15,6 @@ class GraphCypherRunner(CallerBase):
             raise ValueError("The new Cypher projection is only supported since GDS 2.4.0.")
         super().__init__(query_runner, namespace, server_version)
 
-    @local_projection()
     def project(
         self,
         query: str,

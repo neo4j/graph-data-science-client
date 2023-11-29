@@ -24,7 +24,7 @@ from .graph_entity_ops_runner import (
 )
 from .graph_export_runner import GraphExportRunner
 from .graph_object import Graph
-from .graph_project_runner import GraphProjectRunner
+from .graph_project_runner import GraphProjectRemoteRunner, GraphProjectRunner
 from .graph_sample_runner import GraphSampleRunner
 from .graph_type_check import (
     from_graph_type_check,
@@ -41,7 +41,7 @@ Strings = Union[str, List[str]]
 is_neo4j_4_driver = ServerVersion.from_string(neo4j_driver_version) < ServerVersion(5, 0, 0)
 
 
-class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
+class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     @staticmethod
     def _path(package: str, resource: str) -> pathlib.Path:
         if sys.version_info >= (3, 9):
@@ -218,11 +218,6 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         return NXLoader(self._query_runner, self._namespace, self._server_version)
 
     @property
-    def project(self) -> GraphProjectRunner:
-        self._namespace += ".project"
-        return GraphProjectRunner(self._query_runner, self._namespace, self._server_version)
-
-    @property
     @compatible_with("graphProperty", min_inclusive=ServerVersion(2, 5, 0))
     def graphProperty(self) -> GraphPropertyRunner:
         self._namespace += ".graphProperty"
@@ -233,11 +228,6 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def nodeLabel(self) -> GraphLabelRunner:
         self._namespace += ".nodeLabel"
         return GraphLabelRunner(self._query_runner, self._namespace, self._server_version)
-
-    @property
-    def cypher(self) -> GraphCypherRunner:
-        self._namespace += ".project"
-        return GraphCypherRunner(self._query_runner, self._namespace, self._server_version)
 
     @compatible_with("generate", min_inclusive=ServerVersion(2, 5, 0))
     def generate(self, graph_name: str, node_count: int, average_degree: int, **config: Any) -> GraphCreateResult:
@@ -568,3 +558,22 @@ class GraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             endpoint=self._namespace,
             params=params,
         ).squeeze()
+
+
+class GraphProcRunner(BaseGraphProcRunner):
+    @property
+    def project(self) -> GraphProjectRunner:
+        self._namespace += ".project"
+        return GraphProjectRunner(self._query_runner, self._namespace, self._server_version)
+
+    @property
+    def cypher(self) -> GraphCypherRunner:
+        self._namespace += ".project"
+        return GraphCypherRunner(self._query_runner, self._namespace, self._server_version)
+
+
+class GraphRemoteProcRunner(BaseGraphProcRunner):
+    @property
+    def project(self) -> GraphProjectRemoteRunner:
+        self._namespace += ".project.remoteDb"
+        return GraphProjectRemoteRunner(self._query_runner, self._namespace, self._server_version)

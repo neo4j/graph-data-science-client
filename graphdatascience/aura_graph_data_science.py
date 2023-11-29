@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple, Union
 
 from neo4j import GraphDatabase
 from pandas import DataFrame
@@ -8,11 +8,13 @@ from .server_version.server_version import ServerVersion
 from graphdatascience.call_builder import IndirectCallBuilder
 from graphdatascience.endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
+from graphdatascience.graph.graph_proc_runner import GraphRemoteProcRunner
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbArrowQueryRunner,
     AuraDbConnectionInfo,
 )
+from graphdatascience.query_runner.query_runner import QueryRunner
 
 
 class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
@@ -23,46 +25,51 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def __init__(
         self,
-        endpoint: str,
+        endpoint: Union[str, QueryRunner],
         auth: Tuple[str, str],
         aura_db_connection_info: AuraDbConnectionInfo,
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
     ):
-        gds_query_runner = ArrowQueryRunner.create(
-            Neo4jQueryRunner.create(endpoint, auth, aura_ds=True),
-            auth,
-            True,
-            arrow_disable_server_verification,
-            arrow_tls_root_certs,
-        )
-
-        self._server_version = gds_query_runner.server_version()
-
-        if self._server_version < ServerVersion(2, 6, 0):
-            raise RuntimeError(
-                f"AuraDB connection info was provided but GDS version {self._server_version} \
-                    does not support connecting to AuraDB"
+        if isinstance(endpoint, str):
+            gds_query_runner = ArrowQueryRunner.create(
+                Neo4jQueryRunner.create(endpoint, auth, aura_ds=True),
+                auth,
+                True,
+                arrow_disable_server_verification,
+                arrow_tls_root_certs,
             )
 
-        self._driver_config = gds_query_runner.driver_config()
-        driver = GraphDatabase.driver(
-            aura_db_connection_info.uri, auth=aura_db_connection_info.auth, **self._driver_config
-        )
-        self._db_query_runner = Neo4jQueryRunner(
-            driver, auto_close=True, bookmarks=bookmarks, server_version=self._server_version
-        )
+            self._server_version = gds_query_runner.server_version()
 
-        # we need to explicitly set these as the default value is None
-        # which signals the driver to use the default configured database
-        # from the dbms.
-        gds_query_runner.set_database("neo4j")
-        self._db_query_runner.set_database("neo4j")
+            if self._server_version < ServerVersion(2, 6, 0):
+                raise RuntimeError(
+                    f"AuraDB connection info was provided but GDS version {self._server_version} \
+                        does not support connecting to AuraDB"
+                )
 
-        self._query_runner = AuraDbArrowQueryRunner(
-            gds_query_runner, self._db_query_runner, driver.encrypted, aura_db_connection_info
-        )
+            self._driver_config = gds_query_runner.driver_config()
+            driver = GraphDatabase.driver(
+                aura_db_connection_info.uri, auth=aura_db_connection_info.auth, **self._driver_config
+            )
+            self._db_query_runner: QueryRunner = Neo4jQueryRunner(
+                driver, auto_close=True, bookmarks=bookmarks, server_version=self._server_version
+            )
+
+            # we need to explicitly set these as the default value is None
+            # which signals the driver to use the default configured database
+            # from the dbms.
+            gds_query_runner.set_database("neo4j")
+            self._db_query_runner.set_database("neo4j")
+
+            self._query_runner = AuraDbArrowQueryRunner(
+                gds_query_runner, self._db_query_runner, driver.encrypted, aura_db_connection_info
+            )
+        else:
+            self._query_runner = endpoint
+            self._db_query_runner = endpoint
+            self._server_version = self._query_runner.server_version()
 
         super().__init__(self._query_runner, "gds", self._server_version)
 
@@ -86,6 +93,10 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         """
         # This will avoid calling valid gds procedures through a raw string
         return self._db_query_runner.run_cypher(query, params, database, False)
+
+    @property
+    def graph(self) -> GraphRemoteProcRunner:
+        return GraphRemoteProcRunner(self._query_runner, f"{self._namespace}.graph", self._server_version)
 
     @property
     def alpha(self) -> AlphaEndpoints:
