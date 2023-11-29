@@ -8,12 +8,14 @@ from ..error.illegal_attr_checker import IllegalAttrChecker
 from .graph_object import Graph
 from .graph_type_check import from_graph_type_check
 from graphdatascience.call_parameters import CallParameters
+from graphdatascience.error.local_only_endpoint import local_projection
 from graphdatascience.graph.graph_create_result import GraphCreateResult
 from graphdatascience.server_version.compatible_with import compatible_with
 from graphdatascience.server_version.server_version import ServerVersion
 
 
 class GraphProjectRunner(IllegalAttrChecker):
+    @local_projection()
     def __call__(self, graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> GraphCreateResult:
         params = CallParameters(
             graph_name=graph_name,

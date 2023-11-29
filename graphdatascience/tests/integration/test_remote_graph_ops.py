@@ -55,3 +55,10 @@ def test_remote_write_back(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     result = gds_with_cloud_setup.pageRank.write(G, writeProperty="score")
 
     assert result["nodePropertiesWritten"] == 3
+
+
+@pytest.mark.cloud_architecture
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 6, 0))
+def test_blocking_local_projections(gds_with_cloud_setup: AuraGraphDataScience) -> None:
+    with pytest.raises(RuntimeError, match="Projecting through 'gds.graph.project' is not supported."):
+        gds_with_cloud_setup.graph.project(GRAPH_NAME, "*", "*")
