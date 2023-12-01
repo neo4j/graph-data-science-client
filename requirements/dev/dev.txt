@@ -6,7 +6,7 @@ mypy == 1.5.1
 nbconvert == 7.6.0
 pandas-stubs == 2.0.3.230814
 pytest-annotate == 1.0.5
-tox == 4.11.3
+tox == 4.11.4
 types-setuptools == 68.1.0.1
 sphinx == 7.2.6
 types-requests
