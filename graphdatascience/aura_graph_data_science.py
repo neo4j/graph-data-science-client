@@ -3,6 +3,7 @@ from typing import Any, Dict, Optional, Tuple, Union
 from neo4j import GraphDatabase
 from pandas import DataFrame
 
+from .gds_session.gds_session import GdsSessions
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .server_version.server_version import ServerVersion
 from graphdatascience.call_builder import IndirectCallBuilder
@@ -31,6 +32,8 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
+        sessions: GdsSessions = None,
+        session_name: str = "",
     ):
         if isinstance(endpoint, str):
             gds_query_runner = ArrowQueryRunner.create(
@@ -70,6 +73,9 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             self._query_runner = endpoint
             self._db_query_runner = endpoint
             self._server_version = self._query_runner.server_version()
+
+        self._sessions = sessions
+        self._session_name = session_name
 
         super().__init__(self._query_runner, "gds", self._server_version)
 
@@ -174,3 +180,9 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         Close the GraphDataScience object and release any resources held by it.
         """
         self._query_runner.close()
+
+    def disconnect(self) -> None:
+        """
+        Disconnect the GdsSession.
+        """
+        self._sessions.disconnect(self._session_name)

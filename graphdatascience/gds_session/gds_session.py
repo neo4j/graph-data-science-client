@@ -25,7 +25,7 @@ class DbmsConnectionInfo:
 class AuraAPICredentials:
     client_id: str
     client_secret: str
-    tenant: Optional[str]
+    tenant: Optional[str] = None
 
 
 class GdsSessions:
@@ -52,6 +52,8 @@ class GdsSessions:
 
         if isinstance(self._ds_credentials, AuraAPICredentials):
             return AuraGraphDataScience(
+                sessions=self,
+                session_name=session_name,
                 endpoint=create_details.connection_url,
                 auth=(create_details.username, create_details.password),
                 aura_db_connection_info=AuraDbConnectionInfo(
