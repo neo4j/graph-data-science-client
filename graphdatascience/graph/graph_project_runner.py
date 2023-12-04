@@ -46,10 +46,6 @@ class GraphProjectRunner(IllegalAttrChecker):
     def cypher(self) -> GraphProjectRunner:
         return GraphProjectRunner(self._query_runner, self._namespace + ".cypher", self._server_version)
 
-    @property
-    def remoteDb(self) -> GraphProjectRemoteRunner:
-        return GraphProjectRemoteRunner(self._query_runner, self._namespace + ".remoteDb", self._server_version)
-
 
 class GraphProjectBetaRunner(IllegalAttrChecker):
     @from_graph_type_check
@@ -79,7 +75,7 @@ class GraphProjectBetaRunner(IllegalAttrChecker):
 
 
 class GraphProjectRemoteRunner(IllegalAttrChecker):
-    @compatible_with("remoteDb", min_inclusive=ServerVersion(2, 6, 0))
+    @compatible_with("project", min_inclusive=ServerVersion(2, 6, 0))
     def __call__(self, graph_name: str, query: str, **config: Any) -> GraphCreateResult:
         placeholder = "<>"  # host and token will be added by query runner
         params = CallParameters(
