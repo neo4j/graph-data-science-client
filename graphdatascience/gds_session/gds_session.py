@@ -74,62 +74,6 @@ class GdsSessions:
         return True
 
 
-class GdsSessionBuilderWithDbAndDs:
-    def __init__(
-            self, db_credentials: DbmsConnectionInfo, ds_credentials: Union[DbmsConnectionInfo, AuraAPICredentials]
-    ):
-        self._ds_credentials = ds_credentials
-        self._db_credentials = db_credentials
-
-    def build(self) -> GdsSessions:
-        return GdsSessions(self._db_credentials, self._ds_credentials)
-
-
-class GdsSessionBuilderWithDs:
-    def __init__(self, ds_credentials: Union[DbmsConnectionInfo, AuraAPICredentials]):
-        self._ds_credentials = ds_credentials
-
-    def db(self, db_credentials: DbmsConnectionInfo) -> GdsSessionBuilderWithDbAndDs:
-        return GdsSessionBuilderWithDbAndDs(db_credentials, self._ds_credentials)
-
-
-class GdsSessionBuilderWithDb:
-    def __init__(self, db_credentials: DbmsConnectionInfo):
-        self._db_credentials = db_credentials
-
-    def ds(self, ds_credentials: Union[DbmsConnectionInfo, AuraAPICredentials]) -> GdsSessionBuilderWithDbAndDs:
-        return GdsSessionBuilderWithDbAndDs(self._db_credentials, ds_credentials)
-
-
-class GdsSessionBuilder:
-    @staticmethod
-    def db(db_credentials: DbmsConnectionInfo) -> GdsSessionBuilderWithDb:
-        return GdsSessionBuilderWithDb(db_credentials)
-
-    @staticmethod
-    def ds(ds_credentials: Union[DbmsConnectionInfo, AuraAPICredentials]) -> GdsSessionBuilderWithDs:
-        return GdsSessionBuilderWithDs(ds_credentials)
-
-
-def builder():
-    gds_sessions = (
-        GdsSessionBuilder.db(DbmsConnectionInfo(uri="bolt://localhost:7687", username="neo4j", password="neo4j"))
-        .ds(AuraAPICredentials(client_id="client_id", client_secret="client_secret", tenant="tenant"))
-        .build()
-    )
-
-    gds_sessions.list_sessions()
-
-    gds = gds_sessions.connect(session_name="test-session", size="8GB")
-    G, result = gds.graph.project("g", "RETURN gds.graph.project(0, 1)")
-    gds.pageRank.mutate(G, mutateProperty="pagerank")
-    gds.graph.nodeProperty.stream(G, "pagerank")
-
-    gds_sessions.disconnect("test-session")
-    # alternatively
-    gds.disconnect()
-
-
 def namedparams():
     gds_sessions = GdsSessions(
         db_connection=DbmsConnectionInfo(uri="bolt://localhost:7687", username="neo4j", password="neo4j"),
