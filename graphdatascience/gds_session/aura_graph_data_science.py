@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional
 
 from neo4j import GraphDatabase
 from pandas import DataFrame
@@ -6,11 +6,11 @@ from pandas import DataFrame
 from graphdatascience.call_builder import IndirectCallBuilder
 from graphdatascience.endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
+from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.graph.graph_proc_runner import GraphRemoteProcRunner
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbArrowQueryRunner,
-    AuraDbConnectionInfo,
 )
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_runner import QueryRunner
@@ -25,17 +25,18 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def __init__(
         self,
-        endpoint: Union[str, QueryRunner],
-        auth: Tuple[str, str],
-        aura_db_connection_info: AuraDbConnectionInfo,
+        gds_session_connection_info: DbmsConnectionInfo,
+        aura_db_connection_info: DbmsConnectionInfo,
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
     ):
-        if isinstance(endpoint, str):
+        if isinstance(gds_session_connection_info.uri, str):
             gds_query_runner = ArrowQueryRunner.create(
-                Neo4jQueryRunner.create(endpoint, auth, aura_ds=True),
-                auth,
+                Neo4jQueryRunner.create(
+                    gds_session_connection_info.uri, gds_session_connection_info.auth(), aura_ds=True
+                ),
+                gds_session_connection_info.auth(),
                 True,
                 arrow_disable_server_verification,
                 arrow_tls_root_certs,
@@ -51,7 +52,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
 
             self._driver_config = gds_query_runner.driver_config()
             driver = GraphDatabase.driver(
-                aura_db_connection_info.uri, auth=aura_db_connection_info.auth, **self._driver_config
+                aura_db_connection_info.uri, auth=aura_db_connection_info.auth(), **self._driver_config
             )
             self._db_query_runner: QueryRunner = Neo4jQueryRunner(
                 driver, auto_close=True, bookmarks=bookmarks, server_version=self._server_version
@@ -67,8 +68,8 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
                 gds_query_runner, self._db_query_runner, driver.encrypted, aura_db_connection_info
             )
         else:
-            self._query_runner = endpoint
-            self._db_query_runner = endpoint
+            self._query_runner = gds_session_connection_info.uri
+            self._db_query_runner = gds_session_connection_info.uri
             self._server_version = self._query_runner.server_version()
 
         super().__init__(self._query_runner, "gds", self._server_version)

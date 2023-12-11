@@ -6,10 +6,8 @@ from pandas import DataFrame
 from graphdatascience import QueryRunner
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.graph_data_science import GraphDataScience
-from graphdatascience.query_runner.aura_db_arrow_query_runner import (
-    AuraDbConnectionInfo,
-)
 from graphdatascience.query_runner.cypher_graph_constructor import (
     CypherGraphConstructor,
 )
@@ -115,9 +113,9 @@ def gds(runner: CollectingQueryRunner) -> Generator[GraphDataScience, None, None
 
 @pytest.fixture
 def aura_gds(runner: CollectingQueryRunner) -> Generator[AuraGraphDataScience, None, None]:
-    aura_gds = AuraGraphDataScience(
-        endpoint=runner, auth=("some", "auth"), aura_db_connection_info=AuraDbConnectionInfo("uri", ("some", "auth"))
-    )
+    db_connection = DbmsConnectionInfo("", "some", "auth")
+    db_connection.uri = runner  # type: ignore
+    aura_gds = AuraGraphDataScience(db_connection, aura_db_connection_info=DbmsConnectionInfo("uri", "some", "auth"))
     yield aura_gds
 
     aura_gds.close()

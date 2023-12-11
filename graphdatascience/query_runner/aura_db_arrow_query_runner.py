@@ -1,18 +1,14 @@
-from typing import Any, Dict, List, NamedTuple, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from pandas import DataFrame, Series
 from pyarrow import flight
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 
 from ..call_parameters import CallParameters
+from ..gds_session.dbms_connection_info import DbmsConnectionInfo
 from .query_runner import QueryRunner
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.server_version.server_version import ServerVersion
-
-
-class AuraDbConnectionInfo(NamedTuple):
-    uri: str
-    auth: Tuple[str, str]
 
 
 class AuraDbArrowQueryRunner(QueryRunner):
@@ -23,20 +19,18 @@ class AuraDbArrowQueryRunner(QueryRunner):
         gds_query_runner: QueryRunner,
         db_query_runner: QueryRunner,
         encrypted: bool,
-        aura_db_connection_info: AuraDbConnectionInfo,
+        aura_db_connection_info: DbmsConnectionInfo,
     ):
         self._gds_query_runner = gds_query_runner
         self._db_query_runner = db_query_runner
-
-        aura_db_endpoint, auth = aura_db_connection_info
-        self._auth = auth
+        self._auth = aura_db_connection_info.auth()
 
         arrow_info: "Series[Any]" = db_query_runner.call_procedure(
             endpoint="internal.arrow.status", custom_error=False
         ).squeeze()
 
         if not arrow_info.get("running"):
-            raise RuntimeError(f"The Arrow Server is not running at `{aura_db_endpoint}`")
+            raise RuntimeError(f"The Arrow Server is not running at `{aura_db_connection_info.uri}`")
         listen_address: Optional[str] = arrow_info.get("advertisedListenAddress")  # type: ignore
         if not listen_address:
             raise ConnectionError("Did not retrieve connection info from database")

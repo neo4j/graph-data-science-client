@@ -7,9 +7,7 @@ from neo4j import GraphDatabase
 
 from graphdatascience.gds_session.aura_api import AuraApi, InstanceDetails
 from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
-from graphdatascience.query_runner.aura_db_arrow_query_runner import (
-    AuraDbConnectionInfo,
-)
+from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
 
 
 @dataclass
@@ -19,28 +17,29 @@ class SessionInfo:
 
 class AuraSessions:
     GDS_SESSION_NAME_PREFIX = "gds-session-"
+    # Hardcoded neo4j user as sessions are always created with this user
+    GDS_SESSION_USER = "neo4j"
 
     def __init__(
         self,
-        db_credentials: AuraDbConnectionInfo,
         aura_api_client_auth: Tuple[str, str],
         tenant_id: Optional[str] = None,
     ) -> None:
-        self._db_credentials = db_credentials
         self._aura_api = AuraApi(
             tenant_id=tenant_id, client_id=aura_api_client_auth[0], client_secret=aura_api_client_auth[1]
         )
 
-    def get_or_create(self, session_name: str, memory: str = "8GB") -> AuraGraphDataScience:
-        session_password = self._db_credentials.auth[1]
+    def get_or_create(
+        self, session_name: str, db_connection: DbmsConnectionInfo, memory: str = "8GB"
+    ) -> AuraGraphDataScience:
         if session_name in [session.name for session in self.list_sessions()]:
             # session exists, connect to it
-            return self._connect(session_name, session_password)
+            return self._connect(session_name, db_connection)
 
-        db_instance_id = AuraApi.extract_id(self._db_credentials.uri)
+        db_instance_id = AuraApi.extract_id(db_connection.uri)
         db_instance = self._aura_api.list_instance(db_instance_id)
         if not db_instance:
-            raise ValueError(f"Could not find Aura instance with the uri `{self._db_credentials.uri}`")
+            raise ValueError(f"Could not find Aura instance with the uri `{db_connection.uri}`")
 
         available_memory_configurations = self._aura_api.list_available_memory_configurations()
         if memory not in available_memory_configurations:
@@ -62,10 +61,10 @@ class AuraSessions:
         gds_url = create_details.connection_url
 
         self._change_initial_pw(
-            gds_url=gds_url, gds_user=gds_user, initial_pw=create_details.password, new_pw=session_password
+            gds_url=gds_url, gds_user=gds_user, initial_pw=create_details.password, new_pw=db_connection.password
         )
 
-        return self._construct_client(gds_url=gds_url, gds_user=gds_user, gds_pw=session_password)
+        return self._construct_client(gds_url=gds_url, db_connection=db_connection)
 
     def delete_gds(self, session_name: str) -> bool:
         """
@@ -98,7 +97,7 @@ class AuraSessions:
             if instance.name.startswith(AuraSessions.GDS_SESSION_NAME_PREFIX)
         ]
 
-    def _connect(self, session_name: str, session_password: str) -> AuraGraphDataScience:
+    def _connect(self, session_name: str, db_connection: DbmsConnectionInfo) -> AuraGraphDataScience:
         instance_name = AuraSessions._instance_name(session_name)
         matched_instances = [instance for instance in self._aura_api.list_instances() if instance.name == instance_name]
 
@@ -114,8 +113,7 @@ class AuraSessions:
                 f"Unable to get connection information for session `{session_name}`. Does it still exist?"
             )
 
-        # Hardcoded neo4j user as sessions are always created with this user
-        return self._construct_client(gds_url=gds_url, gds_user="neo4j", gds_pw=session_password)
+        return self._construct_client(gds_url=gds_url, db_connection=db_connection)
 
     def _change_initial_pw(self, gds_url: str, gds_user: str, initial_pw: str, new_pw: str) -> None:
         with GraphDatabase.driver(gds_url, auth=(gds_user, initial_pw)) as driver:
@@ -125,9 +123,12 @@ class AuraSessions:
                 database_="system",
             )
 
-    def _construct_client(self, gds_url: str, gds_user: str, gds_pw: str) -> AuraGraphDataScience:
+    def _construct_client(self, gds_url: str, db_connection: DbmsConnectionInfo) -> AuraGraphDataScience:
         return AuraGraphDataScience(
-            endpoint=gds_url, auth=(gds_user, gds_pw), aura_db_connection_info=self._db_credentials
+            gds_session_connection_info=DbmsConnectionInfo(
+                gds_url, AuraSessions.GDS_SESSION_USER, db_connection.password
+            ),
+            aura_db_connection_info=db_connection,
         )
 
     @classmethod
