@@ -5,8 +5,8 @@ from typing import List, Optional, Tuple
 
 from neo4j import GraphDatabase
 
-from graphdatascience.aura_api import AuraApi, InstanceDetails
-from graphdatascience.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.gds_session.aura_api.aura_api import AuraApi, InstanceDetails
+from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbConnectionInfo,
 )
@@ -15,6 +15,7 @@ from graphdatascience.query_runner.aura_db_arrow_query_runner import (
 @dataclass
 class SessionInfo:
     name: str
+    # size: str
 
 
 class AuraSessions:

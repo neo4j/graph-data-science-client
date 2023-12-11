@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
 
 GRAPH_NAME = "g"

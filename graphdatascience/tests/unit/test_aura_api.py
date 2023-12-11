@@ -5,7 +5,7 @@ from _pytest.logging import LogCaptureFixture
 from requests import HTTPError
 from requests_mock import Mocker
 
-from graphdatascience.aura_api import (
+from graphdatascience.gds_session.aura_api.aura_api import (
     AuraApi,
     InstanceCreateDetails,
     InstanceSpecificDetails,

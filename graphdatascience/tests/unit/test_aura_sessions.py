@@ -7,13 +7,13 @@ import pytest
 from pytest_mock import MockerFixture
 from requests_mock import Mocker
 
-from graphdatascience.aura_api import (
+from graphdatascience.gds_session.aura_api.aura_api import (
     AuraApi,
     InstanceCreateDetails,
     InstanceDetails,
     InstanceSpecificDetails,
 )
-from graphdatascience.aura_sessions import AuraSessions, SessionInfo
+from graphdatascience.gds_session.aura_sessions import AuraSessions, SessionInfo
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbConnectionInfo,
 )
@@ -117,8 +117,8 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     def assert_db_credentials(*args: List[Any], **kwargs: Dict[str, Any]) -> None:
         assert kwargs == {"gds_url": "fake-url", "gds_user": "neo4j", "initial_pw": "fake-pw", "new_pw": "my-password"}
 
-    mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: kwargs)
-    mocker.patch("graphdatascience.aura_sessions.AuraSessions._change_initial_pw", assert_db_credentials)
+    mocker.patch("graphdatascience.gds_session.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: kwargs)
+    mocker.patch("graphdatascience.gds_session.aura_sessions.AuraSessions._change_initial_pw", assert_db_credentials)
 
     gds_credentials = sessions.create_gds("my-session", "my-password", "16GB")
 
@@ -138,8 +138,8 @@ def test_create_default_session(mocker: MockerFixture, aura_api: AuraApi) -> Non
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
     sessions._aura_api = aura_api
 
-    mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: kwargs)
-    mocker.patch("graphdatascience.aura_sessions.AuraSessions._change_initial_pw", lambda *args, **kwargs: kwargs)
+    mocker.patch("graphdatascience.gds_session.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: kwargs)
+    mocker.patch("graphdatascience.gds_session.aura_sessions.AuraSessions._change_initial_pw", lambda *args, **kwargs: kwargs)
 
     sessions.create_gds("my-session", "my-password")
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
@@ -155,8 +155,8 @@ def test_invalid_memory_configuration(mocker: MockerFixture, aura_api: AuraApi) 
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
     sessions._aura_api = aura_api
 
-    mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: kwargs)
-    mocker.patch("graphdatascience.aura_sessions.AuraSessions._change_initial_pw", lambda *args, **kwargs: kwargs)
+    mocker.patch("graphdatascience.gds_session.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: kwargs)
+    mocker.patch("graphdatascience.gds_session.aura_sessions.AuraSessions._change_initial_pw", lambda *args, **kwargs: kwargs)
 
     with pytest.raises(ValueError) as ctx:
         sessions.create_gds("my-session", "my-password", "42GB")
@@ -173,8 +173,8 @@ def test_create_duplicate_session(mocker: MockerFixture, aura_api: AuraApi) -> N
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
     sessions._aura_api = aura_api
 
-    mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: None)
-    mocker.patch("graphdatascience.aura_sessions.AuraSessions._change_initial_pw", lambda *args, **kwargs: None)
+    mocker.patch("graphdatascience.gds_session.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: None)
+    mocker.patch("graphdatascience.gds_session.aura_sessions.AuraSessions._change_initial_pw", lambda *args, **kwargs: None)
 
     sessions.create_gds("my-session", "my-password")
 
@@ -191,8 +191,8 @@ def test_connect_to_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     sessions = AuraSessions(db_credentials, aura_api_client_auth=("", ""), tenant_id="placeholder")
     sessions._aura_api = aura_api
 
-    mocker.patch("graphdatascience.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: kwargs)
-    mocker.patch("graphdatascience.aura_sessions.AuraSessions._change_initial_pw", lambda *args, **kwargs: None)
+    mocker.patch("graphdatascience.gds_session.aura_sessions.AuraSessions._construct_client", lambda *args, **kwargs: kwargs)
+    mocker.patch("graphdatascience.gds_session.aura_sessions.AuraSessions._change_initial_pw", lambda *args, **kwargs: None)
 
     sessions.create_gds("my-session", "my-password")
     gds_args = sessions.connect("my-session", "my-password")

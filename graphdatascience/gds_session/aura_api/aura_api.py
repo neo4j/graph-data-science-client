@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 import requests as req
 from requests import HTTPError
 
-from .version import __version__
+from graphdatascience.version import __version__
 
 
 @dataclass(repr=True)

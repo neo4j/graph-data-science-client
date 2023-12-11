@@ -3,9 +3,9 @@
 from dataclasses import dataclass
 from typing import Optional, Tuple, Union
 
-from graphdatascience.aura_api import AuraApi
-from graphdatascience.aura_graph_data_science import AuraGraphDataScience
-from graphdatascience.aura_sessions import AuraSessions, SessionInfo
+from graphdatascience.gds_session.aura_api.aura_api import AuraApi
+from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.gds_session.aura_sessions import AuraSessions, SessionInfo
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbConnectionInfo,
 )

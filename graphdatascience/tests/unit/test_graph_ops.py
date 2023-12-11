@@ -2,7 +2,7 @@ import pytest
 from pandas import DataFrame
 
 from .conftest import CollectingQueryRunner
-from graphdatascience.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
 
