@@ -31,13 +31,11 @@ class AuraSessions:
             tenant_id=tenant_id, client_id=aura_api_client_auth[0], client_secret=aura_api_client_auth[1]
         )
 
-    def get_or_create(self, session_name: str, session_password: str, memory: str = "8GB") -> AuraGraphDataScience:
+    def get_or_create(self, session_name: str, memory: str = "8GB") -> AuraGraphDataScience:
+        session_password = self._db_credentials.auth[1]
         if session_name in [session.name for session in self.list_sessions()]:
             # session exists, connect to it
             return self._connect(session_name, session_password)
-
-        if len(session_password) < 8:
-            raise ValueError("Password must be at least 8 characters long.")
 
         db_instance_id = AuraApi.extract_id(self._db_credentials.uri)
         db_instance = self._aura_api.list_instance(db_instance_id)
