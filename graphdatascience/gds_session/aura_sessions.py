@@ -5,8 +5,8 @@ from typing import List, Optional, Tuple
 
 from neo4j import GraphDatabase
 
-from graphdatascience.aura_api import AuraApi, InstanceDetails
-from graphdatascience.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.gds_session.aura_api import AuraApi, InstanceDetails
+from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbConnectionInfo,
 )
@@ -31,12 +31,13 @@ class AuraSessions:
             tenant_id=tenant_id, client_id=aura_api_client_auth[0], client_secret=aura_api_client_auth[1]
         )
 
-    def create_gds(self, session_name: str, session_password: str, memory: str = "8GB") -> AuraGraphDataScience:
+    def get_or_create(self, session_name: str, session_password: str, memory: str = "8GB") -> AuraGraphDataScience:
+        if session_name in [session.name for session in self.list_sessions()]:
+            # session exists, connect to it
+            return self._connect(session_name, session_password)
+
         if len(session_password) < 8:
             raise ValueError("Password must be at least 8 characters long.")
-
-        if session_name in [session.name for session in self.list_sessions()]:
-            raise RuntimeError(f"Session with name `{session_name}` already exists.")
 
         db_instance_id = AuraApi.extract_id(self._db_credentials.uri)
         db_instance = self._aura_api.list_instance(db_instance_id)
@@ -68,25 +69,6 @@ class AuraSessions:
 
         return self._construct_client(gds_url=gds_url, gds_user=gds_user, gds_pw=session_password)
 
-    def connect(self, session_name: str, session_password: str) -> AuraGraphDataScience:
-        instance_name = AuraSessions._instance_name(session_name)
-        matched_instances = [instance for instance in self._aura_api.list_instances() if instance.name == instance_name]
-
-        if len(matched_instances) != 1:
-            self._fail_ambiguous_session(session_name, matched_instances)
-
-        instance_details = self._aura_api.list_instance(matched_instances[0].id)
-
-        if instance_details:
-            gds_url = instance_details.connection_url
-        else:
-            raise RuntimeError(
-                f"Unable to get connection information for session `{session_name}`. Does it still exist?"
-            )
-
-        # Hardcoded neo4j user as sessions are always created with this user
-        return self._construct_client(gds_url=gds_url, gds_user="neo4j", gds_pw=session_password)
-
     def delete_gds(self, session_name: str) -> bool:
         """
         Delete a GDS session.
@@ -117,6 +99,25 @@ class AuraSessions:
             for instance in all_instances
             if instance.name.startswith(AuraSessions.GDS_SESSION_NAME_PREFIX)
         ]
+
+    def _connect(self, session_name: str, session_password: str) -> AuraGraphDataScience:
+        instance_name = AuraSessions._instance_name(session_name)
+        matched_instances = [instance for instance in self._aura_api.list_instances() if instance.name == instance_name]
+
+        if len(matched_instances) != 1:
+            self._fail_ambiguous_session(session_name, matched_instances)
+
+        instance_details = self._aura_api.list_instance(matched_instances[0].id)
+
+        if instance_details:
+            gds_url = instance_details.connection_url
+        else:
+            raise RuntimeError(
+                f"Unable to get connection information for session `{session_name}`. Does it still exist?"
+            )
+
+        # Hardcoded neo4j user as sessions are always created with this user
+        return self._construct_client(gds_url=gds_url, gds_user="neo4j", gds_pw=session_password)
 
     def _change_initial_pw(self, gds_url: str, gds_user: str, initial_pw: str, new_pw: str) -> None:
         with GraphDatabase.driver(gds_url, auth=(gds_user, initial_pw)) as driver:

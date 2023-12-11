@@ -4,8 +4,8 @@ import pytest
 from pandas import DataFrame
 
 from graphdatascience import QueryRunner
-from graphdatascience.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.call_parameters import CallParameters
+from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbConnectionInfo,

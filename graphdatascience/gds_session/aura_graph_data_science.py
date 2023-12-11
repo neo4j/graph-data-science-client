@@ -3,8 +3,6 @@ from typing import Any, Dict, Optional, Tuple, Union
 from neo4j import GraphDatabase
 from pandas import DataFrame
 
-from .query_runner.neo4j_query_runner import Neo4jQueryRunner
-from .server_version.server_version import ServerVersion
 from graphdatascience.call_builder import IndirectCallBuilder
 from graphdatascience.endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
@@ -14,7 +12,9 @@ from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbArrowQueryRunner,
     AuraDbConnectionInfo,
 )
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
