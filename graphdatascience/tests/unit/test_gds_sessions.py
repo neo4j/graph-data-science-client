@@ -13,7 +13,7 @@ from graphdatascience.gds_session.aura_api import (
     InstanceDetails,
     InstanceSpecificDetails,
 )
-from graphdatascience.gds_session.gds_sessions import GdsSessions, SessionInfo
+from graphdatascience.gds_session.gds_sessions import GdsSessions, SessionInfo, AuraAPICredentials
 from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.gds_session.session_sizes import SessionSizeByMemory, SessionSizes
 
@@ -86,7 +86,7 @@ def aura_api() -> AuraApi:
 
 
 def test_list_session(requests_mock: Mocker) -> None:
-    sessions = GdsSessions(aura_api_client_auth=("", ""), tenant_id="placeholder")
+    sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
 
     db_instance = InstanceDetails(id="id", name="Instance01", tenant_id="tenant_id", cloud_provider="cloud_provider")
     gds_instance = InstanceDetails(
@@ -110,7 +110,7 @@ def test_create_session(
 ) -> None:
     _setup_db_instance(aura_api)
 
-    sessions = GdsSessions(aura_api_client_auth=("", ""), tenant_id="placeholder")
+    sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
     sessions._aura_api = aura_api
 
     def assert_db_credentials(*args: List[Any], **kwargs: Dict[str, Any]) -> None:
@@ -136,7 +136,7 @@ def test_create_session(
 def test_create_default_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
 
-    sessions = GdsSessions(aura_api_client_auth=("", ""), tenant_id="placeholder")
+    sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
     sessions._aura_api = aura_api
 
     mocker.patch(
@@ -157,7 +157,7 @@ def test_create_default_session(mocker: MockerFixture, aura_api: AuraApi) -> Non
 def test_invalid_memory_configuration(mocker: MockerFixture, aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
 
-    sessions = GdsSessions(aura_api_client_auth=("", ""), tenant_id="placeholder")
+    sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
     sessions._aura_api = aura_api
 
     mocker.patch(
@@ -179,7 +179,7 @@ def test_invalid_memory_configuration(mocker: MockerFixture, aura_api: AuraApi) 
 def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
 
-    sessions = GdsSessions(aura_api_client_auth=("", ""), tenant_id="placeholder")
+    sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
     sessions._aura_api = aura_api
 
     mocker.patch(
@@ -200,7 +200,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
 
 
 def test_get_or_create_duplicate_session() -> None:
-    sessions = GdsSessions(aura_api_client_auth=("", ""), tenant_id="foo")
+    sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
     sessions._aura_api = FakeAuraApi(
         existing_instances=[
             InstanceSpecificDetails(
@@ -233,7 +233,7 @@ def test_get_or_create_duplicate_session() -> None:
 
 
 def test_delete_session() -> None:
-    sessions = GdsSessions(aura_api_client_auth=("", ""), tenant_id="placeholder")
+    sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
 
     existing_instances = [
         InstanceSpecificDetails(
@@ -267,7 +267,7 @@ def test_delete_session() -> None:
 
 
 def test_delete_nonexisting_session() -> None:
-    sessions = GdsSessions(aura_api_client_auth=("", ""), tenant_id="placeholder")
+    sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
 
     existing_instances = [
         InstanceSpecificDetails(
@@ -290,7 +290,7 @@ def test_delete_nonexisting_session() -> None:
 
 
 def test_delete_nonunique_session() -> None:
-    sessions = GdsSessions(aura_api_client_auth=("", ""), tenant_id="placeholder")
+    sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
 
     existing_instances = [
         InstanceSpecificDetails(
@@ -334,10 +334,7 @@ def test_delete_nonunique_session() -> None:
 def test_create_immediate_delete(aura_api: AuraApi) -> None:
     aura_api = FakeAuraApi(status_after_creating="deleting")
     _setup_db_instance(aura_api)
-    sessions = GdsSessions(
-        aura_api_client_auth=("", ""),
-        tenant_id="foo",
-    )
+    sessions = GdsSessions(AuraAPICredentials("", "", "foo"))
     sessions._aura_api = aura_api
 
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is being deleted"):
@@ -347,10 +344,7 @@ def test_create_immediate_delete(aura_api: AuraApi) -> None:
 def test_create_waiting_forever() -> None:
     aura_api = FakeAuraApi(status_after_creating="updating")
     _setup_db_instance(aura_api)
-    sessions = GdsSessions(
-        aura_api_client_auth=("", ""),
-        tenant_id="foo",
-    )
+    sessions = GdsSessions(AuraAPICredentials("", "", "foo"))
     sessions._aura_api = aura_api
 
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is not running after waiting"):

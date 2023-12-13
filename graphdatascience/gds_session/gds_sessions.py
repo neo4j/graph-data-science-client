@@ -16,18 +16,21 @@ class SessionInfo:
     name: str
 
 
+@dataclass
+class AuraAPICredentials:
+    client_id: str
+    client_secret: str
+    tenant: Optional[str] = None
+
+
 class GdsSessions:
     GDS_SESSION_NAME_PREFIX = "gds-session-"
     # Hardcoded neo4j user as sessions are always created with this user
     GDS_SESSION_USER = "neo4j"
 
-    def __init__(
-        self,
-        aura_api_client_auth: Tuple[str, str],
-        tenant_id: Optional[str] = None,
-    ) -> None:
+    def __init__(self, ds_connection: AuraAPICredentials) -> None:
         self._aura_api = AuraApi(
-            tenant_id=tenant_id, client_id=aura_api_client_auth[0], client_secret=aura_api_client_auth[1]
+            tenant_id=ds_connection.tenant, client_id=ds_connection.client_id, client_secret=ds_connection.client_secret
         )
 
     def get_or_create(
