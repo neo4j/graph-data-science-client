@@ -118,6 +118,9 @@ class AuraSessions:
             if instance.name.startswith(AuraSessions.GDS_SESSION_NAME_PREFIX)
         ]
 
+    def estimate(self) -> None:
+        self._aura_api.estimation()
+
     def _change_initial_pw(self, gds_url: str, gds_user: str, initial_pw: str, new_pw: str) -> None:
         with GraphDatabase.driver(gds_url, auth=(gds_user, initial_pw)) as driver:
             driver.execute_query(
