@@ -101,7 +101,7 @@ def test_list_session(requests_mock: Mocker) -> None:
         "https://api.neo4j.io/v1/instances", json={"data": [asdict(i) for i in [db_instance, gds_instance]]}
     )
 
-    assert sessions.list_sessions() == [SessionInfo("my-session-name")]
+    assert sessions.list() == [SessionInfo("my-session-name")]
 
 
 @pytest.mark.parametrize("instance_size", ["512GB", SessionSizes.by_memory().XXXXXL])
@@ -125,7 +125,7 @@ def test_create_session(
     gds_credentials = sessions.get_or_create("my-session", db_credentials, instance_size)
 
     assert gds_credentials == {"gds_url": "fake-url", "db_connection": db_credentials}
-    assert sessions.list_sessions() == [SessionInfo("my-session")]
+    assert sessions.list() == [SessionInfo("my-session")]
 
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
     assert instance_details.cloud_provider == "aws"
@@ -196,7 +196,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     assert gds_args1 == {"gds_url": "fake-url", "db_connection": db_credentials}
     assert gds_args1 == gds_args2
 
-    assert sessions.list_sessions() == [SessionInfo("my-session")]
+    assert sessions.list() == [SessionInfo("my-session")]
 
 
 def test_get_or_create_duplicate_session() -> None:
@@ -262,8 +262,8 @@ def test_delete_session() -> None:
 
     sessions._aura_api = FakeAuraApi(existing_instances=existing_instances)
 
-    assert sessions.delete_gds("one")
-    assert sessions.list_sessions() == [SessionInfo("other")]
+    assert sessions.delete("one")
+    assert sessions.list() == [SessionInfo("other")]
 
 
 def test_delete_nonexisting_session() -> None:
@@ -285,8 +285,8 @@ def test_delete_nonexisting_session() -> None:
 
     sessions._aura_api = FakeAuraApi(existing_instances=existing_instances)
 
-    assert sessions.delete_gds("other") is False
-    assert sessions.list_sessions() == [SessionInfo("one")]
+    assert sessions.delete("other") is False
+    assert sessions.list() == [SessionInfo("one")]
 
 
 def test_delete_nonunique_session() -> None:
@@ -326,9 +326,9 @@ def test_delete_nonunique_session() -> None:
             " but found `[('id42', 'one'), ('id43', 'one')]`."
         ),
     ):
-        sessions.delete_gds("one")
+        sessions.delete("one")
 
-    assert sessions.list_sessions() == [SessionInfo("one"), SessionInfo("one")]
+    assert sessions.list() == [SessionInfo("one"), SessionInfo("one")]
 
 
 def test_create_immediate_delete(aura_api: AuraApi) -> None:

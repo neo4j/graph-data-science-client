@@ -36,7 +36,7 @@ class GdsSessions:
     def get_or_create(
         self, session_name: str, db_connection: DbmsConnectionInfo, memory: Union[str, SessionSizeByMemory] = "8GB"
     ) -> AuraGraphDataScience:
-        if session_name in [session.name for session in self.list_sessions()]:
+        if session_name in [session.name for session in self.list()]:
             # session exists, connect to it
             return self._connect(session_name, db_connection)
 
@@ -74,7 +74,7 @@ class GdsSessions:
 
         return self._construct_client(gds_url=gds_url, db_connection=db_connection)
 
-    def delete_gds(self, session_name: str) -> bool:
+    def delete(self, session_name: str) -> bool:
         """
         Delete a GDS session.
         Args:
@@ -96,7 +96,7 @@ class GdsSessions:
 
         return False
 
-    def list_sessions(self) -> List[SessionInfo]:
+    def list(self) -> List[SessionInfo]:
         all_instances = self._aura_api.list_instances()
 
         return [
