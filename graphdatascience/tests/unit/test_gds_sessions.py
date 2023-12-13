@@ -13,8 +13,12 @@ from graphdatascience.gds_session.aura_api import (
     InstanceDetails,
     InstanceSpecificDetails,
 )
-from graphdatascience.gds_session.gds_sessions import GdsSessions, SessionInfo, AuraAPICredentials
 from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.gds_session.gds_sessions import (
+    AuraAPICredentials,
+    GdsSessions,
+    SessionInfo,
+)
 from graphdatascience.gds_session.session_sizes import SessionSizeByMemory, SessionSizes
 
 
@@ -92,6 +96,17 @@ def test_list_session(requests_mock: Mocker) -> None:
     gds_instance = InstanceDetails(
         id="id", name="gds-session-my-session-name", tenant_id="tenant_id", cloud_provider="cloud_provider"
     )
+    gds_instance_specific_details = InstanceSpecificDetails(
+        id="id",
+        name="gds-session-my-session-name",
+        tenant_id="tenant_id",
+        cloud_provider="gcp",
+        status="RUNNING",
+        connection_url="",
+        memory="16 GiB",
+        type="gds",
+        region="",
+    )
 
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
@@ -100,8 +115,9 @@ def test_list_session(requests_mock: Mocker) -> None:
     requests_mock.get(
         "https://api.neo4j.io/v1/instances", json={"data": [asdict(i) for i in [db_instance, gds_instance]]}
     )
+    requests_mock.get("https://api.neo4j.io/v1/instances/id", json={"data": asdict(gds_instance_specific_details)})
 
-    assert sessions.list() == [SessionInfo("my-session-name")]
+    assert sessions.list() == [SessionInfo("my-session-name", "16 GiB", "gds")]
 
 
 @pytest.mark.parametrize("instance_size", ["512GB", SessionSizes.by_memory().XXXXXL])
@@ -125,7 +141,7 @@ def test_create_session(
     gds_credentials = sessions.get_or_create("my-session", db_credentials, instance_size)
 
     assert gds_credentials == {"gds_url": "fake-url", "db_connection": db_credentials}
-    assert sessions.list() == [SessionInfo("my-session")]
+    assert sessions.list() == [SessionInfo("my-session", "512GB", "")]
 
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
     assert instance_details.cloud_provider == "aws"
@@ -196,7 +212,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     assert gds_args1 == {"gds_url": "fake-url", "db_connection": db_credentials}
     assert gds_args1 == gds_args2
 
-    assert sessions.list() == [SessionInfo("my-session")]
+    assert sessions.list() == [SessionInfo("my-session", "8GB", "")]
 
 
 def test_get_or_create_duplicate_session() -> None:
@@ -263,7 +279,7 @@ def test_delete_session() -> None:
     sessions._aura_api = FakeAuraApi(existing_instances=existing_instances)
 
     assert sessions.delete("one")
-    assert sessions.list() == [SessionInfo("other")]
+    assert sessions.list() == [SessionInfo("other", "", "")]
 
 
 def test_delete_nonexisting_session() -> None:
@@ -286,7 +302,7 @@ def test_delete_nonexisting_session() -> None:
     sessions._aura_api = FakeAuraApi(existing_instances=existing_instances)
 
     assert sessions.delete("other") is False
-    assert sessions.list() == [SessionInfo("one")]
+    assert sessions.list() == [SessionInfo("one", "", "")]
 
 
 def test_delete_nonunique_session() -> None:
@@ -328,7 +344,7 @@ def test_delete_nonunique_session() -> None:
     ):
         sessions.delete("one")
 
-    assert sessions.list() == [SessionInfo("one"), SessionInfo("one")]
+    assert sessions.list() == [SessionInfo("one", "", ""), SessionInfo("one", "", "")]
 
 
 def test_create_immediate_delete(aura_api: AuraApi) -> None:

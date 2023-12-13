@@ -5,7 +5,11 @@ from typing import List, Optional, Tuple, Union
 
 from neo4j import GraphDatabase
 
-from graphdatascience.gds_session.aura_api import AuraApi, InstanceDetails
+from graphdatascience.gds_session.aura_api import (
+    AuraApi,
+    InstanceDetails,
+    InstanceSpecificDetails,
+)
 from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.gds_session.session_sizes import SessionSizeByMemory
@@ -14,6 +18,14 @@ from graphdatascience.gds_session.session_sizes import SessionSizeByMemory
 @dataclass
 class SessionInfo:
     name: str
+    size: str
+    type: str
+
+    @classmethod
+    def from_specific_instance_details(cls, instance_details: InstanceSpecificDetails) -> SessionInfo:
+        return SessionInfo(
+            GdsSessions.session_name(instance_details.name), instance_details.memory, instance_details.type
+        )
 
 
 @dataclass
@@ -98,12 +110,13 @@ class GdsSessions:
 
     def list(self) -> List[SessionInfo]:
         all_instances = self._aura_api.list_instances()
-
-        return [
-            SessionInfo(GdsSessions._session_name(instance))
+        instance_details = [
+            self._aura_api.list_instance(instance_id=instance.id)
             for instance in all_instances
             if instance.name.startswith(GdsSessions.GDS_SESSION_NAME_PREFIX)
         ]
+
+        return [SessionInfo.from_specific_instance_details(instance_detail) for instance_detail in instance_details]
 
     def _connect(self, session_name: str, db_connection: DbmsConnectionInfo) -> AuraGraphDataScience:
         instance_name = GdsSessions._instance_name(session_name)
@@ -140,8 +153,13 @@ class GdsSessions:
         )
 
     @classmethod
+    def session_name(cls, instance_name: str) -> str:
+        # str.removeprefix is only available in Python 3.9+
+        return instance_name[len(cls.GDS_SESSION_NAME_PREFIX) :]  # noqa: E203 (black vs flake8 conflict)
+
+    @classmethod
     def _fail_ambiguous_session(cls, session_name: str, instances: List[InstanceDetails]) -> None:
-        candidates = [(i.id, cls._session_name(i)) for i in instances]
+        candidates = [(i.id, cls.session_name(i.name)) for i in instances]
         raise RuntimeError(
             f"Expected to find exactly one GDS session with name `{session_name}`, but found `{candidates}`."
         )
@@ -149,8 +167,3 @@ class GdsSessions:
     @classmethod
     def _instance_name(cls, session_name: str) -> str:
         return f"{cls.GDS_SESSION_NAME_PREFIX}{session_name}"
-
-    @classmethod
-    def _session_name(cls, instance: InstanceDetails) -> str:
-        # str.removeprefix is only available in Python 3.9+
-        return instance.name[len(cls.GDS_SESSION_NAME_PREFIX) :]  # noqa: E203 (black vs flake8 conflict)
