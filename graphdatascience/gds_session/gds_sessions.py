@@ -16,7 +16,7 @@ class SessionInfo:
     name: str
 
 
-class AuraSessions:
+class GdsSessions:
     GDS_SESSION_NAME_PREFIX = "gds-session-"
     # Hardcoded neo4j user as sessions are always created with this user
     GDS_SESSION_USER = "neo4j"
@@ -56,7 +56,7 @@ class AuraSessions:
             )
 
         create_details = self._aura_api.create_instance(
-            AuraSessions._instance_name(session_name), memory, db_instance.cloud_provider, db_instance.region
+            GdsSessions._instance_name(session_name), memory, db_instance.cloud_provider, db_instance.region
         )
         wait_result = self._aura_api.wait_for_instance_running(create_details.id)
         if wait_result is not None:
@@ -80,7 +80,7 @@ class AuraSessions:
         Returns:
             True iff a session was deleted as a result of this call.
         """
-        instance_name = AuraSessions._instance_name(session_name)
+        instance_name = GdsSessions._instance_name(session_name)
 
         candidate_instances = [i for i in self._aura_api.list_instances() if i.name == instance_name]
 
@@ -97,13 +97,13 @@ class AuraSessions:
         all_instances = self._aura_api.list_instances()
 
         return [
-            SessionInfo(AuraSessions._session_name(instance))
+            SessionInfo(GdsSessions._session_name(instance))
             for instance in all_instances
-            if instance.name.startswith(AuraSessions.GDS_SESSION_NAME_PREFIX)
+            if instance.name.startswith(GdsSessions.GDS_SESSION_NAME_PREFIX)
         ]
 
     def _connect(self, session_name: str, db_connection: DbmsConnectionInfo) -> AuraGraphDataScience:
-        instance_name = AuraSessions._instance_name(session_name)
+        instance_name = GdsSessions._instance_name(session_name)
         matched_instances = [instance for instance in self._aura_api.list_instances() if instance.name == instance_name]
 
         if len(matched_instances) != 1:
@@ -131,7 +131,7 @@ class AuraSessions:
     def _construct_client(self, gds_url: str, db_connection: DbmsConnectionInfo) -> AuraGraphDataScience:
         return AuraGraphDataScience(
             gds_session_connection_info=DbmsConnectionInfo(
-                gds_url, AuraSessions.GDS_SESSION_USER, db_connection.password
+                gds_url, GdsSessions.GDS_SESSION_USER, db_connection.password
             ),
             aura_db_connection_info=db_connection,
         )

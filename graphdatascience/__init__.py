@@ -1,3 +1,4 @@
+from .gds_session.gds_sessions import GdsSessions
 from .graph.graph_create_result import GraphCreateResult
 from .graph.graph_object import Graph
 from .graph_data_science import GraphDataScience
@@ -16,7 +17,7 @@ from .version import __version__
 
 __all__ = [
     "GraphDataScience",
-    "AuraSessions",
+    "GdsSessions",
     "QueryRunner",
     "__version__",
     "ServerVersion",
