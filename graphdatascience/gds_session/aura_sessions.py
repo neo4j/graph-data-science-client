@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from neo4j import GraphDatabase
 
 from graphdatascience.gds_session.aura_api import AuraApi, InstanceDetails
 from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.gds_session.session_sizes import SessionSizeByMemory
 
 
 @dataclass
@@ -30,7 +31,7 @@ class AuraSessions:
         )
 
     def get_or_create(
-        self, session_name: str, db_connection: DbmsConnectionInfo, memory: str = "8GB"
+        self, session_name: str, db_connection: DbmsConnectionInfo, memory: Union[str, SessionSizeByMemory] = "8GB"
     ) -> AuraGraphDataScience:
         if session_name in [session.name for session in self.list_sessions()]:
             # session exists, connect to it
@@ -42,6 +43,10 @@ class AuraSessions:
             raise ValueError(f"Could not find Aura instance with the uri `{db_connection.uri}`")
 
         available_memory_configurations = self._aura_api.list_available_memory_configurations()
+
+        if isinstance(memory, SessionSizeByMemory):
+            memory = str(memory.value)
+
         if memory not in available_memory_configurations:
             raise ValueError(
                 (

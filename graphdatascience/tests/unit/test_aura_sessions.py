@@ -1,7 +1,7 @@
 import dataclasses
 import re
 from dataclasses import asdict
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import pytest
 from pytest_mock import MockerFixture
@@ -15,6 +15,7 @@ from graphdatascience.gds_session.aura_api import (
 )
 from graphdatascience.gds_session.aura_sessions import AuraSessions, SessionInfo
 from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.gds_session.session_sizes import SessionSizeByMemory, SessionSizes
 
 
 class FakeAuraApi(AuraApi):
@@ -76,7 +77,7 @@ class FakeAuraApi(AuraApi):
         return super().wait_for_instance_running(instance_id, sleep_time=0.0001, max_sleep_time=0.001)
 
     def list_available_memory_configurations(self) -> List[str]:
-        return ["4GB", "8GB", "16GB", "32GB"]
+        return ["4GB", "8GB", "16GB", "32GB", "512GB"]
 
 
 @pytest.fixture
@@ -103,7 +104,10 @@ def test_list_session(requests_mock: Mocker) -> None:
     assert sessions.list_sessions() == [SessionInfo("my-session-name")]
 
 
-def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
+@pytest.mark.parametrize("instance_size", ["512GB", SessionSizes.by_memory().XXXXXL])
+def test_create_session(
+    mocker: MockerFixture, aura_api: AuraApi, instance_size: Union[str, SessionSizeByMemory]
+) -> None:
     _setup_db_instance(aura_api)
 
     sessions = AuraSessions(aura_api_client_auth=("", ""), tenant_id="placeholder")
@@ -118,7 +122,7 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     mocker.patch("graphdatascience.gds_session.aura_sessions.AuraSessions._change_initial_pw", assert_db_credentials)
 
     db_credentials = DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw")
-    gds_credentials = sessions.get_or_create("my-session", db_credentials, "16GB")
+    gds_credentials = sessions.get_or_create("my-session", db_credentials, instance_size)
 
     assert gds_credentials == {"gds_url": "fake-url", "db_connection": db_credentials}
     assert sessions.list_sessions() == [SessionInfo("my-session")]
@@ -126,7 +130,7 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
     assert instance_details.cloud_provider == "aws"
     assert instance_details.region == "leipzig-1"
-    assert instance_details.memory == "16GB"
+    assert instance_details.memory == "512GB"
 
 
 def test_create_default_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
