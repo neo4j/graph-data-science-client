@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Callable
+from typing import Any, Callable, Dict, Optional
 
 from neo4j import GraphDatabase
 from pandas import DataFrame
@@ -27,10 +27,10 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         self,
         gds_session_connection_info: DbmsConnectionInfo,
         aura_db_connection_info: DbmsConnectionInfo,
+        delete_fn: Callable[[], bool],
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
-        delete_fn: Callable[[], bool] = None,
     ):
         gds_query_runner = ArrowQueryRunner.create(
             Neo4jQueryRunner.create(gds_session_connection_info.uri, gds_session_connection_info.auth(), aura_ds=True),

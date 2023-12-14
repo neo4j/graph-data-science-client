@@ -147,7 +147,9 @@ class GdsSessions:
                 database_="system",
             )
 
-    def _construct_client(self, session_name: str, gds_url: str, db_connection: DbmsConnectionInfo) -> AuraGraphDataScience:
+    def _construct_client(
+        self, session_name: str, gds_url: str, db_connection: DbmsConnectionInfo
+    ) -> AuraGraphDataScience:
         return AuraGraphDataScience(
             gds_session_connection_info=DbmsConnectionInfo(
                 gds_url, GdsSessions.GDS_SESSION_USER, db_connection.password
