@@ -83,7 +83,7 @@ class GdsSessions:
             gds_url=gds_url, gds_user=gds_user, initial_pw=create_details.password, new_pw=self._db_connection.password
         )
 
-        return self._construct_client(gds_url=gds_url, db_connection=self._db_connection)
+        return self._construct_client(session_name=session_name, gds_url=gds_url, db_connection=self._db_connection)
 
     def delete(self, session_name: str) -> bool:
         """
@@ -137,7 +137,7 @@ class GdsSessions:
                 f"Unable to get connection information for session `{session_name}`. Does it still exist?"
             )
 
-        return self._construct_client(gds_url=gds_url, db_connection=db_connection)
+        return self._construct_client(session_name=session_name, gds_url=gds_url, db_connection=db_connection)
 
     def _change_initial_pw(self, gds_url: str, gds_user: str, initial_pw: str, new_pw: str) -> None:
         with GraphDatabase.driver(gds_url, auth=(gds_user, initial_pw)) as driver:
@@ -147,12 +147,13 @@ class GdsSessions:
                 database_="system",
             )
 
-    def _construct_client(self, gds_url: str, db_connection: DbmsConnectionInfo) -> AuraGraphDataScience:
+    def _construct_client(self, session_name: str, gds_url: str, db_connection: DbmsConnectionInfo) -> AuraGraphDataScience:
         return AuraGraphDataScience(
             gds_session_connection_info=DbmsConnectionInfo(
                 gds_url, GdsSessions.GDS_SESSION_USER, db_connection.password
             ),
             aura_db_connection_info=db_connection,
+            delete_fn=lambda: self.delete(session_name),
         )
 
     @classmethod

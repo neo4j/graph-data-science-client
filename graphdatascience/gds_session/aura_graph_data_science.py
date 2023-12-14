@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Callable
 
 from neo4j import GraphDatabase
 from pandas import DataFrame
@@ -30,6 +30,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
+        delete_fn: Callable[[], bool] = None,
     ):
         gds_query_runner = ArrowQueryRunner.create(
             Neo4jQueryRunner.create(gds_session_connection_info.uri, gds_session_connection_info.auth(), aura_ds=True),
@@ -64,6 +65,8 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         self._query_runner = AuraDbArrowQueryRunner(
             gds_query_runner, self._db_query_runner, driver.encrypted, aura_db_connection_info
         )
+
+        self._delete_fn = delete_fn
 
         super().__init__(self._query_runner, "gds", self._server_version)
 
@@ -162,6 +165,13 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             The configuration as a dictionary.
         """
         return self._driver_config
+
+    def delete(self) -> bool:
+        """
+        Delete a GDS session.
+        """
+        self.close()
+        return self._delete_fn()
 
     def close(self) -> None:
         """

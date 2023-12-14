@@ -150,6 +150,7 @@ def test_create_session(
             uri="neo4j+ssc://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
         ),
         "gds_url": "fake-url",
+        "session_name": "my-session",
     }
     assert sessions.list() == [SessionInfo("my-session", "512GB", "")]
 
@@ -230,6 +231,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
             uri="neo4j+ssc://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
         ),
         "gds_url": "fake-url",
+        "session_name": "my-session",
     }
     assert gds_args1 == gds_args2
 
