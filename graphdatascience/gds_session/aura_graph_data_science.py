@@ -32,9 +32,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         bookmarks: Optional[Any] = None,
     ):
         gds_query_runner = ArrowQueryRunner.create(
-            Neo4jQueryRunner.create(
-                gds_session_connection_info.uri, gds_session_connection_info.auth(), aura_ds=True
-            ),
+            Neo4jQueryRunner.create(gds_session_connection_info.uri, gds_session_connection_info.auth(), aura_ds=True),
             gds_session_connection_info.auth(),
             True,
             arrow_disable_server_verification,
