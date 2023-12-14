@@ -114,8 +114,9 @@ def gds(runner: CollectingQueryRunner) -> Generator[GraphDataScience, None, None
 @pytest.fixture
 def aura_gds(runner: CollectingQueryRunner) -> Generator[AuraGraphDataScience, None, None]:
     db_connection = DbmsConnectionInfo("", "some", "auth")
-    db_connection.uri = runner  # type: ignore
     aura_gds = AuraGraphDataScience(db_connection, aura_db_connection_info=DbmsConnectionInfo("uri", "some", "auth"))
+    aura_gds._query_runner._db_query_runner = runner  # type: ignore
+    aura_gds._db_query_runner = runner  # type: ignore
     yield aura_gds
 
     aura_gds.close()
