@@ -115,7 +115,11 @@ class GdsSessions:
             if instance.name.startswith(GdsSessions.GDS_SESSION_NAME_PREFIX)
         ]
 
-        return [SessionInfo.from_specific_instance_details(instance_detail) for instance_detail in instance_details]
+        return [
+            SessionInfo.from_specific_instance_details(instance_detail)
+            for instance_detail in instance_details
+            if instance_detail
+        ]
 
     def _connect(self, session_name: str, db_connection: DbmsConnectionInfo) -> AuraGraphDataScience:
         instance_name = GdsSessions._instance_name(session_name)
