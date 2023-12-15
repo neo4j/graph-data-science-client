@@ -1,6 +1,5 @@
 from typing import Any, Callable, Dict, Optional
 
-from neo4j import GraphDatabase
 from pandas import DataFrame
 
 from graphdatascience.call_builder import IndirectCallBuilder
@@ -13,7 +12,6 @@ from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbArrowQueryRunner,
 )
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 
 
@@ -48,13 +46,13 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
                     does not support connecting to AuraDB"
             )
 
-        self._driver_config = gds_query_runner.driver_config()
-        driver = GraphDatabase.driver(
-            aura_db_connection_info.uri, auth=aura_db_connection_info.auth(), **self._driver_config
+        self._db_query_runner = Neo4jQueryRunner.create(
+            aura_db_connection_info.uri,
+            aura_db_connection_info.auth(),
+            aura_ds=True,
+            server_version=self._server_version,
         )
-        self._db_query_runner: QueryRunner = Neo4jQueryRunner(
-            driver, auto_close=True, bookmarks=bookmarks, server_version=self._server_version
-        )
+        self._db_query_runner.set_bookmarks(bookmarks)
 
         # we need to explicitly set these as the default value is None
         # which signals the driver to use the default configured database
@@ -63,7 +61,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         self._db_query_runner.set_database("neo4j")
 
         self._query_runner = AuraDbArrowQueryRunner(
-            gds_query_runner, self._db_query_runner, driver.encrypted, aura_db_connection_info
+            gds_query_runner, self._db_query_runner, True, aura_db_connection_info
         )
 
         self._delete_fn = delete_fn
@@ -164,7 +162,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         Returns:
             The configuration as a dictionary.
         """
-        return self._driver_config
+        return self._query_runner.driver_config()
 
     def delete(self) -> bool:
         """

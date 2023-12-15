@@ -12,15 +12,15 @@ import neo4j
 from pandas import DataFrame
 from tqdm.auto import tqdm
 
+from graphdatascience.error.gds_not_installed import GdsNotFound
+from .cypher_graph_constructor import CypherGraphConstructor
+from .graph_constructor import GraphConstructor
+from .query_runner import QueryRunner
 from ..call_parameters import CallParameters
 from ..error.endpoint_suggester import generate_suggestive_error_message
 from ..error.unable_to_connect import UnableToConnectError
 from ..server_version.server_version import ServerVersion
 from ..version import __version__
-from .cypher_graph_constructor import CypherGraphConstructor
-from .graph_constructor import GraphConstructor
-from .query_runner import QueryRunner
-from graphdatascience.error.gds_not_installed import GdsNotFound
 
 
 class Neo4jQueryRunner(QueryRunner):
@@ -30,14 +30,13 @@ class Neo4jQueryRunner(QueryRunner):
 
     @staticmethod
     def create(
-        endpoint: Union[str, neo4j.Driver, QueryRunner],
+        endpoint: Union[str, neo4j.Driver],
         auth: Optional[Tuple[str, str]] = None,
         aura_ds: bool = False,
         database: Optional[str] = None,
         bookmarks: Optional[Any] = None,
-        arrow: bool = True,
-    ) -> QueryRunner:
-        query_runner: QueryRunner
+        server_version: Optional[ServerVersion] = None,
+    ) -> Neo4jQueryRunner:
         if isinstance(endpoint, str):
             config: Dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
 
@@ -46,17 +45,15 @@ class Neo4jQueryRunner(QueryRunner):
 
             driver = neo4j.GraphDatabase.driver(endpoint, auth=auth, **config)
 
-            query_runner = Neo4jQueryRunner(driver, auto_close=True, bookmarks=bookmarks, config=config)
+            query_runner = Neo4jQueryRunner(
+                driver, auto_close=True, bookmarks=bookmarks, config=config, server_version=server_version
+            )
 
-        elif isinstance(endpoint, QueryRunner):
-            if arrow:
-                raise ValueError("Arrow cannot be used if the QueryRunner is provided directly")
-
-            query_runner = endpoint
+        elif isinstance(endpoint, neo4j.Driver):
+            query_runner = Neo4jQueryRunner(endpoint, auto_close=False, bookmarks=bookmarks)
 
         else:
-            driver = endpoint
-            query_runner = Neo4jQueryRunner(driver, auto_close=False, bookmarks=bookmarks)
+            raise ValueError(f"Invalid endpoint type: {type(endpoint)}")
 
         if database:
             query_runner.set_database(database)

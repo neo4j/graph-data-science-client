@@ -90,6 +90,7 @@ def test_project_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) 
     }
 
 
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 6, 0)])
 def test_project_remote(runner: CollectingQueryRunner, aura_gds: AuraGraphDataScience) -> None:
     aura_gds.graph.project("g", "RETURN gds.graph.project.remote(0, 1, null)")
 
@@ -103,7 +104,7 @@ def test_project_remote(runner: CollectingQueryRunner, aura_gds: AuraGraphDataSc
         "token": "<>",
         "host": "<>",
         "query": "RETURN gds.graph.project.remote(0, 1, null)",
-        "remote_database": "dummy",
+        "remote_database": "neo4j",
         "config": {},
     }
 
