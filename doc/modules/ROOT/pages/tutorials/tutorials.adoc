@@ -5,4 +5,4 @@ In contrast to the rest of the `graphdatascience` manual, these notebooks are me
 
 The following notebooks are included:
 
-include::partial$tutorial-list.adoc[]
+include::ROOT:partial$tutorial-list.adoc[]
