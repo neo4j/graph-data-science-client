@@ -1,3 +1,4 @@
+import json
 from typing import Any, Dict, List, Optional, Tuple
 
 from pandas import DataFrame, Series
@@ -45,6 +46,34 @@ class TransECreator(UncallableNamespace, IllegalAttrChecker):
             relationship_type_embeddings,
         )
 
+    @compatible_with("train", min_inclusive=ServerVersion(2, 5, 0))
+    @client_only_endpoint("gds.model.transe")
+    def train(self,
+              G: Graph,
+              proportions: list,
+              embedding_dimension: int,
+              batch_size: int,
+              epochs: int,
+              optimizer: str,
+              optimizer_kwargs: dict,
+              # loss: str
+              ) -> int:
+        config = {'scoring_function': 'TransE',
+                  'proportions': proportions,
+                  'embedding_dimension': embedding_dimension,
+                  'num_epochs': epochs,
+                  'graph_name': G.name(),
+                  'batch_size': batch_size,
+                  'optimizer': optimizer,
+                  'optimizer_kwargs': optimizer_kwargs,
+                  # 'loss': loss,
+                  }
+        config_path = "/tmp/kge-train-config-dump.json"
+        print('Dumped to ' + config_path)
+        config_file = open(config_path, "w")
+
+        json.dump(config, config_file)
+        return 0
 
 class ModelProcRunner(ModelResolver):
     @client_only_endpoint("gds.model")
