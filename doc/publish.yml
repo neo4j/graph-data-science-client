@@ -6,6 +6,7 @@ site:
 content:
   sources:
   - url: ../
+    edit_url: '{web_url}/tree/{refname}/{path}'
     start_path: doc
     branches: ['1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', 'main']
     include: doc/
@@ -44,7 +45,7 @@ asciidoc:
     page-canonical-root: /docs
     page-pagination: true
     page-no-canonical: true
-    page-origin-private: true
+    page-origin-private: false
     page-hide-toc: false
     page-mixpanel: 4bfb2414ab973c741b6f067bf06d5575
     # page-cdn: /static/assets
