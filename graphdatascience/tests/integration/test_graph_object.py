@@ -171,4 +171,6 @@ def test_with_whole_project_result(gds: GraphDataScience) -> None:
     with gds.graph.project(temp_graph_name, "*", "*") as TempG:
         assert TempG.exists()
 
+    assert True
+
     assert not gds.graph.exists(temp_graph_name)["exists"]
