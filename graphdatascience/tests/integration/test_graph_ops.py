@@ -407,6 +407,22 @@ def test_graph_nodeProperties_stream_with_arrow(gds: GraphDataScience) -> None:
     assert {e for e in name_values["propertyValue"]} == {"nodeA", "nodeB", "nodeC"}
 
 
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
+def test_graph_nodeProperties_stream_listNodeLabels_with_arrow(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x"]}}, "*")
+
+    result = gds.graph.nodeProperties.stream(
+        G, ["x"], concurrency=2, listNodeLabels=True
+    )
+
+    assert list(result.keys()) == ["nodeId", "labels", "nodeProperty", "propertyValue"]
+
+    x_values = result[result.nodeProperty == "x"]
+    assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
+
+    assert [e for e in result["labels"]] == [["Node"], ["Node"], ["Node"]]
+
+
 def test_graph_streamNodeProperties_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 

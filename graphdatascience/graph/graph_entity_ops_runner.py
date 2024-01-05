@@ -92,7 +92,8 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
             result.columns.name = None
         # old format was requested but the query was run via Arrow
         elif not separate_property_columns and "propertyValue" not in result.keys():
-            result = result.melt(id_vars=["nodeId"]).rename(
+            id_vars = ["nodeId", "labels"] if config.get("listNodeLabels", False) else ["nodeId"]
+            result = result.melt(id_vars=id_vars).rename(
                 columns={"variable": "nodeProperty", "value": "propertyValue"}
             )
 
