@@ -415,13 +415,12 @@ def test_graph_nodeProperties_stream_listNodeLabels_with_arrow(gds: GraphDataSci
         G, ["x"], concurrency=2, listNodeLabels=True
     )
 
-    # FIXME - rename labels into nodeLabels (on the server its off)
-    assert list(result.keys()) == ["nodeId", "labels", "nodeProperty", "propertyValue"]
+    assert list(result.keys()) == ["nodeId", "nodeLabels", "nodeProperty", "propertyValue"]
 
     x_values = result[result.nodeProperty == "x"]
     assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
 
-    assert [e for e in result["labels"]] == [["Node"], ["Node"], ["Node"]]
+    assert [e for e in result["nodeLabels"]] == [["Node"], ["Node"], ["Node"]]
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_graph_nodeProperties_stream_listNodeLabels(gds_without_arrow: GraphDataScience) -> None:

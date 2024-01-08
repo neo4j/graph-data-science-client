@@ -88,7 +88,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         # new format was requested, but the query was run via Cypher
         if separate_property_columns and "propertyValue" in result.keys():
             wide_result = result.pivot(index=["nodeId"], columns=["nodeProperty"], values="propertyValue")
-            if "nodeLabels" in result.keys():
+            if "listNodeLabels" in config.keys():
                 # nodeLabels cannot be an index column of the pivot as its not hashable
                 # so we need to manually join it back in
                 labels_df = result[["nodeId", "nodeLabels"]].set_index("nodeId")
@@ -97,7 +97,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
             result.columns.name = None
         # old format was requested but the query was run via Arrow
         elif not separate_property_columns and "propertyValue" not in result.keys():
-            id_vars = ["nodeId", "labels"] if config.get("listNodeLabels", False) else ["nodeId"]
+            id_vars = ["nodeId", "nodeLabels"] if config.get("listNodeLabels", False) else ["nodeId"]
             result = result.melt(id_vars=id_vars).rename(
                 columns={"variable": "nodeProperty", "value": "propertyValue"}
             )

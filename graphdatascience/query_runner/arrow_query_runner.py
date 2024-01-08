@@ -277,6 +277,11 @@ class ArrowQueryRunner(QueryRunner):
         get = self._flight_client.do_get(ticket)
         arrow_table = get.read_all()
 
+        if configuration.get("list_node_labels", False):
+            # GDS 2.5 had an inconsistent naming of the node labels column
+            new_colum_names = ["nodeLabels" if i == "labels" else i for i in arrow_table.column_names]
+            arrow_table = arrow_table.rename_columns(new_colum_names)
+
         return self._sanitize_arrow_table(arrow_table).to_pandas()
 
     def create_graph_constructor(
