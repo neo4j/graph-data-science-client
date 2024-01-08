@@ -415,12 +415,40 @@ def test_graph_nodeProperties_stream_listNodeLabels_with_arrow(gds: GraphDataSci
         G, ["x"], concurrency=2, listNodeLabels=True
     )
 
+    # FIXME - rename labels into nodeLabels (on the server its off)
     assert list(result.keys()) == ["nodeId", "labels", "nodeProperty", "propertyValue"]
 
     x_values = result[result.nodeProperty == "x"]
     assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
 
     assert [e for e in result["labels"]] == [["Node"], ["Node"], ["Node"]]
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
+def test_graph_nodeProperties_stream_listNodeLabels(gds_without_arrow: GraphDataScience) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x"]}}, "*")
+
+    result = gds_without_arrow.graph.nodeProperties.stream(
+        G, ["x"], concurrency=2, listNodeLabels=True
+    )
+
+    assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue",  "nodeLabels"]
+
+    x_values = result[result.nodeProperty == "x"]
+    assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
+
+    assert [e for e in result["nodeLabels"]] == [["Node"], ["Node"], ["Node"]]
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
+def test_graph_nodeProperties_stream_listNodeLabels_with_seperate_cols(gds_without_arrow: GraphDataScience) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
+
+    result = gds_without_arrow.graph.nodeProperties.stream(
+        G, ["x", "y"], concurrency=2, listNodeLabels=True, separate_property_columns=True
+    )
+
+    assert list(result.keys()) == ["nodeId", "x", "y", "nodeLabels"]
+
+    assert [e for e in result["nodeLabels"]] == [["Node"] for _ in range(6)]
 
 
 def test_graph_streamNodeProperties_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
