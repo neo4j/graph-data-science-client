@@ -24,7 +24,7 @@ class SessionInfo:
     @classmethod
     def from_specific_instance_details(cls, instance_details: InstanceSpecificDetails) -> SessionInfo:
         return SessionInfo(
-            GdsSessions.session_name(instance_details.name), instance_details.memory, instance_details.type
+            GdsSessionNameHelper.session_name(instance_details.name), instance_details.memory, instance_details.type
         )
 
 
@@ -36,7 +36,6 @@ class AuraAPICredentials:
 
 
 class GdsSessions:
-    GDS_SESSION_NAME_PREFIX = "gds-session-"
     # Hardcoded neo4j user as sessions are always created with this user
     GDS_SESSION_USER = "neo4j"
 
@@ -112,7 +111,7 @@ class GdsSessions:
         instance_details = [
             self._aura_api.list_instance(instance_id=instance.id)
             for instance in all_instances
-            if instance.name.startswith(GdsSessions.GDS_SESSION_NAME_PREFIX)
+            if GdsSessionNameHelper.is_gds_session(instance)
         ]
 
         return [
@@ -142,14 +141,6 @@ class GdsSessions:
 
         return self._construct_client(session_name=session_name, gds_url=gds_url, db_connection=db_connection)
 
-    def _change_initial_pw(self, gds_url: str, gds_user: str, initial_pw: str, new_pw: str) -> None:
-        with GraphDatabase.driver(gds_url, auth=(gds_user, initial_pw)) as driver:
-            driver.execute_query(
-                "ALTER CURRENT USER SET PASSWORD FROM $old_pw TO $new_pw",
-                parameters_={"old_pw": initial_pw, "new_pw": new_pw},
-                database_="system",
-            )
-
     def _construct_client(
         self, session_name: str, gds_url: str, db_connection: DbmsConnectionInfo
     ) -> AuraGraphDataScience:
@@ -161,18 +152,39 @@ class GdsSessions:
             delete_fn=lambda: self.delete(session_name),
         )
 
-    @classmethod
-    def session_name(cls, instance_name: str) -> str:
-        # str.removeprefix is only available in Python 3.9+
-        return instance_name[len(cls.GDS_SESSION_NAME_PREFIX) :]  # noqa: E203 (black vs flake8 conflict)
+    @staticmethod
+    def _change_initial_pw(gds_url: str, gds_user: str, initial_pw: str, new_pw: str) -> None:
+        with GraphDatabase.driver(gds_url, auth=(gds_user, initial_pw)) as driver:
+            driver.execute_query(
+                "ALTER CURRENT USER SET PASSWORD FROM $old_pw TO $new_pw",
+                parameters_={"old_pw": initial_pw, "new_pw": new_pw},
+                database_="system",
+            )
 
     @classmethod
     def _fail_ambiguous_session(cls, session_name: str, instances: List[InstanceDetails]) -> None:
-        candidates = [(i.id, cls.session_name(i.name)) for i in instances]
+        candidates = [(i.id, GdsSessionNameHelper.session_name(i.name)) for i in instances]
         raise RuntimeError(
             f"Expected to find exactly one GDS session with name `{session_name}`, but found `{candidates}`."
         )
 
     @classmethod
     def _instance_name(cls, session_name: str) -> str:
+        return GdsSessionNameHelper.instance_name(session_name)
+
+
+class GdsSessionNameHelper:
+    GDS_SESSION_NAME_PREFIX = "gds-session-"
+
+    @classmethod
+    def session_name(cls, instance_name: str) -> str:
+        # str.removeprefix is only available in Python 3.9+
+        return instance_name[len(cls.GDS_SESSION_NAME_PREFIX) :]  # noqa: E203 (black vs flake8 conflict)
+
+    @classmethod
+    def instance_name(cls, session_name: str) -> str:
         return f"{cls.GDS_SESSION_NAME_PREFIX}{session_name}"
+
+    @classmethod
+    def is_gds_session(cls, instance: InstanceDetails) -> bool:
+        return instance.name.startswith(cls.GDS_SESSION_NAME_PREFIX)
