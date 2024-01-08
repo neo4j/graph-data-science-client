@@ -47,9 +47,9 @@ class GdsSessions:
         )
 
     def get_or_create(self, session_name: str, memory: Union[str, SessionSizeByMemory] = "8GB") -> AuraGraphDataScience:
-        if session_name in [session.name for session in self.list()]:
-            # session exists, connect to it
-            return self._connect(session_name, self._db_connection)
+        connected_instance = self._try_connect(session_name, self._db_connection)
+        if connected_instance is not None:
+            return connected_instance
 
         db_instance_id = AuraApi.extract_id(self._db_connection.uri)
         db_instance = self._aura_api.list_instance(db_instance_id)
@@ -121,11 +121,14 @@ class GdsSessions:
             if instance_detail
         ]
 
-    def _connect(self, session_name: str, db_connection: DbmsConnectionInfo) -> AuraGraphDataScience:
+    def _try_connect(self, session_name: str, db_connection: DbmsConnectionInfo) -> Optional[AuraGraphDataScience]:
         instance_name = GdsSessions._instance_name(session_name)
         matched_instances = [instance for instance in self._aura_api.list_instances() if instance.name == instance_name]
 
-        if len(matched_instances) != 1:
+        if len(matched_instances) == 0:
+            return None
+
+        if len(matched_instances) > 1:
             self._fail_ambiguous_session(session_name, matched_instances)
 
         instance_details = self._aura_api.list_instance(matched_instances[0].id)
