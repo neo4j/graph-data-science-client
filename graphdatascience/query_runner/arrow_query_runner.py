@@ -5,10 +5,10 @@ import warnings
 from typing import Any, Dict, List, Optional, Tuple
 
 import pyarrow.flight as flight
-from pyarrow import chunked_array, ChunkedArray, Table
-from pyarrow.types import is_dictionary
 from pandas import DataFrame, Series
+from pyarrow import ChunkedArray, Table, chunked_array
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
+from pyarrow.types import is_dictionary  # type: ignore
 
 from ..call_parameters import CallParameters
 from ..server_version.server_version import ServerVersion
@@ -282,7 +282,7 @@ class ArrowQueryRunner(QueryRunner):
             new_colum_names = ["nodeLabels" if i == "labels" else i for i in arrow_table.column_names]
             arrow_table = arrow_table.rename_columns(new_colum_names)
 
-        return self._sanitize_arrow_table(arrow_table).to_pandas()
+        return self._sanitize_arrow_table(arrow_table).to_pandas()  # type: ignore
 
     def create_graph_constructor(
         self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
@@ -297,18 +297,18 @@ class ArrowQueryRunner(QueryRunner):
         return ArrowGraphConstructor(
             database, graph_name, self._flight_client, concurrency, undirected_relationship_types
         )
-    
+
     def _sanitize_arrow_table(self, arrow_table: Table) -> Table:
-        dict_encoded_fields = [(idx, field) for idx, field in enumerate(arrow_table.schema) if is_dictionary(field.type)]
+        dict_encoded_fields = [
+            (idx, field) for idx, field in enumerate(arrow_table.schema) if is_dictionary(field.type)
+        ]
         for idx, field in dict_encoded_fields:
             try:
                 field.type.to_pandas_dtype()
             except NotImplementedError:
                 # we need to decode the dictionary column before transforming to pandas
-                if (isinstance(arrow_table[field.name], ChunkedArray)):
-                    decoded_col = chunked_array(
-                        [chunk.dictionary_decode() for chunk in arrow_table[field.name].chunks]
-                    )
+                if isinstance(arrow_table[field.name], ChunkedArray):
+                    decoded_col = chunked_array([chunk.dictionary_decode() for chunk in arrow_table[field.name].chunks])
                 else:
                     decoded_col = arrow_table[field.name].dictionary_decode()
                 arrow_table = arrow_table.set_column(idx, field.name, decoded_col)

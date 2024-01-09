@@ -98,9 +98,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         # old format was requested but the query was run via Arrow
         elif not separate_property_columns and "propertyValue" not in result.keys():
             id_vars = ["nodeId", "nodeLabels"] if config.get("listNodeLabels", False) else ["nodeId"]
-            result = result.melt(id_vars=id_vars).rename(
-                columns={"variable": "nodeProperty", "value": "propertyValue"}
-            )
+            result = result.melt(id_vars=id_vars).rename(columns={"variable": "nodeProperty", "value": "propertyValue"})
 
         if db_node_properties:
             duplicate_properties = set(db_node_properties).intersection(set(node_properties))
