@@ -12,6 +12,8 @@
 ## Bug fixes
 
 * Fixed a bug which caused an exception to be raised when running `gds.license.state` targeting an AuraDS instance.
+* Fixed a bug where the parameter `listNodeLabels` was ignored for `gds.graph.[nodeProperty|nodeProperties].stream` calls via Arrow.
+* Fixed a bug where the parameter `listNodeLabels` was ignored for `gds.graph.[nodeProperty|nodeProperties].stream` calls via Cypher and `separate_property_columns=True`.
 
 
 ## Improvements
