@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import dataclasses
 import logging
-import os
 import time
 from dataclasses import dataclass
 from typing import Any, List, Optional
@@ -71,8 +70,8 @@ class InstanceCreateDetails:
 
 
 class AuraApi:
-    DEV_ENV = os.environ.get("AURA_ENV")
-    BASE_URI = "https://api.neo4j.io" if not DEV_ENV else f"https://api-{os.environ.get('AURA_ENV')}.neo4j-dev.io"
+    DEV_ENV = "devsoren"
+    BASE_URI = "https://api.neo4j.io" if not DEV_ENV else f"https://api-devsoren.neo4j-dev.io"
 
     class AuraAuthToken:
         access_token: str
@@ -172,7 +171,7 @@ class AuraApi:
         return InstanceSpecificDetails.fromJson(raw_data)
 
     def wait_for_instance_running(
-        self, instance_id: str, sleep_time: float = 0.2, max_sleep_time: float = 300
+            self, instance_id: str, sleep_time: float = 0.2, max_sleep_time: float = 300
     ) -> Optional[str]:
         waited_time = 0.0
         while waited_time <= max_sleep_time:
@@ -206,6 +205,18 @@ class AuraApi:
             for configuration in raw_data["instance_configurations"]
             if configuration["type"] == self._instance_type()
         ]
+
+    def estimation(self) -> None:
+        data = {
+            "node_count": 100000000,
+            "relationship_count": 1000000000,
+            "algorithm_categories": ["centrality"],
+            "tier": "gds"
+        }
+
+        response = req.post(f"{AuraApi.BASE_URI}/v1/estimations", headers=self._build_header(), json=data)
+        raw_data = response.json()
+        print(raw_data)
 
     def _get_tenant_id(self) -> str:
         response = req.get(
