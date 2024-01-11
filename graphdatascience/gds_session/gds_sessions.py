@@ -39,24 +39,25 @@ class GdsSessions:
     # Hardcoded neo4j user as sessions are always created with this user
     GDS_SESSION_USER = "neo4j"
 
-    def __init__(self, db_connection: DbmsConnectionInfo, ds_connection: AuraAPICredentials) -> None:
-        self._db_connection = db_connection
+    def __init__(self, ds_connection: AuraAPICredentials) -> None:
         self._aura_api = AuraApi(
             tenant_id=ds_connection.tenant, client_id=ds_connection.client_id, client_secret=ds_connection.client_secret
         )
 
-    def get_or_create(self, session_name: str, memory: SessionSizeByMemory) -> AuraGraphDataScience:
-        connected_instance = self._try_connect(session_name, self._db_connection)
+    def get_or_create(
+        self, session_name: str, size: SessionSizeByMemory, db_connection: DbmsConnectionInfo
+    ) -> AuraGraphDataScience:
+        connected_instance = self._try_connect(session_name, db_connection)
         if connected_instance is not None:
             return connected_instance
 
-        db_instance_id = AuraApi.extract_id(self._db_connection.uri)
+        db_instance_id = AuraApi.extract_id(db_connection.uri)
         db_instance = self._aura_api.list_instance(db_instance_id)
         if not db_instance:
-            raise ValueError(f"Could not find Aura instance with the uri `{self._db_connection.uri}`")
+            raise ValueError(f"Could not find Aura instance with the uri `{db_connection.uri}`")
 
         create_details = self._aura_api.create_instance(
-            GdsSessions._instance_name(session_name), memory.value, db_instance.cloud_provider, db_instance.region
+            GdsSessions._instance_name(session_name), size.value, db_instance.cloud_provider, db_instance.region
         )
         wait_result = self._aura_api.wait_for_instance_running(create_details.id)
         if wait_result is not None:
@@ -66,10 +67,10 @@ class GdsSessions:
         gds_url = create_details.connection_url
 
         self._change_initial_pw(
-            gds_url=gds_url, gds_user=gds_user, initial_pw=create_details.password, new_pw=self._db_connection.password
+            gds_url=gds_url, gds_user=gds_user, initial_pw=create_details.password, new_pw=db_connection.password
         )
 
-        return self._construct_client(session_name=session_name, gds_url=gds_url, db_connection=self._db_connection)
+        return self._construct_client(session_name=session_name, gds_url=gds_url, db_connection=db_connection)
 
     def delete(self, session_name: str) -> bool:
         """
