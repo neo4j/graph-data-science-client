@@ -23,7 +23,7 @@ if os.environ.get("NEO4J_USER"):
 
 DB = os.environ.get("NEO4J_DB", "neo4j")
 
-AURA_DB_URI = os.environ.get("NEO4J_AURA_DB_URI", "bolt+ssc://localhost:7689")
+AURA_DB_URI = os.environ.get("NEO4J_AURA_DB_URI", "bolt://localhost:7689")
 AURA_DB_AUTH = ("neo4j", "password")
 
 
