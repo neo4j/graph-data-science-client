@@ -30,13 +30,13 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
     ):
-        gds_query_runner = Neo4jQueryRunner.create(
+        gds_neo4j_query_runner = Neo4jQueryRunner.create(
             gds_session_connection_info.uri, gds_session_connection_info.auth(), aura_ds=True
         )
         gds_query_runner = ArrowQueryRunner.create(
-            gds_query_runner,
+            gds_neo4j_query_runner,
             gds_session_connection_info.auth(),
-            gds_query_runner.encrypted(),
+            gds_neo4j_query_runner.encrypted(),
             arrow_disable_server_verification,
             arrow_tls_root_certs,
         )
