@@ -1,7 +1,7 @@
 import dataclasses
 import re
 from dataclasses import asdict
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import pytest
 from pytest_mock import MockerFixture
@@ -80,9 +80,6 @@ class FakeAuraApi(AuraApi):
     ) -> Optional[str]:
         return super().wait_for_instance_running(instance_id, sleep_time=0.0001, max_sleep_time=0.001)
 
-    def list_available_memory_configurations(self) -> List[str]:
-        return ["4GB", "8GB", "16GB", "32GB", "512GB"]
-
 
 @pytest.fixture
 def aura_api() -> AuraApi:
@@ -123,10 +120,7 @@ def test_list_session(requests_mock: Mocker) -> None:
     assert sessions.list() == [SessionInfo("my-session-name", "16 GiB", "gds")]
 
 
-@pytest.mark.parametrize("instance_size", ["512GB", SessionSizes.by_memory().XXXXXL])
-def test_create_session(
-    mocker: MockerFixture, aura_api: AuraApi, instance_size: Union[str, SessionSizeByMemory]
-) -> None:
+def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
 
     sessions = GdsSessions(
@@ -143,7 +137,7 @@ def test_create_session(
     )
     mocker.patch("graphdatascience.gds_session.gds_sessions.GdsSessions._change_initial_pw", assert_db_credentials)
 
-    gds_credentials = sessions.get_or_create("my-session", instance_size)
+    gds_credentials = sessions.get_or_create("my-session", SessionSizes.by_memory().X5L)
 
     assert gds_credentials == {
         "db_connection": DbmsConnectionInfo(
@@ -176,35 +170,11 @@ def test_create_default_session(mocker: MockerFixture, aura_api: AuraApi) -> Non
         "graphdatascience.gds_session.gds_sessions.GdsSessions._change_initial_pw", lambda *args, **kwargs: kwargs
     )
 
-    sessions.get_or_create("my-session")
+    sessions.get_or_create("my-session", SessionSizeByMemory.DEFAULT)
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
     assert instance_details.cloud_provider == "aws"
     assert instance_details.region == "leipzig-1"
     assert instance_details.memory == "8GB"
-
-
-def test_invalid_memory_configuration(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    _setup_db_instance(aura_api)
-
-    sessions = GdsSessions(
-        DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
-        AuraAPICredentials("", "", "placeholder"),
-    )
-    sessions._aura_api = aura_api
-
-    mocker.patch(
-        "graphdatascience.gds_session.gds_sessions.GdsSessions._construct_client", lambda *args, **kwargs: kwargs
-    )
-    mocker.patch(
-        "graphdatascience.gds_session.gds_sessions.GdsSessions._change_initial_pw", lambda *args, **kwargs: kwargs
-    )
-
-    with pytest.raises(ValueError) as ctx:
-        sessions.get_or_create("my-session", "42GB")
-    assert (
-        "Memory configuration `42GB` is not available. Available configurations are: ['4GB', '8GB', '16GB', "
-        "'32GB', '512GB']" in str(ctx.value)
-    )
 
 
 def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
@@ -223,8 +193,8 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
         "graphdatascience.gds_session.gds_sessions.GdsSessions._change_initial_pw", lambda *args, **kwargs: None
     )
 
-    gds_args1 = sessions.get_or_create("my-session")
-    gds_args2 = sessions.get_or_create("my-session")
+    gds_args1 = sessions.get_or_create("my-session", SessionSizeByMemory.DEFAULT)
+    gds_args2 = sessions.get_or_create("my-session", SessionSizeByMemory.DEFAULT)
 
     assert gds_args1 == {
         "db_connection": DbmsConnectionInfo(
@@ -268,7 +238,7 @@ def test_get_or_create_duplicate_session() -> None:
     )
 
     with pytest.raises(RuntimeError, match=re.escape("Expected to find exactly one GDS session with name `one`")):
-        sessions.get_or_create("one")
+        sessions.get_or_create("one", SessionSizeByMemory.DEFAULT)
 
 
 def test_delete_session() -> None:
@@ -388,7 +358,7 @@ def test_create_immediate_delete(aura_api: AuraApi) -> None:
     sessions._aura_api = aura_api
 
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is being deleted"):
-        sessions.get_or_create("one")
+        sessions.get_or_create("one", SessionSizeByMemory.DEFAULT)
 
 
 def test_create_waiting_forever() -> None:
@@ -400,7 +370,7 @@ def test_create_waiting_forever() -> None:
     sessions._aura_api = aura_api
 
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is not running after waiting"):
-        sessions.get_or_create("one")
+        sessions.get_or_create("one", SessionSizeByMemory.DEFAULT)
 
 
 def _setup_db_instance(aura_api: AuraApi) -> None:

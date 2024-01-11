@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from neo4j import GraphDatabase
 
@@ -45,7 +45,7 @@ class GdsSessions:
             tenant_id=ds_connection.tenant, client_id=ds_connection.client_id, client_secret=ds_connection.client_secret
         )
 
-    def get_or_create(self, session_name: str, memory: Union[str, SessionSizeByMemory] = "8GB") -> AuraGraphDataScience:
+    def get_or_create(self, session_name: str, memory: SessionSizeByMemory) -> AuraGraphDataScience:
         connected_instance = self._try_connect(session_name, self._db_connection)
         if connected_instance is not None:
             return connected_instance
@@ -55,21 +55,8 @@ class GdsSessions:
         if not db_instance:
             raise ValueError(f"Could not find Aura instance with the uri `{self._db_connection.uri}`")
 
-        available_memory_configurations = self._aura_api.list_available_memory_configurations()
-
-        if isinstance(memory, SessionSizeByMemory):
-            memory = str(memory.value)
-
-        if memory not in available_memory_configurations:
-            raise ValueError(
-                (
-                    f"Memory configuration `{memory}` is not available. "
-                    f"Available configurations are: {available_memory_configurations}"
-                )
-            )
-
         create_details = self._aura_api.create_instance(
-            GdsSessions._instance_name(session_name), memory, db_instance.cloud_provider, db_instance.region
+            GdsSessions._instance_name(session_name), memory.value, db_instance.cloud_provider, db_instance.region
         )
         wait_result = self._aura_api.wait_for_instance_running(create_details.id)
         if wait_result is not None:
