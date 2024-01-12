@@ -2,14 +2,13 @@ from typing import Any, Dict, Generator, List, Optional
 
 import pytest
 from pandas import DataFrame
+from pytest_mock import MockerFixture
 
 from graphdatascience import QueryRunner
-from graphdatascience.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.call_parameters import CallParameters
+from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.graph_data_science import GraphDataScience
-from graphdatascience.query_runner.aura_db_arrow_query_runner import (
-    AuraDbConnectionInfo,
-)
 from graphdatascience.query_runner.cypher_graph_constructor import (
     CypherGraphConstructor,
 )
@@ -114,9 +113,16 @@ def gds(runner: CollectingQueryRunner) -> Generator[GraphDataScience, None, None
 
 
 @pytest.fixture
-def aura_gds(runner: CollectingQueryRunner) -> Generator[AuraGraphDataScience, None, None]:
+def aura_gds(runner: CollectingQueryRunner, mocker: MockerFixture) -> Generator[AuraGraphDataScience, None, None]:
+    mocker.patch("graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner.create", return_value=runner)
+    mocker.patch(
+        "graphdatascience.query_runner.aura_db_arrow_query_runner.AuraDbArrowQueryRunner.__new__", return_value=runner
+    )
+    mocker.patch("graphdatascience.query_runner.arrow_query_runner.ArrowQueryRunner.create", return_value=runner)
     aura_gds = AuraGraphDataScience(
-        endpoint=runner, auth=("some", "auth"), aura_db_connection_info=AuraDbConnectionInfo("uri", ("some", "auth"))
+        gds_session_connection_info=DbmsConnectionInfo("address", "some", "auth"),
+        aura_db_connection_info=DbmsConnectionInfo("address", "some", "auth"),
+        delete_fn=lambda: True,
     )
     yield aura_gds
 

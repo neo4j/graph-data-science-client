@@ -5,11 +5,9 @@ from typing import Any, Generator, Optional
 import pytest
 from neo4j import Driver, GraphDatabase
 
-from graphdatascience.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.graph_data_science import GraphDataScience
-from graphdatascience.query_runner.aura_db_arrow_query_runner import (
-    AuraDbConnectionInfo,
-)
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -94,7 +92,9 @@ def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
 def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Optional[Generator[AuraGraphDataScience, None, None]]:
     if "cloud_architecture" not in request.keywords:
         _gds = AuraGraphDataScience(
-            URI, auth=AUTH, aura_db_connection_info=AuraDbConnectionInfo(AURA_DB_URI, AURA_DB_AUTH)
+            gds_session_connection_info=DbmsConnectionInfo(URI, AUTH[0], AUTH[1]),
+            aura_db_connection_info=DbmsConnectionInfo(AURA_DB_URI, AURA_DB_AUTH[0], AURA_DB_AUTH[1]),
+            delete_fn=lambda: True,
         )
         _gds.set_database(DB)
 

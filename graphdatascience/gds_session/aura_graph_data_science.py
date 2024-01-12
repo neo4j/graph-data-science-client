@@ -1,20 +1,18 @@
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Optional
 
-from neo4j import GraphDatabase
 from pandas import DataFrame
 
-from .query_runner.neo4j_query_runner import Neo4jQueryRunner
-from .server_version.server_version import ServerVersion
 from graphdatascience.call_builder import IndirectCallBuilder
 from graphdatascience.endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
+from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.graph.graph_proc_runner import GraphRemoteProcRunner
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbArrowQueryRunner,
-    AuraDbConnectionInfo,
 )
-from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
@@ -25,51 +23,51 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def __init__(
         self,
-        endpoint: Union[str, QueryRunner],
-        auth: Tuple[str, str],
-        aura_db_connection_info: AuraDbConnectionInfo,
+        gds_session_connection_info: DbmsConnectionInfo,
+        aura_db_connection_info: DbmsConnectionInfo,
+        delete_fn: Callable[[], bool],
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
     ):
-        if isinstance(endpoint, str):
-            gds_query_runner = ArrowQueryRunner.create(
-                Neo4jQueryRunner.create(endpoint, auth, aura_ds=True),
-                auth,
-                True,
-                arrow_disable_server_verification,
-                arrow_tls_root_certs,
+        gds_neo4j_query_runner = Neo4jQueryRunner.create(
+            gds_session_connection_info.uri, gds_session_connection_info.auth(), aura_ds=True
+        )
+        gds_query_runner = ArrowQueryRunner.create(
+            gds_neo4j_query_runner,
+            gds_session_connection_info.auth(),
+            gds_neo4j_query_runner.encrypted(),
+            arrow_disable_server_verification,
+            arrow_tls_root_certs,
+        )
+
+        self._server_version = gds_query_runner.server_version()
+
+        if self._server_version < ServerVersion(2, 6, 0):
+            raise RuntimeError(
+                f"AuraDB connection info was provided but GDS version {self._server_version} \
+                    does not support connecting to AuraDB"
             )
 
-            self._server_version = gds_query_runner.server_version()
+        self._db_query_runner = Neo4jQueryRunner.create(
+            aura_db_connection_info.uri,
+            aura_db_connection_info.auth(),
+            aura_ds=True,
+            server_version=self._server_version,
+        )
+        self._db_query_runner.set_bookmarks(bookmarks)
 
-            if self._server_version < ServerVersion(2, 6, 0):
-                raise RuntimeError(
-                    f"AuraDB connection info was provided but GDS version {self._server_version} \
-                        does not support connecting to AuraDB"
-                )
+        # we need to explicitly set these as the default value is None
+        # which signals the driver to use the default configured database
+        # from the dbms.
+        gds_query_runner.set_database("neo4j")
+        self._db_query_runner.set_database("neo4j")
 
-            self._driver_config = gds_query_runner.driver_config()
-            driver = GraphDatabase.driver(
-                aura_db_connection_info.uri, auth=aura_db_connection_info.auth, **self._driver_config
-            )
-            self._db_query_runner: QueryRunner = Neo4jQueryRunner(
-                driver, auto_close=True, bookmarks=bookmarks, server_version=self._server_version
-            )
+        self._query_runner = AuraDbArrowQueryRunner(
+            gds_query_runner, self._db_query_runner, self._db_query_runner.encrypted(), aura_db_connection_info
+        )
 
-            # we need to explicitly set these as the default value is None
-            # which signals the driver to use the default configured database
-            # from the dbms.
-            gds_query_runner.set_database("neo4j")
-            self._db_query_runner.set_database("neo4j")
-
-            self._query_runner = AuraDbArrowQueryRunner(
-                gds_query_runner, self._db_query_runner, driver.encrypted, aura_db_connection_info
-            )
-        else:
-            self._query_runner = endpoint
-            self._db_query_runner = endpoint
-            self._server_version = self._query_runner.server_version()
+        self._delete_fn = delete_fn
 
         super().__init__(self._query_runner, "gds", self._server_version)
 
@@ -167,7 +165,14 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         Returns:
             The configuration as a dictionary.
         """
-        return self._driver_config
+        return self._query_runner.driver_config()
+
+    def delete(self) -> bool:
+        """
+        Delete a GDS session.
+        """
+        self.close()
+        return self._delete_fn()
 
     def close(self) -> None:
         """

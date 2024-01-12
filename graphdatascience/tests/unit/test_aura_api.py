@@ -5,7 +5,7 @@ from _pytest.logging import LogCaptureFixture
 from requests import HTTPError
 from requests_mock import Mocker
 
-from graphdatascience.aura_api import (
+from graphdatascience.gds_session.aura_api import (
     AuraApi,
     InstanceCreateDetails,
     InstanceSpecificDetails,
@@ -346,31 +346,3 @@ def test_parse_create_details() -> None:
     InstanceCreateDetails.from_json(
         {"id": "1", "username": "mats", "password": "1234", "connection_url": "url", "region": "fooo"}
     )
-
-
-def test_available_memory_configurations(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
-
-    mock_auth_token(requests_mock)
-
-    requests_mock.get(
-        "https://api.neo4j.io/v1/tenants/some-tenant",
-        json={
-            "data": {
-                "id": "6981ace7-efe8-4f5c-b7c5-267b5162ce91",
-                "name": "Production",
-                "instance_configurations": [
-                    {
-                        "type": api._instance_type(),
-                        "memory": "4GB",
-                    },
-                    {
-                        "type": api._instance_type(),
-                        "memory": "8GB",
-                    },
-                ],
-            }
-        },
-    )
-
-    assert api.list_available_memory_configurations() == ["4GB", "8GB"]
