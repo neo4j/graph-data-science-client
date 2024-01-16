@@ -1,10 +1,10 @@
-from enum import StrEnum
+from enum import Enum
 
 NODE_PROPERTY_SCHEMA = "nodePropertySchema"
 RELATIONSHIP_PROPERTY_SCHEMA = "relationshipPropertySchema"
 
 
-class GdsPropertyTypes(StrEnum):
+class GdsPropertyTypes(Enum):
     LONG = "long"
     DOUBLE = "double"
     LONG_ARRAY = "long[]"
