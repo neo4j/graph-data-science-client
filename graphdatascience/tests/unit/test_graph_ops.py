@@ -711,8 +711,8 @@ def test_remote_projection_on_specific_database(runner: CollectingQueryRunner, a
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 6, 0))
 def test_remote_projection_all_configuration(runner: CollectingQueryRunner, aura_gds: AuraGraphDataScience) -> None:
     G, _ = aura_gds.graph.project(
-        "g",
-        """
+        graph_name="g",
+        query="""
         MATCH (n)-->(m)
         RETURN gds.graph.project.remote(n, m, {
           sourceNodeProperties: {x: 1},
