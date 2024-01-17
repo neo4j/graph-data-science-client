@@ -76,7 +76,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
             params["token"] = token
             params["host"] = aura_db_arrow_endpoint
-            params["config"] = {"useEncryption": self._encrypted}
+            params["config"]["useEncryption"] = self._encrypted
 
         elif ".write" in endpoint and self.is_remote_projected_graph(params["graph_name"]):
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()

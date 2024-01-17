@@ -6,7 +6,8 @@
 
 ## New features
 
-* Add gds.graph.project.remoteDb endpoint for projecting graphs from AuraDB instances
+* Add the new concept of GDS Sessions, used to manage GDS computations in Aura, based on data from an AuraDB instance.
+  * Add a new `gds.graph.project` endpoint to project graphs from AuraDB instances to GDS sessions.
 
 
 ## Bug fixes

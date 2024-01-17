@@ -1,6 +1,7 @@
 import pytest
 from pandas import DataFrame
 
+from ...gds_session.schema import GdsPropertyTypes
 from .conftest import CollectingQueryRunner
 from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.graph_data_science import GraphDataScience
@@ -704,4 +705,48 @@ def test_remote_projection_on_specific_database(runner: CollectingQueryRunner, a
         "query": "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)",
         "remote_database": "bar",
         "config": {},
+    }
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 6, 0))
+def test_remote_projection_all_configuration(runner: CollectingQueryRunner, aura_gds: AuraGraphDataScience) -> None:
+    G, _ = aura_gds.graph.project(
+        graph_name="g",
+        query="""
+        MATCH (n)-->(m)
+        RETURN gds.graph.project.remote(n, m, {
+          sourceNodeProperties: {x: 1},
+          relationshipType: 'R',
+          relationshipProperties: {y: [1, 2]}
+        })
+        """,
+        undirectedRelationshipTypes=["R"],
+        inverseIndexedRelationshipTypes=["R"],
+        nodePropertySchema={"x": GdsPropertyTypes.LONG},
+        relationshipPropertySchema={"y": GdsPropertyTypes.LONG_ARRAY},
+    )
+
+    assert (
+        runner.last_query()
+        == "CALL gds.graph.project.remoteDb($graph_name, $query, $token, $host, $remote_database, $config)"
+    )
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "token": "<>",
+        "host": "<>",
+        "remote_database": "neo4j",
+        "query": """
+        MATCH (n)-->(m)
+        RETURN gds.graph.project.remote(n, m, {
+          sourceNodeProperties: {x: 1},
+          relationshipType: 'R',
+          relationshipProperties: {y: [1, 2]}
+        })
+        """,
+        "config": {
+            "undirectedRelationshipTypes": ["R"],
+            "inverseIndexedRelationshipTypes": ["R"],
+            "nodePropertySchema": {"x": "long"},
+            "relationshipPropertySchema": {"y": "long[]"},
+        },
     }
