@@ -29,7 +29,7 @@ urls:
 antora:
   extensions:
   - require: "@neo4j-antora/antora-modify-sitemaps"
-    sitemap_version: '1.9-preview'
+    sitemap_version: '1.10-preview'
     sitemap_loc_version: 'current'
     move_sitemaps_to_components: true
 
@@ -63,4 +63,4 @@ asciidoc:
     common-license-page-uri: https://neo4j.com/docs/license/
     operations-manual-base-uri: https://neo4j.com/docs/operations-manual/
     neo4j-docs-base-uri: https://neo4j.com/docs
-    api-version: 1.9-preview
+    api-version: 1.10-preview
