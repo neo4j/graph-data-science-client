@@ -12,10 +12,10 @@
 
 ## Bug fixes
 
+* Fixed an issue where source and target IDs of relationships in heterogeneous OGBL graphs were not parsed correctly.
 
 
 ## Improvements
-
 
 
 ## Other changes
