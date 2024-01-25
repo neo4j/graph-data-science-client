@@ -1,5 +1,6 @@
 from functools import reduce
 from typing import Any, Dict, List, Type, Union
+from warnings import filterwarnings
 
 import pandas as pd
 from pandas import DataFrame, Series
@@ -26,6 +27,13 @@ class TopologyDataFrame(DataFrame):
         return TopologyDataFrame
 
     def by_rel_type(self) -> Dict[str, List[List[int]]]:
+        # Pandas 2.2.0 deprecated an internal API used by DF.take(indices)
+        filterwarnings(
+            "ignore",
+            category=DeprecationWarning,
+            message=r"Passing a BlockManager to TopologyDataFrame is deprecated",
+        )
+
         gb = self.groupby("relationshipType", observed=True)
 
         output = {}
