@@ -93,7 +93,7 @@ gds.set_database("my-db")
 
 === Configure Apache Arrow parameters
 
-If Apache Arrow is available on the https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow[server], we can provide the `GraphDataScience` constructor with several keyword parameters to configure the connection:
+If Apache Arrow is available on the https://neo4j.com/docs/graph-data-science/current/installation/configure-apache-arrow-server/[server], we can provide the `GraphDataScience` constructor with several keyword parameters to configure the connection:
 
 * `arrow_disable_server_verification`: A flag that indicates that, if the flight client is connecting with
         TLS, that it skips server verification. If this is enabled, all other TLS settings are overridden.
