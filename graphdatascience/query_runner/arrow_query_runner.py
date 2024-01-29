@@ -282,6 +282,13 @@ class ArrowQueryRunner(QueryRunner):
             new_colum_names = ["nodeLabels" if i == "labels" else i for i in arrow_table.column_names]
             arrow_table = arrow_table.rename_columns(new_colum_names)
 
+        # Pandas 2.2.0 deprecated an API used by ArrowTable.to_pandas() (< pyarrow 15.0)
+        warnings.filterwarnings(
+            "ignore",
+            category=DeprecationWarning,
+            message=r"Passing a BlockManager to TopologyDataFrame is deprecated",
+        )
+
         return self._sanitize_arrow_table(arrow_table).to_pandas()  # type: ignore
 
     def create_graph_constructor(
