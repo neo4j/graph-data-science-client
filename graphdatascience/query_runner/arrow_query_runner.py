@@ -286,7 +286,7 @@ class ArrowQueryRunner(QueryRunner):
         warnings.filterwarnings(
             "ignore",
             category=DeprecationWarning,
-            message=r"Passing a BlockManager to TopologyDataFrame is deprecated",
+            message=r"Passing a BlockManager to DataFrame is deprecated",
         )
 
         return self._sanitize_arrow_table(arrow_table).to_pandas()  # type: ignore
