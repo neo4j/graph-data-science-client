@@ -1,6 +1,7 @@
 import os
 import pathlib
 import sys
+import warnings
 from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
@@ -42,6 +43,15 @@ is_neo4j_4_driver = ServerVersion.from_string(neo4j_driver_version) < ServerVers
 
 
 class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
+    def __init__(self, query_runner: Any, namespace: str, server_version: ServerVersion):
+        super().__init__(query_runner, namespace, server_version)
+        # Pandas 2.2.0 deprecated an API used by ArrowTable.to_pandas() (< pyarrow 14.0)
+        warnings.filterwarnings(
+            "ignore",
+            category=DeprecationWarning,
+            message=r"Passing a BlockManager to DataFrame is deprecated",
+        )
+
     @staticmethod
     def _path(package: str, resource: str) -> pathlib.Path:
         if sys.version_info >= (3, 9):
