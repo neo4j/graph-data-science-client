@@ -748,9 +748,9 @@ def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataSc
 
     # Pandas 2.2.0 deprecated an API used by the following assertion (in the underlying impl of pandas)
     warnings.filterwarnings(
-            "ignore",
-            category=DeprecationWarning,
-            message=r"Passing a BlockManager to DataFrame is deprecated",
+        "ignore",
+        category=DeprecationWarning,
+        message=r"Passing a BlockManager to DataFrame is deprecated",
     )
 
     assert result.shape[0] == expected.shape[0]
