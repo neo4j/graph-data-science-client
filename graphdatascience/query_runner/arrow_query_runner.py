@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import base64
 import json
 import time
@@ -14,6 +16,7 @@ from ..call_parameters import CallParameters
 from ..server_version.server_version import ServerVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .graph_constructor import GraphConstructor
+from .arrow_version import ArrowVersion, UnsupportedArrowVersion
 from .query_runner import QueryRunner
 from graphdatascience.server_version.compatible_with import (
     IncompatibleServerVersionError,
@@ -32,14 +35,16 @@ class ArrowQueryRunner(QueryRunner):
         server_version = fallback_query_runner.server_version()
 
         yield_fields = (
-            ["running", "listenAddress"]
+            ["running", "listenAddress", "version"]
             if server_version >= ServerVersion(2, 2, 1)
-            else ["running", "advertisedListenAddress"]
+            else ["running", "advertisedListenAddress", "version"]
         )
-        arrow_info: "Series[Any]" = fallback_query_runner.call_procedure(
+        arrow_info: Series[Any] = fallback_query_runner.call_procedure(
             endpoint="gds.debug.arrow", yields=yield_fields, custom_error=False
         ).squeeze()
         listen_address: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])  # type: ignore
+        arrow_version = ArrowQueryRunner.read_arrow_version(arrow_info)
+
         if arrow_info["running"]:
             return ArrowQueryRunner(
                 listen_address,
@@ -49,9 +54,19 @@ class ArrowQueryRunner(QueryRunner):
                 encrypted,
                 disable_server_verification,
                 tls_root_certs,
+                arrow_version,
             )
         else:
             return fallback_query_runner
+
+    @staticmethod
+    def read_arrow_version(arrow_info: Series[Any]) -> ArrowVersion:
+        arrow_version = arrow_info.get("version", "alpha")
+        try:
+            arrow_version = ArrowVersion[arrow_version.upper()]
+            return arrow_version
+        except KeyError:
+            raise UnsupportedArrowVersion(arrow_version)
 
     def __init__(
         self,
@@ -62,9 +77,11 @@ class ArrowQueryRunner(QueryRunner):
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
+        arrow_version: ArrowVersion = ArrowVersion.ALPHA,
     ):
         self._fallback_query_runner = fallback_query_runner
         self._server_version = server_version
+        self._arrow_version = arrow_version
 
         host, port_string = uri.split(":")
 
