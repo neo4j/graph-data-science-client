@@ -289,8 +289,15 @@ class ArrowQueryRunner(QueryRunner):
             "procedure_name": procedure_name,
             "configuration": configuration,
         }
-        ticket = flight.Ticket(json.dumps(payload).encode("utf-8"))
 
+        if self._arrow_version == ArrowVersion.V1:
+            payload = {
+                "name": "GET_MESSAGE",
+                "version": ArrowVersion.V1.name(),
+                "body": payload,
+            }
+
+        ticket = flight.Ticket(json.dumps(payload).encode("utf-8"))
         get = self._flight_client.do_get(ticket)
         arrow_table = get.read_all()
 
