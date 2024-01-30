@@ -1,3 +1,4 @@
+import warnings
 from typing import Generator
 
 import numpy as np
@@ -738,14 +739,23 @@ def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataSc
     else:
         result = gds_without_arrow.beta.graph.relationships.stream(G, ["REL", "REL2"])
 
-    with pytest.raises(DeprecationWarning):
-        expected = gds_without_arrow.run_cypher(
-            "MATCH (n)-[r]->(m) RETURN id(n) AS src_id, id(m) AS trg_id, type(r) AS rel_type"
-        )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="The query used a deprecated function: `id`."
+    )
+    expected = gds_without_arrow.run_cypher(
+        "MATCH (n)-[r]->(m) RETURN id(n) AS src_id, id(m) AS trg_id, type(r) AS rel_type"
+    )
 
-        assert result.shape[0] == expected.shape[0]
-        for _, row in expected.iterrows():
-            assert (result == np.array(row)).all(1).any()
+    # Pandas 2.2.0 deprecated an API used by the following assertion (in the underlying impl of pandas)
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message=r"Passing a BlockManager to TopologyDataFrame is deprecated",
+    )
+
+    assert result.shape[0] == expected.shape[0]
+    for _, row in expected.iterrows():
+        assert (result == np.array(row)).all(1).any()
 
     assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType"]
 

@@ -18,17 +18,15 @@ def test_switching_db(runner: Neo4jQueryRunner) -> None:
     default_database = runner.database()
     runner.run_cypher("CREATE (a: Node)")
 
-    pre_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
+    pre_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c").squeeze()
     assert pre_count == 1
 
     MY_DB_NAME = "my-db"
     runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
     try:
         runner.set_database(MY_DB_NAME)
-
-        with pytest.raises(RuntimeWarning, match="One of the labels in your query is not available in the database"):
-            post_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
-            assert post_count == 0
+        post_count = runner.run_cypher("MATCH (n) RETURN COUNT(n) AS c").squeeze()
+        assert post_count == 0
     finally:
         runner.set_database(default_database)  # type: ignore
         runner.run_cypher("MATCH (n) DETACH DELETE n")
@@ -63,16 +61,15 @@ def test_switching_db_and_use_graph(gds: GraphDataScience) -> None:
 def test_run_query_with_db(runner: Neo4jQueryRunner) -> None:
     runner.run_cypher("CREATE (a: Node)")
 
-    default_db_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
+    default_db_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c").squeeze()
     assert default_db_count == 1
 
     MY_DB_NAME = "my-db"
     runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
     try:
-        with pytest.raises(RuntimeWarning, match="One of the labels in your query is not available in the database"):
-            specified_db_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME)["c"][0]
-            assert specified_db_count == 0
+        specified_db_count = runner.run_cypher("MATCH (n) RETURN COUNT(n) AS c", database=MY_DB_NAME).squeeze()
+        assert specified_db_count == 0
     finally:
         runner.run_cypher("MATCH (n) DETACH DELETE n")
         runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
@@ -82,7 +79,7 @@ def test_run_query_with_db(runner: Neo4jQueryRunner) -> None:
 def test_initialize_with_db(runner: Neo4jQueryRunner) -> None:
     runner.run_cypher("CREATE (a: Node)")
 
-    default_db_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c")["c"][0]
+    default_db_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c").squeeze()
     assert default_db_count == 1
 
     MY_DB_NAME = "my-db"
@@ -91,11 +88,10 @@ def test_initialize_with_db(runner: Neo4jQueryRunner) -> None:
     gds_with_specified_db = GraphDataScience(URI, AUTH, database=MY_DB_NAME)
 
     try:
-        with pytest.raises(RuntimeWarning, match="One of the labels in your query is not available in the database"):
-            specified_db_count = gds_with_specified_db.run_cypher(
-                "MATCH (n: Node) RETURN COUNT(n) AS c", database=MY_DB_NAME
-            )["c"][0]
-            assert specified_db_count == 0
+        specified_db_count = gds_with_specified_db.run_cypher(
+            "MATCH (n) RETURN COUNT(n) AS c", database=MY_DB_NAME
+        ).squeeze()
+        assert specified_db_count == 0
     finally:
         runner.run_cypher("MATCH (n) DETACH DELETE n")
         runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
@@ -169,10 +165,10 @@ def test_no_db_explicitly_set() -> None:
 
 
 def test_warning_when_logging_fails(runner: Neo4jQueryRunner) -> None:
-    pool = f.ThreadPoolExecutor(1)
-    future = pool.submit(lambda: time.sleep(2))
-    with pytest.warns(RuntimeWarning, match=r"^Unable to get progress:"):
-        runner._log("DUMMY", future, "bad_database")
+    with f.ThreadPoolExecutor(1) as pool:
+        future = pool.submit(lambda: time.sleep(2))
+        with pytest.warns(RuntimeWarning, match=r"^Unable to get progress:"):
+            runner._log("DUMMY", future, "bad_database")
 
 
 def test_bookmarks(runner: Neo4jQueryRunner) -> None:
