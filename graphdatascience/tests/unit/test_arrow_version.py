@@ -8,7 +8,7 @@ from graphdatascience.query_runner.arrow_version import ArrowVersion, Unsupporte
 def test_arrow_version_parsing(arrow_version):
     arrow_info = dict()
     arrow_info["version"] = arrow_version.name()
-    actual = ArrowQueryRunner.read_arrow_version(arrow_info)
+    actual = ArrowQueryRunner._read_arrow_version(arrow_info)
     assert actual == arrow_version
 
 
@@ -17,7 +17,7 @@ def test_arrow_version_parsing_fails(arrow_version):
     arrow_info = dict()
     arrow_info["version"] = arrow_version
     with pytest.raises(UnsupportedArrowVersion) as e:
-        ArrowQueryRunner.read_arrow_version(arrow_info)
+        ArrowQueryRunner._read_arrow_version(arrow_info)
     assert arrow_version in str(e.value)
 
 

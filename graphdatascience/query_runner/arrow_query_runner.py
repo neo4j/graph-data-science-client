@@ -32,18 +32,10 @@ class ArrowQueryRunner(QueryRunner):
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
     ) -> "QueryRunner":
+        arrow_info = ArrowQueryRunner._get_arrow_debug_info(fallback_query_runner)
         server_version = fallback_query_runner.server_version()
-
-        yield_fields = (
-            ["running", "listenAddress", "version"]
-            if server_version >= ServerVersion(2, 2, 1)
-            else ["running", "advertisedListenAddress", "version"]
-        )
-        arrow_info: Series[Any] = fallback_query_runner.call_procedure(
-            endpoint="gds.debug.arrow", yields=yield_fields, custom_error=False
-        ).squeeze()
         listen_address: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])  # type: ignore
-        arrow_version = ArrowQueryRunner.read_arrow_version(arrow_info)
+        arrow_version = ArrowQueryRunner._read_arrow_version(arrow_info)
 
         if arrow_info["running"]:
             return ArrowQueryRunner(
@@ -60,7 +52,11 @@ class ArrowQueryRunner(QueryRunner):
             return fallback_query_runner
 
     @staticmethod
-    def read_arrow_version(arrow_info: Series[Any]) -> ArrowVersion:
+    def _get_arrow_debug_info(query_runner) -> Series[Any]:
+        return query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False).squeeze()
+
+    @staticmethod
+    def _read_arrow_version(arrow_info: Series[Any]) -> ArrowVersion:
         arrow_version = arrow_info.get("version", "alpha")
         try:
             arrow_version = ArrowVersion[arrow_version.upper()]
