@@ -326,7 +326,7 @@ class ArrowQueryRunner(QueryRunner):
             )
 
         return ArrowGraphConstructor(
-            database, graph_name, self._flight_client, concurrency, undirected_relationship_types
+            database, graph_name, self._flight_client, concurrency, self._arrow_version, undirected_relationship_types
         )
 
     def _sanitize_arrow_table(self, arrow_table: Table) -> Table:

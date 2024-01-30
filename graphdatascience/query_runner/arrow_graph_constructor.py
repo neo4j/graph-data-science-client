@@ -12,6 +12,7 @@ from pyarrow import Table
 from tqdm.auto import tqdm
 
 from .graph_constructor import GraphConstructor
+from .arrow_version import ArrowVersion
 
 
 class ArrowGraphConstructor(GraphConstructor):
@@ -21,6 +22,7 @@ class ArrowGraphConstructor(GraphConstructor):
         graph_name: str,
         flight_client: flight.FlightClient,
         concurrency: int,
+        arrow_version: ArrowVersion,
         undirected_relationship_types: Optional[List[str]],
         chunk_size: int = 10_000,
     ):
@@ -28,6 +30,7 @@ class ArrowGraphConstructor(GraphConstructor):
         self._concurrency = concurrency
         self._graph_name = graph_name
         self._client = flight_client
+        self._arrow_version = arrow_version
         self._undirected_relationship_types = (
             [] if undirected_relationship_types is None else undirected_relationship_types
         )
@@ -81,6 +84,7 @@ class ArrowGraphConstructor(GraphConstructor):
         return partitioned_dfs
 
     def _send_action(self, action_type: str, meta_data: Dict[str, Any]) -> None:
+        action_type = self._versioned_action_type(action_type)
         result = self._client.do_action(flight.Action(action_type, json.dumps(meta_data).encode("utf-8")))
 
         # Consume result fully to sanity check and avoid cancelled streams
@@ -93,6 +97,7 @@ class ArrowGraphConstructor(GraphConstructor):
         table = Table.from_pandas(df)
         batches = table.to_batches(self._chunk_size)
         flight_descriptor = {"name": self._graph_name, "entity_type": entity_type}
+        flight_descriptor = self._versioned_flight_desriptor(flight_descriptor)
 
         # Write schema
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
@@ -117,3 +122,17 @@ class ArrowGraphConstructor(GraphConstructor):
                 if not future.exception():
                     continue
                 raise future.exception()  # type: ignore
+
+    def _versioned_action_type(self, action_type: str) -> str:
+        return self._arrow_version.prefix() + action_type
+
+    def _versioned_flight_desriptor(self, flight_descriptor: dict) -> dict:
+        return (
+            flight_descriptor
+            if self._arrow_version == ArrowVersion.ALPHA
+            else {
+                "name": "PUT_MESSAGE",
+                "version": ArrowVersion.V1.name(),
+                "body": flight_descriptor,
+            }
+        )
