@@ -87,7 +87,14 @@ class AuraApi:
 
     def __init__(self, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> None:
         self._dev_env = os.environ.get("AURA_ENV")
-        self._base_uri = "https://api.neo4j.io" if not self._dev_env else f"https://api-{self._dev_env}.neo4j-dev.io"
+
+        if not self._dev_env:
+            self._base_uri = "https://api.neo4j.io"
+        elif self._dev_env == "staging":
+            self._base_uri = "https://api-staging.neo4j.io"
+        else:
+            self._base_uri = f"https://api-{self._dev_env}.neo4j-dev.io"
+
         self._credentials = (client_id, client_secret)
         self._token: Optional[AuraApi.AuraAuthToken] = None
         self._logger = logging.getLogger()
