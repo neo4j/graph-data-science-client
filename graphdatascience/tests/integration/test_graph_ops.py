@@ -738,14 +738,13 @@ def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataSc
     else:
         result = gds_without_arrow.beta.graph.relationships.stream(G, ["REL", "REL2"])
 
-    with pytest.raises(DeprecationWarning):
-        expected = gds_without_arrow.run_cypher(
-            "MATCH (n)-[r]->(m) RETURN id(n) AS src_id, id(m) AS trg_id, type(r) AS rel_type"
-        )
+    expected = gds_without_arrow.run_cypher(
+        "MATCH (n)-[r]->(m) RETURN id(n) AS src_id, id(m) AS trg_id, type(r) AS rel_type"
+    )
 
-        assert result.shape[0] == expected.shape[0]
-        for _, row in expected.iterrows():
-            assert (result == np.array(row)).all(1).any()
+    assert result.shape[0] == expected.shape[0]
+    for _, row in expected.iterrows():
+        assert (result == np.array(row)).all(1).any()
 
     assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType"]
 
