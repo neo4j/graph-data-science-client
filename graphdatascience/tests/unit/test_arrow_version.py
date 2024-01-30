@@ -1,7 +1,10 @@
 import pytest
 
 from graphdatascience.graph_data_science import ArrowQueryRunner
-from graphdatascience.query_runner.arrow_version import ArrowVersion, UnsupportedArrowVersion
+from graphdatascience.query_runner.arrow_version import (
+    ArrowVersion,
+    UnsupportedArrowVersion,
+)
 
 
 @pytest.mark.parametrize("arrow_version", [ArrowVersion.V1, ArrowVersion.ALPHA])

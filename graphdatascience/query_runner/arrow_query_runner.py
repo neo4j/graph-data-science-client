@@ -15,8 +15,8 @@ from pyarrow.types import is_dictionary  # type: ignore
 from ..call_parameters import CallParameters
 from ..server_version.server_version import ServerVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
-from .graph_constructor import GraphConstructor
 from .arrow_version import ArrowVersion, UnsupportedArrowVersion
+from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
 from graphdatascience.server_version.compatible_with import (
     IncompatibleServerVersionError,

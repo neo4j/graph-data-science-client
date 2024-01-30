@@ -11,8 +11,8 @@ from pandas import DataFrame
 from pyarrow import Table
 from tqdm.auto import tqdm
 
-from .graph_constructor import GraphConstructor
 from .arrow_version import ArrowVersion
+from .graph_constructor import GraphConstructor
 
 
 class ArrowGraphConstructor(GraphConstructor):
