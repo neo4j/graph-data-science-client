@@ -750,7 +750,7 @@ def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataSc
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
-        message=r"Passing a BlockManager to DataFrame is deprecated",
+        message=r"Passing a BlockManager to TopologyDataFrame is deprecated",
     )
 
     assert result.shape[0] == expected.shape[0]
