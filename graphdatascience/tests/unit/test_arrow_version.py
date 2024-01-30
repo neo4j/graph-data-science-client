@@ -19,3 +19,8 @@ def test_arrow_version_parsing_fails(arrow_version):
     with pytest.raises(UnsupportedArrowVersion) as e:
         ArrowQueryRunner.read_arrow_version(arrow_info)
     assert arrow_version in str(e.value)
+
+
+def test_arrow_version_prefix():
+    assert ArrowVersion.ALPHA.prefix() == ""
+    assert ArrowVersion.V1.prefix() == "v1/"
