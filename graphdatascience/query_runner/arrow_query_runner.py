@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import base64
 import json
 import time
@@ -5,13 +7,14 @@ import warnings
 from typing import Any, Dict, List, Optional, Tuple
 
 import pyarrow.flight as flight
-from pandas import DataFrame, Series
+from pandas import DataFrame
 from pyarrow import ChunkedArray, Table, chunked_array
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary  # type: ignore
 
 from ..call_parameters import CallParameters
 from ..server_version.server_version import ServerVersion
+from .arrow_endpoint_version import ArrowEndpointVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
@@ -28,18 +31,14 @@ class ArrowQueryRunner(QueryRunner):
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
-    ) -> "QueryRunner":
-        server_version = fallback_query_runner.server_version()
-
-        yield_fields = (
-            ["running", "listenAddress"]
-            if server_version >= ServerVersion(2, 2, 1)
-            else ["running", "advertisedListenAddress"]
+    ) -> QueryRunner:
+        arrow_info = (
+            fallback_query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False).squeeze().to_dict()
         )
-        arrow_info: "Series[Any]" = fallback_query_runner.call_procedure(
-            endpoint="gds.debug.arrow", yields=yield_fields, custom_error=False
-        ).squeeze()
-        listen_address: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])  # type: ignore
+        server_version = fallback_query_runner.server_version()
+        listen_address: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])
+        arrow_endpoint_version = ArrowEndpointVersion.from_arrow_info(arrow_info.get("versions", []))
+
         if arrow_info["running"]:
             return ArrowQueryRunner(
                 listen_address,
@@ -49,6 +48,7 @@ class ArrowQueryRunner(QueryRunner):
                 encrypted,
                 disable_server_verification,
                 tls_root_certs,
+                arrow_endpoint_version,
             )
         else:
             return fallback_query_runner
@@ -62,9 +62,11 @@ class ArrowQueryRunner(QueryRunner):
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
+        arrow_endpoint_version: ArrowEndpointVersion = ArrowEndpointVersion.ALPHA,
     ):
         self._fallback_query_runner = fallback_query_runner
         self._server_version = server_version
+        self._arrow_endpoint_version = arrow_endpoint_version
 
         host, port_string = uri.split(":")
 
@@ -272,8 +274,15 @@ class ArrowQueryRunner(QueryRunner):
             "procedure_name": procedure_name,
             "configuration": configuration,
         }
-        ticket = flight.Ticket(json.dumps(payload).encode("utf-8"))
 
+        if self._arrow_endpoint_version == ArrowEndpointVersion.V1:
+            payload = {
+                "name": "GET_MESSAGE",
+                "version": ArrowEndpointVersion.V1.version(),
+                "body": payload,
+            }
+
+        ticket = flight.Ticket(json.dumps(payload).encode("utf-8"))
         get = self._flight_client.do_get(ticket)
         arrow_table = get.read_all()
 
@@ -302,7 +311,12 @@ class ArrowQueryRunner(QueryRunner):
             )
 
         return ArrowGraphConstructor(
-            database, graph_name, self._flight_client, concurrency, undirected_relationship_types
+            database,
+            graph_name,
+            self._flight_client,
+            concurrency,
+            self._arrow_endpoint_version,
+            undirected_relationship_types,
         )
 
     def _sanitize_arrow_table(self, arrow_table: Table) -> Table:
