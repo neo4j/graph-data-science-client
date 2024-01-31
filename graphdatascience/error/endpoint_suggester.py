@@ -9,7 +9,7 @@ def generate_suggestive_error_message(requested_endpoint: str, all_endpoints: Li
     MIN_SIMILARITY_FOR_SUGGESTION = 0.9
 
     closest_endpoint = None
-    curr_max_similarity = 0
+    curr_max_similarity = 0.0
     for ep in all_endpoints:
         similarity = textdistance.jaro_winkler(requested_endpoint, ep)
         if similarity >= MIN_SIMILARITY_FOR_SUGGESTION:

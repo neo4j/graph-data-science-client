@@ -1,6 +1,7 @@
+from typing import List, Tuple
+
 import pytest
 
-from graphdatascience.graph_data_science import ArrowQueryRunner
 from graphdatascience.query_runner.arrow_endpoint_version import (
     ArrowEndpointVersion,
     UnsupportedArrowEndpointVersion,
@@ -19,23 +20,19 @@ from graphdatascience.query_runner.arrow_endpoint_version import (
         (ArrowEndpointVersion.ALPHA, ["alpha", "v2"]),
     ],
 )
-def test_from_arrow_info_multiple_versions(arrow_versions):
-    arrow_info = dict()
-    arrow_info["versions"] = arrow_versions[1]
-    actual = ArrowEndpointVersion.from_arrow_info(arrow_info)
+def test_from_arrow_info_multiple_versions(arrow_versions: Tuple[ArrowEndpointVersion, List[str]]) -> None:
+    actual = ArrowEndpointVersion.from_arrow_info(arrow_versions[1])
     assert actual == arrow_versions[0]
 
 
 @pytest.mark.parametrize("arrow_version", ["v2", "unsupported"])
-def test_from_arrow_info_fails(arrow_version):
-    arrow_info = dict()
-    arrow_info["versions"] = [arrow_version]
+def test_from_arrow_info_fails(arrow_version: str) -> None:
     with pytest.raises(UnsupportedArrowEndpointVersion) as e:
-        ArrowEndpointVersion.from_arrow_info(arrow_info)
+        ArrowEndpointVersion.from_arrow_info([arrow_version])
     assert "Unsupported" in str(e.value)
     assert arrow_version in str(e.value)
 
 
-def test_prefix():
+def test_prefix() -> None:
     assert ArrowEndpointVersion.ALPHA.prefix() == ""
     assert ArrowEndpointVersion.V1.prefix() == "v1/"

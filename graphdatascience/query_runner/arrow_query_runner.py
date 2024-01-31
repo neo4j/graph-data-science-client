@@ -7,7 +7,7 @@ import warnings
 from typing import Any, Dict, List, Optional, Tuple
 
 import pyarrow.flight as flight
-from pandas import DataFrame, Series
+from pandas import DataFrame
 from pyarrow import ChunkedArray, Table, chunked_array
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary  # type: ignore
@@ -31,11 +31,13 @@ class ArrowQueryRunner(QueryRunner):
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
-    ) -> "QueryRunner":
-        arrow_info = ArrowQueryRunner._get_arrow_debug_info(fallback_query_runner)
+    ) -> QueryRunner:
+        arrow_info = (
+            fallback_query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False).squeeze().to_dict()
+        )
         server_version = fallback_query_runner.server_version()
-        listen_address: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])  # type: ignore
-        arrow_endpoint_version = ArrowEndpointVersion.from_arrow_info(arrow_info)
+        listen_address: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])
+        arrow_endpoint_version = ArrowEndpointVersion.from_arrow_info(arrow_info.get("versions", []))
 
         if arrow_info["running"]:
             return ArrowQueryRunner(
@@ -50,10 +52,6 @@ class ArrowQueryRunner(QueryRunner):
             )
         else:
             return fallback_query_runner
-
-    @staticmethod
-    def _get_arrow_debug_info(query_runner) -> Series[Any]:
-        return query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False).squeeze()
 
     def __init__(
         self,
@@ -280,7 +278,7 @@ class ArrowQueryRunner(QueryRunner):
         if self._arrow_endpoint_version == ArrowEndpointVersion.V1:
             payload = {
                 "name": "GET_MESSAGE",
-                "version": ArrowEndpointVersion.V1.name(),
+                "version": ArrowEndpointVersion.V1.version(),
                 "body": payload,
             }
 

@@ -126,13 +126,13 @@ class ArrowGraphConstructor(GraphConstructor):
     def _versioned_action_type(self, action_type: str) -> str:
         return self._arrow_endpoint_version.prefix() + action_type
 
-    def _versioned_flight_desriptor(self, flight_descriptor: dict) -> dict:
+    def _versioned_flight_desriptor(self, flight_descriptor: Dict[str, Any]) -> Dict[str, Any]:
         return (
             flight_descriptor
             if self._arrow_endpoint_version == ArrowEndpointVersion.ALPHA
             else {
                 "name": "PUT_MESSAGE",
-                "version": ArrowEndpointVersion.V1.name(),
+                "version": ArrowEndpointVersion.V1.version(),
                 "body": flight_descriptor,
             }
         )
