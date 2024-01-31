@@ -1,13 +1,13 @@
 import pytest
 
 from graphdatascience.graph_data_science import ArrowQueryRunner
-from graphdatascience.query_runner.arrow_version import (
-    ArrowVersion,
-    UnsupportedArrowVersion,
+from graphdatascience.query_runner.arrow_endpoint_version import (
+    ArrowEndpointVersion,
+    UnsupportedArrowEndpointVersion,
 )
 
 
-@pytest.mark.parametrize("arrow_version", [ArrowVersion.V1, ArrowVersion.ALPHA])
+@pytest.mark.parametrize("arrow_version", [ArrowEndpointVersion.V1, ArrowEndpointVersion.ALPHA])
 def test_arrow_version_parsing(arrow_version):
     arrow_info = dict()
     arrow_info["version"] = arrow_version.name()
@@ -19,11 +19,11 @@ def test_arrow_version_parsing(arrow_version):
 def test_arrow_version_parsing_fails(arrow_version):
     arrow_info = dict()
     arrow_info["version"] = arrow_version
-    with pytest.raises(UnsupportedArrowVersion) as e:
+    with pytest.raises(UnsupportedArrowEndpointVersion) as e:
         ArrowQueryRunner._read_arrow_version(arrow_info)
     assert arrow_version in str(e.value)
 
 
 def test_arrow_version_prefix():
-    assert ArrowVersion.ALPHA.prefix() == ""
-    assert ArrowVersion.V1.prefix() == "v1/"
+    assert ArrowEndpointVersion.ALPHA.prefix() == ""
+    assert ArrowEndpointVersion.V1.prefix() == "v1/"

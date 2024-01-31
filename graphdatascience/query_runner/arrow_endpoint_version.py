@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class ArrowVersion(Enum):
+class ArrowEndpointVersion(Enum):
     ALPHA = ""
     V1 = "v1/"
 
@@ -12,6 +12,6 @@ class ArrowVersion(Enum):
         return self._value_
 
 
-class UnsupportedArrowVersion(Exception):
+class UnsupportedArrowEndpointVersion(Exception):
     def __init__(self, server_version):
-        super().__init__(self, f"Unsupported Arrow server version: {server_version}")
+        super().__init__(self, f"Unsupported Arrow endpoint version: {server_version}")

@@ -11,7 +11,7 @@ from pandas import DataFrame
 from pyarrow import Table
 from tqdm.auto import tqdm
 
-from .arrow_version import ArrowVersion
+from .arrow_endpoint_version import ArrowEndpointVersion
 from .graph_constructor import GraphConstructor
 
 
@@ -22,7 +22,7 @@ class ArrowGraphConstructor(GraphConstructor):
         graph_name: str,
         flight_client: flight.FlightClient,
         concurrency: int,
-        arrow_version: ArrowVersion,
+        arrow_endpoint_version: ArrowEndpointVersion,
         undirected_relationship_types: Optional[List[str]],
         chunk_size: int = 10_000,
     ):
@@ -30,7 +30,7 @@ class ArrowGraphConstructor(GraphConstructor):
         self._concurrency = concurrency
         self._graph_name = graph_name
         self._client = flight_client
-        self._arrow_version = arrow_version
+        self._arrow_endpoint_version = arrow_endpoint_version
         self._undirected_relationship_types = (
             [] if undirected_relationship_types is None else undirected_relationship_types
         )
@@ -124,15 +124,15 @@ class ArrowGraphConstructor(GraphConstructor):
                 raise future.exception()  # type: ignore
 
     def _versioned_action_type(self, action_type: str) -> str:
-        return self._arrow_version.prefix() + action_type
+        return self._arrow_endpoint_version.prefix() + action_type
 
     def _versioned_flight_desriptor(self, flight_descriptor: dict) -> dict:
         return (
             flight_descriptor
-            if self._arrow_version == ArrowVersion.ALPHA
+            if self._arrow_endpoint_version == ArrowEndpointVersion.ALPHA
             else {
                 "name": "PUT_MESSAGE",
-                "version": ArrowVersion.V1.name(),
+                "version": ArrowEndpointVersion.V1.name(),
                 "body": flight_descriptor,
             }
         )

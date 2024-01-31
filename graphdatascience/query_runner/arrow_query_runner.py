@@ -14,8 +14,9 @@ from pyarrow.types import is_dictionary  # type: ignore
 
 from ..call_parameters import CallParameters
 from ..server_version.server_version import ServerVersion
+from .arrow_endpoint_version import ArrowEndpointVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
-from .arrow_version import ArrowVersion, UnsupportedArrowVersion
+from .arrow_endpoint_version import ArrowEndpointVersion, UnsupportedArrowEndpointVersion
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
 from graphdatascience.server_version.compatible_with import (
@@ -35,7 +36,7 @@ class ArrowQueryRunner(QueryRunner):
         arrow_info = ArrowQueryRunner._get_arrow_debug_info(fallback_query_runner)
         server_version = fallback_query_runner.server_version()
         listen_address: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])  # type: ignore
-        arrow_version = ArrowQueryRunner._read_arrow_version(arrow_info)
+        arrow_endpoint_version = ArrowQueryRunner._read_arrow_version(arrow_info)
 
         if arrow_info["running"]:
             return ArrowQueryRunner(
@@ -46,7 +47,7 @@ class ArrowQueryRunner(QueryRunner):
                 encrypted,
                 disable_server_verification,
                 tls_root_certs,
-                arrow_version,
+                arrow_endpoint_version,
             )
         else:
             return fallback_query_runner
@@ -56,13 +57,13 @@ class ArrowQueryRunner(QueryRunner):
         return query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False).squeeze()
 
     @staticmethod
-    def _read_arrow_version(arrow_info: Series[Any]) -> ArrowVersion:
+    def _read_arrow_version(arrow_info: Series[Any]) -> ArrowEndpointVersion:
         arrow_version = arrow_info.get("version", "alpha")
         try:
-            arrow_version = ArrowVersion[arrow_version.upper()]
+            arrow_version = ArrowEndpointVersion[arrow_version.upper()]
             return arrow_version
         except KeyError:
-            raise UnsupportedArrowVersion(arrow_version)
+            raise UnsupportedArrowEndpointVersion(arrow_version)
 
     def __init__(
         self,
@@ -73,11 +74,11 @@ class ArrowQueryRunner(QueryRunner):
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
-        arrow_version: ArrowVersion = ArrowVersion.ALPHA,
+        arrow_endpoint_version: ArrowEndpointVersion = ArrowEndpointVersion.ALPHA,
     ):
         self._fallback_query_runner = fallback_query_runner
         self._server_version = server_version
-        self._arrow_version = arrow_version
+        self._arrow_endpoint_version = arrow_endpoint_version
 
         host, port_string = uri.split(":")
 
@@ -286,10 +287,10 @@ class ArrowQueryRunner(QueryRunner):
             "configuration": configuration,
         }
 
-        if self._arrow_version == ArrowVersion.V1:
+        if self._arrow_endpoint_version == ArrowEndpointVersion.V1:
             payload = {
                 "name": "GET_MESSAGE",
-                "version": ArrowVersion.V1.name(),
+                "version": ArrowEndpointVersion.V1.name(),
                 "body": payload,
             }
 
@@ -322,7 +323,7 @@ class ArrowQueryRunner(QueryRunner):
             )
 
         return ArrowGraphConstructor(
-            database, graph_name, self._flight_client, concurrency, self._arrow_version, undirected_relationship_types
+            database, graph_name, self._flight_client, concurrency, self._arrow_endpoint_version, undirected_relationship_types
         )
 
     def _sanitize_arrow_table(self, arrow_table: Table) -> Table:
