@@ -16,7 +16,6 @@ from ..call_parameters import CallParameters
 from ..server_version.server_version import ServerVersion
 from .arrow_endpoint_version import ArrowEndpointVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
-from .arrow_endpoint_version import ArrowEndpointVersion, UnsupportedArrowEndpointVersion
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
 from graphdatascience.server_version.compatible_with import (
@@ -36,7 +35,7 @@ class ArrowQueryRunner(QueryRunner):
         arrow_info = ArrowQueryRunner._get_arrow_debug_info(fallback_query_runner)
         server_version = fallback_query_runner.server_version()
         listen_address: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])  # type: ignore
-        arrow_endpoint_version = ArrowQueryRunner._read_arrow_version(arrow_info)
+        arrow_endpoint_version = ArrowEndpointVersion.from_arrow_info(arrow_info)
 
         if arrow_info["running"]:
             return ArrowQueryRunner(
@@ -55,15 +54,6 @@ class ArrowQueryRunner(QueryRunner):
     @staticmethod
     def _get_arrow_debug_info(query_runner) -> Series[Any]:
         return query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False).squeeze()
-
-    @staticmethod
-    def _read_arrow_version(arrow_info: Series[Any]) -> ArrowEndpointVersion:
-        arrow_version = arrow_info.get("version", "alpha")
-        try:
-            arrow_version = ArrowEndpointVersion[arrow_version.upper()]
-            return arrow_version
-        except KeyError:
-            raise UnsupportedArrowEndpointVersion(arrow_version)
 
     def __init__(
         self,
@@ -323,7 +313,12 @@ class ArrowQueryRunner(QueryRunner):
             )
 
         return ArrowGraphConstructor(
-            database, graph_name, self._flight_client, concurrency, self._arrow_endpoint_version, undirected_relationship_types
+            database,
+            graph_name,
+            self._flight_client,
+            concurrency,
+            self._arrow_endpoint_version,
+            undirected_relationship_types,
         )
 
     def _sanitize_arrow_table(self, arrow_table: Table) -> Table:
