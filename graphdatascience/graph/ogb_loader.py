@@ -314,8 +314,8 @@ class OGBLLoader(OGBLoader):
                 assert source_labels[i] == source_label
                 assert target_labels[i] == target_label
 
-                source_ids[i] += node_id_offsets[edges["head_type"][i]]
-                target_ids[i] += node_id_offsets[edges["tail_type"][i]]
+                source_ids[i] += node_id_offsets[edges["head_type"][i]] + edges["head"][i]
+                target_ids[i] += node_id_offsets[edges["tail_type"][i]] + edges["tail"][i]
 
                 rel_types.append(f"{edge_type}_{set_type.upper()}")
 
