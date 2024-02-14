@@ -12,6 +12,7 @@ from graphdatascience.gds_session.aura_api import (
     InstanceCreateDetails,
     InstanceDetails,
     InstanceSpecificDetails,
+    TenantDetails,
 )
 from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.gds_session.gds_sessions import (
@@ -79,6 +80,11 @@ class FakeAuraApi(AuraApi):
         self, instance_id: str, sleep_time: float = 0.2, max_sleep_time: float = 300
     ) -> Optional[str]:
         return super().wait_for_instance_running(instance_id, sleep_time=0.0001, max_sleep_time=0.001)
+
+    def tenant_details(self) -> TenantDetails:
+        return TenantDetails(
+            id=self._tenant_id, ds_type="fake-ds", regions_per_provider={"aws": {"leipzig-1", "dresden-2"}}
+        )
 
 
 @pytest.fixture
@@ -173,6 +179,31 @@ def test_create_default_session(mocker: MockerFixture, aura_api: AuraApi) -> Non
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
     assert instance_details.cloud_provider == "aws"
     assert instance_details.region == "leipzig-1"
+    assert instance_details.memory == "8GB"
+
+
+def test_create_session_override_region(mocker: MockerFixture, aura_api: AuraApi) -> None:
+    _setup_db_instance(aura_api)
+
+    sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
+    sessions._aura_api = aura_api
+
+    mocker.patch(
+        "graphdatascience.gds_session.gds_sessions.GdsSessions._construct_client", lambda *args, **kwargs: kwargs
+    )
+    mocker.patch(
+        "graphdatascience.gds_session.gds_sessions.GdsSessions._change_initial_pw", lambda *args, **kwargs: kwargs
+    )
+
+    sessions.get_or_create(
+        "my-session",
+        SessionSizeByMemory.DEFAULT,
+        DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
+        region="dresden-2",
+    )
+    instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
+    assert instance_details.cloud_provider == "aws"
+    assert instance_details.region == "dresden-2"
     assert instance_details.memory == "8GB"
 
 
@@ -365,6 +396,23 @@ def test_create_waiting_forever() -> None:
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is not running after waiting"):
         sessions.get_or_create(
             "one", SessionSizeByMemory.DEFAULT, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
+        )
+
+
+def test_create_session_invalid_region(aura_api: AuraApi) -> None:
+    aura_api.create_instance("test", "8GB", "aws", "only-db-region")
+
+    sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
+    sessions._aura_api = aura_api
+
+    expected_message = (
+        "Region `only-db-region` is not supported by the tenant `tenant_id`." " Supported regions: {'leipzig-1'}."
+    )
+    with pytest.raises(ValueError, match=expected_message):
+        sessions.get_or_create(
+            "my-session",
+            SessionSizes.by_memory().X5L,
+            DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
         )
 
 

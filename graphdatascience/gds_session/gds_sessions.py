@@ -45,7 +45,11 @@ class GdsSessions:
         )
 
     def get_or_create(
-        self, session_name: str, size: SessionSizeByMemory, db_connection: DbmsConnectionInfo
+        self,
+        session_name: str,
+        size: SessionSizeByMemory,
+        db_connection: DbmsConnectionInfo,
+        region: Optional[str] = None,
     ) -> AuraGraphDataScience:
         connected_instance = self._try_connect(session_name, db_connection)
         if connected_instance is not None:
@@ -56,8 +60,11 @@ class GdsSessions:
         if not db_instance:
             raise ValueError(f"Could not find Aura instance with the uri `{db_connection.uri}`")
 
+        region = region if region else db_instance.region
+        self._validate_region(region, db_instance)
+
         create_details = self._aura_api.create_instance(
-            GdsSessions._instance_name(session_name), size.value, db_instance.cloud_provider, db_instance.region
+            GdsSessions._instance_name(session_name), size.value, db_instance.cloud_provider, region
         )
         wait_result = self._aura_api.wait_for_instance_running(create_details.id)
         if wait_result is not None:
@@ -128,6 +135,15 @@ class GdsSessions:
             )
 
         return self._construct_client(session_name=session_name, gds_url=gds_url, db_connection=db_connection)
+
+    def _validate_region(self, region: str, db_instance: InstanceSpecificDetails) -> None:
+        tenant_details = self._aura_api.tenant_details()
+        available_regions = tenant_details.regions_per_provider[db_instance.cloud_provider]
+        if region not in available_regions:
+            raise ValueError(
+                f"Region `{region}` is not supported by the tenant `{tenant_details.id}`."
+                f" Supported regions: {available_regions}`"
+            )
 
     def _construct_client(
         self, session_name: str, gds_url: str, db_connection: DbmsConnectionInfo
