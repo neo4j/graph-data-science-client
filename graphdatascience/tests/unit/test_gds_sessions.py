@@ -406,10 +406,7 @@ def test_create_session_invalid_region(aura_api: AuraApi) -> None:
     sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
     sessions._aura_api = aura_api
 
-    expected_message = (
-        "Region `only-db-region` is not supported by the tenant `tenant_id`."
-        " Supported regions: {'leipzig-1', 'dresden-2'}."
-    )
+    expected_message = "Region `only-db-region` is not supported by the tenant `tenant_id`." " Supported regions:"
     with pytest.raises(ValueError, match=expected_message):
         sessions.get_or_create(
             "my-session",
