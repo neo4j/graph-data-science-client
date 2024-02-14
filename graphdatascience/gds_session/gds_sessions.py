@@ -67,11 +67,11 @@ class GdsSessions:
             GdsSessions._instance_name(session_name), size.value, db_instance.cloud_provider, region
         )
         wait_result = self._aura_api.wait_for_instance_running(create_details.id)
-        if wait_result is not None:
-            raise RuntimeError(f"Failed to create session `{session_name}`: {wait_result}")
+        if err := wait_result.error:
+            raise RuntimeError(f"Failed to create session `{session_name}`: {err}")
 
         gds_user = create_details.username
-        gds_url = create_details.connection_url
+        gds_url = wait_result.connection_url
 
         self._change_initial_pw(
             gds_url=gds_url, gds_user=gds_user, initial_pw=create_details.password, new_pw=db_connection.password
@@ -125,14 +125,10 @@ class GdsSessions:
         if len(matched_instances) > 1:
             self._fail_ambiguous_session(session_name, matched_instances)
 
-        instance_details = self._aura_api.list_instance(matched_instances[0].id)
-
-        if instance_details:
-            gds_url = instance_details.connection_url
-        else:
-            raise RuntimeError(
-                f"Unable to get connection information for session `{session_name}`. Does it still exist?"
-            )
+        wait_result = self._aura_api.wait_for_instance_running(matched_instances[0].id)
+        if err := wait_result.error:
+            raise RuntimeError(f"Failed to connect to session `{session_name}`: {err}")
+        gds_url = wait_result.connection_url
 
         return self._construct_client(session_name=session_name, gds_url=gds_url, db_connection=db_connection)
 

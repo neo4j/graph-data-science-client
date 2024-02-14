@@ -10,6 +10,7 @@ from graphdatascience.gds_session.aura_api import (
     InstanceCreateDetails,
     InstanceSpecificDetails,
     TenantDetails,
+    WaitResult,
 )
 
 
@@ -88,10 +89,12 @@ def test_create_instance(requests_mock: Mocker) -> None:
 
     requests_mock.get(
         "https://api.neo4j.io/v1/tenants/some-tenant",
-        json={"data": {
-            "id": "some_tenant",
-            "instance_configurations": [{"type": "enterprise-ds", "region": "leipzig-1", "cloud_provider": "aws"}]
-            }},
+        json={
+            "data": {
+                "id": "some_tenant",
+                "instance_configurations": [{"type": "enterprise-ds", "region": "leipzig-1", "cloud_provider": "aws"}],
+            }
+        },
     )
 
     requests_mock.post(
@@ -264,8 +267,9 @@ def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> 
     api = AuraApi("", "", tenant_id="some-tenant")
 
     with caplog.at_level(logging.DEBUG):
-        assert "Instance is not running after waiting for 0.8" in api.wait_for_instance_running(  # type: ignore
-            "id0", max_sleep_time=0.7
+        assert (
+            "Instance is not running after waiting for 0.8"
+            in api.wait_for_instance_running("id0", max_sleep_time=0.7).error
         )
 
     assert "Instance `id0` is not yet running. Current status: creating. Retrying in 0.2 seconds..." in caplog.text
@@ -279,7 +283,7 @@ def test_wait_for_instance_running(requests_mock: Mocker) -> None:
             "data": {
                 "status": "running",
                 "cloud_provider": None,
-                "connection_url": None,
+                "connection_url": "foo.bar",
                 "id": None,
                 "name": None,
                 "region": None,
@@ -291,7 +295,7 @@ def test_wait_for_instance_running(requests_mock: Mocker) -> None:
 
     api = AuraApi("", "", tenant_id="some-tenant")
 
-    assert api.wait_for_instance_running("id0") is None
+    assert api.wait_for_instance_running("id0") == WaitResult.from_connection_url("foo.bar")
 
 
 def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
@@ -329,8 +333,8 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
 
     api = AuraApi("", "", tenant_id="some-tenant")
 
-    assert "Instance is being deleted" in api.wait_for_instance_running("id0")  # type: ignore
-    assert "Instance is being deleted" in api.wait_for_instance_running("id1")  # type: ignore
+    assert api.wait_for_instance_running("id0") == WaitResult.from_error("Instance is being deleted")
+    assert api.wait_for_instance_running("id1") == WaitResult.from_error("Instance is being deleted")
 
 
 def test_extract_id() -> None:

@@ -13,6 +13,7 @@ from graphdatascience.gds_session.aura_api import (
     InstanceDetails,
     InstanceSpecificDetails,
     TenantDetails,
+    WaitResult,
 )
 from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.gds_session.gds_sessions import (
@@ -78,7 +79,7 @@ class FakeAuraApi(AuraApi):
 
     def wait_for_instance_running(
         self, instance_id: str, sleep_time: float = 0.2, max_sleep_time: float = 300
-    ) -> Optional[str]:
+    ) -> WaitResult:
         return super().wait_for_instance_running(instance_id, sleep_time=0.0001, max_sleep_time=0.001)
 
     def tenant_details(self) -> TenantDetails:
@@ -406,7 +407,8 @@ def test_create_session_invalid_region(aura_api: AuraApi) -> None:
     sessions._aura_api = aura_api
 
     expected_message = (
-        "Region `only-db-region` is not supported by the tenant `tenant_id`." " Supported regions: {'leipzig-1', 'dresden-2'}."
+        "Region `only-db-region` is not supported by the tenant `tenant_id`."
+        " Supported regions: {'leipzig-1', 'dresden-2'}."
     )
     with pytest.raises(ValueError, match=expected_message):
         sessions.get_or_create(

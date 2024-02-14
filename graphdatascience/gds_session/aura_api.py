@@ -6,7 +6,7 @@ import os
 import time
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, List, Optional, Set
+from typing import Any, List, NamedTuple, Optional, Set
 from urllib.parse import urlparse
 
 import requests as req
@@ -69,6 +69,19 @@ class InstanceCreateDetails:
             raise RuntimeError(f"Missing required field. Expected `{[f.name for f in fields]}` but got `{json}`")
 
         return cls(**{f.name: json[f.name] for f in fields})
+
+
+class WaitResult(NamedTuple):
+    connection_url: str
+    error: str
+
+    @classmethod
+    def from_error(cls, error: str) -> WaitResult:
+        return cls(connection_url="", error=error)
+
+    @classmethod
+    def from_connection_url(cls, connection_url: str) -> WaitResult:
+        return cls(connection_url=connection_url, error="")
 
 
 @dataclass(repr=True, frozen=True)
@@ -210,16 +223,16 @@ class AuraApi:
 
     def wait_for_instance_running(
         self, instance_id: str, sleep_time: float = 0.2, max_sleep_time: float = 300
-    ) -> Optional[str]:
+    ) -> WaitResult:
         waited_time = 0.0
         while waited_time <= max_sleep_time:
             instance = self.list_instance(instance_id)
             if instance is None:
-                return "Instance is not found -- please retry"
+                return WaitResult.from_error("Instance is not found -- please retry")
             elif instance.status in ["deleting", "destroying"]:
-                return "Instance is being deleted"
+                return WaitResult.from_error("Instance is being deleted")
             elif instance.status == "running":
-                return None
+                return WaitResult.from_connection_url(instance.connection_url)
             else:
                 self._logger.debug(
                     f"Instance `{instance_id}` is not yet running. "
@@ -229,7 +242,7 @@ class AuraApi:
             waited_time += sleep_time
             time.sleep(sleep_time)
 
-        return f"Instance is not running after waiting for {waited_time} seconds"
+        return WaitResult.from_error(f"Instance is not running after waiting for {waited_time} seconds")
 
     def _get_tenant_id(self) -> str:
         response = req.get(
