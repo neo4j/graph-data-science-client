@@ -406,7 +406,7 @@ def test_create_session_invalid_region(aura_api: AuraApi) -> None:
     sessions._aura_api = aura_api
 
     expected_message = (
-        "Region `only-db-region` is not supported by the tenant `tenant_id`." " Supported regions: {'leipzig-1'}."
+        "Region `only-db-region` is not supported by the tenant `tenant_id`." " Supported regions: {'leipzig-1', 'dresden-2'}."
     )
     with pytest.raises(ValueError, match=expected_message):
         sessions.get_or_create(

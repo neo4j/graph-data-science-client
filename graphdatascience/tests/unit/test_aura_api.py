@@ -85,6 +85,15 @@ def test_create_instance(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1/tenants/some-tenant",
+        json={"data": {
+            "id": "some_tenant",
+            "instance_configurations": [{"type": "enterprise-ds", "region": "leipzig-1", "cloud_provider": "aws"}]
+            }},
+    )
+
     requests_mock.post(
         "https://api.neo4j.io/v1/instances",
         json={
@@ -103,7 +112,7 @@ def test_create_instance(requests_mock: Mocker) -> None:
 
     api.create_instance("name", "16GB", "gcp", "leipzig-1")
 
-    requested_data = requests_mock.request_history[1].json()
+    requested_data = requests_mock.request_history[-1].json()
     assert requested_data["name"] == "name"
     assert requested_data["memory"] == "16GB"
     assert requested_data["cloud_provider"] == "gcp"
