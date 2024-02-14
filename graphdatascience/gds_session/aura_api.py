@@ -4,8 +4,9 @@ import dataclasses
 import logging
 import os
 import time
+from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Set
 from urllib.parse import urlparse
 
 import requests as req
@@ -14,7 +15,7 @@ from requests import HTTPError
 from graphdatascience.version import __version__
 
 
-@dataclass(repr=True)
+@dataclass(repr=True, frozen=True)
 class InstanceDetails:
     id: str
     name: str
@@ -31,7 +32,7 @@ class InstanceDetails:
         )
 
 
-@dataclass(repr=True)
+@dataclass(repr=True, frozen=True)
 class InstanceSpecificDetails(InstanceDetails):
     status: str
     connection_url: str
@@ -54,7 +55,7 @@ class InstanceSpecificDetails(InstanceDetails):
         )
 
 
-@dataclass(repr=True)
+@dataclass(repr=True, frozen=True)
 class InstanceCreateDetails:
     id: str
     username: str
@@ -68,6 +69,35 @@ class InstanceCreateDetails:
             raise RuntimeError(f"Missing required field. Expected `{[f.name for f in fields]}` but got `{json}`")
 
         return cls(**{f.name: json[f.name] for f in fields})
+
+
+@dataclass(repr=True, frozen=True)
+class TenantDetails:
+    id: str
+    ds_type: str
+    regions_per_provider: dict[str, Set[str]]
+
+    @classmethod
+    def from_json(cls, json: dict[str, Any]) -> TenantDetails:
+        regions_per_provider = defaultdict(set)
+        instance_types = set()
+        ds_type = None
+
+        for configs in json["instance_configurations"]:
+            type = configs["type"]
+            if type.split("-")[1] == "ds":
+                regions_per_provider[configs["cloud_provider"]].add(configs["region"])
+                ds_type = type
+            instance_types.add(configs["type"])
+
+        if not ds_type:
+            raise RuntimeError(f"Tenant cannot create DS instances. Available instances are `{instance_types}`.")
+
+        return cls(
+            id=json["id"],
+            ds_type=ds_type,
+            regions_per_provider=regions_per_provider,
+        )
 
 
 class AuraApi:
@@ -99,6 +129,7 @@ class AuraApi:
         self._token: Optional[AuraApi.AuraAuthToken] = None
         self._logger = logging.getLogger()
         self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
+        self._tenant_details: Optional[TenantDetails] = None
 
     @staticmethod
     def extract_id(uri: str) -> str:
@@ -110,14 +141,14 @@ class AuraApi:
         return host.split(".")[0].split("-")[0]
 
     def create_instance(self, name: str, memory: str, cloud_provider: str, region: str) -> InstanceCreateDetails:
-        # TODO should give more control here
+        tenant_details = self.tenant_details()
+
         data = {
             "name": name,
             "memory": memory,
             "version": "5",
             "region": region,
-            # TODO should be figured out from the tenant details in the future
-            "type": self._instance_type(),
+            "type": tenant_details.ds_type,
             "tenant_id": self._tenant_id,
             "cloud_provider": cloud_provider,
         }
@@ -215,6 +246,16 @@ class AuraApi:
             )
 
         return raw_data[0]["id"]  # type: ignore
+
+    def tenant_details(self) -> TenantDetails:
+        if not self._tenant_details:
+            response = req.get(
+                f"{self._base_uri}/v1/tenants/{self._tenant_id}",
+                headers=self._build_header(),
+            )
+            response.raise_for_status()
+            self._tenant_details = TenantDetails.from_json(response.json()["data"])
+        return self._tenant_details
 
     def _build_header(self) -> dict[str, str]:
         return {"Authorization": f"Bearer {self._auth_token()}", "User-agent": f"neo4j-graphdatascience-v{__version__}"}

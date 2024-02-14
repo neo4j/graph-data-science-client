@@ -9,6 +9,7 @@ from graphdatascience.gds_session.aura_api import (
     AuraApi,
     InstanceCreateDetails,
     InstanceSpecificDetails,
+    TenantDetails,
 )
 
 
@@ -346,3 +347,36 @@ def test_parse_create_details() -> None:
     InstanceCreateDetails.from_json(
         {"id": "1", "username": "mats", "password": "1234", "connection_url": "url", "region": "fooo"}
     )
+
+
+def test_parse_tenant_details() -> None:
+    details = TenantDetails.from_json(
+        {
+            "id": "42",
+            "instance_configurations": [
+                {"type": "enterprise-db", "region": "eu-west1", "cloud_provider": "aws"},
+                {"type": "enterprise-ds", "region": "eu-west3", "cloud_provider": "gcp"},
+                {"type": "enterprise-ds", "region": "us-central1", "cloud_provider": "aws"},
+                {"type": "enterprise-ds", "region": "us-central3", "cloud_provider": "aws"},
+            ],
+        }
+    )
+
+    expected_details = TenantDetails(
+        "42", ds_type="enterprise-ds", regions_per_provider={"gcp": {"eu-west3"}, "aws": {"us-central1", "us-central3"}}
+    )
+    assert details == expected_details
+
+
+def test_parse_non_ds_details() -> None:
+    with pytest.raises(
+        RuntimeError, match="Tenant cannot create DS instances. Available instances are `{'enterprise-db'}`."
+    ):
+        TenantDetails.from_json(
+            {
+                "id": "42",
+                "instance_configurations": [
+                    {"type": "enterprise-db", "region": "europe-west1", "cloud_provider": "aws"}
+                ],
+            }
+        )
