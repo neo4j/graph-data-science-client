@@ -1,8 +1,9 @@
-from typing import List
+from typing import Iterable
+
 import textdistance
 
 
-def closest_match(query: str, options: List[str]) -> str:
+def closest_match(query: str, options: Iterable[str]) -> str:
     if not options:
         raise ValueError("No options to choose from.")
 

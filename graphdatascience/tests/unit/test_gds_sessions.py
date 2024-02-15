@@ -83,9 +83,7 @@ class FakeAuraApi(AuraApi):
         return super().wait_for_instance_running(instance_id, sleep_time=0.0001, max_sleep_time=0.001)
 
     def tenant_details(self) -> TenantDetails:
-        return TenantDetails(
-            id=self._tenant_id, ds_type="fake-ds", regions_per_provider={"aws": {"leipzig-1"}}
-        )
+        return TenantDetails(id=self._tenant_id, ds_type="fake-ds", regions_per_provider={"aws": {"leipzig-1"}})
 
 
 @pytest.fixture

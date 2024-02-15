@@ -12,8 +12,8 @@ from graphdatascience.gds_session.aura_api import (
 )
 from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
-from graphdatascience.gds_session.session_sizes import SessionSizeByMemory
 from graphdatascience.gds_session.region_suggester import closest_match
+from graphdatascience.gds_session.session_sizes import SessionSizeByMemory
 
 
 @dataclass
@@ -59,7 +59,7 @@ class GdsSessions:
         db_instance = self._aura_api.list_instance(db_instance_id)
         if not db_instance:
             raise ValueError(f"Could not find Aura instance with the uri `{db_connection.uri}`")
-        
+
         region = self._ds_region(db_instance.region, db_instance.cloud_provider)
 
         create_details = self._aura_api.create_instance(
@@ -137,8 +137,9 @@ class GdsSessions:
 
         if not available_regions:
             raise ValueError(
-                f"Tenant `{tenant_details.id}` cannot create GDS sessions at cloud provider `{cloud_provider}`.")
-        
+                f"Tenant `{tenant_details.id}` cannot create GDS sessions at cloud provider `{cloud_provider}`."
+            )
+
         return closest_match(region, available_regions)
 
     def _construct_client(
