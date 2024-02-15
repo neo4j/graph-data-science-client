@@ -383,7 +383,8 @@ def test_parse_tenant_details() -> None:
 
 def test_parse_non_ds_details() -> None:
     with pytest.raises(
-        RuntimeError, match="Tenant cannot create DS instances. Available instances are `{'enterprise-db'}`."
+        RuntimeError,
+        match="Tenant with id `42` cannot create DS instances. Available instances are `{'enterprise-db'}`.",
     ):
         TenantDetails.from_json(
             {

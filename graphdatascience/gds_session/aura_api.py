@@ -103,11 +103,14 @@ class TenantDetails:
                 ds_type = type
             instance_types.add(configs["type"])
 
+        id = json["id"]
         if not ds_type:
-            raise RuntimeError(f"Tenant cannot create DS instances. Available instances are `{instance_types}`.")
+            raise RuntimeError(
+                f"Tenant with id `{id}` cannot create DS instances. Available instances are `{instance_types}`."
+            )
 
         return cls(
-            id=json["id"],
+            id=id,
             ds_type=ds_type,
             regions_per_provider=regions_per_provider,
         )
