@@ -13,6 +13,7 @@ from graphdatascience.gds_session.aura_api import (
 from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.gds_session.session_sizes import SessionSizeByMemory
+from graphdatascience.gds_session.region_suggester import closest_match
 
 
 @dataclass
@@ -49,7 +50,6 @@ class GdsSessions:
         session_name: str,
         size: SessionSizeByMemory,
         db_connection: DbmsConnectionInfo,
-        region: Optional[str] = None,
     ) -> AuraGraphDataScience:
         connected_instance = self._try_connect(session_name, db_connection)
         if connected_instance is not None:
@@ -59,9 +59,8 @@ class GdsSessions:
         db_instance = self._aura_api.list_instance(db_instance_id)
         if not db_instance:
             raise ValueError(f"Could not find Aura instance with the uri `{db_connection.uri}`")
-
-        region = region if region else db_instance.region
-        self._validate_region(region, db_instance)
+        
+        region = self._ds_region(db_instance.region, db_instance.cloud_provider)
 
         create_details = self._aura_api.create_instance(
             GdsSessions._instance_name(session_name), size.value, db_instance.cloud_provider, region
@@ -132,14 +131,15 @@ class GdsSessions:
 
         return self._construct_client(session_name=session_name, gds_url=gds_url, db_connection=db_connection)
 
-    def _validate_region(self, region: str, db_instance: InstanceSpecificDetails) -> None:
+    def _ds_region(self, region: str, cloud_provider: str) -> str:
         tenant_details = self._aura_api.tenant_details()
-        available_regions = tenant_details.regions_per_provider[db_instance.cloud_provider]
-        if region not in available_regions:
+        available_regions = tenant_details.regions_per_provider[cloud_provider]
+
+        if not available_regions:
             raise ValueError(
-                f"Region `{region}` is not supported by the tenant `{tenant_details.id}`."
-                f" Supported regions: {available_regions}`"
-            )
+                f"Tenant `{tenant_details.id}` cannot create GDS sessions at cloud provider `{cloud_provider}`.")
+        
+        return closest_match(region, available_regions)
 
     def _construct_client(
         self, session_name: str, gds_url: str, db_connection: DbmsConnectionInfo

@@ -84,7 +84,7 @@ class FakeAuraApi(AuraApi):
 
     def tenant_details(self) -> TenantDetails:
         return TenantDetails(
-            id=self._tenant_id, ds_type="fake-ds", regions_per_provider={"aws": {"leipzig-1", "dresden-2"}}
+            id=self._tenant_id, ds_type="fake-ds", regions_per_provider={"aws": {"leipzig-1"}}
         )
 
 
@@ -184,7 +184,7 @@ def test_create_default_session(mocker: MockerFixture, aura_api: AuraApi) -> Non
 
 
 def test_create_session_override_region(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    _setup_db_instance(aura_api)
+    aura_api.create_instance("test", "8GB", "aws", "dresden-2")
 
     sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
     sessions._aura_api = aura_api
@@ -200,11 +200,10 @@ def test_create_session_override_region(mocker: MockerFixture, aura_api: AuraApi
         "my-session",
         SessionSizeByMemory.DEFAULT,
         DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
-        region="dresden-2",
     )
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
     assert instance_details.cloud_provider == "aws"
-    assert instance_details.region == "dresden-2"
+    assert instance_details.region == "leipzig-1"
     assert instance_details.memory == "8GB"
 
 
@@ -397,21 +396,6 @@ def test_create_waiting_forever() -> None:
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is not running after waiting"):
         sessions.get_or_create(
             "one", SessionSizeByMemory.DEFAULT, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
-        )
-
-
-def test_create_session_invalid_region(aura_api: AuraApi) -> None:
-    aura_api.create_instance("test", "8GB", "aws", "only-db-region")
-
-    sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
-    sessions._aura_api = aura_api
-
-    expected_message = "Region `only-db-region` is not supported by the tenant `tenant_id`." " Supported regions:"
-    with pytest.raises(ValueError, match=expected_message):
-        sessions.get_or_create(
-            "my-session",
-            SessionSizes.by_memory().X5L,
-            DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
         )
 
 
