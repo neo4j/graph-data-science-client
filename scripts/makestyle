@@ -14,4 +14,5 @@ jupyter nbconvert \
   --ClearMetadataPreprocessor.enabled=True \
     --ClearMetadataPreprocessor.preserve_cell_metadata_mask='tags' \
   --log-level CRITICAL \
-  ./**/*.ipynb
+  ./examples/*.ipynb \
+  ./examples/dev/*.ipynb

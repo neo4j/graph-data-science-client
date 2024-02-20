@@ -9,7 +9,7 @@ isort --check .
 flake8
 mypy .
 
-NOTEBOOKS="./**/*.ipynb"
+NOTEBOOKS="./examples/*.ipynb ./examples/dev/*.ipynb"
 for f in $NOTEBOOKS
 do
   NB=$(cat $f)
