@@ -9,6 +9,8 @@ from graphdatascience.gds_session.aura_api import (
     AuraApi,
     InstanceCreateDetails,
     InstanceSpecificDetails,
+    TenantDetails,
+    WaitResult,
 )
 
 
@@ -84,6 +86,17 @@ def test_create_instance(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1/tenants/some-tenant",
+        json={
+            "data": {
+                "id": "some_tenant",
+                "instance_configurations": [{"type": "enterprise-ds", "region": "leipzig-1", "cloud_provider": "aws"}],
+            }
+        },
+    )
+
     requests_mock.post(
         "https://api.neo4j.io/v1/instances",
         json={
@@ -102,7 +115,7 @@ def test_create_instance(requests_mock: Mocker) -> None:
 
     api.create_instance("name", "16GB", "gcp", "leipzig-1")
 
-    requested_data = requests_mock.request_history[1].json()
+    requested_data = requests_mock.request_history[-1].json()
     assert requested_data["name"] == "name"
     assert requested_data["memory"] == "16GB"
     assert requested_data["cloud_provider"] == "gcp"
@@ -254,8 +267,9 @@ def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> 
     api = AuraApi("", "", tenant_id="some-tenant")
 
     with caplog.at_level(logging.DEBUG):
-        assert "Instance is not running after waiting for 0.8" in api.wait_for_instance_running(  # type: ignore
-            "id0", max_sleep_time=0.7
+        assert (
+            "Instance is not running after waiting for 0.8"
+            in api.wait_for_instance_running("id0", max_sleep_time=0.7).error
         )
 
     assert "Instance `id0` is not yet running. Current status: creating. Retrying in 0.2 seconds..." in caplog.text
@@ -269,7 +283,7 @@ def test_wait_for_instance_running(requests_mock: Mocker) -> None:
             "data": {
                 "status": "running",
                 "cloud_provider": None,
-                "connection_url": None,
+                "connection_url": "foo.bar",
                 "id": None,
                 "name": None,
                 "region": None,
@@ -281,7 +295,7 @@ def test_wait_for_instance_running(requests_mock: Mocker) -> None:
 
     api = AuraApi("", "", tenant_id="some-tenant")
 
-    assert api.wait_for_instance_running("id0") is None
+    assert api.wait_for_instance_running("id0") == WaitResult.from_connection_url("foo.bar")
 
 
 def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
@@ -319,8 +333,8 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
 
     api = AuraApi("", "", tenant_id="some-tenant")
 
-    assert "Instance is being deleted" in api.wait_for_instance_running("id0")  # type: ignore
-    assert "Instance is being deleted" in api.wait_for_instance_running("id1")  # type: ignore
+    assert api.wait_for_instance_running("id0") == WaitResult.from_error("Instance is being deleted")
+    assert api.wait_for_instance_running("id1") == WaitResult.from_error("Instance is being deleted")
 
 
 def test_extract_id() -> None:
@@ -346,3 +360,37 @@ def test_parse_create_details() -> None:
     InstanceCreateDetails.from_json(
         {"id": "1", "username": "mats", "password": "1234", "connection_url": "url", "region": "fooo"}
     )
+
+
+def test_parse_tenant_details() -> None:
+    details = TenantDetails.from_json(
+        {
+            "id": "42",
+            "instance_configurations": [
+                {"type": "enterprise-db", "region": "eu-west1", "cloud_provider": "aws"},
+                {"type": "enterprise-ds", "region": "eu-west3", "cloud_provider": "gcp"},
+                {"type": "enterprise-ds", "region": "us-central1", "cloud_provider": "aws"},
+                {"type": "enterprise-ds", "region": "us-central3", "cloud_provider": "aws"},
+            ],
+        }
+    )
+
+    expected_details = TenantDetails(
+        "42", ds_type="enterprise-ds", regions_per_provider={"gcp": {"eu-west3"}, "aws": {"us-central1", "us-central3"}}
+    )
+    assert details == expected_details
+
+
+def test_parse_non_ds_details() -> None:
+    with pytest.raises(
+        RuntimeError,
+        match="Tenant with id `42` cannot create DS instances. Available instances are `{'enterprise-db'}`.",
+    ):
+        TenantDetails.from_json(
+            {
+                "id": "42",
+                "instance_configurations": [
+                    {"type": "enterprise-db", "region": "europe-west1", "cloud_provider": "aws"}
+                ],
+            }
+        )

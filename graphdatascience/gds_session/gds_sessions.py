@@ -12,6 +12,7 @@ from graphdatascience.gds_session.aura_api import (
 )
 from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.gds_session.region_suggester import closest_match
 from graphdatascience.gds_session.session_sizes import SessionSizeByMemory
 
 
@@ -45,7 +46,10 @@ class GdsSessions:
         )
 
     def get_or_create(
-        self, session_name: str, size: SessionSizeByMemory, db_connection: DbmsConnectionInfo
+        self,
+        session_name: str,
+        size: SessionSizeByMemory,
+        db_connection: DbmsConnectionInfo,
     ) -> AuraGraphDataScience:
         connected_instance = self._try_connect(session_name, db_connection)
         if connected_instance is not None:
@@ -56,15 +60,17 @@ class GdsSessions:
         if not db_instance:
             raise ValueError(f"Could not find Aura instance with the uri `{db_connection.uri}`")
 
+        region = self._ds_region(db_instance.region, db_instance.cloud_provider)
+
         create_details = self._aura_api.create_instance(
-            GdsSessions._instance_name(session_name), size.value, db_instance.cloud_provider, db_instance.region
+            GdsSessions._instance_name(session_name), size.value, db_instance.cloud_provider, region
         )
         wait_result = self._aura_api.wait_for_instance_running(create_details.id)
-        if wait_result is not None:
-            raise RuntimeError(f"Failed to create session `{session_name}`: {wait_result}")
+        if err := wait_result.error:
+            raise RuntimeError(f"Failed to create session `{session_name}`: {err}")
 
         gds_user = create_details.username
-        gds_url = create_details.connection_url
+        gds_url = wait_result.connection_url
 
         self._change_initial_pw(
             gds_url=gds_url, gds_user=gds_user, initial_pw=create_details.password, new_pw=db_connection.password
@@ -118,16 +124,24 @@ class GdsSessions:
         if len(matched_instances) > 1:
             self._fail_ambiguous_session(session_name, matched_instances)
 
-        instance_details = self._aura_api.list_instance(matched_instances[0].id)
-
-        if instance_details:
-            gds_url = instance_details.connection_url
-        else:
-            raise RuntimeError(
-                f"Unable to get connection information for session `{session_name}`. Does it still exist?"
-            )
+        wait_result = self._aura_api.wait_for_instance_running(matched_instances[0].id)
+        if err := wait_result.error:
+            raise RuntimeError(f"Failed to connect to session `{session_name}`: {err}")
+        gds_url = wait_result.connection_url
 
         return self._construct_client(session_name=session_name, gds_url=gds_url, db_connection=db_connection)
+
+    def _ds_region(self, region: str, cloud_provider: str) -> str:
+        tenant_details = self._aura_api.tenant_details()
+        available_regions = tenant_details.regions_per_provider[cloud_provider]
+
+        match = closest_match(region, available_regions)
+        if not match:
+            raise ValueError(
+                f"Tenant `{tenant_details.id}` cannot create GDS sessions at cloud provider `{cloud_provider}`."
+            )
+
+        return match
 
     def _construct_client(
         self, session_name: str, gds_url: str, db_connection: DbmsConnectionInfo
