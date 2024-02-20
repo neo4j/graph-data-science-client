@@ -135,12 +135,13 @@ class GdsSessions:
         tenant_details = self._aura_api.tenant_details()
         available_regions = tenant_details.regions_per_provider[cloud_provider]
 
-        if not available_regions:
+        match = closest_match(region, available_regions)
+        if not match:
             raise ValueError(
                 f"Tenant `{tenant_details.id}` cannot create GDS sessions at cloud provider `{cloud_provider}`."
             )
 
-        return closest_match(region, available_regions)
+        return match
 
     def _construct_client(
         self, session_name: str, gds_url: str, db_connection: DbmsConnectionInfo
