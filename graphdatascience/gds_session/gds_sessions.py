@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, NamedTuple, Optional
 
 from neo4j import GraphDatabase
 
@@ -36,6 +36,11 @@ class AuraAPICredentials:
     tenant: Optional[str] = None
 
 
+class CloudLocation(NamedTuple):
+    cloud_provider: str
+    region: str
+
+
 class GdsSessions:
     # Hardcoded neo4j user as sessions are always created with this user
     GDS_SESSION_USER = "neo4j"
@@ -44,6 +49,19 @@ class GdsSessions:
         self._aura_api = AuraApi(
             tenant_id=ds_connection.tenant, client_id=ds_connection.client_id, client_secret=ds_connection.client_secret
         )
+        self.ds_location: Optional[CloudLocation] = None
+
+    def set_cloud_location(self, cloud_provider: str, region: str) -> None:
+        location_options = self._aura_api.tenant_details().regions_per_provider
+        if cloud_provider not in location_options.keys():
+            raise ValueError(f"Cloud provider {cloud_provider} not available for tenant."
+                             f" Available providers: {location_options.keys()}")
+        region_options = location_options.get(cloud_provider)
+        if region not in region_options:
+            raise ValueError(f"Region {region} not available for cloud provider {cloud_provider}."
+                             f" Available regions: {region_options}")
+
+        self.ds_location = CloudLocation(region=region, cloud_provider=cloud_provider)
 
     def get_or_create(
         self,
@@ -56,14 +74,19 @@ class GdsSessions:
             return connected_instance
 
         db_instance_id = AuraApi.extract_id(db_connection.uri)
-        db_instance = self._aura_api.list_instance(db_instance_id)
-        if not db_instance:
-            raise ValueError(f"Could not find Aura instance with the uri `{db_connection.uri}`")
+        aura_db_instance = self._aura_api.list_instance(db_instance_id)
 
-        region = self._ds_region(db_instance.region, db_instance.cloud_provider)
+        # TODO move into function
+        if not aura_db_instance:
+            if not self.ds_location:
+                raise ValueError(" Please set a cloud_location to create sessions for self-hosted dbs.")
+            location = self.ds_location
+        else:
+            db_location = CloudLocation(aura_db_instance.cloud_provider, aura_db_instance.region)
+            location = CloudLocation(db_location.cloud_provider, self._ds_region(db_location))
 
         create_details = self._aura_api.create_instance(
-            GdsSessions._instance_name(session_name), size.value, db_instance.cloud_provider, region
+            GdsSessions._instance_name(session_name), size.value, location.cloud_provider, location.region
         )
         wait_result = self._aura_api.wait_for_instance_running(create_details.id)
         if err := wait_result.error:
@@ -131,8 +154,9 @@ class GdsSessions:
 
         return self._construct_client(session_name=session_name, gds_url=gds_url, db_connection=db_connection)
 
-    def _ds_region(self, region: str, cloud_provider: str) -> str:
+    def _ds_region(self, location: CloudLocation) -> str:
         tenant_details = self._aura_api.tenant_details()
+        cloud_provider, region = location
         available_regions = tenant_details.regions_per_provider[cloud_provider]
 
         match = closest_match(region, available_regions)
