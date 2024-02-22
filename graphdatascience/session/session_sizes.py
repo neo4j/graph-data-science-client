@@ -3,6 +3,10 @@ from typing import Type
 
 
 class SessionSizeByMemory(Enum):
+    """
+    Enumeration representing session sizes.
+    """
+
     XS = "1GB"
     S = "2GB"
     SM = "4GB"
@@ -20,4 +24,10 @@ class SessionSizeByMemory(Enum):
 class SessionSizes:
     @staticmethod
     def by_memory() -> Type[SessionSizeByMemory]:
+        """
+        Helper method to specify the memory size of a session.
+        
+        Returns:
+            Type[SessionSizeByMemory]: The SessionSizeByMemory class.
+        """
         return SessionSizeByMemory

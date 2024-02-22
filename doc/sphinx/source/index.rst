@@ -31,4 +31,8 @@ This API reference manual lists all available endpoints in the Neo4j Graph Data 
    model/simple_rel_embedding_model
    misc
    server_version
+   sessions/gds_sessions
+   sessions/dbms_connection_info
+   sessions/session_sizes
+   sessions/gds_property_types
 
