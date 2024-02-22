@@ -30,7 +30,52 @@ sessions = GdsSessions(ds_connection=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET
 
 The `GdsSessions` object is the top-level API which allows you three operations:
 
-- `create_session`: Create a new GDS Session.
-- `list_sessions`: List all GDS Sessions.
-- `delete_session`: Delete a GDS Session.
+- `get_or_create`: Create a new GDS Session, or connect to an existing one.
+- `list`: List all currently active GDS Sessions.
+- `delete`: Delete a GDS Session.
+
+
+== Creating a GDS Session
+
+To create a GDS Session, you need to provide the following information:
+
+- A session name.
+The name must be unique.
+
+- A session size.
+The size determines the amount of memory and CPU available to the session.
+It also determines the cost of running the session.
+Available sizes are listed in xref:gds-session-sizes[].
+
+- A DBMS connection.
+This is a `DbmsConnectionInfo` object that contains the URI of an AuraDB instance, a username, and a password.
+
+With these three pieces of information, we are ready to create a GDS Session.
+
+.Creating a GDS Session:
+[source, python, role=no-test]
+----
+from graphdatascience.gds_session import SessionSizes, DbmsConnectionInfo
+
+name = "my-new-session"
+size = SessionSizes.by_memory().DEFAULT
+db_connection_info = DbmsConnectionInfo("neo4j+s://mydbid.databases.neo4j.io", "my-user", "my-password")
+
+# let's create a GDS session!
+gds = sessions.get_or_create(
+    session_name=name,
+    size=size,
+    db_connection=db_connection_info,
+)
+----
+
+The `get_or_create` method will create a new GDS Session if it does not exist, or connect to an existing one if it does.
+If the session size is different from the existing one, an error will be raised.
+
+
+[[gds-session-sizes]]
+=== Session sizes
+
+Session sizes are logical and specified using the `SessionSizes.by_memory()` enum.
+Possible values are `DEFAULT`, `XS`, `S`, `SM`, `M`, `ML`, `L`, `XL`, `XXL`, `X3L`, `X4L`, `X5L`.
 
