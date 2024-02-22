@@ -18,4 +18,7 @@ include::partial$tutorial-list.adoc[]
 
 * xref:known-limitations.adoc[]
 
+* Appendix
+** xref:appendix/gds-session.adoc[]
+
 * link:{neo4j-docs-base-uri}/graph-data-science-client/{page-version}/api/[API Reference]

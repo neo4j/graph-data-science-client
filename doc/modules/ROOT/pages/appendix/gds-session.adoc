@@ -1,0 +1,36 @@
+= GDS Sessions
+
+A GDS Session is a temporary compute environment for running GDS workloads.
+It is a service offered by Neo4j and runs within Neo4j's Aura cloud platform.
+A GDS Session reads data from a Neo4j DBMS system through a _remote projection_, then runs computations on the projected graph, and lastly can write back the analytical results using _remote write-back_.
+
+NOTE: GDS Sessions are only available for Neo4j AuraDB Enterprise, and not by default. Contact your account manager to get the features enabled.
+
+
+== Pre-requisites
+
+To create a GDS Session, you need to have a Neo4j Aura account.
+Using your account, you need to create Aura API credentials.
+These credentials are a pair of `CLIENT_ID` and `CLIENT_SECRET` that you will use to authenticate with the Aura API.
+For how to create these credentials, see the https://neo4j.com/docs/aura/platform/api/authentication/#_creating_credentials[Aura documentation].
+
+Using these credentials, you will first create a `GdsSessions` object, and then use it to create a new GDS Session.
+
+.Creating a GdsSessions object.
+[source, python, role=no-test]
+----
+from graphdatascience.gds_session import GdsSessions, AuraAPICredentials
+
+CLIENT_ID = "my-aura-api-client-id"
+CLIENT_SECRET = "my-aura-api-client-secret"
+
+# Create a new GdsSessions object
+sessions = GdsSessions(ds_connection=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET))
+----
+
+The `GdsSessions` object is the top-level API which allows you three operations:
+
+- `create_session`: Create a new GDS Session.
+- `list_sessions`: List all GDS Sessions.
+- `delete_session`: Delete a GDS Session.
+
