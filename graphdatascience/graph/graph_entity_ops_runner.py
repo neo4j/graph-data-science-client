@@ -250,13 +250,13 @@ class ToUndirectedRunner(IllegalAttrChecker):
 
     @graph_type_check
     def __call__(self, G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any) -> "Series[Any]":
-        return self._run_procedure(G, relationship_type, mutate_relationship_type)
+        return self._run_procedure(G, relationship_type, mutate_relationship_type, **config)
 
     @graph_type_check
     @compatible_with("estimate", min_inclusive=ServerVersion(2, 3, 0))
     def estimate(self, G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any) -> "Series[Any]":
         self._namespace += ".estimate"
-        return self._run_procedure(G, relationship_type, mutate_relationship_type)
+        return self._run_procedure(G, relationship_type, mutate_relationship_type, **config)
 
 
 class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
