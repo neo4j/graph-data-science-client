@@ -689,6 +689,18 @@ def test_graph_sample_cnarw(runner: CollectingQueryRunner, gds: GraphDataScience
     }
 
 
+def test_graph_relationships_to_undirected(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project("g", "*", "*")
+
+    gds.graph.relationships.toUndirected(G, "REL", "REL_UNDIRECTED", aggregation="MAX")
+
+    assert runner.last_query() == "CALL gds.graph.relationships.toUndirected($graph_name, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "config": {"relationshipType": "REL", "mutateRelationshipType": "REL_UNDIRECTED", "aggregation": "MAX"},
+    }
+
+
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 6, 0))
 def test_remote_projection_on_specific_database(runner: CollectingQueryRunner, aura_gds: AuraGraphDataScience) -> None:
     aura_gds.set_database("bar")
