@@ -79,3 +79,29 @@ If the session size is different from the existing one, an error will be raised.
 Session sizes are logical and specified using the `SessionSizes.by_memory()` enum.
 Possible values are `DEFAULT`, `XS`, `S`, `SM`, `M`, `ML`, `L`, `XL`, `XXL`, `X3L`, `X4L`, `X5L`.
 
+
+== Listing GDS Sessions
+
+To list all currently active GDS Sessions, use the `list` method.
+This will return the name and size of all currently active sessions.
+
+.Listing GDS Sessions:
+[source, python, role=no-test]
+----
+sessions.list()
+----
+
+
+== Deleting a GDS Session
+
+To delete a GDS Session, use the `delete` method.
+This will terminate the session and stop any running costs from accumulating further.
+Deleting a session will not affect the configured AuraDB data source.
+However, any data not written back to the AuraDB instance will be lost.
+
+.Deleting a GDS Session:
+[source, python, role=no-test]
+----
+sessions.delete("my-session-name")
+----
+
