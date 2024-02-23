@@ -7,7 +7,16 @@ A GDS Session reads data from a Neo4j DBMS system through a _remote projection_,
 NOTE: GDS Sessions are only available for Neo4j AuraDB Enterprise, and not by default. Contact your account manager to get the features enabled.
 
 
-== Pre-requisites
+== GDS Session management
+
+The `GdsSessions` object is the top-level API which allows you three operations:
+
+- `get_or_create`: Create a new GDS Session, or connect to an existing one.
+- `list`: List all currently active GDS Sessions.
+- `delete`: Delete a GDS Session.
+
+
+=== Pre-requisites
 
 To create a GDS Session, you need to have a Neo4j Aura account.
 Using your account, you need to create Aura API credentials.
@@ -28,14 +37,8 @@ CLIENT_SECRET = "my-aura-api-client-secret"
 sessions = GdsSessions(ds_connection=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET))
 ----
 
-The `GdsSessions` object is the top-level API which allows you three operations:
 
-- `get_or_create`: Create a new GDS Session, or connect to an existing one.
-- `list`: List all currently active GDS Sessions.
-- `delete`: Delete a GDS Session.
-
-
-== Creating a GDS Session
+=== Creating a GDS Session
 
 To create a GDS Session, you need to provide the following information:
 
@@ -72,15 +75,19 @@ gds = sessions.get_or_create(
 The `get_or_create` method will create a new GDS Session if it does not exist, or connect to an existing one if it does.
 If the session size is different from the existing one, an error will be raised.
 
+The return value of `get_or_create` is a `AuraGraphDataScience` object.
+It offers a similar API to the `GraphDataScience` object, but it is configured to run on a GDS Session.
+By convention, always use the variable name `gds` for the return value of `get_or_create`.
+
 
 [[gds-session-sizes]]
-=== Session sizes
+==== Session sizes
 
 Session sizes are logical and specified using the `SessionSizes.by_memory()` enum.
 Possible values are `DEFAULT`, `XS`, `S`, `SM`, `M`, `ML`, `L`, `XL`, `XXL`, `X3L`, `X4L`, `X5L`.
 
 
-== Listing GDS Sessions
+=== Listing GDS Sessions
 
 To list all currently active GDS Sessions, use the `list` method.
 This will return the name and size of all currently active sessions.
@@ -92,7 +99,7 @@ sessions.list()
 ----
 
 
-== Deleting a GDS Session
+=== Deleting a GDS Session
 
 To delete a GDS Session, use the `delete` method.
 This will terminate the session and stop any running costs from accumulating further.
@@ -104,4 +111,77 @@ However, any data not written back to the AuraDB instance will be lost.
 ----
 sessions.delete("my-session-name")
 ----
+
+
+== Projecting graphs into a GDS Session
+
+Once you have a GDS Session, you can project a graph into it.
+We call this a _remote projection_.
+It is remote because the data source is not a co-located database, but rather a remote one.
+
+A remote projection is done by using the `gds.graph.project` endpoint.
+You will need to provide a graph name, a Cypher query, and additional optional parameters.
+The Cypher query must contain the `gds.graph.project.remote` function, which will project the graph into the GDS Session.
+
+=== Syntax
+
+.Remote projection:
+[source, role=no-test]
+----
+gds.graph.project(
+    graph_name: str,
+    query: str,
+    nodePropertySchema: dict[str, GdsPropertyTypes],
+    relationshipPropertySchema: dict[str, GdsPropertyTypes],
+    undirectedRelationshipTypes: list[str],
+    inverseIndexedRelationshipTypes: list[str],
+): (Graph, Series[Any])
+----
+
+.Parameters:
+[opts="header",cols="3m,1,6", role="no-break"]
+|===
+| Name                            | Optional | Description
+| graph_name                      | no       | Name of the graph.
+| query                           | no       | Projection query.
+| nodePropertySchema              | yes      | Mapping of node property names to their types.
+| relationshipPropertySchema      | yes      | Mapping of relationship property names to their types.
+| undirectedRelationshipTypes     | yes      | List of relationship type names that should be treated as undirected.
+| inverseIndexedRelationshipTypes | yes      | List of relationship type names that should be indexed in reverse.
+|===
+
+.Results:
+[opts="header",cols="1m,1m,4", role="no-break"]
+|===
+| Name   | Type        | Description
+| graph  | Graph       | Graph object representing the projected graph.
+| result | Series[Any] | Statistical data about the projection.
+|===
+
+
+==== Remote projection query syntax
+
+The remote projection query supports the same syntax as a Cypher projection, with two key differences:
+
+. The graph name is not a parameter.
+Instead, the graph name is provided to the `gds.graph.project` endpoint.
+. The `gds.graph.project.remote` function must be used, instead of the `gds.graph.project` function.
+
+For full details and examples on how to write Cypher projection queries, see the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/[Cypher projection documentation in the GDS Manual].
+
+
+==== Property schemas
+
+The optional parameters `nodePropertySchema` and `relationshipPropertySchema` are useful when projecting graphs with multiple node labels or relationship types which have distinct property sets.
+We call such graphs _heterogeneous graphs_.
+If these parameters are not provided, the type of each property will be inferred from the first row of data seen by the projection function.
+For homogeneous graphs, this is usually sufficient, but for heterogeneous graphs, it becomes cumbersome to provide default values for each property on every row of data.
+We recommend to use the property schema parameters always.
+
+
+==== Relationship type undirectedness and inverse indexing
+
+The optional parameters `undirectedRelationshipTypes` and `inverseIndexedRelationshipTypes` are used to configure undirectedness and inverse indexing of relationships.
+These have the same behaviour as is documented in the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/#graph-project-cypher-projection-syntax[GDS Manual].
+
 
