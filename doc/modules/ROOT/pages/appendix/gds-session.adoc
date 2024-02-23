@@ -185,3 +185,73 @@ The optional parameters `undirectedRelationshipTypes` and `inverseIndexedRelatio
 These have the same behaviour as is documented in the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/#graph-project-cypher-projection-syntax[GDS Manual].
 
 
+=== Example
+
+In this example, we will illustrate how to project a graph into a GDS Session.
+The example graph is heterogeneous and models users and products.
+Users can know each other, and users can buy products.
+We assume here that the database connection is to a new, empty AuraDB instance.
+
+.First, we create a GDS Session and add some data to our database.
+[source,python,role=no-test]
+----
+from graphdatascience.gds_session import SessionSizes, DbmsConnectionInfo, GdsSessions, AuraAPICredentials
+
+sessions = GdsSessions(ds_connection=AuraAPICredentials("my-aura-api-client-id", "my-aura-api-client-secret"))
+
+gds = sessions.get_or_create(
+    session_name="my-new-session",
+    size=SessionSizes.by_memory().DEFAULT,
+    db_connection=DbmsConnectionInfo("neo4j+s://mydbid.databases.neo4j.io", "my-user", "my-password"),
+)
+
+gds.run_cypher(
+    """
+    CREATE
+     (u1:User {name: 'Mats'}),
+     (u2:User {name: 'Florentin'}),
+     (p1:Product {name: 'ice cream', cost: 4.2}),
+     (p2:Product {name: 'computer', cost: 13.37})
+
+    CREATE
+     (u1)-[:KNOWS {since: 2020}]->(u2),
+     (u2)-[:BOUGHT {price: 7474}]->(p1)
+    """
+)
+----
+
+Next, we project the graph into the GDS Session.
+There are some node and relationship properties, which we specify using the `nodePropertySchema` and `relationshipPropertySchema` parameters.
+
+[source,python,role=no-test]
+----
+from graphdatascience.gds_session.schema import GdsPropertyTypes
+
+G, result = gds.graph.project(
+    "my-graph",
+    """
+    CALL {
+        MATCH (u1:User)
+        OPTIONAL MATCH (u1)-[r:KNOWS]->(u2:User)
+        RETURN u1 AS source, r AS rel, u2 AS target, {} AS sourceNodeProperties, {} AS targetNodeProperties
+        UNION
+        MATCH (p:Product)
+        OPTIONAL MATCH (p)<-[r:BOUGHT]-(user:User)
+        RETURN user AS source, r AS rel, p AS target, {} AS sourceNodeProperties, {cost: p.cost} AS targetNodeProperties
+    }
+    RETURN gds.graph.project.remote(source, target, {
+      sourceNodeProperties: sourceNodeProperties,
+      targetNodeProperties: targetNodeProperties,
+      sourceNodeLabels: labels(source),
+      targetNodeLabels: labels(target),
+      relationshipType: type(rel),
+      relationshipProperties: properties(rel)
+    })
+    """,
+    nodePropertySchema={"cost": GdsPropertyTypes.DOUBLE},
+    relationshipPropertySchema={"since": GdsPropertyTypes.LONG, "price": GdsPropertyTypes.DOUBLE},
+)
+----
+
+We have now successfully projected a graph from the AuraDB instance to the new GDS Session and are ready to run algorithms.
+
