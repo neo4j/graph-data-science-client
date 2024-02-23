@@ -11,8 +11,8 @@ from graphdatascience.gds_session.aura_api import (
     InstanceSpecificDetails,
 )
 from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.gds_session.cloud_location_resolver import CloudLocationResolver
 from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
-from graphdatascience.gds_session.region_suggester import closest_match
 from graphdatascience.gds_session.session_sizes import SessionSizeByMemory
 
 
@@ -44,6 +44,10 @@ class GdsSessions:
         self._aura_api = AuraApi(
             tenant_id=ds_connection.tenant, client_id=ds_connection.client_id, client_secret=ds_connection.client_secret
         )
+        self.__location_resolver: Optional[CloudLocationResolver] = None
+
+    def set_cloud_location(self, cloud_provider: str, region: str) -> None:
+        self._location_resolver().set_default(cloud_provider, region)
 
     def get_or_create(
         self,
@@ -56,14 +60,17 @@ class GdsSessions:
             return connected_instance
 
         db_instance_id = AuraApi.extract_id(db_connection.uri)
-        db_instance = self._aura_api.list_instance(db_instance_id)
-        if not db_instance:
-            raise ValueError(f"Could not find Aura instance with the uri `{db_connection.uri}`")
+        aura_db_instance = self._aura_api.list_instance(db_instance_id)
 
-        region = self._ds_region(db_instance.region, db_instance.cloud_provider)
+        if not aura_db_instance:
+            location = self._location_resolver().default_location()
+            if not location:
+                raise ValueError(" Please set a cloud_location to create sessions for self-hosted dbs.")
+        else:
+            location = self._location_resolver().for_instance(aura_db_instance)
 
         create_details = self._aura_api.create_instance(
-            GdsSessions._instance_name(session_name), size.value, db_instance.cloud_provider, region
+            GdsSessions._instance_name(session_name), size.value, location.cloud_provider, location.region
         )
         wait_result = self._aura_api.wait_for_instance_running(create_details.id)
         if err := wait_result.error:
@@ -114,6 +121,12 @@ class GdsSessions:
             if instance_detail
         ]
 
+    def _location_resolver(self) -> CloudLocationResolver:
+        # initialize lazy to avoid calls on __init__
+        if not self.__location_resolver:
+            self.__location_resolver = CloudLocationResolver(self._aura_api.tenant_details())
+        return self.__location_resolver
+
     def _try_connect(self, session_name: str, db_connection: DbmsConnectionInfo) -> Optional[AuraGraphDataScience]:
         instance_name = GdsSessions._instance_name(session_name)
         matched_instances = [instance for instance in self._aura_api.list_instances() if instance.name == instance_name]
@@ -130,18 +143,6 @@ class GdsSessions:
         gds_url = wait_result.connection_url
 
         return self._construct_client(session_name=session_name, gds_url=gds_url, db_connection=db_connection)
-
-    def _ds_region(self, region: str, cloud_provider: str) -> str:
-        tenant_details = self._aura_api.tenant_details()
-        available_regions = tenant_details.regions_per_provider[cloud_provider]
-
-        match = closest_match(region, available_regions)
-        if not match:
-            raise ValueError(
-                f"Tenant `{tenant_details.id}` cannot create GDS sessions at cloud provider `{cloud_provider}`."
-            )
-
-        return match
 
     def _construct_client(
         self, session_name: str, gds_url: str, db_connection: DbmsConnectionInfo
