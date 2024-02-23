@@ -1,4 +1,3 @@
-from .gds_session.gds_sessions import GdsSessions
 from .graph.graph_create_result import GraphCreateResult
 from .graph.graph_object import Graph
 from .graph_data_science import GraphDataScience
@@ -13,6 +12,7 @@ from .pipeline.nc_training_pipeline import NCTrainingPipeline
 from .pipeline.nr_training_pipeline import NRTrainingPipeline
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
+from .session.gds_sessions import GdsSessions
 from .version import __version__
 
 __all__ = [

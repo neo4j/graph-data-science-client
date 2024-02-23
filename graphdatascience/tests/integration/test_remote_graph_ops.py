@@ -2,8 +2,8 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 
 GRAPH_NAME = "g"
 

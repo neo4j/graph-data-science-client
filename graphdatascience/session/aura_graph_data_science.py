@@ -5,7 +5,6 @@ from pandas import DataFrame
 from graphdatascience.call_builder import IndirectCallBuilder
 from graphdatascience.endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
-from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.graph.graph_proc_runner import GraphRemoteProcRunner
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
@@ -13,6 +12,7 @@ from graphdatascience.query_runner.aura_db_arrow_query_runner import (
 )
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 
 
 class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):

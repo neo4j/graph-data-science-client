@@ -7,7 +7,7 @@ import pytest
 from pytest_mock import MockerFixture
 from requests_mock import Mocker
 
-from graphdatascience.gds_session.aura_api import (
+from graphdatascience.session.aura_api import (
     AuraApi,
     InstanceCreateDetails,
     InstanceDetails,
@@ -15,13 +15,13 @@ from graphdatascience.gds_session.aura_api import (
     TenantDetails,
     WaitResult,
 )
-from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
-from graphdatascience.gds_session.gds_sessions import (
+from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.session.gds_sessions import (
     AuraAPICredentials,
     GdsSessions,
     SessionInfo,
 )
-from graphdatascience.gds_session.session_sizes import SessionSizeByMemory, SessionSizes
+from graphdatascience.session.session_sizes import SessionSizeByMemory, SessionSizes
 
 
 class FakeAuraApi(AuraApi):

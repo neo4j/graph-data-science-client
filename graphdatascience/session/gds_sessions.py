@@ -5,15 +5,15 @@ from typing import List, Optional
 
 from neo4j import GraphDatabase
 
-from graphdatascience.gds_session.aura_api import (
+from graphdatascience.session.aura_api import (
     AuraApi,
     InstanceDetails,
     InstanceSpecificDetails,
 )
-from graphdatascience.gds_session.aura_graph_data_science import AuraGraphDataScience
-from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
-from graphdatascience.gds_session.region_suggester import closest_match
-from graphdatascience.gds_session.session_sizes import SessionSizeByMemory
+from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.session.region_suggester import closest_match
+from graphdatascience.session.session_sizes import SessionSizeByMemory
 
 
 @dataclass

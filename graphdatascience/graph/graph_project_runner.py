@@ -5,7 +5,7 @@ from typing import Any
 from pandas import Series
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
-from ..gds_session.schema import NODE_PROPERTY_SCHEMA, RELATIONSHIP_PROPERTY_SCHEMA
+from ..session.schema import NODE_PROPERTY_SCHEMA, RELATIONSHIP_PROPERTY_SCHEMA
 from .graph_object import Graph
 from .graph_type_check import from_graph_type_check
 from graphdatascience.call_parameters import CallParameters

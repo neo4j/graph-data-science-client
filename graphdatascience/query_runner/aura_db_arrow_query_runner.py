@@ -5,7 +5,7 @@ from pyarrow import flight
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 
 from ..call_parameters import CallParameters
-from ..gds_session.dbms_connection_info import DbmsConnectionInfo
+from ..session.dbms_connection_info import DbmsConnectionInfo
 from .query_runner import QueryRunner
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.server_version.server_version import ServerVersion
