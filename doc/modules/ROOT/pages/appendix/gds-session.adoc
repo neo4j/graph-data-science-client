@@ -71,12 +71,12 @@ gds = sessions.get_or_create(
 )
 ----
 
-The `get_or_create` method will create a new GDS Session if it does not exist, or connect to an existing one if it does.
+The `get_or_create()` method will create a new GDS Session if it does not exist, or connect to an existing one if it does.
 If the session size is different from the existing one, an error will be raised.
 
-The return value of `get_or_create` is an `AuraGraphDataScience` object.
+The return value of `get_or_create()` is an `AuraGraphDataScience` object.
 It offers a similar API to the `GraphDataScience` object, but it is configured to run on a GDS Session.
-By convention, always use the variable name `gds` for the return value of `get_or_create`.
+By convention, always use the variable name `gds` for the return value of `get_or_create()`.
 
 
 [[gds-session-sizes]]
@@ -88,7 +88,7 @@ Possible values are `DEFAULT`, `XS`, `S`, `SM`, `M`, `ML`, `L`, `XL`, `XXL`, `X3
 
 === Listing GDS Sessions
 
-To list all currently active GDS Sessions, use the `list` method.
+To list all currently active GDS Sessions, use the `list()` method.
 This will return the name and size of all currently active sessions.
 
 .Listing GDS Sessions:
@@ -100,7 +100,7 @@ sessions.list()
 
 === Deleting a GDS Session
 
-To delete a GDS Session, use the `delete` method.
+To delete a GDS Session, use the `delete()` method.
 This will terminate the session and stop any running costs from accumulating further.
 Deleting a session will not affect the configured AuraDB data source.
 However, any data not written back to the AuraDB instance will be lost.
@@ -118,9 +118,9 @@ Once you have a GDS Session, you can project a graph into it.
 We call this a _remote projection_.
 It is remote because the data source is not a co-located database, but rather a remote one.
 
-A remote projection is done by using the `gds.graph.project` endpoint.
+A remote projection is done by using the `gds.graph.project()` endpoint.
 You will need to provide a graph name, a Cypher query, and additional optional parameters.
-The Cypher query must contain the `gds.graph.project.remote` function, which will project the graph into the GDS Session.
+The Cypher query must contain the `gds.graph.project.remote()` function, which will project the graph into the GDS Session.
 
 === Syntax
 
@@ -163,8 +163,8 @@ gds.graph.project(
 The remote projection query supports the same syntax as a Cypher projection, with two key differences:
 
 . The graph name is not a parameter.
-Instead, the graph name is provided to the `gds.graph.project` endpoint.
-. The `gds.graph.project.remote` function must be used, instead of the `gds.graph.project` function.
+Instead, the graph name is provided to the `gds.graph.project()` endpoint.
+. The `gds.graph.project.remote()` function must be used, instead of the `gds.graph.project()` function.
 
 For full details and examples on how to write Cypher projection queries, see the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/[Cypher projection documentation in the GDS Manual].
 
@@ -295,9 +295,9 @@ gds.graph.nodeProperties.write(G, "embedding")
 
 == Querying the database
 
-You can run Cypher queries on the AuraDB instance using the `run_cypher` method.
+You can run Cypher queries on the AuraDB instance using the `run_cypher()` method.
 There is no restriction on the type of query that can be run, but it is important to note that the query will be run on the AuraDB instance, and not on the GDS Session.
-Thus you will not be able to call gds operations from the `run_cypher` method.
+Thus you will not be able to call gds operations from the `run_cypher()` method.
 
 
 [source,python,role=no-test]
