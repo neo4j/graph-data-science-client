@@ -20,6 +20,10 @@ from graphdatascience.session.session_sizes import SessionSizeByMemory
 class SessionInfo:
     """
     Represents information about a session.
+
+    Attributes:
+        name (str): The name of the session.
+        size (str): The size of the session.
     """
 
     name: str

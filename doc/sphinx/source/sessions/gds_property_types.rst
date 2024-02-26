@@ -1,6 +1,6 @@
 GdsPropertyTypes
 ----------------
 
-.. autoclass:: graphdatascience.gds_session.schema.GdsPropertyTypes
+.. autoclass:: graphdatascience.session.schema.GdsPropertyTypes
     :members:
     :inherited-members:
