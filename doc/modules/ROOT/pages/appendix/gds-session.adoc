@@ -108,7 +108,7 @@ However, any data not written back to the AuraDB instance will be lost.
 .Deleting a GDS Session:
 [source, python, role=no-test]
 ----
-sessions.delete("my-session-name")
+sessions.delete("my-new-session")
 ----
 
 
@@ -194,14 +194,16 @@ We assume here that the database connection is to a new, empty AuraDB instance.
 .First, we create a GDS Session and add some data to our database.
 [source,python,role=no-test]
 ----
+import os # for reading environment variables
 from graphdatascience.session import SessionSizes, DbmsConnectionInfo, GdsSessions, AuraAPICredentials
 
-sessions = GdsSessions(ds_connection=AuraAPICredentials("my-aura-api-client-id", "my-aura-api-client-secret"))
+sessions = GdsSessions(ds_connection=AuraAPICredentials(os.environ["CLIENT_ID"], os.environ["CLIENT_SECRET"]))
 
+db_connection = DbmsConnectionInfo(os.environ["DB_URI"], os.environ["DB_USER"], os.environ["DB_PASSWORD"])
 gds = sessions.get_or_create(
     session_name="my-new-session",
     size=SessionSizes.by_memory().DEFAULT,
-    db_connection=DbmsConnectionInfo("neo4j+s://mydbid.databases.neo4j.io", "my-user", "my-password"),
+    db_connection=db_connection,
 )
 
 gds.run_cypher(
@@ -214,7 +216,8 @@ gds.run_cypher(
 
     CREATE
      (u1)-[:KNOWS {since: 2020}]->(u2),
-     (u2)-[:BOUGHT {price: 7474}]->(p1)
+     (u2)-[:BOUGHT {price: 7474}]->(p1),
+     (u1)-[:BOUGHT {price: 1337}]->(p2)
     """
 )
 ----
@@ -267,7 +270,7 @@ Then we will stream the results back joined with the `name` property fetched fro
 [source,python,role=no-test]
 ----
 gds.pageRank.mutate(G, mutateProperty="pr")
-gds.fastRP.mutate(G, featureProperties=["pr"], embeddingDimension=42, mutateProperty="embedding")
+gds.fastRP.mutate(G, featureProperties=["pr"], embeddingDimension=2, nodeSelfInfluence=0.1, mutateProperty="embedding")
 
 gds.graph.nodeProperties.stream(G, db_properties=["name"], node_properties=["pr", "embedding"])
 ----
@@ -286,7 +289,7 @@ Extending the previous example, we will now write back the FastRP embeddings to 
 
 [source,python,role=no-test]
 ----
-gds.graph.nodeProperty.write(G, "embedding")
+gds.graph.nodeProperties.write(G, "embedding")
 ----
 
 
