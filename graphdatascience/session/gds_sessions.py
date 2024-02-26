@@ -41,12 +41,13 @@ class SessionInfo:
 class AuraAPICredentials:
     """
     Represents the credentials required for accessing the Aura API.
-    
+
     Attributes:
         client_id (str): The client ID for authentication.
         client_secret (str): The client secret for authentication.
         tenant (Optional[str]): The tenant for authentication. Needed if a client belongs to multiple tenants.
     """
+
     client_id: str
     client_secret: str
     tenant: Optional[str] = None

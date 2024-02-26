@@ -17,7 +17,7 @@ class DbmsConnectionInfo:
     def auth(self) -> Tuple[str, str]:
         """
         Returns the username and password for authentication.
-        
+
         Returns:
             A tuple containing the username and password.
         """

@@ -26,7 +26,7 @@ class SessionSizes:
     def by_memory() -> Type[SessionSizeByMemory]:
         """
         Helper method to specify the memory size of a session.
-        
+
         Returns:
             Type[SessionSizeByMemory]: The SessionSizeByMemory class.
         """
