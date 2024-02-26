@@ -28,7 +28,7 @@ Using these credentials, you will first create a `GdsSessions` object, and then 
 .Creating a GdsSessions object.
 [source, python, role=no-test]
 ----
-from graphdatascience.gds_session import GdsSessions, AuraAPICredentials
+from graphdatascience.session import GdsSessions, AuraAPICredentials
 
 CLIENT_ID = "my-aura-api-client-id"
 CLIENT_SECRET = "my-aura-api-client-secret"
@@ -58,7 +58,7 @@ With these three pieces of information, we are ready to create a GDS Session.
 .Creating a GDS Session:
 [source, python, role=no-test]
 ----
-from graphdatascience.gds_session import SessionSizes, DbmsConnectionInfo
+from graphdatascience.session import SessionSizes, DbmsConnectionInfo
 
 name = "my-new-session"
 size = SessionSizes.by_memory().DEFAULT
@@ -195,7 +195,7 @@ We assume here that the database connection is to a new, empty AuraDB instance.
 .First, we create a GDS Session and add some data to our database.
 [source,python,role=no-test]
 ----
-from graphdatascience.gds_session import SessionSizes, DbmsConnectionInfo, GdsSessions, AuraAPICredentials
+from graphdatascience.session import SessionSizes, DbmsConnectionInfo, GdsSessions, AuraAPICredentials
 
 sessions = GdsSessions(ds_connection=AuraAPICredentials("my-aura-api-client-id", "my-aura-api-client-secret"))
 
@@ -225,7 +225,7 @@ There are some node and relationship properties, which we specify using the `nod
 
 [source,python,role=no-test]
 ----
-from graphdatascience.gds_session.schema import GdsPropertyTypes
+from graphdatascience.session import GdsPropertyTypes
 
 G, result = gds.graph.project(
     "my-graph",
@@ -254,4 +254,10 @@ G, result = gds.graph.project(
 ----
 
 We have now successfully projected a graph from the AuraDB instance to the new GDS Session and are ready to run algorithms.
+
+
+// Running algorithms, run_algorithm
+// Remote write-back
+// Querying the database, run_cypher
+
 
