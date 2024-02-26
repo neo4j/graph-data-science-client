@@ -7,7 +7,7 @@ import pytest
 from pytest_mock import MockerFixture
 from requests_mock import Mocker
 
-from graphdatascience.gds_session.aura_api import (
+from graphdatascience.session.aura_api import (
     AuraApi,
     InstanceCreateDetails,
     InstanceDetails,
@@ -15,13 +15,13 @@ from graphdatascience.gds_session.aura_api import (
     TenantDetails,
     WaitResult,
 )
-from graphdatascience.gds_session.dbms_connection_info import DbmsConnectionInfo
-from graphdatascience.gds_session.gds_sessions import (
+from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.session.gds_sessions import (
     AuraAPICredentials,
     GdsSessions,
     SessionInfo,
 )
-from graphdatascience.gds_session.session_sizes import SessionSizeByMemory, SessionSizes
+from graphdatascience.session.session_sizes import SessionSizeByMemory, SessionSizes
 
 
 class FakeAuraApi(AuraApi):
@@ -131,10 +131,8 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     def assert_db_credentials(*args: List[Any], **kwargs: Dict[str, Any]) -> None:
         assert kwargs == {"gds_url": "fake-url", "gds_user": "neo4j", "initial_pw": "fake-pw", "new_pw": "db_pw"}
 
-    mocker.patch(
-        "graphdatascience.gds_session.gds_sessions.GdsSessions._construct_client", lambda *args, **kwargs: kwargs
-    )
-    mocker.patch("graphdatascience.gds_session.gds_sessions.GdsSessions._change_initial_pw", assert_db_credentials)
+    mocker.patch("graphdatascience.session.gds_sessions.GdsSessions._construct_client", lambda *args, **kwargs: kwargs)
+    mocker.patch("graphdatascience.session.gds_sessions.GdsSessions._change_initial_pw", assert_db_credentials)
 
     gds_credentials = sessions.get_or_create(
         "my-session",
@@ -163,12 +161,8 @@ def test_create_default_session(mocker: MockerFixture, aura_api: AuraApi) -> Non
     sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
     sessions._aura_api = aura_api
 
-    mocker.patch(
-        "graphdatascience.gds_session.gds_sessions.GdsSessions._construct_client", lambda *args, **kwargs: kwargs
-    )
-    mocker.patch(
-        "graphdatascience.gds_session.gds_sessions.GdsSessions._change_initial_pw", lambda *args, **kwargs: kwargs
-    )
+    mocker.patch("graphdatascience.session.gds_sessions.GdsSessions._construct_client", lambda *args, **kwargs: kwargs)
+    mocker.patch("graphdatascience.session.gds_sessions.GdsSessions._change_initial_pw", lambda *args, **kwargs: kwargs)
 
     sessions.get_or_create(
         "my-session",
@@ -187,12 +181,8 @@ def test_create_session_override_region(mocker: MockerFixture, aura_api: AuraApi
     sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
     sessions._aura_api = aura_api
 
-    mocker.patch(
-        "graphdatascience.gds_session.gds_sessions.GdsSessions._construct_client", lambda *args, **kwargs: kwargs
-    )
-    mocker.patch(
-        "graphdatascience.gds_session.gds_sessions.GdsSessions._change_initial_pw", lambda *args, **kwargs: kwargs
-    )
+    mocker.patch("graphdatascience.session.gds_sessions.GdsSessions._construct_client", lambda *args, **kwargs: kwargs)
+    mocker.patch("graphdatascience.session.gds_sessions.GdsSessions._change_initial_pw", lambda *args, **kwargs: kwargs)
 
     sessions.get_or_create(
         "my-session",
@@ -211,12 +201,8 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
     sessions._aura_api = aura_api
 
-    mocker.patch(
-        "graphdatascience.gds_session.gds_sessions.GdsSessions._construct_client", lambda *args, **kwargs: kwargs
-    )
-    mocker.patch(
-        "graphdatascience.gds_session.gds_sessions.GdsSessions._change_initial_pw", lambda *args, **kwargs: None
-    )
+    mocker.patch("graphdatascience.session.gds_sessions.GdsSessions._construct_client", lambda *args, **kwargs: kwargs)
+    mocker.patch("graphdatascience.session.gds_sessions.GdsSessions._change_initial_pw", lambda *args, **kwargs: None)
 
     gds_args1 = sessions.get_or_create(
         "my-session",

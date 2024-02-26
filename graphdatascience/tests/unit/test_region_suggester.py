@@ -1,4 +1,4 @@
-from graphdatascience.gds_session import region_suggester
+from graphdatascience.session import region_suggester
 
 
 def test_picks_the_only_option() -> None:
