@@ -8,13 +8,11 @@ from .graph_object import Graph
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.graph_create_result import GraphCreateResult
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.session.schema import (
-    NODE_PROPERTY_SCHEMA,
-    RELATIONSHIP_PROPERTY_SCHEMA,
-)
 
 
 class GraphProjectRemoteRunner(IllegalAttrChecker):
+    _SCHEMA_KEYS = ["nodePropertySchema", "relationshipPropertySchema"]
+
     @compatible_with("project", min_inclusive=ServerVersion(2, 6, 0))
     def __call__(self, graph_name: str, query: str, **config: Any) -> GraphCreateResult:
         placeholder = "<>"  # host and token will be added by query runner
@@ -35,6 +33,6 @@ class GraphProjectRemoteRunner(IllegalAttrChecker):
 
     @staticmethod
     def map_property_types(config: dict[str, Any]) -> None:
-        for key in [NODE_PROPERTY_SCHEMA, RELATIONSHIP_PROPERTY_SCHEMA]:
+        for key in GraphProjectRemoteRunner._SCHEMA_KEYS:
             if key in config:
                 config[key] = {k: v.value for k, v in config[key].items()}
