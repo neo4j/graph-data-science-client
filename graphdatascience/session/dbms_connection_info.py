@@ -7,7 +7,7 @@ from typing import Tuple
 @dataclass
 class DbmsConnectionInfo:
     """
-    Represents the connection information for a DBMS.
+    Represents the connection information for a Neo4j DBMS, such as an AuraDB instance.
     """
 
     uri: str
