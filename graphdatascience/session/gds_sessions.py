@@ -18,6 +18,14 @@ from graphdatascience.session.session_sizes import SessionSizeByMemory
 
 @dataclass
 class SessionInfo:
+    """
+    Represents information about a session.
+
+    Attributes:
+        name (str): The name of the session.
+        size (str): The size of the session.
+    """
+
     name: str
     size: str
     type: str
@@ -31,18 +39,39 @@ class SessionInfo:
 
 @dataclass
 class AuraAPICredentials:
+    """
+    Represents the credentials required for accessing the Aura API.
+
+    Attributes:
+        client_id (str): The client ID for authentication.
+        client_secret (str): The client secret for authentication.
+        tenant (Optional[str]): The tenant for authentication. Needed if a client belongs to multiple tenants.
+    """
+
     client_id: str
     client_secret: str
     tenant: Optional[str] = None
 
 
 class GdsSessions:
+    """
+    Primary API class for managing GDS sessions hosted in Neo4j Aura.
+    """
+
     # Hardcoded neo4j user as sessions are always created with this user
     GDS_SESSION_USER = "neo4j"
 
-    def __init__(self, ds_connection: AuraAPICredentials) -> None:
+    def __init__(self, api_credentials: AuraAPICredentials) -> None:
+        """
+        Initializes a new instance of the GdsSessions class.
+
+        Args:
+            api_credentials (AuraAPICredentials): The Aura API credentials used for establishing a connection.
+        """
         self._aura_api = AuraApi(
-            tenant_id=ds_connection.tenant, client_id=ds_connection.client_id, client_secret=ds_connection.client_secret
+            tenant_id=api_credentials.tenant,
+            client_id=api_credentials.client_id,
+            client_secret=api_credentials.client_secret,
         )
 
     def get_or_create(
@@ -51,6 +80,19 @@ class GdsSessions:
         size: SessionSizeByMemory,
         db_connection: DbmsConnectionInfo,
     ) -> AuraGraphDataScience:
+        """
+        Retrieves an existing session with the given session name and database connection,
+        or creates a new session if one does not exist.
+
+        Args:
+            session_name (str): The name of the session.
+            size (SessionSizeByMemory): The size of the session specified by memory.
+            db_connection (DbmsConnectionInfo): The database connection information.
+
+        Returns:
+            AuraGraphDataScience: The session.
+        """
+
         connected_instance = self._try_connect(session_name, db_connection)
         if connected_instance is not None:
             return connected_instance
@@ -101,6 +143,12 @@ class GdsSessions:
         return False
 
     def list(self) -> List[SessionInfo]:
+        """
+        Retrieves the list of GDS sessions visible by the user asscociated by the given api-credentials.
+
+        Returns:
+            A list of SessionInfo objects representing the GDS sessions.
+        """
         all_instances = self._aura_api.list_instances()
         instance_details = [
             self._aura_api.list_instance(instance_id=instance.id)
