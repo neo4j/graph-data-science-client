@@ -160,6 +160,10 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
                 db_properties_df = db_properties_df.melt(
                     id_vars=["nodeId"], var_name="nodeProperty", value_name="propertyValue"
                 )
+
+                if "nodeProperty" not in result.keys():
+                    result["nodeProperty"] = node_properties[0]
+
                 result = pd.concat([result, db_properties_df])
 
         return result
