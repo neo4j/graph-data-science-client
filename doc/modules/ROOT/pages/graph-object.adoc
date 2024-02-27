@@ -452,10 +452,10 @@ gds.graph.drop(G)
 
 The client methods
 
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-node-ops/[`gds.graph.nodeProperty.stream`] (previously `gds.graph.streamNodeProperty`)
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-node-ops/[`gds.graph.nodeProperties.stream`] (previously `gds.graph.streamNodeProperties`)
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/[`gds.graph.relationshipProperty.stream`] (previously `gds.graph.streamRelationshipProperty`)
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/[`gds.graph.relationshipProperties.stream`] (previously `gds.graph.streamRelationshipProperties`)
+* https://neo4j.com/docs/graph-data-science/current/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.nodeProperty.stream`] (previously `gds.graph.streamNodeProperty`)
+* https://neo4j.com/docs/graph-data-science/current/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.nodeProperties.stream`] (previously `gds.graph.streamNodeProperties`)
+* https://neo4j.com/docs/graph-data-science/current/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationshipProperty.stream`] (previously `gds.graph.streamRelationshipProperty`)
+* https://neo4j.com/docs/graph-data-science/current/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationshipProperties.stream`] (previously `gds.graph.streamRelationshipProperties`)
 
 are greatly sped up if https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/[Apache Arrow Flight Server] of GDS is enabled.
 
