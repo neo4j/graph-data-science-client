@@ -126,7 +126,6 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         result: DataFrame,
         config: Dict[str, Any],
     ) -> DataFrame:
-
         # new format was requested, but the query was run via Cypher
         if separate_property_columns and "propertyValue" in result.keys():
             wide_result = result.pivot(index=["nodeId"], columns=["nodeProperty"], values="propertyValue")
