@@ -28,13 +28,14 @@ class SessionInfo:
 
     name: str
     size: str
-    type: str
 
     @classmethod
     def from_specific_instance_details(cls, instance_details: InstanceSpecificDetails) -> SessionInfo:
-        return SessionInfo(
-            GdsSessionNameHelper.session_name(instance_details.name), instance_details.memory, instance_details.type
-        )
+        sizes = [size.name for size in SessionSizeByMemory if size.value == instance_details.memory]
+
+        assert len(sizes) == 1, f"Expected to find exactly one size for memory `{instance_details.memory}`"
+
+        return SessionInfo(GdsSessionNameHelper.session_name(instance_details.name), sizes[0])
 
 
 @dataclass
