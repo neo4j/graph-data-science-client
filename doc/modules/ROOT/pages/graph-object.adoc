@@ -462,7 +462,7 @@ are greatly sped up if https://neo4j.com/docs/graph-data-science/current/install
 Additionally, setting the client only optional keyword parameter `separate_property_columns=True` (it defaults to `False`) for `gds.graph.streamNodeProperties` and `gds.graph.streamRelationshipProperties` returns a pandas `DataFrame` in which each property requested has its own column.
 Note that this is different from the default behavior for which there would only be one column called `propertyValue` that contains all properties requested interleaved for each node or relationship.
 
-`gds.graph.nodeProperties.stream` also takes an additional optional client only parameter `db_node_properties`, which takes a list of string representing node properties that are only in the Neo4j DB, but not on the in-memory graph.
+`gds.graph.nodeProperties.stream` and `gds.graph.nodeProperty.stream` also take an additional optional client only parameter `db_node_properties`, which takes a list of string representing node properties that are only in the Neo4j DB, but not on the in-memory graph.
 This can be used as a convenience parameter to fetch DB-only properties (for example, `String` type node properties that are not supported in-memory) and enrich streamed results.
 
 
