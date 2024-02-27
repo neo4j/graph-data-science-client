@@ -465,6 +465,8 @@ Note that this is different from the default behavior for which there would only
 `gds.graph.nodeProperties.stream` and `gds.graph.nodeProperty.stream` also take an additional optional client only parameter `db_node_properties`, which takes a list of string representing node properties that are only in the Neo4j DB, but not on the in-memory graph.
 This can be used as a convenience parameter to fetch DB-only properties (for example, `String` type node properties that are not supported in-memory) and enrich streamed results.
 
+When this parameter is used with `gds.graph.nodeProperty.stream`, an additional column `nodeProperty` is added to the result, mirroring the return value of `gds.graph.nodeProperties.stream`.
+
 
 ==== Streaming topology by relationship type
 
