@@ -77,6 +77,26 @@ class GraphElementPropertyRunner(GraphEntityOpsBaseRunner):
         return self._handle_properties(G, node_properties, node_labels, config)
 
 
+class GraphNodePropertyRunner(GraphEntityOpsBaseRunner):
+    @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
+    @filter_id_func_deprecation_warning()
+    def stream(
+        self,
+        G: Graph,
+        node_property: str,
+        node_labels: Strings = ["*"],
+        db_node_properties: List[str] = [],
+        **config: Any,
+    ) -> DataFrame:
+        self._namespace += ".stream"
+
+        result = self._handle_properties(G, node_property, node_labels, config)
+
+        return GraphNodePropertiesRunner._process_result(
+            self._query_runner, list(node_property), False, db_node_properties, result, config
+        )
+
+
 class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
     @filter_id_func_deprecation_warning()
@@ -92,6 +112,20 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         self._namespace += ".stream"
 
         result = self._handle_properties(G, node_properties, node_labels, config)
+
+        return GraphNodePropertiesRunner._process_result(
+            self._query_runner, node_properties, separate_property_columns, db_node_properties, result, config
+        )
+
+    @staticmethod
+    def _process_result(
+        query_runner: QueryRunner,
+        node_properties: List[str],
+        separate_property_columns: bool,
+        db_node_properties: List[str],
+        result: DataFrame,
+        config: Dict[str, Any],
+    ) -> DataFrame:
 
         # new format was requested, but the query was run via Cypher
         if separate_property_columns and "propertyValue" in result.keys():
@@ -116,8 +150,8 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
                 )
 
             unique_node_ids = result["nodeId"].drop_duplicates().tolist()
-            db_properties_df = self._query_runner.run_cypher(
-                self._build_query(db_node_properties), {"ids": unique_node_ids}
+            db_properties_df = query_runner.run_cypher(
+                GraphNodePropertiesRunner._build_query(db_node_properties), {"ids": unique_node_ids}
             )
 
             if "propertyValue" not in result.keys():
