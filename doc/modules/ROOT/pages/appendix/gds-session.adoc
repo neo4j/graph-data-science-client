@@ -2,28 +2,23 @@
 
 A GDS Session is a temporary compute environment for running GDS workloads.
 It is a service offered by Neo4j and runs within Neo4j's Aura cloud platform.
-A GDS Session reads data from a Neo4j DBMS system through a _remote projection_, then runs computations on the projected graph, and lastly can write back the analytical results using _remote write-back_.
+A GDS Session reads data from a Neo4j DBMS through a _remote projection_, runs computations on the projected graph, and optionally writes the results back to the DBMS using _remote write-back_.
 
 NOTE: GDS Sessions are only available for Neo4j AuraDB Enterprise, and not by default. Contact your account manager to get the features enabled.
 
 
 == GDS Session management
 
-The `GdsSessions` object is the top-level API which allows you three operations:
+The `GdsSessions` object is the API entry point to the following operations:
 
 - `get_or_create`: Create a new GDS Session, or connect to an existing one.
 - `list`: List all currently active GDS Sessions.
 - `delete`: Delete a GDS Session.
 
 
-=== Pre-requisites
 
-To create a GDS Session, you need to have a Neo4j Aura account.
-Using your account, you need to create Aura API credentials.
-These credentials are a pair of `CLIENT_ID` and `CLIENT_SECRET` that you will use to authenticate with the Aura API.
-For how to create these credentials, see the https://neo4j.com/docs/aura/platform/api/authentication/#_creating_credentials[Aura documentation].
-
-Using these credentials, you will create a `GdsSessions` object, and use it to create a new GDS Session.
+You need Neo4j Aura API credentials (`CLIENT_ID` and `CLIENT_SECRET`) to create a `GdsSessions` object.
+See the link:{neo4j-docs-base-uri}/aura/platform/api/authentication/#_creating_credentials[Aura documentation] for instructions on how to create API credentials from your Neo4j Aura account.
 
 .Creating a GdsSessions object:
 [source, python, role=no-test]
@@ -48,12 +43,11 @@ The name must be unique.
 - **Session size**.
 The size determines the amount of memory and CPU available to the session.
 It also determines the cost of running the session.
-Available sizes are listed in xref:gds-session-sizes[].
+Available sizes are listed <<gds-session-sizes, below>>.
 
 - **DBMS connection**.
 This is a `DbmsConnectionInfo` object that contains the URI of an AuraDB instance, a username, and a password.
 
-With these pieces of information, we are ready to create a GDS Session.
 
 .Creating a GDS Session:
 [source, python, role=no-test]
@@ -71,25 +65,24 @@ gds = sessions.get_or_create(
 )
 ----
 
-The `get_or_create()` method will create a new GDS Session if it does not exist, or connect to an existing one if it does.
-If the session size is different from the existing one, an error will be raised.
+The `get_or_create()` method creates a new GDS Session if it does not exist, or connects to an existing one if it does.
+If the session size is different from the existing one, an error is raised.
 
 The return value of `get_or_create()` is an `AuraGraphDataScience` object.
 It offers a similar API to the `GraphDataScience` object, but it is configured to run on a GDS Session.
-By convention, always use the variable name `gds` for the return value of `get_or_create()`.
+As a convention, always use the variable name `gds` for the return value of `get_or_create()`.
 
 
 [[gds-session-sizes]]
 ==== Session sizes
 
-Session sizes are logical and specified using the `SessionSizes.by_memory()` enum.
+Session sizes are specified using the `SessionSizes.by_memory()` enum.
 Possible values are `DEFAULT`, `XS`, `S`, `SM`, `M`, `ML`, `L`, `XL`, `XXL`, `X3L`, `X4L`, `X5L`.
 
 
 === Listing GDS Sessions
 
-To list all currently active GDS Sessions, use the `list()` method.
-This will return the name and size of all currently active sessions.
+The `list()` method returns the name and size of all currently active GDS Sessions.
 
 .Listing GDS Sessions:
 [source, python, role=no-test]
@@ -100,7 +93,7 @@ sessions.list()
 
 === Deleting a GDS Session
 
-To delete a GDS Session, use the `delete()` method.
+Use the `delete()` method to delete a GDS Session.
 This will terminate the session and stop any running costs from accumulating further.
 Deleting a session will not affect the configured AuraDB data source.
 However, any data not written back to the AuraDB instance will be lost.
@@ -115,12 +108,10 @@ sessions.delete("my-new-session")
 == Projecting graphs into a GDS Session
 
 Once you have a GDS Session, you can project a graph into it.
-We call this a _remote projection_.
-It is remote because the data source is not a co-located database, but rather a remote one.
+This operation is called _remote projection_ because the data source is not a co-located database, but rather a remote one.
 
-A remote projection is done by using the `gds.graph.project()` endpoint.
-You will need to provide a graph name, a Cypher query, and additional optional parameters.
-The Cypher query must contain the `gds.graph.project.remote()` function, which will project the graph into the GDS Session.
+You can create a remote projection using the `gds.graph.project()` endpoint with a graph name, a Cypher query, and additional optional parameters.
+The Cypher query must contain the `gds.graph.project.remote()` function to project the graph into the GDS Session.
 
 === Syntax
 
@@ -171,8 +162,7 @@ For full details and examples on how to write Cypher projection queries, see the
 
 ==== Property schemas
 
-The optional parameters `nodePropertySchema` and `relationshipPropertySchema` are useful when projecting graphs with multiple node labels or relationship types which have distinct property sets.
-We call such graphs _heterogeneous graphs_.
+The optional parameters `nodePropertySchema` and `relationshipPropertySchema` are useful when projecting graphs with multiple node labels or relationship types which have distinct property sets (_heterogeneous graphs_).
 If these parameters are not provided, the type of each property will be inferred from the first row of data seen by the projection function.
 For homogeneous graphs, this is usually sufficient, but for heterogeneous graphs, it becomes cumbersome to provide default values for each property on every row of data.
 We recommend to use the property schema parameters always.
@@ -181,15 +171,15 @@ We recommend to use the property schema parameters always.
 ==== Relationship type undirectedness and inverse indexing
 
 The optional parameters `undirectedRelationshipTypes` and `inverseIndexedRelationshipTypes` are used to configure undirectedness and inverse indexing of relationships.
-These have the same behaviour as is documented in the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/#graph-project-cypher-projection-syntax[GDS Manual].
+These have the same behavior as documented in the link:{neo4j-docs-base-uri}/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/#graph-project-cypher-projection-syntax[GDS Manual].
 
 
 === Example
 
-In this example, we will illustrate how to project a graph into a GDS Session.
+This example shows how to project a graph into a GDS Session.
 The example graph is heterogeneous and models users and products.
 Users can know each other, and users can buy products.
-We assume here that the database connection is to a new, empty AuraDB instance.
+The database connection is to a new, empty AuraDB instance.
 
 .First, we create a GDS Session and add some data to our database.
 [source,python,role=no-test]
@@ -222,8 +212,7 @@ gds.run_cypher(
 )
 ----
 
-Next, we project the graph into the GDS Session.
-There are some node and relationship properties, which we specify using the `nodePropertySchema` and `relationshipPropertySchema` parameters.
+With the `gds` GDS Session active, project the graph and specify node and relationship property schemas as follows:
 
 [source,python,role=no-test]
 ----
@@ -255,7 +244,6 @@ G, result = gds.graph.project(
 )
 ----
 
-We have now successfully projected a graph from the AuraDB instance to the new GDS Session and are ready to run algorithms.
 
 == Running algorithms
 
