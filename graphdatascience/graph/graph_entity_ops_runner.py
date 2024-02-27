@@ -140,7 +140,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         # old format was requested but the query was run via Arrow
         elif not separate_property_columns and "propertyValue" not in result.keys():
             id_vars = ["nodeId", "nodeLabels"] if config.get("listNodeLabels", False) else ["nodeId"]
-            result = result.melt(id_vars=id_vars).rename(columns={"variable": "nodeProperty", "value": "propertyValue"})
+            result = result.melt(id_vars=id_vars, var_name="nodeProperty", value_name="propertyValue")
 
         if db_node_properties:
             duplicate_properties = set(db_node_properties).intersection(set(node_properties))
@@ -157,8 +157,8 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
             if "propertyValue" not in result.keys():
                 result = result.join(db_properties_df.set_index("nodeId"), on="nodeId")
             else:
-                db_properties_df = db_properties_df.melt(id_vars=["nodeId"]).rename(
-                    columns={"variable": "nodeProperty", "value": "propertyValue"}
+                db_properties_df = db_properties_df.melt(
+                    id_vars=["nodeId"], var_name="nodeProperty", value_name="propertyValue"
                 )
                 result = pd.concat([result, db_properties_df])
 
