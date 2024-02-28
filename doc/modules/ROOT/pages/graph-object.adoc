@@ -440,7 +440,7 @@ exists_result = gds.graph.exists("offices")
 assert exists_result["exists"]
 
 # Stream the node property 'degree'
-result = gds.graph.nodeProperty.stream(G, node_properties="degree")
+result = gds.graph.nodeProperty.stream(G, node_property="degree")
 
 # Drop a graph; same as G.drop()
 gds.graph.drop(G)
