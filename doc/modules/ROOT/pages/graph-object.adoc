@@ -467,7 +467,7 @@ Note that this is different from the default behavior for which there would only
 ==== Including node properties from Neo4j
 
 Graph projections cannot include non-numeric node properties such as names and addresses, because `String`-type node properties are not supported in memory.
-To fetch additional node properties directly from the Neo4j database, you can use the `db_node_properties` client-only parameter of the `gds.graph.nodeProperties.stream` method.
+To fetch additional node properties directly from the Neo4j database, you can use the `db_node_properties` client-only parameter of the `gds.graph.nodeProperty.stream` and `gds.graph.nodeProperties.stream` methods.
 
 In the following example, the `City` nodes have both a numeric and a `String` property; attempting to include the `name` property in the projection would fail with an `UnsupportedOperationException`.
 Instead, the `stream` method retrieves the values of the database-only `name` property alongside the values of the projected `population` property.
