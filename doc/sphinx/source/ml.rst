@@ -196,19 +196,19 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Return a list of selected values in a one hot encoding format.
 
-.. py:function:: gds.beta.hashgnn.mutate(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.hashgnn.mutate(G: Graph, **config: Any) -> Series[Any]
 
     HashGNN creates node embeddings by hashing and message passing.
 
-.. py:function:: gds.beta.hashgnn.mutate.estimate(G: Graph, **config: Any) -> DataFrame
+.. py:function:: gds.hashgnn.mutate.estimate(G: Graph, **config: Any) -> DataFrame
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.beta.hashgnn.stream(G: Graph, **config: Any) -> DataFrame
+.. py:function:: gds.hashgnn.stream(G: Graph, **config: Any) -> DataFrame
 
     HashGNN creates node embeddings by hashing and message passing.
 
-.. py:function:: gds.beta.hashgnn.stream.estimate(G: Graph, **config: Any) -> DataFrame
+.. py:function:: gds.hashgnn.stream.estimate(G: Graph, **config: Any) -> DataFrame
 
     Returns an estimation of the memory consumption for that procedure.
 
