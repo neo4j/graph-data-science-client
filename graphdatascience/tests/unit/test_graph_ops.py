@@ -186,6 +186,8 @@ def test_graph_streamNodeProperty(runner: CollectingQueryRunner, gds: GraphDataS
 def test_graph_nodeProperty_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
+    runner.set__mock_result(DataFrame([{"nodeId": 0, "propertyValue": 2}]))
+
     gds.graph.nodeProperty.stream(G, "dummyProp", concurrency=2)
     assert runner.last_query() == "CALL gds.graph.nodeProperty.stream($graph_name, $properties, $entities, $config)"
     assert runner.last_params() == {
