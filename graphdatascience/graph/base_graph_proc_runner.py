@@ -18,6 +18,7 @@ from .graph_entity_ops_runner import (
     GraphElementPropertyRunner,
     GraphLabelRunner,
     GraphNodePropertiesRunner,
+    GraphNodePropertyRunner,
     GraphPropertyRunner,
     GraphRelationshipPropertiesRunner,
     GraphRelationshipRunner,
@@ -379,9 +380,9 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         )
 
     @property
-    def nodeProperty(self) -> GraphElementPropertyRunner:
+    def nodeProperty(self) -> GraphNodePropertyRunner:
         self._namespace += ".nodeProperty"
-        return GraphElementPropertyRunner(self._query_runner, self._namespace, self._server_version)
+        return GraphNodePropertyRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def nodeProperties(self) -> GraphNodePropertiesRunner:

@@ -370,19 +370,52 @@ def test_graph_nodeProperty_stream_without_arrow(gds_without_arrow: GraphDataSci
     assert {e for e in result["propertyValue"]} == {1, 2, 3}
 
 
-def test_graph_streamNodeProperties_with_arrow(gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_nodeProperty_stream_db_properties(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    with pytest.warns(DeprecationWarning):
-        result = gds.graph.streamNodeProperties(G, ["x", "y"], concurrency=2)
+    result = gds.graph.nodeProperty.stream(G, "x", db_node_properties=["z", "name"], concurrency=2)
 
-    assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
+    assert {"nodeId", "nodeProperty", "propertyValue"}.issubset(set(result.keys()))
 
     x_values = result[result.nodeProperty == "x"]
     assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
 
-    y_values = result[result.nodeProperty == "y"]
-    assert {e for e in y_values["propertyValue"]} == {2, 3, 4}
+    z_values = result[result.nodeProperty == "z"]
+    assert len(z_values) == 3
+    for e in z_values["propertyValue"]:
+        assert e in [[9], [42], [1337]]
+
+    name_values = result[result.nodeProperty == "name"]
+    assert {e for e in name_values["propertyValue"]} == {"nodeA", "nodeB", "nodeC"}
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_nodeProperty_stream_db_properties_without_arrow(gds_without_arrow: GraphDataScience) -> None:
+    G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    result = gds_without_arrow.graph.nodeProperty.stream(G, "x", db_node_properties=["z", "name"], concurrency=2)
+
+    assert {"nodeId", "nodeProperty", "propertyValue"}.issubset(set(result.keys()))
+
+    x_values = result[result.nodeProperty == "x"]
+    assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
+
+    z_values = result[result.nodeProperty == "z"]
+    assert len(z_values) == 3
+    for e in z_values["propertyValue"]:
+        assert e in [[9], [42], [1337]]
+
+    name_values = result[result.nodeProperty == "name"]
+    assert {e for e in name_values["propertyValue"]} == {"nodeA", "nodeB", "nodeC"}
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_nodeProperty_stream_raise_error_with_duplicate_keys(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    with pytest.raises(ValueError, match="Duplicate property keys '{'x'}' in db_node_properties and node_properties."):
+        gds.graph.nodeProperty.stream(G, "x", db_node_properties=["x", "z", "name"], concurrency=2)
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))

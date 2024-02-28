@@ -136,7 +136,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Writes the given node properties to an online Neo4j database.
 
-.. py:function:: gds.graph.nodeProperty.stream(G: Graph, node_properties: str, node_labels: Strings = ["*"], **config: Any) -> DataFrame
+.. py:function:: gds.graph.nodeProperty.stream(G: Graph, node_properties: str, node_labels: Strings = ["*"], db_node_properties: List[str] = [], **config: Any) -> DataFrame
 
     Streams the given node property.
 

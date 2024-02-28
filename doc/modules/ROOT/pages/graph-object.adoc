@@ -440,7 +440,7 @@ exists_result = gds.graph.exists("offices")
 assert exists_result["exists"]
 
 # Stream the node property 'degree'
-result = gds.graph.nodeProperty.stream(G, node_properties="degree")
+result = gds.graph.nodeProperty.stream(G, node_property="degree")
 
 # Drop a graph; same as G.drop()
 gds.graph.drop(G)
@@ -452,18 +452,20 @@ gds.graph.drop(G)
 
 The client methods
 
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-node-ops/[`gds.graph.nodeProperty.stream`] (previously `gds.graph.streamNodeProperty`)
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-node-ops/[`gds.graph.nodeProperties.stream`] (previously `gds.graph.streamNodeProperties`)
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/[`gds.graph.relationshipProperty.stream`] (previously `gds.graph.streamRelationshipProperty`)
-* https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/[`gds.graph.relationshipProperties.stream`] (previously `gds.graph.streamRelationshipProperties`)
+* https://neo4j.com/docs/graph-data-science/current/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.nodeProperty.stream`] (previously `gds.graph.streamNodeProperty`)
+* https://neo4j.com/docs/graph-data-science/current/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.nodeProperties.stream`] (previously `gds.graph.streamNodeProperties`)
+* https://neo4j.com/docs/graph-data-science/current/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationshipProperty.stream`] (previously `gds.graph.streamRelationshipProperty`)
+* https://neo4j.com/docs/graph-data-science/current/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationshipProperties.stream`] (previously `gds.graph.streamRelationshipProperties`)
 
 are greatly sped up if https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/[Apache Arrow Flight Server] of GDS is enabled.
 
 Additionally, setting the client only optional keyword parameter `separate_property_columns=True` (it defaults to `False`) for `gds.graph.streamNodeProperties` and `gds.graph.streamRelationshipProperties` returns a pandas `DataFrame` in which each property requested has its own column.
 Note that this is different from the default behavior for which there would only be one column called `propertyValue` that contains all properties requested interleaved for each node or relationship.
 
-`gds.graph.nodeProperties.stream` also takes an additional optional client only parameter `db_node_properties`, which takes a list of string representing node properties that are only in the Neo4j DB, but not on the in-memory graph.
+`gds.graph.nodeProperties.stream` and `gds.graph.nodeProperty.stream` also take an additional optional client only parameter `db_node_properties`, which takes a list of string representing node properties that are only in the Neo4j DB, but not on the in-memory graph.
 This can be used as a convenience parameter to fetch DB-only properties (for example, `String` type node properties that are not supported in-memory) and enrich streamed results.
+
+When this parameter is used with `gds.graph.nodeProperty.stream`, an additional column `nodeProperty` is added to the result, mirroring the return value of `gds.graph.nodeProperties.stream`.
 
 
 ==== Streaming topology by relationship type
