@@ -4,7 +4,7 @@ A GDS Session is a temporary compute environment for running GDS workloads.
 It is a service offered by Neo4j and runs within Neo4j's Aura cloud platform.
 A GDS Session reads data from a Neo4j DBMS through a _remote projection_, runs computations on the projected graph, and optionally writes the results back to the DBMS using _remote write-back_.
 
-NOTE: GDS Sessions are only available for Neo4j AuraDB Enterprise, and not by default. Contact your account manager to get the features enabled.
+NOTE: GDS Sessions are not available by default. Contact your account manager to get the features enabled.
 
 
 == GDS Session management
