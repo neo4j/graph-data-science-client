@@ -9,6 +9,8 @@
 * xref:rel-embedding-models.adoc[]
 * xref:bookmarks.adoc[]
 
+* xref:gds-session.adoc[]
+
 * xref:tutorials/tutorials.adoc[]
 // https://docs.antora.org/antora/latest/navigation/include-lists/
 +
@@ -17,8 +19,5 @@ include::partial$tutorial-list.adoc[]
 --
 
 * xref:known-limitations.adoc[]
-
-* Appendix
-** xref:appendix/gds-session.adoc[]
 
 * link:{neo4j-docs-base-uri}/graph-data-science-client/{page-version}/api/[API Reference]
