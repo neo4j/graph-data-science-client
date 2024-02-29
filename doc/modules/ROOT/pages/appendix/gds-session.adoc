@@ -77,7 +77,7 @@ As a convention, always use the variable name `gds` for the return value of `get
 ==== Session sizes
 
 Session sizes are specified using the `SessionSizes.by_memory()` enum.
-Possible values are `DEFAULT`, `XS`, `S`, `SM`, `M`, `ML`, `L`, `XL`, `XXL`, `X3L`, `X4L`, `X5L`.
+Possible values are `DEFAULT` (same as `M`), `XS`, `S`, `SM`, `M`, `ML`, `L`, `XL`, `XXL`, `X3L`, `X4L`, `X5L`.
 
 
 === Listing GDS Sessions
@@ -163,9 +163,10 @@ For full details and examples on how to write Cypher projection queries, see the
 ==== Property schemas
 
 The optional parameters `nodePropertySchema` and `relationshipPropertySchema` are useful when projecting graphs with multiple node labels or relationship types which have distinct property sets (_heterogeneous graphs_).
-If these parameters are not provided, the type of each property will be inferred from the first row of data seen by the projection function.
-For homogeneous graphs, this is usually sufficient, but for heterogeneous graphs, it becomes cumbersome to provide default values for each property on every row of data.
-We recommend to use the property schema parameters always.
+
+If these parameters are not provided, the type of each property is inferred from the first row of data seen by the projection function.
+For homogeneous graphs this is usually sufficient, while for heterogeneous graphs it is not.
+For this reason, we recommend to always use the property schema parameters.
 
 
 ==== Relationship type undirectedness and inverse indexing
@@ -247,33 +248,28 @@ G, result = gds.graph.project(
 
 == Running algorithms
 
-You can run algorithms on a remotely projected graph in the same way as you would on any other graph.
-For a full list of available algorithms, see the https://neo4j.com/docs/graph-data-science-client/{page-version}/api/[API reference].
-
-=== Example 
-
-Extending the previous example, we will now run the PageRank and FastRP algorithms on the projected graph.
-Then we will stream the results back joined with the `name` property fetched from the db.
+You can run algorithms on a remotely projected graph in the same way you would on any projected graph.
+For instance, you can run the PageRank and FastRP algorithms on the projected graph from the previous example as follows:
 
 [source,python,role=no-test]
 ----
 gds.pageRank.mutate(G, mutateProperty="pr")
 gds.fastRP.mutate(G, featureProperties=["pr"], embeddingDimension=2, nodeSelfInfluence=0.1, mutateProperty="embedding")
 
+# Stream the results back together with the `name` property fetched from the database
 gds.graph.nodeProperties.stream(G, db_properties=["name"], node_properties=["pr", "embedding"])
 ----
 
+For a full list of the available algorithms, see the https://neo4j.com/docs/graph-data-science-client/{page-version}/api/[API reference].
 
 == Remote write-back
 
-The GDS Session's in-memory graph was projected from data in AuraDB.
-Write back operations will thus persist the data back to the same AuraDB.
-When calling any write operations the GDS Python client will automatically use the remote write back functionality.
+The GDS Session's in-memory graph was projected from data in AuraDB, so write-back operations will persist the data back to the same AuraDB instance.
+When calling any write operations, the GDS Python client will automatically use the remote write-back functionality.
 This includes all `.write` algorithm modes as well as all `.write` graph operations.
 
-=== Example
 
-Extending the previous example, we will now write back the FastRP embeddings to the AuraDB instance.
+Extending the previous example, you can write back the FastRP embeddings to the AuraDB instance as follows:
 
 [source,python,role=no-test]
 ----
@@ -285,14 +281,12 @@ gds.graph.nodeProperties.write(G, "embedding")
 
 You can run Cypher queries on the AuraDB instance using the `run_cypher()` method.
 There is no restriction on the type of query that can be run, but it is important to note that the query will be run on the AuraDB instance, and not on the GDS Session.
-Thus you will not be able to call gds operations from the `run_cypher()` method.
+Therefore, you will not be able to call any GDS procedures from the `run_cypher()` method.
 
 
 [source,python,role=no-test]
 ----
 gds.run_cypher("MATCH (n:User) RETURN n.name, n.embedding")
 ----
-
-We have now integrated our analytical results with the original data in the AuraDB instance.
 
 
