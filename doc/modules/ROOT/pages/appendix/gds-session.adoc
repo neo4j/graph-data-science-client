@@ -257,7 +257,7 @@ gds.pageRank.mutate(G, mutateProperty="pr")
 gds.fastRP.mutate(G, featureProperties=["pr"], embeddingDimension=2, nodeSelfInfluence=0.1, mutateProperty="embedding")
 
 # Stream the results back together with the `name` property fetched from the database
-gds.graph.nodeProperties.stream(G, db_properties=["name"], node_properties=["pr", "embedding"])
+gds.graph.nodeProperties.stream(G, db_node_properties=["name"], node_properties=["pr", "embedding"])
 ----
 
 For a full list of the available algorithms, see the https://neo4j.com/docs/graph-data-science-client/{page-version}/api/[API reference].
