@@ -182,7 +182,7 @@ The example graph is heterogeneous and models users and products.
 Users can know each other, and users can buy products.
 The database connection is to a new, empty AuraDB instance.
 
-.First, we create a GDS Session and add some data to our database.
+.Create a GDS Session and add some data to the database:
 [source,python,role=no-test]
 ----
 import os # for reading environment variables
@@ -215,6 +215,7 @@ gds.run_cypher(
 
 With the `gds` GDS Session active, project the graph and specify node and relationship property schemas as follows:
 
+.Project a graph into the GDS Session:
 [source,python,role=no-test]
 ----
 from graphdatascience.session import GdsPropertyTypes
@@ -251,6 +252,7 @@ G, result = gds.graph.project(
 You can run algorithms on a remotely projected graph in the same way you would on any projected graph.
 For instance, you can run the PageRank and FastRP algorithms on the projected graph from the previous example as follows:
 
+.Run algorithms and stream back results:
 [source,python,role=no-test]
 ----
 gds.pageRank.mutate(G, mutateProperty="pr")
@@ -271,6 +273,7 @@ This includes all `.write` algorithm modes as well as all `.write` graph operati
 
 Extending the previous example, you can write back the FastRP embeddings to the AuraDB instance as follows:
 
+.Write the FastRP embeddings back to the database:
 [source,python,role=no-test]
 ----
 gds.graph.nodeProperties.write(G, "embedding")
@@ -283,7 +286,7 @@ You can run Cypher queries on the AuraDB instance using the `run_cypher()` metho
 There is no restriction on the type of query that can be run, but it is important to note that the query will be run on the AuraDB instance, and not on the GDS Session.
 Therefore, you will not be able to call any GDS procedures from the `run_cypher()` method.
 
-
+.Run a Cypher query to find our written-back embeddings:
 [source,python,role=no-test]
 ----
 gds.run_cypher("MATCH (n:User) RETURN n.name, n.embedding")
