@@ -1,0 +1,295 @@
+= GDS Sessions
+
+A GDS Session is a temporary compute environment for running GDS workloads.
+It is a service offered by Neo4j and runs within Neo4j's Aura cloud platform.
+A GDS Session reads data from a Neo4j DBMS through a _remote projection_, runs computations on the projected graph, and optionally writes the results back to the DBMS using _remote write-back_.
+
+NOTE: GDS Sessions are not available by default. Contact your account manager to get the features enabled.
+
+
+== GDS Session management
+
+The `GdsSessions` object is the API entry point to the following operations:
+
+- `get_or_create`: Create a new GDS Session, or connect to an existing one.
+- `list`: List all currently active GDS Sessions.
+- `delete`: Delete a GDS Session.
+
+
+
+You need Neo4j Aura API credentials (`CLIENT_ID` and `CLIENT_SECRET`) to create a `GdsSessions` object.
+See the link:{neo4j-docs-base-uri}/aura/platform/api/authentication/#_creating_credentials[Aura documentation] for instructions on how to create API credentials from your Neo4j Aura account.
+
+.Creating a GdsSessions object:
+[source, python, role=no-test]
+----
+from graphdatascience.session import GdsSessions, AuraAPICredentials
+
+CLIENT_ID = "my-aura-api-client-id"
+CLIENT_SECRET = "my-aura-api-client-secret"
+
+# Create a new GdsSessions object
+sessions = GdsSessions(ds_connection=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET))
+----
+
+
+=== Creating a GDS Session
+
+To create a GDS Session, you need to provide the following information:
+
+- **Session name**.
+The name must be unique.
+
+- **Session size**.
+The size determines the amount of memory and CPU available to the session.
+It also determines the cost of running the session.
+Available sizes are listed <<gds-session-sizes, below>>.
+
+- **DBMS connection**.
+This is a `DbmsConnectionInfo` object that contains the URI of an AuraDB instance, a username, and a password.
+
+
+.Creating a GDS Session:
+[source, python, role=no-test]
+----
+from graphdatascience.session import SessionSizes, DbmsConnectionInfo
+
+name = "my-new-session"
+size = SessionSizes.by_memory().DEFAULT
+db_connection_info = DbmsConnectionInfo("neo4j+s://mydbid.databases.neo4j.io", "my-user", "my-password")
+
+gds = sessions.get_or_create(
+    session_name=name,
+    size=size,
+    db_connection=db_connection_info,
+)
+----
+
+The `get_or_create()` method creates a new GDS Session if it does not exist, or connects to an existing one if it does.
+If the session size is different from the existing one, an error is raised.
+
+The return value of `get_or_create()` is an `AuraGraphDataScience` object.
+It offers a similar API to the `GraphDataScience` object, but it is configured to run on a GDS Session.
+As a convention, always use the variable name `gds` for the return value of `get_or_create()`.
+
+
+[[gds-session-sizes]]
+==== Session sizes
+
+Session sizes are specified using the `SessionSizes.by_memory()` enum.
+Possible values are `DEFAULT` (same as `M`), `XS`, `S`, `SM`, `M`, `ML`, `L`, `XL`, `XXL`, `X3L`, `X4L`, `X5L`.
+
+
+=== Listing GDS Sessions
+
+The `list()` method returns the name and size of all currently active GDS Sessions.
+
+.Listing GDS Sessions:
+[source, python, role=no-test]
+----
+sessions.list()
+----
+
+
+=== Deleting a GDS Session
+
+Use the `delete()` method to delete a GDS Session.
+This will terminate the session and stop any running costs from accumulating further.
+Deleting a session will not affect the configured AuraDB data source.
+However, any data not written back to the AuraDB instance will be lost.
+
+.Deleting a GDS Session:
+[source, python, role=no-test]
+----
+sessions.delete("my-new-session")
+----
+
+
+== Projecting graphs into a GDS Session
+
+Once you have a GDS Session, you can project a graph into it.
+This operation is called _remote projection_ because the data source is not a co-located database, but rather a remote one.
+
+You can create a remote projection using the `gds.graph.project()` endpoint with a graph name, a Cypher query, and additional optional parameters.
+The Cypher query must contain the `gds.graph.project.remote()` function to project the graph into the GDS Session.
+
+=== Syntax
+
+.Remote projection:
+[source, role=no-test]
+----
+gds.graph.project(
+    graph_name: str,
+    query: str,
+    nodePropertySchema: dict[str, GdsPropertyTypes],
+    relationshipPropertySchema: dict[str, GdsPropertyTypes],
+    undirectedRelationshipTypes: list[str],
+    inverseIndexedRelationshipTypes: list[str],
+): (Graph, Series[Any])
+----
+
+.Parameters:
+[opts="header",cols="3m,1,6", role="no-break"]
+|===
+| Name                            | Optional | Description
+| graph_name                      | no       | Name of the graph.
+| query                           | no       | Projection query.
+| nodePropertySchema              | yes      | Mapping of node property names to their types.
+| relationshipPropertySchema      | yes      | Mapping of relationship property names to their types.
+| undirectedRelationshipTypes     | yes      | List of relationship type names that should be treated as undirected.
+| inverseIndexedRelationshipTypes | yes      | List of relationship type names that should be indexed in reverse.
+|===
+
+.Results:
+[opts="header",cols="1m,1m,4", role="no-break"]
+|===
+| Name   | Type        | Description
+| graph  | Graph       | Graph object representing the projected graph.
+| result | Series[Any] | Statistical data about the projection.
+|===
+
+
+==== Remote projection query syntax
+
+The remote projection query supports the same syntax as a Cypher projection, with two key differences:
+
+. The graph name is not a parameter.
+Instead, the graph name is provided to the `gds.graph.project()` endpoint.
+. The `gds.graph.project.remote()` function must be used, instead of the `gds.graph.project()` function.
+
+For full details and examples on how to write Cypher projection queries, see the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/[Cypher projection documentation in the GDS Manual].
+
+
+==== Property schemas
+
+The optional parameters `nodePropertySchema` and `relationshipPropertySchema` are useful when projecting graphs with multiple node labels or relationship types which have distinct property sets (_heterogeneous graphs_).
+
+If these parameters are not provided, the type of each property is inferred from the first row of data seen by the projection function.
+For homogeneous graphs this is usually sufficient, while for heterogeneous graphs it is not.
+For this reason, we recommend to always use the property schema parameters.
+
+
+==== Relationship type undirectedness and inverse indexing
+
+The optional parameters `undirectedRelationshipTypes` and `inverseIndexedRelationshipTypes` are used to configure undirectedness and inverse indexing of relationships.
+These have the same behavior as documented in the link:{neo4j-docs-base-uri}/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/#graph-project-cypher-projection-syntax[GDS Manual].
+
+
+=== Example
+
+This example shows how to project a graph into a GDS Session.
+The example graph is heterogeneous and models users and products.
+Users can know each other, and users can buy products.
+The database connection is to a new, empty AuraDB instance.
+
+.Create a GDS Session and add some data to the database:
+[source,python,role=no-test]
+----
+import os # for reading environment variables
+from graphdatascience.session import SessionSizes, DbmsConnectionInfo, GdsSessions, AuraAPICredentials
+
+sessions = GdsSessions(ds_connection=AuraAPICredentials(os.environ["CLIENT_ID"], os.environ["CLIENT_SECRET"]))
+
+db_connection = DbmsConnectionInfo(os.environ["DB_URI"], os.environ["DB_USER"], os.environ["DB_PASSWORD"])
+gds = sessions.get_or_create(
+    session_name="my-new-session",
+    size=SessionSizes.by_memory().DEFAULT,
+    db_connection=db_connection,
+)
+
+gds.run_cypher(
+    """
+    CREATE
+     (u1:User {name: 'Mats'}),
+     (u2:User {name: 'Florentin'}),
+     (p1:Product {name: 'ice cream', cost: 4.2}),
+     (p2:Product {name: 'computer', cost: 13.37})
+
+    CREATE
+     (u1)-[:KNOWS {since: 2020}]->(u2),
+     (u2)-[:BOUGHT {price: 7474}]->(p1),
+     (u1)-[:BOUGHT {price: 1337}]->(p2)
+    """
+)
+----
+
+With the `gds` GDS Session active, project the graph and specify node and relationship property schemas as follows:
+
+.Project a graph into the GDS Session:
+[source,python,role=no-test]
+----
+from graphdatascience.session import GdsPropertyTypes
+
+G, result = gds.graph.project(
+    "my-graph",
+    """
+    CALL {
+        MATCH (u1:User)
+        OPTIONAL MATCH (u1)-[r:KNOWS]->(u2:User)
+        RETURN u1 AS source, r AS rel, u2 AS target, {} AS sourceNodeProperties, {} AS targetNodeProperties
+        UNION
+        MATCH (p:Product)
+        OPTIONAL MATCH (p)<-[r:BOUGHT]-(user:User)
+        RETURN user AS source, r AS rel, p AS target, {} AS sourceNodeProperties, {cost: p.cost} AS targetNodeProperties
+    }
+    RETURN gds.graph.project.remote(source, target, {
+      sourceNodeProperties: sourceNodeProperties,
+      targetNodeProperties: targetNodeProperties,
+      sourceNodeLabels: labels(source),
+      targetNodeLabels: labels(target),
+      relationshipType: type(rel),
+      relationshipProperties: properties(rel)
+    })
+    """,
+    nodePropertySchema={"cost": GdsPropertyTypes.DOUBLE},
+    relationshipPropertySchema={"since": GdsPropertyTypes.LONG, "price": GdsPropertyTypes.DOUBLE},
+)
+----
+
+
+== Running algorithms
+
+You can run algorithms on a remotely projected graph in the same way you would on any projected graph.
+For instance, you can run the PageRank and FastRP algorithms on the projected graph from the previous example as follows:
+
+.Run algorithms and stream back results:
+[source,python,role=no-test]
+----
+gds.pageRank.mutate(G, mutateProperty="pr")
+gds.fastRP.mutate(G, featureProperties=["pr"], embeddingDimension=2, nodeSelfInfluence=0.1, mutateProperty="embedding")
+
+# Stream the results back together with the `name` property fetched from the database
+gds.graph.nodeProperties.stream(G, db_node_properties=["name"], node_properties=["pr", "embedding"])
+----
+
+For a full list of the available algorithms, see the https://neo4j.com/docs/graph-data-science-client/{page-version}/api/[API reference].
+
+== Remote write-back
+
+The GDS Session's in-memory graph was projected from data in AuraDB, so write-back operations will persist the data back to the same AuraDB instance.
+When calling any write operations, the GDS Python client will automatically use the remote write-back functionality.
+This includes all `.write` algorithm modes as well as all `.write` graph operations.
+
+
+Extending the previous example, you can write back the FastRP embeddings to the AuraDB instance as follows:
+
+.Write the FastRP embeddings back to the database:
+[source,python,role=no-test]
+----
+gds.graph.nodeProperties.write(G, "embedding")
+----
+
+
+== Querying the database
+
+You can run Cypher queries on the AuraDB instance using the `run_cypher()` method.
+There is no restriction on the type of query that can be run, but it is important to note that the query will be run on the AuraDB instance, and not on the GDS Session.
+Therefore, you will not be able to call any GDS procedures from the `run_cypher()` method.
+
+.Run a Cypher query to find our written-back embeddings:
+[source,python,role=no-test]
+----
+gds.run_cypher("MATCH (n:User) RETURN n.name, n.embedding")
+----
+
+

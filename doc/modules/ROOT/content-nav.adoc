@@ -9,6 +9,8 @@
 * xref:rel-embedding-models.adoc[]
 * xref:bookmarks.adoc[]
 
+* xref:gds-session.adoc[]
+
 * xref:tutorials/tutorials.adoc[]
 // https://docs.antora.org/antora/latest/navigation/include-lists/
 +

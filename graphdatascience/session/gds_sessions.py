@@ -28,13 +28,10 @@ class SessionInfo:
 
     name: str
     size: str
-    type: str
 
     @classmethod
     def from_specific_instance_details(cls, instance_details: InstanceSpecificDetails) -> SessionInfo:
-        return SessionInfo(
-            GdsSessionNameHelper.session_name(instance_details.name), instance_details.memory, instance_details.type
-        )
+        return SessionInfo(GdsSessionNameHelper.session_name(instance_details.name), instance_details.memory)
 
 
 @dataclass
@@ -94,6 +91,7 @@ class GdsSessions:
         """
 
         connected_instance = self._try_connect(session_name, db_connection)
+        # TODO: check instance size and fail if mismatch
         if connected_instance is not None:
             return connected_instance
 
