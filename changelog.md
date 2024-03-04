@@ -23,5 +23,7 @@
 
 ## Improvements
 
+* Made the first parameter of the `GraphDataScience` constructor, `endpoint`, be a keyword parameter in addition to being a positional parameter.
+
 
 ## Other changes
