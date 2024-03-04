@@ -23,6 +23,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def __init__(
         self,
+        /,
         endpoint: Union[str, Driver, QueryRunner],
         auth: Optional[Tuple[str, str]] = None,
         aura_ds: bool = False,

@@ -15,3 +15,11 @@ def test_gds_init_version(major: int, minor: int, patch: int, version_string: st
     assert server_version.major == major
     assert server_version.minor == minor
     assert server_version.patch == patch
+
+
+def test_endpoint_as_required_kwparam(runner: CollectingQueryRunner) -> None:
+    GraphDataScience(endpoint=runner, arrow=False)
+
+    # Should still be mandatory
+    with pytest.raises(TypeError, match=r"__init__\(\) missing 1 required positional argument: 'endpoint'"):
+        GraphDataScience()  # type: ignore
