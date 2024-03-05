@@ -1,7 +1,7 @@
 import dataclasses
 import re
 from dataclasses import asdict
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 import pytest
 from pytest_mock import MockerFixture
@@ -128,7 +128,7 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
     sessions._aura_api = aura_api
 
-    def assert_db_credentials(*args: List[Any], **kwargs: Dict[str, Any]) -> None:
+    def assert_db_credentials(*args: List[Any], **kwargs: str) -> None:
         assert kwargs == {"gds_url": "fake-url", "gds_user": "neo4j", "initial_pw": "fake-pw", "new_pw": "db_pw"}
 
     mocker.patch("graphdatascience.session.gds_sessions.GdsSessions._construct_client", lambda *args, **kwargs: kwargs)
@@ -140,7 +140,7 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
         DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
 
-    assert gds_credentials == {
+    assert gds_credentials == {  # type: ignore
         "db_connection": DbmsConnectionInfo(
             uri="neo4j+ssc://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
         ),
@@ -215,7 +215,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
         DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
 
-    assert gds_args1 == {
+    assert gds_args1 == {  # type: ignore
         "db_connection": DbmsConnectionInfo(
             uri="neo4j+ssc://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
         ),
