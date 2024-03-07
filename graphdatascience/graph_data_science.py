@@ -28,7 +28,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         auth: Optional[Tuple[str, str]] = None,
         aura_ds: bool = False,
         database: Optional[str] = None,
-        arrow: bool = True,
+        arrow: Union[str, bool] = True,
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
@@ -47,9 +47,10 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             to a Neo4j Aura instance.
         database: Optional[str], default None
             The Neo4j database to query against.
-        arrow : bool, default True
-            A flag that indicates that the client should use Apache Arrow
-            for data streaming if it is available on the server.
+        arrow : Union[str, bool], default True
+            Arrow connection information. Either a flag that indicates whether the client should use Apache Arrow
+            for data streaming if it is available on the server. True means discover the connection URI from the server.
+            A connection URI (str) can also be provided.
         arrow_disable_server_verification : bool, default True
             A flag that indicates that, if the flight client is connecting with
             TLS, that it skips server verification. If this is enabled, all
@@ -77,6 +78,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                 self._query_runner.encrypted(),
                 arrow_disable_server_verification,
                 arrow_tls_root_certs,
+                None if arrow is True else arrow,
             )
 
         super().__init__(self._query_runner, "gds", self._server_version)
