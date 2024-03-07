@@ -51,7 +51,7 @@ connection to the database.
 [source, python, role=no-test]
 ----
 # Install necessary dependencies
-%pip install torch torch_scatter torch_sparse torch_geometric graphdatascience
+%pip install graphdatascience torch torch_scatter torch_sparse torch_geometric
 ----
 
 [source, python, role=no-test]

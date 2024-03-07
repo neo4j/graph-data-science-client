@@ -29,7 +29,7 @@ connection to the database.
 [source, python, role=no-test]
 ----
 # Install necessary dependencies
-%pip graphdatascience pandas
+%pip install graphdatascience pandas
 ----
 
 [source, python, role=no-test]

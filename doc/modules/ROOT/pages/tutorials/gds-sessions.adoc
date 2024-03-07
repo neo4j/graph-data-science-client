@@ -28,7 +28,7 @@ to have the `graphdatascience` Python library installed, version
 
 [source, python, role=no-test]
 ----
-%pip install graphdatascience==1.10a1
+%pip install --pre "graphdatascience>1.9"
 ----
 
 == Aura API credentials
@@ -296,6 +296,12 @@ sessions.delete("people-and-fruits")
 ----
 # let's also make sure the deleted session is truly gone:
 sessions.list()
+----
+
+[source, python, role=no-test]
+----
+# Lastly, let's clean up the database
+gds.run_cypher("MATCH (n:Person|Fruit) DETACH DELETE n")
 ----
 
 == Conclusion

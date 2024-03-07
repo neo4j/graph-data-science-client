@@ -49,7 +49,7 @@ our GDS client connection to the database.
 [source, python, role=no-test]
 ----
 # Install necessary dependencies
-%pip graphdatascience
+%pip install graphdatascience
 ----
 
 [source, python, role=no-test]
