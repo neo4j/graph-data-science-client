@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-import sys
 
 import nbformat
 from nbclient.exceptions import CellExecutionError
@@ -34,10 +34,8 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
 
 def main(run_session_nbs: bool) -> None:
     examples_path = Path("examples")
-    
-    notebook_files = [f for f in examples_path.iterdir()
-                      if f.is_file() and ("session" in f.name) == run_session_nbs
-                      ]
+
+    notebook_files = [f for f in examples_path.iterdir() if f.is_file() and ("session" in f.name) == run_session_nbs]
 
     ep = GdsExecutePreprocessor(kernel_name="python3")
 
@@ -63,9 +61,9 @@ def main(run_session_nbs: bool) -> None:
             ep.preprocess(nb)
         print(f"Finished executing notebook {notebook_filename}")
 
- 
+
 if __name__ == "__main__":
-    notebook_filter = sys.argv[1] if len(sys.argv) >= 2 else ''
-    only_session_nbs = True if notebook_filter == 'session' else False
+    notebook_filter = sys.argv[1] if len(sys.argv) >= 2 else ""
+    only_session_nbs = True if notebook_filter == "session" else False
 
     main(only_session_nbs)
