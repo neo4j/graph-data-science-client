@@ -1,0 +1,3 @@
+nbconvert==7.11.0
+nbformat==5.9.2
+nbclient==0.9.0
