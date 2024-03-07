@@ -36,12 +36,16 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
             if e.ename == "AssertionError" and index == self.version_verify_cell_index:
                 print("Skipping notebook due to incompatible GDS version")
                 self._skip_rest = True
-            else:
-                if self.tear_down_cells:
-                    print("Running tear down cells")
-                    for td_cell, td_idx in self.tear_down_cells:
+                return
+
+            if self.tear_down_cells:
+                print(f"Running tear down cells due to error in notebook execution: {e}")
+                for td_cell, td_idx in self.tear_down_cells:
+                    try:
                         super().preprocess_cell(td_cell, resources, td_idx)  # type: ignore
-                raise e
+                    except CellExecutionError as td_e:
+                        print(f"Error running tear down cell {td_idx}: {td_e}")
+            raise e
 
 
 class GdsTearDownCollector(ExecutePreprocessor):
