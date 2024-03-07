@@ -15,7 +15,7 @@ TEARDOWN_CELL_TAG = "teardown"
 
 class IndexedCell(NamedTuple):
     cell: Any
-    index: int
+    index: int  # type: ignore
 
 
 class GdsExecutePreprocessor(ExecutePreprocessor):
@@ -40,7 +40,7 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
                 if self.tear_down_cells:
                     print("Running tear down cells")
                     for td_cell, td_idx in self.tear_down_cells:
-                        super().preprocess_cell(td_cell, resources, td_idx)
+                        super().preprocess_cell(td_cell, resources, td_idx)  # type: ignore
                 raise e
 
 
@@ -49,13 +49,13 @@ class GdsTearDownCollector(ExecutePreprocessor):
         super().__init__(**kw)  # type: ignore
 
     def init_notebook(self) -> None:
-        self._tear_down_cells = []
+        self._tear_down_cells: List[IndexedCell] = []
 
     def preprocess_cell(self, cell: Any, resources: Any, index: int) -> None:
         if TEARDOWN_CELL_TAG in cell["metadata"].get("tags", []):
             self._tear_down_cells.append(IndexedCell(cell, index))
 
-    def tear_down_cells(self) -> List[int]:
+    def tear_down_cells(self) -> List[IndexedCell]:
         return self._tear_down_cells
 
 
