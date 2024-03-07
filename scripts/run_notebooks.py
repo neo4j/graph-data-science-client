@@ -39,16 +39,15 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
             else:
                 if self.tear_down_cells:
                     print("Running tear down cells")
-                    for (td_cell, td_idx) in self.tear_down_cells:
+                    for td_cell, td_idx in self.tear_down_cells:
                         super().preprocess_cell(td_cell, resources, td_idx)
                 raise e
 
 
 class GdsTearDownCollector(ExecutePreprocessor):
-
     def __init__(self, **kw: Any):
         super().__init__(**kw)  # type: ignore
-    
+
     def init_notebook(self) -> None:
         self._tear_down_cells = []
 
