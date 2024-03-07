@@ -102,6 +102,6 @@ def main(run_session_nbs: bool) -> None:
 
 if __name__ == "__main__":
     notebook_filter = sys.argv[1] if len(sys.argv) >= 2 else ""
-    only_session_nbs = True if notebook_filter == "session" else False
+    only_session_nbs = True if notebook_filter == "sessions" else False
 
     main(only_session_nbs)
