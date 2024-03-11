@@ -1,0 +1,67 @@
+import logging
+import os
+import random as rd
+import sys
+
+from ...graphdatascience.session.aura_api import AuraApi
+
+logging.basicConfig(level=logging.INFO)
+
+
+def run_tests(uri, username, password):
+    cmd = f'NEO4J_URI={uri} NEO4J_USER={username} NEO4J_PASSWORD={password} tox -e \$(tox -l | grep aura | grep main | paste -sd \',\' -)'
+
+    if os.system(cmd) != 0:
+        raise Exception('Failed to run tests')
+
+
+def run_notebooks(uri, username, password):
+    cmd = f'NEO4J_URI={uri} NEO4J_USER={username} NEO4J_PASSWORD={password} tox -e jupyter-notebook-ci'
+
+    if os.system(cmd) != 0:
+        raise Exception('Failed to run notebooks')
+
+
+def main():
+    aura_api = AuraApi(
+        os.environ.get('AURA_API_CLIENT_ID'), 
+        os.environ.get('AURA_API_CLIENT_SECRET')
+    )
+    MAX_INT = 2**31
+
+    create_result = aura_api.create_instance(
+        name='ci-instance-' + str(rd.randint(0, MAX_INT)),
+        memory='8GB',
+        cloud_provider='gcp',
+        region='europe-west1'
+    )
+    instance_id = create_result.id
+    logging.info('Creation of database accepted')
+
+    try:
+        aura_api.wait_for_instance_running(instance_id)
+        logging.info('Database %s up and running', instance_id)
+
+        if sys.argv[1] == 'tests':
+            run_tests(
+                create_result['connection_url'],
+                create_result['username'],
+                create_result['password'],
+            )
+            logging.info('Tests ran successfully')
+        elif sys.argv[1] == 'notebooks':
+            run_notebooks(
+                create_result['connection_url'],
+                create_result['username'],
+                create_result['password'],
+            )
+            logging.info('Notebooks ran successfully')
+        else:
+            logging.error(f'Invalid target: {sys.argv[1]}')
+    finally:
+        logging.info('Teardown of instance %s', instance_id)
+        aura_api.delete_instance(instance_id)
+
+
+if __name__ == '__main__':
+    main()
