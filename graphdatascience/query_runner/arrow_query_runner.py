@@ -37,10 +37,11 @@ class ArrowQueryRunner(QueryRunner):
             fallback_query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False).squeeze().to_dict()
         )
         server_version = fallback_query_runner.server_version()
+        connection_string: str
         if connection_string_override is not None:
             connection_string = connection_string_override
         else:
-            connection_string: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])
+            connection_string = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])
         arrow_endpoint_version = ArrowEndpointVersion.from_arrow_info(arrow_info.get("versions", []))
 
         if arrow_info["running"]:
