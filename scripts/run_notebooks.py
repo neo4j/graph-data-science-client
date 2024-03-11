@@ -70,6 +70,7 @@ def main(run_session_nbs: bool) -> None:
 
     ep = GdsExecutePreprocessor(kernel_name="python3")
     td_collector = GdsTearDownCollector(kernel_name="python3")
+    exceptions: List[RuntimeError] = []
 
     for notebook_filename in notebook_files:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -98,9 +99,14 @@ def main(run_session_nbs: bool) -> None:
             try:
                 ep.preprocess(nb)
             except CellExecutionError as e:
-                print(f"Error executing notebook {notebook_filename}: {e}")
+                exceptions.append(RuntimeError(f"Error executing notebook {notebook_filename}", e))
                 continue
 
+    if exceptions:
+        for nb_ex in exceptions:
+            print(nb_ex)
+        raise RuntimeError(f"{len(exceptions)} Errors occurred while executing notebooks")
+    else:
         print(f"Finished executing notebook {notebook_filename}")
 
 
