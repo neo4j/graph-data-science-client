@@ -107,7 +107,7 @@ def get_tenant_id(access_token: str) -> str:
 def run_tests(uri: str, username: str, password: str) -> None:
     cmd = (
         f"NEO4J_URI={uri} NEO4J_USER={username} NEO4J_PASSWORD={password}"
-        "tox -e $(tox -l | grep aura | grep main | paste -sd ',' -)"
+        " tox -e $(tox -l | grep aura | grep main | paste -sd ',' -)"
     )
 
     if os.system(cmd) != 0:
