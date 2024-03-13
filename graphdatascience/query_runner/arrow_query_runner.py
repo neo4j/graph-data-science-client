@@ -31,17 +31,22 @@ class ArrowQueryRunner(QueryRunner):
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
+        connection_string_override: Optional[str] = None,
     ) -> QueryRunner:
         arrow_info = (
             fallback_query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False).squeeze().to_dict()
         )
         server_version = fallback_query_runner.server_version()
-        listen_address: str = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])
+        connection_string: str
+        if connection_string_override is not None:
+            connection_string = connection_string_override
+        else:
+            connection_string = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])
         arrow_endpoint_version = ArrowEndpointVersion.from_arrow_info(arrow_info.get("versions", []))
 
         if arrow_info["running"]:
             return ArrowQueryRunner(
-                listen_address,
+                connection_string,
                 fallback_query_runner,
                 server_version,
                 auth,
