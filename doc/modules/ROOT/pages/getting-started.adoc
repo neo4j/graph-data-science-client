@@ -38,6 +38,9 @@ assert gds.version()
 "2.1.9"
 ----
 
+Please note that the `GraphDataScience` object needs to communicate with a Neo4j database upon construction, and uses the default "neo4j" database by default.
+If there is no such database, you will need to <<specifying-targeted-database, provide a valid database using the `database` keyword>>.
+
 
 === AuraDS
 
@@ -75,6 +78,7 @@ using_enterprise = gds.is_licensed()
 ----
 
 
+[[specifying-targeted-database]]
 === Specifying targeted database
 
 If we don't want to use the default database of our DBMS we can provide the `GraphDataScience` constructor with the keyword parameter `database`:
@@ -102,10 +106,10 @@ If Apache Arrow is available on the https://neo4j.com/docs/graph-data-science/cu
 [source,python,role=no-test]
 ----
 gds = GraphDataScience(
-  NEO4J_URI, 
-  auth=(NEO4J_USER, NEO4J_PASSWORD), 
-  arrow=True, 
-  arrow_disable_server_verification=False, 
+  NEO4J_URI,
+  auth=(NEO4J_USER, NEO4J_PASSWORD),
+  arrow=True,
+  arrow_disable_server_verification=False,
   arrow_tls_root_certs=CERT
 )
 ----
