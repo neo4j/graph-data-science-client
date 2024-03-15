@@ -14,6 +14,22 @@ GRAPH_NAME = "g"
 
 
 @pytest.mark.skip_on_aura
+def test_init_without_neo4j_db(runner: Neo4jQueryRunner) -> None:
+    default_database = runner.database()
+
+    MY_DB_NAME = "bananas"
+    runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+
+    runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": default_database})
+
+    try:
+        _ = GraphDataScience(URI, AUTH, database=MY_DB_NAME)
+    finally:
+        runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": default_database}, database=MY_DB_NAME)
+        runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+
+
+@pytest.mark.skip_on_aura
 def test_switching_db(runner: Neo4jQueryRunner) -> None:
     default_database = runner.database()
     runner.run_cypher("CREATE (a: Node)")
