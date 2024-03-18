@@ -46,17 +46,19 @@ class Neo4jQueryRunner(QueryRunner):
             driver = neo4j.GraphDatabase.driver(endpoint, auth=auth, **config)
 
             query_runner = Neo4jQueryRunner(
-                driver, auto_close=True, bookmarks=bookmarks, config=config, server_version=server_version
+                driver,
+                auto_close=True,
+                bookmarks=bookmarks,
+                config=config,
+                server_version=server_version,
+                database=database,
             )
 
         elif isinstance(endpoint, neo4j.Driver):
-            query_runner = Neo4jQueryRunner(endpoint, auto_close=False, bookmarks=bookmarks)
+            query_runner = Neo4jQueryRunner(endpoint, auto_close=False, bookmarks=bookmarks, database=database)
 
         else:
             raise ValueError(f"Invalid endpoint type: {type(endpoint)}")
-
-        if database:
-            query_runner.set_database(database)
 
         return query_runner
 
@@ -97,7 +99,7 @@ class Neo4jQueryRunner(QueryRunner):
         if database is None:
             database = self._database
 
-        self._verify_connectivity()
+        self._verify_connectivity(database=database)
 
         with self._driver.session(database=database, bookmarks=self.bookmarks()) as session:
             try:
@@ -303,10 +305,13 @@ class Neo4jQueryRunner(QueryRunner):
 
         raise SyntaxError(generate_suggestive_error_message(requested_endpoint, all_endpoints)) from e
 
-    def _verify_connectivity(self) -> None:
+    def _verify_connectivity(self, database: Optional[str] = None) -> None:
         WAIT_TIME = 1
         MAX_RETRYS = 10 * 60
         WARN_INTERVAL = 10
+
+        if database is None:
+            database = self._database
 
         exception = None
         retrys = 0
@@ -318,7 +323,16 @@ class Neo4jQueryRunner(QueryRunner):
                         category=neo4j.ExperimentalWarning,
                         message=r"^The configuration may change in the future.$",
                     )
-                self._driver.verify_connectivity()
+                else:
+                    warnings.filterwarnings(
+                        "ignore",
+                        category=neo4j.ExperimentalWarning,
+                        message=(
+                            r"^All configuration key-word arguments to verify_connectivity\(\) are experimental. "
+                            "They might be changed or removed in any future version without prior notice.$"
+                        ),
+                    )
+                self._driver.verify_connectivity(database=database)
                 break
             except neo4j.exceptions.DriverError as e:
                 exception = e
