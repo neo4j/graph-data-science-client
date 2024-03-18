@@ -323,6 +323,15 @@ class Neo4jQueryRunner(QueryRunner):
                         category=neo4j.ExperimentalWarning,
                         message=r"^The configuration may change in the future.$",
                     )
+                else:
+                    warnings.filterwarnings(
+                        "ignore",
+                        category=neo4j.ExperimentalWarning,
+                        message=(
+                            r"^All configuration key-word arguments to verify_connectivity\(\) are experimental. "
+                            "They might be changed or removed in any future version without prior notice.$"
+                        ),
+                    )
                 self._driver.verify_connectivity(database=database)
                 break
             except neo4j.exceptions.DriverError as e:
