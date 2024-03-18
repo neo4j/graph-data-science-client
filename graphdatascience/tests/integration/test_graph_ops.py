@@ -418,6 +418,7 @@ def test_graph_nodeProperty_stream_raise_error_with_duplicate_keys(gds: GraphDat
         gds.graph.nodeProperty.stream(G, "x", db_node_properties=["x", "z", "name"], concurrency=2)
 
 
+@pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_graph_nodeProperties_stream_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
@@ -441,6 +442,7 @@ def test_graph_nodeProperties_stream_with_arrow(gds: GraphDataScience) -> None:
     assert {e for e in name_values["propertyValue"]} == {"nodeA", "nodeB", "nodeC"}
 
 
+@pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_graph_nodeProperties_stream_listNodeLabels_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x"]}}, "*")

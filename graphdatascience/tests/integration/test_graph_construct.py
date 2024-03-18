@@ -521,11 +521,15 @@ def test_graph_alpha_construct_backward_compat_without_arrow(gds_without_arrow: 
 
 
 @pytest.mark.skip_on_aura  # No warning produced when running on Aura
-def test_nodes_only_without__arrow(gds_without_arrow: GraphDataScience) -> None:
+def test_nodes_only_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     nodes = DataFrame({"nodeId": [0], "labels": ["person"]})
     relationships = DataFrame({"sourceNodeId": [], "targetNodeId": [], "relationshipType": []})
 
-    with pytest.warns(UserWarning):
+    if gds_without_arrow.is_licensed():
+        # on enterprise users should use arrow for construct
+        with pytest.warns(UserWarning):
+            G = gds_without_arrow.graph.construct(graph_name="my_graph", nodes=nodes, relationships=relationships)
+    else:
         G = gds_without_arrow.graph.construct(graph_name="my_graph", nodes=nodes, relationships=relationships)
 
     try:
