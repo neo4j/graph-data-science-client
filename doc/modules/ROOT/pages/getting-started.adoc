@@ -39,7 +39,7 @@ assert gds.version()
 ----
 
 Please note that the `GraphDataScience` object needs to communicate with a Neo4j database upon construction, and uses the default "neo4j" database by default.
-If there is no such database, you will need to <<specifying-targeted-database, provide a valid database using the `database` keyword>>.
+If there is no such database, you will need to <<specifying-targeted-database, provide a valid database using the `database` keyword parameter>>.
 
 
 === AuraDS
