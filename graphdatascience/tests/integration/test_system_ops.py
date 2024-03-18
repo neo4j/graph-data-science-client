@@ -109,4 +109,6 @@ def test_restore(gds: GraphDataScience) -> None:
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_deprecated_endpoints(gds: GraphDataScience) -> None:
     gds.beta.listProgress()
-    gds.alpha.systemMonitor()
+
+    if gds.is_licensed():
+        gds.alpha.systemMonitor()
