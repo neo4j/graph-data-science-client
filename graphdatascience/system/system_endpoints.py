@@ -56,8 +56,8 @@ class DirectSystemEndpoints(CallerBase):
         try:
             isLicensed: bool = self._query_runner.run_cypher(query, custom_error=False).squeeze()
         except Exception as e:
-            # AuraDS does not have `gds.debug.sysInfo`, but is always GDS EE.
-            if re.match(r"There is no procedure with the name `gds.*` registered for this database instance", str(e)):
+            # AuraDS does not have `gds.isLicensed`, but is always GDS EE.
+            if re.match(r"Unknown function 'gds.isLicensed'", str(e)):
                 isLicensed = True
             else:
                 raise e
