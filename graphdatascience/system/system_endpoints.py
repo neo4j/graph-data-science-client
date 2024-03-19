@@ -57,7 +57,7 @@ class DirectSystemEndpoints(CallerBase):
             isLicensed: bool = self._query_runner.run_cypher(query, custom_error=False).squeeze()
         except Exception as e:
             # AuraDS does not have `gds.isLicensed`, but is always GDS EE.
-            if re.match(r"Unknown function 'gds.isLicensed'", str(e)):
+            if re.match(r".*Unknown function 'gds.isLicensed'.*", str(e)):
                 isLicensed = True
             else:
                 raise e
