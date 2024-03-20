@@ -26,12 +26,11 @@ def get_access_token() -> str:
     return response.json()["access_token"]  # type: ignore
 
 
-def create_instance(access_token: str) -> Dict[str, Any]:
+def create_instance(name: str, access_token: str) -> Dict[str, Any]:
     CREATE_OK_MAX_WAIT_TIME = 10
-    MAX_INT = 2**31
 
     data = {
-        "name": "ci-instance-" + str(rd.randint(0, MAX_INT)),
+        "name": name,
         "memory": "8GB",
         "version": "5",
         "region": "europe-west1",
@@ -151,7 +150,10 @@ def main() -> None:
     access_token = get_access_token()
     logging.info("Access token for creation acquired")
 
-    create_result = create_instance(access_token)
+    MAX_INT = 1000000
+    instance_name = f"ci-build-{sys.argv[2]}" if len(sys.argv) > 1 else "ci-instance-" + str(rd.randint(0, MAX_INT))
+
+    create_result = create_instance(instance_name, access_token)
     instance_id = create_result["id"]
     logging.info("Creation of database accepted")
 
