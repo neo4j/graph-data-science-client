@@ -4,16 +4,16 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-black --check .
-isort --check .
-flake8
-mypy .
+python -m black --check .
+python -m isort --check .
+python -m flake8
+python -m mypy .
 
 NOTEBOOKS="./examples/*.ipynb" # ./examples/dev/*.ipynb"
 for f in $NOTEBOOKS
 do
   NB=$(cat $f)
-  FORMATTED_NB=$(jupyter nbconvert \
+  FORMATTED_NB=$(python -m jupyter nbconvert \
     --clear-output \
     --stdout \
     --ClearOutputPreprocessor.enabled=True \
