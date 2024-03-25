@@ -261,6 +261,7 @@ class Neo4jQueryRunner(QueryRunner):
 
         for pbar in pbars.values():
             pbar.update(100 - pbar.n)
+            pbar.refresh()
 
     def set_database(self, database: str) -> None:
         self._database = database

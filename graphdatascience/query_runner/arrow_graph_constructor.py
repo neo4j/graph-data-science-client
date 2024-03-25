@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import concurrent
 import json
 import math
@@ -108,6 +110,8 @@ class ArrowGraphConstructor(GraphConstructor):
             for partition in batches:
                 writer.write_batch(partition)
                 pbar.update(partition.num_rows)
+        # Force a refresh to avoid the progress bar getting stuck at 0%
+        pbar.refresh()
 
     def _send_dfs(self, dfs: List[DataFrame], entity_type: str) -> None:
         desc = "Uploading Nodes" if entity_type == "node" else "Uploading Relationships"
