@@ -226,14 +226,19 @@ class Neo4jQueryRunner(QueryRunner):
             self._logger.info(notification)
 
     def _log(self, job_id: str, future: "Future[Any]", database: Optional[str] = None) -> None:
-        pbars: Dict[str, tqdm[NoReturn]] = {}
+        pbar: Optional[tqdm[NoReturn]] = None
         warn_if_failure = True
 
         while wait([future], timeout=self._LOG_POLLING_INTERVAL).not_done:
             try:
                 tier = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
+                # we only retrieve the progress of the root task
                 progress = self.run_cypher(
-                    f"CALL gds.{tier}listProgress('{job_id}') YIELD taskName, progress", database=database
+                    f"CALL gds.{tier}listProgress('{job_id}')"
+                    + " YIELD taskName, progress"
+                    + " RETURN taskName, progress"
+                    + " LIMIT 1",
+                    database=database,
                 )
             except Exception as e:
                 # Do nothing if the procedure either:
@@ -251,15 +256,14 @@ class Neo4jQueryRunner(QueryRunner):
             if progress_percent == "n/a":
                 return
 
-            task_name = progress["taskName"][0].split("|--")[-1][1:]
-            if task_name not in pbars:
-                pbars[task_name] = tqdm(total=100, unit="%", desc=task_name)
-            pbar = pbars[task_name]
+            root_task_name = progress["taskName"][0].split("|--")[-1][1:]
+            if not pbar:
+                pbar = tqdm(total=100, unit="%", desc=root_task_name, maxinterval=self._LOG_POLLING_INTERVAL)
 
             parsed_progress = float(progress_percent[:-1])
             pbar.update(parsed_progress - pbar.n)
 
-        for pbar in pbars.values():
+        if pbar:
             pbar.update(100 - pbar.n)
             pbar.refresh()
 
