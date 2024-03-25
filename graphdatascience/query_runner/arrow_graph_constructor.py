@@ -3,7 +3,7 @@ import json
 import math
 import warnings
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, NoReturn, Optional
 
 import numpy
 import pyarrow.flight as flight
@@ -93,7 +93,7 @@ class ArrowGraphConstructor(GraphConstructor):
 
         json.loads(collected_result[0].body.to_pybytes().decode())
 
-    def _send_df(self, df: DataFrame, entity_type: str, pbar: tqdm) -> None:
+    def _send_df(self, df: DataFrame, entity_type: str, pbar: tqdm[NoReturn]) -> None:
         table = Table.from_pandas(df)
         batches = table.to_batches(self._chunk_size)
         flight_descriptor = {"name": self._graph_name, "entity_type": entity_type}

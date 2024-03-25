@@ -5,7 +5,7 @@ import re
 import time
 import warnings
 from concurrent.futures import Future, ThreadPoolExecutor, wait
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, NoReturn, Optional, Tuple, Union
 from uuid import uuid4
 
 import neo4j
@@ -226,7 +226,7 @@ class Neo4jQueryRunner(QueryRunner):
             self._logger.info(notification)
 
     def _log(self, job_id: str, future: "Future[Any]", database: Optional[str] = None) -> None:
-        pbar = None
+        pbars: Dict[str, tqdm[NoReturn]] = {}
         warn_if_failure = True
 
         while wait([future], timeout=self._LOG_POLLING_INTERVAL).not_done:
@@ -248,16 +248,18 @@ class Neo4jQueryRunner(QueryRunner):
                     continue
 
             progress_percent = progress["progress"][0]
-            if not progress_percent == "n/a":
-                task_name = progress["taskName"][0].split("|--")[-1][1:]
-                pbar = pbar or tqdm(total=100, unit="%", desc=task_name)
-            else:
+            if progress_percent == "n/a":
                 return
+
+            task_name = progress["taskName"][0].split("|--")[-1][1:]
+            if task_name not in pbars:
+                pbars[task_name] = tqdm(total=100, unit="%", desc=task_name)
+            pbar = pbars[task_name]
 
             parsed_progress = float(progress_percent[:-1])
             pbar.update(parsed_progress - pbar.n)
 
-        if pbar:
+        for pbar in pbars.values():
             pbar.update(100 - pbar.n)
 
     def set_database(self, database: str) -> None:

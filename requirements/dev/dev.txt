@@ -10,3 +10,4 @@ tox == 4.11.3
 types-setuptools == 68.1.0.1
 sphinx == 7.2.6
 types-requests
+types-tqdm
