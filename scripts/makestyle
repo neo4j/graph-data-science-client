@@ -5,9 +5,9 @@ set -o nounset
 set -o pipefail
 set -o xtrace
 
-black .
-isort .
-jupyter nbconvert \
+python -m black .
+python -m isort .
+python -m jupyter nbconvert \
   --clear-output \
   --inplace \
   --ClearOutputPreprocessor.enabled=True \

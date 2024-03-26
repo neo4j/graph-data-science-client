@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import concurrent
 import json
 import math
 import warnings
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, NoReturn, Optional
 
 import numpy
 import pyarrow.flight as flight
@@ -93,7 +95,7 @@ class ArrowGraphConstructor(GraphConstructor):
 
         json.loads(collected_result[0].body.to_pybytes().decode())
 
-    def _send_df(self, df: DataFrame, entity_type: str, pbar: tqdm) -> None:
+    def _send_df(self, df: DataFrame, entity_type: str, pbar: tqdm[NoReturn]) -> None:
         table = Table.from_pandas(df)
         batches = table.to_batches(self._chunk_size)
         flight_descriptor = {"name": self._graph_name, "entity_type": entity_type}
@@ -108,6 +110,8 @@ class ArrowGraphConstructor(GraphConstructor):
             for partition in batches:
                 writer.write_batch(partition)
                 pbar.update(partition.num_rows)
+        # Force a refresh to avoid the progress bar getting stuck at 0%
+        pbar.refresh()
 
     def _send_dfs(self, dfs: List[DataFrame], entity_type: str) -> None:
         desc = "Uploading Nodes" if entity_type == "node" else "Uploading Relationships"
