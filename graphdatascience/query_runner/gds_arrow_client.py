@@ -7,12 +7,12 @@ from typing import Optional, Tuple, Any, Dict
 
 from pandas import DataFrame
 from pyarrow import flight, Table, ChunkedArray, chunked_array, Schema
-from pyarrow.types import is_dictionary
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
+from pyarrow.types import is_dictionary
 
+from .arrow_endpoint_version import ArrowEndpointVersion
 from .query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
-from .arrow_endpoint_version import ArrowEndpointVersion
 
 
 class GdsArrowClient(ABC):
@@ -107,7 +107,7 @@ class GdsArrowClient(ABC):
 
         if self._arrow_endpoint_version == ArrowEndpointVersion.V1:
             payload = {
-                "name": "GET_MESSAGE",
+                "name": "GET_COMMAND",
                 "version": ArrowEndpointVersion.V1.version(),
                 "body": payload,
             }
@@ -164,6 +164,10 @@ class GdsArrowClient(ABC):
 
     @staticmethod
     def _sanitize_arrow_table(arrow_table: Table) -> Table:
+        # empty columns cannot be used to build a chunked_array in pyarrow
+        if len(arrow_table) == 0:
+            return arrow_table
+
         dict_encoded_fields = [
             (idx, field) for idx, field in enumerate(arrow_table.schema) if is_dictionary(field.type)
         ]
@@ -209,10 +213,17 @@ class AuthMiddleware(ClientMiddleware):  # type: ignore
         self._token_timestamp = int(time.time())
 
     def received_headers(self, headers: Dict[str, Any]) -> None:
-        auth_header: str = headers.get("Authorization", None)
+        auth_header = headers.get("authorization", None)
         if not auth_header:
             return
-        [auth_type, token] = auth_header.split(" ", 1)
+
+        # the result is always a list
+        header_value = auth_header[0]
+
+        if not isinstance(header_value, str):
+            raise ValueError(f"Incompatible header value received from server: `{header_value}`")
+
+        auth_type, token = header_value.split(" ", 1)
         if auth_type == "Bearer":
             self._set_token(token)
 
