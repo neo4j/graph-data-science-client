@@ -3,10 +3,11 @@ import json
 import time
 import warnings
 from abc import ABC
-from typing import Optional, Tuple, Any, Dict
+from typing import Any, Dict, Optional, Tuple
 
 from pandas import DataFrame
 from pyarrow import flight, Table, ChunkedArray, chunked_array, Schema
+from pyarrow._flight import FlightStreamReader, FlightStreamWriter
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary
 
@@ -16,22 +17,21 @@ from ..server_version.server_version import ServerVersion
 
 
 class GdsArrowClient(ABC):
+    @staticmethod
+    def is_arrow_enabled(query_runner: QueryRunner) -> bool:
+        arrow_info = query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False).squeeze().to_dict()
+        return not not arrow_info["running"]
 
     @staticmethod
     def create(
-            query_runner: QueryRunner,
-            auth: Optional[Tuple[str, str]] = None,
-            encrypted: bool = False,
-            disable_server_verification: bool = False,
-            tls_root_certs: Optional[bytes] = None,
-            connection_string_override: Optional[str] = None,
-    ) -> "Optional[GdsArrowClient]":
-        arrow_info = (
-            query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False).squeeze().to_dict()
-        )
-
-        if not arrow_info["running"]:
-            return None
+        query_runner: QueryRunner,
+        auth: Optional[Tuple[str, str]] = None,
+        encrypted: bool = False,
+        disable_server_verification: bool = False,
+        tls_root_certs: Optional[bytes] = None,
+        connection_string_override: Optional[str] = None,
+    ) -> "GdsArrowClient":
+        arrow_info = query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False).squeeze().to_dict()
 
         server_version = query_runner.server_version()
         connection_string: str
@@ -72,11 +72,7 @@ class GdsArrowClient(ABC):
         self._port = port
         self._auth = auth
 
-        location = (
-            flight.Location.for_grpc_tls(host, port)
-            if encrypted
-            else flight.Location.for_grpc_tcp(host, port)
-        )
+        location = flight.Location.for_grpc_tls(host, port) if encrypted else flight.Location.for_grpc_tcp(host, port)
 
         client_options: Dict[str, Any] = {"disable_server_verification": disable_server_verification}
         if auth:
@@ -90,14 +86,16 @@ class GdsArrowClient(ABC):
     def connection_info(self) -> tuple[str, int]:
         return self._host, self._port
 
-    def get_or_request_token(self) -> str:
+    def get_or_request_token(self) -> Optional[str]:
         if self._auth:
             self._flight_client.authenticate_basic_token(self._auth[0], self._auth[1])
             return self._auth_middleware.token()
         else:
             return "IGNORED"
 
-    def get_property(self, database: str, graph_name: str, procedure_name: str, configuration: Dict[str, Any]) -> DataFrame:
+    def get_property(
+        self, database: Optional[str], graph_name: str, procedure_name: str, configuration: Dict[str, Any]
+    ) -> DataFrame:
         payload = {
             "database_name": database,
             "graph_name": graph_name,
@@ -143,7 +141,7 @@ class GdsArrowClient(ABC):
     def start_put(self, payload: dict[str, Any], schema: Schema) -> Tuple["FlightStreamWriter", "FlightStreamReader"]:
         flight_descriptor = self._versioned_flight_descriptor(payload)
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
-        return self._flight_client.do_put(upload_descriptor, schema)
+        return self._flight_client.do_put(upload_descriptor, schema)  # type: ignore
 
     def close(self) -> None:
         self._flight_client.close()
@@ -195,7 +193,7 @@ class AuthFactory(ClientMiddlewareFactory):  # type: ignore
 
 
 class AuthMiddleware(ClientMiddleware):  # type: ignore
-    def __init__(self, auth: Tuple[str, str],  *args: Any, **kwargs: Any) -> None:
+    def __init__(self, auth: Tuple[str, str], *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._auth = auth
         self._token: Optional[str] = None

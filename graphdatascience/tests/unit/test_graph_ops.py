@@ -1,7 +1,6 @@
 import pytest
 from pandas import DataFrame
 
-from ...session.schema import GdsPropertyTypes
 from .conftest import CollectingQueryRunner
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
@@ -97,7 +96,8 @@ def test_project_remote(runner: CollectingQueryRunner, aura_gds: AuraGraphDataSc
 
     assert (
         runner.last_query()
-        == "CALL gds.arrow.project($graph_name, $query, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types)"
+        == "CALL gds.arrow.project("
+        + "$graph_name, $query, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types)"
     )
     # injection of token and host into the params is done by the actual query runner
     assert runner.last_params() == {
@@ -721,7 +721,8 @@ def test_remote_projection_all_configuration(runner: CollectingQueryRunner, aura
 
     assert (
         runner.last_query()
-        == "CALL gds.arrow.project($graph_name, $query, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types)"
+        == "CALL gds.arrow.project("
+        + "$graph_name, $query, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types)"
     )
 
     assert runner.last_params() == {
