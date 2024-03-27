@@ -325,6 +325,10 @@ class ArrowQueryRunner(QueryRunner):
         )
 
     def _sanitize_arrow_table(self, arrow_table: Table) -> Table:
+        # empty columns cannot be used to build a chunked_array in pyarrow
+        if len(arrow_table) == 0:
+            return arrow_table
+
         dict_encoded_fields = [
             (idx, field) for idx, field in enumerate(arrow_table.schema) if is_dictionary(field.type)
         ]
