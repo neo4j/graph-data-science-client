@@ -3,7 +3,7 @@ from typing import Generator
 
 import numpy as np
 import pytest
-from pandas import Series
+from pandas import DataFrame, Series
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
@@ -999,3 +999,16 @@ def test_graph_nodeProperty_stream_via_run_query(gds: GraphDataScience) -> None:
         )
     )
     assert {e for e in result["degree"]} == {1, 2, 3}
+
+
+def test_empty_relationships_stream(gds: GraphDataScience) -> None:
+    G = gds.graph.construct(GRAPH_NAME, nodes=DataFrame({"nodeId": [0, 1]}))
+    gds.nodeSimilarity.filtered.mutate(
+        G, mutateRelationshipType="SIMILAR", mutateProperty="score", similarityCutoff=0.99
+    )
+
+    assert G.relationship_count() == 0
+    assert G.relationship_types()
+
+    result = gds.graph.relationships.stream(G, ["SIMILAR"])
+    assert result.empty
