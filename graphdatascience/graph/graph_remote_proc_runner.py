@@ -5,5 +5,4 @@ from graphdatascience.graph.graph_remote_project_runner import GraphProjectRemot
 class GraphRemoteProcRunner(BaseGraphProcRunner):
     @property
     def project(self) -> GraphProjectRemoteRunner:
-        self._namespace += ".project.remoteDb"
         return GraphProjectRemoteRunner(self._query_runner, self._namespace, self._server_version)

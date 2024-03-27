@@ -4,6 +4,7 @@ from pandas import DataFrame, Series
 from pyarrow import flight
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 
+from .gds_arrow_client import GdsArrowClient
 from ..call_parameters import CallParameters
 from ..session.dbms_connection_info import DbmsConnectionInfo
 from .query_runner import QueryRunner
@@ -12,44 +13,24 @@ from graphdatascience.server_version.server_version import ServerVersion
 
 
 class AuraDbArrowQueryRunner(QueryRunner):
-    GDS_REMOTE_PROJECTION_PROC_NAME = "gds.graph.project.remoteDb"
+    GDS_REMOTE_PROJECTION_PROC_NAME = "gds.arrow.project"
 
     def __init__(
         self,
         gds_query_runner: QueryRunner,
         db_query_runner: QueryRunner,
         encrypted: bool,
-        aura_db_connection_info: DbmsConnectionInfo,
+        gds_connection_info: DbmsConnectionInfo,
     ):
         self._gds_query_runner = gds_query_runner
         self._db_query_runner = db_query_runner
-        self._auth = aura_db_connection_info.auth()
+        self._gds_connection_info = gds_connection_info
 
-        arrow_info: "Series[Any]" = db_query_runner.call_procedure(
-            endpoint="internal.arrow.status", custom_error=False
-        ).squeeze()
-
-        if not arrow_info.get("running"):
-            raise RuntimeError(f"The Arrow Server is not running at `{aura_db_connection_info.uri}`")
-        listen_address: Optional[str] = arrow_info.get("advertisedListenAddress")  # type: ignore
-        if not listen_address:
-            raise ConnectionError("Did not retrieve connection info from database")
-
-        host, port_string = listen_address.split(":")
-
-        self._auth_pair_middleware = AuthPairInterceptingMiddleware()
-        client_options: Dict[str, Any] = {
-            "middleware": [AuthPairInterceptingMiddlewareFactory(self._auth_pair_middleware)],
-            "disable_server_verification": True,
-        }
-
-        self._encrypted = encrypted
-        location = (
-            flight.Location.for_grpc_tls(host, int(port_string))
-            if self._encrypted
-            else flight.Location.for_grpc_tcp(host, int(port_string))
+        self._gds_arrow_client = GdsArrowClient.create(
+            gds_query_runner,
+            auth=self._gds_connection_info.auth(),
+            encrypted=encrypted
         )
-        self._client = flight.FlightClient(location, **client_options)
 
     def run_cypher(
         self,
@@ -73,12 +54,18 @@ class AuraDbArrowQueryRunner(QueryRunner):
             params = CallParameters()
 
         if AuraDbArrowQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME == endpoint:
-            token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
-            params["token"] = token
-            params["host"] = aura_db_arrow_endpoint
-            params["config"]["useEncryption"] = self._encrypted
+            host, port = self._gds_arrow_client.connection_info()
+            token = self._gds_arrow_client.get_or_request_token()
+            params["arrowConfiguration"] = {
+                "host": host,
+                "port": port,
+                "token": token,
+            }
+
+            return self._db_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
 
         elif ".write" in endpoint and self.is_remote_projected_graph(params["graph_name"]):
+            raise "todo"
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
             host, port_string = aura_db_arrow_endpoint.split(":")
             params["config"]["arrowConnectionInfo"] = {
@@ -128,57 +115,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
         return self._gds_query_runner.create_graph_constructor(graph_name, concurrency, undirected_relationship_types)
 
     def close(self) -> None:
-        self._client.close()
+        self._gds_arrow_client.close()
         self._gds_query_runner.close()
         self._db_query_runner.close()
 
-    def _get_or_request_auth_pair(self) -> Tuple[str, str]:
-        self._client.authenticate_basic_token(self._auth[0], self._auth[1])
-        return (self._auth_pair_middleware.token(), self._auth_pair_middleware.endpoint())
-
-
-class AuthPairInterceptingMiddlewareFactory(ClientMiddlewareFactory):  # type: ignore
-    def __init__(self, middleware: "AuthPairInterceptingMiddleware", *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self._middleware = middleware
-
-    def start_call(self, info: Any) -> "AuthPairInterceptingMiddleware":
-        return self._middleware
-
-
-class AuthPairInterceptingMiddleware(ClientMiddleware):  # type: ignore
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-
-    def received_headers(self, headers: Dict[str, Any]) -> None:
-        auth_header = headers.get("authorization")
-        auth_type, token = self._read_auth_header(auth_header)
-        if auth_type == "Bearer":
-            self._token = token
-
-        self._arrow_address = self._read_address_header(headers.get("arrowpluginaddress"))
-
-    def sending_headers(self) -> Dict[str, str]:
-        return {}
-
-    def token(self) -> str:
-        return self._token
-
-    def endpoint(self) -> str:
-        return self._arrow_address
-
-    def _read_auth_header(self, auth_header: Any) -> Tuple[str, str]:
-        if isinstance(auth_header, List):
-            auth_header = auth_header[0]
-        elif not isinstance(auth_header, str):
-            raise ValueError("Incompatible header format '{}'", auth_header)
-
-        auth_type, token = auth_header.split(" ", 1)
-        return (str(auth_type), str(token))
-
-    def _read_address_header(self, address_header: Any) -> str:
-        if isinstance(address_header, List):
-            return str(address_header[0])
-        if isinstance(address_header, str):
-            return address_header
-        raise ValueError("Incompatible header format '{}'", address_header)
