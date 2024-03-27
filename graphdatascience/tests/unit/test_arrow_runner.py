@@ -20,7 +20,7 @@ def test_create(runner: CollectingQueryRunner) -> None:
     assert isinstance(arrow_runner, ArrowQueryRunner)
 
     with pytest.raises(FlightUnavailableError, match=".+ failed to connect .+ ipv4:127.0.0.1:1234: .+"):
-        arrow_runner._flight_client.list_actions()
+        arrow_runner._gds_arrow_client.send_action("TEST", {})
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 6, 0)])
@@ -41,4 +41,4 @@ def test_create_with_provided_connection(runner: CollectingQueryRunner) -> None:
     assert isinstance(arrow_runner, ArrowQueryRunner)
 
     with pytest.raises(FlightUnavailableError, match=".+ failed to connect .+ ipv4:127.0.0.1:4321: .+"):
-        arrow_runner._flight_client.list_actions()
+        arrow_runner._gds_arrow_client.send_action("TEST", {})
