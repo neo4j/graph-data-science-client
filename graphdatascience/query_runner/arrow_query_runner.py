@@ -4,17 +4,16 @@ import warnings
 from typing import Any, Dict, List, Optional, Tuple
 
 from pandas import DataFrame
-from pyarrow.types import is_dictionary  # type: ignore
 
-from graphdatascience.server_version.compatible_with import (
-    IncompatibleServerVersionError,
-)
+from ..call_parameters import CallParameters
+from ..server_version.server_version import ServerVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .gds_arrow_client import GdsArrowClient
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
-from ..call_parameters import CallParameters
-from ..server_version.server_version import ServerVersion
+from graphdatascience.server_version.compatible_with import (
+    IncompatibleServerVersionError,
+)
 
 
 class ArrowQueryRunner(QueryRunner):
@@ -37,11 +36,7 @@ class ArrowQueryRunner(QueryRunner):
         )
 
         if gds_arrow_client is not None:
-            return ArrowQueryRunner(
-                gds_arrow_client,
-                fallback_query_runner,
-                fallback_query_runner.server_version()
-            )
+            return ArrowQueryRunner(gds_arrow_client, fallback_query_runner, fallback_query_runner.server_version())
         else:
             return fallback_query_runner
 
@@ -198,7 +193,9 @@ class ArrowQueryRunner(QueryRunner):
                             new_endpoint="gds.graph.relationships.stream",
                         )
 
-            return self._gds_arrow_client.get_property(self.database(), graph_name, endpoint, {"relationship_types": relationship_types})
+            return self._gds_arrow_client.get_property(
+                self.database(), graph_name, endpoint, {"relationship_types": relationship_types}
+            )
 
         return self._fallback_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
 
@@ -231,7 +228,7 @@ class ArrowQueryRunner(QueryRunner):
         self._gds_arrow_client.close()
 
     def fallback_query_runner(self) -> QueryRunner:
-        return self._fallback_query_runner# type: ignore
+        return self._fallback_query_runner
 
     def create_graph_constructor(
         self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
@@ -250,4 +247,3 @@ class ArrowQueryRunner(QueryRunner):
             concurrency,
             undirected_relationship_types,
         )
-

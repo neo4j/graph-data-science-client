@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..query_runner.aura_db_arrow_query_runner import AuraDbArrowQueryRunner
@@ -13,7 +13,14 @@ from graphdatascience.server_version.server_version import ServerVersion
 
 class GraphProjectRemoteRunner(IllegalAttrChecker):
     @compatible_with("project", min_inclusive=ServerVersion(2, 7, 0))
-    def __call__(self, graph_name: str, query: str, concurrency: int = 4, undirected_relationship_types: Optional[List[str]]=None, inverse_indexed_relationship_types: Optional[List[str]]=None) -> GraphCreateResult:
+    def __call__(
+        self,
+        graph_name: str,
+        query: str,
+        concurrency: int = 4,
+        undirected_relationship_types: Optional[List[str]] = None,
+        inverse_indexed_relationship_types: Optional[List[str]] = None,
+    ) -> GraphCreateResult:
         if inverse_indexed_relationship_types is None:
             inverse_indexed_relationship_types = []
         if undirected_relationship_types is None:
