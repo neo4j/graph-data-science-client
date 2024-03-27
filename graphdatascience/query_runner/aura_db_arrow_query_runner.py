@@ -1,12 +1,10 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
-from pandas import DataFrame, Series
-from pyarrow import flight
-from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
+from pandas import DataFrame
 
-from .gds_arrow_client import GdsArrowClient
 from ..call_parameters import CallParameters
 from ..session.dbms_connection_info import DbmsConnectionInfo
+from .gds_arrow_client import GdsArrowClient
 from .query_runner import QueryRunner
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.server_version.server_version import ServerVersion
@@ -25,11 +23,8 @@ class AuraDbArrowQueryRunner(QueryRunner):
         self._gds_query_runner = gds_query_runner
         self._db_query_runner = db_query_runner
         self._gds_connection_info = gds_connection_info
-
         self._gds_arrow_client = GdsArrowClient.create(
-            gds_query_runner,
-            auth=self._gds_connection_info.auth(),
-            encrypted=encrypted
+            gds_query_runner, auth=self._gds_connection_info.auth(), encrypted=encrypted
         )
 
     def run_cypher(
@@ -65,7 +60,6 @@ class AuraDbArrowQueryRunner(QueryRunner):
             return self._db_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
 
         elif ".write" in endpoint and self.is_remote_projected_graph(params["graph_name"]):
-            raise "todo"
             token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
             host, port_string = aura_db_arrow_endpoint.split(":")
             params["config"]["arrowConnectionInfo"] = {
@@ -118,4 +112,3 @@ class AuraDbArrowQueryRunner(QueryRunner):
         self._gds_arrow_client.close()
         self._gds_query_runner.close()
         self._db_query_runner.close()
-
