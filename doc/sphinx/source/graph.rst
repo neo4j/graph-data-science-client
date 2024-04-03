@@ -54,9 +54,9 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. deprecated:: 2.5.0
    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.graph.generate` instead.
 
-.. py:function:: gds.beta.graph.project.subgraph(graph_name: str,from_G: Graph, node_filter: str,relationship_filter: str,**config: Any,) -> GraphCreateResult
+.. py:function:: gds.beta.graph.project.subgraph(graph_name: str, from_G: Graph, node_filter: str, relationship_filter: str, **config: Any,) -> GraphCreateResult
 
-    Creates a named graph in the catalog for use by algorithms.
+    Filters down a graph projection to a named subgraph projection in the catalog for use by algorithms.
 
 .. deprecated:: 2.5.0
    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.graph.filter` instead.
@@ -159,9 +159,12 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.graph.project.subgraph(graph_name: str,from_G: Graph,node_filter: str,relationship_filter: str,**config: Any,) -> GraphCreateResult
+.. py:function:: gds.graph.project.subgraph(graph_name: str, from_G: Graph, node_filter: str, relationship_filter: str, **config: Any,) -> GraphCreateResult
 
-    Creates a named graph in the catalog for use by algorithms.
+    Filters down a graph projection to a named subgraph projection in the catalog for use by algorithms.
+
+.. deprecated:: 2.5.0
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.graph.filter` instead.
 
 .. py:function:: gds.graph.relationships.stream(G: Graph, relationship_types: List[str] = ["*"], **config: Any) -> TopologyDataFrame
 
@@ -260,3 +263,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.graph.nodeLabel.write(G: Graph, node_label: str, **config: Any) -> Series[Any]
     Writes the given node Label to an online Neo4j database.
+
+.. py:function:: gds.graph.filter(graph_name: str, from_G: Graph, node_filter: str, relationship_filter: str, **config: Any,) -> GraphCreateResult
+
+    Filters down a graph projection to a named subgraph projection in the catalog for use by algorithms.
