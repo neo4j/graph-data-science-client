@@ -2,7 +2,7 @@
 
 
 ## Breaking changes
-
+* Deprecated support for pyarrow 10.
 
 ## New features
 
