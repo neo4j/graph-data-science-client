@@ -228,7 +228,7 @@ class AuthMiddleware(ClientMiddleware):  # type: ignore
     def sending_headers(self) -> Dict[str, str]:
         token = self.token()
         if not token:
-            username, password = self._factory.auth
+            username, password = self._auth
             auth_token = f"{username}:{password}"
             auth_token = "Basic " + base64.b64encode(auth_token.encode("utf-8")).decode("ASCII")
             # There seems to be a bug, `authorization` must be lower key

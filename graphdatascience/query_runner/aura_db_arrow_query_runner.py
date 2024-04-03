@@ -51,6 +51,9 @@ class AuraDbArrowQueryRunner(QueryRunner):
         if AuraDbArrowQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME == endpoint:
             host, port = self._gds_arrow_client.connection_info()
             token = self._gds_arrow_client.get_or_request_token()
+            if token is None:
+                token = "IGNORED"
+
             params["arrowConfiguration"] = {
                 "host": host,
                 "port": port,
