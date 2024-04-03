@@ -2,7 +2,9 @@
 
 
 ## Breaking changes
-* Deprecated support for pyarrow 10.
+
+* Deprecated support for pyarrow version 10.X.Y as a dependency.
+
 
 ## New features
 
