@@ -35,7 +35,7 @@ def run_around_tests(gds_with_cloud_setup: AuraGraphDataScience) -> Generator[No
 
 
 @pytest.mark.cloud_architecture
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 6, 0))
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_projection(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
 
