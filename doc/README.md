@@ -10,6 +10,22 @@ We use AsciiDoc for writing documentation, and we render it to both HTML and PDF
 
 ### Rendering locally
 
+#### The easy way
+
+The manual:
+
+```bash
+scripts/render_docs.sh
+```
+
+The refdocs:
+
+```bash
+scripts/render_api_docs.sh
+```
+
+#### The hard way
+
 First, you have to run `npm install`.
 Second, you have to run `npm install @neo4j-antora/antora-page-roles --save`.
 After having done this once, you needn't do it again.
