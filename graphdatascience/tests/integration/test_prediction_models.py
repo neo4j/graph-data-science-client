@@ -50,7 +50,6 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
     G.drop()
 
 
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 @pytest.fixture
 def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[Model, None, None]:
     pipe, _ = gds.beta.pipeline.linkPrediction.create("pipe")
