@@ -7,4 +7,4 @@
 * xref:tutorials/node-regression-with-subgraph-and-graph-sample.adoc[]
 * xref:tutorials/heterogeneous-node-classification-with-hashgnn.adoc[]
 * xref:tutorials/kge-predict-transe-pyg-train.adoc[]
-* xref:tutorials/gds-sessions.adoc[]
+* xref:tutorials/gds-sessions.adoc[] (Beta)
