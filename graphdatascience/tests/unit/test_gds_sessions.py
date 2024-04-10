@@ -227,6 +227,32 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     assert sessions.list() == [SessionInfo("my-session", "M")]
 
 
+def test_get_or_create_different_size(mocker: MockerFixture, aura_api: AuraApi) -> None:
+    _setup_db_instance(aura_api)
+
+    sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
+    sessions._aura_api = aura_api
+
+    mocker.patch("graphdatascience.session.gds_sessions.GdsSessions._construct_client", lambda *args, **kwargs: kwargs)
+    mocker.patch("graphdatascience.session.gds_sessions.GdsSessions._change_initial_pw", lambda *args, **kwargs: None)
+
+    sessions.get_or_create(
+        "my-session",
+        SessionSizeByMemory.M,
+        DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape("Session `my-session` already exists with size `M`." " Requested size `L` does not match."),
+    ):
+        sessions.get_or_create(
+            "my-session",
+            SessionSizeByMemory.L,
+            DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
+        )
+
+
 def test_get_or_create_duplicate_session() -> None:
     sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
     sessions._aura_api = FakeAuraApi(
