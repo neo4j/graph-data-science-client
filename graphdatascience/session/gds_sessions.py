@@ -213,11 +213,11 @@ class GdsSessions:
     @staticmethod
     def _change_initial_pw(gds_url: str, gds_user: str, initial_pw: str, new_pw: str) -> None:
         with GraphDatabase.driver(gds_url, auth=(gds_user, initial_pw)) as driver:
-            driver.execute_query(
-                "ALTER CURRENT USER SET PASSWORD FROM $old_pw TO $new_pw",
-                parameters_={"old_pw": initial_pw, "new_pw": new_pw},
-                database_="system",
-            )
+            with driver.session(database="system") as session:
+                session.run(
+                    "ALTER CURRENT USER SET PASSWORD FROM $old_pw TO $new_pw",
+                    {"old_pw": initial_pw, "new_pw": new_pw}
+                )
 
     @classmethod
     def _fail_ambiguous_session(cls, session_name: str, instances: List[InstanceDetails]) -> None:
