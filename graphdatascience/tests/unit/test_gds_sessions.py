@@ -119,7 +119,7 @@ def test_list_session(requests_mock: Mocker) -> None:
     )
     requests_mock.get("https://api.neo4j.io/v1/instances/id", json={"data": asdict(gds_instance_specific_details)})
 
-    assert sessions.list() == [SessionInfo("my-session-name", "16 GiB")]
+    assert sessions.list() == [SessionInfo("my-session-name", "ML")]
 
 
 def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
@@ -147,7 +147,7 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
         "gds_url": "fake-url",
         "session_name": "my-session",
     }
-    assert sessions.list() == [SessionInfo("my-session", "512GB")]
+    assert sessions.list() == [SessionInfo("my-session", "X5L")]
 
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
     assert instance_details.cloud_provider == "aws"
@@ -224,7 +224,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     }
     assert gds_args1 == gds_args2
 
-    assert sessions.list() == [SessionInfo("my-session", "8GB")]
+    assert sessions.list() == [SessionInfo("my-session", "M")]
 
 
 def test_get_or_create_duplicate_session() -> None:

@@ -31,7 +31,17 @@ class SessionInfo:
 
     @classmethod
     def from_specific_instance_details(cls, instance_details: InstanceSpecificDetails) -> SessionInfo:
-        return SessionInfo(GdsSessionNameHelper.session_name(instance_details.name), instance_details.memory)
+
+        size = ""
+        try:
+            # instance creation also allows for GB but instance details returns size as GiB
+            memory = instance_details.memory.replace("GiB", "GB").replace(" ", "")
+            if memory:
+                size = SessionSizeByMemory(memory).name
+        except ValueError:
+            raise ValueError(f"Expected to find exactly one size for memory `{instance_details.memory}`")
+
+        return SessionInfo(GdsSessionNameHelper.session_name(instance_details.name), size)
 
 
 @dataclass
