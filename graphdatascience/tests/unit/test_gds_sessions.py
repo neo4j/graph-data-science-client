@@ -18,6 +18,7 @@ from graphdatascience.session.aura_api import (
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.gds_sessions import (
     AuraAPICredentials,
+    GdsSessionNameHelper,
     GdsSessions,
     SessionInfo,
 )
@@ -259,7 +260,7 @@ def test_get_or_create_duplicate_session() -> None:
         existing_instances=[
             InstanceSpecificDetails(
                 id="id42",
-                name=GdsSessions._instance_name("one"),
+                name=GdsSessionNameHelper.instance_name("one"),
                 tenant_id="",
                 cloud_provider="",
                 status="RUNNING",
@@ -270,7 +271,7 @@ def test_get_or_create_duplicate_session() -> None:
             ),
             InstanceSpecificDetails(
                 id="id43",
-                name=GdsSessions._instance_name("one"),
+                name=GdsSessionNameHelper.instance_name("one"),
                 tenant_id="",
                 cloud_provider="",
                 status="RUNNING",
@@ -292,7 +293,7 @@ def test_delete_session() -> None:
     existing_instances = [
         InstanceSpecificDetails(
             id="id42",
-            name=GdsSessions._instance_name("one"),
+            name=GdsSessionNameHelper.instance_name("one"),
             tenant_id="tenant_id",
             cloud_provider="cloud_provider",
             status="RUNNING",
@@ -303,7 +304,7 @@ def test_delete_session() -> None:
         ),
         InstanceSpecificDetails(
             id="id1",
-            name=GdsSessions._instance_name("other"),
+            name=GdsSessionNameHelper.instance_name("other"),
             tenant_id="tenant_id",
             cloud_provider="cloud_provider",
             status="RUNNING",
@@ -326,7 +327,7 @@ def test_delete_nonexisting_session() -> None:
     existing_instances = [
         InstanceSpecificDetails(
             id="id42",
-            name=GdsSessions._instance_name("one"),
+            name=GdsSessionNameHelper.instance_name("one"),
             tenant_id="tenant_id",
             cloud_provider="cloud_provider",
             status="RUNNING",
@@ -349,7 +350,7 @@ def test_delete_nonunique_session() -> None:
     existing_instances = [
         InstanceSpecificDetails(
             id="id42",
-            name=GdsSessions._instance_name("one"),
+            name=GdsSessionNameHelper.instance_name("one"),
             tenant_id="",
             cloud_provider="",
             status="RUNNING",
@@ -360,7 +361,7 @@ def test_delete_nonunique_session() -> None:
         ),
         InstanceSpecificDetails(
             id="id43",
-            name=GdsSessions._instance_name("one"),
+            name=GdsSessionNameHelper.instance_name("one"),
             tenant_id="",
             cloud_provider="",
             status="RUNNING",
@@ -406,6 +407,20 @@ def test_create_waiting_forever() -> None:
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is not running after waiting"):
         sessions.get_or_create(
             "one", SessionSizeByMemory.DEFAULT, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
+        )
+
+
+def test_invalid_session_name() -> None:
+    aura_api = FakeAuraApi(status_after_creating="updating")
+    _setup_db_instance(aura_api)
+    sessions = GdsSessions(AuraAPICredentials("", "", "foo"))
+    sessions._aura_api = aura_api
+
+    with pytest.raises(ValueError, match="Session name `one_very_long_session_name` is too long. Max length is 18."):
+        sessions.get_or_create(
+            "one_very_long_session_name",
+            SessionSizeByMemory.DEFAULT,
+            DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", ""),
         )
 
 

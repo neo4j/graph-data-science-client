@@ -138,7 +138,7 @@ class GdsSessions:
         Returns:
             True iff a session was deleted as a result of this call.
         """
-        instance_name = GdsSessions._instance_name(session_name)
+        instance_name = GdsSessionNameHelper.instance_name(session_name)
 
         candidate_instances = [i for i in self._aura_api.list_instances() if i.name == instance_name]
 
@@ -172,7 +172,7 @@ class GdsSessions:
         ]
 
     def _find_existing_session(self, session_name: str) -> Optional[InstanceSpecificDetails]:
-        instance_name = GdsSessions._instance_name(session_name)
+        instance_name = GdsSessionNameHelper.instance_name(session_name)
         matched_instances = [instance for instance in self._aura_api.list_instances() if instance.name == instance_name]
 
         if len(matched_instances) == 0:
@@ -194,7 +194,7 @@ class GdsSessions:
         region = self._ds_region(db_instance.region, db_instance.cloud_provider)
 
         create_details = self._aura_api.create_instance(
-            GdsSessions._instance_name(session_name), size.value, db_instance.cloud_provider, region
+            GdsSessionNameHelper.instance_name(session_name), size.value, db_instance.cloud_provider, region
         )
         return create_details
 
@@ -236,13 +236,10 @@ class GdsSessions:
             f"Expected to find exactly one GDS session with name `{session_name}`, but found `{candidates}`."
         )
 
-    @classmethod
-    def _instance_name(cls, session_name: str) -> str:
-        return GdsSessionNameHelper.instance_name(session_name)
-
 
 class GdsSessionNameHelper:
     GDS_SESSION_NAME_PREFIX = "gds-session-"
+    MAX_INSTANCE_NAME_LENGTH = 30
 
     @classmethod
     def session_name(cls, instance_name: str) -> str:
@@ -251,6 +248,13 @@ class GdsSessionNameHelper:
 
     @classmethod
     def instance_name(cls, session_name: str) -> str:
+        prefix_len = len(cls.GDS_SESSION_NAME_PREFIX)
+        if prefix_len + len(session_name) > cls.MAX_INSTANCE_NAME_LENGTH:
+            raise ValueError(
+                f"Session name `{session_name}` is too long."
+                f" Max length is {cls.MAX_INSTANCE_NAME_LENGTH - prefix_len}."
+            )
+
         return f"{cls.GDS_SESSION_NAME_PREFIX}{session_name}"
 
     @classmethod
