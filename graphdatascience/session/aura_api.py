@@ -12,6 +12,7 @@ from urllib.parse import urlparse
 import requests as req
 from requests import HTTPError
 
+from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.version import __version__
 
 
@@ -64,6 +65,21 @@ class InstanceCreateDetails:
 
     @classmethod
     def from_json(cls, json: dict[str, Any]) -> InstanceCreateDetails:
+        fields = dataclasses.fields(cls)
+        if any(f.name not in json for f in fields):
+            raise RuntimeError(f"Missing required field. Expected `{[f.name for f in fields]}` but got `{json}`")
+
+        return cls(**{f.name: json[f.name] for f in fields})
+
+
+@dataclass(repr=True, frozen=True)
+class EstimationDetails:
+    min_required_memory: str
+    recommended_size: str
+    did_exceed_maximum: bool
+
+    @classmethod
+    def from_json(cls, json: dict[str, Any]) -> EstimationDetails:
         fields = dataclasses.fields(cls)
         if any(f.name not in json for f in fields):
             raise RuntimeError(f"Missing required field. Expected `{[f.name for f in fields]}` but got `{json}`")
@@ -246,6 +262,21 @@ class AuraApi:
             time.sleep(sleep_time)
 
         return WaitResult.from_error(f"Instance is not running after waiting for {waited_time} seconds")
+
+    def estimate_size(
+        self, node_count: int, relationship_count: int, algorithm_categories: List[AlgorithmCategory]
+    ) -> EstimationDetails:
+        data = {
+            "node_count": node_count,
+            "relationship_count": relationship_count,
+            "algorithm_categories": algorithm_categories,
+            "tier": "gds",  # fixed as professional or enterprise makes no difference in sizing
+        }
+
+        response = req.post(f"{self._base_uri}/v1/instances/estimations", headers=self._build_header(), json=data)
+        response.raise_for_status()
+
+        return EstimationDetails.from_json(response.json()["data"])
 
     def _get_tenant_id(self) -> str:
         response = req.get(

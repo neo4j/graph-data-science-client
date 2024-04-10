@@ -1,3 +1,4 @@
+from .algorithm_category import AlgorithmCategory
 from .dbms_connection_info import DbmsConnectionInfo
 from .gds_sessions import AuraAPICredentials, GdsSessions, SessionInfo
 from .schema import GdsPropertyTypes
@@ -10,4 +11,5 @@ __all__ = [
     "AuraAPICredentials",
     "SessionMemory",
     "GdsPropertyTypes",
+    "AlgorithmCategory",
 ]
