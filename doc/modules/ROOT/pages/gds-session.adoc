@@ -45,6 +45,7 @@ The name must be unique.
 This configuration determines the amount of memory and CPU available to the session.
 It also determines the cost of running the session.
 Available configurations are listed <<gds-session-memory, below>>.
+You can use the `sessions.estimate()` method to estimate the size required.
 
 - **DBMS connection**.
 This is a `DbmsConnectionInfo` object that contains the URI of an AuraDB instance, a username, and a password.
@@ -52,10 +53,14 @@ This is a `DbmsConnectionInfo` object that contains the URI of an AuraDB instanc
 .Creating a GDS Session:
 [source,python,role=no-test]
 ----
-from graphdatascience.session import SessionMemory, DbmsConnectionInfo
+from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory
 
 name = "my-new-session"
-memory = SessionMemory.m_8GB
+size = sessions.estimate(
+    node_count=20,
+    relationship_count=50,
+    algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
+)
 db_connection_info = DbmsConnectionInfo("neo4j+s://mydbid.databases.neo4j.io", "my-user", "my-password")
 
 gds = sessions.get_or_create(

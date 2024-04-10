@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class AlgorithmCategory(str, Enum):
+class AlgorithmCategory(Enum):
     """
     Enumeration of supported algorithm categories used for size estimation.
     """
