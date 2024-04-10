@@ -5,7 +5,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Delta Stepping shortest path algorithm computes the shortest (weighted) path\nbetween one node and any other node in the graph. The computation is run multi-threaded.\n\n"
+    "description": "The Delta Stepping shortest path algorithm computes the shortest (weighted) path\nbetween one node and any other node in the graph. The computation is run multi-threaded."
   },
   {
     "function": {
@@ -13,7 +13,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for allShortestPaths.dealta.mutate.\n\n"
+    "description": "Returns an estimation of the memory consumption for allShortestPaths.dealta.mutate."
   },
   {
     "function": {
@@ -21,7 +21,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Delta Stepping shortest path algorithm computes the shortest (weighted) path\nbetween one node and any other node in the graph. The computation is run multi-threaded\n\n"
+    "description": "The Delta Stepping shortest path algorithm computes the shortest (weighted) path\nbetween one node and any other node in the graph. The computation is run multi-threaded"
   },
   {
     "function": {
@@ -29,7 +29,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for allShortestPaths.delta.stats.\n\n"
+    "description": "Returns an estimation of the memory consumption for allShortestPaths.delta.stats."
   },
   {
     "function": {
@@ -37,7 +37,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Delta Stepping shortest path algorithm computes the shortest (weighted) path\nbetween one node and any other node in the graph. The computation is run multi-threaded.\n\n"
+    "description": "The Delta Stepping shortest path algorithm computes the shortest (weighted) path\nbetween one node and any other node in the graph. The computation is run multi-threaded."
   },
   {
     "function": {
@@ -45,7 +45,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for allShortestPaths.delta.strema.\n\n"
+    "description": "Returns an estimation of the memory consumption for allShortestPaths.delta.strema."
   },
   {
     "function": {
@@ -53,7 +53,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Delta Stepping shortest path algorithm computes the shortest (weighted) path\nbetween one node and any other node in the graph. The computation is run multi-threaded.\n\n"
+    "description": "The Delta Stepping shortest path algorithm computes the shortest (weighted) path\nbetween one node and any other node in the graph. The computation is run multi-threaded."
   },
   {
     "function": {
@@ -61,7 +61,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -69,7 +69,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Dijkstra shortest path algorithm computes the shortest (weighted) path\nbetween one node and any other node in the graph.\n\n"
+    "description": "The Dijkstra shortest path algorithm computes the shortest (weighted) path\nbetween one node and any other node in the graph."
   },
   {
     "function": {
@@ -77,7 +77,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -85,7 +85,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Dijkstra shortest path algorithm computes the shortest (weighted) path\nbetween one node and any other node in the graph.\n\n"
+    "description": "The Dijkstra shortest path algorithm computes the shortest (weighted) path\nbetween one node and any other node in the graph."
   },
   {
     "function": {
@@ -93,7 +93,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -101,7 +101,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Dijkstra shortest path algorithm computes the shortest (weighted) path\nbetween one node and any other node in the graph.\n\n"
+    "description": "The Dijkstra shortest path algorithm computes the shortest (weighted) path\nbetween one node and any other node in the graph."
   },
   {
     "function": {
@@ -109,7 +109,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -117,7 +117,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe All Pairs Shortest Path (APSP) calculates the shortest (weighted) path\nbetween all pairs of nodes.\n\n"
+    "description": "The All Pairs Shortest Path (APSP) calculates the shortest (weighted) path\nbetween all pairs of nodes."
   },
   {
     "function": {
@@ -125,7 +125,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe All Pairs Shortest Path (APSP) calculates the shortest (weighted) path\nbetween all pairs of nodes.\n\n",
+    "description": "The All Pairs Shortest Path (APSP) calculates the shortest (weighted) path\nbetween all pairs of nodes.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.allShortestPaths.stream` instead."
@@ -137,7 +137,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nHarmonic centrality is a way of detecting nodes that are able to spread information\nvery efficiently through a graph.\n\n",
+    "description": "Harmonic centrality is a way of detecting nodes that are able to spread information\nvery efficiently through a graph.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.closeness.harmonic.stream` instead."
@@ -149,7 +149,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nHarmonic centrality is a way of detecting nodes that are able to spread information\nvery efficiently through a graph.\n\n",
+    "description": "Harmonic centrality is a way of detecting nodes that are able to spread information\nvery efficiently through a graph.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.closeness.harmonic.write` instead."
@@ -161,7 +161,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nEvaluates a division of nodes into communities based on the proportion of relationships\nthat cross community boundaries.\n\n\n"
+    "description": "Evaluates a division of nodes into communities based on the proportion of relationships\nthat cross community boundaries."
   },
   {
     "function": {
@@ -169,7 +169,7 @@
       "signature": "graph_name: str, from_G: Graph, **config: Any",
       "return_type": "GraphCreateResult"
     },
-    "description": "\nConstructs a random subgraph based on random walks with restarts.\n\n",
+    "description": "Constructs a random subgraph based on random walks with restarts.",
     "deprecated": {
       "version": "2.4.0",
       "message": "Since GDS server version 2.4.0 you should use the endpoint :func:`gds.graph.sample.rwr` instead."
@@ -181,7 +181,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nHyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.\n\n",
+    "description": "Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.mutate` instead."
@@ -193,7 +193,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n",
+    "description": "Returns an estimation of the memory consumption for that procedure.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.mutate.estimate` instead."
@@ -205,7 +205,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nHyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.\n\n",
+    "description": "Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.stats` instead."
@@ -217,7 +217,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n",
+    "description": "Returns an estimation of the memory consumption for that procedure.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.stats.estimate` instead."
@@ -229,7 +229,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nHyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.\n\n",
+    "description": "Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.stream` instead."
@@ -241,7 +241,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n",
+    "description": "Returns an estimation of the memory consumption for that procedure.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.stream.estimate` instead."
@@ -253,7 +253,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nHyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.\n\n",
+    "description": "Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.write` instead."
@@ -265,7 +265,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n",
+    "description": "Returns an estimation of the memory consumption for that procedure.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.hits.write.estimate` instead."
@@ -277,7 +277,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe K-spanning tree algorithm starts from a root node and returns a spanning tree with exactly k nodes\n",
+    "description": "The K-spanning tree algorithm starts from a root node and returns a spanning tree with exactly k nodes",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kSpanningTree.write` instead."
@@ -289,7 +289,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.\n\n"
+    "description": "The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively."
   },
   {
     "function": {
@@ -297,7 +297,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.\n\n"
+    "description": "The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively."
   },
   {
     "function": {
@@ -305,7 +305,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.\n\n"
+    "description": "The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively."
   },
   {
     "function": {
@@ -313,7 +313,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.\n\n"
+    "description": "The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively."
   },
   {
     "function": {
@@ -321,7 +321,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nApproximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities.\n\n"
+    "description": "Approximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities."
   },
   {
     "function": {
@@ -329,7 +329,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nApproximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities.\n\n"
+    "description": "Approximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities."
   },
   {
     "function": {
@@ -337,7 +337,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nApproximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities.\n\n"
+    "description": "Approximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities."
   },
   {
     "function": {
@@ -345,23 +345,21 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nApproximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities.\n\n"
+    "description": "Approximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities."
   },
   {
     "function": {
       "name": "gds.alpha.modularity.stats",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
-    },
-    "description": "\n"
+    }
   },
   {
     "function": {
       "name": "gds.alpha.modularity.stream",
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
-    },
-    "description": "\n"
+    }
   },
   {
     "function": {
@@ -369,7 +367,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters.\n\n"
+    "description": "The Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters."
   },
   {
     "function": {
@@ -377,7 +375,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -385,7 +383,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters.\n\n"
+    "description": "The Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters."
   },
   {
     "function": {
@@ -393,7 +391,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -401,7 +399,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters.\n\n"
+    "description": "The Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters."
   },
   {
     "function": {
@@ -409,7 +407,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -417,7 +415,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters.\n\n"
+    "description": "The Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters."
   },
   {
     "function": {
@@ -425,7 +423,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -433,7 +431,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nScale node properties\n\n",
+    "description": "Scale node properties",
     "deprecated": {
       "version": "2.4.0",
       "message": "Since GDS server version 2.4.0 you should use the endpoint :func:`gds.scaleProperties.mutate` instead."
@@ -445,7 +443,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nScale node properties\n\n",
+    "description": "Scale node properties",
     "deprecated": {
       "version": "2.4.0",
       "message": "Since GDS server version 2.4.0 you should use the endpoint :func:`gds.scaleProperties.stream` instead."
@@ -457,7 +455,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe SCC algorithm finds sets of connected nodes in an directed graph,\nwhere all nodes in the same set form a connected component.\n\n"
+    "description": "The SCC algorithm finds sets of connected nodes in an directed graph,\nwhere all nodes in the same set form a connected component."
   },
   {
     "function": {
@@ -465,7 +463,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe SCC algorithm finds sets of connected nodes in an directed graph,\nwhere all nodes in the same set form a connected component.\n\n"
+    "description": "The SCC algorithm finds sets of connected nodes in an directed graph,\nwhere all nodes in the same set form a connected component."
   },
   {
     "function": {
@@ -473,7 +471,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.\n\n",
+    "description": "The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.mutate` instead."
@@ -485,7 +483,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n",
+    "description": "Returns an estimation of the memory consumption for that procedure.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.mutate.estimate` instead."
@@ -497,7 +495,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.\n\n",
+    "description": "The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.stats` instead."
@@ -509,7 +507,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n",
+    "description": "Returns an estimation of the memory consumption for that procedure.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.stats.estimate` instead."
@@ -521,7 +519,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.\n\n",
+    "description": "The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.stream` instead."
@@ -533,7 +531,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n",
+    "description": "Returns an estimation of the memory consumption for that procedure.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.stream.estimate` instead."
@@ -545,7 +543,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.\n\n",
+    "description": "The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.write` instead."
@@ -557,7 +555,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n",
+    "description": "Returns an estimation of the memory consumption for that procedure.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.sllpa.write.estimate` instead."
@@ -569,7 +567,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nTriangles streams the nodeIds of each triangle in the graph.\n",
+    "description": "Triangles streams the nodeIds of each triangle in the graph.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.triangles` instead."
@@ -581,7 +579,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nArticle Rank is a variant of the Page Rank algorithm, which measures the transitive influence or connectivity of nodes.\n\n"
+    "description": "Article Rank is a variant of the Page Rank algorithm, which measures the transitive influence or connectivity of nodes."
   },
   {
     "function": {
@@ -589,7 +587,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -597,7 +595,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nExecutes the algorithm and returns result statistics without writing the result to Neo4j.\n\n"
+    "description": "Executes the algorithm and returns result statistics without writing the result to Neo4j."
   },
   {
     "function": {
@@ -605,7 +603,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -613,7 +611,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nArticle Rank is a variant of the Page Rank algorithm, which measures the transitive influence or connectivity of nodes.\n\n"
+    "description": "Article Rank is a variant of the Page Rank algorithm, which measures the transitive influence or connectivity of nodes."
   },
   {
     "function": {
@@ -621,7 +619,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -629,7 +627,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nArticle Rank is a variant of the Page Rank algorithm, which measures the transitive influence or connectivity of nodes.\n\n"
+    "description": "Article Rank is a variant of the Page Rank algorithm, which measures the transitive influence or connectivity of nodes."
   },
   {
     "function": {
@@ -637,7 +635,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -645,7 +643,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Bellman-Ford shortest path algorithm computes the shortest (weighted) path between one node\nand any other node in the graph without negative cycles.\n\n"
+    "description": "The Bellman-Ford shortest path algorithm computes the shortest (weighted) path between one node\nand any other node in the graph without negative cycles."
   },
   {
     "function": {
@@ -653,7 +651,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -661,7 +659,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Bellman-Ford shortest path algorithm computes the shortest (weighted) path between one node\nand any other node in the graph without negative cycles.\n\n"
+    "description": "The Bellman-Ford shortest path algorithm computes the shortest (weighted) path between one node\nand any other node in the graph without negative cycles."
   },
   {
     "function": {
@@ -669,7 +667,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -677,7 +675,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Bellman-Ford shortest path algorithm computes the shortest (weighted) path between one node\nand any other node in the graph without negative cycles.\n\n"
+    "description": "The Bellman-Ford shortest path algorithm computes the shortest (weighted) path between one node\nand any other node in the graph without negative cycles."
   },
   {
     "function": {
@@ -685,7 +683,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -693,7 +691,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Bellman-Ford shortest path algorithm computes the shortest (weighted) path between one node\nand any other node in the graph without negative cycles.\n\n"
+    "description": "The Bellman-Ford shortest path algorithm computes the shortest (weighted) path between one node\nand any other node in the graph without negative cycles."
   },
   {
     "function": {
@@ -701,7 +699,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -709,7 +707,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nCloseness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.\n\n"
+    "description": "Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph."
   },
   {
     "function": {
@@ -717,7 +715,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nCloseness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.\n\n"
+    "description": "Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph."
   },
   {
     "function": {
@@ -725,7 +723,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nCloseness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.\n\n"
+    "description": "Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph."
   },
   {
     "function": {
@@ -733,7 +731,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nCloseness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.\n\n"
+    "description": "Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph."
   },
   {
     "function": {
@@ -741,7 +739,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nCollapse Path algorithm is a traversal algorithm capable of creating relationships between the start\nand end nodes of a traversal\n\n"
+    "description": "Collapse Path algorithm is a traversal algorithm capable of creating relationships between the start\nand end nodes of a traversal"
   },
   {
     "function": {
@@ -749,7 +747,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network.\n\n"
+    "description": "The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network."
   },
   {
     "function": {
@@ -757,7 +755,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -765,7 +763,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nExecutes the algorithm and returns result statistics without writing the result to Neo4j.\n\n"
+    "description": "Executes the algorithm and returns result statistics without writing the result to Neo4j."
   },
   {
     "function": {
@@ -773,7 +771,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -781,7 +779,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network.\n\n"
+    "description": "The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network."
   },
   {
     "function": {
@@ -789,7 +787,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network.\n\n"
+    "description": "The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network."
   },
   {
     "function": {
@@ -797,7 +795,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network.\n\n"
+    "description": "The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network."
   },
   {
     "function": {
@@ -805,7 +803,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -813,7 +811,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe K-1 Coloring algorithm assigns a color to every node in the graph.\n\n"
+    "description": "The K-1 Coloring algorithm assigns a color to every node in the graph."
   },
   {
     "function": {
@@ -821,7 +819,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -829,7 +827,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe K-1 Coloring algorithm assigns a color to every node in the graph.\n\n"
+    "description": "The K-1 Coloring algorithm assigns a color to every node in the graph."
   },
   {
     "function": {
@@ -837,7 +835,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -845,7 +843,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe K-1 Coloring algorithm assigns a color to every node in the graph.\n\n"
+    "description": "The K-1 Coloring algorithm assigns a color to every node in the graph."
   },
   {
     "function": {
@@ -853,7 +851,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -861,7 +859,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe K-1 Coloring algorithm assigns a color to every node in the graph.\n\n"
+    "description": "The K-1 Coloring algorithm assigns a color to every node in the graph."
   },
   {
     "function": {
@@ -869,7 +867,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -877,7 +875,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Kmeans  algorithm clusters nodes into different communities based on Euclidean distance\n\n",
+    "description": "The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.mutate` instead."
@@ -889,7 +887,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n",
+    "description": "Returns an estimation of the memory consumption for that procedure.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.mutate.estimate` instead."
@@ -901,7 +899,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Kmeans  algorithm clusters nodes into different communities based on Euclidean distance\n\n",
+    "description": "The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.stats` instead."
@@ -913,7 +911,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n",
+    "description": "Returns an estimation of the memory consumption for that procedure.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.stats.estimate` instead."
@@ -925,7 +923,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Kmeans  algorithm clusters nodes into different communities based on Euclidean distance\n\n",
+    "description": "The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.stream` instead."
@@ -937,7 +935,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n",
+    "description": "Returns an estimation of the memory consumption for that procedure.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.stream.estimate` instead."
@@ -949,7 +947,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Kmeans  algorithm clusters nodes into different communities based on Euclidean distance\n\n",
+    "description": "The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.write` instead."
@@ -961,7 +959,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n",
+    "description": "Returns an estimation of the memory consumption for that procedure.",
     "deprecated": {
       "version": "2.5.0",
       "message": "Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.write.estimate` instead."
@@ -973,7 +971,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nLeiden is a community detection algorithm, which guarantees that communities are well connected\n\n"
+    "description": "Leiden is a community detection algorithm, which guarantees that communities are well connected"
   },
   {
     "function": {
@@ -981,7 +979,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -989,7 +987,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nExecutes the algorithm and returns result statistics without writing the result to Neo4j.\n\n"
+    "description": "Executes the algorithm and returns result statistics without writing the result to Neo4j."
   },
   {
     "function": {
@@ -997,7 +995,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1005,7 +1003,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nLeiden is a community detection algorithm, which guarantees that communities are well connected\n\n"
+    "description": "Leiden is a community detection algorithm, which guarantees that communities are well connected"
   },
   {
     "function": {
@@ -1013,7 +1011,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1021,7 +1019,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nLeiden is a community detection algorithm, which guarantees that communities are well connected\n\n"
+    "description": "Leiden is a community detection algorithm, which guarantees that communities are well connected"
   },
   {
     "function": {
@@ -1029,7 +1027,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1037,7 +1035,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity.\n\n"
+    "description": "The Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity."
   },
   {
     "function": {
@@ -1045,7 +1043,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1053,7 +1051,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity.\n\n"
+    "description": "The Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity."
   },
   {
     "function": {
@@ -1061,7 +1059,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1069,7 +1067,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity.\n\n"
+    "description": "The Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity."
   },
   {
     "function": {
@@ -1077,7 +1075,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1085,7 +1083,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nScale node properties\n\n"
+    "description": "Scale node properties"
   },
   {
     "function": {
@@ -1093,7 +1091,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1101,7 +1099,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nScale node properties\n\n"
+    "description": "Scale node properties"
   },
   {
     "function": {
@@ -1109,7 +1107,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1117,7 +1115,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nScale node properties\n\n"
+    "description": "Scale node properties"
   },
   {
     "function": {
@@ -1125,7 +1123,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1133,7 +1131,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nScale node properties\n\n"
+    "description": "Scale node properties"
   },
   {
     "function": {
@@ -1141,7 +1139,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1149,7 +1147,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.\n\n"
+    "description": "The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component."
   },
   {
     "function": {
@@ -1157,7 +1155,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for SCC.\n\n"
+    "description": "Returns an estimation of the memory consumption for SCC."
   },
   {
     "function": {
@@ -1165,7 +1163,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.\n\n"
+    "description": "The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component."
   },
   {
     "function": {
@@ -1173,7 +1171,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for SCC.\n\n"
+    "description": "Returns an estimation of the memory consumption for SCC."
   },
   {
     "function": {
@@ -1181,7 +1179,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.\n\n"
+    "description": "The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component."
   },
   {
     "function": {
@@ -1189,7 +1187,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for SCC.\n\n"
+    "description": "Returns an estimation of the memory consumption for SCC."
   },
   {
     "function": {
@@ -1197,7 +1195,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.\n\n"
+    "description": "The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component."
   },
   {
     "function": {
@@ -1205,7 +1203,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for SCC.\n\n"
+    "description": "Returns an estimation of the memory consumption for SCC."
   },
   {
     "function": {
@@ -1213,7 +1211,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component where the total weight of the relationships is either minimized or maximized.\n\n"
+    "description": "The spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component where the total weight of the relationships is either minimized or maximized."
   },
   {
     "function": {
@@ -1221,7 +1219,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1229,7 +1227,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component\nwhere the total weight of the relationships is either minimized or maximized.\n\n"
+    "description": "The spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component\nwhere the total weight of the relationships is either minimized or maximized."
   },
   {
     "function": {
@@ -1237,7 +1235,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1245,7 +1243,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component\nwhere the total weight of the relationships is either minimized or maximized.\n\n"
+    "description": "The spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component\nwhere the total weight of the relationships is either minimized or maximized."
   },
   {
     "function": {
@@ -1253,7 +1251,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1261,7 +1259,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component\nwhere the total weight of the relationships is either minimized or maximized.\n\n"
+    "description": "The spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component\nwhere the total weight of the relationships is either minimized or maximized."
   },
   {
     "function": {
@@ -1269,7 +1267,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1277,7 +1275,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible.\n\n"
+    "description": "The steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible."
   },
   {
     "function": {
@@ -1285,7 +1283,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible.\n\n"
+    "description": "The steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible."
   },
   {
     "function": {
@@ -1293,7 +1291,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible.\n\n"
+    "description": "The steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible."
   },
   {
     "function": {
@@ -1301,7 +1299,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible.\n\n"
+    "description": "The steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible."
   },
   {
     "function": {
@@ -1309,7 +1307,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nBetweenness centrality measures the relative information flow that passes through a node.\n\n"
+    "description": "Betweenness centrality measures the relative information flow that passes through a node."
   },
   {
     "function": {
@@ -1317,7 +1315,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nBetweenness centrality measures the relative information flow that passes through a node.\n\n"
+    "description": "Betweenness centrality measures the relative information flow that passes through a node."
   },
   {
     "function": {
@@ -1325,7 +1323,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nBetweenness centrality measures the relative information flow that passes through a node.\n\n"
+    "description": "Betweenness centrality measures the relative information flow that passes through a node."
   },
   {
     "function": {
@@ -1333,7 +1331,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nBetweenness centrality measures the relative information flow that passes through a node.\n\n"
+    "description": "Betweenness centrality measures the relative information flow that passes through a node."
   },
   {
     "function": {
@@ -1341,7 +1339,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nBetweenness centrality measures the relative information flow that passes through a node.\n\n"
+    "description": "Betweenness centrality measures the relative information flow that passes through a node."
   },
   {
     "function": {
@@ -1349,7 +1347,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nBetweenness centrality measures the relative information flow that passes through a node.\n\n"
+    "description": "Betweenness centrality measures the relative information flow that passes through a node."
   },
   {
     "function": {
@@ -1357,7 +1355,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nBetweenness centrality measures the relative information flow that passes through a node.\n\n"
+    "description": "Betweenness centrality measures the relative information flow that passes through a node."
   },
   {
     "function": {
@@ -1365,7 +1363,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nBetweenness centrality measures the relative information flow that passes through a node.\n\n"
+    "description": "Betweenness centrality measures the relative information flow that passes through a node."
   },
   {
     "function": {
@@ -1373,7 +1371,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nBFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth\nprior to moving on to the nodes at the next depth level.\n\n"
+    "description": "BFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth\nprior to moving on to the nodes at the next depth level."
   },
   {
     "function": {
@@ -1381,7 +1379,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1389,7 +1387,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nBFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth\nprior to moving on to the nodes at the next depth level.\n\n"
+    "description": "BFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth\nprior to moving on to the nodes at the next depth level."
   },
   {
     "function": {
@@ -1397,7 +1395,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1405,7 +1403,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nBFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth\nprior to moving on to the nodes at the next depth level.\n\n"
+    "description": "BFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth\nprior to moving on to the nodes at the next depth level."
   },
   {
     "function": {
@@ -1413,7 +1411,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nBFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth\nprior to moving on to the nodes at the next depth level.\"\"\"\n\n"
+    "description": "BFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth\nprior to moving on to the nodes at the next depth level."
   },
   {
     "function": {
@@ -1421,7 +1419,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nCloseness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.\n\n"
+    "description": "Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph."
   },
   {
     "function": {
@@ -1429,7 +1427,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nCloseness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.\n\n"
+    "description": "Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph."
   },
   {
     "function": {
@@ -1437,7 +1435,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nCloseness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.\n\n"
+    "description": "Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph."
   },
   {
     "function": {
@@ -1445,7 +1443,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nCloseness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.\n\n"
+    "description": "Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph."
   },
   {
     "function": {
@@ -1453,7 +1451,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nHarmonic centrality is a way of detecting nodes that are able to spread information\nvery efficiently through a graph.\n\n"
+    "description": "Harmonic centrality is a way of detecting nodes that are able to spread information\nvery efficiently through a graph."
   },
   {
     "function": {
@@ -1461,7 +1459,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nHarmonic centrality is a way of detecting nodes that are able to spread information\nvery efficiently through a graph.\n\n"
+    "description": "Harmonic centrality is a way of detecting nodes that are able to spread information\nvery efficiently through a graph."
   },
   {
     "function": {
@@ -1469,7 +1467,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nHarmonic centrality is a way of detecting nodes that are able to spread information\nvery efficiently through a graph.\n\n"
+    "description": "Harmonic centrality is a way of detecting nodes that are able to spread information\nvery efficiently through a graph."
   },
   {
     "function": {
@@ -1477,7 +1475,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nHarmonic centrality is a way of detecting nodes that are able to spread information\nvery efficiently through a graph.\n\n"
+    "description": "Harmonic centrality is a way of detecting nodes that are able to spread information\nvery efficiently through a graph."
   },
   {
     "function": {
@@ -1485,7 +1483,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nCollapse Path algorithm is a traversal algorithm capable of creating relationships between the start\nand end nodes of a traversal\n\n"
+    "description": "Collapse Path algorithm is a traversal algorithm capable of creating relationships between the start\nand end nodes of a traversal"
   },
   {
     "function": {
@@ -1493,7 +1491,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nEvaluates a division of nodes into communities based on the proportion of relationships\nthat cross community boundaries.\n\n"
+    "description": "Evaluates a division of nodes into communities based on the proportion of relationships\nthat cross community boundaries."
   },
   {
     "function": {
@@ -1501,7 +1499,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nReturns a topological ordering of the nodes in a directed acyclic graph (DAG).\n\n"
+    "description": "Returns a topological ordering of the nodes in a directed acyclic graph (DAG)."
   },
   {
     "function": {
@@ -1509,7 +1507,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nFinds the longest path that leads to a node in a directed acyclic graph (DAG).\n\n"
+    "description": "Finds the longest path that leads to a node in a directed acyclic graph (DAG)."
   },
   {
     "function": {
@@ -1517,7 +1515,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nDegree centrality measures the number of incoming and outgoing relationships from a node.\n\n"
+    "description": "Degree centrality measures the number of incoming and outgoing relationships from a node."
   },
   {
     "function": {
@@ -1525,7 +1523,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nDegree centrality measures the number of incoming and outgoing relationships from a node.\n\n"
+    "description": "Degree centrality measures the number of incoming and outgoing relationships from a node."
   },
   {
     "function": {
@@ -1533,7 +1531,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nDegree centrality measures the number of incoming and outgoing relationships from a node.\n\n"
+    "description": "Degree centrality measures the number of incoming and outgoing relationships from a node."
   },
   {
     "function": {
@@ -1541,7 +1539,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nDegree centrality measures the number of incoming and outgoing relationships from a node.\n\n"
+    "description": "Degree centrality measures the number of incoming and outgoing relationships from a node."
   },
   {
     "function": {
@@ -1549,7 +1547,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nDegree centrality measures the number of incoming and outgoing relationships from a node.\n\n"
+    "description": "Degree centrality measures the number of incoming and outgoing relationships from a node."
   },
   {
     "function": {
@@ -1557,7 +1555,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nDegree centrality measures the number of incoming and outgoing relationships from a node.\n\n"
+    "description": "Degree centrality measures the number of incoming and outgoing relationships from a node."
   },
   {
     "function": {
@@ -1565,7 +1563,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nDegree centrality measures the number of incoming and outgoing relationships from a node.\n\n"
+    "description": "Degree centrality measures the number of incoming and outgoing relationships from a node."
   },
   {
     "function": {
@@ -1573,7 +1571,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nDegree centrality measures the number of incoming and outgoing relationships from a node.\n\n"
+    "description": "Degree centrality measures the number of incoming and outgoing relationships from a node."
   },
   {
     "function": {
@@ -1581,7 +1579,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nDepth-first search (DFS) is an algorithm for traversing or searching tree or graph data structures.\nThe algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph)\nand explores as far as possible along each branch before backtracking.\n\n"
+    "description": "Depth-first search (DFS) is an algorithm for traversing or searching tree or graph data structures.\nThe algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph)\nand explores as far as possible along each branch before backtracking."
   },
   {
     "function": {
@@ -1589,7 +1587,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1597,7 +1595,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nDepth-first search (DFS) is an algorithm for traversing or searching tree or graph data structures.\nThe algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph)\nand explores as far as possible along each branch before backtracking.\n\n"
+    "description": "Depth-first search (DFS) is an algorithm for traversing or searching tree or graph data structures.\nThe algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph)\nand explores as far as possible along each branch before backtracking."
   },
   {
     "function": {
@@ -1605,7 +1603,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nDepth-first search (DFS) is an algorithm for traversing or searching tree or graph data structures.\nThe algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph)\nand explores as far as possible along each branch before backtracking.\n\n"
+    "description": "Depth-first search (DFS) is an algorithm for traversing or searching tree or graph data structures.\nThe algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph)\nand explores as far as possible along each branch before backtracking."
   },
   {
     "function": {
@@ -1613,7 +1611,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nEigenvector Centrality is an algorithm that measures the transitive influence or connectivity of nodes.\n\n"
+    "description": "Eigenvector Centrality is an algorithm that measures the transitive influence or connectivity of nodes."
   },
   {
     "function": {
@@ -1621,7 +1619,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1629,7 +1627,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nEigenvector Centrality is an algorithm that measures the transitive influence or connectivity of nodes.\n\n"
+    "description": "Eigenvector Centrality is an algorithm that measures the transitive influence or connectivity of nodes."
   },
   {
     "function": {
@@ -1637,7 +1635,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1645,7 +1643,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nEigenvector Centrality is an algorithm that measures the transitive influence or connectivity of nodes.\n\n"
+    "description": "Eigenvector Centrality is an algorithm that measures the transitive influence or connectivity of nodes."
   },
   {
     "function": {
@@ -1653,7 +1651,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1661,7 +1659,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nEigenvector Centrality is an algorithm that measures the transitive influence or connectivity of nodes.\n\n"
+    "description": "Eigenvector Centrality is an algorithm that measures the transitive influence or connectivity of nodes."
   },
   {
     "function": {
@@ -1669,7 +1667,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1677,7 +1675,7 @@
       "signature": "graph_name: str, from_G: Graph, **config: Any",
       "return_type": "GraphCreateResult"
     },
-    "description": "\nConstructs a random subgraph based on common-neighbour-aware random walks.\n\n"
+    "description": "Constructs a random subgraph based on common-neighbour-aware random walks."
   },
   {
     "function": {
@@ -1685,7 +1683,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1693,7 +1691,7 @@
       "signature": "graph_name: str, from_G: Graph, **config: Any",
       "return_type": "GraphCreateResult"
     },
-    "description": "\nConstructs a random subgraph based on random walks with restarts.\n\n"
+    "description": "Constructs a random subgraph based on random walks with restarts."
   },
   {
     "function": {
@@ -1701,7 +1699,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nHyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.\n\n"
+    "description": "Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes."
   },
   {
     "function": {
@@ -1709,7 +1707,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1717,7 +1715,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nHyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.\n\n"
+    "description": "Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes."
   },
   {
     "function": {
@@ -1725,7 +1723,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1733,7 +1731,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nHyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.\n\n"
+    "description": "Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes."
   },
   {
     "function": {
@@ -1741,7 +1739,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1749,7 +1747,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nHyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.\n\n"
+    "description": "Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes."
   },
   {
     "function": {
@@ -1757,7 +1755,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1765,7 +1763,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network.\n\n"
+    "description": "The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network."
   },
   {
     "function": {
@@ -1773,7 +1771,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1781,7 +1779,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nExecutes the algorithm and returns result statistics without writing the result to Neo4j.\n\n"
+    "description": "Executes the algorithm and returns result statistics without writing the result to Neo4j."
   },
   {
     "function": {
@@ -1789,7 +1787,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1797,7 +1795,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network.\n\n"
+    "description": "The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network."
   },
   {
     "function": {
@@ -1805,7 +1803,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network.\n\n"
+    "description": "The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network."
   },
   {
     "function": {
@@ -1813,7 +1811,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network.\n\n"
+    "description": "The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes\nthat maximize the expected spread of influence in the network."
   },
   {
     "function": {
@@ -1821,7 +1819,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1829,7 +1827,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Kmeans  algorithm clusters nodes into different communities based on Euclidean distance\n\n"
+    "description": "The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance"
   },
   {
     "function": {
@@ -1837,7 +1835,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1845,7 +1843,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Kmeans  algorithm clusters nodes into different communities based on Euclidean distance\n\n"
+    "description": "The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance"
   },
   {
     "function": {
@@ -1853,7 +1851,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1861,7 +1859,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Kmeans  algorithm clusters nodes into different communities based on Euclidean distance\n\n"
+    "description": "The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance"
   },
   {
     "function": {
@@ -1869,7 +1867,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1877,7 +1875,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Kmeans  algorithm clusters nodes into different communities based on Euclidean distance\n\n"
+    "description": "The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance"
   },
   {
     "function": {
@@ -1885,7 +1883,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1893,7 +1891,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe K-1 Coloring algorithm assigns a color to every node in the graph.\n\n"
+    "description": "The K-1 Coloring algorithm assigns a color to every node in the graph."
   },
   {
     "function": {
@@ -1901,7 +1899,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1909,7 +1907,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe K-1 Coloring algorithm assigns a color to every node in the graph.\n\n"
+    "description": "The K-1 Coloring algorithm assigns a color to every node in the graph."
   },
   {
     "function": {
@@ -1917,7 +1915,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1925,7 +1923,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe K-1 Coloring algorithm assigns a color to every node in the graph.\n\n"
+    "description": "The K-1 Coloring algorithm assigns a color to every node in the graph."
   },
   {
     "function": {
@@ -1933,7 +1931,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1941,7 +1939,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe K-1 Coloring algorithm assigns a color to every node in the graph.\n\n"
+    "description": "The K-1 Coloring algorithm assigns a color to every node in the graph."
   },
   {
     "function": {
@@ -1949,7 +1947,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1957,7 +1955,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nComputes the k-core values in a network\n\n"
+    "description": "Computes the k-core values in a network"
   },
   {
     "function": {
@@ -1965,7 +1963,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1973,7 +1971,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nComputes the k-core values in a network\n\n"
+    "description": "Computes the k-core values in a network"
   },
   {
     "function": {
@@ -1981,7 +1979,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1989,7 +1987,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nComputes the k-core values in a network\n\n"
+    "description": "Computes the k-core values in a network"
   },
   {
     "function": {
@@ -1997,7 +1995,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2005,7 +2003,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nComputes the k-core values in a network\n\n"
+    "description": "Computes the k-core values in a network"
   },
   {
     "function": {
@@ -2013,7 +2011,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2021,7 +2019,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties\n\n"
+    "description": "The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties"
   },
   {
     "function": {
@@ -2029,7 +2027,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2037,7 +2035,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties\n\n"
+    "description": "The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties"
   },
   {
     "function": {
@@ -2045,7 +2043,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2053,7 +2051,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties\n\n"
+    "description": "The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties"
   },
   {
     "function": {
@@ -2061,7 +2059,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2069,7 +2067,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties\n\n"
+    "description": "The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties"
   },
   {
     "function": {
@@ -2077,7 +2075,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2085,7 +2083,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.\n\n.. py:function:: gds.knn.filtered.mutate.estimate(G: Graph, **config: Any) -> Series[Any]\n\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.\n\n.. py:function:: gds.knn.filtered.mutate.estimate(G: Graph, **config: Any) -> Series[Any]\n\nReturns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2093,7 +2091,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.\n\n"
+    "description": "The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively."
   },
   {
     "function": {
@@ -2101,7 +2099,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2109,7 +2107,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.\n\n"
+    "description": "The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively."
   },
   {
     "function": {
@@ -2117,7 +2115,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2125,7 +2123,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.\n\n"
+    "description": "The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance\nbetween two nodes is among the k nearest distances compared to other nodes.\nKNN computes distances based on the similarity of node properties.\nFiltered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively."
   },
   {
     "function": {
@@ -2133,7 +2131,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2141,7 +2139,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe K-spanning tree algorithm starts from a root node and returns a spanning tree with exactly k nodes\n\n"
+    "description": "The K-spanning tree algorithm starts from a root node and returns a spanning tree with exactly k nodes"
   },
   {
     "function": {
@@ -2149,7 +2147,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Label Propagation algorithm is a fast algorithm for finding communities in a graph.\n\n"
+    "description": "The Label Propagation algorithm is a fast algorithm for finding communities in a graph."
   },
   {
     "function": {
@@ -2157,7 +2155,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2165,7 +2163,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Label Propagation algorithm is a fast algorithm for finding communities in a graph.\n\n"
+    "description": "The Label Propagation algorithm is a fast algorithm for finding communities in a graph."
   },
   {
     "function": {
@@ -2173,7 +2171,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2181,7 +2179,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Label Propagation algorithm is a fast algorithm for finding communities in a graph.\n\n"
+    "description": "The Label Propagation algorithm is a fast algorithm for finding communities in a graph."
   },
   {
     "function": {
@@ -2189,7 +2187,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2197,7 +2195,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Label Propagation algorithm is a fast algorithm for finding communities in a graph.\n\n"
+    "description": "The Label Propagation algorithm is a fast algorithm for finding communities in a graph."
   },
   {
     "function": {
@@ -2205,7 +2203,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2213,7 +2211,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nLeiden is a community detection algorithm, which guarantees that communities are well connected\n\n"
+    "description": "Leiden is a community detection algorithm, which guarantees that communities are well connected"
   },
   {
     "function": {
@@ -2221,7 +2219,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2229,7 +2227,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nExecutes the algorithm and returns result statistics without writing the result to Neo4j.\n\n"
+    "description": "Executes the algorithm and returns result statistics without writing the result to Neo4j."
   },
   {
     "function": {
@@ -2237,7 +2235,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2245,7 +2243,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nLeiden is a community detection algorithm, which guarantees that communities are well connected\n\n"
+    "description": "Leiden is a community detection algorithm, which guarantees that communities are well connected"
   },
   {
     "function": {
@@ -2253,7 +2251,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2261,7 +2259,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nLeiden is a community detection algorithm, which guarantees that communities are well connected\n\n"
+    "description": "Leiden is a community detection algorithm, which guarantees that communities are well connected"
   },
   {
     "function": {
@@ -2269,7 +2267,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2277,7 +2275,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe local clustering coefficient is a metric quantifying how connected the neighborhood of a node is.\n\n"
+    "description": "The local clustering coefficient is a metric quantifying how connected the neighborhood of a node is."
   },
   {
     "function": {
@@ -2285,7 +2283,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2293,7 +2291,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nExecutes the algorithm and returns result statistics without writing the result to Neo4j.\n\n"
+    "description": "Executes the algorithm and returns result statistics without writing the result to Neo4j."
   },
   {
     "function": {
@@ -2301,7 +2299,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2309,7 +2307,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe local clustering coefficient is a metric quantifying how connected the neighborhood of a node is.\n\n"
+    "description": "The local clustering coefficient is a metric quantifying how connected the neighborhood of a node is."
   },
   {
     "function": {
@@ -2317,7 +2315,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2325,7 +2323,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe local clustering coefficient is a metric quantifying how connected the neighborhood of a node is.\n\n"
+    "description": "The local clustering coefficient is a metric quantifying how connected the neighborhood of a node is."
   },
   {
     "function": {
@@ -2333,7 +2331,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2341,7 +2339,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Louvain method for community detection is an algorithm for detecting communities in networks.\n\n"
+    "description": "The Louvain method for community detection is an algorithm for detecting communities in networks."
   },
   {
     "function": {
@@ -2349,7 +2347,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2357,7 +2355,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nExecutes the algorithm and returns result statistics without writing the result to Neo4j.\n\n"
+    "description": "Executes the algorithm and returns result statistics without writing the result to Neo4j."
   },
   {
     "function": {
@@ -2365,7 +2363,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2373,7 +2371,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Louvain method for community detection is an algorithm for detecting communities in networks.\n\n"
+    "description": "The Louvain method for community detection is an algorithm for detecting communities in networks."
   },
   {
     "function": {
@@ -2381,7 +2379,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2389,7 +2387,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Louvain method for community detection is an algorithm for detecting communities in networks.\n\n"
+    "description": "The Louvain method for community detection is an algorithm for detecting communities in networks."
   },
   {
     "function": {
@@ -2397,7 +2395,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2405,7 +2403,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nApproximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities.\n\n"
+    "description": "Approximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities."
   },
   {
     "function": {
@@ -2413,7 +2411,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nApproximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities.\n\n"
+    "description": "Approximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities."
   },
   {
     "function": {
@@ -2421,7 +2419,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nApproximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities.\n\n"
+    "description": "Approximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities."
   },
   {
     "function": {
@@ -2429,39 +2427,35 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nApproximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities.\n\n"
+    "description": "Approximate Maximum k-cut maps each node into one of k disjoint communities\ntrying to maximize the sum of weights of relationships between these communities."
   },
   {
     "function": {
       "name": "gds.modularity.stats",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
-    },
-    "description": "\n"
+    }
   },
   {
     "function": {
       "name": "gds.modularity.stats.estimate",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
-    },
-    "description": "\n"
+    }
   },
   {
     "function": {
       "name": "gds.modularity.stream",
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
-    },
-    "description": "\n"
+    }
   },
   {
     "function": {
       "name": "gds.modularity.stream.estimate",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
-    },
-    "description": "\n"
+    }
   },
   {
     "function": {
@@ -2469,7 +2463,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity.\n\n"
+    "description": "The Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity."
   },
   {
     "function": {
@@ -2477,7 +2471,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2485,7 +2479,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity.\n\n"
+    "description": "The Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity."
   },
   {
     "function": {
@@ -2493,7 +2487,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2501,7 +2495,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity.\n\n"
+    "description": "The Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity."
   },
   {
     "function": {
@@ -2509,7 +2503,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2517,7 +2511,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity.\n\n"
+    "description": "The Modularity Optimization algorithm groups the nodes in the graph by optimizing the graphs modularity."
   },
   {
     "function": {
@@ -2525,7 +2519,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2533,7 +2527,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nNode Similarity computes pair-wise similarities based on the Jaccard metric.\n\n"
+    "description": "The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nNode Similarity computes pair-wise similarities based on the Jaccard metric."
   },
   {
     "function": {
@@ -2541,7 +2535,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2549,7 +2543,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nNode Similarity computes pair-wise similarities based on the Jaccard metric.\n\n"
+    "description": "The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nNode Similarity computes pair-wise similarities based on the Jaccard metric."
   },
   {
     "function": {
@@ -2557,7 +2551,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2565,7 +2559,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nNode Similarity computes pair-wise similarities based on the Jaccard metric.\n\n"
+    "description": "The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nNode Similarity computes pair-wise similarities based on the Jaccard metric."
   },
   {
     "function": {
@@ -2573,7 +2567,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2581,7 +2575,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nNode Similarity computes pair-wise similarities based on the Jaccard metric.\n\n"
+    "description": "The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nNode Similarity computes pair-wise similarities based on the Jaccard metric."
   },
   {
     "function": {
@@ -2589,7 +2583,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2597,7 +2591,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters.\n\n"
+    "description": "The Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters."
   },
   {
     "function": {
@@ -2605,7 +2599,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2613,7 +2607,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters.\n\n"
+    "description": "The Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters."
   },
   {
     "function": {
@@ -2621,7 +2615,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2629,7 +2623,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters.\n\n"
+    "description": "The Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters."
   },
   {
     "function": {
@@ -2637,7 +2631,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2645,7 +2639,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters.\n\n"
+    "description": "The Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.\nTwo nodes are considered similar if they share many of the same neighbors.\nThe algorithm computes pair-wise similarities based on Jaccard or Overlap metrics.\nThe filtered variant supports limiting which nodes to compare via source and target node filters."
   },
   {
     "function": {
@@ -2653,7 +2647,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2661,7 +2655,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nPage Rank is an algorithm that measures the transitive influence or connectivity of nodes.\n\n"
+    "description": "Page Rank is an algorithm that measures the transitive influence or connectivity of nodes."
   },
   {
     "function": {
@@ -2669,7 +2663,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2677,7 +2671,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nExecutes the algorithm and returns result statistics without writing the result to Neo4j.\n\n"
+    "description": "Executes the algorithm and returns result statistics without writing the result to Neo4j."
   },
   {
     "function": {
@@ -2685,7 +2679,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2693,7 +2687,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nPage Rank is an algorithm that measures the transitive influence or connectivity of nodes.\n\n"
+    "description": "Page Rank is an algorithm that measures the transitive influence or connectivity of nodes."
   },
   {
     "function": {
@@ -2701,7 +2695,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2709,7 +2703,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nPage Rank is an algorithm that measures the transitive influence or connectivity of nodes.\n\n"
+    "description": "Page Rank is an algorithm that measures the transitive influence or connectivity of nodes."
   },
   {
     "function": {
@@ -2717,7 +2711,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2725,7 +2719,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nRandom Walk is an algorithm that provides random paths in a graph. It\u2019s similar to how a drunk person traverses a city.\n\n"
+    "description": "Random Walk is an algorithm that provides random paths in a graph. It\u2019s similar to how a drunk person traverses a city."
   },
   {
     "function": {
@@ -2733,7 +2727,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2741,7 +2735,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nRandom Walk is an algorithm that provides random paths in a graph. It\u2019s similar to how a drunk person traverses a city.\n\n"
+    "description": "Random Walk is an algorithm that provides random paths in a graph. It\u2019s similar to how a drunk person traverses a city."
   },
   {
     "function": {
@@ -2749,7 +2743,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2757,7 +2751,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe A* shortest path algorithm computes the shortest path between a pair of nodes. It uses the relationship weight\nproperty to compare path lengths. In addition,\nthis implementation uses the haversine distance as a heuristic to converge faster.\n\n"
+    "description": "The A* shortest path algorithm computes the shortest path between a pair of nodes. It uses the relationship weight\nproperty to compare path lengths. In addition,\nthis implementation uses the haversine distance as a heuristic to converge faster."
   },
   {
     "function": {
@@ -2765,7 +2759,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2773,7 +2767,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe A* shortest path algorithm computes the shortest path between a pair of nodes. It uses the relationship weight\nproperty to compare path lengths. In addition,\nthis implementation uses the haversine distance as a heuristic to converge faster.\n\n"
+    "description": "The A* shortest path algorithm computes the shortest path between a pair of nodes. It uses the relationship weight\nproperty to compare path lengths. In addition,\nthis implementation uses the haversine distance as a heuristic to converge faster."
   },
   {
     "function": {
@@ -2781,7 +2775,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2789,7 +2783,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe A* shortest path algorithm computes the shortest path between a pair of nodes. It uses the relationship weight\nproperty to compare path lengths. In addition,\nthis implementation uses the haversine distance as a heuristic to converge faster.\n\n"
+    "description": "The A* shortest path algorithm computes the shortest path between a pair of nodes. It uses the relationship weight\nproperty to compare path lengths. In addition,\nthis implementation uses the haversine distance as a heuristic to converge faster."
   },
   {
     "function": {
@@ -2797,7 +2791,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2805,7 +2799,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Dijkstra shortest path algorithm computes the shortest (weighted) path between a pair of nodes.\n\n"
+    "description": "The Dijkstra shortest path algorithm computes the shortest (weighted) path between a pair of nodes."
   },
   {
     "function": {
@@ -2813,7 +2807,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2821,7 +2815,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Dijkstra shortest path algorithm computes the shortest (weighted) path between a pair of nodes.\n\n"
+    "description": "The Dijkstra shortest path algorithm computes the shortest (weighted) path between a pair of nodes."
   },
   {
     "function": {
@@ -2829,7 +2823,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2837,7 +2831,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Dijkstra shortest path algorithm computes the shortest (weighted) path between a pair of nodes.\n\n"
+    "description": "The Dijkstra shortest path algorithm computes the shortest (weighted) path between a pair of nodes."
   },
   {
     "function": {
@@ -2845,7 +2839,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2853,7 +2847,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Yen's shortest path algorithm computes the k shortest (weighted) paths between a pair of nodes.\n\n"
+    "description": "The Yen's shortest path algorithm computes the k shortest (weighted) paths between a pair of nodes."
   },
   {
     "function": {
@@ -2861,7 +2855,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2869,7 +2863,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Yen's shortest path algorithm computes the k shortest (weighted) paths between a pair of nodes.\n\n"
+    "description": "The Yen's shortest path algorithm computes the k shortest (weighted) paths between a pair of nodes."
   },
   {
     "function": {
@@ -2877,7 +2871,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2885,7 +2879,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Yen's shortest path algorithm computes the k shortest (weighted) paths between a pair of nodes.\n\n"
+    "description": "The Yen's shortest path algorithm computes the k shortest (weighted) paths between a pair of nodes."
   },
   {
     "function": {
@@ -2893,7 +2887,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2901,7 +2895,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.\n\n"
+    "description": "The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph."
   },
   {
     "function": {
@@ -2909,7 +2903,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2917,7 +2911,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.\n\n"
+    "description": "The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph."
   },
   {
     "function": {
@@ -2925,7 +2919,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2933,7 +2927,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.\n\n"
+    "description": "The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph."
   },
   {
     "function": {
@@ -2941,7 +2935,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2949,7 +2943,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph.\n\n"
+    "description": "The Speaker Listener Label Propagation algorithm is a fast algorithm for finding overlapping communities in a graph."
   },
   {
     "function": {
@@ -2957,7 +2951,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2965,7 +2959,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component where the total weight of the relationships is either minimized or maximized.\n\n"
+    "description": "The spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component where the total weight of the relationships is either minimized or maximized."
   },
   {
     "function": {
@@ -2973,7 +2967,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2981,7 +2975,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component\nwhere the total weight of the relationships is either minimized or maximized.\n\n"
+    "description": "The spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component\nwhere the total weight of the relationships is either minimized or maximized."
   },
   {
     "function": {
@@ -2989,7 +2983,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2997,7 +2991,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component\nwhere the total weight of the relationships is either minimized or maximized.\n\n"
+    "description": "The spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component\nwhere the total weight of the relationships is either minimized or maximized."
   },
   {
     "function": {
@@ -3005,7 +2999,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -3013,7 +3007,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component\nwhere the total weight of the relationships is either minimized or maximized.\n\n"
+    "description": "The spanning tree algorithm visits all nodes that are in the same connected component as the starting node,\nand returns a spanning tree of all nodes in the component\nwhere the total weight of the relationships is either minimized or maximized."
   },
   {
     "function": {
@@ -3021,7 +3015,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -3029,7 +3023,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible.\n\n"
+    "description": "The steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible."
   },
   {
     "function": {
@@ -3037,7 +3031,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -3045,7 +3039,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible.\n\n"
+    "description": "The steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible."
   },
   {
     "function": {
@@ -3053,7 +3047,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -3061,7 +3055,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible.\n\n"
+    "description": "The steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible."
   },
   {
     "function": {
@@ -3069,7 +3063,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -3077,7 +3071,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible.\n\n"
+    "description": "The steiner tree algorithm accepts a source node, as well as a list of target nodes.\nIt then attempts to find a spanning tree where there is a path from the source node to each target node,\nsuch that the total weight of the relationships is as low as possible."
   },
   {
     "function": {
@@ -3085,7 +3079,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -3093,7 +3087,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nTriangle counting is a community detection graph algorithm that is used to\ndetermine the number of triangles passing through each node in the graph.\n\n"
+    "description": "Triangle counting is a community detection graph algorithm that is used to\ndetermine the number of triangles passing through each node in the graph."
   },
   {
     "function": {
@@ -3101,7 +3095,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -3109,7 +3103,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nTriangle counting is a community detection graph algorithm that is used to\ndetermine the number of triangles passing through each node in the graph.\n\n"
+    "description": "Triangle counting is a community detection graph algorithm that is used to\ndetermine the number of triangles passing through each node in the graph."
   },
   {
     "function": {
@@ -3117,7 +3111,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -3125,7 +3119,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nTriangle counting is a community detection graph algorithm that is used to\ndetermine the number of triangles passing through each node in the graph.\n\n"
+    "description": "Triangle counting is a community detection graph algorithm that is used to\ndetermine the number of triangles passing through each node in the graph."
   },
   {
     "function": {
@@ -3133,7 +3127,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -3141,7 +3135,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nTriangle counting is a community detection graph algorithm that is used to\ndetermine the number of triangles passing through each node in the graph.\n\n"
+    "description": "Triangle counting is a community detection graph algorithm that is used to\ndetermine the number of triangles passing through each node in the graph."
   },
   {
     "function": {
@@ -3149,7 +3143,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nTriangle counting is a community detection graph algorithm that is used to\ndetermine the number of triangles passing through each node in the graph.\n\n"
+    "description": "Triangle counting is a community detection graph algorithm that is used to\ndetermine the number of triangles passing through each node in the graph."
   },
   {
     "function": {
@@ -3157,7 +3151,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nTriangles streams the nodeIds of each triangle in the graph.\n\n"
+    "description": "Triangles streams the nodeIds of each triangle in the graph."
   },
   {
     "function": {
@@ -3165,7 +3159,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe WCC algorithm finds sets of connected nodes in an undirected graph,\nwhere all nodes in the same set form a connected component.\n\n"
+    "description": "The WCC algorithm finds sets of connected nodes in an undirected graph,\nwhere all nodes in the same set form a connected component."
   },
   {
     "function": {
@@ -3173,7 +3167,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -3181,7 +3175,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nExecutes the algorithm and returns result statistics without writing the result to Neo4j.\n\n"
+    "description": "Executes the algorithm and returns result statistics without writing the result to Neo4j."
   },
   {
     "function": {
@@ -3189,7 +3183,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -3197,7 +3191,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
-    "description": "\nThe WCC algorithm finds sets of connected nodes in an undirected graph,\nwhere all nodes in the same set form a connected component.\n\n"
+    "description": "The WCC algorithm finds sets of connected nodes in an undirected graph,\nwhere all nodes in the same set form a connected component."
   },
   {
     "function": {
@@ -3205,7 +3199,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -3213,7 +3207,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nThe WCC algorithm finds sets of connected nodes in an undirected graph,\nwhere all nodes in the same set form a connected component.\n\n"
+    "description": "The WCC algorithm finds sets of connected nodes in an undirected graph,\nwhere all nodes in the same set form a connected component."
   },
   {
     "function": {
@@ -3221,7 +3215,7 @@
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
-    "description": "\nReturns an estimation of the memory consumption for that procedure.\n\n"
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -3229,7 +3223,7 @@
       "signature": "node1: int, node2: int, **config: Any",
       "return_type": "float"
     },
-    "description": "\nGiven two nodes, calculate Adamic Adar similarity\n\n"
+    "description": "Given two nodes, calculate Adamic Adar similarity"
   },
   {
     "function": {
@@ -3237,7 +3231,7 @@
       "signature": "node1: int, node2: int, **config: Any",
       "return_type": "float"
     },
-    "description": "\nGiven two nodes, returns the number of common neighbors\n\n"
+    "description": "Given two nodes, returns the number of common neighbors"
   },
   {
     "function": {
@@ -3245,7 +3239,7 @@
       "signature": "node1: int, node2: int, **config: Any",
       "return_type": "float"
     },
-    "description": "\nGiven two nodes, calculate Preferential Attachment\n\n"
+    "description": "Given two nodes, calculate Preferential Attachment"
   },
   {
     "function": {
@@ -3253,7 +3247,7 @@
       "signature": "node1: int, node2: int, **config: Any",
       "return_type": "float"
     },
-    "description": "\nGiven two nodes, calculate Resource Allocation similarity\n\n"
+    "description": "Given two nodes, calculate Resource Allocation similarity"
   },
   {
     "function": {
@@ -3261,6 +3255,14 @@
       "signature": "node1: int, node2: int, communityProperty: Optional[str] = None",
       "return_type": "float"
     },
-    "description": "\nGiven two nodes, indicates if they have the same community\n\n"
+    "description": "Given two nodes, indicates if they have the same community"
+  },
+  {
+    "function": {
+      "name": "gds.alpha.linkprediction.totalNeighbors",
+      "signature": "node1: int, node2: int, **config: Any",
+      "return_type": "float"
+    },
+    "description": "Given two nodes, calculate Total Neighbors"
   }
 ]

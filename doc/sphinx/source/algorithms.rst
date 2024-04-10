@@ -810,7 +810,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.bfs.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
     BFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth
-    prior to moving on to the nodes at the next depth level."""
+    prior to moving on to the nodes at the next depth level.
 
 .. py:function:: gds.closeness.mutate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1820,4 +1820,8 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.alpha.linkprediction.sameCommunity(node1: int, node2: int, communityProperty: Optional[str] = None) -> float
 
     Given two nodes, indicates if they have the same community
+
+.. py:function:: gds.alpha.linkprediction.totalNeighbors(node1: int, node2: int, **config: Any) -> float
+
+    Given two nodes, calculate Total Neighbors
 

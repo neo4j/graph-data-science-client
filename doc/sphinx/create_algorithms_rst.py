@@ -19,10 +19,9 @@ with open("algorithms.json") as f, open("source/algorithms.rst", "w") as fw:
     for function in functions:
         name, sig, ret_type = function["function"]["name"], function["function"]["signature"], function["function"]["return_type"]
         fw.write(f".. py:function:: {name}({sig}) -> {ret_type}\n\n")
-        
-        description = function["description"].strip()
 
-        if description:
+        if "description" in function:
+          description = function["description"].strip()
           for desc in description.split("\n"):
               fw.write(f"    {desc}\n")
 
