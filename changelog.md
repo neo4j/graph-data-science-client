@@ -17,6 +17,7 @@
 
 ## Bug fixes
 
+* Fixed a bug which caused the auth token returned from the GDS Arrow Server was not correctly received.
 
 ## Improvements
 

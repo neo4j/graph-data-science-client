@@ -377,10 +377,17 @@ class AuthMiddleware(ClientMiddleware):  # type: ignore
         self._factory = factory
 
     def received_headers(self, headers: Dict[str, Any]) -> None:
-        auth_header: str = headers.get("Authorization", None)
+        auth_header = headers.get("authorization", None)
         if not auth_header:
             return
-        [auth_type, token] = auth_header.split(" ", 1)
+
+        # the result is always a list
+        header_value = auth_header[0]
+
+        if not isinstance(header_value, str):
+            raise ValueError(f"Incompatible header value received from server: `{header_value}`")
+
+        auth_type, token = header_value.split(" ", 1)
         if auth_type == "Bearer":
             self._factory.set_token(token)
 
