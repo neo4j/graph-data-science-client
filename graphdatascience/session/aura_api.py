@@ -269,11 +269,11 @@ class AuraApi:
         data = {
             "node_count": node_count,
             "relationship_count": relationship_count,
-            "algorithm_categories": algorithm_categories,
-            "tier": "gds",  # fixed as professional or enterprise makes no difference in sizing
+            "algorithm_categories": [i.value for i in algorithm_categories],
+            "instance_type": "gds",  # fixed as professional or enterprise makes no difference in sizing
         }
 
-        response = req.post(f"{self._base_uri}/v1/instances/estimations", headers=self._build_header(), json=data)
+        response = req.post(f"{self._base_uri}/v1/instances/sizing", headers=self._build_header(), json=data)
         response.raise_for_status()
 
         return EstimationDetails.from_json(response.json()["data"])
