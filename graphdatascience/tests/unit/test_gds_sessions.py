@@ -18,6 +18,7 @@ from graphdatascience.session.aura_api import (
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.gds_sessions import (
     AuraAPICredentials,
+    GdsSessionNameHelper,
     GdsSessions,
     SessionInfo,
 )
@@ -119,7 +120,7 @@ def test_list_session(requests_mock: Mocker) -> None:
     )
     requests_mock.get("https://api.neo4j.io/v1/instances/id", json={"data": asdict(gds_instance_specific_details)})
 
-    assert sessions.list() == [SessionInfo("my-session-name", "16 GiB")]
+    assert sessions.list() == [SessionInfo("my-session-name", "ML")]
 
 
 def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
@@ -147,7 +148,7 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
         "gds_url": "fake-url",
         "session_name": "my-session",
     }
-    assert sessions.list() == [SessionInfo("my-session", "512GB")]
+    assert sessions.list() == [SessionInfo("my-session", "X5L")]
 
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
     assert instance_details.cloud_provider == "aws"
@@ -224,7 +225,33 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     }
     assert gds_args1 == gds_args2
 
-    assert sessions.list() == [SessionInfo("my-session", "8GB")]
+    assert sessions.list() == [SessionInfo("my-session", "M")]
+
+
+def test_get_or_create_different_size(mocker: MockerFixture, aura_api: AuraApi) -> None:
+    _setup_db_instance(aura_api)
+
+    sessions = GdsSessions(AuraAPICredentials("", "", "placeholder"))
+    sessions._aura_api = aura_api
+
+    mocker.patch("graphdatascience.session.gds_sessions.GdsSessions._construct_client", lambda *args, **kwargs: kwargs)
+    mocker.patch("graphdatascience.session.gds_sessions.GdsSessions._change_initial_pw", lambda *args, **kwargs: None)
+
+    sessions.get_or_create(
+        "my-session",
+        SessionSizeByMemory.M,
+        DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape("Session `my-session` already exists with size `M`." " Requested size `L` does not match."),
+    ):
+        sessions.get_or_create(
+            "my-session",
+            SessionSizeByMemory.L,
+            DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
+        )
 
 
 def test_get_or_create_duplicate_session() -> None:
@@ -233,7 +260,7 @@ def test_get_or_create_duplicate_session() -> None:
         existing_instances=[
             InstanceSpecificDetails(
                 id="id42",
-                name=GdsSessions._instance_name("one"),
+                name=GdsSessionNameHelper.instance_name("one"),
                 tenant_id="",
                 cloud_provider="",
                 status="RUNNING",
@@ -244,7 +271,7 @@ def test_get_or_create_duplicate_session() -> None:
             ),
             InstanceSpecificDetails(
                 id="id43",
-                name=GdsSessions._instance_name("one"),
+                name=GdsSessionNameHelper.instance_name("one"),
                 tenant_id="",
                 cloud_provider="",
                 status="RUNNING",
@@ -266,7 +293,7 @@ def test_delete_session() -> None:
     existing_instances = [
         InstanceSpecificDetails(
             id="id42",
-            name=GdsSessions._instance_name("one"),
+            name=GdsSessionNameHelper.instance_name("one"),
             tenant_id="tenant_id",
             cloud_provider="cloud_provider",
             status="RUNNING",
@@ -277,7 +304,7 @@ def test_delete_session() -> None:
         ),
         InstanceSpecificDetails(
             id="id1",
-            name=GdsSessions._instance_name("other"),
+            name=GdsSessionNameHelper.instance_name("other"),
             tenant_id="tenant_id",
             cloud_provider="cloud_provider",
             status="RUNNING",
@@ -300,7 +327,7 @@ def test_delete_nonexisting_session() -> None:
     existing_instances = [
         InstanceSpecificDetails(
             id="id42",
-            name=GdsSessions._instance_name("one"),
+            name=GdsSessionNameHelper.instance_name("one"),
             tenant_id="tenant_id",
             cloud_provider="cloud_provider",
             status="RUNNING",
@@ -323,7 +350,7 @@ def test_delete_nonunique_session() -> None:
     existing_instances = [
         InstanceSpecificDetails(
             id="id42",
-            name=GdsSessions._instance_name("one"),
+            name=GdsSessionNameHelper.instance_name("one"),
             tenant_id="",
             cloud_provider="",
             status="RUNNING",
@@ -334,7 +361,7 @@ def test_delete_nonunique_session() -> None:
         ),
         InstanceSpecificDetails(
             id="id43",
-            name=GdsSessions._instance_name("one"),
+            name=GdsSessionNameHelper.instance_name("one"),
             tenant_id="",
             cloud_provider="",
             status="RUNNING",
@@ -380,6 +407,20 @@ def test_create_waiting_forever() -> None:
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is not running after waiting"):
         sessions.get_or_create(
             "one", SessionSizeByMemory.DEFAULT, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
+        )
+
+
+def test_invalid_session_name() -> None:
+    aura_api = FakeAuraApi(status_after_creating="updating")
+    _setup_db_instance(aura_api)
+    sessions = GdsSessions(AuraAPICredentials("", "", "foo"))
+    sessions._aura_api = aura_api
+
+    with pytest.raises(ValueError, match="Session name `one_very_long_session_name` is too long. Max length is 18."):
+        sessions.get_or_create(
+            "one_very_long_session_name",
+            SessionSizeByMemory.DEFAULT,
+            DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", ""),
         )
 
 

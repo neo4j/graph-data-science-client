@@ -7,6 +7,7 @@ from neo4j import GraphDatabase
 
 from graphdatascience.session.aura_api import (
     AuraApi,
+    InstanceCreateDetails,
     InstanceDetails,
     InstanceSpecificDetails,
 )
@@ -31,7 +32,17 @@ class SessionInfo:
 
     @classmethod
     def from_specific_instance_details(cls, instance_details: InstanceSpecificDetails) -> SessionInfo:
-        return SessionInfo(GdsSessionNameHelper.session_name(instance_details.name), instance_details.memory)
+
+        size = ""
+        try:
+            # instance creation also allows for GB but instance details returns size as GiB
+            memory = instance_details.memory.replace("GiB", "GB").replace(" ", "")
+            if memory:
+                size = SessionSizeByMemory(memory).name
+        except ValueError:
+            raise ValueError(f"Expected to find exactly one size for memory `{instance_details.memory}`")
+
+        return SessionInfo(GdsSessionNameHelper.session_name(instance_details.name), size)
 
 
 @dataclass
@@ -90,31 +101,31 @@ class GdsSessions:
             AuraGraphDataScience: The session.
         """
 
-        connected_instance = self._try_connect(session_name, db_connection)
-        # TODO: check instance size and fail if mismatch
-        if connected_instance is not None:
-            return connected_instance
+        existing_session = self._find_existing_session(session_name)
 
-        db_instance_id = AuraApi.extract_id(db_connection.uri)
-        db_instance = self._aura_api.list_instance(db_instance_id)
-        if not db_instance:
-            raise ValueError(f"Could not find Aura instance with the uri `{db_connection.uri}`")
+        if existing_session:
+            session_id = existing_session.id
+            existing_size = SessionInfo.from_specific_instance_details(existing_session).size
+            if existing_size != size.name:
+                raise ValueError(
+                    f"Session `{session_name}` already exists with size `{existing_size}`. "
+                    f"Requested size `{size.name}` does not match."
+                )
+        else:
+            create_details = self._create_session(session_name, size, db_connection)
+            session_id = create_details.id
 
-        region = self._ds_region(db_instance.region, db_instance.cloud_provider)
-
-        create_details = self._aura_api.create_instance(
-            GdsSessions._instance_name(session_name), size.value, db_instance.cloud_provider, region
-        )
-        wait_result = self._aura_api.wait_for_instance_running(create_details.id)
+        wait_result = self._aura_api.wait_for_instance_running(session_id)
         if err := wait_result.error:
             raise RuntimeError(f"Failed to create session `{session_name}`: {err}")
 
-        gds_user = create_details.username
         gds_url = wait_result.connection_url
 
-        self._change_initial_pw(
-            gds_url=gds_url, gds_user=gds_user, initial_pw=create_details.password, new_pw=db_connection.password
-        )
+        if not existing_session:
+            gds_user = create_details.username
+            self._change_initial_pw(
+                gds_url=gds_url, gds_user=gds_user, initial_pw=create_details.password, new_pw=db_connection.password
+            )
 
         return self._construct_client(session_name=session_name, gds_url=gds_url, db_connection=db_connection)
 
@@ -127,7 +138,7 @@ class GdsSessions:
         Returns:
             True iff a session was deleted as a result of this call.
         """
-        instance_name = GdsSessions._instance_name(session_name)
+        instance_name = GdsSessionNameHelper.instance_name(session_name)
 
         candidate_instances = [i for i in self._aura_api.list_instances() if i.name == instance_name]
 
@@ -160,8 +171,8 @@ class GdsSessions:
             if instance_detail
         ]
 
-    def _try_connect(self, session_name: str, db_connection: DbmsConnectionInfo) -> Optional[AuraGraphDataScience]:
-        instance_name = GdsSessions._instance_name(session_name)
+    def _find_existing_session(self, session_name: str) -> Optional[InstanceSpecificDetails]:
+        instance_name = GdsSessionNameHelper.instance_name(session_name)
         matched_instances = [instance for instance in self._aura_api.list_instances() if instance.name == instance_name]
 
         if len(matched_instances) == 0:
@@ -170,12 +181,22 @@ class GdsSessions:
         if len(matched_instances) > 1:
             self._fail_ambiguous_session(session_name, matched_instances)
 
-        wait_result = self._aura_api.wait_for_instance_running(matched_instances[0].id)
-        if err := wait_result.error:
-            raise RuntimeError(f"Failed to connect to session `{session_name}`: {err}")
-        gds_url = wait_result.connection_url
+        return self._aura_api.list_instance(matched_instances[0].id)
 
-        return self._construct_client(session_name=session_name, gds_url=gds_url, db_connection=db_connection)
+    def _create_session(
+        self, session_name: str, size: SessionSizeByMemory, db_connection: DbmsConnectionInfo
+    ) -> InstanceCreateDetails:
+        db_instance_id = AuraApi.extract_id(db_connection.uri)
+        db_instance = self._aura_api.list_instance(db_instance_id)
+        if not db_instance:
+            raise ValueError(f"Could not find Aura instance with the uri `{db_connection.uri}`")
+
+        region = self._ds_region(db_instance.region, db_instance.cloud_provider)
+
+        create_details = self._aura_api.create_instance(
+            GdsSessionNameHelper.instance_name(session_name), size.value, db_instance.cloud_provider, region
+        )
+        return create_details
 
     def _ds_region(self, region: str, cloud_provider: str) -> str:
         tenant_details = self._aura_api.tenant_details()
@@ -203,11 +224,10 @@ class GdsSessions:
     @staticmethod
     def _change_initial_pw(gds_url: str, gds_user: str, initial_pw: str, new_pw: str) -> None:
         with GraphDatabase.driver(gds_url, auth=(gds_user, initial_pw)) as driver:
-            driver.execute_query(
-                "ALTER CURRENT USER SET PASSWORD FROM $old_pw TO $new_pw",
-                parameters_={"old_pw": initial_pw, "new_pw": new_pw},
-                database_="system",
-            )
+            with driver.session(database="system") as session:
+                session.run(
+                    "ALTER CURRENT USER SET PASSWORD FROM $old_pw TO $new_pw", {"old_pw": initial_pw, "new_pw": new_pw}
+                )
 
     @classmethod
     def _fail_ambiguous_session(cls, session_name: str, instances: List[InstanceDetails]) -> None:
@@ -216,13 +236,10 @@ class GdsSessions:
             f"Expected to find exactly one GDS session with name `{session_name}`, but found `{candidates}`."
         )
 
-    @classmethod
-    def _instance_name(cls, session_name: str) -> str:
-        return GdsSessionNameHelper.instance_name(session_name)
-
 
 class GdsSessionNameHelper:
     GDS_SESSION_NAME_PREFIX = "gds-session-"
+    MAX_INSTANCE_NAME_LENGTH = 30
 
     @classmethod
     def session_name(cls, instance_name: str) -> str:
@@ -231,6 +248,13 @@ class GdsSessionNameHelper:
 
     @classmethod
     def instance_name(cls, session_name: str) -> str:
+        prefix_len = len(cls.GDS_SESSION_NAME_PREFIX)
+        if prefix_len + len(session_name) > cls.MAX_INSTANCE_NAME_LENGTH:
+            raise ValueError(
+                f"Session name `{session_name}` is too long."
+                f" Max length is {cls.MAX_INSTANCE_NAME_LENGTH - prefix_len}."
+            )
+
         return f"{cls.GDS_SESSION_NAME_PREFIX}{session_name}"
 
     @classmethod
