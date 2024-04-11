@@ -32,7 +32,6 @@ class SessionInfo:
 
     @classmethod
     def from_specific_instance_details(cls, instance_details: InstanceSpecificDetails) -> SessionInfo:
-
         size = ""
         try:
             # instance creation also allows for GB but instance details returns size as GiB
