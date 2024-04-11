@@ -36,7 +36,7 @@ class SessionInfo:
         size = ""
         try:
             # instance creation also allows for GB but instance details returns size as GiB
-            memory = instance_details.memory.replace("GiB", "GB").replace(" ", "")
+            memory = instance_details.memory
             if memory:
                 size = SessionSizeByMemory(memory).name
         except ValueError:

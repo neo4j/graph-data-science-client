@@ -106,7 +106,7 @@ def test_list_session(requests_mock: Mocker) -> None:
         cloud_provider="gcp",
         status="RUNNING",
         connection_url="",
-        memory="16 GiB",
+        memory="16GB",
         type="gds",
         region="",
     )
