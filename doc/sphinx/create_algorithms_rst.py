@@ -1,5 +1,4 @@
 import json
-
 from textwrap import dedent
 
 with open("algorithms.json") as f, open("source/algorithms.rst", "w") as fw:
