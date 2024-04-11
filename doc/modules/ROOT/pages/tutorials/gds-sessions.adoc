@@ -73,7 +73,7 @@ incur any additional costs, and will be a lot faster.
 [source, python, role=no-test]
 ----
 import os
-from graphdatascience.session import SessionSizes, DbmsConnectionInfo
+from graphdatascience.session import SessionMemory, DbmsConnectionInfo
 
 # Identify the AuraDB instance
 aura_db_address = os.environ["AURA_DB_ADDRESS"]
@@ -84,7 +84,7 @@ aura_db_pw = os.environ["AURA_DB_PW"]
 gds = sessions.get_or_create(
     session_name="people-and-fruits",
     # We use the default size for this example
-    size=SessionSizes.by_memory().DEFAULT,
+    memory=SessionMemory.DEFAULT,
     db_connection=DbmsConnectionInfo(aura_db_address, aura_db_user, aura_db_pw),
 )
 ----

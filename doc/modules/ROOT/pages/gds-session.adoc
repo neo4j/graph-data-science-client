@@ -61,7 +61,7 @@ db_connection_info = DbmsConnectionInfo("neo4j+s://mydbid.databases.neo4j.io", "
 
 gds = sessions.get_or_create(
     session_name=name,
-    size=size,
+    memory=size,
     db_connection=db_connection_info,
 )
 ----
@@ -194,7 +194,7 @@ sessions = GdsSessions(ds_connection=AuraAPICredentials(os.environ["CLIENT_ID"],
 db_connection = DbmsConnectionInfo(os.environ["DB_URI"], os.environ["DB_USER"], os.environ["DB_PASSWORD"])
 gds = sessions.get_or_create(
     session_name="my-new-session",
-    size=SessionSizes.by_memory().DEFAULT,
+    memory=SessionSizes.by_memory().DEFAULT,
     db_connection=db_connection,
 )
 
