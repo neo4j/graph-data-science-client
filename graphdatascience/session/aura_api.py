@@ -10,6 +10,15 @@ import requests as req
 from requests import HTTPError
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
+from graphdatascience.session.aura_api_responses import (
+    EstimationDetails,
+    InstanceCreateDetails,
+    InstanceDetails,
+    InstanceSpecificDetails,
+    SessionDetails,
+    TenantDetails,
+    WaitResult,
+)
 from graphdatascience.version import __version__
 
 
@@ -52,6 +61,53 @@ class AuraApi:
             raise RuntimeError(f"Could not parse the uri `{uri}`.")
 
         return host.split(".")[0].split("-")[0]
+
+    def create_session(self, name: str, dbid: str, pwd: str) -> SessionDetails:
+        response = req.post(
+            f"{self._base_uri}/v1beta5/data-science/sessions",
+            headers=self._build_header(),
+            json={"name": name, "instance_id": dbid, "password": pwd},
+        )
+
+        response.raise_for_status()
+
+        return SessionDetails.fromJson(response.json())
+
+    def list_session(self, session_id: str, dbid: str) -> SessionDetails:
+        response = req.get(
+            f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}?instanceId={dbid}",
+            headers=self._build_header(),
+        )
+
+        response.raise_for_status()
+
+        return SessionDetails.fromJson(response.json())
+
+    def list_sessions(self, dbid: str) -> List[SessionDetails]:
+        response = req.get(
+            f"{self._base_uri}/v1beta5/data-science/sessions?instanceId={dbid}",
+            headers=self._build_header(),
+        )
+
+        response.raise_for_status()
+
+        return [SessionDetails.fromJson(s) for s in response.json()]
+
+    def delete_session(self, session_id: str, dbid: str) -> bool:
+        response = req.delete(
+            f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}",
+            headers=self._build_header(),
+            json={"instance_id": dbid},
+        )
+
+        if response.status_code == 404:
+            return False
+        elif response.status_code == 202:
+            return True
+
+        response.raise_for_status()
+
+        return False
 
     def create_instance(self, name: str, memory: str, cloud_provider: str, region: str) -> InstanceCreateDetails:
         tenant_details = self.tenant_details()

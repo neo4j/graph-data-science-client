@@ -6,14 +6,160 @@ from requests import HTTPError
 from requests_mock import Mocker
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
-from graphdatascience.session.aura_api import (
-    AuraApi,
+from graphdatascience.session.aura_api import AuraApi
+from graphdatascience.session.aura_api_responses import (
     EstimationDetails,
     InstanceCreateDetails,
     InstanceSpecificDetails,
+    SessionDetails,
     TenantDetails,
     WaitResult,
 )
+
+
+def test_create_session(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    requests_mock.post(
+        "https://api.neo4j.io/v1beta5/data-science/sessions",
+        json={
+            "id": "id0",
+            "name": "name-0",
+            "status": "Creating",
+            "instance_id": "dbid-1",
+            "created_at": "1970-01-01T00:00:00Z",
+            "host": "1.2.3.4",
+            "memory": "4G",
+        },
+    )
+
+    result = api.create_session("name-0", "dbid-1", "pwd-2")
+
+    assert result == SessionDetails(
+        id="id0",
+        name="name-0",
+        status="Creating",
+        instance_id="dbid-1",
+        created_at="1970-01-01T00:00:00Z",
+        host="1.2.3.4",
+        memory="4G",  # TODO parse into sizing
+        expiry_date=None,
+    )
+
+
+def test_list_session(requests_mock: Mocker) -> None:
+
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0?instanceId=dbid-1",
+        json={
+            "id": "id0",
+            "name": "name-0",
+            "status": "Running",
+            "instance_id": "dbid-1",
+            "created_at": "1970-01-01T00:00:00Z",
+            "host": "1.2.3.4",
+            "memory": "4G",
+            "expiry_date": "1977-01-01T00:00:00Z",
+        },
+    )
+
+    result = api.list_session("id0", "dbid-1")
+
+    assert result == SessionDetails(
+        id="id0",
+        name="name-0",
+        status="Running",
+        instance_id="dbid-1",
+        created_at="1970-01-01T00:00:00Z",
+        host="1.2.3.4",
+        memory="4G",
+        expiry_date="1977-01-01T00:00:00Z",
+    )
+
+
+def test_list_sessions(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1beta5/data-science/sessions?instanceId=dbid-1",
+        json=[
+            {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Running",
+                "instance_id": "dbid-1",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "1.2.3.4",
+                "memory": "4G",
+                "expiry_date": "1977-01-01T00:00:00Z",
+            },
+            {
+                "id": "id1",
+                "name": "name-2",
+                "status": "Creating",
+                "instance_id": "dbid-3",
+                "created_at": "2012-01-01T00:00:00Z",
+                "memory": "8G",
+            },
+        ],
+    )
+
+    result = api.list_sessions("dbid-1")
+
+    expected1 = SessionDetails(
+        id="id0",
+        name="name-0",
+        status="Running",
+        instance_id="dbid-1",
+        created_at="1970-01-01T00:00:00Z",
+        host="1.2.3.4",
+        memory="4G",
+        expiry_date="1977-01-01T00:00:00Z",
+    )
+
+    expected2 = SessionDetails(
+        id="id1",
+        name="name-2",
+        status="Creating",
+        instance_id="dbid-3",
+        created_at="2012-01-01T00:00:00Z",
+        memory="8G",
+        host=None,
+        expiry_date=None,
+    )
+
+    assert result == [expected1, expected2]
+
+
+def test_delete_session(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+    requests_mock.delete(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        status_code=202,
+    )
+
+    assert api.delete_session("id0", "dbid-1") is True
+
+
+def test_delete_missing_session(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+    requests_mock.delete(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        status_code=404,
+    )
+
+    assert api.delete_session("id0", "dbid-1") is False
 
 
 def test_multiple_tenants(requests_mock: Mocker) -> None:
