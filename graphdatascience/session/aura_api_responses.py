@@ -30,6 +30,9 @@ class SessionDetails:
             created_at=json["created_at"],
         )
 
+    def bolt_connection_url(self) -> str:
+        return f"neo4j://{self.host}"  # TODO use neo4j+s
+
 
 @dataclass(repr=True, frozen=True)
 class InstanceDetails:

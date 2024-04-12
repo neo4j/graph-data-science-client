@@ -73,11 +73,14 @@ class AuraApi:
 
         return SessionDetails.fromJson(response.json())
 
-    def list_session(self, session_id: str, dbid: str) -> SessionDetails:
+    def list_session(self, session_id: str, dbid: str) -> Optional[SessionDetails]:
         response = req.get(
             f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}?instanceId={dbid}",
             headers=self._build_header(),
         )
+
+        if response.status_code == 404:
+            return None
 
         response.raise_for_status()
 
@@ -92,6 +95,27 @@ class AuraApi:
         response.raise_for_status()
 
         return [SessionDetails.fromJson(s) for s in response.json()]
+
+    def wait_for_session_running(
+        self, session_id: str, dbid: str, sleep_time: float = 0.2, max_sleep_time: float = 300
+    ) -> WaitResult:
+        waited_time = 0.0
+        while waited_time <= max_sleep_time:
+            session = self.list_session(session_id, dbid)
+            if session is None:
+                return WaitResult.from_error("Session is not found -- please retry")
+            elif session.status == "Ready" and session.host:  # check host needed until dns based routing
+                return WaitResult.from_connection_url(session.bolt_connection_url())
+            else:
+                self._logger.debug(
+                    f"Session `{session_id}` is not yet running. "
+                    f"Current status: {session.status} Host: {session.host}. "
+                    f"Retrying in {sleep_time} seconds..."
+                )
+            waited_time += sleep_time
+            time.sleep(sleep_time)
+
+        return WaitResult.from_error(f"Session is not running after waiting for {waited_time} seconds")
 
     def delete_session(self, session_id: str, dbid: str) -> bool:
         response = req.delete(

@@ -60,7 +60,7 @@ def test_list_session(requests_mock: Mocker) -> None:
         json={
             "id": "id0",
             "name": "name-0",
-            "status": "Running",
+            "status": "Ready",
             "instance_id": "dbid-1",
             "created_at": "1970-01-01T00:00:00Z",
             "host": "1.2.3.4",
@@ -74,7 +74,7 @@ def test_list_session(requests_mock: Mocker) -> None:
     assert result == SessionDetails(
         id="id0",
         name="name-0",
-        status="Running",
+        status="Ready",
         instance_id="dbid-1",
         created_at="1970-01-01T00:00:00Z",
         host="1.2.3.4",
@@ -93,7 +93,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
             {
                 "id": "id0",
                 "name": "name-0",
-                "status": "Running",
+                "status": "Ready",
                 "instance_id": "dbid-1",
                 "created_at": "1970-01-01T00:00:00Z",
                 "host": "1.2.3.4",
@@ -116,7 +116,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
     expected1 = SessionDetails(
         id="id0",
         name="name-0",
-        status="Running",
+        status="Ready",
         instance_id="dbid-1",
         created_at="1970-01-01T00:00:00Z",
         host="1.2.3.4",
@@ -180,6 +180,54 @@ def test_multiple_tenants(requests_mock: Mocker) -> None:
         match="This account has access to multiple tenants: `{'tenant1': 'Production', 'tenant2': 'Development'}`",
     ):
         AuraApi(client_id="", client_secret="")
+
+
+def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCaptureFixture) -> None:
+    mock_auth_token(requests_mock)
+    requests_mock.get(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0?instanceId=dbid-1",
+        json={
+            "id": "id0",
+            "name": "name-0",
+            "status": "Creating",
+            "instance_id": "dbid-1",
+            "created_at": "1970-01-01T00:00:00Z",
+            "host": "foo.bar",
+            "memory": "4G",
+            "expiry_date": "1977-01-01T00:00:00Z",
+        },
+    )
+
+    api = AuraApi("", "", tenant_id="some-tenant")
+
+    with caplog.at_level(logging.DEBUG):
+        assert (
+            "Session is not running after waiting for 0.8"
+            in api.wait_for_session_running("id0", "dbid-1", max_sleep_time=0.7).error
+        )
+
+    assert "Session `id0` is not yet running. Current status: Creating Host: foo.bar. Retrying in 0.2" in caplog.text
+
+
+def test_wait_for_session_running(requests_mock: Mocker) -> None:
+    mock_auth_token(requests_mock)
+    requests_mock.get(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0?instanceId=db2",
+        json={
+            "id": "id0",
+            "name": "name-0",
+            "status": "Ready",
+            "instance_id": "dbid-1",
+            "created_at": "1970-01-01T00:00:00Z",
+            "host": "foo.bar",
+            "memory": "4G",
+            "expiry_date": "1977-01-01T00:00:00Z",
+        },
+    )
+
+    api = AuraApi("", "", tenant_id="some-tenant")
+
+    assert api.wait_for_session_running("id0", "db2") == WaitResult.from_connection_url("neo4j://foo.bar")
 
 
 def test_delete_instance(requests_mock: Mocker) -> None:
