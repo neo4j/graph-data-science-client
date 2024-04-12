@@ -7,8 +7,8 @@ from typing import List, Optional
 from neo4j import GraphDatabase
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
-from graphdatascience.session.aura_api import (
-    AuraApi,
+from graphdatascience.session.aura_api import AuraApi
+from graphdatascience.session.aura_api_responses import (
     InstanceCreateDetails,
     InstanceDetails,
     InstanceSpecificDetails,

@@ -8,14 +8,14 @@ from pytest_mock import MockerFixture
 from requests_mock import Mocker
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
-from graphdatascience.session.aura_api import (
-    AuraApi,
-    EstimationDetails,
+from graphdatascience.session.aura_api import AuraApi
+from graphdatascience.session.aura_api_responses import (
     InstanceCreateDetails,
     InstanceDetails,
     InstanceSpecificDetails,
     TenantDetails,
     WaitResult,
+    EstimationDetails,
 )
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.gds_sessions import (
