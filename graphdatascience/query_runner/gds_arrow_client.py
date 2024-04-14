@@ -6,14 +6,14 @@ from abc import ABC
 from typing import Any, Dict, Optional, Tuple
 
 from pandas import DataFrame
-from pyarrow import flight, Table, ChunkedArray, chunked_array, Schema
+from pyarrow import ChunkedArray, Schema, Table, chunked_array, flight
 from pyarrow._flight import FlightStreamReader, FlightStreamWriter
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary
 
+from ..server_version.server_version import ServerVersion
 from .arrow_endpoint_version import ArrowEndpointVersion
 from .query_runner import QueryRunner
-from ..server_version.server_version import ServerVersion
 
 
 class GdsArrowClient(ABC):
