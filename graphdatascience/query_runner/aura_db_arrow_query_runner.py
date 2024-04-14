@@ -1,3 +1,4 @@
+import datetime
 from typing import Any, Dict, List, Optional
 
 from pandas import DataFrame
@@ -26,6 +27,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
         self._gds_arrow_client = GdsArrowClient.create(
             gds_query_runner, auth=self._gds_connection_info.auth(), encrypted=encrypted
         )
+        self._encrypted = encrypted
 
     def run_cypher(
         self,
@@ -49,28 +51,10 @@ class AuraDbArrowQueryRunner(QueryRunner):
             params = CallParameters()
 
         if AuraDbArrowQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME == endpoint:
-            host, port = self._gds_arrow_client.connection_info()
-            token = self._gds_arrow_client.get_or_request_token()
-            if token is None:
-                token = "IGNORED"
-
-            params["arrowConfiguration"] = {
-                "host": host,
-                "port": port,
-                "token": token,
-            }
-
-            return self._db_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
+            return self._remote_projection(endpoint, params, yields, database, logging, custom_error)
 
         elif ".write" in endpoint and self.is_remote_projected_graph(params["graph_name"]):
-            token, aura_db_arrow_endpoint = self._get_or_request_auth_pair()
-            host, port_string = aura_db_arrow_endpoint.split(":")
-            params["config"]["arrowConnectionInfo"] = {
-                "hostname": host,
-                "port": int(port_string),
-                "bearerToken": token,
-                "useEncryption": self._encrypted,
-            }
+            return self._remote_write_back(endpoint, params, yields, database, logging, custom_error)
 
         return self._gds_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
 
@@ -115,3 +99,130 @@ class AuraDbArrowQueryRunner(QueryRunner):
         self._gds_arrow_client.close()
         self._gds_query_runner.close()
         self._db_query_runner.close()
+
+    def _remote_projection(
+        self,
+        endpoint: str,
+        params: CallParameters,
+        yields: Optional[List[str]] = None,
+        database: Optional[str] = None,
+        logging: bool = False,
+        custom_error: bool = True,
+    ) -> DataFrame:
+        host, port = self._gds_arrow_client.connection_info()
+        token = self._gds_arrow_client.get_or_request_token()
+        if token is None:
+            token = "IGNORED"
+
+        params["arrowConfiguration"] = {
+            "host": host,
+            "port": port,
+            "token": token,
+            "encrypted": self._encrypted,
+        }
+        return self._db_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
+
+    def _remote_write_back(
+        self,
+        endpoint: str,
+        params: CallParameters,
+        yields: Optional[List[str]] = None,
+        database: Optional[str] = None,
+        logging: bool = False,
+        custom_error: bool = True,
+    ) -> DataFrame:
+        if params["config"] is None:
+            params["config"] = {}
+
+        params["config"]["writeToResultStore"] = True  # type: ignore
+        gds_write_result = self._gds_query_runner.call_procedure(
+            endpoint, params, yields, database, logging, custom_error
+        )
+
+        token = self._gds_arrow_client.get_or_request_token()
+        host, port = self._gds_arrow_client.connection_info()
+        write_params = {
+            "graphName": params["graph_name"],
+            "databaseName": self._gds_query_runner.database(),
+            "writeConfiguration": self._extract_write_back_arguments(endpoint, params),
+            "arrowConfiguration": {
+                "host": host,
+                "port": port,
+                "token": token,
+                "encrypted": self._encrypted,
+            },
+        }
+
+        write_back_start = datetime.datetime.now()
+        database_write_result = self._db_query_runner.call_procedure(
+            "gds.arrow.write", CallParameters(write_params), yields, None, False, False
+        )
+        write_millis = (datetime.datetime.now() - write_back_start).microseconds / 100
+        gds_write_result["writeMillis"] = write_millis
+
+        if "nodePropertiesWritten" in gds_write_result:
+            gds_write_result["nodePropertiesWritten"] = database_write_result["writtenNodeProperties"]
+        if "propertiesWritten" in gds_write_result:
+            gds_write_result["propertiesWritten"] = database_write_result["writtenNodeProperties"]
+        if "nodeLabelsWritten" in gds_write_result:
+            gds_write_result["nodeLabelsWritten"] = database_write_result["writtenNodeLabels"]
+        if "relationshipsWritten" in gds_write_result:
+            gds_write_result["relationshipsWritten"] = database_write_result["writtenRelationships"]
+
+        return gds_write_result
+
+    @staticmethod
+    def _extract_write_back_arguments(proc_name: str, params: dict[str, Any]) -> dict[str, Any]:
+        config = params.get("config", {})
+        write_config = {}
+
+        if "concurrency" in config:
+            write_config["concurrency"] = config["concurrency"]
+
+        if "gds.shortestPath" in proc_name:
+            write_config["relationshipType"] = config["writeRelationshipType"]
+
+            write_node_ids = config.get("writeNodeIds")
+            write_costs = config.get("writeCosts")
+
+            if write_node_ids and write_costs:
+                write_config["relationshipProperties"] = ["totalCost", "nodeIds", "costs"]
+            elif write_node_ids:
+                write_config["relationshipProperties"] = ["totalCost", "nodeIds"]
+            elif write_costs:
+                write_config["relationshipProperties"] = ["totalCost", "costs"]
+
+        elif "gds.graph." in proc_name:
+            if "gds.graph.nodeProperties.write" == proc_name:
+                write_config["nodeProperties"] = params["properties"]
+                write_config["nodeLabels"] = params["entities"]
+
+            elif "gds.graph.nodeLabel.write" == proc_name:
+                write_config["nodeLabels"] = [params["node_label"]]
+
+            elif "gds.graph.relationshipProperties.write" == proc_name:
+                write_config["relationshipProperties"] = params["relationship_properties"]
+                write_config["relationshipType"] = params["relationship_type"]
+
+            elif "gds.graph.relationship.write" == proc_name:
+                if "relationship_property" in params and params["relationship_property"] != "":
+                    write_config["relationshipProperties"] = [params["relationship_property"]]
+                write_config["relationshipType"] = params["relationship_type"]
+
+            else:
+                raise ValueError(f"Unsupported procedure name: {proc_name}")
+
+        else:
+            if "writeRelationshipType" in config:
+                write_config["relationshipType"] = config["writeRelationshipType"]
+                if "writeProperty" in config:
+                    write_config["relationshipProperties"] = [config["writeProperty"]]
+            else:
+                if "writeProperty" in config:
+                    write_config["nodeProperties"] = [config["writeProperty"]]
+                if "nodeLabels" in params:
+                    write_config["nodeLabels"] = params["nodeLabels"]
+                else:
+                    write_config["nodeLabels"] = ["*"]
+
+        return write_config
