@@ -4,7 +4,7 @@ from typing import List
 
 class SessionMemory(Enum):
     """
-    Enumeration representing session memory configurations.
+    Enumeration representing session main memory configurations.
     """
 
     m_1GB = "1GB"

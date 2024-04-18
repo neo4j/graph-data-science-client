@@ -82,7 +82,7 @@ Supported values are: `1GB`, `2GB`, `4GB`, `8GB`, `16GB`, `32GB`, `64GB`, `128GB
 
 === Listing GDS Sessions
 
-The `list()` method returns the name and memory of all currently active GDS Sessions.
+The `list()` method returns the name and size of memory of all currently active GDS Sessions.
 
 .Listing GDS Sessions:
 [source, python, role=no-test]
