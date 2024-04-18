@@ -246,7 +246,7 @@ def test_get_or_create_different_size(mocker: MockerFixture, aura_api: AuraApi) 
     with pytest.raises(
         ValueError,
         match=re.escape(
-            "Session `my-session` already exists with size `8GB`." " Requested size `32GB` does not match."
+            "Session `my-session` already exists with memory `8GB`." " Requested memory `32GB` does not match."
         ),
     ):
         sessions.get_or_create(

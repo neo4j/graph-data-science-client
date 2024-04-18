@@ -106,11 +106,10 @@ class GdsSessions:
 
         if existing_session:
             session_id = existing_session.id
-            existing_size = SessionInfo.from_specific_instance_details(existing_session).memory
-            if existing_size != memory.value:
+            if existing_session.memory != memory.value:
                 raise ValueError(
-                    f"Session `{session_name}` already exists with size `{existing_size}`. "
-                    f"Requested size `{memory.value}` does not match."
+                    f"Session `{session_name}` already exists with memory `{existing_session.memory}`. "
+                    f"Requested memory `{memory.value}` does not match."
                 )
         else:
             create_details = self._create_session(session_name, memory, db_connection)
