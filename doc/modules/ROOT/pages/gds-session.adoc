@@ -82,7 +82,7 @@ As a convention, always use the variable name `gds` for the return value of `get
 ==== Session memory configuration
 
 Session memory configuration is specified using the `SessionMemory` enum.
-Supported values are: `1GB`, `2GB`, `4GB`, `8GB`, `16GB`, `32GB`, `64GB`, `128GB`, `256GB`, `320GB`, `512GB`.
+Supported values are: `8GB`, `16GB`, `24GB`, `32GB`, `48GB`, `64GB`, `96GB`, `128GB`, `192GB`, `256GB`, `384GB`.
 
 
 === Listing GDS Sessions

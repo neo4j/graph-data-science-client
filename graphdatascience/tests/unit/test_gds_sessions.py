@@ -148,7 +148,7 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
 
     gds_credentials = sessions.get_or_create(
         "my-session",
-        SessionMemory.m_512GB,
+        SessionMemory.m_384GB,
         DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
 
@@ -159,12 +159,12 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
         "gds_url": "fake-url",
         "session_name": "my-session",
     }
-    assert sessions.list() == [SessionInfo("my-session", "512GB")]
+    assert sessions.list() == [SessionInfo("my-session", "384GB")]
 
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
     assert instance_details.cloud_provider == "aws"
     assert instance_details.region == "leipzig-1"
-    assert instance_details.memory == "512GB"
+    assert instance_details.memory == "384GB"
 
 
 def test_create_default_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
@@ -297,7 +297,7 @@ def test_get_or_create_duplicate_session() -> None:
     )
 
     with pytest.raises(RuntimeError, match=re.escape("Expected to find exactly one GDS session with name `one`")):
-        sessions.get_or_create("one", SessionMemory.m_2GB, DbmsConnectionInfo("", "", ""))
+        sessions.get_or_create("one", SessionMemory.m_8GB, DbmsConnectionInfo("", "", ""))
 
 
 def test_delete_session() -> None:
@@ -407,7 +407,7 @@ def test_create_immediate_delete(aura_api: AuraApi) -> None:
 
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is being deleted"):
         sessions.get_or_create(
-            "one", SessionMemory.m_2GB, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
+            "one", SessionMemory.m_8GB, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
         )
 
 
@@ -419,7 +419,7 @@ def test_create_waiting_forever() -> None:
 
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is not running after waiting"):
         sessions.get_or_create(
-            "one", SessionMemory.m_2GB, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
+            "one", SessionMemory.m_8GB, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
         )
 
 
@@ -432,7 +432,7 @@ def test_invalid_session_name() -> None:
     with pytest.raises(ValueError, match="Session name `one_very_long_session_name` is too long. Max length is 18."):
         sessions.get_or_create(
             "one_very_long_session_name",
-            SessionMemory.m_2GB,
+            SessionMemory.m_8GB,
             DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", ""),
         )
 
@@ -459,15 +459,15 @@ def test_estimate_size_exceeds(aura_api: AuraApi) -> None:
 
 def test_from_specific_instance_details() -> None:
     info = SessionInfo.from_specific_instance_details(
-        InstanceSpecificDetails("id", "gds-session-foo", "tenant", "cp", "status", "bolt", "2GB", "type", "region")
+        InstanceSpecificDetails("id", "gds-session-foo", "tenant", "cp", "status", "bolt", "96GB", "type", "region")
     )
 
     assert info.name == "foo"
-    assert info.memory == "2GB"
+    assert info.memory == "96GB"
 
 
 def test_from_specific_instance_details_failures() -> None:
-    with pytest.raises(ValueError, match="Unknown memory configuration: `invalid`. Supported values are `\\['1GB', "):
+    with pytest.raises(ValueError, match="Unknown memory configuration: `invalid`. Supported values are `\\['8GB', "):
         SessionInfo.from_specific_instance_details(
             InstanceSpecificDetails(
                 "id", "gds-session-foo", "tenant", "cp", "status", "bolt", "invalid", "type", "region"
@@ -476,7 +476,7 @@ def test_from_specific_instance_details_failures() -> None:
     with pytest.raises(ValueError, match="Invalid session name: `not-a-gds-session-foo`"):
         SessionInfo.from_specific_instance_details(
             InstanceSpecificDetails(
-                "id", "not-a-gds-session-foo", "tenant", "cp", "status", "bolt", "2GB", "type", "region"
+                "id", "not-a-gds-session-foo", "tenant", "cp", "status", "bolt", "24GB", "type", "region"
             )
         )
 
