@@ -14,7 +14,7 @@ from graphdatascience.session.aura_api import (
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.region_suggester import closest_match
-from graphdatascience.session.session_sizes import SessionSizeByMemory
+from graphdatascience.session.session_sizes import SessionMemory
 
 
 @dataclass
@@ -24,25 +24,26 @@ class SessionInfo:
 
     Attributes:
         name (str): The name of the session.
-        size (str): The size of the session.
+        memory (str): The size of the session.
     """
 
     name: str
-    size: str
+    memory: str
 
     @classmethod
     def from_specific_instance_details(cls, instance_details: InstanceSpecificDetails) -> SessionInfo:
-
-        size = ""
+        session_memory = ""
         try:
-            # instance creation also allows for GB but instance details returns size as GiB
-            memory = instance_details.memory.replace("GiB", "GB").replace(" ", "")
-            if memory:
-                size = SessionSizeByMemory(memory).name
+            instance_memory = instance_details.memory
+            if instance_memory:
+                session_memory = SessionMemory(instance_memory).value
         except ValueError:
-            raise ValueError(f"Expected to find exactly one size for memory `{instance_details.memory}`")
+            raise ValueError(
+                f"Unknown memory configuration: `{instance_details.memory}`. "
+                f"Supported values are `{SessionMemory.all_values()}`"
+            )
 
-        return SessionInfo(GdsSessionNameHelper.session_name(instance_details.name), size)
+        return SessionInfo(GdsSessionNameHelper.session_name(instance_details.name), session_memory)
 
 
 @dataclass
@@ -85,7 +86,7 @@ class GdsSessions:
     def get_or_create(
         self,
         session_name: str,
-        size: SessionSizeByMemory,
+        memory: SessionMemory,
         db_connection: DbmsConnectionInfo,
     ) -> AuraGraphDataScience:
         """
@@ -94,7 +95,7 @@ class GdsSessions:
 
         Args:
             session_name (str): The name of the session.
-            size (SessionSizeByMemory): The size of the session specified by memory.
+            memory (SessionMemory): The size of the session specified by memory.
             db_connection (DbmsConnectionInfo): The database connection information.
 
         Returns:
@@ -105,14 +106,13 @@ class GdsSessions:
 
         if existing_session:
             session_id = existing_session.id
-            existing_size = SessionInfo.from_specific_instance_details(existing_session).size
-            if existing_size != size.name:
+            if existing_session.memory != memory.value:
                 raise ValueError(
-                    f"Session `{session_name}` already exists with size `{existing_size}`. "
-                    f"Requested size `{size.name}` does not match."
+                    f"Session `{session_name}` already exists with memory `{existing_session.memory}`. "
+                    f"Requested memory `{memory.value}` does not match."
                 )
         else:
-            create_details = self._create_session(session_name, size, db_connection)
+            create_details = self._create_session(session_name, memory, db_connection)
             session_id = create_details.id
 
         wait_result = self._aura_api.wait_for_instance_running(session_id)
@@ -184,7 +184,7 @@ class GdsSessions:
         return self._aura_api.list_instance(matched_instances[0].id)
 
     def _create_session(
-        self, session_name: str, size: SessionSizeByMemory, db_connection: DbmsConnectionInfo
+        self, session_name: str, memory: SessionMemory, db_connection: DbmsConnectionInfo
     ) -> InstanceCreateDetails:
         db_instance_id = AuraApi.extract_id(db_connection.uri)
         db_instance = self._aura_api.list_instance(db_instance_id)
@@ -194,7 +194,7 @@ class GdsSessions:
         region = self._ds_region(db_instance.region, db_instance.cloud_provider)
 
         create_details = self._aura_api.create_instance(
-            GdsSessionNameHelper.instance_name(session_name), size.value, db_instance.cloud_provider, region
+            GdsSessionNameHelper.instance_name(session_name), memory.value, db_instance.cloud_provider, region
         )
         return create_details
 
@@ -244,7 +244,13 @@ class GdsSessionNameHelper:
     @classmethod
     def session_name(cls, instance_name: str) -> str:
         # str.removeprefix is only available in Python 3.9+
-        return instance_name[len(cls.GDS_SESSION_NAME_PREFIX) :]  # noqa: E203 (black vs flake8 conflict)
+        if instance_name.startswith(cls.GDS_SESSION_NAME_PREFIX):
+            return instance_name[len(cls.GDS_SESSION_NAME_PREFIX) :]  # noqa: E203 (black vs flake8 conflict)
+        else:
+            raise ValueError(
+                f"Invalid session name: `{instance_name}`. "
+                f"The name must begin with the prefix `{GdsSessionNameHelper.GDS_SESSION_NAME_PREFIX}`"
+            )
 
     @classmethod
     def instance_name(cls, session_name: str) -> str:

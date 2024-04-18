@@ -14,6 +14,26 @@ from graphdatascience.session.aura_api import (
 )
 
 
+def test_multiple_tenants(requests_mock: Mocker) -> None:
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1/tenants",
+        json={
+            "data": [
+                {"id": "tenant1", "name": "Production"},
+                {"id": "tenant2", "name": "Development"},
+            ]
+        },
+    )
+
+    with pytest.raises(
+        RuntimeError,
+        match="This account has access to multiple tenants: `{'tenant1': 'Production', 'tenant2': 'Development'}`",
+    ):
+        AuraApi(client_id="", client_secret="")
+
+
 def test_delete_instance(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
 

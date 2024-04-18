@@ -1,33 +1,31 @@
 from enum import Enum
-from typing import Type
+from typing import List
 
 
-class SessionSizeByMemory(Enum):
+class SessionMemory(Enum):
     """
-    Enumeration representing session sizes.
+    Enumeration representing session main memory configurations.
     """
 
-    XS = "1GB"
-    S = "2GB"
-    SM = "4GB"
-    M = "8GB"
-    ML = "16GB"
-    L = "32GB"
-    XL = "64GB"
-    XXL = "128GB"
-    X3L = "256GB"
-    X4L = "320GB"
-    X5L = "512GB"
-    DEFAULT = "8GB"
+    m_1GB = "1GB"
+    m_2GB = "2GB"
+    m_4GB = "4GB"
+    m_8GB = "8GB"
+    m_16GB = "16GB"
+    m_32GB = "32GB"
+    m_64GB = "64GB"
+    m_128GB = "128GB"
+    m_256GB = "256GB"
+    m_320GB = "320GB"
+    m_512GB = "512GB"
 
-
-class SessionSizes:
-    @staticmethod
-    def by_memory() -> Type[SessionSizeByMemory]:
+    @classmethod
+    def all_values(cls) -> List[str]:
         """
-        Helper method to specify the memory size of a session.
+        All supported memory configurations.
 
         Returns:
-            Type[SessionSizeByMemory]: The SessionSizeByMemory class.
+            A list of strings representing all supported memory configurations for sessions.
+
         """
-        return SessionSizeByMemory
+        return [e.value for e in cls]

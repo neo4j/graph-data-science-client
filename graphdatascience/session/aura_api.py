@@ -257,8 +257,9 @@ class AuraApi:
         raw_data = response.json()["data"]
 
         if len(raw_data) != 1:
+            tenants_dict = {d["id"]: d["name"] for d in raw_data}
             raise RuntimeError(
-                f"This account has access to multiple tenants `{raw_data}`. Please specify which one to use."
+                f"This account has access to multiple tenants: `{tenants_dict}`. Please specify which one to use."
             )
 
         return raw_data[0]["id"]  # type: ignore

@@ -30,7 +30,7 @@ CLIENT_ID = "my-aura-api-client-id"
 CLIENT_SECRET = "my-aura-api-client-secret"
 
 # Create a new GdsSessions object
-sessions = GdsSessions(ds_connection=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET))
+sessions = GdsSessions(api_credentials=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET))
 ----
 
 
@@ -41,49 +41,48 @@ To create a GDS Session, you need to provide the following information:
 - **Session name**.
 The name must be unique.
 
-- **Session size**.
-The size determines the amount of memory and CPU available to the session.
+- **Session memory**.
+This configuration determines the amount of memory and CPU available to the session.
 It also determines the cost of running the session.
-Available sizes are listed <<gds-session-sizes, below>>.
+Available configurations are listed <<gds-session-memory, below>>.
 
 - **DBMS connection**.
 This is a `DbmsConnectionInfo` object that contains the URI of an AuraDB instance, a username, and a password.
 
-
 .Creating a GDS Session:
-[source, python, role=no-test]
+[source,python,role=no-test]
 ----
-from graphdatascience.session import SessionSizes, DbmsConnectionInfo
+from graphdatascience.session import SessionMemory, DbmsConnectionInfo
 
 name = "my-new-session"
-size = SessionSizes.by_memory().DEFAULT
+memory = SessionMemory.m_8GB
 db_connection_info = DbmsConnectionInfo("neo4j+s://mydbid.databases.neo4j.io", "my-user", "my-password")
 
 gds = sessions.get_or_create(
     session_name=name,
-    size=size,
+    memory=memory,
     db_connection=db_connection_info,
 )
 ----
 
 The `get_or_create()` method creates a new GDS Session if it does not exist, or connects to an existing one if it does.
-If the session size is different from the existing one, an error is raised.
+If the session memory configuration is different from the existing one, an error is raised.
 
 The return value of `get_or_create()` is an `AuraGraphDataScience` object.
 It offers a similar API to the `GraphDataScience` object, but it is configured to run on a GDS Session.
 As a convention, always use the variable name `gds` for the return value of `get_or_create()`.
 
 
-[[gds-session-sizes]]
-==== Session sizes
+[[gds-session-memory]]
+==== Session memory configuration
 
-Session sizes are specified using the `SessionSizes.by_memory()` enum.
-Possible values are `DEFAULT` (same as `M`), `XS`, `S`, `SM`, `M`, `ML`, `L`, `XL`, `XXL`, `X3L`, `X4L`, `X5L`.
+Session memory configuration is specified using the `SessionMemory` enum.
+Supported values are: `1GB`, `2GB`, `4GB`, `8GB`, `16GB`, `32GB`, `64GB`, `128GB`, `256GB`, `320GB`, `512GB`.
 
 
 === Listing GDS Sessions
 
-The `list()` method returns the name and size of all currently active GDS Sessions.
+The `list()` method returns the name and size of memory of all currently active GDS Sessions.
 
 .Listing GDS Sessions:
 [source, python, role=no-test]
@@ -187,14 +186,14 @@ The database connection is to a new, empty AuraDB instance.
 [source,python,role=no-test]
 ----
 import os # for reading environment variables
-from graphdatascience.session import SessionSizes, DbmsConnectionInfo, GdsSessions, AuraAPICredentials
+from graphdatascience.session import SessionMemory, DbmsConnectionInfo, GdsSessions, AuraAPICredentials
 
-sessions = GdsSessions(ds_connection=AuraAPICredentials(os.environ["CLIENT_ID"], os.environ["CLIENT_SECRET"]))
+sessions = GdsSessions(api_credentials=AuraAPICredentials(os.environ["CLIENT_ID"], os.environ["CLIENT_SECRET"]))
 
 db_connection = DbmsConnectionInfo(os.environ["DB_URI"], os.environ["DB_USER"], os.environ["DB_PASSWORD"])
 gds = sessions.get_or_create(
     session_name="my-new-session",
-    size=SessionSizes.by_memory().DEFAULT,
+    memory=SessionMemory.m_8GB,
     db_connection=db_connection,
 )
 
