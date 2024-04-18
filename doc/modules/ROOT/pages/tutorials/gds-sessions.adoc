@@ -62,8 +62,9 @@ AuraDB instance has been created and is available to access. We need to
 provide the database Bolt address, username, and password to the
 `DbmsConnectionInfo` class.
 
-We also have to specify the size of the session. In this example we will
-use the default size, but there are many options available.
+We also have to specify the size of the session. There are many possible
+sizes to choose from. Please refer to the API reference docs or the
+manual for a full list.
 
 Lastly, we need to give our session a name. We will call ours
 `analysing-people-and-fruits`. If we had already created a session and
@@ -82,9 +83,10 @@ aura_db_pw = os.environ["AURA_DB_PW"]
 
 # Create a GDS session!
 gds = sessions.get_or_create(
+    # we give it a representative name
     session_name="people-and-fruits",
-    # We use the default size for this example
-    memory=SessionMemory.DEFAULT,
+    # we will use a medium-sized configuration
+    memory=SessionMemory.m_8GB,
     db_connection=DbmsConnectionInfo(aura_db_address, aura_db_user, aura_db_pw),
 )
 ----
