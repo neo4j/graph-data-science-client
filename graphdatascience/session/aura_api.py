@@ -270,7 +270,7 @@ class AuraApi:
             "node_count": node_count,
             "relationship_count": relationship_count,
             "algorithm_categories": [i.value for i in algorithm_categories],
-            "instance_type": "gds",  # fixed as professional or enterprise makes no difference in sizing
+            "instance_type": "dsenterprise",
         }
 
         response = req.post(f"{self._base_uri}/v1/instances/sizing", headers=self._build_header(), json=data)
