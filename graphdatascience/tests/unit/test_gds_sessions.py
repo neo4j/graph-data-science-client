@@ -137,7 +137,7 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
 
     gds_credentials = sessions.get_or_create(
         "my-session",
-        SessionMemory._512GB,
+        SessionMemory.m_512GB,
         DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
 
@@ -167,7 +167,7 @@ def test_create_default_session(mocker: MockerFixture, aura_api: AuraApi) -> Non
 
     sessions.get_or_create(
         "my-session",
-        SessionMemory.DEFAULT,
+        SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
@@ -187,7 +187,7 @@ def test_create_session_override_region(mocker: MockerFixture, aura_api: AuraApi
 
     sessions.get_or_create(
         "my-session",
-        SessionMemory.DEFAULT,
+        SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
@@ -207,12 +207,12 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
 
     gds_args1 = sessions.get_or_create(
         "my-session",
-        SessionMemory.DEFAULT,
+        SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
     gds_args2 = sessions.get_or_create(
         "my-session",
-        SessionMemory.DEFAULT,
+        SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
 
@@ -239,7 +239,7 @@ def test_get_or_create_different_size(mocker: MockerFixture, aura_api: AuraApi) 
 
     sessions.get_or_create(
         "my-session",
-        SessionMemory._8GB,
+        SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
 
@@ -251,7 +251,7 @@ def test_get_or_create_different_size(mocker: MockerFixture, aura_api: AuraApi) 
     ):
         sessions.get_or_create(
             "my-session",
-            SessionMemory._32GB,
+            SessionMemory.m_32GB,
             DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
         )
 
@@ -286,7 +286,7 @@ def test_get_or_create_duplicate_session() -> None:
     )
 
     with pytest.raises(RuntimeError, match=re.escape("Expected to find exactly one GDS session with name `one`")):
-        sessions.get_or_create("one", SessionMemory.DEFAULT, DbmsConnectionInfo("", "", ""))
+        sessions.get_or_create("one", SessionMemory.m_2GB, DbmsConnectionInfo("", "", ""))
 
 
 def test_delete_session() -> None:
@@ -396,7 +396,7 @@ def test_create_immediate_delete(aura_api: AuraApi) -> None:
 
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is being deleted"):
         sessions.get_or_create(
-            "one", SessionMemory.DEFAULT, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
+            "one", SessionMemory.m_2GB, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
         )
 
 
@@ -408,7 +408,7 @@ def test_create_waiting_forever() -> None:
 
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Instance is not running after waiting"):
         sessions.get_or_create(
-            "one", SessionMemory.DEFAULT, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
+            "one", SessionMemory.m_2GB, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
         )
 
 
@@ -421,7 +421,7 @@ def test_invalid_session_name() -> None:
     with pytest.raises(ValueError, match="Session name `one_very_long_session_name` is too long. Max length is 18."):
         sessions.get_or_create(
             "one_very_long_session_name",
-            SessionMemory.DEFAULT,
+            SessionMemory.m_2GB,
             DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", ""),
         )
 
