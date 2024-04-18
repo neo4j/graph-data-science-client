@@ -24,11 +24,11 @@ listing, and deletion.
 
 This notebook requires having an AuraDB instance available. We also need
 to have the `graphdatascience` Python library installed, version
-`1.10a1` or later.
+`1.11a1` or later.
 
 [source, python, role=no-test]
 ----
-%pip install --pre "graphdatascience>1.9"
+%pip install --pre "graphdatascience>1.10"
 ----
 
 == Aura API credentials
@@ -74,7 +74,7 @@ incur any additional costs, and will be a lot faster.
 [source, python, role=no-test]
 ----
 import os
-from graphdatascience.session import SessionMemory, DbmsConnectionInfo
+from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory
 
 # Identify the AuraDB instance
 aura_db_address = os.environ["AURA_DB_ADDRESS"]
@@ -82,11 +82,15 @@ aura_db_user = os.environ["AURA_DB_USER"]
 aura_db_pw = os.environ["AURA_DB_PW"]
 
 # Create a GDS session!
+size = sessions.estimate(
+    node_count=20,
+    relationship_count=50,
+    algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
+)
 gds = sessions.get_or_create(
     # we give it a representative name
     session_name="people-and-fruits",
-    # we will use a medium-sized configuration
-    memory=SessionMemory.m_8GB,
+    size=size,
     db_connection=DbmsConnectionInfo(aura_db_address, aura_db_user, aura_db_pw),
 )
 ----

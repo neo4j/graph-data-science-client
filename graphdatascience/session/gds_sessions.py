@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
 from typing import List, Optional
 
 from neo4j import GraphDatabase
 
+from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import (
     AuraApi,
     InstanceCreateDetails,
@@ -82,6 +84,23 @@ class GdsSessions:
             client_id=api_credentials.client_id,
             client_secret=api_credentials.client_secret,
         )
+
+    def estimate(
+        self, node_count: int, relationship_count: int, algorithm_categories: Optional[List[AlgorithmCategory]] = None
+    ) -> SessionMemory:
+        if algorithm_categories is None:
+            algorithm_categories = []
+
+        estimation = self._aura_api.estimate_size(node_count, relationship_count, algorithm_categories)
+
+        if estimation.did_exceed_maximum:
+            warnings.warn(
+                f"The estimated memory `{estimation.min_required_memory}` exceeds the maximum size"
+                f" supported by your Aura tenant (`{estimation.recommended_size}`).",
+                ResourceWarning,
+            )
+
+        return SessionMemory(estimation.recommended_size)
 
     def get_or_create(
         self,

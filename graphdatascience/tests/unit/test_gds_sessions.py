@@ -7,8 +7,10 @@ import pytest
 from pytest_mock import MockerFixture
 from requests_mock import Mocker
 
+from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import (
     AuraApi,
+    EstimationDetails,
     InstanceCreateDetails,
     InstanceDetails,
     InstanceSpecificDetails,
@@ -27,7 +29,10 @@ from graphdatascience.session.session_sizes import SessionMemory
 
 class FakeAuraApi(AuraApi):
     def __init__(
-        self, existing_instances: Optional[List[InstanceSpecificDetails]] = None, status_after_creating: str = "running"
+        self,
+        existing_instances: Optional[List[InstanceSpecificDetails]] = None,
+        status_after_creating: str = "running",
+        size_estimation: Optional[EstimationDetails] = None,
     ) -> None:
         super().__init__("", "", "tenant_id")
         if existing_instances is None:
@@ -36,6 +41,7 @@ class FakeAuraApi(AuraApi):
         self.id_counter = 0
         self.time = 0
         self._status_after_creating = status_after_creating
+        self._size_estimation = size_estimation or EstimationDetails("1GB", "8GB", False)
 
     def create_instance(self, name: str, memory: str, cloud_provider: str, region: str) -> InstanceCreateDetails:
         create_details = InstanceCreateDetails(
@@ -85,6 +91,11 @@ class FakeAuraApi(AuraApi):
 
     def tenant_details(self) -> TenantDetails:
         return TenantDetails(id=self._tenant_id, ds_type="fake-ds", regions_per_provider={"aws": {"leipzig-1"}})
+
+    def estimate_size(
+        self, node_count: int, relationship_count: int, algorithm_categories: List[AlgorithmCategory]
+    ) -> EstimationDetails:
+        return self._size_estimation
 
 
 @pytest.fixture
@@ -424,6 +435,26 @@ def test_invalid_session_name() -> None:
             SessionMemory.m_2GB,
             DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", ""),
         )
+
+
+def test_estimate_size(aura_api: AuraApi) -> None:
+    aura_api = FakeAuraApi(size_estimation=EstimationDetails("1GB", "8GB", False))
+    sessions = GdsSessions(AuraAPICredentials("", "", "foo"))
+    sessions._aura_api = aura_api
+
+    assert sessions.estimate(1, 1, [AlgorithmCategory.CENTRALITY]) == SessionMemory.m_8GB
+
+
+def test_estimate_size_exceeds(aura_api: AuraApi) -> None:
+    aura_api = FakeAuraApi(size_estimation=EstimationDetails("16GB", "8GB", True))
+    sessions = GdsSessions(AuraAPICredentials("", "", "foo"))
+    sessions._aura_api = aura_api
+
+    with pytest.warns(
+        ResourceWarning,
+        match=re.escape("The estimated memory `16GB` exceeds the maximum size supported by your Aura tenant (`8GB`)"),
+    ):
+        assert sessions.estimate(1, 1, [AlgorithmCategory.CENTRALITY]) == SessionMemory.m_8GB
 
 
 def test_from_specific_instance_details() -> None:

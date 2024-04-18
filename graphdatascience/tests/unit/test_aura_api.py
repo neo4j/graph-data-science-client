@@ -5,8 +5,10 @@ from _pytest.logging import LogCaptureFixture
 from requests import HTTPError
 from requests_mock import Mocker
 
+from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import (
     AuraApi,
+    EstimationDetails,
     InstanceCreateDetails,
     InstanceSpecificDetails,
     TenantDetails,
@@ -355,6 +357,17 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
 
     assert api.wait_for_instance_running("id0") == WaitResult.from_error("Instance is being deleted")
     assert api.wait_for_instance_running("id1") == WaitResult.from_error("Instance is being deleted")
+
+
+def test_estimate_size(requests_mock: Mocker) -> None:
+    mock_auth_token(requests_mock)
+    requests_mock.post(
+        "https://api.neo4j.io/v1/instances/sizing",
+        json={"data": {"did_exceed_maximum": True, "min_required_memory": "307GB", "recommended_size": "96GB"}},
+    )
+
+    api = AuraApi("", "", tenant_id="some-tenant")
+    assert api.estimate_size(100, 10, [AlgorithmCategory.NODE_EMBEDDING]) == EstimationDetails("307GB", "96GB", True)
 
 
 def test_extract_id() -> None:
