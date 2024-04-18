@@ -24,24 +24,26 @@ class SessionInfo:
 
     Attributes:
         name (str): The name of the session.
-        size (str): The size of the session.
+        memory (str): The size of the session.
     """
 
     name: str
-    size: str
+    memory: str
 
     @classmethod
     def from_specific_instance_details(cls, instance_details: InstanceSpecificDetails) -> SessionInfo:
-        size = ""
+        session_memory = ""
         try:
-            # instance creation also allows for GB but instance details returns size as GiB
-            memory = instance_details.memory
-            if memory:
-                size = SessionMemory(memory).value
+            instance_memory = instance_details.memory
+            if instance_memory:
+                session_memory = SessionMemory(instance_memory).value
         except ValueError:
-            raise ValueError(f"Expected to find exactly one size for memory `{instance_details.memory}`")
+            raise ValueError(
+                f"Unknown memory configuration: `{instance_details.memory}`. "
+                f"Supported values are `{SessionMemory.all_values()}`"
+            )
 
-        return SessionInfo(GdsSessionNameHelper.session_name(instance_details.name), size)
+        return SessionInfo(GdsSessionNameHelper.session_name(instance_details.name), session_memory)
 
 
 @dataclass
@@ -104,7 +106,7 @@ class GdsSessions:
 
         if existing_session:
             session_id = existing_session.id
-            existing_size = SessionInfo.from_specific_instance_details(existing_session).size
+            existing_size = SessionInfo.from_specific_instance_details(existing_session).memory
             if existing_size != memory.value:
                 raise ValueError(
                     f"Session `{session_name}` already exists with size `{existing_size}`. "
@@ -243,7 +245,13 @@ class GdsSessionNameHelper:
     @classmethod
     def session_name(cls, instance_name: str) -> str:
         # str.removeprefix is only available in Python 3.9+
-        return instance_name[len(cls.GDS_SESSION_NAME_PREFIX) :]  # noqa: E203 (black vs flake8 conflict)
+        if instance_name.startswith(cls.GDS_SESSION_NAME_PREFIX):
+            return instance_name[len(cls.GDS_SESSION_NAME_PREFIX) :]  # noqa: E203 (black vs flake8 conflict)
+        else:
+            raise ValueError(
+                f"Invalid session name: `{instance_name}`. "
+                f"The name must begin with the prefix `{GdsSessionNameHelper.GDS_SESSION_NAME_PREFIX}`"
+            )
 
     @classmethod
     def instance_name(cls, session_name: str) -> str:

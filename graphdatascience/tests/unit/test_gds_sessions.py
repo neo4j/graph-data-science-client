@@ -426,5 +426,29 @@ def test_invalid_session_name() -> None:
         )
 
 
+def test_from_specific_instance_details() -> None:
+    info = SessionInfo.from_specific_instance_details(
+        InstanceSpecificDetails("id", "gds-session-foo", "tenant", "cp", "status", "bolt", "2GB", "type", "region")
+    )
+
+    assert info.name == "foo"
+    assert info.memory == "2GB"
+
+
+def test_from_specific_instance_details_failures() -> None:
+    with pytest.raises(ValueError, match="Unknown memory configuration: `invalid`. Supported values are `\\['1GB', "):
+        SessionInfo.from_specific_instance_details(
+            InstanceSpecificDetails(
+                "id", "gds-session-foo", "tenant", "cp", "status", "bolt", "invalid", "type", "region"
+            )
+        )
+    with pytest.raises(ValueError, match="Invalid session name: `not-a-gds-session-foo`"):
+        SessionInfo.from_specific_instance_details(
+            InstanceSpecificDetails(
+                "id", "not-a-gds-session-foo", "tenant", "cp", "status", "bolt", "2GB", "type", "region"
+            )
+        )
+
+
 def _setup_db_instance(aura_api: AuraApi) -> None:
     aura_api.create_instance("test", "8GB", "aws", "leipzig-1")

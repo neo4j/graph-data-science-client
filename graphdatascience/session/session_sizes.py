@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 
 
 class SessionMemory(Enum):
@@ -18,3 +19,7 @@ class SessionMemory(Enum):
     _320GB = "320GB"
     _512GB = "512GB"
     DEFAULT = "8GB"
+
+    @classmethod
+    def all_values(cls) -> List[str]:
+        return [e.value for e in cls if not e.name == SessionMemory.DEFAULT.name]
