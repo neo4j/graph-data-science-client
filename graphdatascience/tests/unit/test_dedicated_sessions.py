@@ -15,8 +15,9 @@ from graphdatascience.session.aura_api_responses import (
     WaitResult,
 )
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-from graphdatascience.session.gds_sessions import AuraAPICredentials
-from graphdatascience.session.gds_sessions_v2 import GdsSessionsV2
+from graphdatascience.session.dedicated_sessions import DedicatedSessions
+from graphdatascience.session.session_info import SessionInfo
+from graphdatascience.session.session_sizes import SessionMemory
 
 
 class FakeAuraApi(AuraApi):
@@ -136,23 +137,21 @@ def test_list_session(aura_api: AuraApi) -> None:
     session = aura_api.create_session(
         name="gds-session-my-session-name", dbid=aura_api.list_instances()[0].id, pwd="some_pwd"
     )
+    sessions = DedicatedSessions(aura_api)
 
-    sessions = GdsSessionsV2(AuraAPICredentials("", "", "placeholder"))
-    sessions._aura_api = aura_api
-
-    assert sessions.list() == [session]
+    assert sessions.list() == [SessionInfo.from_session_details(session)]
 
 
 def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
 
-    sessions = GdsSessionsV2(AuraAPICredentials("", "", "placeholder"))
-    sessions._aura_api = aura_api
+    sessions = DedicatedSessions(aura_api)
 
     patch_construct_client(mocker)
 
     gds_credentials = sessions.get_or_create(
         "my-session",
+        SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
 
@@ -169,17 +168,18 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
 def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
 
-    sessions = GdsSessionsV2(AuraAPICredentials("", "", "placeholder"))
-    sessions._aura_api = aura_api
+    sessions = DedicatedSessions(aura_api)
 
     patch_construct_client(mocker)
 
     gds_args1 = sessions.get_or_create(
         "my-session",
+        SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
     gds_args2 = sessions.get_or_create(
         "my-session",
+        SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
 
@@ -200,11 +200,10 @@ def test_get_or_create_duplicate_session(aura_api: AuraApi) -> None:
     aura_api.create_session("one", db.id, "1234")
     aura_api.create_session("one", db.id, "12345")
 
-    sessions = GdsSessionsV2(AuraAPICredentials("", "", "placeholder"))
-    sessions._aura_api = aura_api
+    sessions = DedicatedSessions(aura_api)
 
     with pytest.raises(RuntimeError, match=re.escape("Expected to find exactly one GDS session with name `one`")):
-        sessions.get_or_create("one", DbmsConnectionInfo(db.connection_url, "", ""))
+        sessions.get_or_create("one", SessionMemory.m_8GB, DbmsConnectionInfo(db.connection_url, "", ""))
 
 
 def test_delete_session(aura_api: AuraApi) -> None:
@@ -213,8 +212,7 @@ def test_delete_session(aura_api: AuraApi) -> None:
     aura_api.create_session("one", db1, "12345")
     aura_api.create_session("other", db2, "123123")
 
-    sessions = GdsSessionsV2(AuraAPICredentials("", "", "placeholder"))
-    sessions._aura_api = aura_api
+    sessions = DedicatedSessions(aura_api)
 
     assert sessions.delete("one")
     assert [i.name for i in sessions.list()] == ["other"]
@@ -223,8 +221,7 @@ def test_delete_session(aura_api: AuraApi) -> None:
 def test_delete_nonexisting_session(aura_api: AuraApi) -> None:
     db1 = aura_api.create_instance("db1", "1gb", "aura", "leipzig").id
     aura_api.create_session("one", db1, "12345")
-    sessions = GdsSessionsV2(AuraAPICredentials("", "", "placeholder"))
-    sessions._aura_api = aura_api
+    sessions = DedicatedSessions(aura_api)
 
     assert sessions.delete("other") is False
     assert [i.name for i in sessions.list()] == ["one"]
@@ -234,8 +231,7 @@ def test_delete_nonunique_session(aura_api: AuraApi) -> None:
     db1 = aura_api.create_instance("db1", "1GB", "aura", "leipzig").id
     aura_api.create_session("one", db1, "12345")
     aura_api.create_session("one", db1, "12345")
-    sessions = GdsSessionsV2(AuraAPICredentials("", "", "placeholder"))
-    sessions._aura_api = aura_api
+    sessions = DedicatedSessions(aura_api)
 
     with pytest.raises(
         RuntimeError,
@@ -251,11 +247,12 @@ def test_delete_nonunique_session(aura_api: AuraApi) -> None:
 def test_create_waiting_forever() -> None:
     aura_api = FakeAuraApi(status_after_creating="updating")
     _setup_db_instance(aura_api)
-    sessions = GdsSessionsV2(AuraAPICredentials("", "", "foo"))
-    sessions._aura_api = aura_api
+    sessions = DedicatedSessions(aura_api)
 
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Session is not running after waiting"):
-        sessions.get_or_create("one", DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", ""))
+        sessions.get_or_create(
+            "one", SessionMemory.m_8GB, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
+        )
 
 
 def _setup_db_instance(aura_api: AuraApi) -> InstanceCreateDetails:
@@ -264,5 +261,6 @@ def _setup_db_instance(aura_api: AuraApi) -> InstanceCreateDetails:
 
 def patch_construct_client(mocker: MockerFixture) -> None:
     mocker.patch(
-        "graphdatascience.session.gds_sessions_v2.GdsSessionsV2._construct_client", lambda *args, **kwargs: kwargs
+        "graphdatascience.session.dedicated_sessions.DedicatedSessions._construct_client",
+        lambda *args, **kwargs: kwargs,
     )

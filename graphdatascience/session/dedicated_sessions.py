@@ -2,57 +2,37 @@ from __future__ import annotations
 
 from typing import List, Optional
 
+from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_api_responses import SessionDetails
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-from graphdatascience.session.gds_sessions import AuraAPICredentials
+from graphdatascience.session.session_info import SessionInfo
+from graphdatascience.session.session_sizes import SessionMemory
 
 
-# TODO come up with a good name (explain diff to previous version)
-class GdsSessionsV2:
-    """
-    Class for managing GDS sessions v2 hosted in Neo4j Aura.
-    """
-
+class DedicatedSessions:
     # Hardcoded neo4j user as sessions are always created with this user
     GDS_SESSION_USER = "neo4j"
 
-    def __init__(self, api_credentials: AuraAPICredentials) -> None:
-        """
-        Initializes a new instance of the GdsSessions class.
+    def __init__(self, aura_api: AuraApi) -> None:
+        self._aura_api = aura_api
 
-        Args:
-            api_credentials (AuraAPICredentials): The Aura API credentials used for establishing a connection.
-        """
-        self._aura_api = AuraApi(
-            tenant_id=api_credentials.tenant,
-            client_id=api_credentials.client_id,
-            client_secret=api_credentials.client_secret,
-        )
+    def estimate(
+        self, node_count: int, relationship_count: int, algorithm_categories: Optional[List[AlgorithmCategory]] = None
+    ) -> SessionMemory:
+        raise NotImplementedError("estimate is not implemented yet for DedicatedSessions.")
 
-    # TODO configure session size
     def get_or_create(
         self,
         session_name: str,
+        memory: SessionMemory,
         db_connection: DbmsConnectionInfo,
     ) -> AuraGraphDataScience:
-        """
-        Retrieves an existing session with the given session name and database connection,
-        or creates a new session if one does not exist.
-
-        Args:
-            session_name (str): The name of the session.
-            size (SessionSizeByMemory): The size of the session specified by memory.
-            db_connection (DbmsConnectionInfo): The database connection information.
-
-        Returns:
-            AuraGraphDataScience: The session.
-        """
-
         dbid = AuraApi.extract_id(db_connection.uri)
         existing_session = self._find_existing_session(session_name, dbid)
 
+        # TODO configure session size (and check existing_session has same size)
         if existing_session:
             session_id = existing_session.id
         else:
@@ -68,14 +48,6 @@ class GdsSessionsV2:
         )
 
     def delete(self, session_name: str, dbid: Optional[str] = None) -> bool:
-        """
-        Delete a GDS session.
-        Args:
-            session_name: the name of the session to delete
-
-        Returns:
-            True iff a session was deleted as a result of this call.
-        """
         candidate: Optional[SessionDetails] = None
         if not dbid:
             dbs = self._aura_api.list_instances()
@@ -91,22 +63,14 @@ class GdsSessionsV2:
 
         return False
 
-    def list(self) -> List[SessionDetails]:
-        """
-        Retrieves the list of GDS sessions visible by the user asscociated by the given api-credentials.
-
-        Returns:
-            A list of SessionInfo objects representing the GDS sessions.
-        """
+    def list(self) -> List[SessionInfo]:
         dbs = self._aura_api.list_instances()
 
         sessions: List[SessionDetails] = []
         for db in dbs:
             sessions.extend(self._aura_api.list_sessions(db.id))
 
-        # TODO SessionDetails vs SessionInfo?
-        # TODO return dataframe?
-        return sessions
+        return [SessionInfo.from_session_details(i) for i in sessions]
 
     def _find_existing_session(self, session_name: str, dbid: str) -> Optional[SessionDetails]:
         matched_sessions = [s for s in self._aura_api.list_sessions(dbid) if s.name == session_name]
@@ -136,7 +100,7 @@ class GdsSessionsV2:
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience(
             gds_session_connection_info=DbmsConnectionInfo(
-                gds_url, GdsSessionsV2.GDS_SESSION_USER, db_connection.password
+                gds_url, DedicatedSessions.GDS_SESSION_USER, db_connection.password
             ),
             aura_db_connection_info=db_connection,
             delete_fn=lambda: self.delete(session_name, dbid=AuraApi.extract_id(db_connection.uri)),
