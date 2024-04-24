@@ -82,7 +82,7 @@ class GdsArrowClient:
 
         self._flight_client = flight.FlightClient(location, **client_options)
 
-    def connection_info(self) -> tuple[str, int]:
+    def connection_info(self) -> Tuple[str, int]:
         return self._host, self._port
 
     def get_or_request_token(self) -> Optional[str]:
@@ -95,6 +95,12 @@ class GdsArrowClient:
     def get_property(
         self, database: Optional[str], graph_name: str, procedure_name: str, configuration: Dict[str, Any]
     ) -> DataFrame:
+        if not database:
+            raise ValueError(
+                "For this call you must have explicitly specified a valid Neo4j database to execute on, "
+                "using `GraphDataScience.set_database`."
+            )
+
         payload = {
             "database_name": database,
             "graph_name": graph_name,
