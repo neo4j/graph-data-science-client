@@ -1,5 +1,6 @@
 import dataclasses
 import re
+from datetime import datetime
 from typing import List, Optional
 
 import pytest
@@ -45,7 +46,7 @@ class FakeAuraApi(AuraApi):
             instance_id=dbid,
             memory="2GB",
             status="Creating",
-            created_at="some-date",
+            created_at=datetime.fromisoformat("2021-01-01T00:00:00+00:00"),
             host="foo.bar",
             expiry_date=None,
         )
@@ -249,7 +250,9 @@ def test_create_waiting_forever() -> None:
     _setup_db_instance(aura_api)
     sessions = DedicatedSessions(aura_api)
 
-    with pytest.raises(RuntimeError, match="Failed to create session `one`: Session is not running after waiting"):
+    with pytest.raises(
+        RuntimeError, match="Failed to create session `one`: Session `ffff0-ffff1` for database `ffff0` is not running"
+    ):
         sessions.get_or_create(
             "one", SessionMemory.m_8GB, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
         )
