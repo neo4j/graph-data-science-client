@@ -2,7 +2,6 @@ import base64
 import json
 import time
 import warnings
-from abc import ABC
 from typing import Any, Dict, Optional, Tuple
 
 from pandas import DataFrame
@@ -16,7 +15,7 @@ from .arrow_endpoint_version import ArrowEndpointVersion
 from .query_runner import QueryRunner
 
 
-class GdsArrowClient(ABC):
+class GdsArrowClient:
     @staticmethod
     def is_arrow_enabled(query_runner: QueryRunner) -> bool:
         arrow_info = query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False).squeeze().to_dict()
