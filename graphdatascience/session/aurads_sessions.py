@@ -122,7 +122,7 @@ class AuraDsSessions:
         db_instance_id = AuraApi.extract_id(db_connection.uri)
         db_instance = self._aura_api.list_instance(db_instance_id)
         if not db_instance:
-            raise ValueError(f"Could not find Aura instance with the uri `{db_connection.uri}`")
+            raise ValueError(f"Could not find AuraDB instance with the uri `{db_connection.uri}`")
 
         region = self._ds_region(db_instance.region, db_instance.cloud_provider)
 

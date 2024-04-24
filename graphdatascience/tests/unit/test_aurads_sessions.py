@@ -98,7 +98,6 @@ def aura_api() -> AuraApi:
 
 
 def test_list_session(aura_api: AuraApi) -> None:
-    aura_api = FakeAuraApi()
     aura_api.create_instance(name="gds-session-my-session-name", cloud_provider="gcp", memory="16GB", region="")
 
     sessions = AuraDsSessions(aura_api)
@@ -378,7 +377,7 @@ def test_delete_nonunique_session() -> None:
     assert sessions.list() == [SessionInfo("one", ""), SessionInfo("one", "")]
 
 
-def test_create_immediate_delete(aura_api: AuraApi) -> None:
+def test_create_immediate_delete() -> None:
     aura_api = FakeAuraApi(status_after_creating="deleting")
     _setup_db_instance(aura_api)
     sessions = AuraDsSessions(aura_api)

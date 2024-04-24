@@ -86,7 +86,7 @@ class DedicatedSessions:
     def _create_session(self, session_name: str, dbid: str, dburi: str, pwd: str) -> SessionDetails:
         db_instance = self._aura_api.list_instance(dbid)
         if not db_instance:
-            raise ValueError(f"Could not find Aura instance with the uri `{dburi}`")
+            raise ValueError(f"Could not find AuraDB instance with the uri `{dburi}`")
 
         create_details = self._aura_api.create_session(
             name=session_name,
