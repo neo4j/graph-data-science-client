@@ -109,17 +109,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
         logging: bool = False,
         custom_error: bool = True,
     ) -> DataFrame:
-        host, port = self._gds_arrow_client.connection_info()
-        token = self._gds_arrow_client.get_or_request_token()
-        if token is None:
-            token = "IGNORED"
-
-        params["arrowConfiguration"] = {
-            "host": host,
-            "port": port,
-            "token": token,
-            "encrypted": self._encrypted,
-        }
+        self._inject_connection_parameters(params)
         return self._db_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
 
     def _remote_write_back(
@@ -139,19 +129,12 @@ class AuraDbArrowQueryRunner(QueryRunner):
             endpoint, params, yields, database, logging, custom_error
         )
 
-        token = self._gds_arrow_client.get_or_request_token()
-        host, port = self._gds_arrow_client.connection_info()
         write_params = {
             "graphName": params["graph_name"],
             "databaseName": self._gds_query_runner.database(),
             "writeConfiguration": self._extract_write_back_arguments(endpoint, params),
-            "arrowConfiguration": {
-                "host": host,
-                "port": port,
-                "token": token,
-                "encrypted": self._encrypted,
-            },
         }
+        self._inject_connection_parameters(write_params)
 
         write_back_start = datetime.datetime.now()
         database_write_result = self._db_query_runner.call_procedure(
@@ -171,15 +154,29 @@ class AuraDbArrowQueryRunner(QueryRunner):
 
         return gds_write_result
 
+    def _inject_connection_parameters(self, params: dict[str, Any]) -> None:
+        host, port = self._gds_arrow_client.connection_info()
+        token = self._gds_arrow_client.get_or_request_token()
+        if token is None:
+            token = "IGNORED"
+        params["arrowConfiguration"] = {
+            "host": host,
+            "port": port,
+            "token": token,
+            "encrypted": self._encrypted,
+        }
+
     @staticmethod
     def _extract_write_back_arguments(proc_name: str, params: dict[str, Any]) -> dict[str, Any]:
         config = params.get("config", {})
         write_config = {}
 
-        if "concurrency" in config:
+        if "writeConcurrency" in config:
+            write_config["concurrency"] = config["writeConcurrency"]
+        elif "concurrency" in config:
             write_config["concurrency"] = config["concurrency"]
 
-        if "gds.shortestPath" in proc_name:
+        if "gds.shortestPath" in proc_name or "gds.allShortestPaths" in proc_name:
             write_config["relationshipType"] = config["writeRelationshipType"]
 
             write_node_ids = config.get("writeNodeIds")
