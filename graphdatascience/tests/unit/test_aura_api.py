@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timezone
 
 import pytest
 from _pytest.logging import LogCaptureFixture
@@ -44,7 +45,7 @@ def test_create_session(requests_mock: Mocker) -> None:
         instance_id="dbid-1",
         created_at="1970-01-01T00:00:00Z",
         host="1.2.3.4",
-        memory="4G",  # TODO parse into sizing
+        memory="4G",
         expiry_date=None,
     )
 
@@ -621,3 +622,52 @@ def test_parse_non_ds_details() -> None:
                 ],
             }
         )
+
+
+def test_parse_session_info() -> None:
+    session_details = {
+        "id": "test_id",
+        "name": "test_session",
+        "memory": "small",
+        "instance_id": "test_instance",
+        "status": "running",
+        "expiry_date": "2022-01-01T00:00:00Z",
+        "created_at": "2021-01-01T00:00:00Z",
+        "host": "a.b",
+    }
+    session_info = SessionDetails.fromJson(session_details)
+
+    assert session_info == SessionDetails(
+        id="test_id",
+        name="test_session",
+        memory="small",
+        instance_id="test_instance",
+        status="running",
+        host="a.b",
+        expiry_date=datetime(2022, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
+        created_at=datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
+    )
+
+
+def test_parse_session_info_without_expiry() -> None:
+    session_details = {
+        "id": "test_id",
+        "name": "test_session",
+        "memory": "small",
+        "instance_id": "test_instance",
+        "status": "running",
+        "host": "a.b",
+        "created_at": "2021-01-01T00:00:00Z",
+    }
+    session_info = SessionDetails.fromJson(session_details)
+
+    assert session_info == SessionDetails(
+        id="test_id",
+        name="test_session",
+        memory="small",
+        instance_id="test_instance",
+        host="a.b",
+        status="running",
+        expiry_date=None,
+        created_at=datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
+    )

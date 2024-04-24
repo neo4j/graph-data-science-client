@@ -103,7 +103,7 @@ class AuraApi:
         while waited_time <= max_sleep_time:
             session = self.list_session(session_id, dbid)
             if session is None:
-                return WaitResult.from_error("Session is not found -- please retry")
+                return WaitResult.from_error(f"Session `{session_id}` for database `{dbid}` not found -- please retry")
             elif session.status == "Ready" and session.host:  # check host needed until dns based routing
                 return WaitResult.from_connection_url(session.bolt_connection_url())
             else:
@@ -115,7 +115,9 @@ class AuraApi:
             waited_time += sleep_time
             time.sleep(sleep_time)
 
-        return WaitResult.from_error(f"Session is not running after waiting for {waited_time} seconds")
+        return WaitResult.from_error(
+            f"Session `{session_id}` for database `{dbid}` is not running after {waited_time} seconds"
+        )
 
     def delete_session(self, session_id: str, dbid: str) -> bool:
         response = req.delete(

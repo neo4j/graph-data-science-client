@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
 from graphdatascience.session.aura_api_responses import SessionDetails
@@ -35,5 +36,5 @@ class SessionInfo:
 class ExtendedSessionInfo(SessionInfo):
     instance_id: str
     status: str
-    expiry_date: Optional[str]  # TODO parse time into datetime using dateutil?
-    created_at: str  # TODO parse time into datetime using dateutil?
+    expiry_date: Optional[datetime]
+    created_at: datetime

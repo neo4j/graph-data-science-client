@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 from collections import defaultdict
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any, NamedTuple, Optional, Set
 
 
@@ -11,14 +12,16 @@ class SessionDetails:
     id: str
     name: str
     instance_id: str
-    memory: str  # TODO parse session size?
+    memory: str
     status: str
-    host: Optional[str]  # TODO non-optional once dns based routing
-    expiry_date: Optional[str]  # TODO parse time into datetime using dateutil?
-    created_at: str  # TODO parse time into datetime using dateutil?
+    host: Optional[str]
+    expiry_date: Optional[datetime]
+    created_at: datetime
 
     @classmethod
     def fromJson(cls, json: dict[str, Any]) -> SessionDetails:
+        expiry_date = json.get("expiry_date")
+
         return cls(
             id=json["id"],
             name=json["name"],
@@ -26,8 +29,8 @@ class SessionDetails:
             memory=json["memory"],
             status=json["status"],
             host=json.get("host"),
-            expiry_date=json.get("expiry_date"),
-            created_at=json["created_at"],
+            expiry_date=datetime.fromisoformat(expiry_date) if expiry_date else None,
+            created_at=datetime.fromisoformat(json["created_at"]),
         )
 
     def bolt_connection_url(self) -> str:
