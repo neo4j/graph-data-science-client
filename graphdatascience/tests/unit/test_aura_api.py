@@ -14,6 +14,7 @@ from graphdatascience.session.aura_api_responses import (
     InstanceSpecificDetails,
     SessionDetails,
     TenantDetails,
+    TimeParser,
     WaitResult,
 )
 
@@ -43,7 +44,7 @@ def test_create_session(requests_mock: Mocker) -> None:
         name="name-0",
         status="Creating",
         instance_id="dbid-1",
-        created_at=datetime.fromisoformat("1970-01-01T00:00:00Z"),
+        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
         host="1.2.3.4",
         memory="4G",
         expiry_date=None,
@@ -77,10 +78,10 @@ def test_list_session(requests_mock: Mocker) -> None:
         name="name-0",
         status="Ready",
         instance_id="dbid-1",
-        created_at=datetime.fromisoformat("1970-01-01T00:00:00Z"),
+        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
         host="1.2.3.4",
         memory="4G",
-        expiry_date=datetime.fromisoformat("1977-01-01T00:00:00Z"),
+        expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
     )
 
 
@@ -119,10 +120,10 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         name="name-0",
         status="Ready",
         instance_id="dbid-1",
-        created_at=datetime.fromisoformat("1970-01-01T00:00:00Z"),
+        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
         host="1.2.3.4",
         memory="4G",
-        expiry_date=datetime.fromisoformat("1977-01-01T00:00:00Z"),
+        expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
     )
 
     expected2 = SessionDetails(
@@ -130,7 +131,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         name="name-2",
         status="Creating",
         instance_id="dbid-3",
-        created_at=datetime.fromisoformat("2012-01-01T00:00:00Z"),
+        created_at=TimeParser.fromisoformat("2012-01-01T00:00:00Z"),
         memory="8G",
         host=None,
         expiry_date=None,

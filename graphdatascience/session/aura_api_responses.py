@@ -3,7 +3,8 @@ from __future__ import annotations
 import dataclasses
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
+import sys
 from typing import Any, NamedTuple, Optional, Set
 
 
@@ -29,8 +30,8 @@ class SessionDetails:
             memory=json["memory"],
             status=json["status"],
             host=json.get("host"),
-            expiry_date=datetime.fromisoformat(expiry_date) if expiry_date else None,
-            created_at=datetime.fromisoformat(json["created_at"]),
+            expiry_date=TimeParser.fromisoformat(expiry_date) if expiry_date else None,
+            created_at=TimeParser.fromisoformat(json["created_at"]),
         )
 
     def bolt_connection_url(self) -> str:
@@ -151,3 +152,15 @@ class TenantDetails:
             ds_type=ds_type,
             regions_per_provider=regions_per_provider,
         )
+
+
+# datetime.fromisoformat only works with Python version > 3.9
+class TimeParser:
+    
+    @staticmethod
+    def fromisoformat(date: str) -> datetime:
+        if sys.version_info > (3, 10):
+            return datetime.fromisoformat(date)
+        else:
+            # Aura API example: 1970-01-01T00:00:00Z
+            return datetime.strptime(date, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
