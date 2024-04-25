@@ -44,20 +44,20 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             A username, password pair for database authentication.
         aura_ds : bool, default False
             A flag that indicates that that the client is used to connect
-            to a Neo4j Aura instance.
+            to a Neo4j AuraDS instance.
         database: Optional[str], default None
             The Neo4j database to query against.
         arrow : Union[str, bool], default True
-            Arrow connection information. Either a flag that indicates whether the client should use Apache Arrow
-            for data streaming if it is available on the server. True means discover the connection URI from the server.
-            A connection URI (str) can also be provided.
+            Arrow connection information. This is either a bool or a string.
+            If it is a string, it will be interpreted as a connection URL to a GDS Arrow Server.
+            If it is a bool,
+                True will make the client discover the connection URI to the GDS Arrow server via the Neo4j endpoint,
+                while False will make the client use Bolt for all operations.
         arrow_disable_server_verification : bool, default True
-            A flag that indicates that, if the flight client is connecting with
-            TLS, that it skips server verification. If this is enabled, all
-            other TLS settings are overridden.
+            A flag that overrides other TLS settings and disables server verification for TLS connections.
         arrow_tls_root_certs : Optional[bytes], default None
-            PEM-encoded certificates that are used for the connecting to the
-            Arrow Flight server.
+            PEM-encoded certificates that are used for the connection to the
+            GDS Arrow Flight server.
         bookmarks : Optional[Any], default None
             The Neo4j bookmarks to require a certain state before the next query gets executed.
         """

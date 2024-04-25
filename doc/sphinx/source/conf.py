@@ -9,9 +9,9 @@ import sys
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "Neo4j Graph Data Science Python Client"
-copyright = "2023, Neo4j"
+copyright = "2024, Neo4j"
 author = "Neo4j"
-version = "1.9"
+version = "1.11"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -21,6 +21,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
 extensions = [
     "sphinx.ext.autodoc",  # include docs from docstrings
+    "enum_tools.autoenum",  # specialised autoclass for enums
     "sphinx.ext.napoleon",  # Support for NumPy and Google style docstrings
 ]
 

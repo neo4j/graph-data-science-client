@@ -1,0 +1,2 @@
+sphinx == 7.2.6
+enum-tools[sphinx] == 0.12.0

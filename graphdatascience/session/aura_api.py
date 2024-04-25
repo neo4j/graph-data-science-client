@@ -1,119 +1,25 @@
 from __future__ import annotations
 
-import dataclasses
 import logging
 import os
 import time
-from collections import defaultdict
-from dataclasses import dataclass
-from typing import Any, List, NamedTuple, Optional, Set
+from typing import Any, List, Optional
 from urllib.parse import urlparse
 
 import requests as req
 from requests import HTTPError
 
+from graphdatascience.session.algorithm_category import AlgorithmCategory
+from graphdatascience.session.aura_api_responses import (
+    EstimationDetails,
+    InstanceCreateDetails,
+    InstanceDetails,
+    InstanceSpecificDetails,
+    SessionDetails,
+    TenantDetails,
+    WaitResult,
+)
 from graphdatascience.version import __version__
-
-
-@dataclass(repr=True, frozen=True)
-class InstanceDetails:
-    id: str
-    name: str
-    tenant_id: str
-    cloud_provider: str
-
-    @classmethod
-    def fromJson(cls, json: dict[str, Any]) -> InstanceDetails:
-        return cls(
-            id=json["id"],
-            name=json["name"],
-            tenant_id=json["tenant_id"],
-            cloud_provider=json["cloud_provider"],
-        )
-
-
-@dataclass(repr=True, frozen=True)
-class InstanceSpecificDetails(InstanceDetails):
-    status: str
-    connection_url: str
-    memory: str
-    type: str
-    region: str
-
-    @classmethod
-    def fromJson(cls, json: dict[str, Any]) -> InstanceSpecificDetails:
-        return cls(
-            id=json["id"],
-            name=json["name"],
-            tenant_id=json["tenant_id"],
-            cloud_provider=json["cloud_provider"],
-            status=json["status"],
-            connection_url=json.get("connection_url", ""),
-            memory=json.get("memory", ""),
-            type=json["type"],
-            region=json["region"],
-        )
-
-
-@dataclass(repr=True, frozen=True)
-class InstanceCreateDetails:
-    id: str
-    username: str
-    password: str
-    connection_url: str
-
-    @classmethod
-    def from_json(cls, json: dict[str, Any]) -> InstanceCreateDetails:
-        fields = dataclasses.fields(cls)
-        if any(f.name not in json for f in fields):
-            raise RuntimeError(f"Missing required field. Expected `{[f.name for f in fields]}` but got `{json}`")
-
-        return cls(**{f.name: json[f.name] for f in fields})
-
-
-class WaitResult(NamedTuple):
-    connection_url: str
-    error: str
-
-    @classmethod
-    def from_error(cls, error: str) -> WaitResult:
-        return cls(connection_url="", error=error)
-
-    @classmethod
-    def from_connection_url(cls, connection_url: str) -> WaitResult:
-        return cls(connection_url=connection_url, error="")
-
-
-@dataclass(repr=True, frozen=True)
-class TenantDetails:
-    id: str
-    ds_type: str
-    regions_per_provider: dict[str, Set[str]]
-
-    @classmethod
-    def from_json(cls, json: dict[str, Any]) -> TenantDetails:
-        regions_per_provider = defaultdict(set)
-        instance_types = set()
-        ds_type = None
-
-        for configs in json["instance_configurations"]:
-            type = configs["type"]
-            if type.split("-")[1] == "ds":
-                regions_per_provider[configs["cloud_provider"]].add(configs["region"])
-                ds_type = type
-            instance_types.add(configs["type"])
-
-        id = json["id"]
-        if not ds_type:
-            raise RuntimeError(
-                f"Tenant with id `{id}` cannot create DS instances. Available instances are `{instance_types}`."
-            )
-
-        return cls(
-            id=id,
-            ds_type=ds_type,
-            regions_per_provider=regions_per_provider,
-        )
 
 
 class AuraApi:
@@ -155,6 +61,79 @@ class AuraApi:
             raise RuntimeError(f"Could not parse the uri `{uri}`.")
 
         return host.split(".")[0].split("-")[0]
+
+    def create_session(self, name: str, dbid: str, pwd: str) -> SessionDetails:
+        response = req.post(
+            f"{self._base_uri}/v1beta5/data-science/sessions",
+            headers=self._build_header(),
+            json={"name": name, "instance_id": dbid, "password": pwd},
+        )
+
+        response.raise_for_status()
+
+        return SessionDetails.fromJson(response.json())
+
+    def list_session(self, session_id: str, dbid: str) -> Optional[SessionDetails]:
+        response = req.get(
+            f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}?instanceId={dbid}",
+            headers=self._build_header(),
+        )
+
+        if response.status_code == 404:
+            return None
+
+        response.raise_for_status()
+
+        return SessionDetails.fromJson(response.json())
+
+    def list_sessions(self, dbid: str) -> List[SessionDetails]:
+        response = req.get(
+            f"{self._base_uri}/v1beta5/data-science/sessions?instanceId={dbid}",
+            headers=self._build_header(),
+        )
+
+        response.raise_for_status()
+
+        return [SessionDetails.fromJson(s) for s in response.json()]
+
+    def wait_for_session_running(
+        self, session_id: str, dbid: str, sleep_time: float = 0.2, max_sleep_time: float = 300
+    ) -> WaitResult:
+        waited_time = 0.0
+        while waited_time <= max_sleep_time:
+            session = self.list_session(session_id, dbid)
+            if session is None:
+                return WaitResult.from_error(f"Session `{session_id}` for database `{dbid}` not found -- please retry")
+            elif session.status == "Ready" and session.host:  # check host needed until dns based routing
+                return WaitResult.from_connection_url(session.bolt_connection_url())
+            else:
+                self._logger.debug(
+                    f"Session `{session_id}` is not yet running. "
+                    f"Current status: {session.status} Host: {session.host}. "
+                    f"Retrying in {sleep_time} seconds..."
+                )
+            waited_time += sleep_time
+            time.sleep(sleep_time)
+
+        return WaitResult.from_error(
+            f"Session `{session_id}` for database `{dbid}` is not running after {waited_time} seconds"
+        )
+
+    def delete_session(self, session_id: str, dbid: str) -> bool:
+        response = req.delete(
+            f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}",
+            headers=self._build_header(),
+            json={"instance_id": dbid},
+        )
+
+        if response.status_code == 404:
+            return False
+        elif response.status_code == 202:
+            return True
+
+        response.raise_for_status()
+
+        return False
 
     def create_instance(self, name: str, memory: str, cloud_provider: str, region: str) -> InstanceCreateDetails:
         tenant_details = self.tenant_details()
@@ -247,6 +226,21 @@ class AuraApi:
 
         return WaitResult.from_error(f"Instance is not running after waiting for {waited_time} seconds")
 
+    def estimate_size(
+        self, node_count: int, relationship_count: int, algorithm_categories: List[AlgorithmCategory]
+    ) -> EstimationDetails:
+        data = {
+            "node_count": node_count,
+            "relationship_count": relationship_count,
+            "algorithm_categories": [i.value for i in algorithm_categories],
+            "instance_type": "dsenterprise",
+        }
+
+        response = req.post(f"{self._base_uri}/v1/instances/sizing", headers=self._build_header(), json=data)
+        response.raise_for_status()
+
+        return EstimationDetails.from_json(response.json()["data"])
+
     def _get_tenant_id(self) -> str:
         response = req.get(
             f"{self._base_uri}/v1/tenants",
@@ -257,8 +251,9 @@ class AuraApi:
         raw_data = response.json()["data"]
 
         if len(raw_data) != 1:
+            tenants_dict = {d["id"]: d["name"] for d in raw_data}
             raise RuntimeError(
-                f"This account has access to multiple tenants `{raw_data}`. Please specify which one to use."
+                f"This account has access to multiple tenants: `{tenants_dict}`. Please specify which one to use."
             )
 
         return raw_data[0]["id"]  # type: ignore

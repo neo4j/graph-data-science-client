@@ -12,11 +12,12 @@
   * Add a new top-level class `GdsSessions` to manage GDS sessions in Aura.
     * `GdsSessions` support `get_or_create()`, `list()`, and `delete()`.
   * Creating a new session supports various sizes.
-  * The `run_cypher()` method will run Cypher queries targetting the configured AuraDB instance.
+  * The `run_cypher()` method will run Cypher queries targeting the configured AuraDB instance.
 
 
 ## Bug fixes
 
+* Fixed a bug which caused the auth token returned from the GDS Arrow Server was not correctly received.
 
 ## Improvements
 

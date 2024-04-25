@@ -1,17 +1,235 @@
 import logging
+from datetime import datetime, timezone
 
 import pytest
 from _pytest.logging import LogCaptureFixture
 from requests import HTTPError
 from requests_mock import Mocker
 
-from graphdatascience.session.aura_api import (
-    AuraApi,
+from graphdatascience.session.algorithm_category import AlgorithmCategory
+from graphdatascience.session.aura_api import AuraApi
+from graphdatascience.session.aura_api_responses import (
+    EstimationDetails,
     InstanceCreateDetails,
     InstanceSpecificDetails,
+    SessionDetails,
     TenantDetails,
+    TimeParser,
     WaitResult,
 )
+
+
+def test_create_session(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    requests_mock.post(
+        "https://api.neo4j.io/v1beta5/data-science/sessions",
+        json={
+            "id": "id0",
+            "name": "name-0",
+            "status": "Creating",
+            "instance_id": "dbid-1",
+            "created_at": "1970-01-01T00:00:00Z",
+            "host": "1.2.3.4",
+            "memory": "4G",
+        },
+    )
+
+    result = api.create_session("name-0", "dbid-1", "pwd-2")
+
+    assert result == SessionDetails(
+        id="id0",
+        name="name-0",
+        status="Creating",
+        instance_id="dbid-1",
+        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
+        host="1.2.3.4",
+        memory="4G",
+        expiry_date=None,
+    )
+
+
+def test_list_session(requests_mock: Mocker) -> None:
+
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0?instanceId=dbid-1",
+        json={
+            "id": "id0",
+            "name": "name-0",
+            "status": "Ready",
+            "instance_id": "dbid-1",
+            "created_at": "1970-01-01T00:00:00Z",
+            "host": "1.2.3.4",
+            "memory": "4G",
+            "expiry_date": "1977-01-01T00:00:00Z",
+        },
+    )
+
+    result = api.list_session("id0", "dbid-1")
+
+    assert result == SessionDetails(
+        id="id0",
+        name="name-0",
+        status="Ready",
+        instance_id="dbid-1",
+        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
+        host="1.2.3.4",
+        memory="4G",
+        expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
+    )
+
+
+def test_list_sessions(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1beta5/data-science/sessions?instanceId=dbid-1",
+        json=[
+            {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Ready",
+                "instance_id": "dbid-1",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "1.2.3.4",
+                "memory": "4G",
+                "expiry_date": "1977-01-01T00:00:00Z",
+            },
+            {
+                "id": "id1",
+                "name": "name-2",
+                "status": "Creating",
+                "instance_id": "dbid-3",
+                "created_at": "2012-01-01T00:00:00Z",
+                "memory": "8G",
+            },
+        ],
+    )
+
+    result = api.list_sessions("dbid-1")
+
+    expected1 = SessionDetails(
+        id="id0",
+        name="name-0",
+        status="Ready",
+        instance_id="dbid-1",
+        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
+        host="1.2.3.4",
+        memory="4G",
+        expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
+    )
+
+    expected2 = SessionDetails(
+        id="id1",
+        name="name-2",
+        status="Creating",
+        instance_id="dbid-3",
+        created_at=TimeParser.fromisoformat("2012-01-01T00:00:00Z"),
+        memory="8G",
+        host=None,
+        expiry_date=None,
+    )
+
+    assert result == [expected1, expected2]
+
+
+def test_delete_session(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+    requests_mock.delete(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        status_code=202,
+    )
+
+    assert api.delete_session("id0", "dbid-1") is True
+
+
+def test_delete_missing_session(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+    requests_mock.delete(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        status_code=404,
+    )
+
+    assert api.delete_session("id0", "dbid-1") is False
+
+
+def test_multiple_tenants(requests_mock: Mocker) -> None:
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1/tenants",
+        json={
+            "data": [
+                {"id": "tenant1", "name": "Production"},
+                {"id": "tenant2", "name": "Development"},
+            ]
+        },
+    )
+
+    with pytest.raises(
+        RuntimeError,
+        match="This account has access to multiple tenants: `{'tenant1': 'Production', 'tenant2': 'Development'}`",
+    ):
+        AuraApi(client_id="", client_secret="")
+
+
+def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCaptureFixture) -> None:
+    mock_auth_token(requests_mock)
+    requests_mock.get(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0?instanceId=dbid-1",
+        json={
+            "id": "id0",
+            "name": "name-0",
+            "status": "Creating",
+            "instance_id": "dbid-1",
+            "created_at": "1970-01-01T00:00:00Z",
+            "host": "foo.bar",
+            "memory": "4G",
+            "expiry_date": "1977-01-01T00:00:00Z",
+        },
+    )
+
+    api = AuraApi("", "", tenant_id="some-tenant")
+
+    with caplog.at_level(logging.DEBUG):
+        assert (
+            "Session `id0` for database `dbid-1` is not running after 0.8 seconds"
+            in api.wait_for_session_running("id0", "dbid-1", max_sleep_time=0.7).error
+        )
+
+    assert "Session `id0` is not yet running. Current status: Creating Host: foo.bar. Retrying in 0.2" in caplog.text
+
+
+def test_wait_for_session_running(requests_mock: Mocker) -> None:
+    mock_auth_token(requests_mock)
+    requests_mock.get(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0?instanceId=db2",
+        json={
+            "id": "id0",
+            "name": "name-0",
+            "status": "Ready",
+            "instance_id": "dbid-1",
+            "created_at": "1970-01-01T00:00:00Z",
+            "host": "foo.bar",
+            "memory": "4G",
+            "expiry_date": "1977-01-01T00:00:00Z",
+        },
+    )
+
+    api = AuraApi("", "", tenant_id="some-tenant")
+
+    assert api.wait_for_session_running("id0", "db2") == WaitResult.from_connection_url("neo4j://foo.bar")
 
 
 def test_delete_instance(requests_mock: Mocker) -> None:
@@ -337,6 +555,17 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
     assert api.wait_for_instance_running("id1") == WaitResult.from_error("Instance is being deleted")
 
 
+def test_estimate_size(requests_mock: Mocker) -> None:
+    mock_auth_token(requests_mock)
+    requests_mock.post(
+        "https://api.neo4j.io/v1/instances/sizing",
+        json={"data": {"did_exceed_maximum": True, "min_required_memory": "307GB", "recommended_size": "96GB"}},
+    )
+
+    api = AuraApi("", "", tenant_id="some-tenant")
+    assert api.estimate_size(100, 10, [AlgorithmCategory.NODE_EMBEDDING]) == EstimationDetails("307GB", "96GB", True)
+
+
 def test_extract_id() -> None:
     assert AuraApi.extract_id("neo4j+ssc://000fc8c8-envgdssync.databases.neo4j-dev.io") == "000fc8c8"
     assert AuraApi.extract_id("neo4j+ssc://02f1bff5.databases.neo4j.io") == "02f1bff5"
@@ -394,3 +623,52 @@ def test_parse_non_ds_details() -> None:
                 ],
             }
         )
+
+
+def test_parse_session_info() -> None:
+    session_details = {
+        "id": "test_id",
+        "name": "test_session",
+        "memory": "small",
+        "instance_id": "test_instance",
+        "status": "running",
+        "expiry_date": "2022-01-01T00:00:00Z",
+        "created_at": "2021-01-01T00:00:00Z",
+        "host": "a.b",
+    }
+    session_info = SessionDetails.fromJson(session_details)
+
+    assert session_info == SessionDetails(
+        id="test_id",
+        name="test_session",
+        memory="small",
+        instance_id="test_instance",
+        status="running",
+        host="a.b",
+        expiry_date=datetime(2022, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
+        created_at=datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
+    )
+
+
+def test_parse_session_info_without_expiry() -> None:
+    session_details = {
+        "id": "test_id",
+        "name": "test_session",
+        "memory": "small",
+        "instance_id": "test_instance",
+        "status": "running",
+        "host": "a.b",
+        "created_at": "2021-01-01T00:00:00Z",
+    }
+    session_info = SessionDetails.fromJson(session_details)
+
+    assert session_info == SessionDetails(
+        id="test_id",
+        name="test_session",
+        memory="small",
+        instance_id="test_instance",
+        host="a.b",
+        status="running",
+        expiry_date=None,
+        created_at=datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
+    )
