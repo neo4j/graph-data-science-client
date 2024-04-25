@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import dataclasses
+import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timezone
-import sys
 from typing import Any, NamedTuple, Optional, Set
 
 
@@ -156,10 +156,10 @@ class TenantDetails:
 
 # datetime.fromisoformat only works with Python version > 3.9
 class TimeParser:
-    
+
     @staticmethod
     def fromisoformat(date: str) -> datetime:
-        if sys.version_info > (3, 10):
+        if sys.version_info >= (3, 11):
             return datetime.fromisoformat(date)
         else:
             # Aura API example: 1970-01-01T00:00:00Z
