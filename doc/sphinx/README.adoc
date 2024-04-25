@@ -16,3 +16,8 @@ Adding new content sections is done by editing the `doc/sphinx/source/index.rst`
 Configure stuff in `doc/sphinx/source/conf.py`.
 
 Add more or edit content in this file when you learn something new.
+
+== Update `algorithms.rst`
+
+The `algorithms.json` file contains information on each algorithm-related function.
+The `algorithms.rst` page can be (re)created from the JSON file by running the `create_algorithms_rst.py` script.

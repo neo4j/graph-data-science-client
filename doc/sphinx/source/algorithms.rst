@@ -1,3 +1,6 @@
+..
+    DO NOT EDIT - File generated automatically
+
 Algorithms procedures
 ----------------------
 Listing of all algorithm procedures in the Neo4j Graph Data Science Python Client API.
@@ -100,9 +103,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Evaluates a division of nodes into communities based on the proportion of relationships
     that cross community boundaries.
 
-
-.. py:function:: gds.alpha.graph.sample.rwr(graph_name: str, from_G: Graph, **config: Any)
-    -> GraphCreateResult
+.. py:function:: gds.alpha.graph.sample.rwr(graph_name: str, from_G: Graph, **config: Any) -> GraphCreateResult
 
     Constructs a random subgraph based on random walks with restarts.
 
@@ -168,6 +169,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.alpha.kSpanningTree.write(G: Graph, **config: Any) -> Series[Any]
 
     The K-spanning tree algorithm starts from a root node and returns a spanning tree with exactly k nodes
+
 .. deprecated:: 2.5.0
    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kSpanningTree.write` instead.
 
@@ -350,8 +352,9 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.alpha.triangles(G: Graph, **config: Any) -> DataFrame
 
     Triangles streams the nodeIds of each triangle in the graph.
+
 .. deprecated:: 2.5.0
-    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.triangles` instead.
+   Since GDS server version 2.5.0 you should use the endpoint :func:`gds.triangles` instead.
 
 .. py:function:: gds.articleRank.mutate(G: Graph, **config: Any) -> Series[Any]
 
@@ -405,7 +408,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.bellmanFord.stream(G: Graph, **config: Any) -> DataFrame
 
-    The Bellman-Ford shortest path algorithm computes the shortest (weighted) path between one node 
+    The Bellman-Ford shortest path algorithm computes the shortest (weighted) path between one node
     and any other node in the graph without negative cycles.
 
 .. py:function:: gds.bellmanFord.stream.estimate(G: Graph, **config: Any) -> Series[Any]
@@ -414,7 +417,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.bellmanFord.write(G: Graph, **config: Any) -> Series[Any]
 
-    The Bellman-Ford shortest path algorithm computes the shortest (weighted) path between one node 
+    The Bellman-Ford shortest path algorithm computes the shortest (weighted) path between one node
     and any other node in the graph without negative cycles.
 
 .. py:function:: gds.bellmanFord.write.estimate(G: Graph, **config: Any) -> Series[Any]
@@ -439,12 +442,12 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.beta.collapsePath.mutate(G: Graph, **config: Any) -> Series[Any]
 
-    Collapse Path algorithm is a traversal algorithm capable of creating relationships between the start 
+    Collapse Path algorithm is a traversal algorithm capable of creating relationships between the start
     and end nodes of a traversal
 
 .. py:function:: gds.beta.influenceMaximization.celf.mutate(G: Graph, **config: Any) -> Series[Any]
 
-    The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes 
+    The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes
     that maximize the expected spread of influence in the network.
 
 .. py:function:: gds.beta.influenceMaximization.celf.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
@@ -805,9 +808,9 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     prior to moving on to the nodes at the next depth level.
 
 .. py:function:: gds.bfs.stream.estimate(G: Graph, **config: Any) -> Series[Any]
-    
+
     BFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth
-    prior to moving on to the nodes at the next depth level."""
+    prior to moving on to the nodes at the next depth level.
 
 .. py:function:: gds.closeness.mutate(G: Graph, **config: Any) -> Series[Any]
 
@@ -897,8 +900,8 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.dfs.mutate(G: Graph, **config: Any) -> Series[Any]
 
-    Depth-first search (DFS) is an algorithm for traversing or searching tree or graph data structures. 
-    The algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph) 
+    Depth-first search (DFS) is an algorithm for traversing or searching tree or graph data structures.
+    The algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph)
     and explores as far as possible along each branch before backtracking.
 
 .. py:function:: gds.dfs.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
@@ -907,14 +910,14 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.dfs.stream(G: Graph, **config: Any) -> DataFrame
 
-    Depth-first search (DFS) is an algorithm for traversing or searching tree or graph data structures. 
-    The algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph) 
+    Depth-first search (DFS) is an algorithm for traversing or searching tree or graph data structures.
+    The algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph)
     and explores as far as possible along each branch before backtracking.
 
 .. py:function:: gds.dfs.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
-    Depth-first search (DFS) is an algorithm for traversing or searching tree or graph data structures. 
-    The algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph) 
+    Depth-first search (DFS) is an algorithm for traversing or searching tree or graph data structures.
+    The algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph)
     and explores as far as possible along each branch before backtracking.
 
 .. py:function:: gds.eigenvector.mutate(G: Graph, **config: Any) -> Series[Any]
@@ -949,8 +952,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.graph.sample.cnarw(graph_name: str, from_G: Graph, **config: Any)
-    -> GraphCreateResult
+.. py:function:: gds.graph.sample.cnarw(graph_name: str, from_G: Graph, **config: Any) -> GraphCreateResult
 
     Constructs a random subgraph based on common-neighbour-aware random walks.
 
@@ -958,8 +960,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.graph.sample.rwr(graph_name: str, from_G: Graph, **config: Any)
-    -> GraphCreateResult
+.. py:function:: gds.graph.sample.rwr(graph_name: str, from_G: Graph, **config: Any) -> GraphCreateResult
 
     Constructs a random subgraph based on random walks with restarts.
 
@@ -997,7 +998,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.influenceMaximization.celf.mutate(G: Graph, **config: Any) -> Series[Any]
 
-    The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes 
+    The Cost Effective Lazy Forward (CELF) algorithm aims to find k nodes
     that maximize the expected spread of influence in the network.
 
 .. py:function:: gds.influenceMaximization.celf.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
@@ -1062,6 +1063,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.kmeans.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.k1coloring.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The K-1 Coloring algorithm assigns a color to every node in the graph.
@@ -1128,7 +1130,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.knn.mutate(G: Graph, **config: Any) -> Series[Any]
 
-    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance 
+    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance
     between two nodes is among the k nearest distances compared to other nodes.
     KNN computes distances based on the similarity of node properties
 
@@ -1138,7 +1140,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.knn.stats(G: Graph, **config: Any) -> Series[Any]
 
-    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance 
+    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance
     between two nodes is among the k nearest distances compared to other nodes.
     KNN computes distances based on the similarity of node properties
 
@@ -1148,7 +1150,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.knn.stream(G: Graph, **config: Any) -> DataFrame
 
-    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance 
+    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance
     between two nodes is among the k nearest distances compared to other nodes.
     KNN computes distances based on the similarity of node properties
 
@@ -1158,7 +1160,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.knn.write(G: Graph, **config: Any) -> Series[Any]
 
-    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance 
+    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance
     between two nodes is among the k nearest distances compared to other nodes.
     KNN computes distances based on the similarity of node properties
 
@@ -1172,9 +1174,9 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     between two nodes is among the k nearest distances compared to other nodes.
     KNN computes distances based on the similarity of node properties.
     Filtered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.
-
- .. py:function:: gds.knn.filtered.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
-
+    
+    .. py:function:: gds.knn.filtered.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+    
     Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.knn.filtered.stats(G: Graph, **config: Any) -> Series[Any]
@@ -1277,7 +1279,6 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.leiden.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
-
 
 .. py:function:: gds.localClusteringCoefficient.mutate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1403,11 +1404,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-
 .. py:function:: gds.nodeSimilarity.mutate(G: Graph, **config: Any) -> Series[Any]
 
-    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to. 
-    Two nodes are considered similar if they share many of the same neighbors. 
+    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
+    Two nodes are considered similar if they share many of the same neighbors.
     Node Similarity computes pair-wise similarities based on the Jaccard metric.
 
 .. py:function:: gds.nodeSimilarity.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
@@ -1416,8 +1416,8 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.nodeSimilarity.stats(G: Graph, **config: Any) -> Series[Any]
 
-    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to. 
-    Two nodes are considered similar if they share many of the same neighbors. 
+    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
+    Two nodes are considered similar if they share many of the same neighbors.
     Node Similarity computes pair-wise similarities based on the Jaccard metric.
 
 .. py:function:: gds.nodeSimilarity.stats.estimate(G: Graph, **config: Any) -> Series[Any]
@@ -1426,8 +1426,8 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.nodeSimilarity.stream(G: Graph, **config: Any) -> DataFrame
 
-    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to. 
-    Two nodes are considered similar if they share many of the same neighbors. 
+    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
+    Two nodes are considered similar if they share many of the same neighbors.
     Node Similarity computes pair-wise similarities based on the Jaccard metric.
 
 .. py:function:: gds.nodeSimilarity.stream.estimate(G: Graph, **config: Any) -> Series[Any]
@@ -1436,8 +1436,8 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.nodeSimilarity.write(G: Graph, **config: Any) -> Series[Any]
 
-    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to. 
-    Two nodes are considered similar if they share many of the same neighbors. 
+    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
+    Two nodes are considered similar if they share many of the same neighbors.
     Node Similarity computes pair-wise similarities based on the Jaccard metric.
 
 .. py:function:: gds.nodeSimilarity.write.estimate(G: Graph, **config: Any) -> Series[Any]
@@ -1490,51 +1490,51 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.pageRank.mutate(G: Graph, **config: Any) -> Series[Any]
 
-	Page Rank is an algorithm that measures the transitive influence or connectivity of nodes.
+    Page Rank is an algorithm that measures the transitive influence or connectivity of nodes.
 
 .. py:function:: gds.pageRank.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.pageRank.stats(G: Graph, **config: Any) -> Series[Any]
 
-	Executes the algorithm and returns result statistics without writing the result to Neo4j.
+    Executes the algorithm and returns result statistics without writing the result to Neo4j.
 
 .. py:function:: gds.pageRank.stats.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.pageRank.stream(G: Graph, **config: Any) -> DataFrame
 
-	Page Rank is an algorithm that measures the transitive influence or connectivity of nodes.
+    Page Rank is an algorithm that measures the transitive influence or connectivity of nodes.
 
 .. py:function:: gds.pageRank.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.pageRank.write(G: Graph, **config: Any) -> Series[Any]
 
-	Page Rank is an algorithm that measures the transitive influence or connectivity of nodes.
+    Page Rank is an algorithm that measures the transitive influence or connectivity of nodes.
 
 .. py:function:: gds.pageRank.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.randomWalk.stats(G: Graph, **config: Any) -> Series[Any]
 
-	Random Walk is an algorithm that provides random paths in a graph. It’s similar to how a drunk person traverses a city.
+    Random Walk is an algorithm that provides random paths in a graph. It’s similar to how a drunk person traverses a city.
 
 .. py:function:: gds.randomWalk.stats.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.randomWalk.stream(G: Graph, **config: Any) -> DataFrame
 
-	Random Walk is an algorithm that provides random paths in a graph. It’s similar to how a drunk person traverses a city.
+    Random Walk is an algorithm that provides random paths in a graph. It’s similar to how a drunk person traverses a city.
 
 .. py:function:: gds.randomWalk.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.shortestPath.astar.mutate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1544,7 +1544,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.shortestPath.astar.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.shortestPath.astar.stream(G: Graph, **config: Any) -> DataFrame
 
@@ -1554,7 +1554,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.shortestPath.astar.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.shortestPath.astar.write(G: Graph, **config: Any) -> Series[Any]
 
@@ -1564,55 +1564,55 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.shortestPath.astar.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.shortestPath.dijkstra.mutate(G: Graph, **config: Any) -> Series[Any]
 
-	The Dijkstra shortest path algorithm computes the shortest (weighted) path between a pair of nodes.
+    The Dijkstra shortest path algorithm computes the shortest (weighted) path between a pair of nodes.
 
 .. py:function:: gds.shortestPath.dijkstra.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.shortestPath.dijkstra.stream(G: Graph, **config: Any) -> DataFrame
 
-	The Dijkstra shortest path algorithm computes the shortest (weighted) path between a pair of nodes.
+    The Dijkstra shortest path algorithm computes the shortest (weighted) path between a pair of nodes.
 
 .. py:function:: gds.shortestPath.dijkstra.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.shortestPath.dijkstra.write(G: Graph, **config: Any) -> Series[Any]
 
-	The Dijkstra shortest path algorithm computes the shortest (weighted) path between a pair of nodes.
+    The Dijkstra shortest path algorithm computes the shortest (weighted) path between a pair of nodes.
 
 .. py:function:: gds.shortestPath.dijkstra.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.shortestPath.yens.mutate(G: Graph, **config: Any) -> Series[Any]
 
-	The Yen's shortest path algorithm computes the k shortest (weighted) paths between a pair of nodes.
+    The Yen's shortest path algorithm computes the k shortest (weighted) paths between a pair of nodes.
 
 .. py:function:: gds.shortestPath.yens.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.shortestPath.yens.stream(G: Graph, **config: Any) -> DataFrame
 
-	The Yen's shortest path algorithm computes the k shortest (weighted) paths between a pair of nodes.
+    The Yen's shortest path algorithm computes the k shortest (weighted) paths between a pair of nodes.
 
 .. py:function:: gds.shortestPath.yens.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.shortestPath.yens.write(G: Graph, **config: Any) -> Series[Any]
 
-	The Yen's shortest path algorithm computes the k shortest (weighted) paths between a pair of nodes.
+    The Yen's shortest path algorithm computes the k shortest (weighted) paths between a pair of nodes.
 
 .. py:function:: gds.shortestPath.yens.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.sllpa.mutate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1732,7 +1732,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.triangleCount.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.triangleCount.stats(G: Graph, **config: Any) -> Series[Any]
 
@@ -1741,7 +1741,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.triangleCount.stats.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.triangleCount.stream(G: Graph, **config: Any) -> DataFrame
 
@@ -1750,7 +1750,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.triangleCount.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.triangleCount.write(G: Graph, **config: Any) -> Series[Any]
 
@@ -1773,15 +1773,15 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.wcc.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.wcc.stats(G: Graph, **config: Any) -> Series[Any]
 
-	Executes the algorithm and returns result statistics without writing the result to Neo4j.
+    Executes the algorithm and returns result statistics without writing the result to Neo4j.
 
 .. py:function:: gds.wcc.stats.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.wcc.stream(G: Graph, **config: Any) -> DataFrame
 
@@ -1790,7 +1790,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.wcc.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.wcc.write(G: Graph, **config: Any) -> Series[Any]
 
@@ -1799,7 +1799,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.wcc.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
-	Returns an estimation of the memory consumption for that procedure.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.alpha.linkprediction.adamicAdar(node1: int, node2: int, **config: Any) -> float
 
@@ -1824,3 +1824,4 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.alpha.linkprediction.totalNeighbors(node1: int, node2: int, **config: Any) -> float
 
     Given two nodes, calculate Total Neighbors
+
