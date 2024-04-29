@@ -51,6 +51,17 @@ class GdsSessions:
     def estimate(
         self, node_count: int, relationship_count: int, algorithm_categories: Optional[List[AlgorithmCategory]] = None
     ) -> SessionMemory:
+        """
+        Estimates the memory required for a session with the given node and relationship counts.
+
+        Args:
+            node_count (int): The number of nodes.
+            relationship_count (int): The number of relationships.
+            algorithm_categories (Optional[List[AlgorithmCategory]]): The algorithm categories to consider.
+
+        Returns:
+            SessionMemory: The estimated memory required for the session.
+        """
         if algorithm_categories is None:
             algorithm_categories = []
         return self._impl.estimate(node_count, relationship_count, algorithm_categories)

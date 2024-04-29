@@ -82,7 +82,7 @@ aura_db_user = os.environ["AURA_DB_USER"]
 aura_db_pw = os.environ["AURA_DB_PW"]
 
 # Create a GDS session!
-size = sessions.estimate(
+memory = sessions.estimate(
     node_count=20,
     relationship_count=50,
     algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
@@ -90,7 +90,7 @@ size = sessions.estimate(
 gds = sessions.get_or_create(
     # we give it a representative name
     session_name="people-and-fruits",
-    size=size,
+    memory=memory,
     db_connection=DbmsConnectionInfo(aura_db_address, aura_db_user, aura_db_pw),
 )
 ----
