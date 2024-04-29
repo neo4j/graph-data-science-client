@@ -35,7 +35,7 @@ class SessionDetails:
         )
 
     def bolt_connection_url(self) -> str:
-        return f"neo4j://{self.host}"  # TODO use neo4j+s
+        return f"neo4j+ssc://{self.host}"  # TODO use neo4j+s
 
 
 @dataclass(repr=True, frozen=True)
