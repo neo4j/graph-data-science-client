@@ -53,7 +53,8 @@ class AuraDsSessions:
 
         if existing_session:
             session_id = existing_session.id
-            if existing_session.memory != memory.value:
+            # 0MB is AuraAPI default value for memory if none can be retrieved
+            if existing_session.memory != "0MB" and existing_session.memory != memory.value:
                 raise ValueError(
                     f"Session `{session_name}` already exists with memory `{existing_session.memory}`. "
                     f"Requested memory `{memory.value}` does not match."
