@@ -188,6 +188,8 @@ class AuraDbArrowQueryRunner(QueryRunner):
                 write_config["relationshipProperties"] = ["totalCost", "nodeIds"]
             elif write_costs:
                 write_config["relationshipProperties"] = ["totalCost", "costs"]
+            else:
+                write_config["relationshipProperties"] = ["totalCost"]
 
         elif "gds.graph." in proc_name:
             if "gds.graph.nodeProperties.write" == proc_name:
