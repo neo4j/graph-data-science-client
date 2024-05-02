@@ -229,7 +229,7 @@ def test_wait_for_session_running(requests_mock: Mocker) -> None:
 
     api = AuraApi("", "", tenant_id="some-tenant")
 
-    assert api.wait_for_session_running("id0", "db2") == WaitResult.from_connection_url("neo4j://foo.bar")
+    assert api.wait_for_session_running("id0", "db2") == WaitResult.from_connection_url("neo4j+ssc://foo.bar")
 
 
 def test_delete_instance(requests_mock: Mocker) -> None:
