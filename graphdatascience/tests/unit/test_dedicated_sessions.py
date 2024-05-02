@@ -6,8 +6,10 @@ from typing import List, Optional
 import pytest
 from pytest_mock import MockerFixture
 
+from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_api_responses import (
+    EstimationDetails,
     InstanceCreateDetails,
     InstanceDetails,
     InstanceSpecificDetails,
@@ -27,6 +29,7 @@ class FakeAuraApi(AuraApi):
         existing_instances: Optional[List[InstanceSpecificDetails]] = None,
         existing_sessions: Optional[List[SessionDetails]] = None,
         status_after_creating: str = "Ready",
+        size_estimation: Optional[EstimationDetails] = None,
     ) -> None:
         super().__init__("", "", "tenant_id")
         if existing_instances is None:
@@ -38,6 +41,7 @@ class FakeAuraApi(AuraApi):
         self.id_counter = 0
         self.time = 0
         self._status_after_creating = status_after_creating
+        self._size_estimation = size_estimation or EstimationDetails("1GB", "8GB", False)
 
     def create_session(self, name: str, dbid: str, pwd: str) -> SessionDetails:
         details = SessionDetails(
@@ -127,6 +131,11 @@ class FakeAuraApi(AuraApi):
     def tenant_details(self) -> TenantDetails:
         return TenantDetails(id=self._tenant_id, ds_type="fake-ds", regions_per_provider={"aws": {"leipzig-1"}})
 
+    def estimate_size(
+        self, node_count: int, relationship_count: int, algorithm_categories: List[AlgorithmCategory]
+    ) -> EstimationDetails:
+        return self._size_estimation
+
 
 @pytest.fixture
 def aura_api() -> AuraApi:
@@ -160,7 +169,7 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
         "db_connection": DbmsConnectionInfo(
             uri="neo4j+ssc://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
         ),
-        "gds_url": "neo4j://foo.bar",
+        "gds_url": "neo4j+ssc://foo.bar",
         "session_name": "my-session",
     }
     assert [i.name for i in sessions.list()] == ["my-session"]
@@ -188,7 +197,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
         "db_connection": DbmsConnectionInfo(
             uri="neo4j+ssc://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
         ),
-        "gds_url": "neo4j://foo.bar",
+        "gds_url": "neo4j+ssc://foo.bar",
         "session_name": "my-session",
     }
     assert gds_args1 == gds_args2
@@ -256,6 +265,24 @@ def test_create_waiting_forever() -> None:
         sessions.get_or_create(
             "one", SessionMemory.m_8GB, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
         )
+
+
+def test_estimate_size() -> None:
+    aura_api = FakeAuraApi(size_estimation=EstimationDetails("1GB", "8GB", False))
+    sessions = DedicatedSessions(aura_api)
+
+    assert sessions.estimate(1, 1, [AlgorithmCategory.CENTRALITY]) == SessionMemory.m_8GB
+
+
+def test_estimate_size_exceeds() -> None:
+    aura_api = FakeAuraApi(size_estimation=EstimationDetails("16GB", "8GB", True))
+    sessions = DedicatedSessions(aura_api)
+
+    with pytest.warns(
+        ResourceWarning,
+        match=re.escape("The estimated memory `16GB` exceeds the maximum size supported by your Aura tenant (`8GB`)"),
+    ):
+        assert sessions.estimate(1, 1, [AlgorithmCategory.CENTRALITY]) == SessionMemory.m_8GB
 
 
 def _setup_db_instance(aura_api: AuraApi) -> InstanceCreateDetails:
