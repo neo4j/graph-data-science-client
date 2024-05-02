@@ -66,7 +66,11 @@ class GdsTearDownCollector(ExecutePreprocessor):
 def main(run_session_nbs: bool) -> None:
     examples_path = Path("examples")
 
-    notebook_files = [f for f in examples_path.iterdir() if f.is_file() and ("session" in f.name) == run_session_nbs]
+    notebook_files = [
+        f
+        for f in examples_path.iterdir()
+        if f.is_file() and ("session" in f.name) == run_session_nbs and f.suffix == ".ipynb"
+    ]
 
     ep = GdsExecutePreprocessor(kernel_name="python3")
     td_collector = GdsTearDownCollector(kernel_name="python3")
