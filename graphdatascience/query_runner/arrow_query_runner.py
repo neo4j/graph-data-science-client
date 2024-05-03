@@ -282,7 +282,7 @@ class ArrowQueryRunner(QueryRunner):
 
         if self._arrow_endpoint_version == ArrowEndpointVersion.V1:
             payload = {
-                "name": "GET_MESSAGE",
+                "name": "GET_COMMAND",
                 "version": ArrowEndpointVersion.V1.version(),
                 "body": payload,
             }
