@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import warnings
 from typing import List, Optional
 
@@ -44,19 +45,28 @@ class DedicatedSessions:
         dbid = AuraApi.extract_id(db_connection.uri)
         existing_session = self._find_existing_session(session_name, dbid)
 
+        # hashing the password to avoid storing the actual db password in Aura
+        password = hashlib.sha256(db_connection.password.encode()).hexdigest()
+
         # TODO configure session size (and check existing_session has same size)
         if existing_session:
             session_id = existing_session.id
         else:
-            create_details = self._create_session(session_name, dbid, db_connection.uri, db_connection.password)
+            create_details = self._create_session(session_name, dbid, db_connection.uri, password)
             session_id = create_details.id
 
         wait_result = self._aura_api.wait_for_session_running(session_id, dbid)
         if err := wait_result.error:
             raise RuntimeError(f"Failed to create session `{session_name}`: {err}")
 
+        session_connection = DbmsConnectionInfo(
+            uri=wait_result.connection_url,
+            username=DedicatedSessions.GDS_SESSION_USER,
+            password=password,
+        )
+
         return self._construct_client(
-            session_name=session_name, gds_url=wait_result.connection_url, db_connection=db_connection
+            session_name=session_name, session_connection=session_connection, db_connection=db_connection
         )
 
     def delete(self, session_name: str, dbid: Optional[str] = None) -> bool:
@@ -108,12 +118,10 @@ class DedicatedSessions:
         return create_details
 
     def _construct_client(
-        self, session_name: str, gds_url: str, db_connection: DbmsConnectionInfo
+        self, session_name: str, session_connection: DbmsConnectionInfo, db_connection: DbmsConnectionInfo
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience(
-            gds_session_connection_info=DbmsConnectionInfo(
-                gds_url, DedicatedSessions.GDS_SESSION_USER, db_connection.password
-            ),
+            gds_session_connection_info=session_connection,
             aura_db_connection_info=db_connection,
             delete_fn=lambda: self.delete(session_name, dbid=AuraApi.extract_id(db_connection.uri)),
         )

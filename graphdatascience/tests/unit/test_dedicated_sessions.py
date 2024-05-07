@@ -142,6 +142,9 @@ def aura_api() -> AuraApi:
     return FakeAuraApi()
 
 
+HASHED_DB_PASSWORD = "722cbc618c015c7c062f071868d9bb5f207f35a317e71054740716642cfd0f61"
+
+
 def test_list_session(aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
     session = aura_api.create_session(
@@ -169,7 +172,9 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
         "db_connection": DbmsConnectionInfo(
             uri="neo4j+ssc://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
         ),
-        "gds_url": "neo4j+ssc://foo.bar",
+        "session_connection": DbmsConnectionInfo(
+            uri="neo4j+ssc://foo.bar", username="neo4j", password=HASHED_DB_PASSWORD
+        ),
         "session_name": "my-session",
     }
     assert [i.name for i in sessions.list()] == ["my-session"]
@@ -197,7 +202,9 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
         "db_connection": DbmsConnectionInfo(
             uri="neo4j+ssc://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
         ),
-        "gds_url": "neo4j+ssc://foo.bar",
+        "session_connection": DbmsConnectionInfo(
+            uri="neo4j+ssc://foo.bar", username="neo4j", password=HASHED_DB_PASSWORD
+        ),
         "session_name": "my-session",
     }
     assert gds_args1 == gds_args2
