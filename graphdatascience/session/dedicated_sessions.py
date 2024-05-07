@@ -46,7 +46,7 @@ class DedicatedSessions:
         existing_session = self._find_existing_session(session_name, dbid)
 
         # hashing the password to avoid storing the actual db password in Aura
-        password = hashlib.md5(db_connection.password.encode()).hexdigest()
+        password = hashlib.sha256(db_connection.password.encode()).hexdigest()
 
         # TODO configure session size (and check existing_session has same size)
         if existing_session:
