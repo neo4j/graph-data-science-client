@@ -169,7 +169,9 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
         "db_connection": DbmsConnectionInfo(
             uri="neo4j+ssc://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
         ),
-        "gds_url": "neo4j+ssc://foo.bar",
+        "session_connection": DbmsConnectionInfo(
+            uri="neo4j+ssc://foo.bar", username="neo4j", password="b9a95eca8b70feddf59c69343fe826ab"
+        ),
         "session_name": "my-session",
     }
     assert [i.name for i in sessions.list()] == ["my-session"]
@@ -197,7 +199,9 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
         "db_connection": DbmsConnectionInfo(
             uri="neo4j+ssc://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
         ),
-        "gds_url": "neo4j+ssc://foo.bar",
+        "session_connection": DbmsConnectionInfo(
+            uri="neo4j+ssc://foo.bar", username="neo4j", password="b9a95eca8b70feddf59c69343fe826ab"
+        ),
         "session_name": "my-session",
     }
     assert gds_args1 == gds_args2
