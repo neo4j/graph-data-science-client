@@ -531,7 +531,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.beta.kmeans.mutate(G: Graph, **config: Any) -> Series[Any]
 
-    The Kmeans algorithm clusters nodes into different communities based on Euclidean distance
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
 .. deprecated:: 2.5.0
    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.mutate` instead.
@@ -545,7 +545,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.beta.kmeans.stats(G: Graph, **config: Any) -> Series[Any]
 
-    The Kmeans algorithm clusters nodes into different communities based on Euclidean distance
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
 .. deprecated:: 2.5.0
    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.stats` instead.
@@ -559,7 +559,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.beta.kmeans.stream(G: Graph, **config: Any) -> DataFrame
 
-    The Kmeans algorithm clusters nodes into different communities based on Euclidean distance
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
 .. deprecated:: 2.5.0
    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.stream` instead.
@@ -573,7 +573,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.beta.kmeans.write(G: Graph, **config: Any) -> Series[Any]
 
-    The Kmeans algorithm clusters nodes into different communities based on Euclidean distance
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
 .. deprecated:: 2.5.0
    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.kmeans.write` instead.
@@ -1110,7 +1110,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.kmeans.mutate(G: Graph, **config: Any) -> Series[Any]
 
-    The Kmeans algorithm clusters nodes into different communities based on Euclidean distance
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
 .. py:function:: gds.kmeans.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1118,7 +1118,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.kmeans.stats(G: Graph, **config: Any) -> Series[Any]
 
-    The Kmeans algorithm clusters nodes into different communities based on Euclidean distance
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
 .. py:function:: gds.kmeans.stats.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1126,7 +1126,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.kmeans.stream(G: Graph, **config: Any) -> DataFrame
 
-    The Kmeans algorithm clusters nodes into different communities based on Euclidean distance
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
 .. py:function:: gds.kmeans.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1134,7 +1134,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
 .. py:function:: gds.kmeans.write(G: Graph, **config: Any) -> Series[Any]
 
-    The Kmeans algorithm clusters nodes into different communities based on Euclidean distance
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
 .. py:function:: gds.kmeans.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
