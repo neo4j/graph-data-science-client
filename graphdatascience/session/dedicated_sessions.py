@@ -105,7 +105,9 @@ class DedicatedSessions:
 
         return matched_sessions[0]
 
-    def _create_session(self, session_name: str, dbid: str, dburi: str, pwd: str, memory: SessionMemory) -> SessionDetails:
+    def _create_session(
+        self, session_name: str, dbid: str, dburi: str, pwd: str, memory: SessionMemory
+    ) -> SessionDetails:
         db_instance = self._aura_api.list_instance(dbid)
         if not db_instance:
             raise ValueError(f"Could not find AuraDB instance with the uri `{dburi}`")
