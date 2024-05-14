@@ -37,7 +37,7 @@ def test_create_session(requests_mock: Mocker) -> None:
         },
     )
 
-    result = api.create_session("name-0", "dbid-1", "pwd-2")
+    result = api.create_session("name-0", "dbid-1", "pwd-2", "4G")
 
     assert result == SessionDetails(
         id="id0",

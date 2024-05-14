@@ -62,11 +62,11 @@ class AuraApi:
 
         return host.split(".")[0].split("-")[0]
 
-    def create_session(self, name: str, dbid: str, pwd: str) -> SessionDetails:
+    def create_session(self, name: str, dbid: str, pwd: str, memory: str) -> SessionDetails:
         response = req.post(
             f"{self._base_uri}/v1beta5/data-science/sessions",
             headers=self._build_header(),
-            json={"name": name, "instance_id": dbid, "password": pwd},
+            json={"name": name, "instance_id": dbid, "password": pwd, "memory": memory},
         )
 
         response.raise_for_status()
