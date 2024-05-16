@@ -52,7 +52,7 @@ setuptools.setup(
     url="https://neo4j.com/product/graph-data-science/",
     classifiers=classifiers,
     packages=setuptools.find_packages(),
-    package_data={"graphdatascience": ["py.typed", "resources/**/*.gzip"]},
+    package_data={"graphdatascience": ["py.typed", "resources/**/*.gzip", "resources/field-testing/pub.pem"]},
     project_urls=project_urls,
     python_requires=">=3.8",
     install_requires=reqs,

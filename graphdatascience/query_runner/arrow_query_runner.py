@@ -72,6 +72,7 @@ class ArrowQueryRunner(QueryRunner):
         self._fallback_query_runner = fallback_query_runner
         self._server_version = server_version
         self._arrow_endpoint_version = arrow_endpoint_version
+        self.uri = uri
 
         host, port_string = uri.split(":")
 
