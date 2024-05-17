@@ -85,7 +85,7 @@ class GdsArrowClient:
     def connection_info(self) -> Tuple[str, int]:
         return self._host, self._port
 
-    def get_or_request_token(self) -> Optional[str]:
+    def request_token(self) -> Optional[str]:
         if self._auth:
             self._flight_client.authenticate_basic_token(self._auth[0], self._auth[1])
             return self._auth_middleware.token()
