@@ -20,6 +20,7 @@ class GraphProjectRemoteRunner(IllegalAttrChecker):
         concurrency: int = 4,
         undirected_relationship_types: Optional[List[str]] = None,
         inverse_indexed_relationship_types: Optional[List[str]] = None,
+        batch_size: Optional[int] = None,
     ) -> GraphCreateResult:
         if inverse_indexed_relationship_types is None:
             inverse_indexed_relationship_types = []
@@ -32,6 +33,7 @@ class GraphProjectRemoteRunner(IllegalAttrChecker):
             concurrency=concurrency,
             undirected_relationship_types=undirected_relationship_types,
             inverse_indexed_relationship_types=inverse_indexed_relationship_types,
+            arrow_configuration={"batchSize": batch_size},
         )
 
         result = self._query_runner.call_procedure(
