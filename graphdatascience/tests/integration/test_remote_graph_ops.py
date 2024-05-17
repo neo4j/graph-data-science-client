@@ -45,6 +45,17 @@ def test_remote_projection(gds_with_cloud_setup: AuraGraphDataScience) -> None:
 
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
+def test_remote_projection_with_small_batch_size(gds_with_cloud_setup: AuraGraphDataScience) -> None:
+    G, result = gds_with_cloud_setup.graph.project(
+        GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)", batch_size=10
+    )
+
+    assert G.name() == GRAPH_NAME
+    assert result["nodeCount"] == 3
+
+
+@pytest.mark.cloud_architecture
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_page_rank(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
 
