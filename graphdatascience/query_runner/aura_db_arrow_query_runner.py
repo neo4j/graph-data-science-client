@@ -152,7 +152,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
 
     def _inject_connection_parameters(self, params: dict[str, Any]) -> None:
         host, port = self._gds_arrow_client.connection_info()
-        token = self._gds_arrow_client.get_or_request_token()
+        token = self._gds_arrow_client.request_token()
         if token is None:
             token = "IGNORED"
         params["arrowConfiguration"] = {
