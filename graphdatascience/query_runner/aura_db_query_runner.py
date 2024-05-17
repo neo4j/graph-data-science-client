@@ -104,7 +104,7 @@ class AuraDbQueryRunner(QueryRunner):
         database: Optional[str] = None,
         logging: bool = False,
     ) -> DataFrame:
-        self._inject_connection_parameters(params)
+        self._inject_arrow_config(params["arrow_configuration"])
         return self._db_query_runner.call_procedure(endpoint, params, yields, database, logging, False)
 
     def _remote_write_back(
@@ -119,21 +119,27 @@ class AuraDbQueryRunner(QueryRunner):
         if params["config"] is None:
             params["config"] = {}
 
+        # we pop these out so that they are not retained for the GDS proc call
+        db_write_config = params["config"].pop("writeConfiguration", {})  # type: ignore
+        db_arrow_config = params["config"].pop("arrowConfiguration", {})  # type: ignore
+        self._inject_write_config(endpoint, params, db_write_config)
+        self._inject_arrow_config(db_arrow_config)
+
         params["config"]["writeToResultStore"] = True  # type: ignore
         gds_write_result = self._gds_query_runner.call_procedure(
             endpoint, params, yields, database, logging, custom_error
         )
 
-        write_params = {
+        db_write_proc_params = {
             "graphName": params["graph_name"],
             "databaseName": self._gds_query_runner.database(),
-            "writeConfiguration": self._extract_write_back_arguments(endpoint, params),
+            "writeConfiguration": db_write_config,
+            "arrowConfiguration": db_arrow_config,
         }
-        self._inject_connection_parameters(write_params)
 
         write_back_start = time.time()
         database_write_result = self._db_query_runner.call_procedure(
-            "gds.arrow.write", CallParameters(write_params), yields, None, False, False
+            "gds.arrow.write", CallParameters(db_write_proc_params), yields, None, False, False
         )
         write_millis = (time.time() - write_back_start) * 1000
         gds_write_result["writeMillis"] = write_millis
@@ -149,22 +155,20 @@ class AuraDbQueryRunner(QueryRunner):
 
         return gds_write_result
 
-    def _inject_connection_parameters(self, params: Dict[str, Any]) -> None:
+    def _inject_arrow_config(self, params: Dict[str, Any]) -> None:
         host, port = self._gds_arrow_client.connection_info()
         token = self._gds_arrow_client.request_token()
         if token is None:
             token = "IGNORED"
-        params["arrowConfiguration"] = {
-            "host": host,
-            "port": port,
-            "token": token,
-            "encrypted": self._encrypted,
-        }
+
+        params["host"] = host
+        params["port"] = port
+        params["token"] = token
+        params["encrypted"] = self._encrypted
 
     @staticmethod
-    def _extract_write_back_arguments(proc_name: str, params: Dict[str, Any]) -> Dict[str, Any]:
-        config = params.get("config", {})
-        write_config = {}
+    def _inject_write_config(proc_name: str, proc_params: Dict[str, Any], write_config: Dict[str, Any]) -> None:
+        config = proc_params.get("config", {})
 
         if "writeConcurrency" in config:
             write_config["concurrency"] = config["writeConcurrency"]
@@ -188,21 +192,21 @@ class AuraDbQueryRunner(QueryRunner):
 
         elif "gds.graph." in proc_name:
             if "gds.graph.nodeProperties.write" == proc_name:
-                properties = params["properties"]
+                properties = proc_params["properties"]
                 write_config["nodeProperties"] = properties if isinstance(properties, list) else [properties]
-                write_config["nodeLabels"] = params["entities"]
+                write_config["nodeLabels"] = proc_params["entities"]
 
             elif "gds.graph.nodeLabel.write" == proc_name:
-                write_config["nodeLabels"] = [params["node_label"]]
+                write_config["nodeLabels"] = [proc_params["node_label"]]
 
             elif "gds.graph.relationshipProperties.write" == proc_name:
-                write_config["relationshipProperties"] = params["relationship_properties"]
-                write_config["relationshipType"] = params["relationship_type"]
+                write_config["relationshipProperties"] = proc_params["relationship_properties"]
+                write_config["relationshipType"] = proc_params["relationship_type"]
 
             elif "gds.graph.relationship.write" == proc_name:
-                if "relationship_property" in params and params["relationship_property"] != "":
-                    write_config["relationshipProperties"] = [params["relationship_property"]]
-                write_config["relationshipType"] = params["relationship_type"]
+                if "relationship_property" in proc_params and proc_params["relationship_property"] != "":
+                    write_config["relationshipProperties"] = [proc_params["relationship_property"]]
+                write_config["relationshipType"] = proc_params["relationship_type"]
 
             else:
                 raise ValueError(f"Unsupported procedure name: {proc_name}")
@@ -215,9 +219,7 @@ class AuraDbQueryRunner(QueryRunner):
             else:
                 if "writeProperty" in config:
                     write_config["nodeProperties"] = [config["writeProperty"]]
-                if "nodeLabels" in params:
-                    write_config["nodeLabels"] = params["nodeLabels"]
+                if "nodeLabels" in proc_params:
+                    write_config["nodeLabels"] = proc_params["nodeLabels"]
                 else:
                     write_config["nodeLabels"] = ["*"]
-
-        return write_config
