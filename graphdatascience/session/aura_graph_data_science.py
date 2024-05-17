@@ -10,6 +10,7 @@ from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.aura_db_arrow_query_runner import (
     AuraDbArrowQueryRunner,
 )
+from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
@@ -63,8 +64,11 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         gds_query_runner.set_database("neo4j")
         self._db_query_runner.set_database("neo4j")
 
+        arrow_client = GdsArrowClient.create(
+            gds_query_runner, aura_db_connection_info.auth(), self._db_query_runner.encrypted()
+        )
         self._query_runner = AuraDbArrowQueryRunner(
-            gds_query_runner, self._db_query_runner, self._db_query_runner.encrypted(), aura_db_connection_info
+            gds_query_runner, self._db_query_runner, arrow_client, self._db_query_runner.encrypted()
         )
 
         self._delete_fn = delete_fn

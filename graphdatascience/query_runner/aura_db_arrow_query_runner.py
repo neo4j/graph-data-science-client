@@ -4,7 +4,6 @@ from typing import Any, Dict, List, Optional
 from pandas import DataFrame
 
 from ..call_parameters import CallParameters
-from ..session.dbms_connection_info import DbmsConnectionInfo
 from .gds_arrow_client import GdsArrowClient
 from .query_runner import QueryRunner
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
@@ -18,15 +17,12 @@ class AuraDbArrowQueryRunner(QueryRunner):
         self,
         gds_query_runner: QueryRunner,
         db_query_runner: QueryRunner,
+        arrow_client: GdsArrowClient,
         encrypted: bool,
-        gds_connection_info: DbmsConnectionInfo,
     ):
         self._gds_query_runner = gds_query_runner
         self._db_query_runner = db_query_runner
-        self._gds_connection_info = gds_connection_info
-        self._gds_arrow_client = GdsArrowClient.create(
-            gds_query_runner, auth=self._gds_connection_info.auth(), encrypted=encrypted
-        )
+        self._gds_arrow_client = arrow_client
         self._encrypted = encrypted
 
     def run_cypher(
