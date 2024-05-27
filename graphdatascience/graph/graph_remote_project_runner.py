@@ -27,13 +27,17 @@ class GraphProjectRemoteRunner(IllegalAttrChecker):
         if undirected_relationship_types is None:
             undirected_relationship_types = []
 
+        arrow_configuration = {}
+        if batch_size is not None:
+            arrow_configuration["batchSize"] = batch_size
+
         params = CallParameters(
             graph_name=graph_name,
             query=query,
             concurrency=concurrency,
             undirected_relationship_types=undirected_relationship_types,
             inverse_indexed_relationship_types=inverse_indexed_relationship_types,
-            arrow_configuration={"batchSize": batch_size},
+            arrow_configuration=arrow_configuration,
         )
 
         result = self._query_runner.call_procedure(
