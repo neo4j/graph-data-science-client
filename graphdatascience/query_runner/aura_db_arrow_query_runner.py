@@ -1,4 +1,4 @@
-import datetime
+import time
 from typing import Any, Dict, List, Optional
 
 from pandas import DataFrame
@@ -132,11 +132,11 @@ class AuraDbArrowQueryRunner(QueryRunner):
         }
         self._inject_connection_parameters(write_params)
 
-        write_back_start = datetime.datetime.now()
+        write_back_start = time.time()
         database_write_result = self._db_query_runner.call_procedure(
             "gds.arrow.write", CallParameters(write_params), yields, None, False, False
         )
-        write_millis = (datetime.datetime.now() - write_back_start).microseconds / 100
+        write_millis = (time.time() - write_back_start) * 1000
         gds_write_result["writeMillis"] = write_millis
 
         if "nodePropertiesWritten" in gds_write_result:
