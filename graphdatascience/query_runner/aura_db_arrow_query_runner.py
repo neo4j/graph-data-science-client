@@ -189,7 +189,8 @@ class AuraDbArrowQueryRunner(QueryRunner):
 
         elif "gds.graph." in proc_name:
             if "gds.graph.nodeProperties.write" == proc_name:
-                write_config["nodeProperties"] = params["properties"]
+                properties = params["properties"]
+                write_config["nodeProperties"] = properties if isinstance(properties, list) else [properties]
                 write_config["nodeLabels"] = params["entities"]
 
             elif "gds.graph.nodeLabel.write" == proc_name:
