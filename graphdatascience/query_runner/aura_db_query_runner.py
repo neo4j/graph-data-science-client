@@ -1,5 +1,6 @@
 import time
 from typing import Any, Dict, List, Optional
+from uuid import uuid4
 
 from pandas import DataFrame
 
@@ -120,12 +121,14 @@ class AuraDbQueryRunner(QueryRunner):
             params["config"] = {}
 
         # we pop these out so that they are not retained for the GDS proc call
-        db_write_config = params["config"].pop("writeConfiguration", {})  # type: ignore
         db_arrow_config = params["config"].pop("arrowConfiguration", {})  # type: ignore
-        self._inject_write_config(endpoint, params, db_write_config)
         self._inject_arrow_config(db_arrow_config)
 
+        job_id = params["config"]["jobId"] if "jobId" in params["config"] else str(uuid4())
+        params["config"]["jobId"] = job_id
+
         params["config"]["writeToResultStore"] = True  # type: ignore
+
         gds_write_result = self._gds_query_runner.call_procedure(
             endpoint, params, yields, database, logging, custom_error
         )
@@ -133,7 +136,7 @@ class AuraDbQueryRunner(QueryRunner):
         db_write_proc_params = {
             "graphName": params["graph_name"],
             "databaseName": self._gds_query_runner.database(),
-            "writeConfiguration": db_write_config,
+            "writeConfiguration": {"jobId": job_id},
             "arrowConfiguration": db_arrow_config,
         }
 
@@ -165,61 +168,3 @@ class AuraDbQueryRunner(QueryRunner):
         params["port"] = port
         params["token"] = token
         params["encrypted"] = self._encrypted
-
-    @staticmethod
-    def _inject_write_config(proc_name: str, proc_params: Dict[str, Any], write_config: Dict[str, Any]) -> None:
-        config = proc_params.get("config", {})
-
-        if "writeConcurrency" in config:
-            write_config["concurrency"] = config["writeConcurrency"]
-        elif "concurrency" in config:
-            write_config["concurrency"] = config["concurrency"]
-
-        if "gds.shortestPath" in proc_name or "gds.allShortestPaths" in proc_name:
-            write_config["relationshipType"] = config["writeRelationshipType"]
-
-            write_node_ids = config.get("writeNodeIds")
-            write_costs = config.get("writeCosts")
-
-            if write_node_ids and write_costs:
-                write_config["relationshipProperties"] = ["totalCost", "nodeIds", "costs"]
-            elif write_node_ids:
-                write_config["relationshipProperties"] = ["totalCost", "nodeIds"]
-            elif write_costs:
-                write_config["relationshipProperties"] = ["totalCost", "costs"]
-            else:
-                write_config["relationshipProperties"] = ["totalCost"]
-
-        elif "gds.graph." in proc_name:
-            if "gds.graph.nodeProperties.write" == proc_name:
-                properties = proc_params["properties"]
-                write_config["nodeProperties"] = properties if isinstance(properties, list) else [properties]
-                write_config["nodeLabels"] = proc_params["entities"]
-
-            elif "gds.graph.nodeLabel.write" == proc_name:
-                write_config["nodeLabels"] = [proc_params["node_label"]]
-
-            elif "gds.graph.relationshipProperties.write" == proc_name:
-                write_config["relationshipProperties"] = proc_params["relationship_properties"]
-                write_config["relationshipType"] = proc_params["relationship_type"]
-
-            elif "gds.graph.relationship.write" == proc_name:
-                if "relationship_property" in proc_params and proc_params["relationship_property"] != "":
-                    write_config["relationshipProperties"] = [proc_params["relationship_property"]]
-                write_config["relationshipType"] = proc_params["relationship_type"]
-
-            else:
-                raise ValueError(f"Unsupported procedure name: {proc_name}")
-
-        else:
-            if "writeRelationshipType" in config:
-                write_config["relationshipType"] = config["writeRelationshipType"]
-                if "writeProperty" in config:
-                    write_config["relationshipProperties"] = [config["writeProperty"]]
-            else:
-                if "writeProperty" in config:
-                    write_config["nodeProperties"] = [config["writeProperty"]]
-                if "nodeLabels" in proc_params:
-                    write_config["nodeLabels"] = proc_params["nodeLabels"]
-                else:
-                    write_config["nodeLabels"] = ["*"]
