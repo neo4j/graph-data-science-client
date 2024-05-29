@@ -79,9 +79,13 @@ class FakeAuraApi(AuraApi):
             return None
 
     def wait_for_instance_running(
-        self, instance_id: str, sleep_time: float = 0.2, max_sleep_time: float = 300
+        self,
+        instance_id: str,
+        sleep_time: float = 0.2,
+        max_sleep_time: float = 5,
+        max_wait_time: float = 5,
     ) -> WaitResult:
-        return super().wait_for_instance_running(instance_id, sleep_time=0.0001, max_sleep_time=0.001)
+        return super().wait_for_instance_running(instance_id, sleep_time=0.0001, max_wait_time=0.001)
 
     def tenant_details(self) -> TenantDetails:
         return TenantDetails(id=self._tenant_id, ds_type="fake-ds", regions_per_provider={"aws": {"leipzig-1"}})
