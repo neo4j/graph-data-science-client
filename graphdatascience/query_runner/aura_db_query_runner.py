@@ -106,7 +106,7 @@ class AuraDbQueryRunner(QueryRunner):
         custom_error: bool = True,
     ) -> DataFrame:
         self._inject_connection_parameters(params)
-        return self._db_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
+        return self._db_query_runner.call_procedure(endpoint, params, yields, database, logging, False)
 
     def _remote_write_back(
         self,
