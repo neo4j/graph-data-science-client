@@ -124,8 +124,8 @@ class AuraDbQueryRunner(QueryRunner):
         db_arrow_config = params["config"].pop("arrowConfiguration", {})  # type: ignore
         self._inject_arrow_config(db_arrow_config)
 
-        job_id = params["config"]["jobId"] if "jobId" in params["config"] else str(uuid4())
-        params["config"]["jobId"] = job_id
+        job_id = params["config"]["jobId"] if "jobId" in params["config"] else str(uuid4())  # type: ignore
+        params["config"]["jobId"] = job_id  # type: ignore
 
         params["config"]["writeToResultStore"] = True  # type: ignore
 
