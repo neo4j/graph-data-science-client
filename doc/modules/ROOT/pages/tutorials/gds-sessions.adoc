@@ -173,8 +173,6 @@ although we do not do that in this notebook.
 
 [source, python, role=no-test]
 ----
-from graphdatascience.session import GdsPropertyTypes
-
 G, result = gds.graph.project(
     "people-and-fruits",
     """
@@ -201,15 +199,6 @@ G, result = gds.graph.project(
       relationshipType: type(rel)
     })
     """,
-    nodePropertySchema={
-        "age": GdsPropertyTypes.LONG,
-        "experience": GdsPropertyTypes.LONG,
-        "hipster": GdsPropertyTypes.LONG,
-        "tropical": GdsPropertyTypes.LONG,
-        "sourness": GdsPropertyTypes.DOUBLE,
-        "sweetness": GdsPropertyTypes.DOUBLE,
-    },
-    relationshipPropertySchema={},
 )
 
 str(G)
