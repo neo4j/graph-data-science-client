@@ -758,7 +758,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: gds.articleRank.stream(G: Graph, *, , dampingFactor=0.85, maxIterations=20, tolerance=0.0000001, relationshipWeightProperty=None, sourceNodes=[], scaler=None) -> DataFrame
+.. py:function:: gds.articleRank.stream(G: Graph, *, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True, dampingFactor=0.85, maxIterations=20, tolerance=0.0000001, relationshipWeightProperty=None, sourceNodes=[], scaler=None) -> DataFrame
 
     Article Rank is a variant of the Page Rank algorithm, which measures the transitive influence or connectivity of nodes.
 
@@ -767,6 +767,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
 
         * **dampingFactor** - *(Optional)* The damping factor of the Page Rank calculation. Must be in [0, 1). *Default*: 0.85.
 
@@ -1690,7 +1700,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: gds.betweenness.stream(G: Graph, *, , samplingSize=node count, samplingSeed=None, relationshipWeightProperty=None) -> DataFrame
+.. py:function:: gds.betweenness.stream(G: Graph, *, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True, samplingSize=node count, samplingSeed=None, relationshipWeightProperty=None) -> DataFrame
 
     Betweenness centrality measures the relative information flow that passes through a node.
 
@@ -1699,6 +1709,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
 
         * **samplingSize** - *(Optional)* The number of source nodes to consider for computing centrality scores. *Default*: node count.
 
@@ -1780,7 +1800,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: gds.bfs.stream(G: Graph, *, , sourceNode, targetNodes=empty list, maxDepth=-1) -> DataFrame
+.. py:function:: gds.bfs.stream(G: Graph, *, sourceNode, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True, targetNodes=empty list, maxDepth=-1) -> DataFrame
 
     BFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth
     prior to moving on to the nodes at the next depth level.
@@ -1792,6 +1812,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
         * **G** - Graph
 
         * **sourceNode** - *(Required)* The node id of the node where to start the traversal. *Default*: n/a.
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
 
         * **targetNodes** - *(Optional)* Ids for target nodes. Traversal terminates when any target node is visited. *Default*: empty list.
 
@@ -1905,7 +1935,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: gds.conductance.stream(G: Graph, *, , communityProperty, relationshipWeightProperty=None) -> DataFrame
+.. py:function:: gds.conductance.stream(G: Graph, *, communityProperty, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True, relationshipWeightProperty=None) -> DataFrame
 
     Evaluates a division of nodes into communities based on the proportion of relationships
     that cross community boundaries.
@@ -1917,6 +1947,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
         * **G** - Graph
 
         * **communityProperty** - *(Required)* The node property that holds the community ID as an integer for each node. Note that only non-negative community IDs are considered valid and will have their conductance computed. *Default*: n/a.
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
 
         * **relationshipWeightProperty** - *(Optional)* Name of the relationship property to use as weights. If unspecified, the algorithm runs unweighted. *Default*: null.
 
@@ -1982,7 +2022,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: gds.degree.stream(G: Graph, *, , orientation=NATURAL, relationshipWeightProperty=None) -> DataFrame
+.. py:function:: gds.degree.stream(G: Graph, *, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True, orientation=NATURAL, relationshipWeightProperty=None) -> DataFrame
 
     Degree centrality measures the number of incoming and outgoing relationships from a node.
 
@@ -1991,6 +2031,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
 
         * **orientation** - *(Optional)* The orientation used to compute node degrees. Supported orientations are `NATURAL`, `REVERSE` and `UNDIRECTED`. *Default*: NATURAL.
 
@@ -2050,7 +2100,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: gds.dfs.stream(G: Graph, *, , sourceNode, targetNodes=empty list, maxDepth=-1) -> DataFrame
+.. py:function:: gds.dfs.stream(G: Graph, *, sourceNode, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True, targetNodes=empty list, maxDepth=-1) -> DataFrame
 
     Depth-first search (DFS) is an algorithm for traversing or searching tree or graph data structures.
     The algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph)
@@ -2063,6 +2113,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
         * **G** - Graph
 
         * **sourceNode** - *(Required)* The node id of the node where to start the traversal. *Default*: n/a.
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
 
         * **targetNodes** - *(Optional)* Ids for target nodes. Traversal terminates when any target node is visited. *Default*: empty list.
 
@@ -2122,7 +2182,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: gds.eigenvector.stream(G: Graph, *, , maxIterations=20, tolerance=0.0000001, relationshipWeightProperty=None, sourceNodes=[], scaler=None) -> DataFrame
+.. py:function:: gds.eigenvector.stream(G: Graph, *, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True, maxIterations=20, tolerance=0.0000001, relationshipWeightProperty=None, sourceNodes=[], scaler=None) -> DataFrame
 
     Eigenvector Centrality is an algorithm that measures the transitive influence or connectivity of nodes.
 
@@ -2131,6 +2191,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
 
         * **maxIterations** - *(Optional)* The maximum number of iterations of Eigenvector Centrality to run. *Default*: 20.
 
@@ -2996,7 +3066,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: gds.localClusteringCoefficient.stream(G: Graph, *, , triangleCountProperty=n/a) -> DataFrame
+.. py:function:: gds.localClusteringCoefficient.stream(G: Graph, *, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True, triangleCountProperty=n/a) -> DataFrame
 
     The local clustering coefficient is a metric quantifying how connected the neighborhood of a node is.
 
@@ -3005,6 +3075,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
 
         * **triangleCountProperty** - *(Optional)* Node property that contains pre-computed triangle count. *Default*: n/a.
 
@@ -3180,7 +3260,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: gds.modularity.stream(G: Graph, *, , communityProperty, relationshipWeightProperty=None) -> DataFrame
+.. py:function:: gds.modularity.stream(G: Graph, *, communityProperty, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True, relationshipWeightProperty=None) -> DataFrame
 
     |
 
@@ -3189,6 +3269,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
         * **G** - Graph
 
         * **communityProperty** - *(Required)* The node property that holds the community ID as an integer for each node. Note that only non-negative community IDs are considered valid and will have their modularity score computed. *Default*: n/a.
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
 
         * **relationshipWeightProperty** - *(Optional)* Name of the relationship property to use as weights. If unspecified, the algorithm runs unweighted. *Default*: null.
 
@@ -3326,7 +3416,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: gds.nodeSimilarity.stream(G: Graph, *, , similarityCutoff=1e-42, degreeCutoff=1, upperDegreeCutoff=2147483647, topK=10, bottomK=10, topN=0, bottomN=0, relationshipWeightProperty=None, similarityMetric=JACCARD,  useComponents=false) -> DataFrame
+.. py:function:: gds.nodeSimilarity.stream(G: Graph, *, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True, similarityCutoff=1e-42, degreeCutoff=1, upperDegreeCutoff=2147483647, topK=10, bottomK=10, topN=0, bottomN=0, relationshipWeightProperty=None, similarityMetric=JACCARD,  useComponents=false) -> DataFrame
 
     The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
     Two nodes are considered similar if they share many of the same neighbors.
@@ -3337,6 +3427,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
 
         * **similarityCutoff** - *(Optional)* Lower limit for the similarity score to be present in the result.
                 Values must be between 0 and 1. *Default*: 1e-42.
@@ -3540,7 +3640,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: gds.pageRank.stream(G: Graph, *, , dampingFactor=0.85, maxIterations=20, tolerance=0.0000001, relationshipWeightProperty=None, sourceNodes=[], scaler=None) -> DataFrame
+.. py:function:: gds.pageRank.stream(G: Graph, *, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True, dampingFactor=0.85, maxIterations=20, tolerance=0.0000001, relationshipWeightProperty=None, sourceNodes=[], scaler=None) -> DataFrame
 
     Page Rank is an algorithm that measures the transitive influence or connectivity of nodes.
 
@@ -3549,6 +3649,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
 
         * **dampingFactor** - *(Optional)* The damping factor of the Page Rank calculation. Must be in [0, 1). *Default*: 0.85.
 
@@ -4117,7 +4227,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: gds.triangleCount.stream(G: Graph, *, , maxDegree=2^63^ - 1) -> DataFrame
+.. py:function:: gds.triangleCount.stream(G: Graph, *, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True, maxDegree=2^63^ - 1) -> DataFrame
 
     Triangle counting is a community detection graph algorithm that is used to
     determine the number of triangles passing through each node in the graph.
@@ -4127,6 +4237,16 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
 
         * **maxDegree** - *(Optional)* If a node has a degree higher than this it will not be considered by the algorithm. The triangle count for these nodes will be `-1`. *Default*: 2^63^ - 1.
 
