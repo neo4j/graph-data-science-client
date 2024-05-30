@@ -136,7 +136,7 @@ class AuraDbQueryRunner(QueryRunner):
         db_write_proc_params = {
             "graphName": params["graph_name"],
             "databaseName": self._gds_query_runner.database(),
-            "writeConfiguration": {"jobId": job_id},
+            "jobId": job_id,
             "arrowConfiguration": db_arrow_config,
         }
 
