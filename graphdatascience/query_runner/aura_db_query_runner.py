@@ -10,7 +10,7 @@ from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.server_version.server_version import ServerVersion
 
 
-class AuraDbArrowQueryRunner(QueryRunner):
+class AuraDbQueryRunner(QueryRunner):
     GDS_REMOTE_PROJECTION_PROC_NAME = "gds.arrow.project"
 
     def __init__(
@@ -46,7 +46,7 @@ class AuraDbArrowQueryRunner(QueryRunner):
         if params is None:
             params = CallParameters()
 
-        if AuraDbArrowQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME == endpoint:
+        if AuraDbQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME == endpoint:
             return self._remote_projection(endpoint, params, yields, database, logging, custom_error)
 
         elif ".write" in endpoint and self.is_remote_projected_graph(params["graph_name"]):

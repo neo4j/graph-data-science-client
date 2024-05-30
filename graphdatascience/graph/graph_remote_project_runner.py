@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List, Optional
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
-from ..query_runner.aura_db_arrow_query_runner import AuraDbArrowQueryRunner
+from ..query_runner.aura_db_query_runner import AuraDbQueryRunner
 from ..server_version.compatible_with import compatible_with
 from .graph_object import Graph
 from graphdatascience.call_parameters import CallParameters
@@ -35,7 +35,7 @@ class GraphProjectRemoteRunner(IllegalAttrChecker):
         )
 
         result = self._query_runner.call_procedure(
-            endpoint=AuraDbArrowQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME,
+            endpoint=AuraDbQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME,
             params=params,
         ).squeeze()
         return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)

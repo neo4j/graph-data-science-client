@@ -7,9 +7,7 @@ from graphdatascience.endpoints import AlphaEndpoints, BetaEndpoints, DirectEndp
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
 from graphdatascience.graph.graph_remote_proc_runner import GraphRemoteProcRunner
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
-from graphdatascience.query_runner.aura_db_arrow_query_runner import (
-    AuraDbArrowQueryRunner,
-)
+from graphdatascience.query_runner.aura_db_query_runner import AuraDbQueryRunner
 from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
@@ -67,7 +65,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_client = GdsArrowClient.create(
             gds_query_runner, aura_db_connection_info.auth(), self._db_query_runner.encrypted()
         )
-        self._query_runner = AuraDbArrowQueryRunner(
+        self._query_runner = AuraDbQueryRunner(
             gds_query_runner, self._db_query_runner, arrow_client, self._db_query_runner.encrypted()
         )
 
