@@ -758,7 +758,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: scaler(G: Graph, *, , dampingFactor='0.85', maxIterations='20', tolerance='0.0000001', relationshipWeightProperty='None', sourceNodes='[]', scaler='None': Any) -> DataFrame
+.. py:function:: gds.articleRank.stream(G: Graph, *, , dampingFactor=0.85, maxIterations=20, tolerance=0.0000001, relationshipWeightProperty=None, sourceNodes=[], scaler=None) -> DataFrame
 
     Article Rank is a variant of the Page Rank algorithm, which measures the transitive influence or connectivity of nodes.
 
@@ -767,6 +767,20 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **dampingFactor** - *(Optional)* The damping factor of the Page Rank calculation. Must be in [0, 1). *Default*: 0.85.
+
+        * **maxIterations** - *(Optional)* The maximum number of iterations of Article Rank to run. *Default*: 20.
+
+        * **tolerance** - *(Optional)* Minimum change in scores between iterations. If all scores change less than the tolerance value the result is considered stable, and the algorithm returns. *Default*: 0.0000001.
+
+        * **relationshipWeightProperty** - *(Optional)* Name of the relationship property to use as weights. If unspecified, the algorithm runs unweighted. *Default*: null.
+
+        * **sourceNodes** - *(Optional)* The nodes or node ids to use for computing Personalized Page Rank. *Default*: [].
+
+        * **scaler** - *(Optional)* The name of the scaler applied for the final scores. Supported values are `None`, `MinMax`, `Max`, `Mean`, `Log`, and `StdScore`.  To apply scaler-specific configuration, use the Map syntax: `{scaler: 'name', ...}`. *Default*: None.
+
+
 
 .. py:function:: gds.articleRank.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1676,7 +1690,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: relationshipWeightProperty(G: Graph, *, , samplingSize='node count', samplingSeed='None', relationshipWeightProperty='None': Any) -> DataFrame
+.. py:function:: gds.betweenness.stream(G: Graph, *, , samplingSize=node count, samplingSeed=None, relationshipWeightProperty=None) -> DataFrame
 
     Betweenness centrality measures the relative information flow that passes through a node.
 
@@ -1685,6 +1699,14 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **samplingSize** - *(Optional)* The number of source nodes to consider for computing centrality scores. *Default*: node count.
+
+        * **samplingSeed** - *(Optional)* The seed value for the random number generator that selects start nodes. *Default*: null.
+
+        * **relationshipWeightProperty** - *(Optional)* Name of the relationship property to use as weights. If unspecified, the algorithm runs unweighted. *Default*: null.
+
+
 
 .. py:function:: gds.betweenness.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1758,7 +1780,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: maxDepth(G: Graph, *, , sourceNode, targetNodes='empty list', maxDepth='-1': Any) -> DataFrame
+.. py:function:: gds.bfs.stream(G: Graph, *, , sourceNode, targetNodes=empty list, maxDepth=-1) -> DataFrame
 
     BFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth
     prior to moving on to the nodes at the next depth level.
@@ -1768,6 +1790,14 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **sourceNode** - *(Required)* The node id of the node where to start the traversal. *Default*: n/a.
+
+        * **targetNodes** - *(Optional)* Ids for target nodes. Traversal terminates when any target node is visited. *Default*: empty list.
+
+        * **maxDepth** - *(Optional)* The maximum distance from the source node at which nodes are visited. *Default*: -1.
+
+
 
 .. py:function:: gds.bfs.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1875,7 +1905,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: relationshipWeightProperty(G: Graph, *, , communityProperty, relationshipWeightProperty='None': Any) -> DataFrame
+.. py:function:: gds.conductance.stream(G: Graph, *, , communityProperty, relationshipWeightProperty=None) -> DataFrame
 
     Evaluates a division of nodes into communities based on the proportion of relationships
     that cross community boundaries.
@@ -1885,6 +1915,12 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **communityProperty** - *(Required)* The node property that holds the community ID as an integer for each node. Note that only non-negative community IDs are considered valid and will have their conductance computed. *Default*: n/a.
+
+        * **relationshipWeightProperty** - *(Optional)* Name of the relationship property to use as weights. If unspecified, the algorithm runs unweighted. *Default*: null.
+
+
 
 .. py:function:: gds.dag.topologicalSort.stream(G: Graph, **config: Any) -> DataFrame
 
@@ -1946,7 +1982,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: relationshipWeightProperty(G: Graph, *, , orientation='NATURAL', relationshipWeightProperty='None': Any) -> DataFrame
+.. py:function:: gds.degree.stream(G: Graph, *, , orientation=NATURAL, relationshipWeightProperty=None) -> DataFrame
 
     Degree centrality measures the number of incoming and outgoing relationships from a node.
 
@@ -1955,6 +1991,12 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **orientation** - *(Optional)* The orientation used to compute node degrees. Supported orientations are `NATURAL`, `REVERSE` and `UNDIRECTED`. *Default*: NATURAL.
+
+        * **relationshipWeightProperty** - *(Optional)* Name of the relationship property to use for weighted degree computation. If unspecified, the algorithm runs unweighted. *Default*: null.
+
+
 
 .. py:function:: gds.degree.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -2008,7 +2050,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: maxDepth(G: Graph, *, , sourceNode, targetNodes='empty list', maxDepth='-1': Any) -> DataFrame
+.. py:function:: gds.dfs.stream(G: Graph, *, , sourceNode, targetNodes=empty list, maxDepth=-1) -> DataFrame
 
     Depth-first search (DFS) is an algorithm for traversing or searching tree or graph data structures.
     The algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph)
@@ -2019,6 +2061,14 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **sourceNode** - *(Required)* The node id of the node where to start the traversal. *Default*: n/a.
+
+        * **targetNodes** - *(Optional)* Ids for target nodes. Traversal terminates when any target node is visited. *Default*: empty list.
+
+        * **maxDepth** - *(Optional)* The maximum distance from the source node at which nodes are visited. *Default*: -1.
+
+
 
 .. py:function:: gds.dfs.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -2072,7 +2122,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: scaler(G: Graph, *, , maxIterations='20', tolerance='0.0000001', relationshipWeightProperty='None', sourceNodes='[]', scaler='None': Any) -> DataFrame
+.. py:function:: gds.eigenvector.stream(G: Graph, *, , maxIterations=20, tolerance=0.0000001, relationshipWeightProperty=None, sourceNodes=[], scaler=None) -> DataFrame
 
     Eigenvector Centrality is an algorithm that measures the transitive influence or connectivity of nodes.
 
@@ -2081,6 +2131,18 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **maxIterations** - *(Optional)* The maximum number of iterations of Eigenvector Centrality to run. *Default*: 20.
+
+        * **tolerance** - *(Optional)* Minimum change in scores between iterations. If all scores change less than the tolerance value the result is considered stable and the algorithm returns. *Default*: 0.0000001.
+
+        * **relationshipWeightProperty** - *(Optional)* Name of the relationship property to use as weights. If unspecified, the algorithm runs unweighted. *Default*: null.
+
+        * **sourceNodes** - *(Optional)* The nodes or node ids to use for computing Personalized Page Rank. *Default*: [].
+
+        * **scaler** - *(Optional)* The name of the scaler applied for the final scores. Supported values are `None`, `MinMax`, `Max`, `Mean`, `Log`, and `StdScore`.  To apply scaler-specific configuration, use the Map syntax: `{scaler: 'name', ...}`. *Default*: None.
+
+
 
 .. py:function:: gds.eigenvector.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -2934,7 +2996,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: triangleCountProperty(G: Graph, *, , triangleCountProperty='n/a': Any) -> DataFrame
+.. py:function:: gds.localClusteringCoefficient.stream(G: Graph, *, , triangleCountProperty=n/a) -> DataFrame
 
     The local clustering coefficient is a metric quantifying how connected the neighborhood of a node is.
 
@@ -2943,6 +3005,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **triangleCountProperty** - *(Optional)* Node property that contains pre-computed triangle count. *Default*: n/a.
+
+
 
 .. py:function:: gds.localClusteringCoefficient.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -3114,13 +3180,19 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: relationshipWeightProperty(G: Graph, *, , communityProperty, relationshipWeightProperty='None': Any) -> DataFrame
+.. py:function:: gds.modularity.stream(G: Graph, *, , communityProperty, relationshipWeightProperty=None) -> DataFrame
 
     |
 
     **Parameters:**
 
         * **G** - Graph
+
+        * **communityProperty** - *(Required)* The node property that holds the community ID as an integer for each node. Note that only non-negative community IDs are considered valid and will have their modularity score computed. *Default*: n/a.
+
+        * **relationshipWeightProperty** - *(Optional)* Name of the relationship property to use as weights. If unspecified, the algorithm runs unweighted. *Default*: null.
+
+
 
 .. py:function:: gds.modularity.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -3254,7 +3326,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function::  useComponents(G: Graph, *, , similarityCutoff='1e-42', degreeCutoff='1', upperDegreeCutoff='2147483647', topK='10', bottomK='10', topN='0', bottomN='0', relationshipWeightProperty='None', similarityMetric='JACCARD',  useComponents='false': Any) -> DataFrame
+.. py:function:: gds.nodeSimilarity.stream(G: Graph, *, , similarityCutoff=1e-42, degreeCutoff=1, upperDegreeCutoff=2147483647, topK=10, bottomK=10, topN=0, bottomN=0, relationshipWeightProperty=None, similarityMetric=JACCARD,  useComponents=false) -> DataFrame
 
     The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
     Two nodes are considered similar if they share many of the same neighbors.
@@ -3265,6 +3337,44 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **similarityCutoff** - *(Optional)* Lower limit for the similarity score to be present in the result.
+                Values must be between 0 and 1. *Default*: 1e-42.
+
+        * **degreeCutoff** - *(Optional)* Inclusive lower bound on the node degree for a node to be considered in the comparisons.
+                This value can not be lower than 1. *Default*: 1.
+
+        * **upperDegreeCutoff** - *(Optional)* Inclusive upper bound on the node degree for a node to be considered in the comparisons.
+                This value can not be lower than 1. *Default*: 2147483647.
+
+        * **topK** - *(Optional)* Limit on the number of scores per node.
+                The K largest results are returned.
+                This value cannot be lower than 1. *Default*: 10.
+
+        * **bottomK** - *(Optional)* Limit on the number of scores per node.
+                The K smallest results are returned.
+                This value cannot be lower than 1. *Default*: 10.
+
+        * **topN** - *(Optional)* Global limit on the number of scores computed.
+                The N largest total results are returned.
+                This value cannot be negative, a value of 0 means no global limit. *Default*: 0.
+
+        * **bottomN** - *(Optional)* Global limit on the number of scores computed.
+                The N smallest total results are returned.
+                This value cannot be negative, a value of 0 means no global limit. *Default*: 0.
+
+        * **relationshipWeightProperty** - *(Optional)* Name of the relationship property to use as weights.
+                If unspecified, the algorithm runs unweighted. *Default*: null.
+
+        * **similarityMetric** - *(Optional)* The metric used to compute similarity.
+                Can be either `JACCARD`, `OVERLAP` or `COSINE`. *Default*: JACCARD.
+
+        * ** useComponents** - *(Optional)* If enabled, Node Similarity will use components to improve the performance of the computation, skipping comparisons of nodes in different components.
+                Set to `false` (Default): the algorithm does not use components, but computes similarity across the entire graph.
+                Set to `true`: the algorithm uses components, and will compute these components before computing similarity.
+                Set to *String*: use pre-computed components stored in graph, *String* is the key for a node property representing components. *Default*: false.
+
+
 
 .. py:function:: gds.nodeSimilarity.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -3430,7 +3540,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: scaler(G: Graph, *, , dampingFactor='0.85', maxIterations='20', tolerance='0.0000001', relationshipWeightProperty='None', sourceNodes='[]', scaler='None': Any) -> DataFrame
+.. py:function:: gds.pageRank.stream(G: Graph, *, , dampingFactor=0.85, maxIterations=20, tolerance=0.0000001, relationshipWeightProperty=None, sourceNodes=[], scaler=None) -> DataFrame
 
     Page Rank is an algorithm that measures the transitive influence or connectivity of nodes.
 
@@ -3439,6 +3549,20 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **dampingFactor** - *(Optional)* The damping factor of the Page Rank calculation. Must be in [0, 1). *Default*: 0.85.
+
+        * **maxIterations** - *(Optional)* The maximum number of iterations of Page Rank to run. *Default*: 20.
+
+        * **tolerance** - *(Optional)* Minimum change in scores between iterations. If all scores change less than the tolerance value the result is considered stable and the algorithm returns. *Default*: 0.0000001.
+
+        * **relationshipWeightProperty** - *(Optional)* Name of the relationship property to use as weights. If unspecified, the algorithm runs unweighted. *Default*: null.
+
+        * **sourceNodes** - *(Optional)* The nodes or node ids to use for computing Personalized Page Rank. *Default*: [].
+
+        * **scaler** - *(Optional)* The name of the scaler applied for the final scores. Supported values are `None`, `MinMax`, `Max`, `Mean`, `Log`, and `StdScore`.  To apply scaler-specific configuration, use the Map syntax: `{scaler: 'name', ...}`. *Default*: None.
+
+
 
 .. py:function:: gds.pageRank.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -3993,7 +4117,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: maxDegree(G: Graph, *, , maxDegree='2^63^ - 1': Any) -> DataFrame
+.. py:function:: gds.triangleCount.stream(G: Graph, *, , maxDegree=2^63^ - 1) -> DataFrame
 
     Triangle counting is a community detection graph algorithm that is used to
     determine the number of triangles passing through each node in the graph.
@@ -4003,6 +4127,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **maxDegree** - *(Optional)* If a node has a degree higher than this it will not be considered by the algorithm. The triangle count for these nodes will be `-1`. *Default*: 2^63^ - 1.
+
+
 
 .. py:function:: gds.triangleCount.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
