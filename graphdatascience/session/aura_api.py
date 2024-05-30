@@ -97,10 +97,15 @@ class AuraApi:
         return [SessionDetails.fromJson(s) for s in response.json()]
 
     def wait_for_session_running(
-        self, session_id: str, dbid: str, sleep_time: float = 0.2, max_sleep_time: float = 300
+        self,
+        session_id: str,
+        dbid: str,
+        sleep_time: float = 0.2,
+        max_sleep_time: float = 10,
+        max_wait_time: float = 300,
     ) -> WaitResult:
         waited_time = 0.0
-        while waited_time <= max_sleep_time:
+        while waited_time < max_wait_time:
             session = self.list_session(session_id, dbid)
             if session is None:
                 return WaitResult.from_error(f"Session `{session_id}` for database `{dbid}` not found -- please retry")
@@ -114,6 +119,7 @@ class AuraApi:
                 )
             waited_time += sleep_time
             time.sleep(sleep_time)
+            sleep_time = min(sleep_time * 2, max_sleep_time, max_wait_time - waited_time)
 
         return WaitResult.from_error(
             f"Session `{session_id}` for database `{dbid}` is not running after {waited_time} seconds"
@@ -204,10 +210,10 @@ class AuraApi:
         return InstanceSpecificDetails.fromJson(raw_data)
 
     def wait_for_instance_running(
-        self, instance_id: str, sleep_time: float = 0.2, max_sleep_time: float = 300
+        self, instance_id: str, sleep_time: float = 0.2, max_sleep_time: float = 10, max_wait_time: float = 300
     ) -> WaitResult:
         waited_time = 0.0
-        while waited_time <= max_sleep_time:
+        while waited_time < max_wait_time:
             instance = self.list_instance(instance_id)
             if instance is None:
                 return WaitResult.from_error("Instance is not found -- please retry")
@@ -223,6 +229,7 @@ class AuraApi:
                 )
             waited_time += sleep_time
             time.sleep(sleep_time)
+            sleep_time = min(sleep_time * 2, max_sleep_time, max_wait_time - waited_time)
 
         return WaitResult.from_error(f"Instance is not running after waiting for {waited_time} seconds")
 

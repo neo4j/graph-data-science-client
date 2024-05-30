@@ -204,8 +204,8 @@ def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCapture
 
     with caplog.at_level(logging.DEBUG):
         assert (
-            "Session `id0` for database `dbid-1` is not running after 0.8 seconds"
-            in api.wait_for_session_running("id0", "dbid-1", max_sleep_time=0.7).error
+            "Session `id0` for database `dbid-1` is not running after 0.7 seconds"
+            in api.wait_for_session_running("id0", "dbid-1", max_wait_time=0.7).error
         )
 
     assert "Session `id0` is not yet running. Current status: Creating Host: foo.bar. Retrying in 0.2" in caplog.text
@@ -486,8 +486,8 @@ def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> 
 
     with caplog.at_level(logging.DEBUG):
         assert (
-            "Instance is not running after waiting for 0.8"
-            in api.wait_for_instance_running("id0", max_sleep_time=0.7).error
+            "Instance is not running after waiting for 0.7"
+            in api.wait_for_instance_running("id0", max_wait_time=0.7).error
         )
 
     assert "Instance `id0` is not yet running. Current status: creating. Retrying in 0.2 seconds..." in caplog.text
