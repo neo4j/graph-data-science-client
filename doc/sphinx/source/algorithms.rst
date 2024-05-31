@@ -48,7 +48,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: gds.allShortestPaths.delta.stream(G: Graph, **config: Any) -> DataFrame
+.. py:function:: gds.allShortestPaths.delta.stream(G: Graph, *, sourceNode, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True, delta=2.0, relationshipWeightProperty=None) -> DataFrame
 
     The Delta Stepping shortest path algorithm computes the shortest (weighted) path
     between one node and any other node in the graph. The computation is run multi-threaded.
@@ -58,6 +58,24 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     **Parameters:**
 
         * **G** - Graph
+
+        * **sourceNode** - The Neo4j source node or node id.
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
+
+        * **delta** - *(Optional)* The bucket width for grouping nodes with the same tentative distance to the source node. *Default*: 2.0.
+
+        * **relationshipWeightProperty** - *(Optional)* Name of the relationship property to use as weights. If unspecified, the algorithm runs unweighted. *Default*: null.
+
+
 
 .. py:function:: gds.allShortestPaths.delta.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1811,7 +1829,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-        * **sourceNode** - *(Required)* The node id of the node where to start the traversal. *Default*: n/a.
+        * **sourceNode** - The node id of the node where to start the traversal.
 
         * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
 
@@ -1946,7 +1964,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-        * **communityProperty** - *(Required)* The node property that holds the community ID as an integer for each node. Note that only non-negative community IDs are considered valid and will have their conductance computed. *Default*: n/a.
+        * **communityProperty** - The node property that holds the community ID as an integer for each node. Note that only non-negative community IDs are considered valid and will have their conductance computed.
 
         * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
 
@@ -2112,7 +2130,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-        * **sourceNode** - *(Required)* The node id of the node where to start the traversal. *Default*: n/a.
+        * **sourceNode** - The node id of the node where to start the traversal.
 
         * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
 
@@ -3268,7 +3286,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-        * **communityProperty** - *(Required)* The node property that holds the community ID as an integer for each node. Note that only non-negative community IDs are considered valid and will have their modularity score computed. *Default*: n/a.
+        * **communityProperty** - The node property that holds the community ID as an integer for each node. Note that only non-negative community IDs are considered valid and will have their modularity score computed.
 
         * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
 
