@@ -72,22 +72,7 @@ class ArrowQueryRunner(QueryRunner):
         self._fallback_query_runner = fallback_query_runner
         self._server_version = server_version
         self._arrow_endpoint_version = arrow_endpoint_version
-
-        host, port_string = uri.split(":")
-
-        location = (
-            flight.Location.for_grpc_tls(host, int(port_string))
-            if encrypted
-            else flight.Location.for_grpc_tcp(host, int(port_string))
-        )
-
-        client_options: Dict[str, Any] = {"disable_server_verification": disable_server_verification}
-        if auth:
-            client_options["middleware"] = [AuthFactory(auth)]
-        if tls_root_certs:
-            client_options["tls_root_certs"] = tls_root_certs
-
-        self._flight_client = flight.FlightClient(location, **client_options)
+        self._flight_client = construct_flight_client(uri, encrypted, disable_server_verification, auth, tls_root_certs)
 
     def warn_about_deprecation(self, old_endpoint: str, new_endpoint: str) -> None:
         warnings.warn(
@@ -343,6 +328,30 @@ class ArrowQueryRunner(QueryRunner):
                     decoded_col = arrow_table[field.name].dictionary_decode()
                 arrow_table = arrow_table.set_column(idx, field.name, decoded_col)
         return arrow_table
+
+
+def construct_flight_client(
+    uri: str,
+    encrypted: bool,
+    disable_server_verification: bool,
+    auth: Optional[Tuple[str, str]] = None,
+    tls_root_certs: Optional[bytes] = None,
+) -> flight.FlightClient:
+    host, port_string = uri.split(":")
+
+    location = (
+        flight.Location.for_grpc_tls(host, int(port_string))
+        if encrypted
+        else flight.Location.for_grpc_tcp(host, int(port_string))
+    )
+
+    client_options: Dict[str, Any] = {"disable_server_verification": disable_server_verification}
+    if auth:
+        client_options["middleware"] = [AuthFactory(auth)]
+    if tls_root_certs:
+        client_options["tls_root_certs"] = tls_root_certs
+
+    return flight.FlightClient(location, **client_options)
 
 
 class AuthFactory(ClientMiddlewareFactory):  # type: ignore
