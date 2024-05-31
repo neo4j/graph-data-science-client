@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import hashlib
 import warnings
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.query_runner.arrow_query_runner import construct_flight_client
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_api_responses import SessionDetails
@@ -49,18 +51,20 @@ class DedicatedSessions:
         password = hashlib.sha256(db_connection.password.encode()).hexdigest()
 
         # TODO configure session size (and check existing_session has same size)
+        session_details: SessionDetails
         if existing_session:
-            session_id = existing_session.id
+            session_details = existing_session
         else:
-            create_details = self._create_session(session_name, dbid, db_connection.uri, password, memory)
-            session_id = create_details.id
+            session_details = self._create_session(session_name, dbid, db_connection.uri, password, memory)
 
-        wait_result = self._aura_api.wait_for_session_running(session_id, dbid)
-        if err := wait_result.error:
+        try:
+            # if session_details.status != "Ready":
+            self._wait_for_session_running(session_details.host, (DedicatedSessions.GDS_SESSION_USER, password))
+        except Exception as err:
             raise RuntimeError(f"Failed to create session `{session_name}`: {err}")
 
         session_connection = DbmsConnectionInfo(
-            uri=wait_result.connection_url,
+            uri=session_details.bolt_connection_url(),
             username=DedicatedSessions.GDS_SESSION_USER,
             password=password,
         )
@@ -135,3 +139,25 @@ class DedicatedSessions:
         raise RuntimeError(
             f"Expected to find exactly one GDS session with name `{session_name}`, but found `{candidates}`."
         )
+
+    # def _wait_for_session_running(self, connectionInfo: DbmsConnectionInfo) -> None:
+    #     query_runner = Neo4jQueryRunner.create(
+    #         connectionInfo.uri, connectionInfo.auth(), aura_ds=True
+    #     )
+    #     try:
+    #         # for some reason returns auth problem the first time
+    #         query_runner._verify_connectivity()
+    #     except Exception as e:
+    #         raise RuntimeError(f"Failed to connect to session: {e}")
+        
+    def _wait_for_session_running(self, host: str, auth: Tuple[str, str]) -> None:
+        arrow_client = construct_flight_client(f"{host}:8491", True, True, auth)
+
+        try:
+            # wait_for_available was not working :/
+            # arrow_client.wait_for_available(timeout=300)  # in seconds
+            arrow_client.list_actions()
+        except Exception as e:
+            raise RuntimeError(f"Failed to connect to session: {e}")
+        finally:
+            arrow_client.close()
