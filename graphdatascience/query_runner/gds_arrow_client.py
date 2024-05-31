@@ -143,7 +143,7 @@ class GdsArrowClient:
 
         json.loads(collected_result[0].body.to_pybytes().decode())
 
-    def start_put(self, payload: Dict[str, Any], schema: Schema) -> Tuple["FlightStreamWriter", "FlightStreamReader"]:
+    def start_put(self, payload: Dict[str, Any], schema: Schema) -> Tuple[FlightStreamWriter, FlightStreamReader]:
         flight_descriptor = self._versioned_flight_descriptor(payload)
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
         return self._flight_client.do_put(upload_descriptor, schema)  # type: ignore
