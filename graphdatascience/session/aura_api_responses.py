@@ -5,7 +5,7 @@ import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, NamedTuple, Optional, Set
+from typing import Any, Dict, NamedTuple, Optional, Set
 
 
 @dataclass(repr=True, frozen=True)
@@ -20,7 +20,7 @@ class SessionDetails:
     created_at: datetime
 
     @classmethod
-    def fromJson(cls, json: dict[str, Any]) -> SessionDetails:
+    def fromJson(cls, json: Dict[str, Any]) -> SessionDetails:
         expiry_date = json.get("expiry_date")
 
         return cls(
@@ -46,7 +46,7 @@ class InstanceDetails:
     cloud_provider: str
 
     @classmethod
-    def fromJson(cls, json: dict[str, Any]) -> InstanceDetails:
+    def fromJson(cls, json: Dict[str, Any]) -> InstanceDetails:
         return cls(
             id=json["id"],
             name=json["name"],
@@ -64,7 +64,7 @@ class InstanceSpecificDetails(InstanceDetails):
     region: str
 
     @classmethod
-    def fromJson(cls, json: dict[str, Any]) -> InstanceSpecificDetails:
+    def fromJson(cls, json: Dict[str, Any]) -> InstanceSpecificDetails:
         return cls(
             id=json["id"],
             name=json["name"],
@@ -86,7 +86,7 @@ class InstanceCreateDetails:
     connection_url: str
 
     @classmethod
-    def from_json(cls, json: dict[str, Any]) -> InstanceCreateDetails:
+    def from_json(cls, json: Dict[str, Any]) -> InstanceCreateDetails:
         fields = dataclasses.fields(cls)
         if any(f.name not in json for f in fields):
             raise RuntimeError(f"Missing required field. Expected `{[f.name for f in fields]}` but got `{json}`")
@@ -101,7 +101,7 @@ class EstimationDetails:
     did_exceed_maximum: bool
 
     @classmethod
-    def from_json(cls, json: dict[str, Any]) -> EstimationDetails:
+    def from_json(cls, json: Dict[str, Any]) -> EstimationDetails:
         fields = dataclasses.fields(cls)
         if any(f.name not in json for f in fields):
             raise RuntimeError(f"Missing required field. Expected `{[f.name for f in fields]}` but got `{json}`")
@@ -126,10 +126,10 @@ class WaitResult(NamedTuple):
 class TenantDetails:
     id: str
     ds_type: str
-    regions_per_provider: dict[str, Set[str]]
+    regions_per_provider: Dict[str, Set[str]]
 
     @classmethod
-    def from_json(cls, json: dict[str, Any]) -> TenantDetails:
+    def from_json(cls, json: Dict[str, Any]) -> TenantDetails:
         regions_per_provider = defaultdict(set)
         instance_types = set()
         ds_type = None

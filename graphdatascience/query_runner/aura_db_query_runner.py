@@ -150,7 +150,7 @@ class AuraDbQueryRunner(QueryRunner):
 
         return gds_write_result
 
-    def _inject_connection_parameters(self, params: dict[str, Any]) -> None:
+    def _inject_connection_parameters(self, params: Dict[str, Any]) -> None:
         host, port = self._gds_arrow_client.connection_info()
         token = self._gds_arrow_client.request_token()
         if token is None:
@@ -163,7 +163,7 @@ class AuraDbQueryRunner(QueryRunner):
         }
 
     @staticmethod
-    def _extract_write_back_arguments(proc_name: str, params: dict[str, Any]) -> dict[str, Any]:
+    def _extract_write_back_arguments(proc_name: str, params: Dict[str, Any]) -> Dict[str, Any]:
         config = params.get("config", {})
         write_config = {}
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import os
 import time
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 
 import requests as req
@@ -28,7 +28,7 @@ class AuraApi:
         expires_in: int
         token_type: str
 
-        def __init__(self, json: dict[str, Any]) -> None:
+        def __init__(self, json: Dict[str, Any]) -> None:
             self.access_token = json["access_token"]
             expires_in: int = json["expires_in"]
             self.expires_at = int(time.time()) + expires_in
@@ -275,7 +275,7 @@ class AuraApi:
             self._tenant_details = TenantDetails.from_json(response.json()["data"])
         return self._tenant_details
 
-    def _build_header(self) -> dict[str, str]:
+    def _build_header(self) -> Dict[str, str]:
         return {"Authorization": f"Bearer {self._auth_token()}", "User-agent": f"neo4j-graphdatascience-v{__version__}"}
 
     def _auth_token(self) -> str:
