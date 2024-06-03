@@ -115,9 +115,7 @@ def gds(runner: CollectingQueryRunner) -> Generator[GraphDataScience, None, None
 @pytest.fixture
 def aura_gds(runner: CollectingQueryRunner, mocker: MockerFixture) -> Generator[AuraGraphDataScience, None, None]:
     mocker.patch("graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner.create", return_value=runner)
-    mocker.patch(
-        "graphdatascience.query_runner.aura_db_query_runner.AuraArrowQueryRunner.__new__", return_value=runner
-    )
+    mocker.patch("graphdatascience.query_runner.aura_db_query_runner.AuraArrowQueryRunner.__new__", return_value=runner)
     mocker.patch("graphdatascience.query_runner.arrow_query_runner.ArrowQueryRunner.create", return_value=runner)
     aura_gds = AuraGraphDataScience(
         gds_session_connection_info=DbmsConnectionInfo("address", "some", "auth"),
