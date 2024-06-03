@@ -20,13 +20,13 @@ def test_init_without_neo4j_db(runner: Neo4jQueryRunner) -> None:
     MY_DB_NAME = "bananas"
     runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
-    runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": default_database})
+    runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": default_database}, database="system")
 
     try:
         gds = GraphDataScience(URI, AUTH, database=MY_DB_NAME)
         gds.close()
     finally:
-        runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": default_database}, database=MY_DB_NAME)
+        runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": default_database}, database="system")
         runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
 
