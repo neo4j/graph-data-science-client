@@ -4,9 +4,7 @@ from pandas import DataFrame
 
 from graphdatascience import ServerVersion
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.query_runner.aura_db_arrow_query_runner import (
-    AuraDbArrowQueryRunner,
-)
+from graphdatascience.query_runner.aura_db_query_runner import AuraDbQueryRunner
 from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 
 
@@ -24,7 +22,7 @@ def test_extracts_parameters_projection() -> None:
     db_query_runner = CollectingQueryRunner(version)
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbArrowQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
+    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
 
     qr.call_procedure(
         endpoint="gds.arrow.project",
@@ -66,7 +64,7 @@ def test_extracts_parameters_algo_write() -> None:
     db_query_runner = CollectingQueryRunner(version)
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbArrowQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
+    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
 
     qr.call_procedure(endpoint="gds.degree.write", params=CallParameters(graph_name="g", config={}))
 
@@ -92,7 +90,7 @@ def test_arrow_and_write_configuration() -> None:
     db_query_runner = CollectingQueryRunner(version)
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbArrowQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
+    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
 
     qr.call_procedure(
         endpoint="gds.degree.write",
@@ -130,7 +128,7 @@ def test_arrow_and_write_configuration_graph_write() -> None:
     db_query_runner = CollectingQueryRunner(version)
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbArrowQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
+    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
 
     qr.call_procedure(
         endpoint="gds.graph.nodeProperties.write",
