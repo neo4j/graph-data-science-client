@@ -66,21 +66,21 @@ def test_extracts_parameters_algo_write() -> None:
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
     qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
 
-    qr.call_procedure(endpoint="gds.degree.write", params=CallParameters(graph_name="g", config={}))
+    qr.call_procedure(endpoint="gds.degree.write", params=CallParameters(graph_name="g", config={"jobId": "my-job"}))
 
     assert gds_query_runner.last_query() == "CALL gds.degree.write($graph_name, $config)"
     assert gds_query_runner.last_params() == {
         "graph_name": "g",
-        "config": {"writeToResultStore": True},
+        "config": {"jobId": "my-job", "writeToResultStore": True},
     }
     assert (
         db_query_runner.last_query()
-        == "CALL gds.arrow.write($graphName, $databaseName, $writeConfiguration, $arrowConfiguration)"
+        == "CALL gds.arrow.write($graphName, $databaseName, $jobId, $arrowConfiguration)"
     )
     assert db_query_runner.last_params() == {
         "graphName": "g",
         "databaseName": "dummy",
-        "writeConfiguration": {"nodeLabels": ["*"]},
+        "jobId": "my-job",
         "arrowConfiguration": {"encrypted": False, "host": "myHost", "port": "1234", "token": "myToken"},
     }
 
@@ -96,23 +96,23 @@ def test_arrow_and_write_configuration() -> None:
         endpoint="gds.degree.write",
         params=CallParameters(
             graph_name="g",
-            config={"arrowConfiguration": {"batchSize": 1000}, "writeConfiguration": {"writeMode": "FOOBAR"}},
+            config={"arrowConfiguration": {"batchSize": 1000}, "jobId": "my-job"},
         ),
     )
 
     assert gds_query_runner.last_query() == "CALL gds.degree.write($graph_name, $config)"
     assert gds_query_runner.last_params() == {
         "graph_name": "g",
-        "config": {"writeToResultStore": True},
+        "config": {"writeToResultStore": True, "jobId": "my-job"},
     }
     assert (
         db_query_runner.last_query()
-        == "CALL gds.arrow.write($graphName, $databaseName, $writeConfiguration, $arrowConfiguration)"
+        == "CALL gds.arrow.write($graphName, $databaseName, $jobId, $arrowConfiguration)"
     )
     assert db_query_runner.last_params() == {
         "graphName": "g",
         "databaseName": "dummy",
-        "writeConfiguration": {"nodeLabels": ["*"], "writeMode": "FOOBAR"},
+        "jobId": "my-job",
         "arrowConfiguration": {
             "encrypted": False,
             "host": "myHost",
@@ -136,7 +136,7 @@ def test_arrow_and_write_configuration_graph_write() -> None:
             graph_name="g",
             properties=[],
             entities=[],
-            config={"arrowConfiguration": {"batchSize": 42}, "writeConfiguration": {"writeMode": "FOOBAR"}},
+            config={"arrowConfiguration": {"batchSize": 42}, "jobId": "my-job"},
         ),
     )
 
@@ -148,16 +148,16 @@ def test_arrow_and_write_configuration_graph_write() -> None:
         "graph_name": "g",
         "entities": [],
         "properties": [],
-        "config": {"writeToResultStore": True},
+        "config": {"writeToResultStore": True, "jobId": "my-job"},
     }
     assert (
         db_query_runner.last_query()
-        == "CALL gds.arrow.write($graphName, $databaseName, $writeConfiguration, $arrowConfiguration)"
+        == "CALL gds.arrow.write($graphName, $databaseName, $jobId, $arrowConfiguration)"
     )
     assert db_query_runner.last_params() == {
         "graphName": "g",
         "databaseName": "dummy",
-        "writeConfiguration": {"nodeLabels": [], "nodeProperties": [], "writeMode": "FOOBAR"},
+        "jobId": "my-job",
         "arrowConfiguration": {
             "encrypted": False,
             "host": "myHost",
