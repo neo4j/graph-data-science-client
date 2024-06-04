@@ -74,8 +74,7 @@ def test_extracts_parameters_algo_write() -> None:
         "config": {"jobId": "my-job", "writeToResultStore": True},
     }
     assert (
-        db_query_runner.last_query()
-        == "CALL gds.arrow.write($graphName, $databaseName, $jobId, $arrowConfiguration)"
+        db_query_runner.last_query() == "CALL gds.arrow.write($graphName, $databaseName, $jobId, $arrowConfiguration)"
     )
     assert db_query_runner.last_params() == {
         "graphName": "g",
@@ -106,8 +105,7 @@ def test_arrow_and_write_configuration() -> None:
         "config": {"writeToResultStore": True, "jobId": "my-job"},
     }
     assert (
-        db_query_runner.last_query()
-        == "CALL gds.arrow.write($graphName, $databaseName, $jobId, $arrowConfiguration)"
+        db_query_runner.last_query() == "CALL gds.arrow.write($graphName, $databaseName, $jobId, $arrowConfiguration)"
     )
     assert db_query_runner.last_params() == {
         "graphName": "g",
@@ -151,8 +149,7 @@ def test_arrow_and_write_configuration_graph_write() -> None:
         "config": {"writeToResultStore": True, "jobId": "my-job"},
     }
     assert (
-        db_query_runner.last_query()
-        == "CALL gds.arrow.write($graphName, $databaseName, $jobId, $arrowConfiguration)"
+        db_query_runner.last_query() == "CALL gds.arrow.write($graphName, $databaseName, $jobId, $arrowConfiguration)"
     )
     assert db_query_runner.last_params() == {
         "graphName": "g",
