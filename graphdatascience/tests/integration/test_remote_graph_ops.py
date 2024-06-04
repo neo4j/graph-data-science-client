@@ -135,7 +135,7 @@ def test_remote_write_back_relationship_property(gds_with_cloud_setup: AuraGraph
     assert result["relationshipsWritten"] == 4
 
 
-# @pytest.mark.cloud_architecture
+@pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_relationship_properties(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(
@@ -152,7 +152,7 @@ def test_remote_write_back_relationship_properties(gds_with_cloud_setup: AuraGra
     assert result["relationshipsWritten"] == 4
 
 
-# @pytest.mark.cloud_architecture
+@pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_relationship_property_from_pathfinding_algo(
     gds_with_cloud_setup: AuraGraphDataScience,
