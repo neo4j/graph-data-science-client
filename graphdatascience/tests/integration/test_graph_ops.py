@@ -275,8 +275,8 @@ def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     node_count = runner.run_cypher("MATCH (n) RETURN COUNT(n) AS c").squeeze()
 
     assert node_count == 3
-    runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
     runner.set_database(DB)
+    runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
 
 @pytest.mark.filterwarnings("ignore: The query used a deprecated procedure.")
