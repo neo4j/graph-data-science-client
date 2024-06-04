@@ -1,7 +1,6 @@
 import pytest
 from pandas import DataFrame
 
-from ...session.schema import GdsPropertyTypes
 from .conftest import CollectingQueryRunner
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
@@ -91,22 +90,22 @@ def test_project_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) 
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 6, 0)])
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 7, 0)])
 def test_project_remote(runner: CollectingQueryRunner, aura_gds: AuraGraphDataScience) -> None:
     aura_gds.graph.project("g", "RETURN gds.graph.project.remote(0, 1, null)")
 
     assert (
         runner.last_query()
-        == "CALL gds.graph.project.remoteDb($graph_name, $query, $token, $host, $remote_database, $config)"
+        == "CALL gds.arrow.project("
+        + "$graph_name, $query, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types)"
     )
     # injection of token and host into the params is done by the actual query runner
     assert runner.last_params() == {
         "graph_name": "g",
-        "token": "<>",
-        "host": "<>",
+        "concurrency": 4,
+        "inverse_indexed_relationship_types": [],
         "query": "RETURN gds.graph.project.remote(0, 1, null)",
-        "remote_database": "neo4j",
-        "config": {},
+        "undirected_relationship_types": [],
     }
 
 
@@ -703,26 +702,7 @@ def test_graph_relationships_to_undirected(runner: CollectingQueryRunner, gds: G
     }
 
 
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 6, 0))
-def test_remote_projection_on_specific_database(runner: CollectingQueryRunner, aura_gds: AuraGraphDataScience) -> None:
-    aura_gds.set_database("bar")
-    G, _ = aura_gds.graph.project("g", "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
-
-    assert (
-        runner.last_query()
-        == "CALL gds.graph.project.remoteDb($graph_name, $query, $token, $host, $remote_database, $config)"
-    )
-    assert runner.last_params() == {
-        "graph_name": "g",
-        "token": "<>",
-        "host": "<>",
-        "query": "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)",
-        "remote_database": "bar",
-        "config": {},
-    }
-
-
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 6, 0))
+@pytest.mark.parametrize("server_version", [ServerVersion(2, 7, 0)])
 def test_remote_projection_all_configuration(runner: CollectingQueryRunner, aura_gds: AuraGraphDataScience) -> None:
     G, _ = aura_gds.graph.project(
         graph_name="g",
@@ -734,21 +714,20 @@ def test_remote_projection_all_configuration(runner: CollectingQueryRunner, aura
           relationshipProperties: {y: [1, 2]}
         })
         """,
-        undirectedRelationshipTypes=["R"],
-        inverseIndexedRelationshipTypes=["R"],
-        nodePropertySchema={"x": GdsPropertyTypes.LONG},
-        relationshipPropertySchema={"y": GdsPropertyTypes.LONG_ARRAY},
+        concurrency=8,
+        undirected_relationship_types=["R"],
+        inverse_indexed_relationship_types=["R"],
     )
 
     assert (
         runner.last_query()
-        == "CALL gds.graph.project.remoteDb($graph_name, $query, $token, $host, $remote_database, $config)"
+        == "CALL gds.arrow.project("
+        + "$graph_name, $query, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types)"
     )
+
     assert runner.last_params() == {
         "graph_name": "g",
-        "token": "<>",
-        "host": "<>",
-        "remote_database": "neo4j",
+        "concurrency": 8,
         "query": """
         MATCH (n)-->(m)
         RETURN gds.graph.project.remote(n, m, {
@@ -757,10 +736,6 @@ def test_remote_projection_all_configuration(runner: CollectingQueryRunner, aura
           relationshipProperties: {y: [1, 2]}
         })
         """,
-        "config": {
-            "undirectedRelationshipTypes": ["R"],
-            "inverseIndexedRelationshipTypes": ["R"],
-            "nodePropertySchema": {"x": "long"},
-            "relationshipPropertySchema": {"y": "long[]"},
-        },
+        "undirected_relationship_types": ["R"],
+        "inverse_indexed_relationship_types": ["R"],
     }

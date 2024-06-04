@@ -177,7 +177,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         return reduce(add_property, db_node_properties, query_prefix)
 
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
-    def write(self, G: Graph, node_properties: List[str], node_labels: Strings = ["*"], **config: Any) -> "Series[Any]":
+    def write(self, G: Graph, node_properties: Strings, node_labels: Strings = ["*"], **config: Any) -> "Series[Any]":
         self._namespace += ".write"
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
