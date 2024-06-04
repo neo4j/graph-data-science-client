@@ -97,7 +97,7 @@ def test_project_remote(runner: CollectingQueryRunner, aura_gds: AuraGraphDataSc
     assert (
         runner.last_query()
         == "CALL gds.arrow.project("
-        + "$graph_name, $query, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types)"
+        + "$graph_name, $query, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_configuration)"
     )
     # injection of token and host into the params is done by the actual query runner
     assert runner.last_params() == {
@@ -106,6 +106,7 @@ def test_project_remote(runner: CollectingQueryRunner, aura_gds: AuraGraphDataSc
         "inverse_indexed_relationship_types": [],
         "query": "RETURN gds.graph.project.remote(0, 1, null)",
         "undirected_relationship_types": [],
+        "arrow_configuration": {},
     }
 
 
@@ -722,7 +723,7 @@ def test_remote_projection_all_configuration(runner: CollectingQueryRunner, aura
     assert (
         runner.last_query()
         == "CALL gds.arrow.project("
-        + "$graph_name, $query, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types)"
+        + "$graph_name, $query, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_configuration)"
     )
 
     assert runner.last_params() == {
@@ -738,4 +739,5 @@ def test_remote_projection_all_configuration(runner: CollectingQueryRunner, aura
         """,
         "undirected_relationship_types": ["R"],
         "inverse_indexed_relationship_types": ["R"],
+        "arrow_configuration": {},
     }
