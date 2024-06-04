@@ -1,0 +1,1 @@
+* xref:python-runtime/knowledge-graph-embeddings.adoc[Knowledge Graph Embeddings]

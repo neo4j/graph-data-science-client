@@ -1,0 +1,187 @@
+= Knowledge graph embeddings
+
+Knowledge Grapg Embeddings (KGE) are a family of algorithms that learn low-dimensional representations of entities and relations in a knowledge graph.
+The embeddings can be used to perform various tasks such as link prediction, entity classification, and entity clustering.
+
+// we define a KGEM as four components: an in- teraction model, a training approach, a loss function, and its usage of explicit inverse relations.
+
+To define the KGE algorithms, we need to define the following components: a scoring function, a training approach and a loss function.
+
+Python runtime provides the following scoring functions:
+
+* TransE
+** https://proceedings.neurips.cc/paper_files/paper/2013/file/1cecc7a77928ca8133fa24680a88d2f9-Paper.pdf[Bordes, Antoine, et al. "Translating embeddings for modeling multi-relational data." Advances in neural information processing systems 26 (2013).^]
+* DistMult
+** https://arxiv.org/pdf/1412.6575[Yang, Bishan, et al. "Embedding entities and relations for learning and inference in knowledge bases." arXiv preprint arXiv:1412.6575 (2014).^]
+
+
+KGE an _inductive_ algorithm for computing node embeddings for knowledge graphs.
+Knowledge graph means that graph can have multiple node labels and relationship types.
+The algorithm is inductive, meaning that it can be trained on one graph and then applied to this exact graph or another graph with the same schema.
+
+KGEMs (Knowledge Graph Embedding Models) are used to learn low-dimensional representations of entities and relations in a knowledge graph.
+The embeddings can be used to perform various tasks such as link prediction, entity classification, and entity clustering.
+KGEM can return the score for the triple `(head, relation, tail)` which can be used to predict the missing tail entity for a given head and relation.
+
+
+* https://arxiv.org/pdf/1706.02216.pdf[William L. Hamilton, Rex Ying, and Jure Leskovec. "Inductive Representation Learning on Large Graphs." 2018.^]
+* https://arxiv.org/pdf/1911.10232.pdf[Amit Pande, Kai Ni and Venkataramani Kini. "SWAG: Item Recommendations using Convolutions on Weighted Graphs." 2019.^]
+
+
+== Train API
+
+[source,python]
+----
+G = gds.graph.load_fb15k237("train")
+gds.model.transe.train(G,
+    embedding_dimension = 256,
+    batch_size=512,
+    num_epochs=100,
+    optimizer='Adagrad',
+    optimizer_kwargs={'lr': 0.01},
+    loss_function="MarginRanking",
+    loss_function_kwargs={'margin': 1.0},
+)
+----
+
+[cols="1,1,1,4", options="header"]
+|====
+| Parameter | Type | Default value | Description
+
+| num_epochs
+| int
+|
+| Number of epochs for training (must be greater than 0)
+
+| epochs_per_checkpoint
+| int
+|
+| Number of epochs between checkpoints (must be greater than or equal to 0)
+
+| load_from_checkpoint
+| Optional[tuple[str, int]]
+| None
+| Checkpoint to load from, specified as a tuple (path, epoch)
+
+| split_ratios
+| dict[str, float]
+| {TRAIN=0.8, TEST=0.2}
+| Ratios for splitting the dataset into training and test sets
+
+| scoring_function
+| str
+| "transe"
+| Function used to score embeddings
+
+| embedding_dimension
+| int
+| 256
+| Dimensionality of the embeddings (must be greater than 0)
+
+| batch_size
+| int
+| 512
+| Size of the training batch (must be greater than 0)
+
+| test_batch_size
+| int
+| 512
+| Size of the test batch (must be greater than 0)
+
+| epochs_per_val
+| int
+| 50
+| Number of epochs between validations (must be greater than or equal to 0)
+
+| optimizer
+| str
+| "adam"
+| Optimizer to use for training
+
+| optimizer_kwargs
+| dict[str, Any]
+| {lr=0.01, weight_decay=0.0005}
+| Additional arguments for the optimizer
+
+| lr_scheduler
+| str
+| ConstantLR
+| Learning rate scheduler
+
+| lr_scheduler_kwargs
+| dict[str, Any]
+| {factor=1, total_iters=1000}
+| Additional arguments for the learning rate scheduler
+
+| filtered_metrics
+| bool
+| False
+| Whether to use filtered metrics during evaluation
+
+| negative_sampling_size
+| int
+| 1
+| Number of negative samples per positive sample
+
+| p_norm
+| float
+| 1.0
+| Norm to use in TransE scoring function
+
+| loss_function
+| str
+| MarginRanking
+| Loss function to use for training
+
+| loss_function_kwargs
+| dict[str, Any]
+| {margin=1.0, adversarial_temperature=1.0, gamma=20.0}
+| Additional arguments for the loss function
+
+| k_value
+| int
+| 10
+| Value of k used in evaluation metrics
+
+| do_validation
+| bool
+| True
+| Whether to perform validation
+
+| do_test
+| bool
+| True
+| Whether to perform testing
+
+| disable_tqdm
+| bool
+| True
+| Whether to disable tqdm progress bars
+
+| inner_norm
+| bool
+| True
+| Whether to apply normalization to embeddings
+
+| init_bound
+| Optional[float]
+| None
+| Initial bound for embeddings (if any)
+|====
+
+
+[[algorithms-embeddings-graph-sage-considerations]]
+== Considerations
+
+=== Negative sampling
+
+=== sLCWA - Stochastic Local Closed World Assumption
+
+=== Loss function
+
+=== Optimizer
+
+=== Learning rate scheduler
+
+=== Inner normalisation
+
