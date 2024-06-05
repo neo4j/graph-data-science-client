@@ -1,7 +1,7 @@
 import dataclasses
 import re
-from datetime import datetime
-from typing import List, Optional
+from datetime import datetime, timedelta, timezone
+from typing import List, Optional, cast
 
 import pytest
 from pytest_mock import MockerFixture
@@ -53,12 +53,19 @@ class FakeAuraApi(AuraApi):
             created_at=datetime.fromisoformat("2021-01-01T00:00:00+00:00"),
             host="foo.bar",
             expiry_date=None,
+            ttl=None,
         )
 
         self.id_counter += 1
         self._sessions[details.id] = details
 
         return details
+
+    def add_session(self, session: SessionDetails) -> None:
+        if session.id in self._sessions:
+            raise ValueError(f"Session with id {session.id} already exists.")
+
+        self._sessions[session.id] = session
 
     def create_instance(self, name: str, memory: str, cloud_provider: str, region: str) -> InstanceCreateDetails:
         id = f"ffff{self.id_counter}"
@@ -233,6 +240,54 @@ def test_get_or_create_duplicate_session(aura_api: AuraApi) -> None:
     sessions = DedicatedSessions(aura_api)
 
     with pytest.raises(RuntimeError, match=re.escape("Expected to find exactly one GDS session with name `one`")):
+        sessions.get_or_create("one", SessionMemory.m_8GB, DbmsConnectionInfo(db.connection_url, "", ""))
+
+
+def test_get_or_create_expired_session(aura_api: AuraApi) -> None:
+    db = _setup_db_instance(aura_api)
+
+    fake_aura_api = cast(FakeAuraApi, aura_api)
+    fake_aura_api.add_session(
+        SessionDetails(
+            id="ffff0-ffff1",
+            name="one",
+            instance_id=db.id,
+            memory=SessionMemory.m_8GB.value,
+            status="Expired",
+            created_at=datetime.now(),
+            host="foo.bar",
+            expiry_date=None,
+            ttl=None,
+        )
+    )
+
+    with pytest.raises(
+        RuntimeError, match=re.escape("Session `one` is expired. Please delete it and create a new one.")
+    ):
+        sessions = DedicatedSessions(aura_api)
+        sessions.get_or_create("one", SessionMemory.m_8GB, DbmsConnectionInfo(db.connection_url, "", ""))
+
+
+def test_get_or_create_soon_expired_session(aura_api: AuraApi) -> None:
+    db = _setup_db_instance(aura_api)
+
+    fake_aura_api = cast(FakeAuraApi, aura_api)
+    fake_aura_api.add_session(
+        SessionDetails(
+            id="ffff0-ffff1",
+            name="one",
+            instance_id=db.id,
+            memory=SessionMemory.m_8GB.value,
+            status="Ready",
+            created_at=datetime.now(),
+            host="foo.bar",
+            expiry_date=datetime.now(tz=timezone.utc) - timedelta(hours=23),
+            ttl=None,
+        )
+    )
+
+    with pytest.raises(Warning, match=re.escape("Session `one` is expiring in less than a day.")):
+        sessions = DedicatedSessions(aura_api)
         sessions.get_or_create("one", SessionMemory.m_8GB, DbmsConnectionInfo(db.connection_url, "", ""))
 
 
