@@ -111,6 +111,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
                 "instance_id": "dbid-3",
                 "created_at": "2012-01-01T00:00:00Z",
                 "memory": "8G",
+                "host": "foo.bar",
             },
         ],
     )
