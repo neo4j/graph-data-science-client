@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from _pytest.logging import LogCaptureFixture
@@ -48,6 +48,7 @@ def test_create_session(requests_mock: Mocker) -> None:
         host="1.2.3.4",
         memory="4G",
         expiry_date=None,
+        ttl=None,
     )
 
 
@@ -82,6 +83,7 @@ def test_list_session(requests_mock: Mocker) -> None:
         host="1.2.3.4",
         memory="4G",
         expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
+        ttl=None,
     )
 
 
@@ -124,6 +126,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         host="1.2.3.4",
         memory="4G",
         expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
+        ttl=None,
     )
 
     expected2 = SessionDetails(
@@ -133,8 +136,9 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         instance_id="dbid-3",
         created_at=TimeParser.fromisoformat("2012-01-01T00:00:00Z"),
         memory="8G",
-        host=None,
+        host="foo.bar",
         expiry_date=None,
+        ttl=None,
     )
 
     assert result == [expected1, expected2]
@@ -635,6 +639,7 @@ def test_parse_session_info() -> None:
         "expiry_date": "2022-01-01T00:00:00Z",
         "created_at": "2021-01-01T00:00:00Z",
         "host": "a.b",
+        "ttl": "1d8h1m2s",
     }
     session_info = SessionDetails.fromJson(session_details)
 
@@ -647,10 +652,11 @@ def test_parse_session_info() -> None:
         host="a.b",
         expiry_date=datetime(2022, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
         created_at=datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
+        ttl=timedelta(days=1, hours=8, minutes=1, seconds=2),
     )
 
 
-def test_parse_session_info_without_expiry() -> None:
+def test_parse_session_info_without_optionals() -> None:
     session_details = {
         "id": "test_id",
         "name": "test_session",
@@ -670,5 +676,6 @@ def test_parse_session_info_without_expiry() -> None:
         host="a.b",
         status="running",
         expiry_date=None,
+        ttl=None,
         created_at=datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
     )

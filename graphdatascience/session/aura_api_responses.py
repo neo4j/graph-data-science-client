@@ -4,8 +4,10 @@ import dataclasses
 import sys
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from typing import Any, Dict, NamedTuple, Optional, Set
+from datetime import datetime, timedelta, timezone
+
+from pandas import Timedelta
 
 
 @dataclass(repr=True, frozen=True)
@@ -15,13 +17,15 @@ class SessionDetails:
     instance_id: str
     memory: str
     status: str
-    host: Optional[str]
-    expiry_date: Optional[datetime]
+    host: str
     created_at: datetime
+    expiry_date: Optional[datetime]
+    ttl: Optional[timedelta]
 
     @classmethod
     def fromJson(cls, json: Dict[str, Any]) -> SessionDetails:
         expiry_date = json.get("expiry_date")
+        ttl = json.get("ttl")
 
         return cls(
             id=json["id"],
@@ -29,13 +33,17 @@ class SessionDetails:
             instance_id=json["instance_id"],
             memory=json["memory"],
             status=json["status"],
-            host=json.get("host"),
+            host=json["host"],
             expiry_date=TimeParser.fromisoformat(expiry_date) if expiry_date else None,
             created_at=TimeParser.fromisoformat(json["created_at"]),
+            ttl=Timedelta(ttl).to_pytimedelta() if ttl else None,  # datetime has no support for parsing timedetla
         )
 
     def bolt_connection_url(self) -> str:
         return f"neo4j+ssc://{self.host}"  # TODO use neo4j+s
+
+    def is_expired(self) -> bool:
+        return self.status == "Expired"
 
 
 @dataclass(repr=True, frozen=True)
