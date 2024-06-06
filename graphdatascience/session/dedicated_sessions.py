@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import warnings
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
@@ -50,6 +51,7 @@ class DedicatedSessions:
 
         # TODO configure session size (and check existing_session has same size)
         if existing_session:
+            self._check_expiry_date(existing_session)
             session_id = existing_session.id
         else:
             create_details = self._create_session(session_name, dbid, db_connection.uri, password, memory)
@@ -128,6 +130,14 @@ class DedicatedSessions:
             aura_db_connection_info=db_connection,
             delete_fn=lambda: self.delete(session_name, dbid=AuraApi.extract_id(db_connection.uri)),
         )
+
+    def _check_expiry_date(self, session: SessionDetails) -> None:
+        if session.is_expired():
+            raise RuntimeError(f"Session `{session.name}` is expired. Please delete it and create a new one.")
+        if session.expiry_date:
+            until_expiry: timedelta = session.expiry_date - datetime.now(timezone.utc)
+            if until_expiry < timedelta(days=1):
+                raise Warning(f"Session `{session.name}` is expiring in less than a day.")
 
     @classmethod
     def _fail_ambiguous_session(cls, session_name: str, sessions: List[SessionDetails]) -> None:
