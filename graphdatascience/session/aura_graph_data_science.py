@@ -63,7 +63,11 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         self._db_query_runner.set_database("neo4j")
 
         arrow_client = GdsArrowClient.create(
-            gds_query_runner, aura_db_connection_info.auth(), self._db_query_runner.encrypted()
+            gds_neo4j_query_runner,
+            gds_session_connection_info.auth(),
+            gds_neo4j_query_runner.encrypted(),
+            arrow_disable_server_verification,
+            arrow_tls_root_certs,
         )
         self._query_runner = AuraDbQueryRunner(
             gds_query_runner, self._db_query_runner, arrow_client, self._db_query_runner.encrypted()
