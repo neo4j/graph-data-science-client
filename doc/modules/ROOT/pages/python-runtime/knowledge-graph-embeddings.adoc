@@ -1,61 +1,137 @@
 = Knowledge graph embeddings
 
-Knowledge Grapg Embeddings (KGE) are a family of algorithms that learn low-dimensional representations of entities and relations in a knowledge graph.
-The embeddings can be used to perform various tasks such as link prediction, entity classification, and entity clustering.
-
-// we define a KGEM as four components: an in- teraction model, a training approach, a loss function, and its usage of explicit inverse relations.
-
-To define the KGE algorithms, we need to define the following components: a scoring function, a training approach and a loss function.
+Knowledge Graph Embeddings (KGE) refer to a family of algorithms designed to learn low-dimensional representations of entities and relations within a knowledge graph.
+These embeddings are utilized for tasks including link prediction, entity classification, and entity clustering.
 
 Python runtime provides the following scoring functions:
 
-* TransE
+* `TransE`
 ** https://proceedings.neurips.cc/paper_files/paper/2013/file/1cecc7a77928ca8133fa24680a88d2f9-Paper.pdf[Bordes, Antoine, et al. "Translating embeddings for modeling multi-relational data." Advances in neural information processing systems 26 (2013).^]
-* DistMult
+* `DistMult`
 ** https://arxiv.org/pdf/1412.6575[Yang, Bishan, et al. "Embedding entities and relations for learning and inference in knowledge bases." arXiv preprint arXiv:1412.6575 (2014).^]
 
 
-KGE an _inductive_ algorithm for computing node embeddings for knowledge graphs.
-Knowledge graph means that graph can have multiple node labels and relationship types.
+KGE is an _inductive_ algorithm for computing node embeddings for knowledge graphs.
+A knowledge graph means that graph can have multiple node labels and relationship types.
+Triple `(head, relation, tail)` is used to represent the relationship between two entities.
 The algorithm is inductive, meaning that it can be trained on one graph and then applied to this exact graph or another graph with the same schema.
 
-KGEMs (Knowledge Graph Embedding Models) are used to learn low-dimensional representations of entities and relations in a knowledge graph.
-The embeddings can be used to perform various tasks such as link prediction, entity classification, and entity clustering.
-KGEM can return the score for the triple `(head, relation, tail)` which can be used to predict the missing tail entity for a given head and relation.
+KGE models are used to learn low-dimensional representations of entities and relations in a knowledge graph.
+The embeddings can be used to perform various tasks, such as link prediction, entity classification, and entity clustering.
+A KGE model can return the score for the triple `(head, relation, tail)` which can be used to predict the missing tail entity for a given head and relation.
 
 
 * https://arxiv.org/pdf/1706.02216.pdf[William L. Hamilton, Rex Ying, and Jure Leskovec. "Inductive Representation Learning on Large Graphs." 2018.^]
 * https://arxiv.org/pdf/1911.10232.pdf[Amit Pande, Kai Ni and Venkataramani Kini. "SWAG: Item Recommendations using Convolutions on Weighted Graphs." 2019.^]
 
 
-== Train API
+[[algorithms-embeddings-kge-considerations]]
+== Scoring functions
+
+For KGE algorithms, the scoring function is used to compute the score of a triple `(head, relation, tail)`.
+This score is used for computing loss during training and during prediction to rank the tail entities for a given head and relation.
+
+The scoring function is a function of the embeddings of the head, relation, and tail entities.
+
+Let the embeddings of the head, relation, and tail entities be denoted by `h`, `r`, and `t` respectively.
+To compute the score of the triple `(head, relation, tail)`, the scoring function takes the embeddings `h`, `r`, and `t` as input and computes a scalar score using the corresponding formula.
+
+=== `TransE`
+
+It is a translation-based model that represents the relationship between head and tail entities as a vector translation in the embedding space.
+This method is effective for modeling anti-symmetric, inversion, and composition relations.
+
+The formula to compute the score of a triple `(head, relation, tail)` using the embeddings `h`, `r`, and `t`:
+
+image::python-runtime/transe-formula.svg[width=280]
+
+=== `DistMult`
+
+This method assumes that the relation between head and tail entities is a dot-product multiplication in the embedding space.
+This method works for modelling symmetric relations.
+
+The formula to compute the score of a triple `(head, relation, tail)` using the embeddings `h`, `r`, and `t`:
+
+image::python-runtime/distmult-formula.svg[width=400]
+
+
+== Considerations
+To effectively train KGE models, several considerations need to be taken into account, including the choice of loss function, sampling methods, and optimization strategies.
+
+=== Loss function
+The loss function is crucial for guiding the training process of KGE models. It determines how the difference between predicted and actual values is calculated and minimized.
+
+==== Margin ranking loss
+
+Margin ranking loss is a pairwise loss function that compares the scores based on the difference between the scores of a positive triple and a negative triple.
+When negative sampling size is more than 1, the loss is computed for positive triple and each negative triple and the average loss is computed.
+
+image::python-runtime/mrl.svg[width=300]
+image::python-runtime/delta-value.svg[width=400]
+
+
+==== Negative Sampling Self-Adversarial Loss
+
+Negative Sampling Self-Adversarial Loss is a setwise loss function that compares the scores based on the difference between the scores of a positive triple and a set of negative triples.
+`loss_function_kwargs` can be used to set the `adversarial_temperature` and `margin` parameters.
+
+* https://arxiv.org/pdf/1902.10197[Sun, Zhiqing, et al. "Rotate: Knowledge graph embedding by relational rotation in complex space." arXiv preprint arXiv:1902.10197 (2019).]
+
+=== Negative sampling
+
+Loss function requires negative samples to compute the loss.
+The number of negative samples per positive sample is controlled by the `negative_sampling_size` parameter.
+When `use_node_type_aware_sampler` is set to `True`, negative nodes are sampled with the same label as the corresponding positive node.
+With or without node type awareness, the negative samples are sampled uniformly at random from the graph.
+
+=== Stochastic Local Closed World Assumption (sLCWA)
+
+Under this assumption, all positive triples are considered true and randomly sampled negative triples are considered false.
+
+* https://arxiv.org/pdf/2006.13365[Ali, M., Berrendorf, M., Hoyt, C. T., Vermue, L., Galkin, M., Sharifzadeh, S., ... & Lehmann, J. (2021). Bringing light into the dark: A large-scale evaluation of knowledge graph embedding models under a unified framework. IEEE Transactions on Pattern Analysis and Machine Intelligence, 44(12), 8825-8845.]
+
+=== Optimizer
+
+Any pytorch optimizer can be used for training the model.
+To use non-default optimizer, specify the optimizer class name as a string in the `optimizer` parameter.
+All optimizer parameters except `params` can be passed as `optimizer_kwargs`.
+
+=== Learning rate scheduler
+
+Any pytorch learning rate scheduler can be used for training the model.
+To use non-default learning rate scheduler, specify the scheduler class name as a string in the `lr_scheduler` parameter.
+All scheduler parameters except `optimizer` can be passed as `lr_scheduler_kwargs`.
+
+=== Inner normalisation
+
+In original `TransE` paper in `Algorithm 1` line 5, the entity embeddings are normalized to have `Lp` norm of 1.
+For some datasets, this normalization might not be beneficial.
+To avoid this normalization, set `inner_norm` to `False`.
+
+
+[[algorithms-embeddings-kge-syntax]]
+== Syntax
 
 [source,python]
 ----
-G = gds.graph.load_fb15k237("train")
 gds.model.transe.train(G,
-    embedding_dimension = 256,
-    batch_size=512,
-    num_epochs=100,
-    optimizer='Adagrad',
-    optimizer_kwargs={'lr': 0.01},
-    loss_function="MarginRanking",
-    loss_function_kwargs={'margin': 1.0},
+    num_epochs = 10,
 )
 ----
 
-[cols="1,1,1,4", options="header"]
+.Parameters
+[cols="1m,1m,1m,1", options="header"]
 |====
 | Parameter | Type | Default value | Description
 
 | num_epochs
 | int
-|
+| N/A
 | Number of epochs for training (must be greater than 0)
 
 | epochs_per_checkpoint
 | int
-|
+| max(num_epochs / 10, 1)
 | Number of epochs between checkpoints (must be greater than or equal to 0)
 
 | load_from_checkpoint
@@ -123,6 +199,11 @@ gds.model.transe.train(G,
 | 1
 | Number of negative samples per positive sample
 
+| use_node_type_aware_sampler
+| bool
+| False
+| Whether to sample negative nodes with the same label as the corresponding positive node
+
 | p_norm
 | float
 | 1.0
@@ -170,18 +251,17 @@ gds.model.transe.train(G,
 |====
 
 
-[[algorithms-embeddings-graph-sage-considerations]]
-== Considerations
+.Results
+[opts="header",cols="2m,1,6"]
+|===
+| Name              | Type    | Description
+| modelInfo         | Map     | Details of the trained model.
+| configuration     | Map     | The configuration used to run the procedure.
+| trainMillis       | Integer | Milliseconds to train the model.
+|===
 
-=== Negative sampling
 
-=== sLCWA - Stochastic Local Closed World Assumption
 
-=== Loss function
-
-=== Optimizer
-
-=== Learning rate scheduler
-
-=== Inner normalisation
-
+[[algorithms-embeddings-kge-examples]]
+== Examples
+TODO
