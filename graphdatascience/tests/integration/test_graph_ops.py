@@ -685,6 +685,26 @@ def test_graph_streamRelationshipProperties_with_arrow_separate_property_columns
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_relationshipProperties_stream_with_arrow_rel_as_str(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
+
+    result = gds.graph.relationshipProperties.stream(G, ["relX", "relY"], "REL", concurrency=2)
+
+    assert list(result.keys()) == [
+        "sourceNodeId",
+        "targetNodeId",
+        "relationshipType",
+        "relationshipProperty",
+        "propertyValue",
+    ]
+
+    x_values = result[result.relationshipProperty == "relX"]
+    assert {e for e in x_values["propertyValue"]} == {4, 5, 6}
+    y_values = result[result.relationshipProperty == "relY"]
+    assert {e for e in y_values["propertyValue"]} == {5, 6, 7}
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_graph_relationshipProperties_stream_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
