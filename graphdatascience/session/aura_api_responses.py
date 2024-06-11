@@ -164,7 +164,6 @@ class TenantDetails:
 
 # datetime.fromisoformat only works with Python version > 3.9
 class TimeParser:
-
     @staticmethod
     def fromisoformat(date: str) -> datetime:
         if sys.version_info >= (3, 11):

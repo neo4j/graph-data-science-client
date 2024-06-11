@@ -53,7 +53,6 @@ def test_create_session(requests_mock: Mocker) -> None:
 
 
 def test_list_session(requests_mock: Mocker) -> None:
-
     api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
