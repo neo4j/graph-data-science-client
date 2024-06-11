@@ -6,22 +6,19 @@ These embeddings are utilized for tasks such as link prediction, entity classifi
 This chapter provides an overview of the available shallow embedding algorithms in the GDS Python runtime, such as `TransE` and `DistMult`.
 
 * `TransE`
-** https://proceedings.neurips.cc/paper_files/paper/2013/file/1cecc7a77928ca8133fa24680a88d2f9-Paper.pdf[Bordes, Antoine, et al. "Translating embeddings for modeling multi-relational data." Advances in neural information processing systems 26 (2013).^]
+** Bordes, Antoine, et al. "Translating embeddings for modeling multi-relational data." Advances in neural information processing systems 26 (2013).
 * `DistMult`
-** https://arxiv.org/pdf/1412.6575[Yang, Bishan, et al. "Embedding entities and relations for learning and inference in knowledge bases." arXiv preprint arXiv:1412.6575 (2014).^]
+** Yang, Bishan, et al. "Embedding entities and relations for learning and inference in knowledge bases." arXiv preprint arXiv:1412.6575 (2014)
 
 A knowledge graph is a directed, multi-relational graph.
 It consists of triples `(head, relation, tail)` where `head` and `tail` are entities and `relation` is the relationship between them.
 
-Shallow models of KGE represented here are _inductive_ algorithms for computing node and relationship embeddings (low-dimensional representations) for knowledge graphs.
+Shallow models of KGE represented here are _transductive_ algorithms for computing node and relationship embeddings (low-dimensional representations) for knowledge graphs.
 Shallow means that matrix lookups represent the entity and relation encoders.
 The algorithm is inductive, meaning that it can be trained on one graph and then applied to this exact graph or another graph with the same schema.
 
-A KGE model can return the score for the triple which can be used to predict the missing tail entity for a given head and relation.
+A KGE model can return the score for the triple which can be used to predict the missing tail entity for a given head and relationship type.
 The embeddings can be used to perform various tasks, such as link prediction, entity classification, and entity clustering.
-
-* https://arxiv.org/pdf/1706.02216.pdf[William L. Hamilton, Rex Ying, and Jure Leskovec. "Inductive Representation Learning on Large Graphs." 2018.^]
-* https://arxiv.org/pdf/1911.10232.pdf[Amit Pande, Kai Ni and Venkataramani Kini. "SWAG: Item Recommendations using Convolutions on Weighted Graphs." 2019.^]
 
 
 [[algorithms-embeddings-kge-considerations]]
@@ -35,6 +32,7 @@ The scoring function is a function of the embeddings of the head, relation, and 
 Let the embeddings of the head, relation, and tail entities be denoted by `h`, `r`, and `t` respectively.
 To compute the score of the triple `(head, relation, tail)`, the scoring function takes the embeddings `h`, `r`, and `t` as input and computes a scalar score using the corresponding formula.
 
+
 === `TransE`
 
 `TransE` is a translational distance interaction model.
@@ -44,6 +42,7 @@ This method is effective for modeling anti-symmetric, inversion, and composition
 The formula to compute the score of a triple `(head, relation, tail)` using the embeddings `h`, `r`, and `t`:
 
 image::python-runtime/transe-formula.svg[width=280]
+
 
 === `DistMult`
 
@@ -58,6 +57,7 @@ image::python-runtime/distmult-formula.svg[width=400]
 
 == Considerations
 To effectively train KGE models, several considerations need to be taken into account, including the choice of loss function, sampling methods, and optimization strategies.
+
 
 === Stochastic Local Closed World Assumption (sLCWA)
 
@@ -83,6 +83,7 @@ The loss function is crucial for guiding the training process of KGE models.
 It determines how the difference between predicted and actual values is calculated and minimized.
 There are several loss functions that can be used for training KGE models, see below for more details.
 
+
 ==== Margin ranking loss
 
 Margin ranking loss is a pairwise loss function that compares the scores based on the difference between the scores of a positive triple and a negative triple.
@@ -104,6 +105,7 @@ Any pytorch optimizer can be used for training the model.
 To use non-default optimizer, specify the optimizer class name as a string in the `optimizer` parameter.
 All optimizer parameters except `params` can be passed as `optimizer_kwargs`.
 
+
 === Negative sampling
 
 The loss function requires negative samples to compute the loss.
@@ -111,11 +113,13 @@ The number of negative samples per positive sample is controlled by the `negativ
 When `use_node_type_aware_sampler` is set to `True`, negative nodes are sampled with the same label as the corresponding positive node.
 With or without node type awareness, the negative samples are sampled uniformly at random from the graph.
 
+
 === Learning rate scheduler
 
 Any pytorch learning rate scheduler can be used for training the model.
 To use non-default learning rate scheduler, specify the scheduler class name as a string in the `lr_scheduler` parameter.
 All scheduler parameters except `optimizer` can be passed as `lr_scheduler_kwargs`.
+
 
 === Inner normalisation
 
@@ -125,13 +129,23 @@ For some datasets, this normalization might not be beneficial.
 To avoid this normalization, set `inner_norm` to `False`.
 
 
+=== Filtered metrics
+
+When we evaluate (compute metrics) the model, we compute scores for all possible triples with the same head or tail and relationship type as the test triple.
+Ranking the test triple among other triples is used for computing metrics, such as Mean Rank, Mean Reciprocal Rank, and Hit@k.
+
+When `filtered_metrics` is set to `False`, the ranking is done among all possible triples.
+
+When `filtered_metrics` is set to `True`, the ranking is done among only the triples that are not present in the training set.
+
 [[algorithms-embeddings-kge-syntax]]
 == Syntax
 
 [source,python]
 ----
-gds.model.transe.train(G,
+gds.model.train(G,
     num_epochs = 10,
+    embedding_dimension = 100,
 )
 ----
 
@@ -147,7 +161,7 @@ gds.model.transe.train(G,
 
 | embedding_dimension
 | int
-| 256
+| N/A
 | Dimensionality of the embeddings (must be greater than 0)
 
 | epochs_per_checkpoint
@@ -243,27 +257,22 @@ gds.model.transe.train(G,
 | filtered_metrics
 | bool
 | False
-| Whether to use filtered metrics during evaluation
+| Whether to use filtered metrics during evaluation, see <<_filtered_metrics, filtered metrics>>
 
 | epochs_per_val
 | int
 | 50
 | Number of epochs between validations (must be greater than or equal to 0)
 
-| disable_tqdm
-| bool
-| True
-| Whether to disable tqdm progress bars
-
 | inner_norm
 | bool
 | True
-| Whether to apply normalization to embeddings
+| Whether to apply normalization to embeddings, see <<_inner_normalisation, inner normalisation>>
 
 | init_bound
 | Optional[float]
 | None
-| Initial bound for embeddings (if any)
+| The value for the range [-bound; bound] of the uniform distribution used to initialize the embeddings. Xavier's initialization is used if None.
 |====
 
 
