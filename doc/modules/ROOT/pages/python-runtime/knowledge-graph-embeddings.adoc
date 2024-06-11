@@ -1,7 +1,7 @@
 = Knowledge graph embeddings
 
 Knowledge Graph Embeddings (KGE) refer to a family of algorithms designed to learn low-dimensional representations of entities and relations within a knowledge graph.
-These embeddings are utilized for tasks including link prediction, entity classification, and entity clustering.
+These embeddings are utilized for tasks such as link prediction, entity classification, and entity clustering.
 
 This chapter provides an overview of the available shallow embedding algorithms in the GDS Python runtime, such as `TransE` and `DistMult`.
 
@@ -86,7 +86,7 @@ There are several loss functions that can be used for training KGE models, see b
 ==== Margin ranking loss
 
 Margin ranking loss is a pairwise loss function that compares the scores based on the difference between the scores of a positive triple and a negative triple.
-When negative sampling size is more than one, the loss is computed for positive triple and each negative triple and the average loss is computed.
+When negative sampling size is more than one, the loss is computed for a positive triple and each of its negative triples, and the average loss is computed.
 
 image::python-runtime/mrl.svg[width=300]
 image::python-runtime/delta-value.svg[width=400]
@@ -106,7 +106,7 @@ All optimizer parameters except `params` can be passed as `optimizer_kwargs`.
 
 === Negative sampling
 
-Loss function requires negative samples to compute the loss.
+The loss function requires negative samples to compute the loss.
 The number of negative samples per positive sample is controlled by the `negative_sampling_size` parameter.
 When `use_node_type_aware_sampler` is set to `True`, negative nodes are sampled with the same label as the corresponding positive node.
 With or without node type awareness, the negative samples are sampled uniformly at random from the graph.
@@ -193,7 +193,7 @@ gds.model.transe.train(G,
 | optimizer_kwargs
 | dict[str, Any]
 | {lr=0.01, weight_decay=0.0005}
-| Additional arguments for the optimizer
+| Arguments for the optimizer
 
 | lr_scheduler
 | str
