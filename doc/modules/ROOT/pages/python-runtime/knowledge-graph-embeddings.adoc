@@ -125,6 +125,7 @@ All scheduler parameters except `optimizer` can be passed as `lr_scheduler_kwarg
 
 In the original `TransE` paperfootnote:[Bordes, Antoine, et al. "Translating embeddings for modeling multi-relational data." Advances in neural information processing systems 26 (2013).]
 in `Algorithm 1`, line 5, the entity embeddings are normalized to have `Lp` norm of 1.
+Value of `p` is set by the `p_norm` parameter.
 For some datasets, this normalization might not be beneficial.
 To avoid this normalization, set `inner_norm` to `False`.
 
@@ -177,7 +178,10 @@ gds.model.train(G,
 | split_ratios
 | dict[str, float]
 | {TRAIN=0.8, TEST=0.2}
-| Ratios for splitting the dataset into training and test sets
+| Ratios for splitting the dataset into training and test sets.
+When sum of values is less than 1, the remaining data is used for validation.
+Validation size can be set explicitly with the key `VALID`.
+When all three keys are present, the sum of values must be equal to 1.
 
 | scoring_function
 | str
@@ -267,7 +271,7 @@ gds.model.train(G,
 | inner_norm
 | bool
 | True
-| Whether to apply normalization to embeddings, see <<_inner_normalisation, inner normalisation>>
+| Whether to apply normalization to embeddings, see <<_inner_normalisation, inner normalization>>
 
 | init_bound
 | Optional[float]
