@@ -4,11 +4,6 @@
 * xref:graph-object.adoc[]
 * xref:algorithms.adoc[]
 * xref:pipelines.adoc[]
-* xref:python-runtime/introduction.adoc[Python Runtime Algorithms]
-+
---
-include::partial$python-runtime-algorithms.adoc[]
---
 * xref:model-object.adoc[]
 * xref:common-datasets.adoc[]
 * xref:rel-embedding-models.adoc[]
