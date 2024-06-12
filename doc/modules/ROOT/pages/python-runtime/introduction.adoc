@@ -1,7 +1,0 @@
-= Introduction
-
-Python runtime works with GDS sessions.
-
-The list of available algorithms:
-
-include::ROOT:partial$python-runtime-algorithms.adoc[]
