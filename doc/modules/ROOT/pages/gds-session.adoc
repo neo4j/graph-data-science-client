@@ -56,7 +56,7 @@ This is a `DbmsConnectionInfo` object that contains the URI of an AuraDB instanc
 from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory
 
 name = "my-new-session"
-size = sessions.estimate(
+memory = sessions.estimate(
     node_count=20,
     relationship_count=50,
     algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
