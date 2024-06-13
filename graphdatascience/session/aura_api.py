@@ -9,7 +9,6 @@ from urllib.parse import urlparse
 import requests as req
 from requests import HTTPError
 
-from graphdatascience.session.session_sizes import SessionMemory
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api_responses import (
     EstimationDetails,
@@ -20,6 +19,7 @@ from graphdatascience.session.aura_api_responses import (
     TenantDetails,
     WaitResult,
 )
+from graphdatascience.session.session_sizes import SessionMemoryValue
 from graphdatascience.version import __version__
 
 
@@ -63,7 +63,7 @@ class AuraApi:
 
         return host.split(".")[0].split("-")[0]
 
-    def create_session(self, name: str, dbid: str, pwd: str, memory: SessionMemory) -> SessionDetails:
+    def create_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
         response = req.post(
             f"{self._base_uri}/v1beta5/data-science/sessions",
             headers=self._build_header(),
@@ -143,7 +143,7 @@ class AuraApi:
         return False
 
     def create_instance(
-        self, name: str, memory: SessionMemory, cloud_provider: str, region: str
+        self, name: str, memory: SessionMemoryValue, cloud_provider: str, region: str
     ) -> InstanceCreateDetails:
         tenant_details = self.tenant_details()
 
