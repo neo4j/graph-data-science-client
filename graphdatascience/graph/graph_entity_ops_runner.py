@@ -209,6 +209,8 @@ class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
     ) -> DataFrame:
         self._namespace += ".stream"
 
+        relationship_types = [relationship_types] if isinstance(relationship_types, str) else relationship_types
+
         result = self._handle_properties(G, relationship_properties, relationship_types, config)
 
         # new format was requested, but the query was run via Cypher
