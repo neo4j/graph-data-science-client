@@ -54,9 +54,9 @@ class AuraDsSessions:
         if existing_session:
             session_id = existing_session.id
             # 0MB is AuraAPI default value for memory if none can be retrieved
-            if existing_session.memory != "0MB" and existing_session.memory != memory.value:
+            if existing_session.memory != memory:
                 raise ValueError(
-                    f"Session `{session_name}` already exists with memory `{existing_session.memory}`. "
+                    f"Session `{session_name}` already exists with memory `{existing_session.memory.value}`. "
                     f"Requested memory `{memory.value}` does not match."
                 )
         else:
@@ -128,7 +128,7 @@ class AuraDsSessions:
         region = self._ds_region(db_instance.region, db_instance.cloud_provider)
 
         create_details = self._aura_api.create_instance(
-            SessionNameHelper.instance_name(session_name), memory.value, db_instance.cloud_provider, region
+            SessionNameHelper.instance_name(session_name), memory, db_instance.cloud_provider, region
         )
         return create_details
 

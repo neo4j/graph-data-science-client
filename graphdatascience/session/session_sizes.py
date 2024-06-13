@@ -7,6 +7,7 @@ class SessionMemory(Enum):
     Enumeration representing session main memory configurations.
     """
 
+    m_4GB = "4GB"
     m_8GB = "8GB"
     m_16GB = "16GB"
     m_24GB = "24GB"
@@ -29,3 +30,20 @@ class SessionMemory(Enum):
 
         """
         return [e.value for e in cls]
+
+    @staticmethod
+    def fromApiResponse(value: str) -> "SessionMemory":
+        """
+        Converts the string value from an API response to a SessionMemory enumeration value.
+
+        Args:
+            value: The string value from the API response.
+
+        Returns:
+            The SessionMemory enumeration value.
+
+        """
+        try:
+            return SessionMemory(value.replace("Gi", "GB"))
+        except ValueError:
+            raise ValueError(f"Unsupported memory configuration: {value}")

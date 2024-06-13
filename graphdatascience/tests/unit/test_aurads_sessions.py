@@ -37,7 +37,9 @@ class FakeAuraApi(AuraApi):
         self._status_after_creating = status_after_creating
         self._size_estimation = size_estimation or EstimationDetails("1GB", "8GB", False)
 
-    def create_instance(self, name: str, memory: str, cloud_provider: str, region: str) -> InstanceCreateDetails:
+    def create_instance(
+        self, name: str, memory: SessionMemory, cloud_provider: str, region: str
+    ) -> InstanceCreateDetails:
         create_details = InstanceCreateDetails(
             id=f"ffff{self.id_counter}",
             username="neo4j",
@@ -102,11 +104,13 @@ def aura_api() -> AuraApi:
 
 
 def test_list_session(aura_api: AuraApi) -> None:
-    aura_api.create_instance(name="gds-session-my-session-name", cloud_provider="gcp", memory="16GB", region="")
+    aura_api.create_instance(
+        name="gds-session-my-session-name", cloud_provider="gcp", memory=SessionMemory.m_16GB, region=""
+    )
 
     sessions = AuraDsSessions(aura_api)
 
-    assert sessions.list() == [SessionInfo("my-session-name", "16GB")]
+    assert sessions.list() == [SessionInfo("my-session-name", SessionMemory.m_16GB)]
 
 
 def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
@@ -135,12 +139,12 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
         "gds_url": "fake-url",
         "session_name": "my-session",
     }
-    assert sessions.list() == [SessionInfo("my-session", "384GB")]
+    assert sessions.list() == [SessionInfo("my-session", SessionMemory.m_384GB)]
 
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
     assert instance_details.cloud_provider == "aws"
     assert instance_details.region == "leipzig-1"
-    assert instance_details.memory == "384GB"
+    assert instance_details.memory == SessionMemory.m_384GB
 
 
 def test_create_default_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
@@ -163,11 +167,11 @@ def test_create_default_session(mocker: MockerFixture, aura_api: AuraApi) -> Non
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
     assert instance_details.cloud_provider == "aws"
     assert instance_details.region == "leipzig-1"
-    assert instance_details.memory == "8GB"
+    assert instance_details.memory == SessionMemory.m_8GB
 
 
 def test_create_session_override_region(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    aura_api.create_instance("test", "8GB", "aws", "dresden-2")
+    aura_api.create_instance("test", SessionMemory.m_8GB, "aws", "dresden-2")
 
     sessions = AuraDsSessions(aura_api)
 
@@ -186,7 +190,7 @@ def test_create_session_override_region(mocker: MockerFixture, aura_api: AuraApi
     instance_details: InstanceSpecificDetails = aura_api.list_instance("ffff1")  # type: ignore
     assert instance_details.cloud_provider == "aws"
     assert instance_details.region == "leipzig-1"
-    assert instance_details.memory == "8GB"
+    assert instance_details.memory == SessionMemory.m_8GB
 
 
 def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
@@ -221,7 +225,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     }
     assert gds_args1 == gds_args2
 
-    assert sessions.list() == [SessionInfo("my-session", "8GB")]
+    assert sessions.list() == [SessionInfo("my-session", SessionMemory.m_8GB)]
 
 
 def test_get_or_create_different_size(mocker: MockerFixture, aura_api: AuraApi) -> None:
@@ -265,7 +269,7 @@ def test_get_or_create_duplicate_session() -> None:
                 cloud_provider="",
                 status="RUNNING",
                 connection_url="",
-                memory="",
+                memory=SessionMemory.m_8GB,
                 type="",
                 region="",
             ),
@@ -276,7 +280,7 @@ def test_get_or_create_duplicate_session() -> None:
                 cloud_provider="",
                 status="RUNNING",
                 connection_url="",
-                memory="",
+                memory=SessionMemory.m_8GB,
                 type="",
                 region="",
             ),
@@ -298,7 +302,7 @@ def test_delete_session() -> None:
             cloud_provider="cloud_provider",
             status="RUNNING",
             connection_url="",
-            memory="",
+            memory=SessionMemory.m_8GB,
             type="",
             region="",
         ),
@@ -309,7 +313,7 @@ def test_delete_session() -> None:
             cloud_provider="cloud_provider",
             status="RUNNING",
             connection_url="",
-            memory="",
+            memory=SessionMemory.m_8GB,
             type="",
             region="",
         ),
@@ -318,7 +322,7 @@ def test_delete_session() -> None:
     sessions = AuraDsSessions(FakeAuraApi(existing_instances=existing_instances))
 
     assert sessions.delete("one")
-    assert sessions.list() == [SessionInfo("other", "")]
+    assert sessions.list() == [SessionInfo("other", SessionMemory.m_8GB)]
 
 
 def test_delete_nonexisting_session() -> None:
@@ -330,7 +334,7 @@ def test_delete_nonexisting_session() -> None:
             cloud_provider="cloud_provider",
             status="RUNNING",
             connection_url="",
-            memory="",
+            memory=SessionMemory.m_8GB,
             type="",
             region="",
         ),
@@ -339,7 +343,7 @@ def test_delete_nonexisting_session() -> None:
     sessions = AuraDsSessions(FakeAuraApi(existing_instances=existing_instances))
 
     assert sessions.delete("other") is False
-    assert sessions.list() == [SessionInfo("one", "")]
+    assert sessions.list() == [SessionInfo("one", SessionMemory.m_8GB)]
 
 
 def test_delete_nonunique_session() -> None:
@@ -351,7 +355,7 @@ def test_delete_nonunique_session() -> None:
             cloud_provider="",
             status="RUNNING",
             connection_url="",
-            memory="",
+            memory=SessionMemory.m_8GB,
             type="",
             region="",
         ),
@@ -362,7 +366,7 @@ def test_delete_nonunique_session() -> None:
             cloud_provider="",
             status="RUNNING",
             connection_url="",
-            memory="",
+            memory=SessionMemory.m_8GB,
             type="",
             region="",
         ),
@@ -378,7 +382,7 @@ def test_delete_nonunique_session() -> None:
     ):
         sessions.delete("one")
 
-    assert sessions.list() == [SessionInfo("one", ""), SessionInfo("one", "")]
+    assert sessions.list() == [SessionInfo("one", SessionMemory.m_8GB), SessionInfo("one", SessionMemory.m_8GB)]
 
 
 def test_create_immediate_delete() -> None:
@@ -435,4 +439,4 @@ def test_estimate_size_exceeds() -> None:
 
 
 def _setup_db_instance(aura_api: AuraApi) -> None:
-    aura_api.create_instance("test", "8GB", "aws", "leipzig-1")
+    aura_api.create_instance("test", SessionMemory.m_8GB, "aws", "leipzig-1")

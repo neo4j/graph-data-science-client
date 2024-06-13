@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
+from graphdatascience.session.session_sizes import SessionMemory
 from graphdatascience.session.aura_api_responses import SessionDetails
 
 
@@ -18,7 +19,7 @@ class SessionInfo:
     """
 
     name: str
-    memory: str
+    memory: SessionMemory
 
     @classmethod
     def from_session_details(cls, details: SessionDetails) -> ExtendedSessionInfo:

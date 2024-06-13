@@ -43,7 +43,7 @@ class FakeAuraApi(AuraApi):
         self._status_after_creating = status_after_creating
         self._size_estimation = size_estimation or EstimationDetails("1GB", "8GB", False)
 
-    def create_session(self, name: str, dbid: str, pwd: str, memory: str) -> SessionDetails:
+    def create_session(self, name: str, dbid: str, pwd: str, memory: SessionMemory) -> SessionDetails:
         details = SessionDetails(
             id=f"{dbid}-ffff{self.id_counter}",
             name=name,
@@ -67,7 +67,9 @@ class FakeAuraApi(AuraApi):
 
         self._sessions[session.id] = session
 
-    def create_instance(self, name: str, memory: str, cloud_provider: str, region: str) -> InstanceCreateDetails:
+    def create_instance(
+        self, name: str, memory: SessionMemory, cloud_provider: str, region: str
+    ) -> InstanceCreateDetails:
         id = f"ffff{self.id_counter}"
         create_details = InstanceCreateDetails(
             id=id,
@@ -168,7 +170,10 @@ HASHED_DB_PASSWORD = "722cbc618c015c7c062f071868d9bb5f207f35a317e71054740716642c
 def test_list_session(aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
     session = aura_api.create_session(
-        name="gds-session-my-session-name", dbid=aura_api.list_instances()[0].id, pwd="some_pwd", memory="8GB"
+        name="gds-session-my-session-name",
+        dbid=aura_api.list_instances()[0].id,
+        pwd="some_pwd",
+        memory=SessionMemory.m_8GB,
     )
     sessions = DedicatedSessions(aura_api)
 
@@ -234,8 +239,8 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
 
 def test_get_or_create_duplicate_session(aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
-    aura_api.create_session("one", db.id, "1234", memory="1GB")
-    aura_api.create_session("one", db.id, "12345", memory="1GB")
+    aura_api.create_session("one", db.id, "1234", memory=SessionMemory.m_4GB)
+    aura_api.create_session("one", db.id, "12345", memory=SessionMemory.m_4GB)
 
     sessions = DedicatedSessions(aura_api)
 
@@ -252,7 +257,7 @@ def test_get_or_create_expired_session(aura_api: AuraApi) -> None:
             id="ffff0-ffff1",
             name="one",
             instance_id=db.id,
-            memory=SessionMemory.m_8GB.value,
+            memory=SessionMemory.m_8GB,
             status="Expired",
             created_at=datetime.now(),
             host="foo.bar",
@@ -277,7 +282,7 @@ def test_get_or_create_soon_expired_session(aura_api: AuraApi) -> None:
             id="ffff0-ffff1",
             name="one",
             instance_id=db.id,
-            memory=SessionMemory.m_8GB.value,
+            memory=SessionMemory.m_8GB,
             status="Ready",
             created_at=datetime.now(),
             host="foo.bar",
@@ -291,11 +296,39 @@ def test_get_or_create_soon_expired_session(aura_api: AuraApi) -> None:
         sessions.get_or_create("one", SessionMemory.m_8GB, DbmsConnectionInfo(db.connection_url, "", ""))
 
 
+def test_get_or_create_with_different_memory_config(aura_api: AuraApi) -> None:
+    db = _setup_db_instance(aura_api)
+
+    fake_aura_api = cast(FakeAuraApi, aura_api)
+    fake_aura_api.add_session(
+        SessionDetails(
+            id="ffff0-ffff1",
+            name="one",
+            instance_id=db.id,
+            memory=SessionMemory.m_8GB,
+            status="Ready",
+            created_at=datetime.now(),
+            host="foo.bar",
+            expiry_date=None,
+            ttl=None,
+        )
+    )
+
+    with pytest.raises(
+        RuntimeError,
+        match=re.escape(
+            "Session `one` exists with a different memory configuration. Current: 8GB, Requested: 16GB."
+        ),
+    ):
+        sessions = DedicatedSessions(aura_api)
+        sessions.get_or_create("one", SessionMemory.m_16GB, DbmsConnectionInfo(db.connection_url, "", ""))
+
+
 def test_delete_session(aura_api: AuraApi) -> None:
-    db1 = aura_api.create_instance("db1", "1GB", "aura", "leipzig").id
-    db2 = aura_api.create_instance("db2", "1GB", "aura", "dresden").id
-    aura_api.create_session("one", db1, "12345", memory="8GB")
-    aura_api.create_session("other", db2, "123123", memory="8GB")
+    db1 = aura_api.create_instance("db1", SessionMemory.m_4GB, "aura", "leipzig").id
+    db2 = aura_api.create_instance("db2", SessionMemory.m_4GB, "aura", "dresden").id
+    aura_api.create_session("one", db1, "12345", memory=SessionMemory.m_8GB)
+    aura_api.create_session("other", db2, "123123", memory=SessionMemory.m_8GB)
 
     sessions = DedicatedSessions(aura_api)
 
@@ -304,8 +337,8 @@ def test_delete_session(aura_api: AuraApi) -> None:
 
 
 def test_delete_nonexisting_session(aura_api: AuraApi) -> None:
-    db1 = aura_api.create_instance("db1", "1gb", "aura", "leipzig").id
-    aura_api.create_session("one", db1, "12345", memory="8GB")
+    db1 = aura_api.create_instance("db1", SessionMemory.m_4GB, "aura", "leipzig").id
+    aura_api.create_session("one", db1, "12345", memory=SessionMemory.m_8GB)
     sessions = DedicatedSessions(aura_api)
 
     assert sessions.delete("other") is False
@@ -313,9 +346,9 @@ def test_delete_nonexisting_session(aura_api: AuraApi) -> None:
 
 
 def test_delete_nonunique_session(aura_api: AuraApi) -> None:
-    db1 = aura_api.create_instance("db1", "1GB", "aura", "leipzig").id
-    aura_api.create_session("one", db1, "12345", memory="8GB")
-    aura_api.create_session("one", db1, "12345", memory="8GB")
+    db1 = aura_api.create_instance("db1", SessionMemory.m_4GB, "aura", "leipzig").id
+    aura_api.create_session("one", db1, "12345", memory=SessionMemory.m_8GB)
+    aura_api.create_session("one", db1, "12345", memory=SessionMemory.m_8GB)
     sessions = DedicatedSessions(aura_api)
 
     with pytest.raises(
@@ -361,7 +394,7 @@ def test_estimate_size_exceeds() -> None:
 
 
 def _setup_db_instance(aura_api: AuraApi) -> InstanceCreateDetails:
-    return aura_api.create_instance("test", "8GB", "aws", "leipzig-1")
+    return aura_api.create_instance("test", SessionMemory.m_8GB, "aws", "leipzig-1")
 
 
 def patch_construct_client(mocker: MockerFixture) -> None:
