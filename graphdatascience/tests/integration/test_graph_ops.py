@@ -652,7 +652,7 @@ def test_graph_streamRelationshipProperties_with_arrow(gds: GraphDataScience) ->
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
-def test_graph_relationshipProperties_stream_with_arrow(gds: GraphDataScience) -> None:
+def test_graph_relationshipProperties_stream(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
     result = gds.graph.relationshipProperties.stream(G, ["relX", "relY"], concurrency=2)
@@ -671,7 +671,7 @@ def test_graph_relationshipProperties_stream_with_arrow(gds: GraphDataScience) -
     assert {e for e in y_values["propertyValue"]} == {5, 6, 7}
 
 
-def test_graph_streamRelationshipProperties_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
+def test_graph_streamRelationshipProperties_separate_property_columns_dep(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
     with pytest.warns(DeprecationWarning):
@@ -685,7 +685,18 @@ def test_graph_streamRelationshipProperties_with_arrow_separate_property_columns
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
-def test_graph_relationshipProperties_stream_with_arrow_rel_as_str(gds: GraphDataScience) -> None:
+def test_graph_relationshipProperties_stream_separate_property_columns(gds: GraphDataScience) -> None:
+    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
+
+    result = gds.graph.relationshipProperties.stream(G, ["relX", "relY"], separate_property_columns=True, concurrency=2)
+
+    assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType", "relX", "relY"]
+    assert {e for e in result["relX"]} == {4, 5, 6}
+    assert {e for e in result["relY"]} == {5, 6, 7}
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
+def test_graph_relationshipProperties_stream_rel_as_str(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
     result = gds.graph.relationshipProperties.stream(G, ["relX", "relY"], "REL", concurrency=2)
@@ -705,7 +716,7 @@ def test_graph_relationshipProperties_stream_with_arrow_rel_as_str(gds: GraphDat
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
-def test_graph_relationshipProperties_stream_with_arrow_rel_as_str_sep(gds: GraphDataScience) -> None:
+def test_graph_relationshipProperties_stream_rel_as_str_separate_property_columns(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
     result = gds.graph.relationshipProperties.stream(
@@ -720,27 +731,6 @@ def test_graph_relationshipProperties_stream_with_arrow_rel_as_str_sep(gds: Grap
         "relY",
     ]
 
-    assert {e for e in result["relX"]} == {4, 5, 6}
-    assert {e for e in result["relY"]} == {5, 6, 7}
-
-
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
-def test_graph_relationshipProperties_stream_with_arrow_rel_as_str_separate(gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
-
-    result = gds.graph.relationshipProperties.stream(G, ["relX"], ["REL"], separate_property_columns=True)
-
-    assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType", "relX"]
-    assert {e for e in result["relX"]} == {4, 5, 6}
-
-
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
-def test_graph_relationshipProperties_stream_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
-
-    result = gds.graph.relationshipProperties.stream(G, ["relX", "relY"], separate_property_columns=True, concurrency=2)
-
-    assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType", "relX", "relY"]
     assert {e for e in result["relX"]} == {4, 5, 6}
     assert {e for e in result["relY"]} == {5, 6, 7}
 
