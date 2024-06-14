@@ -70,13 +70,6 @@ class GraphEntityOpsBaseRunner(UncallableNamespace, IllegalAttrChecker):
         )
 
 
-class GraphElementPropertyRunner(GraphEntityOpsBaseRunner):
-    @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
-    def stream(self, G: Graph, node_properties: str, node_labels: Strings = ["*"], **config: Any) -> DataFrame:
-        self._namespace += ".stream"
-        return self._handle_properties(G, node_properties, node_labels, config)
-
-
 class GraphNodePropertyRunner(GraphEntityOpsBaseRunner):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
     @filter_id_func_deprecation_warning()
@@ -195,6 +188,16 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
             endpoint=self._namespace,
             params=params,
         ).squeeze()
+
+
+class GraphRelationshipPropertyRunner(GraphEntityOpsBaseRunner):
+    @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
+    def stream(
+        self, G: Graph, relationship_property: str, relationship_types: Strings = ["*"], **config: Any
+    ) -> DataFrame:
+        self._namespace += ".stream"
+        relationship_types = [relationship_types] if isinstance(relationship_types, str) else relationship_types
+        return self._handle_properties(G, relationship_property, relationship_types, config)
 
 
 class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
