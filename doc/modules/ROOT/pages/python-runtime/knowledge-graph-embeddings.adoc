@@ -142,7 +142,7 @@ When `filtered_metrics` is set to `True`, the ranking is done among only the tri
 [[algorithms-embeddings-kge-syntax]]
 == Syntax
 
-[source,python]
+[source, python, role=no-test]
 ----
 gds.model.train(G,
     num_epochs = 10,
