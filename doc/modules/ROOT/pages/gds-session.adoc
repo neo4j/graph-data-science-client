@@ -212,8 +212,6 @@ With the `gds` GDS Session active, project the graph and specify node and relati
 .Project a graph into the GDS Session:
 [source,python,role=no-test]
 ----
-from graphdatascience.session import GdsPropertyTypes
-
 G, result = gds.graph.project(
     graph_name="my-graph",
     query="""
