@@ -17,6 +17,8 @@
 ## Bug fixes
 
 * Fixed a bug which caused the auth token returned from the GDS Arrow Server was not correctly received.
+* Fixed a bug which didn't allow the user to specify `relationship_types` as a string in `gds.graph.relationshipProperties.stream()`.
+* Fixed a bug in `kge-predict-transe-pyg-train.ipynb` which now uses the `gds.graph.relationshipProperty.stream()` call and can correctly handle multiple relationships between the same pair of nodes. Issue ref: [#554](https://github.com/neo4j/graph-data-science-client/issues/554)
 
 ## Improvements
 
