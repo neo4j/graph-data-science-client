@@ -11,7 +11,7 @@ from graphdatascience.session.aura_api_responses import SessionDetails
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.session_info import SessionInfo
-from graphdatascience.session.session_sizes import SessionMemory
+from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
 
 
 class DedicatedSessions:
@@ -35,7 +35,7 @@ class DedicatedSessions:
                 ResourceWarning,
             )
 
-        return SessionMemory(estimation.recommended_size)
+        return SessionMemory(SessionMemoryValue(estimation.recommended_size))
 
     def get_or_create(
         self,
@@ -52,9 +52,10 @@ class DedicatedSessions:
         # TODO configure session size (and check existing_session has same size)
         if existing_session:
             self._check_expiry_date(existing_session)
+            self._check_memory_configuration(existing_session, memory.value)
             session_id = existing_session.id
         else:
-            create_details = self._create_session(session_name, dbid, db_connection.uri, password, memory)
+            create_details = self._create_session(session_name, dbid, db_connection.uri, password, memory.value)
             session_id = create_details.id
 
         wait_result = self._aura_api.wait_for_session_running(session_id, dbid)
@@ -108,7 +109,7 @@ class DedicatedSessions:
         return matched_sessions[0]
 
     def _create_session(
-        self, session_name: str, dbid: str, dburi: str, pwd: str, memory: SessionMemory
+        self, session_name: str, dbid: str, dburi: str, pwd: str, memory: SessionMemoryValue
     ) -> SessionDetails:
         db_instance = self._aura_api.list_instance(dbid)
         if not db_instance:
@@ -118,7 +119,7 @@ class DedicatedSessions:
             name=session_name,
             dbid=dbid,
             pwd=pwd,
-            memory=memory.value,
+            memory=memory,
         )
         return create_details
 
@@ -138,6 +139,15 @@ class DedicatedSessions:
             until_expiry: timedelta = session.expiry_date - datetime.now(timezone.utc)
             if until_expiry < timedelta(days=1):
                 raise Warning(f"Session `{session.name}` is expiring in less than a day.")
+
+    def _check_memory_configuration(
+        self, existing_session: SessionDetails, requested_memory: SessionMemoryValue
+    ) -> None:
+        if existing_session.memory != requested_memory:
+            raise RuntimeError(
+                f"Session `{existing_session.name}` exists with a different memory configuration. "
+                f"Current: {existing_session.memory}, Requested: {requested_memory}."
+            )
 
     @classmethod
     def _fail_ambiguous_session(cls, session_name: str, sessions: List[SessionDetails]) -> None:

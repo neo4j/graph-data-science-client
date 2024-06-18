@@ -9,13 +9,15 @@ from typing import Any, Dict, NamedTuple, Optional, Set
 
 from pandas import Timedelta
 
+from .session_sizes import SessionMemoryValue
+
 
 @dataclass(repr=True, frozen=True)
 class SessionDetails:
     id: str
     name: str
     instance_id: str
-    memory: str
+    memory: SessionMemoryValue
     status: str
     host: str
     created_at: datetime
@@ -31,7 +33,7 @@ class SessionDetails:
             id=json["id"],
             name=json["name"],
             instance_id=json["instance_id"],
-            memory=json["memory"],
+            memory=SessionMemoryValue.fromApiResponse(json["memory"]),
             status=json["status"],
             host=json["host"],
             expiry_date=TimeParser.fromisoformat(expiry_date) if expiry_date else None,
@@ -67,7 +69,7 @@ class InstanceDetails:
 class InstanceSpecificDetails(InstanceDetails):
     status: str
     connection_url: str
-    memory: str
+    memory: SessionMemoryValue
     type: str
     region: str
 
@@ -80,7 +82,7 @@ class InstanceSpecificDetails(InstanceDetails):
             cloud_provider=json["cloud_provider"],
             status=json["status"],
             connection_url=json.get("connection_url", ""),
-            memory=json.get("memory", ""),
+            memory=SessionMemoryValue.fromApiResponse(json.get("memory", "")),
             type=json["type"],
             region=json["region"],
         )

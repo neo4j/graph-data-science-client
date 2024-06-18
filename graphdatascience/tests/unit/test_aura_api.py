@@ -6,6 +6,7 @@ from _pytest.logging import LogCaptureFixture
 from requests import HTTPError
 from requests_mock import Mocker
 
+from graphdatascience.session import SessionMemory
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_api_responses import (
@@ -33,11 +34,11 @@ def test_create_session(requests_mock: Mocker) -> None:
             "instance_id": "dbid-1",
             "created_at": "1970-01-01T00:00:00Z",
             "host": "1.2.3.4",
-            "memory": "4G",
+            "memory": "4Gi",
         },
     )
 
-    result = api.create_session("name-0", "dbid-1", "pwd-2", "4G")
+    result = api.create_session("name-0", "dbid-1", "pwd-2", SessionMemory.m_4GB.value)
 
     assert result == SessionDetails(
         id="id0",
@@ -46,7 +47,7 @@ def test_create_session(requests_mock: Mocker) -> None:
         instance_id="dbid-1",
         created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
         host="1.2.3.4",
-        memory="4G",
+        memory=SessionMemory.m_4GB.value,
         expiry_date=None,
         ttl=None,
     )
@@ -67,7 +68,7 @@ def test_list_session(requests_mock: Mocker) -> None:
             "instance_id": "dbid-1",
             "created_at": "1970-01-01T00:00:00Z",
             "host": "1.2.3.4",
-            "memory": "4G",
+            "memory": "4Gi",
             "expiry_date": "1977-01-01T00:00:00Z",
         },
     )
@@ -81,7 +82,7 @@ def test_list_session(requests_mock: Mocker) -> None:
         instance_id="dbid-1",
         created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
         host="1.2.3.4",
-        memory="4G",
+        memory=SessionMemory.m_4GB.value,
         expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
         ttl=None,
     )
@@ -101,7 +102,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
                 "instance_id": "dbid-1",
                 "created_at": "1970-01-01T00:00:00Z",
                 "host": "1.2.3.4",
-                "memory": "4G",
+                "memory": "4Gi",
                 "expiry_date": "1977-01-01T00:00:00Z",
             },
             {
@@ -110,7 +111,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
                 "status": "Creating",
                 "instance_id": "dbid-3",
                 "created_at": "2012-01-01T00:00:00Z",
-                "memory": "8G",
+                "memory": "8Gi",
                 "host": "foo.bar",
             },
         ],
@@ -125,7 +126,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         instance_id="dbid-1",
         created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
         host="1.2.3.4",
-        memory="4G",
+        memory=SessionMemory.m_4GB.value,
         expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
         ttl=None,
     )
@@ -136,7 +137,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         status="Creating",
         instance_id="dbid-3",
         created_at=TimeParser.fromisoformat("2012-01-01T00:00:00Z"),
-        memory="8G",
+        memory=SessionMemory.m_8GB.value,
         host="foo.bar",
         expiry_date=None,
         ttl=None,
@@ -200,7 +201,7 @@ def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCapture
             "instance_id": "dbid-1",
             "created_at": "1970-01-01T00:00:00Z",
             "host": "foo.bar",
-            "memory": "4G",
+            "memory": "4Gi",
             "expiry_date": "1977-01-01T00:00:00Z",
         },
     )
@@ -227,7 +228,7 @@ def test_wait_for_session_running(requests_mock: Mocker) -> None:
             "instance_id": "dbid-1",
             "created_at": "1970-01-01T00:00:00Z",
             "host": "foo.bar",
-            "memory": "4G",
+            "memory": "4Gi",
             "expiry_date": "1977-01-01T00:00:00Z",
         },
     )
@@ -253,7 +254,7 @@ def test_delete_instance(requests_mock: Mocker) -> None:
                 "connection_url": "",
                 "tenant_id": "",
                 "cloud_provider": "",
-                "memory": "",
+                "memory": "4Gi",
                 "region": "",
                 "type": "",
             }
@@ -269,7 +270,7 @@ def test_delete_instance(requests_mock: Mocker) -> None:
         cloud_provider="",
         status="deleting",
         connection_url="",
-        memory="",
+        memory=SessionMemory.m_4GB.value,
         region="",
         type="",
     )
@@ -336,7 +337,7 @@ def test_create_instance(requests_mock: Mocker) -> None:
         },
     )
 
-    api.create_instance("name", "16GB", "gcp", "leipzig-1")
+    api.create_instance("name", SessionMemory.m_16GB.value, "gcp", "leipzig-1")
 
     requested_data = requests_mock.request_history[-1].json()
     assert requested_data["name"] == "name"
@@ -437,6 +438,7 @@ def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
                 "status": "creating",
                 "tenant_id": "046046d1-6996-53e4-8880-5b822766e1f9",
                 "type": "enterprise-ds",
+                "memory": "16Gi",
             }
         },
     )
@@ -444,7 +446,7 @@ def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
     result = api.list_instance("id0")
 
     assert result and result.id == "a10fb995"
-    assert result.memory == ""
+    assert result.memory == SessionMemory.m_16GB.value
 
 
 def test_list_missing_instance(requests_mock: Mocker) -> None:
@@ -483,6 +485,7 @@ def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> 
                 "region": None,
                 "tenant_id": None,
                 "type": None,
+                "memory": "4Gi",
             }
         },
     )
@@ -512,6 +515,7 @@ def test_wait_for_instance_running(requests_mock: Mocker) -> None:
                 "region": None,
                 "tenant_id": None,
                 "type": None,
+                "memory": "4Gi",
             }
         },
     )
@@ -535,6 +539,7 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
                 "region": None,
                 "tenant_id": None,
                 "type": None,
+                "memory": "4Gi",
             }
         },
     )
@@ -550,6 +555,7 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
                 "region": None,
                 "tenant_id": None,
                 "type": None,
+                "memory": "4Gi",
             }
         },
     )
@@ -634,7 +640,7 @@ def test_parse_session_info() -> None:
     session_details = {
         "id": "test_id",
         "name": "test_session",
-        "memory": "small",
+        "memory": "4Gi",
         "instance_id": "test_instance",
         "status": "running",
         "expiry_date": "2022-01-01T00:00:00Z",
@@ -647,7 +653,7 @@ def test_parse_session_info() -> None:
     assert session_info == SessionDetails(
         id="test_id",
         name="test_session",
-        memory="small",
+        memory=SessionMemory.m_4GB.value,
         instance_id="test_instance",
         status="running",
         host="a.b",
@@ -661,7 +667,7 @@ def test_parse_session_info_without_optionals() -> None:
     session_details = {
         "id": "test_id",
         "name": "test_session",
-        "memory": "small",
+        "memory": "16Gi",
         "instance_id": "test_instance",
         "status": "running",
         "host": "a.b",
@@ -672,7 +678,7 @@ def test_parse_session_info_without_optionals() -> None:
     assert session_info == SessionDetails(
         id="test_id",
         name="test_session",
-        memory="small",
+        memory=SessionMemory.m_16GB.value,
         instance_id="test_instance",
         host="a.b",
         status="running",

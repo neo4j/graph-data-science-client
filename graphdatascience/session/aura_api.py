@@ -19,6 +19,7 @@ from graphdatascience.session.aura_api_responses import (
     TenantDetails,
     WaitResult,
 )
+from graphdatascience.session.session_sizes import SessionMemoryValue
 from graphdatascience.version import __version__
 
 
@@ -62,11 +63,11 @@ class AuraApi:
 
         return host.split(".")[0].split("-")[0]
 
-    def create_session(self, name: str, dbid: str, pwd: str, memory: str) -> SessionDetails:
+    def create_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
         response = req.post(
             f"{self._base_uri}/v1beta5/data-science/sessions",
             headers=self._build_header(),
-            json={"name": name, "instance_id": dbid, "password": pwd, "memory": memory},
+            json={"name": name, "instance_id": dbid, "password": pwd, "memory": memory.value},
         )
 
         response.raise_for_status()
@@ -141,12 +142,14 @@ class AuraApi:
 
         return False
 
-    def create_instance(self, name: str, memory: str, cloud_provider: str, region: str) -> InstanceCreateDetails:
+    def create_instance(
+        self, name: str, memory: SessionMemoryValue, cloud_provider: str, region: str
+    ) -> InstanceCreateDetails:
         tenant_details = self.tenant_details()
 
         data = {
             "name": name,
-            "memory": memory,
+            "memory": memory.value,
             "version": "5",
             "region": region,
             "type": tenant_details.ds_type,
