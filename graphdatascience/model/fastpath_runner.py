@@ -32,7 +32,7 @@ class FastPathRunner(UncallableNamespace, IllegalAttrChecker):
         self._query_runner = query_runner
         self._namespace = namespace
         self._server_version = server_version
-        self._compute_cluster_web_uri = f"http://{compute_cluster_ip}:5000"
+        self._compute_cluster_web_uri = f"http://{compute_cluster_ip}:5005"
         self._compute_cluster_arrow_uri = f"grpc://{compute_cluster_ip}:8815"
         self._compute_cluster_mlflow_uri = f"http://{compute_cluster_ip}:8080"
         self._encrypted_db_password = encrypted_db_password
