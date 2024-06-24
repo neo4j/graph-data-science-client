@@ -13,7 +13,7 @@ This chapter provides an overview of the available shallow embedding algorithms 
 A knowledge graph is a directed, multi-relational graph.
 It consists of triples `(head, relation, tail)` where `head` and `tail` are entities and `relation` is the relationship between them.
 
-Shallow models of KGE represented here are _transductive_ algorithms for computing node and relationship embeddings (low-dimensional representations) for knowledge graphs.
+Shallow models of KGE represented here are _transductive_ algorithms for computing node and relationship type embeddings (low-dimensional representations) for knowledge graphs.
 Shallow means that matrix lookups represent the entity and relation encoders.
 The algorithm is inductive, meaning that it can be trained on one graph and then applied to this exact graph or another graph with the same schema.
 
