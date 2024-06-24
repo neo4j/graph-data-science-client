@@ -18,11 +18,10 @@ from .query_runner import QueryRunner
 class GdsArrowClient:
     @staticmethod
     def is_arrow_enabled(query_runner: QueryRunner) -> bool:
-        arrow_server_running = (
-            query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False, yields=["running"])
-            .squeeze()
-        )
-        return not not arrow_server_running
+        arrow_server_running = query_runner.call_procedure(
+            endpoint="gds.debug.arrow", custom_error=False, yields=["running", "listenAddress"]
+        ).squeeze()
+        return not not arrow_server_running["running"]
 
     @staticmethod
     def create(
