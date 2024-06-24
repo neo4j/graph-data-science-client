@@ -35,7 +35,7 @@ To compute the score of the triple `(head, relation, tail)`, the scoring functio
 === `TransE`
 
 `TransE` is a translational distance interaction model.
-It is a translation-based model that represents the relationship between head and tail entities as a vector translation in the embedding space.
+It represents the relationship between head and tail entities as a vector translation in the embedding space.
 This method is effective for modeling anti-symmetric, inversion, and composition relations.
 
 The formula to compute the score of a triple `(head, relation, tail)` using the embeddings `h`, `r`, and `t`:
