@@ -15,12 +15,12 @@ from ..error.uncallable_namespace import UncallableNamespace
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
 from .graph_entity_ops_runner import (
-    GraphElementPropertyRunner,
     GraphLabelRunner,
     GraphNodePropertiesRunner,
     GraphNodePropertyRunner,
     GraphPropertyRunner,
     GraphRelationshipPropertiesRunner,
+    GraphRelationshipPropertyRunner,
     GraphRelationshipRunner,
     GraphRelationshipsRunner,
 )
@@ -390,9 +390,9 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         return GraphNodePropertiesRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
-    def relationshipProperty(self) -> GraphElementPropertyRunner:
+    def relationshipProperty(self) -> GraphRelationshipPropertyRunner:
         self._namespace += ".relationshipProperty"
-        return GraphElementPropertyRunner(self._query_runner, self._namespace, self._server_version)
+        return GraphRelationshipPropertyRunner(self._query_runner, self._namespace, self._server_version)
 
     @property
     def relationshipProperties(self) -> GraphRelationshipPropertiesRunner:

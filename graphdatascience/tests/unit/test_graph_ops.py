@@ -305,7 +305,7 @@ def test_graph_relationshipProperty_stream(runner: CollectingQueryRunner, gds: G
     assert runner.last_params() == {
         "graph_name": "g",
         "properties": "dummyProp",
-        "entities": "dummyType",
+        "entities": ["dummyType"],
         "config": {"concurrency": 2},
     }
 
@@ -390,7 +390,7 @@ def test_graph_relationshipProperties_stream(runner: CollectingQueryRunner, gds:
     assert runner.last_params() == {
         "graph_name": "g",
         "properties": ["dummyProp"],
-        "entities": "dummyType",
+        "entities": ["dummyType"],
         "config": {"concurrency": 2},
     }
 

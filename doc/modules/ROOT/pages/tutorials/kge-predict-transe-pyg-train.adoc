@@ -29,12 +29,12 @@ version (2.5+ or later) installed.
 
 Additionally, the following Python libraries are required:
 
-* `graphdatascience`
-(https://neo4j.com/docs/graph-data-science-client/current/installation/[see
-documentation for installation instructions])
-* PyG
-(https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html[see
-PyG documentation for installation instructions])
+* `graphdatascience`,
+https://neo4j.com/docs/graph-data-science-client/current/installation/[see
+documentation for installation instructions]
+* `pytorch-geometric` version >= 2.5.0,
+https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html[see
+PyG documentation for installation instructions]
 
 == Setup
 
@@ -233,15 +233,13 @@ format it into a `Data` structure suitable for training with PyG.
 [source, python, role=no-test]
 ----
 def create_data_from_graph(relationship_type):
-    rels_tmp = gds.graph.relationshipProperties.stream(
-        ttv_G, ["rel_id"], relationship_type, separate_property_columns=True
-    )
+    rels_tmp = gds.graph.relationshipProperty.stream(ttv_G, "rel_id", relationship_type)
     topology = [
         rels_tmp.sourceNodeId.map(lambda x: nodeId_to_id[x]),
         rels_tmp.targetNodeId.map(lambda x: nodeId_to_id[x]),
     ]
     edge_index = torch.tensor(topology, dtype=torch.long)
-    edge_type = torch.tensor(rels_tmp.rel_id.astype(int), dtype=torch.long)
+    edge_type = torch.tensor(rels_tmp.propertyValue.astype(int), dtype=torch.long)
     data = Data(edge_index=edge_index, edge_type=edge_type)
     data.num_nodes = len(nodeId_to_id)
     display(data)
@@ -303,7 +301,7 @@ def train_model_with_pyg():
             head_index=data.edge_index[0],
             rel_type=data.edge_type,
             tail_index=data.edge_index[1],
-            batch_size=20000,
+            batch_size=1000,
             k=10,
         )
 
@@ -316,11 +314,10 @@ def train_model_with_pyg():
             rank, hits = test(val_tensor_data)
             print(f"Epoch: {epoch:03d}, Val Mean Rank: {rank:.2f}, " f"Val Hits@10: {hits:.4f}")
 
-    print(model)
-    rank, hits_at_10 = test(test_tensor_data)
-    print(f"Test Mean Rank: {rank:.2f}, Test Hits@10: {hits_at_10:.4f}")
-
     torch.save(model, f"./model_{epoch_count}.pt")
+
+    mean_rank, mrr, hits_at_k = test(test_tensor_data)
+    print(f"Test Mean Rank: {mean_rank:.2f}, Test Hits@10: {hits_at_k:.4f}, MRR: {mrr:.4f}")
 
     return model
 ----
