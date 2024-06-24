@@ -15,7 +15,6 @@ It consists of triples `(head, relation, tail)` where `head` and `tail` are enti
 
 Shallow models of KGE represented here are _transductive_ algorithms for computing node and relationship type embeddings (low-dimensional representations) for knowledge graphs.
 Shallow means that matrix lookups represent the entity and relation encoders.
-The algorithm is inductive, meaning that it can be trained on one graph and then applied to this exact graph or another graph with the same schema.
 
 A KGE model can return the score for the triple which can be used to predict the missing tail entity for a given head and relationship type.
 The embeddings can be used to perform various tasks, such as link prediction, entity classification, and entity clustering.
