@@ -24,7 +24,7 @@ The embeddings can be used to perform various tasks, such as link prediction, en
 == Scoring functions
 
 For KGE algorithms, the scoring function is used to compute the score of a triple `(head, relation, tail)`.
-This score is used for computing loss during training and during prediction to rank the tail entities for a given head and relation.
+This score is used for computing loss during training and during prediction to rank the tail entities for a given head and relationship type.
 
 The scoring function is a function of the embeddings of the head, relation, and tail entities.
 
@@ -46,7 +46,7 @@ image::python-runtime/transe-formula.svg[width=280]
 === `DistMult`
 
 `DistMult` is a semantic matching interaction model.
-This method assumes that the relation between head and tail entities is a dot-product multiplication in the embedding space.
+This method scores the triple by computing the dot-product multiplication of the embeddings of the head, relationship type, and tail entities.
 This method works for modelling symmetric relations.
 
 The formula to compute the score of a triple `(head, relation, tail)` using the embeddings `h`, `r`, and `t`:
@@ -55,6 +55,7 @@ image::python-runtime/distmult-formula.svg[width=400]
 
 
 == Considerations
+
 To effectively train KGE models, several considerations need to be taken into account, including the choice of loss function, sampling methods, and optimization strategies.
 
 
@@ -78,6 +79,7 @@ Knowledge graph embedding models are trained under the sLCWA assumption in the G
 
 
 === Loss function
+
 The loss function is crucial for guiding the training process of KGE models.
 It determines how the difference between predicted and actual values is calculated and minimized.
 There are several loss functions that can be used for training KGE models, see below for more details.
