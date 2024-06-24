@@ -102,7 +102,7 @@ Negative Sampling Self-Adversarial Lossfootnote:[Sun, Zhiqing, et al. "Rotate: K
 
 === Optimizer
 
-Any pytorch optimizer can be used for training the model.
+Any PyTorch optimizer can be used for training the model.
 To use non-default optimizer, specify the optimizer class name as a string in the `optimizer` parameter.
 All optimizer parameters except `params` can be passed as `optimizer_kwargs`.
 
@@ -117,7 +117,7 @@ With or without node type awareness, the negative samples are sampled uniformly 
 
 === Learning rate scheduler
 
-Any pytorch learning rate scheduler can be used for training the model.
+Any PyTorch learning rate scheduler can be used for training the model.
 To use non-default learning rate scheduler, specify the scheduler class name as a string in the `lr_scheduler` parameter.
 All scheduler parameters except `optimizer` can be passed as `lr_scheduler_kwargs`.
 
@@ -133,8 +133,8 @@ To avoid this normalization, set `inner_norm` to `False`.
 
 === Filtered metrics
 
-When we evaluate (compute metrics) the model, we compute scores for all possible triples with the same head or tail and relationship type as the test triple.
-Ranking the test triple among other triples is used for computing metrics, such as Mean Rank, Mean Reciprocal Rank, and Hit@k.
+When we evaluate (compute metrics of) the model on the test set, we compute scores for all possible triples with the same head or tail and relationship type as the test triple.
+Ranking the test triple among other triples is used for computing metrics, such as Mean Rank, Mean Reciprocal Rank, and Hits@k.
 
 When `filtered_metrics` is set to `False`, the ranking is done among all possible triples.
 
@@ -180,14 +180,14 @@ gds.model.train(G,
 | dict[str, float]
 | {TRAIN=0.8, TEST=0.2}
 | Ratios for splitting the dataset into training and test sets.
-When sum of values is less than 1, the remaining data is used for validation.
-Validation size can be set explicitly with the key `VALID`.
-When all three keys are present, the sum of values must be equal to 1.
+When the sum of the ratios is less than 1.0, the remaining examples are used for validation.
+The validation set ratio can be set explicitly with the key `VALID`.
+When all three keys are present, the sum of values must be equal to 1.0.
 
 | scoring_function
 | str
 | "transe"
-| Function used to score embeddings
+| Function used to score embeddings of triples
 
 | p_norm
 | float
@@ -247,7 +247,7 @@ When all three keys are present, the sum of values must be equal to 1.
 | k_value
 | int
 | 10
-| Value of k used in evaluation metrics
+| Value of k used in Hits@k evaluation metric
 
 | do_validation
 | bool
@@ -277,7 +277,7 @@ When all three keys are present, the sum of values must be equal to 1.
 | init_bound
 | Optional[float]
 | None
-| The value for the range [-bound; bound] of the uniform distribution used to initialize the embeddings. Xavier's initialization is used if None.
+| The value for the range [-init_bound; init_bound] of the uniform distribution used to initialize the embeddings. Xavier initialization is used if None.
 |====
 
 
