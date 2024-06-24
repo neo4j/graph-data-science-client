@@ -145,7 +145,7 @@ When `filtered_metrics` is set to `True`, the ranking is done among only the tri
 
 [source, python, role=no-test]
 ----
-gds.model.train(G,
+gds.kge.model.train(G,
     num_epochs = 10,
     embedding_dimension = 100,
 )
@@ -279,17 +279,6 @@ When all three keys are present, the sum of values must be equal to 1.0.
 | None
 | The value for the range [-init_bound; init_bound] of the uniform distribution used to initialize the embeddings. Xavier initialization is used if None.
 |====
-
-
-.Results
-[opts="header",cols="2m,1,6"]
-|===
-| Name              | Type    | Description
-| modelInfo         | Map     | Details of the trained model.
-| configuration     | Map     | The configuration used to run the procedure.
-| trainMillis       | Integer | Milliseconds to train the model.
-|===
-
 
 
 [[algorithms-embeddings-kge-examples]]
