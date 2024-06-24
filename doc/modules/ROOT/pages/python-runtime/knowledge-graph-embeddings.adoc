@@ -278,7 +278,9 @@ When all three keys are present, the sum of values must be equal to 1.0.
 | init_bound
 | Optional[float]
 | None
-| The value for the range [-init_bound; init_bound] of the uniform distribution used to initialize the embeddings. Xavier initialization is used if None.
+| The value for the range [-init_bound; init_bound] of the uniform distribution used to initialize the embeddings.
+Xavier initializationfootnote:[Xavier Glorot, Yoshua Bengio "Understanding the difficulty of training deep feedforward neural networks" Proceedings of the Thirteenth International Conference on Artificial Intelligence and Statistics, PMLR 9:249-256, 2010]
+ is used if None.
 |====
 
 
