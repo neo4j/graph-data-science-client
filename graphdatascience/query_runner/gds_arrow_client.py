@@ -18,8 +18,10 @@ from .query_runner import QueryRunner
 class GdsArrowClient:
     @staticmethod
     def is_arrow_enabled(query_runner: QueryRunner) -> bool:
-        arrow_info = query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False).squeeze().to_dict()
-        return not not arrow_info["running"]
+        arrow_server_running = query_runner.call_procedure(
+            endpoint="gds.debug.arrow", custom_error=False, yields=["running", "listenAddress"]
+        ).squeeze()
+        return not not arrow_server_running["running"]
 
     @staticmethod
     def create(
@@ -30,14 +32,20 @@ class GdsArrowClient:
         tls_root_certs: Optional[bytes] = None,
         connection_string_override: Optional[str] = None,
     ) -> "GdsArrowClient":
-        arrow_info = query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False).squeeze().to_dict()
+        arrow_info = (
+            query_runner.call_procedure(
+                endpoint="gds.debug.arrow", custom_error=False, yields=["listenAddress", "versions"]
+            )
+            .squeeze()
+            .to_dict()
+        )
 
         server_version = query_runner.server_version()
         connection_string: str
         if connection_string_override is not None:
             connection_string = connection_string_override
         else:
-            connection_string = arrow_info.get("advertisedListenAddress", arrow_info["listenAddress"])
+            connection_string = arrow_info.get("listenAddress")
 
         host, port = connection_string.split(":")
 
