@@ -238,7 +238,7 @@ print(data)
 ----
 # Do a random split of the data so that ~10% goes into a test set and the rest used for training
 transform = RandomNodeSplit(num_test=40, num_val=0)
-_ = transform(data)
+data = transform(data)
 
 # We can see that our `data` object have been extended with some masks defining the split
 print(data)
