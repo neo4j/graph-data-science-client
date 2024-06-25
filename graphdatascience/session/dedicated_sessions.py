@@ -79,12 +79,13 @@ class DedicatedSessions:
             for db in dbs:
                 candidate = self._find_existing_session(session_name, db.id)
                 if candidate:
+                    dbid = db.id
                     break
         else:
             candidate = self._find_existing_session(session_name, dbid)
 
         if candidate:
-            return self._aura_api.delete_session(candidate.id, db.id) is not None
+            return self._aura_api.delete_session(candidate.id, str(dbid)) is not None
 
         return False
 
