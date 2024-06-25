@@ -1,1 +1,1 @@
-* xref:python-runtime/knowledge-graph-embeddings.adoc[Knowledge Graph Embeddings]
+* xref:gds-session-algorithms/knowledge-graph-embeddings.adoc[Knowledge Graph Embeddings]

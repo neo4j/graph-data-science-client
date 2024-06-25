@@ -78,7 +78,7 @@ We describe how to use them in the Python client in the sections below.
 // There are some algorithm which are available for xref:gds-session.adoc[GDS Sessions] only.
 // See the list:
 //
-// include::ROOT:partial$python-runtime-algorithms.adoc[]
+// include::ROOT:partial$gds-session-algorithms-algorithms.adoc[]
 // ====
 
 

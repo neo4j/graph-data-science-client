@@ -3,7 +3,7 @@
 Knowledge Graph Embeddings (KGE) refer to a family of algorithms designed to learn low-dimensional representations of entities and relations within a knowledge graph.
 These embeddings are utilized for tasks such as link prediction, entity classification, and entity clustering.
 
-This chapter provides an overview of the available shallow embedding algorithms in the GDS Python runtime, such as `TransE` and `DistMult`.
+This chapter provides an overview of the available shallow embedding algorithms under the GDS Session, such as `TransE` and `DistMult`.
 
 * `TransE`
 ** Bordes, Antoine, et al. "Translating embeddings for modeling multi-relational data." Advances in neural information processing systems 26 (2013).
@@ -40,7 +40,7 @@ This method is effective for modeling anti-symmetric, inversion, and composition
 
 The formula to compute the score of a triple `(head, relation, tail)` using the embeddings `h`, `r`, and `t`:
 
-image::python-runtime/transe-formula.svg[width=280]
+image::gds-session-algorithms/kge/transe-formula.svg[width=280]
 
 
 === `DistMult`
@@ -51,7 +51,7 @@ This method works for modelling symmetric relations.
 
 The formula to compute the score of a triple `(head, relation, tail)` using the embeddings `h`, `r`, and `t`:
 
-image::python-runtime/distmult-formula.svg[width=400]
+image::gds-session-algorithms/kge/distmult-formula.svg[width=400]
 
 
 == Considerations
@@ -90,8 +90,8 @@ There are several loss functions that can be used for training KGE models, see b
 Margin ranking loss is a pairwise loss function that compares the scores based on the difference between the scores of a positive triple and a negative triple.
 When negative sampling size is more than one, the loss is computed for a positive triple and each of its negative triples, and the average loss is computed.
 
-image::python-runtime/mrl.svg[width=300]
-image::python-runtime/delta-value.svg[width=400]
+image::gds-session-algorithms/kge/mrl.svg[width=300]
+image::gds-session-algorithms/kge/delta-value.svg[width=400]
 
 
 ==== Negative Sampling Self-Adversarial Loss
