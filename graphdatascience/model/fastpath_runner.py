@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional
 import pyarrow as pa
 import pyarrow.flight
 import requests
-from pandas import DataFrame
+from pandas import Series
 
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
@@ -40,18 +40,18 @@ class FastPathRunner(UncallableNamespace, IllegalAttrChecker):
 
     @compatible_with("stream", min_inclusive=ServerVersion(2, 5, 0))
     @client_only_endpoint("gds.fastpath")
-    def stream(
+    def mutate(
         self,
         G: Graph,
         graph_filter: Optional[Dict[str, Any]] = None,
         mlflow_experiment_name: Optional[str] = None,
         **algo_config: Any,
-    ) -> DataFrame:
+    ) -> Series:
         if graph_filter is None:
             # Take full graph if no filter provided
             node_filter = G.node_properties().to_dict()
             rel_filter = G.relationship_properties().to_dict()
-            graph_filter = {"node_labels": node_filter, "rel_types": rel_filter}
+            graph_filter = {"node_filter": node_filter, "rel_filter": rel_filter}
 
         graph_config = {"name": G.name()}
         graph_config.update(graph_filter)
@@ -77,7 +77,9 @@ class FastPathRunner(UncallableNamespace, IllegalAttrChecker):
 
         self._wait_for_job(job_id)
 
-        return self._stream_results(job_id)
+        return Series({"status": "finished"})
+
+        #return self._stream_results(job_id)
 
     def _start_job(self, config: Dict[str, Any]) -> str:
         res = requests.post(f"{self._compute_cluster_web_uri}/api/machine-learning/start", json=config)
@@ -104,12 +106,12 @@ class FastPathRunner(UncallableNamespace, IllegalAttrChecker):
                 else:
                     raise RuntimeError(error)
 
-    def _stream_results(self, job_id: str) -> DataFrame:
-        client = pa.flight.connect(self._compute_cluster_arrow_uri)
+    # def _stream_results(self, job_id: str) -> DataFrame:
+    #     client = pa.flight.connect(self._compute_cluster_arrow_uri)
 
-        upload_descriptor = pa.flight.FlightDescriptor.for_path(f"{job_id}.nodes")
-        flight = client.get_flight_info(upload_descriptor)
-        reader = client.do_get(flight.endpoints[0].ticket)
-        read_table = reader.read_all()
+    #     upload_descriptor = pa.flight.FlightDescriptor.for_path(f"{job_id}.nodes")
+    #     flight = client.get_flight_info(upload_descriptor)
+    #     reader = client.do_get(flight.endpoints[0].ticket)
+    #     read_table = reader.read_all()
 
-        return read_table.to_pandas()
+    #     return read_table.to_pandas()
