@@ -8,12 +8,12 @@ from pandas import DataFrame
 from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
-from .graph.graph_proc_runner import GraphProcRunner
 from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
-from .utils.util_proc_runner import UtilProcRunner
+from graphdatascience.graph.graph_proc_runner import GraphProcRunner
+from graphdatascience.utils.util_proc_runner import UtilProcRunner
 
 
 class GraphDataScience(DirectEndpoints, UncallableNamespace):
@@ -49,12 +49,11 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         database: Optional[str], default None
             The Neo4j database to query against.
         arrow : Union[str, bool], default True
-            Arrow connection information. This is either a string or a bool.
-
-            - If it is a string, it will be interpreted as a connection URL to a GDS Arrow Server.
-            - If it is a bool:
-                - True will make the client discover the connection URI to the GDS Arrow server via the Neo4j endpoint.
-                - False will make the client use Bolt for all operations.
+            Arrow connection information. This is either a bool or a string.
+            If it is a string, it will be interpreted as a connection URL to a GDS Arrow Server.
+            If it is a bool,
+                True will make the client discover the connection URI to the GDS Arrow server via the Neo4j endpoint,
+                while False will make the client use Bolt for all operations.
         arrow_disable_server_verification : bool, default True
             A flag that overrides other TLS settings and disables server verification for TLS connections.
         arrow_tls_root_certs : Optional[bytes], default None
