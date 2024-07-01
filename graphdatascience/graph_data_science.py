@@ -83,7 +83,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                 None if arrow is True else arrow,
             )
 
-        super().__init__(self._query_runner, namespace="gds", server_version=self._server_version)
+        super().__init__(self._query_runner, "gds", self._server_version)
 
     @property
     def graph(self) -> GraphProcRunner:
