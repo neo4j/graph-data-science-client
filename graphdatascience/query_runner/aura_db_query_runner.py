@@ -3,11 +3,11 @@ from typing import Any, Dict, List, Optional
 
 from pandas import DataFrame
 
-from ..call_parameters import CallParameters
-from .gds_arrow_client import GdsArrowClient
-from .query_runner import QueryRunner
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.server_version.server_version import ServerVersion
+from .gds_arrow_client import GdsArrowClient
+from .query_runner import QueryRunner
+from ..call_parameters import CallParameters
 
 
 class AuraDbQueryRunner(QueryRunner):
@@ -47,7 +47,7 @@ class AuraDbQueryRunner(QueryRunner):
             params = CallParameters()
 
         if AuraDbQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME == endpoint:
-            return self._remote_projection(endpoint, params, yields, database, logging, custom_error)
+            return self._remote_projection(endpoint, params, yields, database, logging)
 
         elif ".write" in endpoint and self.is_remote_projected_graph(params["graph_name"]):
             return self._remote_write_back(endpoint, params, yields, database, logging, custom_error)
@@ -103,7 +103,6 @@ class AuraDbQueryRunner(QueryRunner):
         yields: Optional[List[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
-        custom_error: bool = True,
     ) -> DataFrame:
         self._inject_connection_parameters(params)
         return self._db_query_runner.call_procedure(endpoint, params, yields, database, logging, False)
