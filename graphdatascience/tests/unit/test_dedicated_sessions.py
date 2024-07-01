@@ -190,15 +190,15 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     gds_credentials = sessions.get_or_create(
         "my-session",
         SessionMemory.m_8GB,
-        DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
+        DbmsConnectionInfo("neo4j+s://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
 
     assert gds_credentials == {  # type: ignore
         "db_connection": DbmsConnectionInfo(
-            uri="neo4j+ssc://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
+            uri="neo4j+s://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
         ),
         "session_connection": DbmsConnectionInfo(
-            uri="neo4j+ssc://foo.bar", username="neo4j", password=HASHED_DB_PASSWORD
+            uri="neo4j+s://foo.bar", username="neo4j", password=HASHED_DB_PASSWORD
         ),
         "session_name": "my-session",
     }
@@ -215,20 +215,20 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     gds_args1 = sessions.get_or_create(
         "my-session",
         SessionMemory.m_8GB,
-        DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
+        DbmsConnectionInfo("neo4j+s://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
     gds_args2 = sessions.get_or_create(
         "my-session",
         SessionMemory.m_8GB,
-        DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
+        DbmsConnectionInfo("neo4j+s://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
     )
 
     assert gds_args1 == {  # type: ignore
         "db_connection": DbmsConnectionInfo(
-            uri="neo4j+ssc://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
+            uri="neo4j+s://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
         ),
         "session_connection": DbmsConnectionInfo(
-            uri="neo4j+ssc://foo.bar", username="neo4j", password=HASHED_DB_PASSWORD
+            uri="neo4j+s://foo.bar", username="neo4j", password=HASHED_DB_PASSWORD
         ),
         "session_name": "my-session",
     }

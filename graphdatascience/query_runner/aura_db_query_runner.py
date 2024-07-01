@@ -3,11 +3,11 @@ from typing import Any, Dict, List, Optional
 
 from pandas import DataFrame
 
-from graphdatascience.query_runner.graph_constructor import GraphConstructor
-from graphdatascience.server_version.server_version import ServerVersion
+from ..call_parameters import CallParameters
 from .gds_arrow_client import GdsArrowClient
 from .query_runner import QueryRunner
-from ..call_parameters import CallParameters
+from graphdatascience.query_runner.graph_constructor import GraphConstructor
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 class AuraDbQueryRunner(QueryRunner):

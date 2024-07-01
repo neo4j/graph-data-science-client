@@ -42,7 +42,7 @@ class SessionDetails:
         )
 
     def bolt_connection_url(self) -> str:
-        return f"neo4j+ssc://{self.host}"  # TODO use neo4j+s
+        return f"neo4j+s://{self.host}"
 
     def is_expired(self) -> bool:
         return self.status == "Expired"
