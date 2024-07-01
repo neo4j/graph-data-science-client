@@ -73,7 +73,7 @@ class CollectingQueryRunner(QueryRunner):
         return self.queries[-1]
 
     def last_params(self) -> dict[str, Any]:
-        if len(self.queries) == 0:
+        if len(self.params) == 0:
             return {}
         return self.params[-1]
 
