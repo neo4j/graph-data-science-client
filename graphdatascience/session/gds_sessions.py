@@ -8,6 +8,7 @@ from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.aurads_sessions import AuraDsSessions
+from graphdatascience.session.cloud_location_resolver import CloudLocationResolver
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.dedicated_sessions import DedicatedSessions
 from graphdatascience.session.session_info import SessionInfo
@@ -47,6 +48,18 @@ class GdsSessions:
         self._impl: Union[DedicatedSessions, AuraDsSessions] = (
             DedicatedSessions(aura_api) if session_type_flag else AuraDsSessions(aura_api)
         )
+        self.__location_resolver: Optional[CloudLocationResolver] = None
+
+
+    def set_cloud_location(self, cloud_provider: str, region: str) -> None:
+        self._location_resolver().set_default(cloud_provider, region)
+
+    def _location_resolver(self) -> CloudLocationResolver:
+        # initialize lazy to avoid calls on __init__
+        if not self.__location_resolver:
+            self.__location_resolver = CloudLocationResolver(self._aura_api.tenant_details())
+        return self.__location_resolver
+
 
     def estimate(
         self, node_count: int, relationship_count: int, algorithm_categories: Optional[List[AlgorithmCategory]] = None
