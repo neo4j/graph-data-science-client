@@ -68,9 +68,13 @@ class CollectingQueryRunner(QueryRunner):
         return False
 
     def last_query(self) -> str:
+        if len(self.queries) == 0:
+            return ""
         return self.queries[-1]
 
     def last_params(self) -> Dict[str, Any]:
+        if len(self.params) == 0:
+            return {}
         return self.params[-1]
 
     def set_database(self, database: str) -> None:
