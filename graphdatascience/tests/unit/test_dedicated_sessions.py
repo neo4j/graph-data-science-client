@@ -5,6 +5,8 @@ from typing import List, Optional, cast
 
 import pytest
 from pytest_mock import MockerFixture
+from requests import Response
+from requests.exceptions import HTTPError
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
@@ -102,6 +104,14 @@ class FakeAuraApi(AuraApi):
         return self._instances.pop(instance_id)
 
     def list_sessions(self, dbid: str) -> List[SessionDetails]:
+        # mimic aura behaviour of paused instances not being in an orchestra
+        db = self.list_instance(dbid)
+        if db and db.status == "paused":
+            response = Response()
+            response.status_code = 404
+            response._content = b"database not found"
+            raise HTTPError(request=None, response=response)
+
         return [v for _, v in self._sessions.items() if v.instance_id == dbid]
 
     def list_instances(self) -> List[InstanceDetails]:
@@ -172,6 +182,35 @@ def test_list_session(aura_api: AuraApi) -> None:
     session = aura_api.create_session(
         name="gds-session-my-session-name",
         dbid=aura_api.list_instances()[0].id,
+        pwd="some_pwd",
+        memory=SessionMemory.m_8GB.value,
+    )
+    sessions = DedicatedSessions(aura_api)
+
+    assert sessions.list() == [SessionInfo.from_session_details(session)]
+
+
+def test_list_session_paused_instance(aura_api: AuraApi) -> None:
+    db = aura_api.create_instance("test", SessionMemory.m_8GB.value, "aws", "leipzig-1")
+    fake_aura_api = cast(FakeAuraApi, aura_api)
+
+    fake_aura_api.id_counter += 1
+    paused_db = InstanceSpecificDetails(
+        id="4242",
+        status="paused",
+        connection_url="foo.bar",
+        memory=SessionMemory.m_16GB.value,
+        type="",
+        region="dresden",
+        name="paused-db",
+        tenant_id=fake_aura_api._tenant_id,
+        cloud_provider="aws",
+    )
+    fake_aura_api._instances[paused_db.id] = paused_db
+
+    session = aura_api.create_session(
+        name="gds-session-my-session-name",
+        dbid=db.id,
         pwd="some_pwd",
         memory=SessionMemory.m_8GB.value,
     )

@@ -32,10 +32,14 @@ class GdsArrowClient:
         tls_root_certs: Optional[bytes] = None,
         connection_string_override: Optional[str] = None,
     ) -> "GdsArrowClient":
+        if query_runner.server_version() > ServerVersion(2, 6, 0):
+            debugYields = ["listenAddress", "versions"]
+        else:
+            # return enabled to avoid squeeze returning a single str
+            debugYields = ["listenAddress", "enabled"]
+
         arrow_info = (
-            query_runner.call_procedure(
-                endpoint="gds.debug.arrow", custom_error=False, yields=["listenAddress", "versions"]
-            )
+            query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False, yields=debugYields)
             .squeeze()
             .to_dict()
         )
