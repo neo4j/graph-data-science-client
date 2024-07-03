@@ -27,6 +27,7 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         encrypted_db_password: str,
         arrow_uri: str,
     ):
+        print("!init", flush=True)
         self._query_runner = query_runner
         self._namespace = namespace
         self._server_version = server_version
@@ -36,13 +37,13 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         self._encrypted_db_password = encrypted_db_password
         self._arrow_uri = arrow_uri
 
-    # @compatible_with(min_inclusive=ServerVersion(2, 5, 0))
     @client_only_endpoint("gds.kge")
     def model(self):
-        print("!!!model")
+        print("!model")
         return self
 
-    # @compatible_with(min_inclusive=ServerVersion(2, 5, 0))
+    # @client_only_endpoint("gds.kge.model") and name is train
+    # @compatible_with("stream", min_inclusive=ServerVersion(2, 5, 0))
     @client_only_endpoint("gds.kge.model")
     def train(
         self,
