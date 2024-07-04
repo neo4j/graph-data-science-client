@@ -3,6 +3,6 @@
 Operations known to not work with the Python client are:
 
 * https://neo4j.com/docs/graph-data-science/current/management-ops/utility-functions/#utility-functions-numeric[Numeric utility functions] (will never be supported)
-* https://neo4j.com/docs/graph-data-science/2.6/management-ops/graph-reads/read-with-cypher/[Cypher on GDS] (deprecated in GDS 2.6)
+* Running Cypher queries on GDS (functionality link:https://neo4j.com/docs/graph-data-science/2.6/management-ops/graph-reads/read-with-cypher/[deprecated in GDS 2.6])
 
 The GDS Python client is not compatible with Python's `multiprocessing` or any operations that rely on forking. If running queries in parallel is required, multithreading can be used instead.
