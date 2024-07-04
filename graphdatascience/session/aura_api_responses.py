@@ -82,7 +82,7 @@ class InstanceSpecificDetails(InstanceDetails):
             cloud_provider=json["cloud_provider"],
             status=json["status"],
             connection_url=json.get("connection_url", ""),
-            memory=SessionMemoryValue.fromApiResponse(json.get("memory", "")),
+            memory=SessionMemoryValue.fromInstanceSize(json.get("memory")),
             type=json["type"],
             region=json["region"],
         )

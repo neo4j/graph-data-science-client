@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
 
 @dataclass(frozen=True)
@@ -11,7 +13,7 @@ class SessionMemoryValue:
         return self.value
 
     @staticmethod
-    def fromApiResponse(value: str) -> "SessionMemoryValue":
+    def fromApiResponse(value: str) -> SessionMemoryValue:
         """
         Converts the string value from an API response to a SessionMemory enumeration value.
 
@@ -26,6 +28,16 @@ class SessionMemoryValue:
             raise ValueError("memory configuration cannot be empty")
 
         return SessionMemoryValue(value.replace("Gi", "GB"))
+
+    @staticmethod
+    def fromInstanceSize(value: Optional[str]) -> SessionMemoryValue:
+        if not value:
+            return SESSION_MEMORY_VALUE_UNKNOWN
+
+        return SessionMemoryValue(value.replace("Gi", "GB"))
+
+
+SESSION_MEMORY_VALUE_UNKNOWN = SessionMemoryValue("")
 
 
 class SessionMemory(Enum):

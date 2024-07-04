@@ -18,6 +18,7 @@ from graphdatascience.session.aura_api_responses import (
     TimeParser,
     WaitResult,
 )
+from graphdatascience.session.session_sizes import SESSION_MEMORY_VALUE_UNKNOWN
 
 
 def test_create_session(requests_mock: Mocker) -> None:
@@ -438,7 +439,7 @@ def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
                 "status": "creating",
                 "tenant_id": "046046d1-6996-53e4-8880-5b822766e1f9",
                 "type": "enterprise-ds",
-                "memory": "16Gi",
+                "memory": "",
             }
         },
     )
@@ -446,7 +447,7 @@ def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
     result = api.list_instance("id0")
 
     assert result and result.id == "a10fb995"
-    assert result.memory == SessionMemory.m_16GB.value
+    assert result.memory == SESSION_MEMORY_VALUE_UNKNOWN
 
 
 def test_list_missing_instance(requests_mock: Mocker) -> None:

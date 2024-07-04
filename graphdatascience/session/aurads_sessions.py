@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import warnings
 from typing import List, Optional
 
@@ -16,7 +17,11 @@ from graphdatascience.session.aura_graph_data_science import AuraGraphDataScienc
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.region_suggester import closest_match
 from graphdatascience.session.session_info import SessionInfo
-from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
+from graphdatascience.session.session_sizes import (
+    SESSION_MEMORY_VALUE_UNKNOWN,
+    SessionMemory,
+    SessionMemoryValue,
+)
 
 
 class AuraDsSessions:
@@ -25,6 +30,7 @@ class AuraDsSessions:
 
     def __init__(self, aura_api: AuraApi) -> None:
         self._aura_api = aura_api
+        self._logger = logging.getLogger()
 
     def estimate(
         self, node_count: int, relationship_count: int, algorithm_categories: Optional[List[AlgorithmCategory]] = None
@@ -53,8 +59,12 @@ class AuraDsSessions:
 
         if existing_session:
             session_id = existing_session.id
-            # 0MB is AuraAPI default value for memory if none can be retrieved
-            if existing_session.memory.value != "0MB" and existing_session.memory != memory.value:
+            # "0MB" or "" is AuraAPI default value for memory if none can be retrieved
+            if existing_session.memory.value == "0MB" or existing_session.memory == SESSION_MEMORY_VALUE_UNKNOWN:
+                self._logger.debug(
+                    f"Reusing existing session with id `{session_id}` as size for session is unknown during creation."
+                )
+            elif existing_session.memory != memory.value:
                 raise ValueError(
                     f"Session `{session_name}` already exists with memory `{existing_session.memory.value}`. "
                     f"Requested memory `{memory.value}` does not match."
