@@ -59,8 +59,8 @@ class AuraDsSessions:
 
         if existing_session:
             session_id = existing_session.id
-            # "0MB" or "" is AuraAPI default value for memory if none can be retrieved
-            if existing_session.memory.value == "0MB" or existing_session.memory == SESSION_MEMORY_VALUE_UNKNOWN:
+            # AuraAPI default value for memory if none can be retrieved
+            if existing_session.memory == SESSION_MEMORY_VALUE_UNKNOWN:
                 self._logger.debug(
                     f"Reusing existing session with id `{session_id}` as size for session is unknown during creation."
                 )
