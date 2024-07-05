@@ -24,7 +24,7 @@ listing, and deletion.
 
 This notebook requires having an AuraDB instance available. We also need
 to have the `graphdatascience` Python library installed, version
-`1.11a1` or later.
+`1.11a3` or later.
 
 [source, python, role=no-test]
 ----
