@@ -94,8 +94,13 @@ dataset = read_data()
 
 
 def put_data_in_db(dataset):
-    for rel_split in tqdm(dataset, desc="Relationship"):
-        for rel_type in tqdm(dataset[rel_split], mininterval=1, leave=False):
+    res = gds.run_cypher("MATCH (m) RETURN count(m) as num_nodes")
+    if res['num_nodes'].values[0] > 0:
+        print("Data already in db, number of nodes: ", res['num_nodes'].values[0])
+        return
+    pbar = tqdm(desc='Putting data in db', total=sum([len(dataset[rel_split][rel_type]) for rel_split in dataset for rel_type in dataset[rel_split]]))
+    for rel_split in dataset:
+        for rel_type in dataset[rel_split]:
             edges = dataset[rel_split][rel_type]
 
             # MERGE (n)-[:{rel_type} {{text:l.rel_text}}]->(m)
@@ -109,6 +114,8 @@ def put_data_in_db(dataset):
                 """,
                 params={"ll": edges},
             )
+            pbar.update(len(edges))
+    pbar.close()
 
     for rel_split in dataset:
         res = gds.run_cypher(
@@ -120,7 +127,7 @@ def put_data_in_db(dataset):
         print(f"Number of relationships of type {rel_split} in db: ", res.numberOfRelationships)
 
 
-# put_data_in_db(dataset)
+put_data_in_db(dataset)
 
 ALL_RELS = dataset["TRAIN"].keys()
 gds.graph.drop("trainGraph", failIfMissing=False)
@@ -159,13 +166,18 @@ inspect_graph(G_train)
 gds.set_compute_cluster_ip("localhost")
 
 kkge = gds.kge
+kmodel = gds.kge.model
+
+print(gds.debug.arrow())
 
 gds.kge.model.train(
     G_train,
-    scoring_function="distmult",
-    num_epochs=10,
-    embedding_dimension=100,
+    scoring_function="DistMult",
+    num_epochs=1,
+    embedding_dimension=10,
 )
+
+print('Finished training')
 #
 # node_projection = {"Entity": {"properties": "id"}}
 # relationship_projection = [

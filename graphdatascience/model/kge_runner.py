@@ -27,22 +27,21 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         encrypted_db_password: str,
         arrow_uri: str,
     ):
-        print("!init", flush=True)
         self._query_runner = query_runner
         self._namespace = namespace
         self._server_version = server_version
         self._compute_cluster_web_uri = f"http://{compute_cluster_ip}:5005"
-        self._compute_cluster_arrow_uri = f"grpc://{compute_cluster_ip}:8815"
+        # self._compute_cluster_arrow_uri = f"grpc://{compute_cluster_ip}:8491"
         self._compute_cluster_mlflow_uri = f"http://{compute_cluster_ip}:8080"
         self._encrypted_db_password = encrypted_db_password
         self._arrow_uri = arrow_uri
+        print("KgeRunner __dict__:")
+        print(self.__dict__)
 
-    @client_only_endpoint("gds.kge")
+    @property
     def model(self):
-        print("!model")
         return self
 
-    # @client_only_endpoint("gds.kge.model") and name is train
     # @compatible_with("stream", min_inclusive=ServerVersion(2, 5, 0))
     @client_only_endpoint("gds.kge.model")
     def train(
@@ -53,7 +52,6 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         embedding_dimension,
         mlflow_experiment_name: Optional[str] = None,
     ) -> Series:
-        print("!!!train")
         graph_config = {"name": G.name()}
 
         algo_config = {
@@ -85,6 +83,7 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         return Series({"status": "finished"})
 
     def _start_job(self, config: Dict[str, Any]) -> str:
+        print(config)
         res = requests.post(f"{self._compute_cluster_web_uri}/api/machine-learning/start", json=config)
         res.raise_for_status()
         job_id = res.json()["job_id"]
