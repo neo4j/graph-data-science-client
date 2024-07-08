@@ -31,7 +31,6 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace = namespace
         self._server_version = server_version
         self._compute_cluster_web_uri = f"http://{compute_cluster_ip}:5005"
-        # self._compute_cluster_arrow_uri = f"grpc://{compute_cluster_ip}:8491"
         self._compute_cluster_mlflow_uri = f"http://{compute_cluster_ip}:8080"
         self._encrypted_db_password = encrypted_db_password
         self._arrow_uri = arrow_uri
@@ -50,6 +49,7 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         scoring_function,
         num_epochs,
         embedding_dimension,
+        epochs_per_checkpoint,
         mlflow_experiment_name: Optional[str] = None,
     ) -> Series:
         graph_config = {"name": G.name()}
@@ -58,6 +58,7 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
             "scoring_function": scoring_function,
             "num_epochs": num_epochs,
             "embedding_dimension": embedding_dimension,
+            "epochs_per_checkpoint": epochs_per_checkpoint,
         }
 
         config = {
@@ -65,9 +66,10 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
             "task": "KGE_TRAINING_PYG",
             "task_config": {
                 "graph_config": graph_config,
+                "modelname": "dummmy_model_name",
                 "task_config": algo_config,
             },
-            "encrypted_db_password": self._encrypted_db_password,
+            # "encrypted_db_password": self._encrypted_db_password,
             "graph_arrow_uri": self._arrow_uri,
         }
 
@@ -83,8 +85,11 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         return Series({"status": "finished"})
 
     def _start_job(self, config: Dict[str, Any]) -> str:
+        print("_start_job")
         print(config)
-        res = requests.post(f"{self._compute_cluster_web_uri}/api/machine-learning/start", json=config)
+        url = f"{self._compute_cluster_web_uri}/api/machine-learning/start"
+        print(url)
+        res = requests.post(url, json=config)
         res.raise_for_status()
         job_id = res.json()["job_id"]
         logging.info(f"Job with ID '{job_id}' started")

@@ -88,11 +88,12 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             )
 
         if auth is not None:
-            with open(self._path("graphdatascience.resources.field-testing", "pub.pem"), "rb") as f:
-                pub_key = rsa.PublicKey.load_pkcs1(f.read())
-            self._encrypted_db_password = rsa.encrypt(auth[1].encode(), pub_key).hex()
-        # self._encrypted_db_password = None
-
+            if self._query_runner.encrypted():
+                with open(self._path("graphdatascience.resources.field-testing", "pub.pem"), "rb") as f:
+                    pub_key = rsa.PublicKey.load_pkcs1(f.read())
+                self._encrypted_db_password = rsa.encrypt(auth[1].encode(), pub_key).hex()
+            else:
+                self._encrypted_db_password = '12345'
 
         self._compute_cluster_ip = None
 
