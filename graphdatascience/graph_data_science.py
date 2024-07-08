@@ -87,10 +87,12 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                 None if arrow is True else arrow,
             )
 
-        # if auth is not None:
-        #     with open(self._path("graphdatascience.resources.field-testing", "pub.pem"), "rb") as f:
-        #         pub_key = rsa.PublicKey.load_pkcs1(f.read())
-        #     self._encrypted_db_password = rsa.encrypt(auth[1].encode(), pub_key).hex()
+        if auth is not None:
+            with open(self._path("graphdatascience.resources.field-testing", "pub.pem"), "rb") as f:
+                pub_key = rsa.PublicKey.load_pkcs1(f.read())
+            self._encrypted_db_password = rsa.encrypt(auth[1].encode(), pub_key).hex()
+        # self._encrypted_db_password = None
+
 
         self._compute_cluster_ip = None
 
@@ -143,7 +145,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
     @property
     def kge(self) -> KgeRunner:
-        print("!kge")
         if not isinstance(self._query_runner, ArrowQueryRunner):
             raise ValueError("Running FastPath requires GDS with the Arrow server enabled")
         if self._compute_cluster_ip is None:
@@ -156,7 +157,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             self._server_version,
             self._compute_cluster_ip,
             self._encrypted_db_password,
-            None,
+            self._query_runner._gds_arrow_client._host + ":" + str(self._query_runner._gds_arrow_client._port),
         )
 
     def __getattr__(self, attr: str) -> IndirectCallBuilder:

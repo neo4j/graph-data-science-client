@@ -854,7 +854,7 @@ def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataSc
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
+    G, _ = gds.graph.project(GRAPH_NAME, "*", ["REL_0", "REL2"])
 
     if gds.server_version() >= ServerVersion(2, 5, 0):
         result = gds.graph.relationships.stream(G, ["REL", "REL2"])
@@ -1058,3 +1058,5 @@ def test_empty_relationships_stream(gds: GraphDataScience) -> None:
 
     result = gds.graph.relationships.stream(G, ["SIMILAR"])
     assert result.empty
+
+
