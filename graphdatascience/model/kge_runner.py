@@ -66,12 +66,13 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
             "task": "KGE_TRAINING_PYG",
             "task_config": {
                 "graph_config": graph_config,
-                "modelname": "dummmy_model_name",
+                "modelname": "dummmy_model_name"+str(time.time()),
                 "task_config": algo_config,
             },
-            # "encrypted_db_password": self._encrypted_db_password,
             "graph_arrow_uri": self._arrow_uri,
         }
+        if self._encrypted_db_password is not None:
+            config["encrypted_db_password"] = self._encrypted_db_password
 
         if mlflow_experiment_name is not None:
             config["task_config"]["mlflow"] = {
