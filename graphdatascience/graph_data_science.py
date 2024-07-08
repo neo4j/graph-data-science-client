@@ -143,7 +143,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
     @property
     def kge(self) -> KgeRunner:
-        print("!kge")
         if not isinstance(self._query_runner, ArrowQueryRunner):
             raise ValueError("Running FastPath requires GDS with the Arrow server enabled")
         if self._compute_cluster_ip is None:
@@ -156,7 +155,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             self._server_version,
             self._compute_cluster_ip,
             self._encrypted_db_password,
-            None,
+            self._query_runner._gds_arrow_client._host + ":" + str(self._query_runner._gds_arrow_client._port),
         )
 
     def __getattr__(self, attr: str) -> IndirectCallBuilder:
