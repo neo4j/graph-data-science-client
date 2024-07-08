@@ -92,8 +92,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                 with open(self._path("graphdatascience.resources.field-testing", "pub.pem"), "rb") as f:
                     pub_key = rsa.PublicKey.load_pkcs1(f.read())
                 self._encrypted_db_password = rsa.encrypt(auth[1].encode(), pub_key).hex()
-            else:
-                self._encrypted_db_password = '12345'
 
         self._compute_cluster_ip = None
 
@@ -157,7 +155,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             "gds.kge.model",
             self._server_version,
             self._compute_cluster_ip,
-            self._encrypted_db_password,
+            self._encrypted_db_password if self._query_runner.encrypted() else None,
             self._query_runner._gds_arrow_client._host + ":" + str(self._query_runner._gds_arrow_client._port),
         )
 
