@@ -44,7 +44,7 @@ def gs_model(gds: GraphDataScience, G: Graph, runner: Neo4jQueryRunner) -> Gener
     yield model
 
     namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
-    query = f"CALL gds.{namespace}model.drop($name)"
+    query = f"CALL gds.{namespace}model.drop($name, false)"
     params = {"name": model.name()}
     runner.run_cypher(query, params)
 
@@ -53,25 +53,24 @@ def test_model_exists(gs_model: GraphSageModel) -> None:
     assert gs_model.exists()
 
 
-def test_model_drop(gds: GraphDataScience, G: Graph) -> None:
-    model, _ = gds.beta.graphSage.train(G, modelName="gs-model", featureProperties=["age"])
+def test_model_drop(gds: GraphDataScience, G: Graph, gs_model: GraphSageModel) -> None:
+    model_type = gs_model.type()
+    model_published = gs_model.shared()
 
-    model_type = model.type()
-    model_published = model.shared()
-    drop_result = model.drop()
+    drop_result = gs_model.drop()
     if gds.server_version() >= ServerVersion(2, 5, 0):
-        assert drop_result["modelName"] == model.name()
+        assert drop_result["modelName"] == gs_model.name()
         assert drop_result["modelType"] == model_type
         assert drop_result["published"] == model_published
-    assert drop_result["modelInfo"]["modelName"] == model.name()
+    assert drop_result["modelInfo"]["modelName"] == gs_model.name()
 
-    assert not model.exists()
+    assert not gs_model.exists()
 
     # Should not raise error.
-    model.drop(failIfMissing=False)
+    gs_model.drop(failIfMissing=False)
 
     with pytest.raises(Exception):
-        model.drop(failIfMissing=True)
+        gs_model.drop(failIfMissing=True)
 
 
 def test_model_name(gs_model: GraphSageModel) -> None:
