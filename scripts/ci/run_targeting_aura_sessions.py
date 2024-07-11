@@ -27,9 +27,9 @@ def main() -> None:
         aura_api.check_running(instance_id)
         logging.info("Database %s up and running", instance_id)
 
-        uri = (create_result["connection_url"],)
-        username = (create_result["username"],)
-        password = (create_result["password"],)
+        uri = create_result["connection_url"]
+        username = create_result["username"]
+        password = create_result["password"]
 
         cmd = f"AURA_DB_ADDRESS={uri} AURA_DB_USER={username} AURA_DB_PW={password} tox -e jupyter-notebook-session-ci"
 
