@@ -11,10 +11,13 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main() -> None:
-    aura_api = AuraApiCI()
+    client_id = os.environ["AURA_API_CLIENT_ID"]
+    client_secret = os.environ["AURA_API_CLIENT_SECRET"]
+    tenant_id = os.environ.get("TENANT_ID")
+    aura_api = AuraApiCI(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
 
     MAX_INT = 1000000
-    instance_name = f"ci-build-{sys.argv[1]}" if len(sys.argv) > 0 else "ci-instance-" + str(rd.randint(0, MAX_INT))
+    instance_name = f"ci-build-{sys.argv[1]}" if len(sys.argv) > 1 else "ci-instance-" + str(rd.randint(0, MAX_INT))
 
     create_result = aura_api.create_instance(instance_name, memory="1GB", type="professional-db")
     instance_id = create_result["id"]

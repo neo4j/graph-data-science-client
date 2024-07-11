@@ -1,13 +1,9 @@
 import logging
-import os
 import time
 from time import sleep
 from typing import Any, Dict, Optional
 
 import requests
-
-CLIENT_ID = os.environ["AURA_API_CLIENT_ID"]
-CLIENT_SECRET = os.environ["AURA_API_CLIENT_SECRET"]
 
 
 class AuraApiCI:
@@ -25,9 +21,11 @@ class AuraApiCI:
         def is_expired(self) -> bool:
             return self.expires_at >= int(time.time())
 
-    def __init__(self) -> None:
+    def __init__(self, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> None:
         self._token: Optional[AuraApiCI.AuraAuthToken] = None
         self._logger = logging.getLogger()
+        self._auth = (client_id, client_secret)
+        self._tenant_id = tenant_id
 
     def _build_header(self) -> Dict[str, str]:
         return {"Authorization": f"Bearer {self._auth_token()}", "User-agent": "neo4j-graphdatascience-ci"}
@@ -44,7 +42,7 @@ class AuraApiCI:
 
         self._logger.debug("Updating oauth token")
 
-        response = requests.post("https://api-staging.neo4j.io/oauth/token", data=data, auth=(CLIENT_ID, CLIENT_SECRET))
+        response = requests.post("https://api-staging.neo4j.io/oauth/token", data=data, auth=self._auth)
 
         response.raise_for_status()
 
@@ -143,6 +141,9 @@ class AuraApiCI:
         response.raise_for_status()
 
     def get_tenant_id(self) -> str:
+        if self._tenant_id:
+            return self._tenant_id
+
         response = requests.get(
             "https://api-staging.neo4j.io/v1/tenants",
             headers=self._build_header(),
