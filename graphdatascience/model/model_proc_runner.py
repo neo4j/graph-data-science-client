@@ -55,10 +55,10 @@ class ModelProcRunner(ModelResolver):
         if self._server_version < ServerVersion(2, 5, 0):
             endpoint = "gds.beta.model.list"
             yields = ["modelInfo"]
-            result: Series[Any] = self._query_runner.call_procedure(
+            result_25: Series[Any] = self._query_runner.call_procedure(
                 endpoint=endpoint, params=params, yields=yields, custom_error=False
             ).squeeze()
-            model_type = str(result["modelInfo"]["modelType"]) if not result.empty else None
+            model_type = str(result_25["modelInfo"]["modelType"]) if not result_25.empty else None
         else:
             endpoint = "gds.model.list"
             yields = ["modelType"]
