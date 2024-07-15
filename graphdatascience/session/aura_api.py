@@ -6,8 +6,7 @@ import time
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 
-import requests as req
-from requests import HTTPError
+import requests
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api_responses import (
@@ -22,6 +21,10 @@ from graphdatascience.session.aura_api_responses import (
 from graphdatascience.session.session_sizes import SessionMemoryValue
 from graphdatascience.version import __version__
 
+class AuraApiError(Exception):
+    def __init__(self, message: str, status_code: int):
+        super().__init__(self, message)
+        self.status_code = status_code
 
 class AuraApi:
     class AuraAuthToken:
@@ -64,18 +67,18 @@ class AuraApi:
         return host.split(".")[0].split("-")[0]
 
     def create_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
-        response = req.post(
+        response = requests.post(
             f"{self._base_uri}/v1beta5/data-science/sessions",
             headers=self._build_header(),
             json={"name": name, "instance_id": dbid, "password": pwd, "memory": memory.value},
         )
 
-        response.raise_for_status()
+        self._check_code(response)
 
         return SessionDetails.fromJson(response.json())
 
     def list_session(self, session_id: str, dbid: str) -> Optional[SessionDetails]:
-        response = req.get(
+        response = requests.get(
             f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}?instanceId={dbid}",
             headers=self._build_header(),
         )
@@ -83,17 +86,17 @@ class AuraApi:
         if response.status_code == 404:
             return None
 
-        response.raise_for_status()
+        self._check_code(response)
 
         return SessionDetails.fromJson(response.json())
 
     def list_sessions(self, dbid: str) -> List[SessionDetails]:
-        response = req.get(
+        response = requests.get(
             f"{self._base_uri}/v1beta5/data-science/sessions?instanceId={dbid}",
             headers=self._build_header(),
         )
 
-        response.raise_for_status()
+        self._check_code(response)
 
         return [SessionDetails.fromJson(s) for s in response.json()]
 
@@ -127,7 +130,7 @@ class AuraApi:
         )
 
     def delete_session(self, session_id: str, dbid: str) -> bool:
-        response = req.delete(
+        response = requests.delete(
             f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}",
             headers=self._build_header(),
             json={"instance_id": dbid},
@@ -138,7 +141,7 @@ class AuraApi:
         elif response.status_code == 202:
             return True
 
-        response.raise_for_status()
+        self._check_code(response)
 
         return False
 
@@ -157,22 +160,18 @@ class AuraApi:
             "cloud_provider": cloud_provider,
         }
 
-        response = req.post(
+        response = requests.post(
             f"{self._base_uri}/v1/instances",
             json=data,
             headers=self._build_header(),
         )
 
-        try:
-            response.raise_for_status()
-        except HTTPError as e:
-            print(response.json())
-            raise e
+        self._check_code(response)
 
         return InstanceCreateDetails.from_json(response.json()["data"])
 
     def delete_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
-        response = req.delete(
+        response = requests.delete(
             f"{self._base_uri}/v1/instances/{instance_id}",
             headers=self._build_header(),
         )
@@ -180,25 +179,25 @@ class AuraApi:
         if response.status_code == 404:
             return None
 
-        response.raise_for_status()
+        self._check_code(response)
 
         return InstanceSpecificDetails.fromJson(response.json()["data"])
 
     def list_instances(self) -> List[InstanceDetails]:
-        response = req.get(
+        response = requests.get(
             f"{self._base_uri}/v1/instances",
             headers=self._build_header(),
             params={"tenantId": self._tenant_id},
         )
 
-        response.raise_for_status()
+        self._check_code(response)
 
         raw_data = response.json()["data"]
 
         return [InstanceDetails.fromJson(i) for i in raw_data]
 
     def list_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
-        response = req.get(
+        response = requests.get(
             f"{self._base_uri}/v1/instances/{instance_id}",
             headers=self._build_header(),
         )
@@ -206,7 +205,7 @@ class AuraApi:
         if response.status_code == 404:
             return None
 
-        response.raise_for_status()
+        self._check_code(response)
 
         raw_data = response.json()["data"]
 
@@ -246,17 +245,17 @@ class AuraApi:
             "instance_type": "dsenterprise",
         }
 
-        response = req.post(f"{self._base_uri}/v1/instances/sizing", headers=self._build_header(), json=data)
-        response.raise_for_status()
+        response = requests.post(f"{self._base_uri}/v1/instances/sizing", headers=self._build_header(), json=data)
+        self._check_code(response)
 
         return EstimationDetails.from_json(response.json()["data"])
 
     def _get_tenant_id(self) -> str:
-        response = req.get(
+        response = requests.get(
             f"{self._base_uri}/v1/tenants",
             headers=self._build_header(),
         )
-        response.raise_for_status()
+        self._check_code(response)
 
         raw_data = response.json()["data"]
 
@@ -270,11 +269,11 @@ class AuraApi:
 
     def tenant_details(self) -> TenantDetails:
         if not self._tenant_details:
-            response = req.get(
+            response = requests.get(
                 f"{self._base_uri}/v1/tenants/{self._tenant_id}",
                 headers=self._build_header(),
             )
-            response.raise_for_status()
+            self._check_code(response)
             self._tenant_details = TenantDetails.from_json(response.json()["data"])
         return self._tenant_details
 
@@ -293,13 +292,20 @@ class AuraApi:
 
         self._logger.debug("Updating oauth token")
 
-        response = req.post(
+        response = requests.post(
             f"{self._base_uri}/oauth/token", data=data, auth=(self._credentials[0], self._credentials[1])
         )
 
-        response.raise_for_status()
+        self._check_code(response)
 
         return AuraApi.AuraAuthToken(response.json())
+
+    def _check_code(self, resp: requests.Response) -> None:
+        if resp.status_code >= 400:
+            raise AuraApiError(
+                f"Request for {resp.url} failed with status code {resp.status_code} - {resp.reason}: {resp.text}",
+                status_code=resp.status_code,
+            )
 
     def _instance_type(self) -> str:
         return "enterprise-ds" if not self._dev_env else "professional-ds"
