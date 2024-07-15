@@ -94,6 +94,12 @@ def test_cypher_projection(gds: GraphDataScience) -> None:
     assert result["exists"]
 
 
+@pytest.mark.filterwarnings("ignore: One of the labels in your query is not available in the database")
+def test_cypher_projection_empty_graph(gds: GraphDataScience) -> None:
+    with pytest.raises(ValueError, match="Projected graph cannot be empty"):
+        gds.graph.cypher.project("MATCH (n:MISSING_LABEL) RETURN gds.graph.project('some-graph', n, null)")
+
+
 def test_beta_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 

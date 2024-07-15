@@ -1,6 +1,10 @@
+from __future__ import annotations
+
 import re
 from itertools import chain, zip_longest
 from typing import Any, Optional
+
+from pandas import Series
 
 from ..caller_base import CallerBase
 from ..query_runner.query_runner import QueryRunner
@@ -41,7 +45,10 @@ class GraphCypherRunner(CallerBase):
 
         GraphCypherRunner._verify_query_ends_with_return_clause(self._namespace, query)
 
-        result = self._query_runner.run_cypher(query, params, database, False).squeeze()
+        result: Optional[Series[Any]] = self._query_runner.run_cypher(query, params, database, False).squeeze()
+
+        if result is None or result.empty:
+            raise ValueError("Projected graph cannot be empty.")
 
         try:
             graph_name = str(result["graphName"])
