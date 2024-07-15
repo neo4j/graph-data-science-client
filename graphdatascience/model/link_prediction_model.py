@@ -41,5 +41,5 @@ class LPModel(PipelineModel):
             A list of LinkFeatures of the pipeline.
 
         """
-        steps: List[Dict[str, Any]] = self._list_info()["modelInfo"][0]["pipeline"]["featureSteps"]
+        steps: List[Dict[str, Any]] = self._list_info()["modelInfo"]["pipeline"]["featureSteps"]
         return [LinkFeature(s["name"], s["config"]) for s in steps]

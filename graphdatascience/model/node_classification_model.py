@@ -62,7 +62,7 @@ class NCModel(PipelineModel):
             The classes of the model.
 
         """
-        return self._list_info()["modelInfo"][0]["classes"]  # type: ignore
+        return self._list_info()["modelInfo"]["classes"]  # type: ignore
 
     def feature_properties(self) -> List[str]:
         """
@@ -72,5 +72,5 @@ class NCModel(PipelineModel):
             The feature properties of the model.
 
         """
-        features: List[Dict[str, Any]] = self._list_info()["modelInfo"][0]["pipeline"]["featureProperties"]
+        features: List[Dict[str, Any]] = self._list_info()["modelInfo"]["pipeline"]["featureProperties"]
         return [f["feature"] for f in features]

@@ -300,6 +300,23 @@ def test_model_get_graphsage(gds: GraphDataScience, gs_model: GraphSageModel) ->
     model.drop()
 
 
+def test_model_get_no_model(gds: GraphDataScience) -> None:
+    with pytest.raises(ValueError, match="No loaded model named 'no_model' exists"):
+        gds.model.get("no_model")
+
+
+def test_missing_model_info(gds: GraphDataScience) -> None:
+    model = GraphSageModel("ghost-model", gds._query_runner, gds.server_version())
+    with pytest.raises(ValueError, match="There is no 'ghost-model' in the model catalog"):
+        model.model_info()
+
+
+def test_missing_model_drop(gds: GraphDataScience) -> None:
+    model = GraphSageModel("ghost-model", gds._query_runner, gds.server_version())
+
+    assert model.drop(failIfMissing=False).empty
+
+
 @pytest.mark.model_store_location
 @pytest.mark.filterwarnings("ignore: The query used a deprecated procedure.")
 def test_deprecated_model_Functions_still_work(gds: GraphDataScience, gs_model: GraphSageModel) -> None:
