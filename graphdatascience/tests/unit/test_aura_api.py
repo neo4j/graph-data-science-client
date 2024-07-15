@@ -355,14 +355,14 @@ def test_auth_token(requests_mock: Mocker) -> None:
         json={"access_token": "very_short_token", "expires_in": 1, "token_type": "Bearer"},
     )
 
-    assert api._auth_token() == "very_short_token"
+    assert api._auth._auth_token() == "very_short_token"
 
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
         json={"access_token": "longer_token", "expires_in": 3600, "token_type": "Bearer"},
     )
 
-    assert api._auth_token() == "longer_token"
+    assert api._auth._auth_token() == "longer_token"
 
 
 def test_derive_tenant(requests_mock: Mocker) -> None:
