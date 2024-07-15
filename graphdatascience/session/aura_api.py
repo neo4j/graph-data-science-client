@@ -21,10 +21,12 @@ from graphdatascience.session.aura_api_responses import (
 from graphdatascience.session.session_sizes import SessionMemoryValue
 from graphdatascience.version import __version__
 
+
 class AuraApiError(Exception):
     def __init__(self, message: str, status_code: int):
         super().__init__(self, message)
         self.status_code = status_code
+
 
 class AuraApi:
     class AuraAuthToken:
@@ -56,6 +58,7 @@ class AuraApi:
         self._logger = logging.getLogger()
         self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
         self._tenant_details: Optional[TenantDetails] = None
+        self._request_session = requests.Session()
 
     @staticmethod
     def extract_id(uri: str) -> str:
@@ -67,7 +70,7 @@ class AuraApi:
         return host.split(".")[0].split("-")[0]
 
     def create_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
-        response = requests.post(
+        response = self._request_session.post(
             f"{self._base_uri}/v1beta5/data-science/sessions",
             headers=self._build_header(),
             json={"name": name, "instance_id": dbid, "password": pwd, "memory": memory.value},
@@ -78,7 +81,7 @@ class AuraApi:
         return SessionDetails.fromJson(response.json())
 
     def list_session(self, session_id: str, dbid: str) -> Optional[SessionDetails]:
-        response = requests.get(
+        response = self._request_session.get(
             f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}?instanceId={dbid}",
             headers=self._build_header(),
         )
@@ -91,7 +94,7 @@ class AuraApi:
         return SessionDetails.fromJson(response.json())
 
     def list_sessions(self, dbid: str) -> List[SessionDetails]:
-        response = requests.get(
+        response = self._request_session.get(
             f"{self._base_uri}/v1beta5/data-science/sessions?instanceId={dbid}",
             headers=self._build_header(),
         )
@@ -130,7 +133,7 @@ class AuraApi:
         )
 
     def delete_session(self, session_id: str, dbid: str) -> bool:
-        response = requests.delete(
+        response = self._request_session.delete(
             f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}",
             headers=self._build_header(),
             json={"instance_id": dbid},
@@ -160,7 +163,7 @@ class AuraApi:
             "cloud_provider": cloud_provider,
         }
 
-        response = requests.post(
+        response = self._request_session.post(
             f"{self._base_uri}/v1/instances",
             json=data,
             headers=self._build_header(),
@@ -171,7 +174,7 @@ class AuraApi:
         return InstanceCreateDetails.from_json(response.json()["data"])
 
     def delete_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
-        response = requests.delete(
+        response = self._request_session.delete(
             f"{self._base_uri}/v1/instances/{instance_id}",
             headers=self._build_header(),
         )
@@ -184,7 +187,7 @@ class AuraApi:
         return InstanceSpecificDetails.fromJson(response.json()["data"])
 
     def list_instances(self) -> List[InstanceDetails]:
-        response = requests.get(
+        response = self._request_session.get(
             f"{self._base_uri}/v1/instances",
             headers=self._build_header(),
             params={"tenantId": self._tenant_id},
@@ -197,7 +200,7 @@ class AuraApi:
         return [InstanceDetails.fromJson(i) for i in raw_data]
 
     def list_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
-        response = requests.get(
+        response = self._request_session.get(
             f"{self._base_uri}/v1/instances/{instance_id}",
             headers=self._build_header(),
         )
@@ -245,13 +248,15 @@ class AuraApi:
             "instance_type": "dsenterprise",
         }
 
-        response = requests.post(f"{self._base_uri}/v1/instances/sizing", headers=self._build_header(), json=data)
+        response = self._request_session.post(
+            f"{self._base_uri}/v1/instances/sizing", headers=self._build_header(), json=data
+        )
         self._check_code(response)
 
         return EstimationDetails.from_json(response.json()["data"])
 
     def _get_tenant_id(self) -> str:
-        response = requests.get(
+        response = self._request_session.get(
             f"{self._base_uri}/v1/tenants",
             headers=self._build_header(),
         )
@@ -269,7 +274,7 @@ class AuraApi:
 
     def tenant_details(self) -> TenantDetails:
         if not self._tenant_details:
-            response = requests.get(
+            response = self._request_session.get(
                 f"{self._base_uri}/v1/tenants/{self._tenant_id}",
                 headers=self._build_header(),
             )
@@ -292,7 +297,7 @@ class AuraApi:
 
         self._logger.debug("Updating oauth token")
 
-        response = requests.post(
+        response = self._request_session.post(
             f"{self._base_uri}/oauth/token", data=data, auth=(self._credentials[0], self._credentials[1])
         )
 
