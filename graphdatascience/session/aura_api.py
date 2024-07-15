@@ -262,13 +262,15 @@ class AuraApi:
 
             def __init__(self, json: Dict[str, Any]) -> None:
                 self.access_token = json["access_token"]
-                expires_in: int = json["expires_in"]
-                self.expires_at = int(time.time()) + expires_in
                 self.token_type = json["token_type"]
 
-            # TODO add a buffer of 10s to avoid nearly expiring tokens
-            def is_expired(self) -> bool:
-                return self.expires_at >= int(time.time())
+                expires_in: int = json["expires_in"]
+                refresh_in: int = expires_in if expires_in <= 10 else expires_in - 10
+                # avoid token expiry during request send by refreshing 10 seconds earlier
+                self.refresh_at = int(time.time()) + refresh_in
+
+            def should_refresh(self) -> bool:
+                return self.refresh_at >= int(time.time())
 
         def __init__(self, oauth_url: str, credentials: Tuple[str, str]) -> None:
             self._token: Optional[AuraApi.Auth.Token] = None
@@ -281,7 +283,7 @@ class AuraApi:
             return r
 
         def _auth_token(self) -> str:
-            if self._token is None or self._token.is_expired():
+            if self._token is None or self._token.should_refresh():
                 self._token = self._update_token()
             return self._token.access_token
 
