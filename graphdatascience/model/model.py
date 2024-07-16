@@ -201,7 +201,7 @@ class Model(ABC):
             ).squeeze()
 
             if result.empty:
-                return Series()
+                return result
 
             #  modelInfo {.*, modelName: modelName, modelType: modelType} AS modelInfo
             result["modelInfo"] = {
