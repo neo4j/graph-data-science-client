@@ -51,7 +51,6 @@ class DedicatedSessions:
         # hashing the password to avoid storing the actual db password in Aura
         password = hashlib.sha256(db_connection.password.encode()).hexdigest()
 
-        # TODO configure session size (and check existing_session has same size)
         if existing_session:
             self._check_expiry_date(existing_session)
             self._check_memory_configuration(existing_session, memory.value)
@@ -106,7 +105,13 @@ class DedicatedSessions:
         return [SessionInfo.from_session_details(i) for i in sessions]
 
     def _find_existing_session(self, session_name: str, dbid: str) -> Optional[SessionDetails]:
-        matched_sessions = [s for s in self._aura_api.list_sessions(dbid) if s.name == session_name]
+        matched_sessions: List[SessionDetails] = []
+        try:
+            matched_sessions = [s for s in self._aura_api.list_sessions(dbid) if s.name == session_name]
+        except HTTPError as e:
+            # ignore 404 errors when listing sessions as it could mean paused sessions or deleted sessions
+            if e.response.status_code != 404:
+                raise e
 
         if len(matched_sessions) == 0:
             return None

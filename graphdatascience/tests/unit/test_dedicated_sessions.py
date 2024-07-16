@@ -69,6 +69,15 @@ class FakeAuraApi(AuraApi):
 
         self._sessions[session.id] = session
 
+    # aura behaviour of paused instances not being in an orchestra
+    def _mimic_paused_db_behaviour(self, dbid: str) -> None:
+        db = self.list_instance(dbid)
+        if db and db.status == "paused":
+            response = Response()
+            response.status_code = 404
+            response._content = b"database not found"
+            raise HTTPError(request=None, response=response)
+
     def create_instance(
         self, name: str, memory: SessionMemoryValue, cloud_provider: str, region: str
     ) -> InstanceCreateDetails:
@@ -104,13 +113,7 @@ class FakeAuraApi(AuraApi):
         return self._instances.pop(instance_id)
 
     def list_sessions(self, dbid: str) -> List[SessionDetails]:
-        # mimic aura behaviour of paused instances not being in an orchestra
-        db = self.list_instance(dbid)
-        if db and db.status == "paused":
-            response = Response()
-            response.status_code = 404
-            response._content = b"database not found"
-            raise HTTPError(request=None, response=response)
+        self._mimic_paused_db_behaviour(dbid)
 
         return [v for _, v in self._sessions.items() if v.instance_id == dbid]
 
@@ -118,6 +121,8 @@ class FakeAuraApi(AuraApi):
         return [v for _, v in self._instances.items()]
 
     def list_session(self, session_id: str, dbid: str) -> Optional[SessionDetails]:
+        self._mimic_paused_db_behaviour(dbid)
+
         matched_instance = self._sessions.get(session_id, None)
 
         if matched_instance:
@@ -397,6 +402,35 @@ def test_delete_nonunique_session(aura_api: AuraApi) -> None:
         sessions.delete("one")
 
     assert len(sessions.list()) == 2
+
+
+def test_delete_session_paused_instance(aura_api: AuraApi) -> None:
+    fake_aura_api = cast(FakeAuraApi, aura_api)
+
+    fake_aura_api.id_counter += 1
+    paused_db = InstanceSpecificDetails(
+        id="4242",
+        status="paused",
+        connection_url="foo.bar",
+        memory=SessionMemory.m_16GB.value,
+        type="",
+        region="dresden",
+        name="paused-db",
+        tenant_id=fake_aura_api._tenant_id,
+        cloud_provider="aws",
+    )
+    fake_aura_api._instances[paused_db.id] = paused_db
+
+    session = aura_api.create_session(
+        name="gds-session-my-session-name",
+        dbid=paused_db.id,
+        pwd="some_pwd",
+        memory=SessionMemory.m_8GB.value,
+    )
+    sessions = DedicatedSessions(aura_api)
+
+    # cannot delete session running against a paused instance
+    assert not sessions.delete(session.name)
 
 
 def test_create_waiting_forever() -> None:
