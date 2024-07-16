@@ -124,12 +124,12 @@ data_query = """
     (brie:Person {name: 'Brie',   age: 31, experience: 6, hipster: 0}),
     (elsa:Person {name: 'Elsa',   age: 65, experience: 23, hipster: 1}),
     (john:Person {name: 'John',   age: 4, experience: 100, hipster: 0}),
-    
+
     (apple:Fruit {name: 'Apple',   tropical: 0, sourness: 0.3, sweetness: 0.6}),
     (banana:Fruit {name: 'Banana', tropical: 1, sourness: 0.1, sweetness: 0.9}),
     (mango:Fruit {name: 'Mango',   tropical: 1, sourness: 0.3, sweetness: 1.0}),
     (plum:Fruit {name: 'Plum',     tropical: 0, sourness: 0.5, sweetness: 0.8})
-  
+
   CREATE
     (dan)-[:LIKES]->(apple),
     (annie)-[:LIKES]->(banana),
@@ -138,7 +138,7 @@ data_query = """
     (brie)-[:LIKES]->(banana),
     (elsa)-[:LIKES]->(plum),
     (john)-[:LIKES]->(plum),
-  
+
     (dan)-[:KNOWS]->(annie),
     (dan)-[:KNOWS]->(matt),
     (annie)-[:KNOWS]->(matt),
@@ -179,16 +179,16 @@ G, result = gds.graph.project(
     CALL {
         MATCH (p1:Person)
         OPTIONAL MATCH (p1)-[r:KNOWS]->(p2:Person)
-        RETURN 
-          p1 AS source, r AS rel, p2 AS target, 
-          p1 {.age, .experience, .hipster } AS sourceNodeProperties, 
+        RETURN
+          p1 AS source, r AS rel, p2 AS target,
+          p1 {.age, .experience, .hipster } AS sourceNodeProperties,
           p2 {.age, .experience, .hipster } AS targetNodeProperties
         UNION
         MATCH (f:Fruit)
         OPTIONAL MATCH (f)<-[r:LIKES]-(p:Person)
-        RETURN 
-          p AS source, r AS rel, f AS target, 
-          p {.age, .experience, .hipster } AS sourceNodeProperties, 
+        RETURN
+          p AS source, r AS rel, f AS target,
+          p {.age, .experience, .hipster } AS sourceNodeProperties,
           f { .tropical, .sourness, .sweetness } AS targetNodeProperties
     }
     RETURN gds.graph.project.remote(source, target, {
@@ -265,8 +265,8 @@ instance.
 ----
 gds.run_cypher(
     """
-    MATCH (p:Person) 
-    RETURN p.name, p.pagerank AS rank, p.louvain 
+    MATCH (p:Person)
+    RETURN p.name, p.pagerank AS rank, p.louvain
      ORDER BY rank DESC
     """
 )
@@ -284,7 +284,9 @@ stop incurring costs.
 
 [source, python, role=no-test]
 ----
-sessions.delete("people-and-fruits")
+gds.delete()
+
+# or sessions.delete("people-and-fruits")
 ----
 
 [source, python, role=no-test]
