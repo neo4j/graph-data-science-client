@@ -51,7 +51,6 @@ class DedicatedSessions:
         # hashing the password to avoid storing the actual db password in Aura
         password = hashlib.sha256(db_connection.password.encode()).hexdigest()
 
-        # TODO configure session size (and check existing_session has same size)
         if existing_session:
             self._check_expiry_date(existing_session)
             self._check_memory_configuration(existing_session, memory.value)
@@ -71,7 +70,7 @@ class DedicatedSessions:
         )
 
         return self._construct_client(
-            session_name=session_name, session_connection=session_connection, db_connection=db_connection
+            session_id=session_id, session_connection=session_connection, db_connection=db_connection
         )
 
     def delete(self, session_name: str, dbid: Optional[str] = None) -> bool:
@@ -106,7 +105,13 @@ class DedicatedSessions:
         return [SessionInfo.from_session_details(i) for i in sessions]
 
     def _find_existing_session(self, session_name: str, dbid: str) -> Optional[SessionDetails]:
-        matched_sessions = [s for s in self._aura_api.list_sessions(dbid) if s.name == session_name]
+        matched_sessions: List[SessionDetails] = []
+        try:
+            matched_sessions = [s for s in self._aura_api.list_sessions(dbid) if s.name == session_name]
+        except HTTPError as e:
+            # ignore 404 errors when listing sessions as it could mean paused sessions or deleted sessions
+            if e.response.status_code != 404:
+                raise e
 
         if len(matched_sessions) == 0:
             return None
@@ -132,12 +137,14 @@ class DedicatedSessions:
         return create_details
 
     def _construct_client(
-        self, session_name: str, session_connection: DbmsConnectionInfo, db_connection: DbmsConnectionInfo
+        self, session_id: str, session_connection: DbmsConnectionInfo, db_connection: DbmsConnectionInfo
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience(
             gds_session_connection_info=session_connection,
             aura_db_connection_info=db_connection,
-            delete_fn=lambda: self.delete(session_name, dbid=AuraApi.extract_id(db_connection.uri)),
+            delete_fn=lambda: self._aura_api.delete_session(
+                session_id=session_id, dbid=AuraApi.extract_id(db_connection.uri)
+            ),
         )
 
     def _check_expiry_date(self, session: SessionDetails) -> None:
