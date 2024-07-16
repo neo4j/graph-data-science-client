@@ -5,10 +5,8 @@ import warnings
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
-from requests.exceptions import HTTPError
-
 from graphdatascience.session.algorithm_category import AlgorithmCategory
-from graphdatascience.session.aura_api import AuraApi
+from graphdatascience.session.aura_api import AuraApi, AuraApiError
 from graphdatascience.session.aura_api_responses import SessionDetails
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
@@ -97,9 +95,9 @@ class DedicatedSessions:
         for db in dbs:
             try:
                 sessions.extend(self._aura_api.list_sessions(db.id))
-            except HTTPError as e:
+            except AuraApiError as e:
                 # ignore 404 errors when listing sessions as it could mean paused sessions or deleted sessions
-                if e.response.status_code != 404:
+                if e.status_code != 404:
                     raise e
 
         return [SessionInfo.from_session_details(i) for i in sessions]
@@ -108,9 +106,9 @@ class DedicatedSessions:
         matched_sessions: List[SessionDetails] = []
         try:
             matched_sessions = [s for s in self._aura_api.list_sessions(dbid) if s.name == session_name]
-        except HTTPError as e:
+        except AuraApiError as e:
             # ignore 404 errors when listing sessions as it could mean paused sessions or deleted sessions
-            if e.response.status_code != 404:
+            if e.status_code != 404:
                 raise e
 
         if len(matched_sessions) == 0:

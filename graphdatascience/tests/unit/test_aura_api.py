@@ -3,12 +3,11 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 from _pytest.logging import LogCaptureFixture
-from requests import HTTPError
 from requests_mock import Mocker
 
 from graphdatascience.session import SessionMemory
 from graphdatascience.session.algorithm_category import AlgorithmCategory
-from graphdatascience.session.aura_api import AuraApi
+from graphdatascience.session.aura_api import AuraApi, AuraApiError
 from graphdatascience.session.aura_api_responses import (
     EstimationDetails,
     InstanceCreateDetails,
@@ -303,7 +302,7 @@ def test_delete_that_fails(requests_mock: Mocker) -> None:
         json={"errors": [{"message": "some failure happened", "reason": "unknown", "field": "string"}]},
     )
 
-    with pytest.raises(HTTPError, match="Internal Server Error"):
+    with pytest.raises(AuraApiError, match="Internal Server Error"):
         api.delete_instance("id0")
 
 
@@ -355,14 +354,38 @@ def test_auth_token(requests_mock: Mocker) -> None:
         json={"access_token": "very_short_token", "expires_in": 1, "token_type": "Bearer"},
     )
 
-    assert api._auth_token() == "very_short_token"
+    assert api._auth._auth_token() == "very_short_token"
 
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
         json={"access_token": "longer_token", "expires_in": 3600, "token_type": "Bearer"},
     )
 
-    assert api._auth_token() == "longer_token"
+    assert api._auth._auth_token() == "longer_token"
+
+
+def test_auth_token_reused(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    requests_mock.post(
+        "https://api.neo4j.io/oauth/token",
+        json={"access_token": "one_token", "expires_in": 3600, "token_type": "Bearer"},
+    )
+
+    assert api._auth._auth_token() == "one_token"
+    assert api._auth._auth_token() == "one_token"
+
+
+def test_auth_token_use_short_token(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    requests_mock.post(
+        "https://api.neo4j.io/oauth/token",
+        json={"access_token": "one_token", "expires_in": 10, "token_type": "Bearer"},
+    )
+
+    assert api._auth._auth_token() == "one_token"
+    assert api._auth._auth_token() == "one_token"
 
 
 def test_derive_tenant(requests_mock: Mocker) -> None:

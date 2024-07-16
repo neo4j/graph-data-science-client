@@ -5,11 +5,9 @@ from typing import List, Optional, cast
 
 import pytest
 from pytest_mock import MockerFixture
-from requests import Response
-from requests.exceptions import HTTPError
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
-from graphdatascience.session.aura_api import AuraApi
+from graphdatascience.session.aura_api import AuraApi, AuraApiError
 from graphdatascience.session.aura_api_responses import (
     EstimationDetails,
     InstanceCreateDetails,
@@ -73,10 +71,7 @@ class FakeAuraApi(AuraApi):
     def _mimic_paused_db_behaviour(self, dbid: str) -> None:
         db = self.list_instance(dbid)
         if db and db.status == "paused":
-            response = Response()
-            response.status_code = 404
-            response._content = b"database not found"
-            raise HTTPError(request=None, response=response)
+            raise AuraApiError(message="Database not found", status_code=404)
 
     def create_instance(
         self, name: str, memory: SessionMemoryValue, cloud_provider: str, region: str
