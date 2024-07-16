@@ -5,8 +5,6 @@ from typing import List, Optional, cast
 
 import pytest
 from pytest_mock import MockerFixture
-from requests import Response
-from requests.exceptions import HTTPError
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi, AuraApiError
