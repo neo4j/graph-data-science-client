@@ -22,5 +22,7 @@
 
 ## Improvements
 
+* Improved the error message if `gds.graph.project.cypher` produces an empty graph.
+
 
 ## Other changes
