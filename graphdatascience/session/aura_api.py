@@ -42,11 +42,13 @@ class AuraApi:
 
         self._auth = AuraApi.Auth(oauth_url=f"{self._base_uri}/oauth/token", credentials=(client_id, client_secret))
         self._logger = logging.getLogger()
-        self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
-        self._tenant_details: Optional[TenantDetails] = None
+
         self._request_session = requests.Session()
         self._request_session.headers = {"User-agent": f"neo4j-graphdatascience-v{__version__}"}
         self._request_session.auth = self._auth
+
+        self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
+        self._tenant_details: Optional[TenantDetails] = None
 
     @staticmethod
     def extract_id(uri: str) -> str:

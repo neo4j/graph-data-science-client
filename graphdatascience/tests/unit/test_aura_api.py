@@ -3,12 +3,11 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 from _pytest.logging import LogCaptureFixture
-from requests import HTTPError
 from requests_mock import Mocker
 
 from graphdatascience.session import SessionMemory
 from graphdatascience.session.algorithm_category import AlgorithmCategory
-from graphdatascience.session.aura_api import AuraApi
+from graphdatascience.session.aura_api import AuraApi, AuraApiError
 from graphdatascience.session.aura_api_responses import (
     EstimationDetails,
     InstanceCreateDetails,
@@ -303,7 +302,7 @@ def test_delete_that_fails(requests_mock: Mocker) -> None:
         json={"errors": [{"message": "some failure happened", "reason": "unknown", "field": "string"}]},
     )
 
-    with pytest.raises(HTTPError, match="Internal Server Error"):
+    with pytest.raises(AuraApiError, match="Internal Server Error"):
         api.delete_instance("id0")
 
 
