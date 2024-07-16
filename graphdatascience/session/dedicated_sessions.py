@@ -70,7 +70,7 @@ class DedicatedSessions:
         )
 
         return self._construct_client(
-            session_name=session_name, session_connection=session_connection, db_connection=db_connection
+            session_id=session_id, session_connection=session_connection, db_connection=db_connection
         )
 
     def delete(self, session_name: str, dbid: Optional[str] = None) -> bool:
@@ -137,12 +137,14 @@ class DedicatedSessions:
         return create_details
 
     def _construct_client(
-        self, session_name: str, session_connection: DbmsConnectionInfo, db_connection: DbmsConnectionInfo
+        self, session_id: str, session_connection: DbmsConnectionInfo, db_connection: DbmsConnectionInfo
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience(
             gds_session_connection_info=session_connection,
             aura_db_connection_info=db_connection,
-            delete_fn=lambda: self.delete(session_name, dbid=AuraApi.extract_id(db_connection.uri)),
+            delete_fn=lambda: self._aura_api.delete_session(
+                session_id=session_id, dbid=AuraApi.extract_id(db_connection.uri)
+            ),
         )
 
     def _check_expiry_date(self, session: SessionDetails) -> None:
