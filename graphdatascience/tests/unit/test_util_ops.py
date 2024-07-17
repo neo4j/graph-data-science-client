@@ -38,7 +38,7 @@ def test_remote_as_nodes(runner: CollectingQueryRunner, aura_gds: AuraGraphDataS
     aura_gds.util.asNodes([1, 2, 3])
 
     assert runner.last_query() == "MATCH (n) WHERE id(n) IN $nodeIds RETURN collect(n)"
-    assert runner.last_params() == {"nodeId": [1, 2, 3]}
+    assert runner.last_params() == {"nodeIds": [1, 2, 3]}
 
 
 def test_node_property(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:

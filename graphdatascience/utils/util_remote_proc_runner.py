@@ -39,7 +39,7 @@ class UtilRemoteProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         """
         query = "MATCH (n) WHERE id(n) IN $nodeIds RETURN collect(n)"
-        params = {"nodeId": node_ids}
+        params = {"nodeIds": node_ids}
 
         return self._query_runner.run_cypher(query=query, params=params).squeeze()  # type: ignore
 
