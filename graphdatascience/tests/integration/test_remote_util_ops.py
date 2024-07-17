@@ -3,13 +3,12 @@ from typing import Generator
 import pytest
 
 from graphdatascience.graph.graph_object import Graph
-from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 
 
 @pytest.fixture(autouse=True)
-def G(gds_with_cloud_setup: GraphDataScience) -> Generator[Graph, None, None]:
+def G(gds_with_cloud_setup: AuraGraphDataScience) -> Generator[Graph, None, None]:
     gds_with_cloud_setup.run_cypher(
         """
         CREATE
@@ -32,8 +31,17 @@ def G(gds_with_cloud_setup: GraphDataScience) -> Generator[Graph, None, None]:
     )
     G, _ = gds_with_cloud_setup.graph.project(
         "g",
-        {"Location": {"properties": "population"}},
-        {"ROAD": {"properties": "cost"}},
+        """
+         MATCH (n)-[r]->(m)
+         RETURN gds.graph.project.remote(n, m, {
+            sourceNodeLabels: labels(n),
+            targetNodeLabels: labels(m),
+            sourceNodeProperties: n {.population},
+            targetNodeProperties: m {.population},
+            relationshipType: type(r),
+            relationshipProperties: properties(r)
+        })
+        """,
     )
 
     yield G
@@ -63,7 +71,7 @@ def test_remote_util_as_nodes(gds_with_cloud_setup: AuraGraphDataScience) -> Non
 
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
-def test_util_nodeProperty(gds_with_cloud_setup: GraphDataScience, G: Graph) -> None:
+def test_util_nodeProperty(gds_with_cloud_setup: AuraGraphDataScience, G: Graph) -> None:
     id = gds_with_cloud_setup.find_node_id(["Location"], {"name": "A"})
     result = gds_with_cloud_setup.util.nodeProperty(G, id, "population")
     assert result == 1337
