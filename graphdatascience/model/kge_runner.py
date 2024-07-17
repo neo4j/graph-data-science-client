@@ -137,10 +137,12 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         )
         res.raise_for_status()
 
-        with open("res.json", mode="wb+") as f:
+        res_file_name = f'res_{job_id}.json'
+        with open(res_file_name, mode="wb+") as f:
             f.write(res.content)
 
-        df = pd.read_json("res.json", orient="records", lines=True)
+        df = pd.read_json(res_file_name, orient="records", lines=True)
+        os.remove(res_file_name)
         return df
 
     def _start_job(self, config: Dict[str, Any]) -> str:
