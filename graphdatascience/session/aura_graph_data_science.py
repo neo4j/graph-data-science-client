@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, Optional
 from pandas import DataFrame
 
 from graphdatascience.call_builder import IndirectCallBuilder
-from graphdatascience.endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
+from graphdatascience.endpoints import AlphaRemoteEndpoints, BetaEndpoints, DirectEndpoints
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
 from graphdatascience.graph.graph_remote_proc_runner import GraphRemoteProcRunner
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
@@ -103,8 +103,8 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         return GraphRemoteProcRunner(self._query_runner, f"{self._namespace}.graph", self._server_version)
 
     @property
-    def alpha(self) -> AlphaEndpoints:
-        return AlphaEndpoints(self._query_runner, "gds.alpha", self._server_version)
+    def alpha(self) -> AlphaRemoteEndpoints:
+        return AlphaRemoteEndpoints(self._query_runner, "gds.alpha", self._server_version)
 
     @property
     def beta(self) -> BetaEndpoints:
