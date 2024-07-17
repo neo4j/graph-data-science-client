@@ -23,7 +23,7 @@ from .system.system_endpoints import (
     SystemBetaEndpoints,
 )
 from .topological_lp.topological_lp_endpoints import TopologicalLPAlphaEndpoints
-from .utils.util_endpoints import DirectUtilEndpoints
+from .utils.direct_util_endpoints import DirectUtilEndpoints
 
 """
 This class should inherit endpoint classes that only contain endpoints that can be called directly from

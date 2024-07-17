@@ -4,7 +4,6 @@ from pandas import DataFrame
 
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
-from .util_proc_runner import UtilProcRunner
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.error.cypher_warning_handler import (
     filter_id_func_deprecation_warning,
@@ -85,10 +84,6 @@ class DirectUtilEndpoints(CallerBase):
         """
         namespace = self._namespace + ".list"
         return self._query_runner.call_procedure(endpoint=namespace, custom_error=False)
-
-    @property
-    def util(self) -> UtilProcRunner:
-        return UtilProcRunner(self._query_runner, f"{self._namespace}.util", self._server_version)
 
 
 class IndirectUtilAlphaEndpoints(CallerBase):

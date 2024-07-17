@@ -6,6 +6,7 @@ from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 
 
 @pytest.fixture(autouse=True)
@@ -97,12 +98,31 @@ def test_util_asNode(gds: GraphDataScience) -> None:
     assert result["name"] == "A"
 
 
+@pytest.mark.cloud_architecture
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
+def test_remote_util_as_node(gds_with_cloud_setup: AuraGraphDataScience) -> None:
+    id = gds_with_cloud_setup.find_node_id(["Location"], {"name": "A"})
+    result = gds_with_cloud_setup.util.asNode(id)
+    assert result["name"] == "A"
+
+
 def test_util_asNodes(gds: GraphDataScience) -> None:
     ids = [
         gds.find_node_id(["Location"], {"name": "A"}),
         gds.find_node_id(["Location"], {"name": 2}),
     ]
     result = gds.util.asNodes(ids)
+    assert len(result) == 2
+
+
+@pytest.mark.cloud_architecture
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
+def test_remote_util_as_nodes(gds_with_cloud_setup: AuraGraphDataScience) -> None:
+    ids = [
+        gds_with_cloud_setup.find_node_id(["Location"], {"name": "A"}),
+        gds_with_cloud_setup.find_node_id(["Location"], {"name": 2}),
+    ]
+    result = gds_with_cloud_setup.util.asNodes(ids)
     assert len(result) == 2
 
 
