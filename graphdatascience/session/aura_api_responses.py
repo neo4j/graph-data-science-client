@@ -23,6 +23,8 @@ class SessionDetails:
     created_at: datetime
     expiry_date: Optional[datetime]
     ttl: Optional[timedelta]
+    user_id: str
+    tenant_id: str
 
     @classmethod
     def fromJson(cls, json: Dict[str, Any]) -> SessionDetails:
@@ -38,7 +40,9 @@ class SessionDetails:
             host=json["host"],
             expiry_date=TimeParser.fromisoformat(expiry_date) if expiry_date else None,
             created_at=TimeParser.fromisoformat(json["created_at"]),
-            ttl=Timedelta(ttl).to_pytimedelta() if ttl else None,  # datetime has no support for parsing timedetla
+            ttl=Timedelta(ttl).to_pytimedelta() if ttl else None,  # datetime has no support for parsing timedelta
+            tenant_id=json["tenant_id"],
+            user_id=json["user_id"],
         )
 
     def bolt_connection_url(self) -> str:
