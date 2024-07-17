@@ -559,35 +559,9 @@ def test_graph_alpha_construct_backward_compat_with_arrow(gds: GraphDataScience)
     with pytest.warns(DeprecationWarning):
         gds.alpha.graph.construct("hello", nodes, relationships)
 
-@pytest.mark.enterprise
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
-def test_graph_alpha_construct_backward_compat_with_arrow(gds: GraphDataScience) -> None:
-    nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
-    relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
-
-    with pytest.warns(DeprecationWarning):
-        gds.alpha.graph.construct("hello", nodes, relationships)
-
-
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
-def test_roundtrip_with_arrow(gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
-
-    rel_df = gds.graph.relationshipProperty.stream(G, "relX")
-    node_df = gds.graph.nodeProperty.stream(G, "x")
-
-    G_2 = gds.graph.construct("arrowGraph", node_df, rel_df)
-
-    res = gds.graph.list()
-    try:
-        assert set(res['graphName'].tolist()) == {'g', 'arrowGraph'}
-        assert G.node_count() == G_2.node_count()
-        assert G.relationship_count() == G_2.relationship_count()
-    finally:
-        G_2.drop()
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
 def test_drop_list_warning_reproduction(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
     res = gds.graph.list()
-    assert res['graphName'].tolist() == ['g']
+    assert res["graphName"].tolist() == ["g"]

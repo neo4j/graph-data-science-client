@@ -49,6 +49,13 @@ def download_data(raw_file_names):
     return data_dir
 
 
+def get_text_to_id_map(data_dir, text_to_id_filename):
+    with open(data_dir + "/" + text_to_id_filename, "r") as f:
+        data = [x.split("\t") for x in f.read().split("\n")[:-1]]
+    text_to_id_map = {text: int(id) for text, id in data}
+    return text_to_id_map
+
+
 def read_data():
     rel_types = {
         "train.txt": "TRAIN",
@@ -56,13 +63,16 @@ def read_data():
         "test.txt": "TEST",
     }
     raw_file_names = ["train.txt", "valid.txt", "test.txt"]
+    node_id_filename = "entity2id.txt"
+    rel_id_filename = "relation2id.txt"
 
-    data_dir = download_data(raw_file_names)
-
-    rel_id_to_text_dict = {}
-    rel_dict = {}
-    node_id_set = {}
+    data_dir = "/Users/olgarazvenskaia/work/datasets/KGDatasets/Nations"
+    node_map = get_text_to_id_map(data_dir, node_id_filename)
+    rel_map = get_text_to_id_map(data_dir, rel_id_filename)
     dataset = defaultdict(lambda: defaultdict(list))
+
+    rel_split_id = {"TRAIN": 0, "VALID": 1, "TEST": 2}
+
     for file_name in raw_file_names:
         file_name_path = data_dir + "/" + file_name
 
@@ -70,17 +80,9 @@ def read_data():
             data = [x.split("\t") for x in f.read().split("\n")[:-1]]
 
         for i, (src_text, rel_text, dst_text) in enumerate(data):
-            if src_text not in node_id_set:
-                node_id_set[src_text] = len(node_id_set)
-            if dst_text not in node_id_set:
-                node_id_set[dst_text] = len(node_id_set)
-            if rel_text not in rel_dict:
-                rel_dict[rel_text] = len(rel_dict)
-                rel_id_to_text_dict[rel_dict[rel_text]] = rel_text
-
-            source = node_id_set[src_text]
-            target = node_id_set[dst_text]
-            rel_type = "REL_" + str(rel_dict[rel_text])
+            source = node_map[src_text]
+            target = node_map[dst_text]
+            rel_type = "REL_" + rel_text.upper()
             rel_split = rel_types[file_name]
 
             dataset[rel_split][rel_type].append(
@@ -89,11 +91,14 @@ def read_data():
                     "source_text": src_text,
                     "target": target,
                     "target_text": dst_text,
-                    # "rel_text": rel_text,
+                    "rel_type": rel_type,
+                    "rel_id": rel_map[rel_text],
+                    "rel_split": rel_split,
+                    "rel_split_id": rel_split_id[rel_split],
                 }
             )
 
-    print("Number of nodes: ", len(node_id_set))
+    print("Number of nodes: ", len(node_map))
     for rel_split in dataset:
         print(
             f"Number of relationships of type {rel_split}: ",
@@ -112,19 +117,17 @@ def put_data_in_db(gds):
         desc="Putting data in db",
         total=sum([len(dataset[rel_split][rel_type]) for rel_split in dataset for rel_type in dataset[rel_split]]),
     )
-    rel_split_id = {"TRAIN": 0, "VALID": 1, "TEST": 2}
+
     for rel_split in dataset:
         for rel_type in dataset[rel_split]:
             edges = dataset[rel_split][rel_type]
 
-            # MERGE (n)-[:{rel_type} {{text:l.rel_text}}]->(m)
-            # MERGE (n)-[:{rel_split}]->(m)
             gds.run_cypher(
                 f"""
                 UNWIND $ll as l
                 MERGE (n:Entity {{id:l.source, text:l.source_text}})
                 MERGE (m:Entity {{id:l.target, text:l.target_text}})
-                MERGE (n)-[:{rel_type} {{split: {rel_split_id[rel_split]}}}]->(m)
+                MERGE (n)-[:{rel_type} {{split: l.rel_split_id, rel_id: l.rel_id}}]->(m)
                 """,
                 params={"ll": edges},
             )
@@ -141,46 +144,33 @@ def put_data_in_db(gds):
         print(f"Number of relationships of type {rel_split} in db: ", res.numberOfRelationships)
 
 
-def project_train_graph(gds):
+def project_graphs(gds):
     all_rels = gds.run_cypher(
         """
     CALL db.relationshipTypes() YIELD relationshipType
     """
     )
     all_rels = all_rels["relationshipType"].to_list()
-    all_rels = [rel for rel in all_rels if rel.startswith("REL_")]
+    all_rels = {rel: {"properties": "split"} for rel in all_rels if rel.startswith("REL_")}
+    gds.graph.drop("fullGraph", failIfMissing=False)
     gds.graph.drop("trainGraph", failIfMissing=False)
+    gds.graph.drop("validGraph", failIfMissing=False)
+    gds.graph.drop("testGraph", failIfMissing=False)
 
-    G_train, result = gds.graph.project("trainGraph", ["Entity"], all_rels)
+    G_full, _ = gds.graph.project("fullGraph", ["Entity"], all_rels)
+    inspect_graph(G_full)
 
-    return G_train
+    G_train, _ = gds.graph.filter("trainGraph", G_full, "*", "r.split = 0.0")
+    G_valid, _ = gds.graph.filter("validGraph", G_full, "*", "r.split = 1.0")
+    G_test, _ = gds.graph.filter("testGraph", G_full, "*", "r.split = 2.0")
 
-
-def project_predict_graph(gds):
-    all_rels = gds.run_cypher(
-        """
-    CALL db.relationshipTypes() YIELD relationshipType
-    """
-    )
-    all_rels = all_rels["relationshipType"].to_list()
-    rel_spec = {}
-    for rel in all_rels:
-        if rel.startswith("REL_"):
-            rel_spec[rel] = {"properties": ["split"]}
+    inspect_graph(G_train)
+    inspect_graph(G_valid)
+    inspect_graph(G_test)
 
     gds.graph.drop("fullGraph", failIfMissing=False)
-    gds.graph.drop("predictGraph", failIfMissing=False)
 
-    # {"REL": {"properties": ["relY"]}, "RELR": {"properties": ["relY"]}}
-    # print(rel_spec)
-
-    G_full, result = gds.graph.project("fullGraph", ["Entity"], all_rels)
-
-    G_full, result = gds.graph.project("fullGraph", ["Entity"], rel_spec)
-    # G_predict = gds.graph.filter('predictGraph', 'fullGraph', '*', 'r.split == 2')
-
-    inspect_graph(G_full)
-    return G_full
+    return G_train, G_valid, G_test
 
 
 def inspect_graph(G):
@@ -199,9 +189,10 @@ if __name__ == "__main__":
     gds = setup_connection()
     create_constraint(gds)
     put_data_in_db(gds)
-    G_train = project_train_graph(gds)
-    # G_predict = project_predict_graph(gds)
-    # inspect_graph(G_train)
+    G_train, G_valid, G_test = project_graphs(gds)
+    inspect_graph(G_train)
+    inspect_graph(G_valid)
+    inspect_graph(G_test)
 
     gds.set_compute_cluster_ip("localhost")
 
@@ -218,29 +209,35 @@ if __name__ == "__main__":
         epochs_per_checkpoint=0,
     )
 
-    gds.kge.model.predict(
+    df = gds.kge.model.predict(
         G_train,
         model_name=model_name,
         top_k=10,
-        node_ids=[1, 2, 3],
-        rel_types=["REL_1", "REL_2"],
-    )
-
-    gds.kge.model.predict_tail(
-        G_train,
-        model_name=model_name,
-        top_k=10,
-        node_ids=[gds.find_node_id(["Entity"], {"text": "/m/016wzw"}), gds.find_node_id(["Entity"], {"id": 2})],
-        rel_types=["REL_1", "REL_2"],
-    )
-
-    gds.kge.model.score_triples(
-        G_train,
-        model_name=model_name,
-        triples=[
-            (gds.find_node_id(["Entity"], {"text": "/m/016wzw"}), "REL_1", gds.find_node_id(["Entity"], {"id": 2})),
-            (gds.find_node_id(["Entity"], {"id": 0}), "REL_123", gds.find_node_id(["Entity"], {"id": 3})),
+        node_ids=[
+            gds.find_node_id(["Entity"], {"text": "brazil"}),
+            gds.find_node_id(["Entity"], {"text": "uk"}),
+            gds.find_node_id(["Entity"], {"text": "jordan"}),
         ],
+        rel_types=["REL_RELDIPLOMACY", "REL_RELNGO"],
     )
+
+    print(df)
+    #
+    # gds.kge.model.predict_tail(
+    #     G_train,
+    #     model_name=model_name,
+    #     top_k=10,
+    #     node_ids=[gds.find_node_id(["Entity"], {"text": "/m/016wzw"}), gds.find_node_id(["Entity"], {"id": 2})],
+    #     rel_types=["REL_1", "REL_2"],
+    # )
+    #
+    # gds.kge.model.score_triples(
+    #     G_train,
+    #     model_name=model_name,
+    #     triples=[
+    #         (gds.find_node_id(["Entity"], {"text": "/m/016wzw"}), "REL_1", gds.find_node_id(["Entity"], {"id": 2})),
+    #         (gds.find_node_id(["Entity"], {"id": 0}), "REL_123", gds.find_node_id(["Entity"], {"id": 3})),
+    #     ],
+    # )
 
     print("Finished training")
