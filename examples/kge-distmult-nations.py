@@ -212,7 +212,7 @@ if __name__ == "__main__":
     df = gds.kge.model.predict(
         G_train,
         model_name=model_name,
-        top_k=10,
+        top_k=3,
         node_ids=[
             gds.find_node_id(["Entity"], {"text": "brazil"}),
             gds.find_node_id(["Entity"], {"text": "uk"}),
