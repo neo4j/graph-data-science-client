@@ -1058,5 +1058,3 @@ def test_empty_relationships_stream(gds: GraphDataScience) -> None:
 
     result = gds.graph.relationships.stream(G, ["SIMILAR"])
     assert result.empty
-
-
