@@ -255,6 +255,11 @@ gds.graph.nodeProperties.stream(G, db_node_properties=["name"], node_properties=
 For a full list of the available algorithms, see the https://neo4j.com/docs/graph-data-science-client/{page-version}/api/[API reference].
 
 
+=== Limitations
+
+Topological Link Prediction algorithms are not yet supported.
+
+
 == Remote write-back
 
 The GDS Session's in-memory graph was projected from data in AuraDB, so write-back operations will persist the data back to the same AuraDB instance.
@@ -282,5 +287,3 @@ Therefore, you will not be able to call any GDS procedures from the `run_cypher(
 ----
 gds.run_cypher("MATCH (n:User) RETURN n.name, n.embedding")
 ----
-
-

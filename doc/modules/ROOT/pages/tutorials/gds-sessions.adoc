@@ -31,10 +31,6 @@ to have the `graphdatascience` Python library installed, version
 %pip install --pre "graphdatascience>1.11a3"
 ----
 
-== Limitations
-
-* Topological Link Prediction algorithms are not yet supported.
-
 == Aura API credentials
 
 A GDS Session is created and accessed via the Aura API. In order to use
