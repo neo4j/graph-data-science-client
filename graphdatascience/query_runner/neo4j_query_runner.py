@@ -131,6 +131,13 @@ class Neo4jQueryRunner(QueryRunner):
 
             return df
 
+    def call_function(self, endpoint: str, params: Optional[CallParameters] = None) -> Any:
+        if params is None:
+            params = CallParameters()
+        query = f"RETURN {endpoint}({params.placeholder_str()})"
+
+        return self.run_cypher(query, params).squeeze()
+
     def call_procedure(
         self,
         endpoint: str,
