@@ -24,11 +24,11 @@ listing, and deletion.
 
 This notebook requires having an AuraDB instance available. We also need
 to have the `graphdatascience` Python library installed, version
-`1.11a3` or later.
+`1.11a4` or later.
 
 [source, python, role=no-test]
 ----
-%pip install --pre "graphdatascience>1.11a3"
+%pip install --pre "graphdatascience>1.11a4"
 ----
 
 == Aura API credentials
