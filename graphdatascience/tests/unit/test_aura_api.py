@@ -20,6 +20,13 @@ from graphdatascience.session.aura_api_responses import (
 from graphdatascience.session.session_sizes import SESSION_MEMORY_VALUE_UNKNOWN
 
 
+def mock_auth_token(requests_mock: Mocker) -> None:
+    requests_mock.post(
+        "https://api.neo4j.io/oauth/token",
+        json={"access_token": "very_short_token", "expires_in": 500, "token_type": "Bearer"},
+    )
+
+
 def test_create_session(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
 
@@ -366,6 +373,20 @@ def test_create_instance(requests_mock: Mocker) -> None:
     assert requested_data["region"] == "leipzig-1"
 
 
+def test_warn_about_expirying_endpoint(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+    requests_mock.delete(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        status_code=202,
+        headers={"X-Tyk-Api-Expires": "Mon, 03 Mar 2025 00:00:00 UTC"},
+    )
+
+    with pytest.warns(DeprecationWarning):
+        api.delete_session("id0", "dbid-1")
+
+
 def test_auth_token(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
 
@@ -506,13 +527,6 @@ def test_list_missing_instance(requests_mock: Mocker) -> None:
     )
 
     assert api.list_instance("id0") is None
-
-
-def mock_auth_token(requests_mock: Mocker) -> None:
-    requests_mock.post(
-        "https://api.neo4j.io/oauth/token",
-        json={"access_token": "very_short_token", "expires_in": 500, "token_type": "Bearer"},
-    )
 
 
 def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> None:
