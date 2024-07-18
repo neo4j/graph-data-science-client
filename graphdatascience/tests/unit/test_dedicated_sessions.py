@@ -54,6 +54,8 @@ class FakeAuraApi(AuraApi):
             host="foo.bar",
             expiry_date=None,
             ttl=None,
+            user_id="user-1",
+            tenant_id=self._tenant_id,
         )
 
         self.id_counter += 1
@@ -302,6 +304,8 @@ def test_get_or_create_expired_session(aura_api: AuraApi) -> None:
             host="foo.bar",
             expiry_date=None,
             ttl=None,
+            tenant_id="tenant-0",
+            user_id="user-0",
         )
     )
 
@@ -327,6 +331,8 @@ def test_get_or_create_soon_expired_session(aura_api: AuraApi) -> None:
             host="foo.bar",
             expiry_date=datetime.now(tz=timezone.utc) - timedelta(hours=23),
             ttl=None,
+            tenant_id="tenant-0",
+            user_id="user-0",
         )
     )
 
@@ -350,6 +356,8 @@ def test_get_or_create_with_different_memory_config(aura_api: AuraApi) -> None:
             host="foo.bar",
             expiry_date=None,
             ttl=None,
+            tenant_id="tenant-0",
+            user_id="user-0",
         )
     )
 

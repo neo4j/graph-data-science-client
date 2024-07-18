@@ -35,6 +35,8 @@ def test_create_session(requests_mock: Mocker) -> None:
             "created_at": "1970-01-01T00:00:00Z",
             "host": "1.2.3.4",
             "memory": "4Gi",
+            "tenant_id": "tenant-0",
+            "user_id": "user-0",
         },
     )
 
@@ -50,6 +52,8 @@ def test_create_session(requests_mock: Mocker) -> None:
         memory=SessionMemory.m_4GB.value,
         expiry_date=None,
         ttl=None,
+        tenant_id="tenant-0",
+        user_id="user-0",
     )
 
 
@@ -70,6 +74,8 @@ def test_list_session(requests_mock: Mocker) -> None:
             "host": "1.2.3.4",
             "memory": "4Gi",
             "expiry_date": "1977-01-01T00:00:00Z",
+            "tenant_id": "tenant-0",
+            "user_id": "user-0",
         },
     )
 
@@ -85,6 +91,8 @@ def test_list_session(requests_mock: Mocker) -> None:
         memory=SessionMemory.m_4GB.value,
         expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
         ttl=None,
+        tenant_id="tenant-0",
+        user_id="user-0",
     )
 
 
@@ -104,6 +112,8 @@ def test_list_sessions(requests_mock: Mocker) -> None:
                 "host": "1.2.3.4",
                 "memory": "4Gi",
                 "expiry_date": "1977-01-01T00:00:00Z",
+                "tenant_id": "tenant-1",
+                "user_id": "user-1",
             },
             {
                 "id": "id1",
@@ -113,6 +123,8 @@ def test_list_sessions(requests_mock: Mocker) -> None:
                 "created_at": "2012-01-01T00:00:00Z",
                 "memory": "8Gi",
                 "host": "foo.bar",
+                "tenant_id": "tenant-2",
+                "user_id": "user-2",
             },
         ],
     )
@@ -129,6 +141,8 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         memory=SessionMemory.m_4GB.value,
         expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
         ttl=None,
+        tenant_id="tenant-1",
+        user_id="user-1",
     )
 
     expected2 = SessionDetails(
@@ -141,6 +155,8 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         host="foo.bar",
         expiry_date=None,
         ttl=None,
+        tenant_id="tenant-2",
+        user_id="user-2",
     )
 
     assert result == [expected1, expected2]
@@ -203,6 +219,8 @@ def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCapture
             "host": "foo.bar",
             "memory": "4Gi",
             "expiry_date": "1977-01-01T00:00:00Z",
+            "tenant_id": "tenant-1",
+            "user_id": "user-1",
         },
     )
 
@@ -230,6 +248,8 @@ def test_wait_for_session_running(requests_mock: Mocker) -> None:
             "host": "foo.bar",
             "memory": "4Gi",
             "expiry_date": "1977-01-01T00:00:00Z",
+            "tenant_id": "tenant-1",
+            "user_id": "user-1",
         },
     )
 
@@ -671,6 +691,8 @@ def test_parse_session_info() -> None:
         "created_at": "2021-01-01T00:00:00Z",
         "host": "a.b",
         "ttl": "1d8h1m2s",
+        "tenant_id": "tenant-1",
+        "user_id": "user-1",
     }
     session_info = SessionDetails.fromJson(session_details)
 
@@ -684,6 +706,8 @@ def test_parse_session_info() -> None:
         expiry_date=datetime(2022, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
         created_at=datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
         ttl=timedelta(days=1, hours=8, minutes=1, seconds=2),
+        tenant_id="tenant-1",
+        user_id="user-1",
     )
 
 
@@ -696,6 +720,8 @@ def test_parse_session_info_without_optionals() -> None:
         "status": "running",
         "host": "a.b",
         "created_at": "2021-01-01T00:00:00Z",
+        "tenant_id": "tenant-1",
+        "user_id": "user-1",
     }
     session_info = SessionDetails.fromJson(session_details)
 
@@ -709,4 +735,6 @@ def test_parse_session_info_without_optionals() -> None:
         expiry_date=None,
         ttl=None,
         created_at=datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
+        tenant_id="tenant-1",
+        user_id="user-1",
     )
