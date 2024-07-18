@@ -2,7 +2,7 @@ multimethod >= 1.0, < 2.0
 neo4j >= 4.4.12, < 6.0
 numpy < 2.0
 pandas >= 1.0, < 3.0
-pyarrow >= 14.0.1, < 17.0
+pyarrow >= 14.0.1, < 18.0
 textdistance >= 4.0, < 5.0
 tqdm >= 4.0, < 5.0
 typing-extensions >= 4.0, < 5.0
