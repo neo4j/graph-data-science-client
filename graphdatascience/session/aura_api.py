@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import os
 import time
+import warnings
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
@@ -65,7 +66,7 @@ class AuraApi:
             json={"name": name, "instance_id": dbid, "password": pwd, "memory": memory.value},
         )
 
-        self._check_code(response)
+        self._check_resp(response)
 
         return SessionDetails.fromJson(response.json())
 
@@ -77,7 +78,7 @@ class AuraApi:
         if response.status_code == 404:
             return None
 
-        self._check_code(response)
+        self._check_resp(response)
 
         return SessionDetails.fromJson(response.json())
 
@@ -86,7 +87,7 @@ class AuraApi:
             f"{self._base_uri}/v1beta5/data-science/sessions?instanceId={dbid}",
         )
 
-        self._check_code(response)
+        self._check_resp(response)
 
         return [SessionDetails.fromJson(s) for s in response.json()]
 
@@ -125,12 +126,13 @@ class AuraApi:
             json={"instance_id": dbid},
         )
 
+        self._check_endpoint_expiry(response)
+
         if response.status_code == 404:
             return False
         elif response.status_code == 202:
             return True
-
-        self._check_code(response)
+        self._check_endpoint_expiry(response)
 
         return False
 
@@ -151,7 +153,7 @@ class AuraApi:
 
         response = self._request_session.post(f"{self._base_uri}/v1/instances", json=data)
 
-        self._check_code(response)
+        self._check_resp(response)
 
         return InstanceCreateDetails.from_json(response.json()["data"])
 
@@ -161,14 +163,14 @@ class AuraApi:
         if response.status_code == 404:
             return None
 
-        self._check_code(response)
+        self._check_resp(response)
 
         return InstanceSpecificDetails.fromJson(response.json()["data"])
 
     def list_instances(self) -> List[InstanceDetails]:
         response = self._request_session.get(f"{self._base_uri}/v1/instances", params={"tenantId": self._tenant_id})
 
-        self._check_code(response)
+        self._check_resp(response)
 
         raw_data = response.json()["data"]
 
@@ -180,7 +182,7 @@ class AuraApi:
         if response.status_code == 404:
             return None
 
-        self._check_code(response)
+        self._check_resp(response)
 
         raw_data = response.json()["data"]
 
@@ -221,13 +223,13 @@ class AuraApi:
         }
 
         response = self._request_session.post(f"{self._base_uri}/v1/instances/sizing", json=data)
-        self._check_code(response)
+        self._check_resp(response)
 
         return EstimationDetails.from_json(response.json()["data"])
 
     def _get_tenant_id(self) -> str:
         response = self._request_session.get(f"{self._base_uri}/v1/tenants")
-        self._check_code(response)
+        self._check_resp(response)
 
         raw_data = response.json()["data"]
 
@@ -242,15 +244,28 @@ class AuraApi:
     def tenant_details(self) -> TenantDetails:
         if not self._tenant_details:
             response = self._request_session.get(f"{self._base_uri}/v1/tenants/{self._tenant_id}")
-            self._check_code(response)
+            self._check_resp(response)
             self._tenant_details = TenantDetails.from_json(response.json()["data"])
         return self._tenant_details
 
-    def _check_code(self, resp: requests.Response) -> None:
+    def _check_resp(self, resp: requests.Response) -> None:
+        self._check_status_code(resp)
+        self._check_endpoint_expiry(resp)
+
+    def _check_status_code(self, resp: requests.Response) -> None:
         if resp.status_code >= 400:
             raise AuraApiError(
                 f"Request for {resp.url} failed with status code {resp.status_code} - {resp.reason}: {resp.text}",
                 status_code=resp.status_code,
+            )
+
+    def _check_endpoint_expiry(self, resp: requests.Response) -> None:
+        expiry_date = resp.headers.get("X-Tyk-Api-Expires")
+        if expiry_date:
+            warnings.warn(
+                f"The endpoint is deprecated and will be removed on {expiry_date}."
+                " Please update to a newer version of this client.",
+                DeprecationWarning,
             )
 
     def _instance_type(self) -> str:
