@@ -137,7 +137,7 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         )
         res.raise_for_status()
 
-        res_file_name = f'res_{job_id}.json'
+        res_file_name = f"res_{job_id}.json"
         with open(res_file_name, mode="wb+") as f:
             f.write(res.content)
 
