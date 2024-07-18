@@ -94,6 +94,12 @@ class GdsArrowClient:
         if tls_root_certs:
             client_options["tls_root_certs"] = tls_root_certs
 
+        print("location:")
+        print(location)
+        print("client_options:")
+        print(client_options)
+        print("auth:")
+        print(auth)
         self._flight_client = flight.FlightClient(location, **client_options)
 
     def connection_info(self) -> Tuple[str, int]:

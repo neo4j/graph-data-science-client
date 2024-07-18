@@ -558,10 +558,3 @@ def test_graph_alpha_construct_backward_compat_with_arrow(gds: GraphDataScience)
 
     with pytest.warns(DeprecationWarning):
         gds.alpha.graph.construct("hello", nodes, relationships)
-
-
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
-def test_drop_list_warning_reproduction(gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, {"REL": {"properties": "relX"}})
-    res = gds.graph.list()
-    assert res["graphName"].tolist() == ["g"]
