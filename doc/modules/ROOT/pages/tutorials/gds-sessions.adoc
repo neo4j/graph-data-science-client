@@ -28,7 +28,7 @@ to have the `graphdatascience` Python library installed, version
 
 [source, python, role=no-test]
 ----
-%pip install --pre "graphdatascience>1.10"
+%pip install --pre "graphdatascience>1.11a3"
 ----
 
 == Aura API credentials

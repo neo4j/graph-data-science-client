@@ -1,6 +1,6 @@
 from .algo.algo_endpoints import AlgoEndpoints
 from .error.uncallable_namespace import UncallableNamespace
-from .utils.util_endpoints import IndirectUtilAlphaEndpoints
+from .utils.direct_util_endpoints import IndirectUtilAlphaEndpoints
 
 
 class IndirectCallBuilder(AlgoEndpoints, UncallableNamespace):

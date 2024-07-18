@@ -98,8 +98,6 @@ The manual is versioned to cover all GDS Python Client versions, so make sure to
 Operations known to not yet work with `graphdatascience`:
 
 * [Numeric utility functions](https://neo4j.com/docs/graph-data-science/current/management-ops/utility-functions/#utility-functions-numeric) (will never be supported)
-* [Cypher on GDS](https://neo4j.com/docs/graph-data-science/current/management-ops/create-cypher-db/) (might be supported in the future)
-* [Projecting graphs using Cypher Aggregation](https://neo4j.com/docs/graph-data-science/current/management-ops/projections/graph-project-cypher-aggregation/) (might be supported in the future)
 
 
 ## License

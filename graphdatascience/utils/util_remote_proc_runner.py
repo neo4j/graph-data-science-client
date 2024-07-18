@@ -2,10 +2,14 @@ from typing import Any, List
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
+from graphdatascience.error.cypher_warning_handler import (
+    filter_id_func_deprecation_warning,
+)
 from graphdatascience.utils.util_node_property_func_runner import NodePropertyFuncRunner
 
 
-class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
+class UtilRemoteProcRunner(UncallableNamespace, IllegalAttrChecker):
+    @filter_id_func_deprecation_warning()
     def asNode(self, node_id: int) -> Any:
         """
         Get a node from a node id.
@@ -17,11 +21,12 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
             The node with the given id.
 
         """
-        self._namespace += ".asNode"
-        result = self._query_runner.run_cypher(f"RETURN {self._namespace}({node_id}) AS node")
+        query = "MATCH (n) WHERE id(n) = $nodeId RETURN n"
+        params = {"nodeId": node_id}
 
-        return result.iat[0, 0]
+        return self._query_runner.run_cypher(query=query, params=params).squeeze()
 
+    @filter_id_func_deprecation_warning()
     def asNodes(self, node_ids: List[int]) -> List[Any]:
         """
         Get a list of nodes from a list of node ids.
@@ -33,10 +38,10 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
             The nodes with the given ids.
 
         """
-        self._namespace += ".asNodes"
-        result = self._query_runner.run_cypher(f"RETURN {self._namespace}({node_ids}) AS nodes")
+        query = "MATCH (n) WHERE id(n) IN $nodeIds RETURN collect(n)"
+        params = {"nodeIds": node_ids}
 
-        return result.iat[0, 0]  # type: ignore
+        return self._query_runner.run_cypher(query=query, params=params).squeeze()  # type: ignore
 
     @property
     def nodeProperty(self) -> NodePropertyFuncRunner:
