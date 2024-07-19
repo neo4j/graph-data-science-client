@@ -158,15 +158,11 @@ def project_graphs(gds):
     gds.graph.drop("testGraph", failIfMissing=False)
 
     G_full, _ = gds.graph.project("fullGraph", ["Entity"], all_rels)
-    inspect_graph(G_full)
 
     G_train, _ = gds.graph.filter("trainGraph", G_full, "*", "r.split = 0.0")
     G_valid, _ = gds.graph.filter("validGraph", G_full, "*", "r.split = 1.0")
     G_test, _ = gds.graph.filter("testGraph", G_full, "*", "r.split = 2.0")
 
-    inspect_graph(G_train)
-    inspect_graph(G_valid)
-    inspect_graph(G_test)
 
     gds.graph.drop("fullGraph", failIfMissing=False)
 
@@ -190,13 +186,8 @@ if __name__ == "__main__":
     create_constraint(gds)
     put_data_in_db(gds)
     G_train, G_valid, G_test = project_graphs(gds)
-    inspect_graph(G_train)
-    inspect_graph(G_valid)
-    inspect_graph(G_test)
 
     gds.set_compute_cluster_ip("localhost")
-
-    print(gds.debug.arrow())
 
     model_name = "dummyModelName_" + str(time.time())
 
@@ -210,7 +201,6 @@ if __name__ == "__main__":
     )
 
     df = gds.kge.model.predict(
-        G_train,
         model_name=model_name,
         top_k=3,
         node_ids=[
@@ -221,7 +211,7 @@ if __name__ == "__main__":
         rel_types=["REL_RELDIPLOMACY", "REL_RELNGO"],
     )
 
-    print(df)
+    print(df.to_string())
     #
     # gds.kge.model.predict_tail(
     #     G_train,
@@ -240,4 +230,3 @@ if __name__ == "__main__":
     #     ],
     # )
 
-    print("Finished training")

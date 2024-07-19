@@ -34,8 +34,6 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         self._compute_cluster_mlflow_uri = f"http://{compute_cluster_ip}:8080"
         self._encrypted_db_password = encrypted_db_password
         self._arrow_uri = arrow_uri
-        print("KgeRunner __dict__:")
-        print(self.__dict__)
 
     @property
     def model(self):
@@ -89,14 +87,12 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
     @client_only_endpoint("gds.kge.model")
     def predict(
         self,
-        G: Graph,
         model_name: str,
         top_k: int,
         node_ids: list[int],
         rel_types: list[str],
         mlflow_experiment_name: Optional[str] = None,
     ) -> DataFrame:
-        graph_config = {"name": G.name()}
 
         algo_config = {
             "top_k": top_k,
@@ -108,7 +104,6 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
             "user_name": "DUMMY_USER",
             "task": "KGE_PREDICT_PYG",
             "task_config": {
-                "graph_config": graph_config,
                 "modelname": model_name,
                 "task_config": algo_config,
             },
@@ -122,8 +117,6 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
                 "config": {"tracking_uri": self._compute_cluster_mlflow_uri, "experiment_name": mlflow_experiment_name}
             }
 
-        print("predict config")
-        print(config)
         job_id = self._start_job(config)
 
         self._wait_for_job(job_id)
@@ -146,8 +139,6 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         return df
 
     def _start_job(self, config: Dict[str, Any]) -> str:
-        print("_start_job")
-        print(config)
         url = f"{self._compute_cluster_web_uri}/api/machine-learning/start"
         print(url)
         res = requests.post(url, json=config)
