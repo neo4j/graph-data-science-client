@@ -141,6 +141,11 @@ class Neo4jQueryRunner(QueryRunner):
                 if notifications:
                     for notification in notifications:
                         self._forward_cypher_warnings(notification)
+            elif Neo4jQueryRunner._NEO4J_DRIVER_VERSION > ServerVersion(5, 21, 0):
+                # the client does not expose YIELD fields so we just skip these warnings for now
+                warnings.filterwarnings(
+                    "ignore", message=r".*The query used a deprecated field from a procedure\. .* by 'gds.* "
+                )
 
             return df
 

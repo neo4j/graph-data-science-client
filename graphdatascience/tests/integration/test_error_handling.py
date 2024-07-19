@@ -1,8 +1,12 @@
 from typing import Generator
 
 import pytest
+from neo4j import GraphDatabase, NotificationMinimumSeverity
 
 from graphdatascience import GraphDataScience
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.tests.integration.conftest import AUTH, URI
 
 GRAPH_NAME = "g"
 
@@ -189,3 +193,30 @@ def test_auto_completion_false_positives(gds: GraphDataScience) -> None:
     # Without `graph` prefix
     with pytest.raises(SyntaxError, match="There is no 'gds.toUndirected' to call"):
         gds.toUndirected()
+
+
+def test_forward_server_side_warning(gds: GraphDataScience) -> None:
+    with pytest.raises(Warning, match="The query used a deprecated function: `id`."):
+        gds.run_cypher("MATCH (n) RETURN id(n)")
+
+
+@pytest.mark.filterwarnings("ignore: notification warnings are a preview feature")
+def test_forward_driver_configured_warning() -> None:
+    if Neo4jQueryRunner._NEO4J_DRIVER_VERSION > ServerVersion(5, 21, 0):
+        driver = GraphDatabase.driver(URI, auth=AUTH, warn_notification_severity=NotificationMinimumSeverity.WARNING)
+        gds = GraphDataScience(driver)
+
+        with pytest.raises(Warning, match="The query used a deprecated function: `id`."):
+            gds.run_cypher("MATCH (n) RETURN id(n)")
+
+
+def test_filter_out_client_related__warning(gds: GraphDataScience) -> None:
+    gds.graph.drop("g", failIfMissing=False)
+
+
+@pytest.mark.filterwarnings("ignore: notification warnings are a preview feature")
+def test_filter_out_client_related__driver_configured_warning() -> None:
+    if Neo4jQueryRunner._NEO4J_DRIVER_VERSION > ServerVersion(5, 21, 0):
+        driver = GraphDatabase.driver(URI, auth=AUTH, warn_notification_severity=NotificationMinimumSeverity.WARNING)
+        gds = GraphDataScience(driver)
+        gds.graph.drop("g", failIfMissing=False)
