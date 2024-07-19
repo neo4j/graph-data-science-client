@@ -28,3 +28,4 @@
 ## Other changes
 
 * Updated required `neo4j` driver from `4.4.2` to the latest 4.4 path release (`4.4.12`) or later.
+* Avoid duplications or user-indepedent logs and warnings introduced by the driver option `warn_notification_severity` in `neo4j>=5.21.0`.
