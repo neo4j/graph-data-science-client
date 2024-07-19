@@ -1,8 +1,11 @@
 from typing import Generator
 
 import pytest
+from neo4j import Driver, GraphDatabase
 
 from graphdatascience import GraphDataScience
+from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.tests.integration.conftest import AUTH, URI
 
 GRAPH_NAME = "g"
 
@@ -27,6 +30,15 @@ def run_around_tests(gds: GraphDataScience) -> Generator[None, None, None]:
     # Runs after each test
     gds.run_cypher("MATCH (n) DETACH DELETE n")
     gds.graph.drop(GRAPH_NAME)
+
+
+@pytest.fixture
+def warning_driver() -> Generator[Driver, None, None]:
+    driver = GraphDatabase.driver(URI, auth=AUTH, warn_notification_severity="WARNING")
+
+    yield driver
+
+    driver.close()
 
 
 def test_bogus_algo(gds: GraphDataScience) -> None:
@@ -189,3 +201,28 @@ def test_auto_completion_false_positives(gds: GraphDataScience) -> None:
     # Without `graph` prefix
     with pytest.raises(SyntaxError, match="There is no 'gds.toUndirected' to call"):
         gds.toUndirected()
+
+
+def test_forward_server_side_warning(gds: GraphDataScience) -> None:
+    with pytest.raises(Warning, match="The query used a deprecated function: `id`."):
+        gds.run_cypher("MATCH (n) RETURN id(n)")
+
+
+@pytest.mark.filterwarnings("ignore: notification warnings are a preview feature")
+@pytest.mark.compatible_with_db_driver(min_inclusive=ServerVersion(5, 21, 0))
+def test_forward_driver_configured_warning(warning_driver: Driver) -> None:
+    gds = GraphDataScience(warning_driver)
+
+    with pytest.raises(Warning, match="The query used a deprecated function: `id`."):
+        gds.run_cypher("MATCH (n) RETURN id(n)")
+
+
+def test_filter_out_client_related__warning(gds: GraphDataScience) -> None:
+    gds.graph.drop("g", failIfMissing=False)
+
+
+@pytest.mark.filterwarnings("ignore: notification warnings are a preview feature")
+@pytest.mark.compatible_with_db_driver(min_inclusive=ServerVersion(5, 21, 0))
+def test_filter_out_client_related__driver_configured_warning(warning_driver: Driver) -> None:
+    gds = GraphDataScience(warning_driver)
+    gds.graph.drop("g", failIfMissing=False)
