@@ -1,7 +1,7 @@
 from typing import Generator
 
 import pytest
-from neo4j import GraphDatabase, NotificationMinimumSeverity
+from neo4j import Driver, GraphDatabase, NotificationMinimumSeverity
 
 from graphdatascience import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
@@ -31,6 +31,15 @@ def run_around_tests(gds: GraphDataScience) -> Generator[None, None, None]:
     # Runs after each test
     gds.run_cypher("MATCH (n) DETACH DELETE n")
     gds.graph.drop(GRAPH_NAME)
+
+
+@pytest.fixture
+def warning_driver() -> Generator[Driver, None, None]:
+    driver = GraphDatabase.driver(URI, auth=AUTH, warn_notification_severity=NotificationMinimumSeverity.WARNING)
+
+    yield driver
+
+    driver.close()
 
 
 def test_bogus_algo(gds: GraphDataScience) -> None:
@@ -201,10 +210,9 @@ def test_forward_server_side_warning(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.filterwarnings("ignore: notification warnings are a preview feature")
-def test_forward_driver_configured_warning() -> None:
-    if Neo4jQueryRunner._NEO4J_DRIVER_VERSION > ServerVersion(5, 21, 0):
-        driver = GraphDatabase.driver(URI, auth=AUTH, warn_notification_severity=NotificationMinimumSeverity.WARNING)
-        gds = GraphDataScience(driver)
+def test_forward_driver_configured_warning(warning_driver: Driver) -> None:
+    if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= ServerVersion(5, 21, 0):
+        gds = GraphDataScience(warning_driver)
 
         with pytest.raises(Warning, match="The query used a deprecated function: `id`."):
             gds.run_cypher("MATCH (n) RETURN id(n)")
@@ -215,8 +223,7 @@ def test_filter_out_client_related__warning(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.filterwarnings("ignore: notification warnings are a preview feature")
-def test_filter_out_client_related__driver_configured_warning() -> None:
-    if Neo4jQueryRunner._NEO4J_DRIVER_VERSION > ServerVersion(5, 21, 0):
-        driver = GraphDatabase.driver(URI, auth=AUTH, warn_notification_severity=NotificationMinimumSeverity.WARNING)
-        gds = GraphDataScience(driver)
+def test_filter_out_client_related__driver_configured_warning(warning_driver: Driver) -> None:
+    if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= ServerVersion(5, 21, 0):
+        gds = GraphDataScience(warning_driver)
         gds.graph.drop("g", failIfMissing=False)
