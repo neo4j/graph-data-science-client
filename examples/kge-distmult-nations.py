@@ -163,7 +163,6 @@ def project_graphs(gds):
     G_valid, _ = gds.graph.filter("validGraph", G_full, "*", "r.split = 1.0")
     G_test, _ = gds.graph.filter("testGraph", G_full, "*", "r.split = 2.0")
 
-
     gds.graph.drop("fullGraph", failIfMissing=False)
 
     return G_train, G_valid, G_test
@@ -194,10 +193,11 @@ if __name__ == "__main__":
     gds.kge.model.train(
         G_train,
         model_name=model_name,
-        scoring_function="DistMult",
+        scoring_function="distmult",
         num_epochs=1,
         embedding_dimension=10,
         epochs_per_checkpoint=0,
+        epochs_per_val=0,
     )
 
     df = gds.kge.model.predict(
@@ -229,4 +229,3 @@ if __name__ == "__main__":
     #         (gds.find_node_id(["Entity"], {"id": 0}), "REL_123", gds.find_node_id(["Entity"], {"id": 3})),
     #     ],
     # )
-
