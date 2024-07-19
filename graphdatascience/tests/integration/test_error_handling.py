@@ -1,7 +1,7 @@
 from typing import Generator
 
 import pytest
-from neo4j import Driver, GraphDatabase, NotificationMinimumSeverity
+from neo4j import Driver, GraphDatabase
 
 from graphdatascience import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
@@ -35,7 +35,7 @@ def run_around_tests(gds: GraphDataScience) -> Generator[None, None, None]:
 
 @pytest.fixture
 def warning_driver() -> Generator[Driver, None, None]:
-    driver = GraphDatabase.driver(URI, auth=AUTH, warn_notification_severity=NotificationMinimumSeverity.WARNING)
+    driver = GraphDatabase.driver(URI, auth=AUTH, warn_notification_severity="WARNING")
 
     yield driver
 
