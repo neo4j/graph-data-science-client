@@ -4,7 +4,6 @@ import pytest
 from neo4j import Driver, GraphDatabase
 
 from graphdatascience import GraphDataScience
-from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.tests.integration.conftest import AUTH, URI
 
@@ -210,12 +209,12 @@ def test_forward_server_side_warning(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.filterwarnings("ignore: notification warnings are a preview feature")
+@pytest.mark.compatible_with_db_driver(min_inclusive=ServerVersion(5, 21, 0))
 def test_forward_driver_configured_warning(warning_driver: Driver) -> None:
-    if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= ServerVersion(5, 21, 0):
-        gds = GraphDataScience(warning_driver)
+    gds = GraphDataScience(warning_driver)
 
-        with pytest.raises(Warning, match="The query used a deprecated function: `id`."):
-            gds.run_cypher("MATCH (n) RETURN id(n)")
+    with pytest.raises(Warning, match="The query used a deprecated function: `id`."):
+        gds.run_cypher("MATCH (n) RETURN id(n)")
 
 
 def test_filter_out_client_related__warning(gds: GraphDataScience) -> None:
@@ -223,7 +222,7 @@ def test_filter_out_client_related__warning(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.filterwarnings("ignore: notification warnings are a preview feature")
+@pytest.mark.compatible_with_db_driver(min_inclusive=ServerVersion(5, 21, 0))
 def test_filter_out_client_related__driver_configured_warning(warning_driver: Driver) -> None:
-    if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= ServerVersion(5, 21, 0):
-        gds = GraphDataScience(warning_driver)
-        gds.graph.drop("g", failIfMissing=False)
+    gds = GraphDataScience(warning_driver)
+    gds.graph.drop("g", failIfMissing=False)

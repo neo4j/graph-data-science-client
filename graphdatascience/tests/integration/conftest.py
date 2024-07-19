@@ -194,10 +194,9 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
         server_version = gds._server_version
     except Exception as e:
         print("Could not derive GDS library server version")
-        gds.close()
         raise e
-
-    gds.close()
+    finally:
+        gds.close()
 
     skip_incompatible_versions = pytest.mark.skip(reason=f"incompatible with GDS server version {server_version}")
 
@@ -211,3 +210,17 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
 
             if "max_exclusive" in kwargs and kwargs["max_exclusive"] <= server_version:
                 item.add_marker(skip_incompatible_versions)
+
+    db_driver_version = Neo4jQueryRunner._NEO4J_DRIVER_VERSION
+    skip_incompatible_driver_version = pytest.mark.skip(reason=f"incompatible with driver version {db_driver_version}")
+
+    for item in items:
+        for mark in item.iter_markers(name="compatible_with_db_driver"):
+            kwargs = mark.kwargs
+
+            if "min_inclusive" in kwargs and kwargs["min_inclusive"] > db_driver_version:
+                item.add_marker(skip_incompatible_driver_version)
+                continue
+
+            if "max_exclusive" in kwargs and kwargs["max_exclusive"] <= db_driver_version:
+                item.add_marker(skip_incompatible_driver_version)
