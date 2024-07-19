@@ -45,20 +45,52 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         self,
         G: Graph,
         model_name: str,
-        scoring_function,
-        num_epochs,
-        embedding_dimension,
-        epochs_per_checkpoint,
+        *,
+        num_epochs: int,
+        embedding_dimension: int,
+        epochs_per_checkpoint: Optional[int] = None,
+        load_from_checkpoint: Optional[tuple[str, int]] = None,
+        split_ratios=None,
+        scoring_function: str = "transe",
+        p_norm: float = 1.0,
+        batch_size: int = 512,
+        test_batch_size: int = 512,
+        optimizer: str = "adam",
+        optimizer_kwargs=None,
+        lr_scheduler: str = "ConstantLR",
+        lr_scheduler_kwargs=None,
+        loss_function: str = "MarginRanking",
+        loss_function_kwargs=None,
+        negative_sampling_size: int = 1,
+        use_node_type_aware_sampler: bool = False,
+        k_value: int = 10,
+        do_validation: bool = True,
+        do_test: bool = True,
+        filtered_metrics: bool = False,
+        epochs_per_val: int = 50,
+        inner_norm: bool = True,
+        init_bound: Optional[float] = None,
         mlflow_experiment_name: Optional[str] = None,
     ) -> Series:
-        graph_config = {"name": G.name()}
+        if epochs_per_checkpoint is None:
+            epochs_per_checkpoint = max(num_epochs / 10, 1)
+        if loss_function_kwargs is None:
+            loss_function_kwargs = dict(margin=1.0, adversarial_temperature=1.0, gamma=20.0)
+        if lr_scheduler_kwargs is None:
+            lr_scheduler_kwargs = dict(factor=1, total_iters=1000)
+        if optimizer_kwargs is None:
+            optimizer_kwargs = {"lr": 0.01, "weight_decay": 0.0005}
+        if split_ratios is None:
+            split_ratios = {"TRAIN": 0.8, "TEST": 0.2}
 
         algo_config = {
-            "scoring_function": scoring_function,
-            "num_epochs": num_epochs,
-            "embedding_dimension": embedding_dimension,
-            "epochs_per_checkpoint": epochs_per_checkpoint,
+            key: value
+            for key, value in locals().items()
+            if (key not in ["self", "G", "mlflow_experiment_name", "model_name"]) and (value is not None)
         }
+        print(algo_config)
+
+        graph_config = {"name": G.name()}
 
         config = {
             "user_name": "DUMMY_USER",
