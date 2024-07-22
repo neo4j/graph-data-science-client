@@ -188,7 +188,7 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
 
             res_json = res.json()
             if res_json["job_status"] == "exited":
-                logging.info("KGE job completed!")
+                logging.info(f"Job with ID '{job_id}' completed")
                 return
             elif res_json["job_status"] == "failed":
                 error = f"KGE job failed with errors:{os.linesep}{os.linesep.join(res_json['errors'])}"
