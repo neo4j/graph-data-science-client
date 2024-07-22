@@ -143,6 +143,7 @@ When `filtered_metrics` is set to `True`, the ranking is done among only the tri
 
 [[algorithms-embeddings-kge-syntax]]
 == Syntax
+=== Training
 
 [source, python, role=no-test]
 ----
@@ -283,6 +284,73 @@ Xavier initializationfootnote:[Xavier Glorot, Yoshua Bengio "Understanding the d
  is used if None.
 |====
 
+=== Prediction
+
+Function `predict` is used to predict the tail entities for a given heads entity and relationship types.
+For each head entity and relationship type, the top `k` tail entities are returned with their scores.
+To get `node_id` for the entities, use the `gds.find_node_id` function.
+
+[source, python, role=no-test]
+----
+predict_result = gds.kge.model.predict(
+    model_name=model_name,
+    top_k=3,
+    node_ids=[node_id1, node_id2, ... ],
+    rel_types=["RELATIONSHIP_TYPE1", "RELATIONSHIP_TYPE2", ... ],
+)
+----
+.Parameters
+[cols="1m,1m,1m,1", options="header"]
+|====
+| Parameter | Type | Default value | Description
+
+| model_name
+| str
+| N/A
+| The name of the model to use for prediction
+
+| top_k
+| int
+| N/A
+| Number of top tail entities to return for each head entity and relationship type
+
+| node_ids
+| list[int]
+| N/A
+| List of node IDs for the head entities
+
+| rel_types
+| list[str]
+| N/A
+| List of relationship types
+
+|====
+
+For every `N` head entities and `M` relationship types, the function returns `N*M` rows.
+The result object is pandas DataFrame with the following columns:
+
+.Predict result
+[cols="1m,1m,1", options="header"]
+|====
+| Column name | Type | Description
+
+| head
+| int
+| id of the head entity
+
+| rel
+| str
+| Relationship type
+
+| tail
+| list[int]
+| List of suggested `top_k` tail entities, sorted by score
+
+| score
+| list[double]
+| List of scores for the suggested tail entities
+
+|====
 
 [[algorithms-embeddings-kge-examples]]
 == Examples
