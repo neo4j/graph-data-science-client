@@ -17,7 +17,6 @@ from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
 from graphdatascience.graph.graph_proc_runner import GraphProcRunner
-from graphdatascience.utils.util_proc_runner import UtilProcRunner
 
 
 class GraphDataScience(DirectEndpoints, UncallableNamespace):

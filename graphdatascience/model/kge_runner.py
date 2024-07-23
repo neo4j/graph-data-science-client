@@ -155,6 +155,41 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
 
         return self._stream_results(config["user_name"], config["task_config"]["modelname"], job_id)
 
+    @client_only_endpoint("gds.kge.model")
+    def score_triplets(
+        self,
+        model_name: str,
+        triplets: list[tuple[int, str, int]],
+        mlflow_experiment_name: Optional[str] = None,
+    ) -> DataFrame:
+
+        algo_config = {
+            "triplets": triplets,
+        }
+
+        config = {
+            "user_name": "DUMMY_USER",
+            "task": "KGE_SCORE_TRIPLETS_PYG",
+            "task_config": {
+                "modelname": model_name,
+                "task_config": algo_config,
+            },
+            "graph_arrow_uri": self._arrow_uri,
+        }
+        if self._encrypted_db_password is not None:
+            config["encrypted_db_password"] = self._encrypted_db_password
+
+        if mlflow_experiment_name is not None:
+            config["task_config"]["mlflow"] = {
+                "config": {"tracking_uri": self._compute_cluster_mlflow_uri, "experiment_name": mlflow_experiment_name}
+            }
+
+        job_id = self._start_job(config)
+
+        self._wait_for_job(job_id)
+
+        return self._stream_results(config["user_name"], config["task_config"]["modelname"], job_id)
+
     def _stream_results(self, user_name: str, model_name: str, job_id: str) -> DataFrame:
         res = requests.get(
             f"{self._compute_cluster_web_uri}/internal/fetch-result",
@@ -172,11 +207,10 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
 
     def _start_job(self, config: Dict[str, Any]) -> str:
         url = f"{self._compute_cluster_web_uri}/api/machine-learning/start"
-        print(url)
         res = requests.post(url, json=config)
         res.raise_for_status()
         job_id = res.json()["job_id"]
-        logging.info(f"Job with ID '{job_id}' started")
+        logging.info(f"Job '{config['task']}' with ID '{job_id}' started")
 
         return job_id
 
