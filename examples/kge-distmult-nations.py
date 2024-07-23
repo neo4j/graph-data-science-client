@@ -186,6 +186,8 @@ if __name__ == "__main__":
     put_data_in_db(gds)
     G_train, G_valid, G_test = project_graphs(gds)
 
+    inspect_graph(G_train)
+
     gds.set_compute_cluster_ip("localhost")
 
     model_name = "dummyModelName_" + str(time.time())
@@ -197,10 +199,11 @@ if __name__ == "__main__":
         num_epochs=1,
         embedding_dimension=10,
         epochs_per_checkpoint=0,
-        epochs_per_val=0,
+        epochs_per_val=5,
+        split_ratios={"TRAIN": 0.8, "VALID": 0.1, "TEST": 0.1},
     )
 
-    df = gds.kge.model.predict(
+    predict_result = gds.kge.model.predict(
         model_name=model_name,
         top_k=3,
         node_ids=[
@@ -211,7 +214,37 @@ if __name__ == "__main__":
         rel_types=["REL_RELDIPLOMACY", "REL_RELNGO"],
     )
 
-    print(df.to_string())
+    print(predict_result.to_string())
+
+    print(predict_result.to_string())
+    for index, row in predict_result.iterrows():
+        h = row["head"]
+        r = row["rel"]
+        gds.run_cypher(
+            f"""
+            UNWIND $tt as t
+            MATCH (a:Entity WHERE id(a) = {h})
+            MATCH (b:Entity WHERE id(b) = t)
+            MERGE (a)-[:NEW_REL_{r}]->(b)
+        """,
+            params={"tt": row["tail"]},
+        )
+
+    brazil_node = gds.find_node_id(["Entity"], {"text": "brazil"})
+    uk_node = gds.find_node_id(["Entity"], {"text": "uk"})
+    jordan_node = gds.find_node_id(["Entity"], {"text": "jordan"})
+
+    triplets = [
+        (brazil_node, "REL_RELNGO", uk_node),
+        (brazil_node, "REL_RELDIPLOMACY", jordan_node),
+    ]
+
+    scores = gds.kge.model.score_triplets(
+        model_name=model_name,
+        triplets=triplets,
+    )
+
+    print(scores)
     #
     # gds.kge.model.predict_tail(
     #     G_train,
