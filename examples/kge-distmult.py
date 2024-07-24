@@ -117,8 +117,6 @@ def put_data_in_db(gds):
         for rel_type in dataset[rel_split]:
             edges = dataset[rel_split][rel_type]
 
-            # MERGE (n)-[:{rel_type} {{text:l.rel_text}}]->(m)
-            # MERGE (n)-[:{rel_split}]->(m)
             gds.run_cypher(
                 f"""
                 UNWIND $ll as l
@@ -156,33 +154,6 @@ def project_train_graph(gds):
     return G_train
 
 
-def project_predict_graph(gds):
-    all_rels = gds.run_cypher(
-        """
-    CALL db.relationshipTypes() YIELD relationshipType
-    """
-    )
-    all_rels = all_rels["relationshipType"].to_list()
-    rel_spec = {}
-    for rel in all_rels:
-        if rel.startswith("REL_"):
-            rel_spec[rel] = {"properties": ["split"]}
-
-    gds.graph.drop("fullGraph", failIfMissing=False)
-    gds.graph.drop("predictGraph", failIfMissing=False)
-
-    # {"REL": {"properties": ["relY"]}, "RELR": {"properties": ["relY"]}}
-    # print(rel_spec)
-
-    G_full, result = gds.graph.project("fullGraph", ["Entity"], all_rels)
-
-    G_full, result = gds.graph.project("fullGraph", ["Entity"], rel_spec)
-    # G_predict = gds.graph.filter('predictGraph', 'fullGraph', '*', 'r.split == 2')
-
-    inspect_graph(G_full)
-    return G_full
-
-
 def inspect_graph(G):
     func_names = [
         "name",
@@ -200,8 +171,6 @@ if __name__ == "__main__":
     create_constraint(gds)
     put_data_in_db(gds)
     G_train = project_train_graph(gds)
-    # G_predict = project_predict_graph(gds)
-    # inspect_graph(G_train)
 
     gds.set_compute_cluster_ip("localhost")
 
@@ -209,38 +178,36 @@ if __name__ == "__main__":
 
     model_name = "dummyModelName_" + str(time.time())
 
-    gds.kge.model.train(
+    node_id_text = gds.find_node_id(["Entity"], {"text": "/m/016wzw"})
+    node_id_2 = gds.find_node_id(["Entity"], {"id": 2})
+    node_id_3 = gds.find_node_id(["Entity"], {"id": 3})
+    node_id_0 = gds.find_node_id(["Entity"], {"id": 0})
+
+    res = gds.kge.model.train(
         G_train,
         model_name=model_name,
-        scoring_function="DistMult",
+        scoring_function="distmult",
         num_epochs=1,
         embedding_dimension=10,
         epochs_per_checkpoint=0,
     )
+    print(res['metrics'])
 
-    gds.kge.model.predict(
-        G_train,
+    res = gds.kge.model.predict(
         model_name=model_name,
         top_k=10,
-        node_ids=[1, 2, 3],
+        node_ids=[node_id_3, node_id_2, node_id_text],
         rel_types=["REL_1", "REL_2"],
     )
+    print(res.to_string())
 
-    gds.kge.model.predict_tail(
-        G_train,
+    scores = gds.kge.model.score_triplets(
         model_name=model_name,
-        top_k=10,
-        node_ids=[gds.find_node_id(["Entity"], {"text": "/m/016wzw"}), gds.find_node_id(["Entity"], {"id": 2})],
-        rel_types=["REL_1", "REL_2"],
-    )
-
-    gds.kge.model.score_triples(
-        G_train,
-        model_name=model_name,
-        triples=[
-            (gds.find_node_id(["Entity"], {"text": "/m/016wzw"}), "REL_1", gds.find_node_id(["Entity"], {"id": 2})),
-            (gds.find_node_id(["Entity"], {"id": 0}), "REL_123", gds.find_node_id(["Entity"], {"id": 3})),
+        triplets=[
+            (node_id_2, "REL_1", node_id_text),
+            (node_id_0, "REL_123", node_id_3),
         ],
     )
+    print(scores)
 
     print("Finished training")
