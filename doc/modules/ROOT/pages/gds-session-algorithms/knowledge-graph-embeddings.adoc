@@ -326,7 +326,7 @@ predict_result = gds.kge.model.predict(
 
 |====
 
-For every `N` head entities and `M` relationship types, the function returns `N*M` rows.
+For every `N` head entities and `M` relationship types, the function returns `N*M` rows
 The result object is pandas DataFrame with the following columns:
 
 .Predict result
@@ -352,6 +352,89 @@ The result object is pandas DataFrame with the following columns:
 
 |====
 
+=== Triplets scoring
+
+Function `score_triplets` is used to compute the scores for the given triplets.
+Triplets are represented as a list of tuples `(head, relation, tail)`, where `head` and `tail` are node IDs and can be obtained using the `gds.find_node_id` function.
+`relation` is a string representing the relationship type.
+[source, python, role=no-test]
+----
+predict_result = gds.kge.model.score_triplets(
+    model_name=model_name,
+    triplets=[(node_id1, "RELATIONSHIP_TYPE1", node_id2), ... ],
+)
+----
+.Parameters
+[cols="1m,1m,1m,1", options="header"]
+|====
+| Parameter | Type | Default value | Description
+
+| model_name
+| str
+| N/A
+| The name of the model to use for prediction
+
+| triplets
+| list[tuple[int, str, int]]
+| N/A
+| List of triplets to score
+
+|====
+
+Score triplets function returns a list of scores where each score corresponds to the score of the triplet at the same index in the input list.
+
 [[algorithms-embeddings-kge-examples]]
 == Examples
-TODO
+
+Let's train the `TransE` model on the `Nations` dataset and predict the tail entities for a given head entity and relationship type.
+Upload the `Nations` dataset into neo4j database and project graph `G_train` for training.
+
+Ensure that projected graph has multiple relationship types by calling `G_train.relationship_types()` function.
+
+[source, python, role=no-test]
+----
+model_name = "my_transe_model"
+
+gds.kge.model.train(
+    G_train,
+    model_name=model_name,
+    scoring_function="transe",
+    num_epochs=30,
+    embedding_dimension=64,
+    split_ratios={"TRAIN": 0.8, "VALID": 0.1, "TEST": 0.1},
+)
+----
+
+This will train the `TransE` model and this model can be used for prediction.
+Prediction of topk tail entities for a given head entity and relationship type can be done as follows:
+
+[source, python, role=no-test]
+----
+brazil_node = gds.find_node_id(["Entity"], {"text": "brazil"})
+uk_node = gds.find_node_id(["Entity"], {"text": "uk"})
+jordan_node = gds.find_node_id(["Entity"], {"text": "jordan"})
+
+predict_result = gds.kge.model.predict(
+    model_name=model_name,
+    top_k=3,
+    node_ids=[brazil_node, uk_node, jordan_node],
+    rel_types=["REL_RELDIPLOMACY", "REL_RELNGO"],
+)
+
+print(predict_result.to_string())
+----
+
+There is also a function to score the triplets.
+
+[source, python, role=no-test]
+----
+triplets = [
+    (brazil_node, "REL_RELNGO", uk_node),
+    (brazil_node, "REL_RELDIPLOMACY", jordan_node),
+]
+
+scores = gds.kge.model.score_triplets(
+    model_name=model_name,
+    triplets=triplets,
+)
+----
