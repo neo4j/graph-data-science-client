@@ -192,7 +192,7 @@ if __name__ == "__main__":
 
     model_name = "dummyModelName_" + str(time.time())
 
-    gds.kge.model.train(
+    res = gds.kge.model.train(
         G_train,
         model_name=model_name,
         scoring_function="distmult",
@@ -202,6 +202,7 @@ if __name__ == "__main__":
         epochs_per_val=5,
         split_ratios={"TRAIN": 0.8, "VALID": 0.1, "TEST": 0.1},
     )
+    print(res["metrics"])
 
     predict_result = gds.kge.model.predict(
         model_name=model_name,
@@ -216,7 +217,6 @@ if __name__ == "__main__":
 
     print(predict_result.to_string())
 
-    print(predict_result.to_string())
     for index, row in predict_result.iterrows():
         h = row["head"]
         r = row["rel"]
