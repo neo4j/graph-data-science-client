@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import time
@@ -114,7 +115,12 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
 
         self._wait_for_job(job_id)
 
-        return Series({"status": "finished"})
+        return Series(
+            {
+                "status": "finished",
+                "metrics": self._get_metrics(config["user_name"], config["task_config"]["modelname"], job_id),
+            }
+        )
 
     @client_only_endpoint("gds.kge.model")
     def predict(
@@ -204,6 +210,25 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         df = pd.read_json(res_file_name, orient="records", lines=True)
         os.remove(res_file_name)
         return df
+
+    def _get_metrics(self, user_name: str, model_name: str, job_id: str) -> DataFrame:
+        res = requests.get(
+            f"{self._compute_cluster_web_uri}/internal/fetch-model-metadata",
+            params={"user_name": user_name, "modelname": model_name},
+        )
+        res.raise_for_status()
+
+        res_file_name = f"metadata_{job_id}.json"
+
+        with open(res_file_name, mode="wb+") as f:
+            f.write(res.content)
+
+        with open(res_file_name, mode="r") as f:
+            metadata = json.load(f)
+
+        os.remove(res_file_name)
+
+        return metadata["metrics"]
 
     def _start_job(self, config: Dict[str, Any]) -> str:
         url = f"{self._compute_cluster_web_uri}/api/machine-learning/start"
