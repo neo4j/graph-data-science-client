@@ -191,7 +191,7 @@ if __name__ == "__main__":
         embedding_dimension=10,
         epochs_per_checkpoint=0,
     )
-    print(res['metrics'])
+    print(res["metrics"])
 
     res = gds.kge.model.predict(
         model_name=model_name,
