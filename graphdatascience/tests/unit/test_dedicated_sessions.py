@@ -19,7 +19,7 @@ from graphdatascience.session.aura_api_responses import (
 )
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.dedicated_sessions import DedicatedSessions
-from graphdatascience.session.session_info import SessionInfo
+from graphdatascience.session.session_info import ExtendedSessionInfo, SessionInfo
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
 
 
@@ -120,12 +120,12 @@ class FakeAuraApi(AuraApi):
     def list_session(self, session_id: str, dbid: str) -> Optional[SessionDetails]:
         self._mimic_paused_db_behaviour(dbid)
 
-        matched_instance = self._sessions.get(session_id, None)
+        matched_session = self._sessions.get(session_id, None)
 
-        if matched_instance:
-            old_instance = matched_instance
-            self._sessions[session_id] = dataclasses.replace(old_instance, status=self._status_after_creating)
-            return old_instance
+        if matched_session:
+            old_session = matched_session
+            self._sessions[session_id] = dataclasses.replace(old_session, status=self._status_after_creating)
+            return old_session
         else:
             return None
 
@@ -243,7 +243,13 @@ def test_create_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
         ),
         "session_id": "ffff0-ffff1",
     }
-    assert [i.name for i in sessions.list()] == ["my-session"]
+
+    assert len(sessions.list()) == 1
+    actual_session = sessions.list()[0]
+
+    assert isinstance(actual_session, ExtendedSessionInfo)
+    assert actual_session.name == "my-session"
+    assert actual_session.user_id == "user-1"
 
 
 def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:

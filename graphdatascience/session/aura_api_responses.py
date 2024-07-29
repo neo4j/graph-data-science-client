@@ -29,7 +29,7 @@ class SessionDetails:
     @classmethod
     def fromJson(cls, json: Dict[str, Any]) -> SessionDetails:
         expiry_date = json.get("expiry_date")
-        ttl = json.get("ttl")
+        ttl: Any | None = json.get("ttl")
 
         return cls(
             id=json["id"],
