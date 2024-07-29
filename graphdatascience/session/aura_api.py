@@ -34,7 +34,7 @@ class AuraApi:
     def __init__(self, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> None:
         self._aura_env = os.environ.get("AURA_ENV")
 
-        if not self._aura_env or self._aura_env == "prod":
+        if not self._aura_env or self._aura_env == "production":
             self._base_uri = "https://api.neo4j.io"
         elif self._aura_env == "staging":
             self._base_uri = "https://api-staging.neo4j.io"
