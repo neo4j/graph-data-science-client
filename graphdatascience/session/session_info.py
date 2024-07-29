@@ -24,12 +24,13 @@ class SessionInfo:
     @classmethod
     def from_session_details(cls, details: SessionDetails) -> ExtendedSessionInfo:
         return ExtendedSessionInfo(
-            details.name,
-            details.memory,
-            details.instance_id,
-            details.status,
-            details.expiry_date,
-            details.created_at,
+            name=details.name,
+            memory=details.memory,
+            instance_id=details.instance_id,
+            status=details.status,
+            expiry_date=details.expiry_date,
+            created_at=details.created_at,
+            user_id=details.user_id,
         )
 
 
@@ -39,3 +40,4 @@ class ExtendedSessionInfo(SessionInfo):
     status: str
     expiry_date: Optional[datetime]
     created_at: datetime
+    user_id: str
