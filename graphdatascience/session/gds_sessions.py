@@ -22,12 +22,12 @@ class AuraAPICredentials:
     Attributes:
         client_id (str): The client ID for authentication.
         client_secret (str): The client secret for authentication.
-        tenant (Optional[str]): The tenant for authentication. Needed if a client belongs to multiple tenants.
+        tenant_id (Optional[str]): The tenant ID for authentication. Needed if a client belongs to multiple tenants.
     """
 
     client_id: str
     client_secret: str
-    tenant: Optional[str] = None
+    tenant_id: Optional[str] = None
 
 
 class GdsSessions:
@@ -42,8 +42,8 @@ class GdsSessions:
         Args:
             api_credentials (AuraAPICredentials): The Aura API credentials used for establishing a connection.
         """
-        aura_api = AuraApi(api_credentials.client_id, api_credentials.client_secret, api_credentials.tenant)
-        session_type_flag = os.environ.get("USE_DEDICATED_SESSIONS", "false").lower() == "true"
+        aura_api = AuraApi(api_credentials.client_id, api_credentials.client_secret, api_credentials.tenant_id)
+        session_type_flag = os.environ.get("USE_DEDICATED_SESSIONS", "true").lower() == "true"
         self._impl: Union[DedicatedSessions, AuraDsSessions] = (
             DedicatedSessions(aura_api) if session_type_flag else AuraDsSessions(aura_api)
         )

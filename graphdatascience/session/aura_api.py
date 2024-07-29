@@ -32,14 +32,14 @@ class AuraApiError(Exception):
 
 class AuraApi:
     def __init__(self, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> None:
-        self._dev_env = os.environ.get("AURA_ENV")
+        self._aura_env = os.environ.get("AURA_ENV")
 
-        if not self._dev_env:
+        if not self._aura_env or self._aura_env == "production":
             self._base_uri = "https://api.neo4j.io"
-        elif self._dev_env == "staging":
+        elif self._aura_env == "staging":
             self._base_uri = "https://api-staging.neo4j.io"
         else:
-            self._base_uri = f"https://api-{self._dev_env}.neo4j-dev.io"
+            self._base_uri = f"https://api-{self._aura_env}.neo4j-dev.io"
 
         self._auth = AuraApi.Auth(oauth_url=f"{self._base_uri}/oauth/token", credentials=(client_id, client_secret))
         self._logger = logging.getLogger()
@@ -267,9 +267,6 @@ class AuraApi:
                 " Please update to a newer version of this client.",
                 DeprecationWarning,
             )
-
-    def _instance_type(self) -> str:
-        return "enterprise-ds" if not self._dev_env else "professional-ds"
 
     class Auth(requests.auth.AuthBase):
         class Token:
