@@ -22,9 +22,16 @@ listing, and deletion.
 
 == Prerequisites
 
-This notebook requires having an AuraDB instance available. We also need
-to have the `graphdatascience` Python library installed, version
-`1.11a4` or later.
+This notebook requires having an AuraDB instance available and have the
+GDS sessions feature enabled for your tenant. Contact your account
+manager to get the features enabled.
+
+We also need to have the `graphdatascience` Python library installed,
+version `1.11a4` or later.
+
+
+
+
 
 [source, python, role=no-test]
 ----
@@ -51,7 +58,9 @@ client_id = os.environ["AURA_API_CLIENT_ID"]
 client_secret = os.environ["AURA_API_CLIENT_SECRET"]
 
 # If your account is a member of several tenants, you must also specify the tenant ID to use
-sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secret))
+tenant_id = os.environ.get("AURA_API_TENANT_ID", None)
+
+sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secret, tenant_id=tenant_id))
 ----
 
 == Creating a new session
