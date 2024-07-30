@@ -285,7 +285,7 @@ class AuraApi:
                 self.refresh_at = int(time.time()) + refresh_in
 
             def should_refresh(self) -> bool:
-                return self.refresh_at >= int(time.time())
+                return self.refresh_at <= int(time.time())
 
         def __init__(self, oauth_url: str, credentials: Tuple[str, str]) -> None:
             self._token: Optional[AuraApi.Auth.Token] = None
