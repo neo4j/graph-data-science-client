@@ -68,7 +68,7 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         do_validation: bool = True,
         do_test: bool = True,
         filtered_metrics: bool = False,
-        epochs_per_val: int = 50,
+        epochs_per_val: int = 0,
         inner_norm: bool = True,
         init_bound: Optional[float] = None,
         mlflow_experiment_name: Optional[str] = None,
@@ -108,7 +108,8 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
 
         if mlflow_experiment_name is not None:
             config["task_config"]["mlflow"] = {
-                "config": {"tracking_uri": self._compute_cluster_mlflow_uri, "experiment_name": mlflow_experiment_name}
+                "tracking_uri": self._compute_cluster_mlflow_uri,
+                "experiment_name": mlflow_experiment_name,
             }
 
         job_id = self._start_job(config)
@@ -152,7 +153,8 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
 
         if mlflow_experiment_name is not None:
             config["task_config"]["mlflow"] = {
-                "config": {"tracking_uri": self._compute_cluster_mlflow_uri, "experiment_name": mlflow_experiment_name}
+                "tracking_uri": self._compute_cluster_mlflow_uri,
+                "experiment_name": mlflow_experiment_name,
             }
 
         job_id = self._start_job(config)
@@ -187,7 +189,8 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
 
         if mlflow_experiment_name is not None:
             config["task_config"]["mlflow"] = {
-                "config": {"tracking_uri": self._compute_cluster_mlflow_uri, "experiment_name": mlflow_experiment_name}
+                "tracking_uri": self._compute_cluster_mlflow_uri,
+                "experiment_name": mlflow_experiment_name,
             }
 
         job_id = self._start_job(config)
@@ -228,7 +231,7 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
 
         os.remove(res_file_name)
 
-        return metadata["metrics"]
+        return metadata.get("metrics", None)
 
     def _start_job(self, config: Dict[str, Any]) -> str:
         url = f"{self._compute_cluster_web_uri}/api/machine-learning/start"

@@ -268,8 +268,8 @@ When all three keys are present, the sum of values must be equal to 1.0.
 
 | epochs_per_val
 | int
-| 50
-| Number of epochs between validations (must be greater than or equal to 0)
+| 0
+| Number of epochs between validations (must be greater than or equal to 0). If 0, validation is not performed.
 
 | inner_norm
 | bool
