@@ -96,7 +96,8 @@ class DedicatedSessions:
             try:
                 sessions.extend(self._aura_api.list_sessions(db.id))
             except AuraApiError as e:
-                # ignore 404 errors when listing sessions as it could mean paused sessions or deleted sessions
+                # ignore 404 errors when listing sessions
+                # it could mean paused sessions or deleted sessions (or an invalid instance type)
                 if e.status_code != 404:
                     raise e
 
@@ -107,7 +108,8 @@ class DedicatedSessions:
         try:
             matched_sessions = [s for s in self._aura_api.list_sessions(dbid) if s.name == session_name]
         except AuraApiError as e:
-            # ignore 404 errors when listing sessions as it could mean paused sessions or deleted sessions
+            # ignore 404 errors when listing sessions
+            # it could mean paused sessions or deleted sessions (or an invalid instance type)
             if e.status_code != 404:
                 raise e
 
