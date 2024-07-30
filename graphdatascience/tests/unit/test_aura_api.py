@@ -392,7 +392,7 @@ def test_auth_token(requests_mock: Mocker) -> None:
 
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
-        json={"access_token": "very_short_token", "expires_in": 1, "token_type": "Bearer"},
+        json={"access_token": "very_short_token", "expires_in": 0, "token_type": "Bearer"},
     )
 
     assert api._auth._auth_token() == "very_short_token"
