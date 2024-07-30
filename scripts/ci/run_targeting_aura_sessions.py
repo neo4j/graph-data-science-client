@@ -7,13 +7,13 @@ import sys
 
 from aura_api_ci import AuraApiCI
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 
 def main() -> None:
     client_id = os.environ["AURA_API_CLIENT_ID"]
     client_secret = os.environ["AURA_API_CLIENT_SECRET"]
-    tenant_id = os.environ.get("TENANT_ID")
+    tenant_id = os.environ.get("AURA_API_TENANT_ID")
     aura_api = AuraApiCI(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
 
     MAX_INT = 1000000
@@ -21,11 +21,11 @@ def main() -> None:
 
     create_result = aura_api.create_instance(instance_name, memory="1GB", type="professional-db")
     instance_id = create_result["id"]
-    logging.info("Creation of database accepted")
+    logging.info(f"Creation of database with id '{instance_id}'")
 
     try:
         aura_api.check_running(instance_id)
-        logging.info("Database %s up and running", instance_id)
+        logging.info("Database up and running")
 
         uri = create_result["connection_url"]
         username = create_result["username"]
