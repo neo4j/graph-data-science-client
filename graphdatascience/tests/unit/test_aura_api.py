@@ -414,6 +414,13 @@ def test_auth_token_reused(requests_mock: Mocker) -> None:
     )
 
     assert api._auth._auth_token() == "one_token"
+
+    requests_mock.post(
+        "https://api.neo4j.io/oauth/token",
+        json={"access_token": "new_token", "expires_in": 3600, "token_type": "Bearer"},
+    )
+
+    # no new token requested
     assert api._auth._auth_token() == "one_token"
 
 
