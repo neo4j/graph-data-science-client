@@ -75,6 +75,12 @@ class FakeAuraApi(AuraApi):
         if db and db.status == "paused":
             raise AuraApiError(message="Database not found", status_code=404)
 
+        if db and db.type == "gds":
+            raise AuraApiError(
+                message=f"Database with id `{db.id}` of tier `{db.type}`, which is not supported by sessions.",
+                status_code=400,
+            )
+
     def create_instance(
         self, name: str, memory: SessionMemoryValue, cloud_provider: str, region: str
     ) -> InstanceCreateDetails:
@@ -209,6 +215,35 @@ def test_list_session_paused_instance(aura_api: AuraApi) -> None:
         cloud_provider="aws",
     )
     fake_aura_api._instances[paused_db.id] = paused_db
+
+    session = aura_api.create_session(
+        name="gds-session-my-session-name",
+        dbid=db.id,
+        pwd="some_pwd",
+        memory=SessionMemory.m_8GB.value,
+    )
+    sessions = DedicatedSessions(aura_api)
+
+    assert sessions.list() == [SessionInfo.from_session_details(session)]
+
+
+def test_list_session_gds_instance(aura_api: AuraApi) -> None:
+    db = aura_api.create_instance("test", SessionMemory.m_8GB.value, "aws", "leipzig-1")
+    fake_aura_api = cast(FakeAuraApi, aura_api)
+
+    fake_aura_api.id_counter += 1
+    gds_instance = InstanceSpecificDetails(
+        id="4242",
+        status="Creating",
+        connection_url="foo.bar",
+        memory=SessionMemory.m_16GB.value,
+        type="gds",
+        region="dresden",
+        name="ds instance",
+        tenant_id=fake_aura_api._tenant_id,
+        cloud_provider="aws",
+    )
+    fake_aura_api._instances[gds_instance.id] = gds_instance
 
     session = aura_api.create_session(
         name="gds-session-my-session-name",
