@@ -60,6 +60,15 @@ class Neo4jQueryRunner(QueryRunner):
         else:
             raise ValueError(f"Invalid endpoint type: {type(endpoint)}")
 
+        if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= ServerVersion(5, 21, 0):
+            notifications_logger = logging.getLogger("neo4j.notifications")
+            # the client does not expose YIELD fields so we just skip these warnings for now
+            notifications_logger.addFilter(
+                lambda record: (
+                    "The query used a deprecated field from a procedure" in record.msg and "by 'gds." in record.msg
+                )
+            )
+
         return query_runner
 
     @staticmethod
@@ -124,12 +133,28 @@ class Neo4jQueryRunner(QueryRunner):
             else:
                 self._last_bookmarks = session.last_bookmarks()
 
-            notifications = result.consume().notifications
-            if notifications:
-                for notification in notifications:
-                    self._forward_cypher_warnings(notification)
+            if (
+                Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= ServerVersion(5, 21, 0)
+                and result._warn_notification_severity == "WARNING"
+            ):
+                # the client does not expose YIELD fields so we just skip these warnings for now
+                warnings.filterwarnings(
+                    "ignore", message=r".*The query used a deprecated field from a procedure\. .* by 'gds.* "
+                )
+            else:
+                notifications = result.consume().notifications
+                if notifications:
+                    for notification in notifications:
+                        self._forward_cypher_warnings(notification)
 
             return df
+
+    def call_function(self, endpoint: str, params: Optional[CallParameters] = None) -> Any:
+        if params is None:
+            params = CallParameters()
+        query = f"RETURN {endpoint}({params.placeholder_str()})"
+
+        return self.run_cypher(query, params).squeeze()
 
     def call_procedure(
         self,

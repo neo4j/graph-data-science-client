@@ -23,7 +23,7 @@ from .system.system_endpoints import (
     SystemBetaEndpoints,
 )
 from .topological_lp.topological_lp_endpoints import TopologicalLPAlphaEndpoints
-from .utils.util_endpoints import DirectUtilEndpoints
+from .utils.direct_util_endpoints import DirectUtilEndpoints
 
 """
 This class should inherit endpoint classes that only contain endpoints that can be called directly from
@@ -44,7 +44,7 @@ class DirectEndpoints(
 
 
 """
-This class should inherit endpoint classes that only expose calls of the `gds.beta` namespace.
+This class should inherit endpoint classes that only expose calls of the `gds.alpha` namespace.
 Example of such endpoints: "gds.alpha.listProgress".
 """
 
@@ -53,6 +53,21 @@ class AlphaEndpoints(
     GraphAlphaEndpoints,
     PipelineAlphaEndpoints,
     TopologicalLPAlphaEndpoints,
+    ModelAlphaEndpoints,
+    SingleModeAlphaAlgoEndpoints,
+    SystemAlphaEndpoints,
+    AlphaConfigEndpoints,
+):
+    def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
+        super().__init__(query_runner, namespace, server_version)
+
+    def __getattr__(self, attr: str) -> IndirectAlphaCallBuilder:
+        return IndirectAlphaCallBuilder(self._query_runner, f"{self._namespace}.{attr}", self._server_version)
+
+
+class AlphaRemoteEndpoints(
+    GraphAlphaEndpoints,
+    PipelineAlphaEndpoints,
     ModelAlphaEndpoints,
     SingleModeAlphaAlgoEndpoints,
     SystemAlphaEndpoints,

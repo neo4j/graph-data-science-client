@@ -1,13 +1,13 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from _pytest.logging import LogCaptureFixture
-from requests import HTTPError
 from requests_mock import Mocker
 
+from graphdatascience.session import SessionMemory
 from graphdatascience.session.algorithm_category import AlgorithmCategory
-from graphdatascience.session.aura_api import AuraApi
+from graphdatascience.session.aura_api import AuraApi, AuraApiError
 from graphdatascience.session.aura_api_responses import (
     EstimationDetails,
     InstanceCreateDetails,
@@ -17,6 +17,14 @@ from graphdatascience.session.aura_api_responses import (
     TimeParser,
     WaitResult,
 )
+from graphdatascience.session.session_sizes import SESSION_MEMORY_VALUE_UNKNOWN
+
+
+def mock_auth_token(requests_mock: Mocker) -> None:
+    requests_mock.post(
+        "https://api.neo4j.io/oauth/token",
+        json={"access_token": "very_short_token", "expires_in": 500, "token_type": "Bearer"},
+    )
 
 
 def test_create_session(requests_mock: Mocker) -> None:
@@ -33,11 +41,13 @@ def test_create_session(requests_mock: Mocker) -> None:
             "instance_id": "dbid-1",
             "created_at": "1970-01-01T00:00:00Z",
             "host": "1.2.3.4",
-            "memory": "4G",
+            "memory": "4Gi",
+            "tenant_id": "tenant-0",
+            "user_id": "user-0",
         },
     )
 
-    result = api.create_session("name-0", "dbid-1", "pwd-2", "4G")
+    result = api.create_session("name-0", "dbid-1", "pwd-2", SessionMemory.m_4GB.value)
 
     assert result == SessionDetails(
         id="id0",
@@ -46,8 +56,11 @@ def test_create_session(requests_mock: Mocker) -> None:
         instance_id="dbid-1",
         created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
         host="1.2.3.4",
-        memory="4G",
+        memory=SessionMemory.m_4GB.value,
         expiry_date=None,
+        ttl=None,
+        tenant_id="tenant-0",
+        user_id="user-0",
     )
 
 
@@ -66,8 +79,10 @@ def test_list_session(requests_mock: Mocker) -> None:
             "instance_id": "dbid-1",
             "created_at": "1970-01-01T00:00:00Z",
             "host": "1.2.3.4",
-            "memory": "4G",
+            "memory": "4Gi",
             "expiry_date": "1977-01-01T00:00:00Z",
+            "tenant_id": "tenant-0",
+            "user_id": "user-0",
         },
     )
 
@@ -80,8 +95,11 @@ def test_list_session(requests_mock: Mocker) -> None:
         instance_id="dbid-1",
         created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
         host="1.2.3.4",
-        memory="4G",
+        memory=SessionMemory.m_4GB.value,
         expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
+        ttl=None,
+        tenant_id="tenant-0",
+        user_id="user-0",
     )
 
 
@@ -99,8 +117,10 @@ def test_list_sessions(requests_mock: Mocker) -> None:
                 "instance_id": "dbid-1",
                 "created_at": "1970-01-01T00:00:00Z",
                 "host": "1.2.3.4",
-                "memory": "4G",
+                "memory": "4Gi",
                 "expiry_date": "1977-01-01T00:00:00Z",
+                "tenant_id": "tenant-1",
+                "user_id": "user-1",
             },
             {
                 "id": "id1",
@@ -108,7 +128,10 @@ def test_list_sessions(requests_mock: Mocker) -> None:
                 "status": "Creating",
                 "instance_id": "dbid-3",
                 "created_at": "2012-01-01T00:00:00Z",
-                "memory": "8G",
+                "memory": "8Gi",
+                "host": "foo.bar",
+                "tenant_id": "tenant-2",
+                "user_id": "user-2",
             },
         ],
     )
@@ -122,8 +145,11 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         instance_id="dbid-1",
         created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
         host="1.2.3.4",
-        memory="4G",
+        memory=SessionMemory.m_4GB.value,
         expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
+        ttl=None,
+        tenant_id="tenant-1",
+        user_id="user-1",
     )
 
     expected2 = SessionDetails(
@@ -132,9 +158,12 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         status="Creating",
         instance_id="dbid-3",
         created_at=TimeParser.fromisoformat("2012-01-01T00:00:00Z"),
-        memory="8G",
-        host=None,
+        memory=SessionMemory.m_8GB.value,
+        host="foo.bar",
         expiry_date=None,
+        ttl=None,
+        tenant_id="tenant-2",
+        user_id="user-2",
     )
 
     assert result == [expected1, expected2]
@@ -195,8 +224,10 @@ def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCapture
             "instance_id": "dbid-1",
             "created_at": "1970-01-01T00:00:00Z",
             "host": "foo.bar",
-            "memory": "4G",
+            "memory": "4Gi",
             "expiry_date": "1977-01-01T00:00:00Z",
+            "tenant_id": "tenant-1",
+            "user_id": "user-1",
         },
     )
 
@@ -204,8 +235,8 @@ def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCapture
 
     with caplog.at_level(logging.DEBUG):
         assert (
-            "Session `id0` for database `dbid-1` is not running after 0.8 seconds"
-            in api.wait_for_session_running("id0", "dbid-1", max_sleep_time=0.7).error
+            "Session `id0` for database `dbid-1` is not running after 0.7 seconds"
+            in api.wait_for_session_running("id0", "dbid-1", max_wait_time=0.7).error
         )
 
     assert "Session `id0` is not yet running. Current status: Creating Host: foo.bar. Retrying in 0.2" in caplog.text
@@ -222,14 +253,16 @@ def test_wait_for_session_running(requests_mock: Mocker) -> None:
             "instance_id": "dbid-1",
             "created_at": "1970-01-01T00:00:00Z",
             "host": "foo.bar",
-            "memory": "4G",
+            "memory": "4Gi",
             "expiry_date": "1977-01-01T00:00:00Z",
+            "tenant_id": "tenant-1",
+            "user_id": "user-1",
         },
     )
 
     api = AuraApi("", "", tenant_id="some-tenant")
 
-    assert api.wait_for_session_running("id0", "db2") == WaitResult.from_connection_url("neo4j+ssc://foo.bar")
+    assert api.wait_for_session_running("id0", "db2") == WaitResult.from_connection_url("neo4j+s://foo.bar")
 
 
 def test_delete_instance(requests_mock: Mocker) -> None:
@@ -248,7 +281,7 @@ def test_delete_instance(requests_mock: Mocker) -> None:
                 "connection_url": "",
                 "tenant_id": "",
                 "cloud_provider": "",
-                "memory": "",
+                "memory": "4Gi",
                 "region": "",
                 "type": "",
             }
@@ -264,7 +297,7 @@ def test_delete_instance(requests_mock: Mocker) -> None:
         cloud_provider="",
         status="deleting",
         connection_url="",
-        memory="",
+        memory=SessionMemory.m_4GB.value,
         region="",
         type="",
     )
@@ -296,7 +329,7 @@ def test_delete_that_fails(requests_mock: Mocker) -> None:
         json={"errors": [{"message": "some failure happened", "reason": "unknown", "field": "string"}]},
     )
 
-    with pytest.raises(HTTPError, match="Internal Server Error"):
+    with pytest.raises(AuraApiError, match="Internal Server Error"):
         api.delete_instance("id0")
 
 
@@ -331,7 +364,7 @@ def test_create_instance(requests_mock: Mocker) -> None:
         },
     )
 
-    api.create_instance("name", "16GB", "gcp", "leipzig-1")
+    api.create_instance("name", SessionMemory.m_16GB.value, "gcp", "leipzig-1")
 
     requested_data = requests_mock.request_history[-1].json()
     assert requested_data["name"] == "name"
@@ -340,22 +373,67 @@ def test_create_instance(requests_mock: Mocker) -> None:
     assert requested_data["region"] == "leipzig-1"
 
 
+def test_warn_about_expirying_endpoint(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+    requests_mock.delete(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        status_code=202,
+        headers={"X-Tyk-Api-Expires": "Mon, 03 Mar 2025 00:00:00 UTC"},
+    )
+
+    with pytest.warns(DeprecationWarning):
+        api.delete_session("id0", "dbid-1")
+
+
 def test_auth_token(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
 
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
-        json={"access_token": "very_short_token", "expires_in": 1, "token_type": "Bearer"},
+        json={"access_token": "very_short_token", "expires_in": 0, "token_type": "Bearer"},
     )
 
-    assert api._auth_token() == "very_short_token"
+    assert api._auth._auth_token() == "very_short_token"
 
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
         json={"access_token": "longer_token", "expires_in": 3600, "token_type": "Bearer"},
     )
 
-    assert api._auth_token() == "longer_token"
+    assert api._auth._auth_token() == "longer_token"
+
+
+def test_auth_token_reused(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    requests_mock.post(
+        "https://api.neo4j.io/oauth/token",
+        json={"access_token": "one_token", "expires_in": 3600, "token_type": "Bearer"},
+    )
+
+    assert api._auth._auth_token() == "one_token"
+
+    requests_mock.post(
+        "https://api.neo4j.io/oauth/token",
+        json={"access_token": "new_token", "expires_in": 3600, "token_type": "Bearer"},
+    )
+
+    # no new token requested
+    assert api._auth._auth_token() == "one_token"
+
+
+def test_auth_token_use_short_token(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    requests_mock.post(
+        "https://api.neo4j.io/oauth/token",
+        json={"access_token": "one_token", "expires_in": 10, "token_type": "Bearer"},
+    )
+
+    assert api._auth._auth_token() == "one_token"
+    assert api._auth._auth_token() == "one_token"
 
 
 def test_derive_tenant(requests_mock: Mocker) -> None:
@@ -432,6 +510,7 @@ def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
                 "status": "creating",
                 "tenant_id": "046046d1-6996-53e4-8880-5b822766e1f9",
                 "type": "enterprise-ds",
+                "memory": "",
             }
         },
     )
@@ -439,7 +518,7 @@ def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
     result = api.list_instance("id0")
 
     assert result and result.id == "a10fb995"
-    assert result.memory == ""
+    assert result.memory == SESSION_MEMORY_VALUE_UNKNOWN
 
 
 def test_list_missing_instance(requests_mock: Mocker) -> None:
@@ -457,13 +536,6 @@ def test_list_missing_instance(requests_mock: Mocker) -> None:
     assert api.list_instance("id0") is None
 
 
-def mock_auth_token(requests_mock: Mocker) -> None:
-    requests_mock.post(
-        "https://api.neo4j.io/oauth/token",
-        json={"access_token": "very_short_token", "expires_in": 500, "token_type": "Bearer"},
-    )
-
-
 def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> None:
     mock_auth_token(requests_mock)
     requests_mock.get(
@@ -478,6 +550,7 @@ def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> 
                 "region": None,
                 "tenant_id": None,
                 "type": None,
+                "memory": "4Gi",
             }
         },
     )
@@ -486,8 +559,8 @@ def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> 
 
     with caplog.at_level(logging.DEBUG):
         assert (
-            "Instance is not running after waiting for 0.8"
-            in api.wait_for_instance_running("id0", max_sleep_time=0.7).error
+            "Instance is not running after waiting for 0.7"
+            in api.wait_for_instance_running("id0", max_wait_time=0.7).error
         )
 
     assert "Instance `id0` is not yet running. Current status: creating. Retrying in 0.2 seconds..." in caplog.text
@@ -507,6 +580,7 @@ def test_wait_for_instance_running(requests_mock: Mocker) -> None:
                 "region": None,
                 "tenant_id": None,
                 "type": None,
+                "memory": "4Gi",
             }
         },
     )
@@ -530,6 +604,7 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
                 "region": None,
                 "tenant_id": None,
                 "type": None,
+                "memory": "4Gi",
             }
         },
     )
@@ -545,6 +620,7 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
                 "region": None,
                 "tenant_id": None,
                 "type": None,
+                "memory": "4Gi",
             }
         },
     )
@@ -629,46 +705,57 @@ def test_parse_session_info() -> None:
     session_details = {
         "id": "test_id",
         "name": "test_session",
-        "memory": "small",
+        "memory": "4Gi",
         "instance_id": "test_instance",
         "status": "running",
         "expiry_date": "2022-01-01T00:00:00Z",
         "created_at": "2021-01-01T00:00:00Z",
         "host": "a.b",
+        "ttl": "1d8h1m2s",
+        "tenant_id": "tenant-1",
+        "user_id": "user-1",
     }
     session_info = SessionDetails.fromJson(session_details)
 
     assert session_info == SessionDetails(
         id="test_id",
         name="test_session",
-        memory="small",
+        memory=SessionMemory.m_4GB.value,
         instance_id="test_instance",
         status="running",
         host="a.b",
         expiry_date=datetime(2022, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
         created_at=datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
+        ttl=timedelta(days=1, hours=8, minutes=1, seconds=2),
+        tenant_id="tenant-1",
+        user_id="user-1",
     )
 
 
-def test_parse_session_info_without_expiry() -> None:
+def test_parse_session_info_without_optionals() -> None:
     session_details = {
         "id": "test_id",
         "name": "test_session",
-        "memory": "small",
+        "memory": "16Gi",
         "instance_id": "test_instance",
         "status": "running",
         "host": "a.b",
         "created_at": "2021-01-01T00:00:00Z",
+        "tenant_id": "tenant-1",
+        "user_id": "user-1",
     }
     session_info = SessionDetails.fromJson(session_details)
 
     assert session_info == SessionDetails(
         id="test_id",
         name="test_session",
-        memory="small",
+        memory=SessionMemory.m_16GB.value,
         instance_id="test_instance",
         host="a.b",
         status="running",
         expiry_date=None,
+        ttl=None,
         created_at=datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
+        tenant_id="tenant-1",
+        user_id="user-1",
     )

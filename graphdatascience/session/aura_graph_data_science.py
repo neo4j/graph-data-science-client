@@ -3,16 +3,20 @@ from typing import Any, Callable, Dict, Optional
 from pandas import DataFrame
 
 from graphdatascience.call_builder import IndirectCallBuilder
-from graphdatascience.endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
+from graphdatascience.endpoints import (
+    AlphaRemoteEndpoints,
+    BetaEndpoints,
+    DirectEndpoints,
+)
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
 from graphdatascience.graph.graph_remote_proc_runner import GraphRemoteProcRunner
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
-from graphdatascience.query_runner.aura_db_arrow_query_runner import (
-    AuraDbArrowQueryRunner,
-)
+from graphdatascience.query_runner.aura_db_query_runner import AuraDbQueryRunner
+from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.utils.util_remote_proc_runner import UtilRemoteProcRunner
 
 
 class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
@@ -63,13 +67,20 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         gds_query_runner.set_database("neo4j")
         self._db_query_runner.set_database("neo4j")
 
-        self._query_runner = AuraDbArrowQueryRunner(
-            gds_query_runner, self._db_query_runner, self._db_query_runner.encrypted(), aura_db_connection_info
+        arrow_client = GdsArrowClient.create(
+            gds_neo4j_query_runner,
+            gds_session_connection_info.auth(),
+            gds_neo4j_query_runner.encrypted(),
+            arrow_disable_server_verification,
+            arrow_tls_root_certs,
+        )
+        self._query_runner = AuraDbQueryRunner(
+            gds_query_runner, self._db_query_runner, arrow_client, self._db_query_runner.encrypted()
         )
 
         self._delete_fn = delete_fn
 
-        super().__init__(self._query_runner, "gds", self._server_version)
+        super().__init__(self._query_runner, namespace="gds", server_version=self._server_version)
 
     def run_cypher(
         self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
@@ -97,8 +108,12 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         return GraphRemoteProcRunner(self._query_runner, f"{self._namespace}.graph", self._server_version)
 
     @property
-    def alpha(self) -> AlphaEndpoints:
-        return AlphaEndpoints(self._query_runner, "gds.alpha", self._server_version)
+    def util(self) -> UtilRemoteProcRunner:
+        return UtilRemoteProcRunner(self._query_runner, f"{self._namespace}.util", self._server_version)
+
+    @property
+    def alpha(self) -> AlphaRemoteEndpoints:
+        return AlphaRemoteEndpoints(self._query_runner, "gds.alpha", self._server_version)
 
     @property
     def beta(self) -> BetaEndpoints:

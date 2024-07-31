@@ -22,6 +22,10 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
+    def call_function(self, endpoint: str, params: Optional[CallParameters] = None) -> Any:
+        pass
+
+    @abstractmethod
     def run_cypher(
         self,
         query: str,

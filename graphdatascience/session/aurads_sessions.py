@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import warnings
 from typing import List, Optional
 
@@ -16,7 +17,11 @@ from graphdatascience.session.aura_graph_data_science import AuraGraphDataScienc
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.region_suggester import closest_match
 from graphdatascience.session.session_info import SessionInfo
-from graphdatascience.session.session_sizes import SessionMemory
+from graphdatascience.session.session_sizes import (
+    SESSION_MEMORY_VALUE_UNKNOWN,
+    SessionMemory,
+    SessionMemoryValue,
+)
 
 
 class AuraDsSessions:
@@ -25,6 +30,7 @@ class AuraDsSessions:
 
     def __init__(self, aura_api: AuraApi) -> None:
         self._aura_api = aura_api
+        self._logger = logging.getLogger()
 
     def estimate(
         self, node_count: int, relationship_count: int, algorithm_categories: Optional[List[AlgorithmCategory]] = None
@@ -41,7 +47,7 @@ class AuraDsSessions:
                 ResourceWarning,
             )
 
-        return SessionMemory(estimation.recommended_size)
+        return SessionMemory(SessionMemoryValue(estimation.recommended_size))
 
     def get_or_create(
         self,
@@ -53,14 +59,18 @@ class AuraDsSessions:
 
         if existing_session:
             session_id = existing_session.id
-            # 0MB is AuraAPI default value for memory if none can be retrieved
-            if existing_session.memory != "0MB" and existing_session.memory != memory.value:
+            # AuraAPI default value for memory if none can be retrieved
+            if existing_session.memory == SESSION_MEMORY_VALUE_UNKNOWN:
+                self._logger.debug(
+                    f"Reusing existing session with id `{session_id}` as size for session is unknown during creation."
+                )
+            elif existing_session.memory != memory.value:
                 raise ValueError(
-                    f"Session `{session_name}` already exists with memory `{existing_session.memory}`. "
+                    f"Session `{session_name}` already exists with memory `{existing_session.memory.value}`. "
                     f"Requested memory `{memory.value}` does not match."
                 )
         else:
-            create_details = self._create_session(session_name, memory, db_connection)
+            create_details = self._create_session(session_name, memory.value, db_connection)
             session_id = create_details.id
 
         wait_result = self._aura_api.wait_for_instance_running(session_id)
@@ -118,7 +128,7 @@ class AuraDsSessions:
         return self._aura_api.list_instance(matched_instances[0].id)
 
     def _create_session(
-        self, session_name: str, memory: SessionMemory, db_connection: DbmsConnectionInfo
+        self, session_name: str, memory: SessionMemoryValue, db_connection: DbmsConnectionInfo
     ) -> InstanceCreateDetails:
         db_instance_id = AuraApi.extract_id(db_connection.uri)
         db_instance = self._aura_api.list_instance(db_instance_id)
@@ -128,7 +138,7 @@ class AuraDsSessions:
         region = self._ds_region(db_instance.region, db_instance.cloud_provider)
 
         create_details = self._aura_api.create_instance(
-            SessionNameHelper.instance_name(session_name), memory.value, db_instance.cloud_provider, region
+            SessionNameHelper.instance_name(session_name), memory, db_instance.cloud_provider, region
         )
         return create_details
 

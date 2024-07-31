@@ -70,13 +70,6 @@ class GraphEntityOpsBaseRunner(UncallableNamespace, IllegalAttrChecker):
         )
 
 
-class GraphElementPropertyRunner(GraphEntityOpsBaseRunner):
-    @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
-    def stream(self, G: Graph, node_properties: str, node_labels: Strings = ["*"], **config: Any) -> DataFrame:
-        self._namespace += ".stream"
-        return self._handle_properties(G, node_properties, node_labels, config)
-
-
 class GraphNodePropertyRunner(GraphEntityOpsBaseRunner):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
     @filter_id_func_deprecation_warning()
@@ -177,7 +170,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         return reduce(add_property, db_node_properties, query_prefix)
 
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
-    def write(self, G: Graph, node_properties: List[str], node_labels: Strings = ["*"], **config: Any) -> "Series[Any]":
+    def write(self, G: Graph, node_properties: Strings, node_labels: Strings = ["*"], **config: Any) -> "Series[Any]":
         self._namespace += ".write"
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
@@ -197,6 +190,16 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         ).squeeze()
 
 
+class GraphRelationshipPropertyRunner(GraphEntityOpsBaseRunner):
+    @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
+    def stream(
+        self, G: Graph, relationship_property: str, relationship_types: Strings = ["*"], **config: Any
+    ) -> DataFrame:
+        self._namespace += ".stream"
+        relationship_types = [relationship_types] if isinstance(relationship_types, str) else relationship_types
+        return self._handle_properties(G, relationship_property, relationship_types, config)
+
+
 class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
     def stream(
@@ -208,6 +211,8 @@ class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
         **config: Any,
     ) -> DataFrame:
         self._namespace += ".stream"
+
+        relationship_types = [relationship_types] if isinstance(relationship_types, str) else relationship_types
 
         result = self._handle_properties(G, relationship_properties, relationship_types, config)
 

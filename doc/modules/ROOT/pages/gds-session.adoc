@@ -56,7 +56,7 @@ This is a `DbmsConnectionInfo` object that contains the URI of an AuraDB instanc
 from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory
 
 name = "my-new-session"
-size = sessions.estimate(
+memory = sessions.estimate(
     node_count=20,
     relationship_count=50,
     algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
@@ -126,10 +126,9 @@ The Cypher query must contain the `gds.graph.project.remote()` function to proje
 gds.graph.project(
     graph_name: str,
     query: str,
-    nodePropertySchema: dict[str, GdsPropertyTypes],
-    relationshipPropertySchema: dict[str, GdsPropertyTypes],
-    undirectedRelationshipTypes: list[str],
-    inverseIndexedRelationshipTypes: list[str],
+    concurrency: int = 4,
+    undirected_relationship_types: Optional[List[str]] = None,
+    inverse_indexed_relationship_types: Optional[List[str]] = None,
 ): (Graph, Series[Any])
 ----
 
@@ -139,8 +138,7 @@ gds.graph.project(
 | Name                            | Optional | Description
 | graph_name                      | no       | Name of the graph.
 | query                           | no       | Projection query.
-| nodePropertySchema              | yes      | Mapping of node property names to their types.
-| relationshipPropertySchema      | yes      | Mapping of relationship property names to their types.
+| concurrency                     | yes      | Concurrency to use for building the graph within the session.
 | undirectedRelationshipTypes     | yes      | List of relationship type names that should be treated as undirected.
 | inverseIndexedRelationshipTypes | yes      | List of relationship type names that should be indexed in reverse.
 |===
@@ -163,15 +161,6 @@ Instead, the graph name is provided to the `gds.graph.project()` endpoint.
 . The `gds.graph.project.remote()` function must be used, instead of the `gds.graph.project()` function.
 
 For full details and examples on how to write Cypher projection queries, see the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/[Cypher projection documentation in the GDS Manual].
-
-
-==== Property schemas
-
-The optional parameters `nodePropertySchema` and `relationshipPropertySchema` are useful when projecting graphs with multiple node labels or relationship types which have distinct property sets (_heterogeneous graphs_).
-
-If these parameters are not provided, the type of each property is inferred from the first row of data seen by the projection function.
-For homogeneous graphs this is usually sufficient, while for heterogeneous graphs it is not.
-For this reason, we recommend to always use the property schema parameters.
 
 
 ==== Relationship type undirectedness and inverse indexing
@@ -223,11 +212,9 @@ With the `gds` GDS Session active, project the graph and specify node and relati
 .Project a graph into the GDS Session:
 [source,python,role=no-test]
 ----
-from graphdatascience.session import GdsPropertyTypes
-
 G, result = gds.graph.project(
-    "my-graph",
-    """
+    graph_name="my-graph",
+    query="""
     CALL {
         MATCH (u1:User)
         OPTIONAL MATCH (u1)-[r:KNOWS]->(u2:User)
@@ -246,8 +233,6 @@ G, result = gds.graph.project(
       relationshipProperties: properties(rel)
     })
     """,
-    nodePropertySchema={"cost": GdsPropertyTypes.DOUBLE},
-    relationshipPropertySchema={"since": GdsPropertyTypes.LONG, "price": GdsPropertyTypes.DOUBLE},
 )
 ----
 
@@ -263,11 +248,17 @@ For instance, you can run the PageRank and FastRP algorithms on the projected gr
 gds.pageRank.mutate(G, mutateProperty="pr")
 gds.fastRP.mutate(G, featureProperties=["pr"], embeddingDimension=2, nodeSelfInfluence=0.1, mutateProperty="embedding")
 
-# Stream the results back together with the `name` property fetched from the database
+# Stream the results back together with the `name` property fetched from the database
 gds.graph.nodeProperties.stream(G, db_node_properties=["name"], node_properties=["pr", "embedding"])
 ----
 
 For a full list of the available algorithms, see the https://neo4j.com/docs/graph-data-science-client/{page-version}/api/[API reference].
+
+
+=== Limitations
+
+Topological Link Prediction algorithms are not yet supported.
+
 
 == Remote write-back
 
@@ -296,5 +287,3 @@ Therefore, you will not be able to call any GDS procedures from the `run_cypher(
 ----
 gds.run_cypher("MATCH (n:User) RETURN n.name, n.embedding")
 ----
-
-

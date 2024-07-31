@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional, Tuple
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from pandas import DataFrame, Series
 
@@ -49,23 +51,29 @@ class TransECreator(UncallableNamespace, IllegalAttrChecker):
 class ModelProcRunner(ModelResolver):
     @client_only_endpoint("gds.model")
     def get(self, model_name: str) -> Model:
+        params = CallParameters(model_name=model_name)
         if self._server_version < ServerVersion(2, 5, 0):
-            query = "CALL gds.beta.model.list($model_name) YIELD modelInfo RETURN modelInfo.modelType AS modelType"
+            endpoint = "gds.beta.model.list"
+            yields = ["modelInfo"]
+            result_25: Series[Any] = self._query_runner.call_procedure(
+                endpoint=endpoint, params=params, yields=yields, custom_error=False
+            ).squeeze()
+            model_type = str(result_25["modelInfo"]["modelType"]) if not result_25.empty else None
         else:
-            query = "CALL gds.model.list($model_name) YIELD modelType"
+            endpoint = "gds.model.list"
+            yields = ["modelType"]
+            result: Union[str, Series[Any]] = self._query_runner.call_procedure(
+                endpoint=endpoint, params=params, yields=yields, custom_error=False
+            ).squeeze()
+            model_type = result if isinstance(result, str) else None
 
-        params = {"model_name": model_name}
-        # FIXME use call procedure + do post processing on the client side
-        result = self._query_runner.run_cypher(query, params, custom_error=False)
-
-        if len(result) == 0:
+        if model_type is None:
             raise ValueError(f"No loaded model named '{model_name}' exists")
 
-        model_type = str(result["modelType"].squeeze())
         return self._resolve_model(model_type, model_name)
 
     @compatible_with("store", min_inclusive=ServerVersion(2, 5, 0))
-    def store(self, model: Model, failIfUnsupportedType: bool = True) -> "Series[Any]":
+    def store(self, model: Model, failIfUnsupportedType: bool = True) -> Series[Any]:
         self._namespace += ".store"
         params = CallParameters(model_name=model.name(), fail_flag=failIfUnsupportedType)
 
@@ -88,7 +96,7 @@ class ModelProcRunner(ModelResolver):
         return self._resolve_model(model_type, model_name)
 
     @compatible_with("load", min_inclusive=ServerVersion(2, 5, 0))
-    def load(self, model_name: str) -> Tuple[Model, "Series[Any]"]:
+    def load(self, model_name: str) -> Tuple[Model, Series[Any]]:
         self._namespace += ".load"
 
         params = CallParameters(model_name=model_name)
@@ -101,7 +109,7 @@ class ModelProcRunner(ModelResolver):
         return proc_runner.get(result["modelName"]), result
 
     @compatible_with("delete", min_inclusive=ServerVersion(2, 5, 0))
-    def delete(self, model: Model) -> "Series[Any]":
+    def delete(self, model: Model) -> Series[Any]:
         self._namespace += ".delete"
         params = CallParameters(model_name=model.name())
         return self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()  # type: ignore
@@ -117,7 +125,7 @@ class ModelProcRunner(ModelResolver):
         return self._query_runner.call_procedure(endpoint=self._namespace, params=params)
 
     @compatible_with("exists", min_inclusive=ServerVersion(2, 5, 0))
-    def exists(self, model_name: str) -> "Series[Any]":
+    def exists(self, model_name: str) -> Series[Any]:
         self._namespace += ".exists"
 
         return self._query_runner.call_procedure(  # type: ignore
@@ -125,7 +133,7 @@ class ModelProcRunner(ModelResolver):
         ).squeeze()
 
     @compatible_with("drop", min_inclusive=ServerVersion(2, 5, 0))
-    def drop(self, model: Model) -> "Series[Any]":
+    def drop(self, model: Model) -> Series[Any]:
         self._namespace += ".drop"
 
         return self._query_runner.call_procedure(  # type: ignore

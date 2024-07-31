@@ -44,6 +44,13 @@ class CollectingQueryRunner(QueryRunner):
 
         return self.run_cypher(query, params, database, custom_error)
 
+    def call_function(self, endpoint: str, params: Optional[CallParameters] = None) -> Any:
+        if params is None:
+            params = CallParameters()
+        query = f"RETURN {endpoint}({params.placeholder_str()})"
+
+        return self.run_cypher(query, params).squeeze()
+
     def run_cypher(
         self, query: str, params: Optional[Dict[str, Any]] = None, db: Optional[str] = None, custom_error: bool = True
     ) -> DataFrame:
@@ -68,9 +75,13 @@ class CollectingQueryRunner(QueryRunner):
         return False
 
     def last_query(self) -> str:
+        if len(self.queries) == 0:
+            return ""
         return self.queries[-1]
 
     def last_params(self) -> Dict[str, Any]:
+        if len(self.params) == 0:
+            return {}
         return self.params[-1]
 
     def set_database(self, database: str) -> None:
@@ -115,10 +126,9 @@ def gds(runner: CollectingQueryRunner) -> Generator[GraphDataScience, None, None
 @pytest.fixture
 def aura_gds(runner: CollectingQueryRunner, mocker: MockerFixture) -> Generator[AuraGraphDataScience, None, None]:
     mocker.patch("graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner.create", return_value=runner)
-    mocker.patch(
-        "graphdatascience.query_runner.aura_db_arrow_query_runner.AuraDbArrowQueryRunner.__new__", return_value=runner
-    )
+    mocker.patch("graphdatascience.query_runner.aura_db_query_runner.AuraDbQueryRunner.__new__", return_value=runner)
     mocker.patch("graphdatascience.query_runner.arrow_query_runner.ArrowQueryRunner.create", return_value=runner)
+    mocker.patch("graphdatascience.query_runner.gds_arrow_client.GdsArrowClient.create", return_value=None)
     aura_gds = AuraGraphDataScience(
         gds_session_connection_info=DbmsConnectionInfo("address", "some", "auth"),
         aura_db_connection_info=DbmsConnectionInfo("address", "some", "auth"),

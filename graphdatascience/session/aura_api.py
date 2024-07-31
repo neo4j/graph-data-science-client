@@ -3,11 +3,12 @@ from __future__ import annotations
 import logging
 import os
 import time
-from typing import Any, List, Optional
+import warnings
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
-import requests as req
-from requests import HTTPError
+import requests
+import requests.auth
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api_responses import (
@@ -19,37 +20,35 @@ from graphdatascience.session.aura_api_responses import (
     TenantDetails,
     WaitResult,
 )
+from graphdatascience.session.session_sizes import SessionMemoryValue
 from graphdatascience.version import __version__
 
 
+class AuraApiError(Exception):
+    def __init__(self, message: str, status_code: int):
+        super().__init__(self, message)
+        self.status_code = status_code
+        self.message = message
+
+
 class AuraApi:
-    class AuraAuthToken:
-        access_token: str
-        expires_in: int
-        token_type: str
-
-        def __init__(self, json: dict[str, Any]) -> None:
-            self.access_token = json["access_token"]
-            expires_in: int = json["expires_in"]
-            self.expires_at = int(time.time()) + expires_in
-            self.token_type = json["token_type"]
-
-        def is_expired(self) -> bool:
-            return self.expires_at >= int(time.time())
-
     def __init__(self, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> None:
-        self._dev_env = os.environ.get("AURA_ENV")
+        self._aura_env = os.environ.get("AURA_ENV")
 
-        if not self._dev_env:
+        if not self._aura_env or self._aura_env == "production":
             self._base_uri = "https://api.neo4j.io"
-        elif self._dev_env == "staging":
+        elif self._aura_env == "staging":
             self._base_uri = "https://api-staging.neo4j.io"
         else:
-            self._base_uri = f"https://api-{self._dev_env}.neo4j-dev.io"
+            self._base_uri = f"https://api-{self._aura_env}.neo4j-dev.io"
 
-        self._credentials = (client_id, client_secret)
-        self._token: Optional[AuraApi.AuraAuthToken] = None
+        self._auth = AuraApi.Auth(oauth_url=f"{self._base_uri}/oauth/token", credentials=(client_id, client_secret))
         self._logger = logging.getLogger()
+
+        self._request_session = requests.Session()
+        self._request_session.headers = {"User-agent": f"neo4j-graphdatascience-v{__version__}"}
+        self._request_session.auth = self._auth
+
         self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
         self._tenant_details: Optional[TenantDetails] = None
 
@@ -62,45 +61,47 @@ class AuraApi:
 
         return host.split(".")[0].split("-")[0]
 
-    def create_session(self, name: str, dbid: str, pwd: str, memory: str) -> SessionDetails:
-        response = req.post(
+    def create_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
+        response = self._request_session.post(
             f"{self._base_uri}/v1beta5/data-science/sessions",
-            headers=self._build_header(),
-            json={"name": name, "instance_id": dbid, "password": pwd, "memory": memory},
+            json={"name": name, "instance_id": dbid, "password": pwd, "memory": memory.value},
         )
 
-        response.raise_for_status()
+        self._check_resp(response)
 
         return SessionDetails.fromJson(response.json())
 
     def list_session(self, session_id: str, dbid: str) -> Optional[SessionDetails]:
-        response = req.get(
+        response = self._request_session.get(
             f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}?instanceId={dbid}",
-            headers=self._build_header(),
         )
 
         if response.status_code == 404:
             return None
 
-        response.raise_for_status()
+        self._check_resp(response)
 
         return SessionDetails.fromJson(response.json())
 
     def list_sessions(self, dbid: str) -> List[SessionDetails]:
-        response = req.get(
+        response = self._request_session.get(
             f"{self._base_uri}/v1beta5/data-science/sessions?instanceId={dbid}",
-            headers=self._build_header(),
         )
 
-        response.raise_for_status()
+        self._check_resp(response)
 
         return [SessionDetails.fromJson(s) for s in response.json()]
 
     def wait_for_session_running(
-        self, session_id: str, dbid: str, sleep_time: float = 0.2, max_sleep_time: float = 300
+        self,
+        session_id: str,
+        dbid: str,
+        sleep_time: float = 0.2,
+        max_sleep_time: float = 10,
+        max_wait_time: float = 300,
     ) -> WaitResult:
         waited_time = 0.0
-        while waited_time <= max_sleep_time:
+        while waited_time < max_wait_time:
             session = self.list_session(session_id, dbid)
             if session is None:
                 return WaitResult.from_error(f"Session `{session_id}` for database `{dbid}` not found -- please retry")
@@ -114,33 +115,36 @@ class AuraApi:
                 )
             waited_time += sleep_time
             time.sleep(sleep_time)
+            sleep_time = min(sleep_time * 2, max_sleep_time, max_wait_time - waited_time)
 
         return WaitResult.from_error(
             f"Session `{session_id}` for database `{dbid}` is not running after {waited_time} seconds"
         )
 
     def delete_session(self, session_id: str, dbid: str) -> bool:
-        response = req.delete(
+        response = self._request_session.delete(
             f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}",
-            headers=self._build_header(),
             json={"instance_id": dbid},
         )
+
+        self._check_endpoint_expiry(response)
 
         if response.status_code == 404:
             return False
         elif response.status_code == 202:
             return True
-
-        response.raise_for_status()
+        self._check_endpoint_expiry(response)
 
         return False
 
-    def create_instance(self, name: str, memory: str, cloud_provider: str, region: str) -> InstanceCreateDetails:
+    def create_instance(
+        self, name: str, memory: SessionMemoryValue, cloud_provider: str, region: str
+    ) -> InstanceCreateDetails:
         tenant_details = self.tenant_details()
 
         data = {
             "name": name,
-            "memory": memory,
+            "memory": memory.value,
             "version": "5",
             "region": region,
             "type": tenant_details.ds_type,
@@ -148,66 +152,48 @@ class AuraApi:
             "cloud_provider": cloud_provider,
         }
 
-        response = req.post(
-            f"{self._base_uri}/v1/instances",
-            json=data,
-            headers=self._build_header(),
-        )
+        response = self._request_session.post(f"{self._base_uri}/v1/instances", json=data)
 
-        try:
-            response.raise_for_status()
-        except HTTPError as e:
-            print(response.json())
-            raise e
+        self._check_resp(response)
 
         return InstanceCreateDetails.from_json(response.json()["data"])
 
     def delete_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
-        response = req.delete(
-            f"{self._base_uri}/v1/instances/{instance_id}",
-            headers=self._build_header(),
-        )
+        response = self._request_session.delete(f"{self._base_uri}/v1/instances/{instance_id}")
 
         if response.status_code == 404:
             return None
 
-        response.raise_for_status()
+        self._check_resp(response)
 
         return InstanceSpecificDetails.fromJson(response.json()["data"])
 
     def list_instances(self) -> List[InstanceDetails]:
-        response = req.get(
-            f"{self._base_uri}/v1/instances",
-            headers=self._build_header(),
-            params={"tenantId": self._tenant_id},
-        )
+        response = self._request_session.get(f"{self._base_uri}/v1/instances", params={"tenantId": self._tenant_id})
 
-        response.raise_for_status()
+        self._check_resp(response)
 
         raw_data = response.json()["data"]
 
         return [InstanceDetails.fromJson(i) for i in raw_data]
 
     def list_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
-        response = req.get(
-            f"{self._base_uri}/v1/instances/{instance_id}",
-            headers=self._build_header(),
-        )
+        response = self._request_session.get(f"{self._base_uri}/v1/instances/{instance_id}")
 
         if response.status_code == 404:
             return None
 
-        response.raise_for_status()
+        self._check_resp(response)
 
         raw_data = response.json()["data"]
 
         return InstanceSpecificDetails.fromJson(raw_data)
 
     def wait_for_instance_running(
-        self, instance_id: str, sleep_time: float = 0.2, max_sleep_time: float = 300
+        self, instance_id: str, sleep_time: float = 0.2, max_sleep_time: float = 10, max_wait_time: float = 300
     ) -> WaitResult:
         waited_time = 0.0
-        while waited_time <= max_sleep_time:
+        while waited_time < max_wait_time:
             instance = self.list_instance(instance_id)
             if instance is None:
                 return WaitResult.from_error("Instance is not found -- please retry")
@@ -223,6 +209,7 @@ class AuraApi:
                 )
             waited_time += sleep_time
             time.sleep(sleep_time)
+            sleep_time = min(sleep_time * 2, max_sleep_time, max_wait_time - waited_time)
 
         return WaitResult.from_error(f"Instance is not running after waiting for {waited_time} seconds")
 
@@ -236,17 +223,14 @@ class AuraApi:
             "instance_type": "dsenterprise",
         }
 
-        response = req.post(f"{self._base_uri}/v1/instances/sizing", headers=self._build_header(), json=data)
-        response.raise_for_status()
+        response = self._request_session.post(f"{self._base_uri}/v1/instances/sizing", json=data)
+        self._check_resp(response)
 
         return EstimationDetails.from_json(response.json()["data"])
 
     def _get_tenant_id(self) -> str:
-        response = req.get(
-            f"{self._base_uri}/v1/tenants",
-            headers=self._build_header(),
-        )
-        response.raise_for_status()
+        response = self._request_session.get(f"{self._base_uri}/v1/tenants")
+        self._check_resp(response)
 
         raw_data = response.json()["data"]
 
@@ -260,36 +244,78 @@ class AuraApi:
 
     def tenant_details(self) -> TenantDetails:
         if not self._tenant_details:
-            response = req.get(
-                f"{self._base_uri}/v1/tenants/{self._tenant_id}",
-                headers=self._build_header(),
-            )
-            response.raise_for_status()
+            response = self._request_session.get(f"{self._base_uri}/v1/tenants/{self._tenant_id}")
+            self._check_resp(response)
             self._tenant_details = TenantDetails.from_json(response.json()["data"])
         return self._tenant_details
 
-    def _build_header(self) -> dict[str, str]:
-        return {"Authorization": f"Bearer {self._auth_token()}", "User-agent": f"neo4j-graphdatascience-v{__version__}"}
+    def _check_resp(self, resp: requests.Response) -> None:
+        self._check_status_code(resp)
+        self._check_endpoint_expiry(resp)
 
-    def _auth_token(self) -> str:
-        if self._token is None or self._token.is_expired():
-            self._token = self._update_token()
-        return self._token.access_token
+    def _check_status_code(self, resp: requests.Response) -> None:
+        if resp.status_code >= 400:
+            raise AuraApiError(
+                f"Request for {resp.url} failed with status code {resp.status_code} - {resp.reason}: {resp.text}",
+                status_code=resp.status_code,
+            )
 
-    def _update_token(self) -> AuraAuthToken:
-        data = {
-            "grant_type": "client_credentials",
-        }
+    def _check_endpoint_expiry(self, resp: requests.Response) -> None:
+        expiry_date = resp.headers.get("X-Tyk-Api-Expires")
+        if expiry_date:
+            warnings.warn(
+                f"The endpoint is deprecated and will be removed on {expiry_date}."
+                " Please update to a newer version of this client.",
+                DeprecationWarning,
+            )
 
-        self._logger.debug("Updating oauth token")
+    class Auth(requests.auth.AuthBase):
+        class Token:
+            access_token: str
+            expires_in: int
+            token_type: str
 
-        response = req.post(
-            f"{self._base_uri}/oauth/token", data=data, auth=(self._credentials[0], self._credentials[1])
-        )
+            def __init__(self, json: Dict[str, Any]) -> None:
+                self.access_token = json["access_token"]
+                self.token_type = json["token_type"]
 
-        response.raise_for_status()
+                expires_in: int = json["expires_in"]
+                refresh_in: int = expires_in if expires_in <= 10 else expires_in - 10
+                # avoid token expiry during request send by refreshing 10 seconds earlier
+                self.refresh_at = int(time.time()) + refresh_in
 
-        return AuraApi.AuraAuthToken(response.json())
+            def should_refresh(self) -> bool:
+                return self.refresh_at <= int(time.time())
 
-    def _instance_type(self) -> str:
-        return "enterprise-ds" if not self._dev_env else "professional-ds"
+        def __init__(self, oauth_url: str, credentials: Tuple[str, str]) -> None:
+            self._token: Optional[AuraApi.Auth.Token] = None
+            self._logger = logging.getLogger()
+            self._oauth_url = oauth_url
+            self._credentials = credentials
+
+        def __call__(self, r: requests.PreparedRequest) -> requests.PreparedRequest:
+            r.headers["Authorization"] = f"Bearer {self._auth_token()}"
+            return r
+
+        def _auth_token(self) -> str:
+            if self._token is None or self._token.should_refresh():
+                self._token = self._update_token()
+            return self._token.access_token
+
+        def _update_token(self) -> AuraApi.Auth.Token:
+            data = {
+                "grant_type": "client_credentials",
+            }
+
+            self._logger.debug("Updating oauth token")
+
+            resp = requests.post(self._oauth_url, data=data, auth=(self._credentials[0], self._credentials[1]))
+
+            if resp.status_code >= 400:
+                raise AuraApiError(
+                    "Failed to authorize with provided client credentials: "
+                    + f"{resp.status_code} - {resp.reason}, {resp.text}",
+                    status_code=resp.status_code,
+                )
+
+            return AuraApi.Auth.Token(resp.json())

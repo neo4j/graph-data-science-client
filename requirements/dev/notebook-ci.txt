@@ -2,8 +2,8 @@ nbconvert==7.11.0
 nbformat==5.9.2
 nbclient==0.9.0
 ipykernel==6.26.0
-scipy == 1.10.1
+scipy == 1.14.0
 torch==2.1.0
 torch-scatter==2.1.1
 torch-sparse==0.6.17
-torch-geometric==2.3.1
+torch-geometric>=2.5.0

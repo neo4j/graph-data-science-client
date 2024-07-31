@@ -2,8 +2,7 @@ from typing import Any, List
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
-from ..graph.graph_object import Graph
-from ..graph.graph_type_check import graph_type_check
+from graphdatascience.utils.util_node_property_func_runner import NodePropertyFuncRunner
 
 
 class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
@@ -39,30 +38,6 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return result.iat[0, 0]  # type: ignore
 
-    @graph_type_check
-    def nodeProperty(self, G: Graph, node_id: int, property_key: str, node_label: str = "*") -> Any:
-        """
-        Get the property of a node with the given id.
-
-        Args:
-            G: The graph to get the node property from.
-            node_id: The id of the node to get the property from.
-            property_key: The key of the property to get.
-            node_label: The label of the node to get the property from.
-
-        Returns:
-            The property of the node with the given id.
-
-        """
-        self._namespace += ".nodeProperty"
-
-        query = f"RETURN {self._namespace}($graph_name, $node_id, $property_key, $node_label) as property"
-        params = {
-            "graph_name": G.name(),
-            "node_id": node_id,
-            "property_key": property_key,
-            "node_label": node_label,
-        }
-        result = self._query_runner.run_cypher(query, params)
-
-        return result.iat[0, 0]
+    @property
+    def nodeProperty(self) -> NodePropertyFuncRunner:
+        return NodePropertyFuncRunner(self._query_runner, self._namespace + ".nodeProperty", self._server_version)

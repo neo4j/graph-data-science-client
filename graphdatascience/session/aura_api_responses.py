@@ -4,8 +4,12 @@ import dataclasses
 import sys
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Any, NamedTuple, Optional, Set
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, NamedTuple, Optional, Set
+
+from pandas import Timedelta
+
+from .session_sizes import SessionMemoryValue
 
 
 @dataclass(repr=True, frozen=True)
@@ -13,29 +17,39 @@ class SessionDetails:
     id: str
     name: str
     instance_id: str
-    memory: str
+    memory: SessionMemoryValue
     status: str
-    host: Optional[str]
-    expiry_date: Optional[datetime]
+    host: str
     created_at: datetime
+    expiry_date: Optional[datetime]
+    ttl: Optional[timedelta]
+    user_id: str
+    tenant_id: str
 
     @classmethod
-    def fromJson(cls, json: dict[str, Any]) -> SessionDetails:
+    def fromJson(cls, json: Dict[str, Any]) -> SessionDetails:
         expiry_date = json.get("expiry_date")
+        ttl: Any | None = json.get("ttl")
 
         return cls(
             id=json["id"],
             name=json["name"],
             instance_id=json["instance_id"],
-            memory=json["memory"],
+            memory=SessionMemoryValue.fromApiResponse(json["memory"]),
             status=json["status"],
-            host=json.get("host"),
+            host=json["host"],
             expiry_date=TimeParser.fromisoformat(expiry_date) if expiry_date else None,
             created_at=TimeParser.fromisoformat(json["created_at"]),
+            ttl=Timedelta(ttl).to_pytimedelta() if ttl else None,  # datetime has no support for parsing timedelta
+            tenant_id=json["tenant_id"],
+            user_id=json["user_id"],
         )
 
     def bolt_connection_url(self) -> str:
-        return f"neo4j+ssc://{self.host}"  # TODO use neo4j+s
+        return f"neo4j+s://{self.host}"
+
+    def is_expired(self) -> bool:
+        return self.status == "Expired"
 
 
 @dataclass(repr=True, frozen=True)
@@ -46,7 +60,7 @@ class InstanceDetails:
     cloud_provider: str
 
     @classmethod
-    def fromJson(cls, json: dict[str, Any]) -> InstanceDetails:
+    def fromJson(cls, json: Dict[str, Any]) -> InstanceDetails:
         return cls(
             id=json["id"],
             name=json["name"],
@@ -59,12 +73,12 @@ class InstanceDetails:
 class InstanceSpecificDetails(InstanceDetails):
     status: str
     connection_url: str
-    memory: str
+    memory: SessionMemoryValue
     type: str
     region: str
 
     @classmethod
-    def fromJson(cls, json: dict[str, Any]) -> InstanceSpecificDetails:
+    def fromJson(cls, json: Dict[str, Any]) -> InstanceSpecificDetails:
         return cls(
             id=json["id"],
             name=json["name"],
@@ -72,7 +86,7 @@ class InstanceSpecificDetails(InstanceDetails):
             cloud_provider=json["cloud_provider"],
             status=json["status"],
             connection_url=json.get("connection_url", ""),
-            memory=json.get("memory", ""),
+            memory=SessionMemoryValue.fromInstanceSize(json.get("memory")),
             type=json["type"],
             region=json["region"],
         )
@@ -86,7 +100,7 @@ class InstanceCreateDetails:
     connection_url: str
 
     @classmethod
-    def from_json(cls, json: dict[str, Any]) -> InstanceCreateDetails:
+    def from_json(cls, json: Dict[str, Any]) -> InstanceCreateDetails:
         fields = dataclasses.fields(cls)
         if any(f.name not in json for f in fields):
             raise RuntimeError(f"Missing required field. Expected `{[f.name for f in fields]}` but got `{json}`")
@@ -101,7 +115,7 @@ class EstimationDetails:
     did_exceed_maximum: bool
 
     @classmethod
-    def from_json(cls, json: dict[str, Any]) -> EstimationDetails:
+    def from_json(cls, json: Dict[str, Any]) -> EstimationDetails:
         fields = dataclasses.fields(cls)
         if any(f.name not in json for f in fields):
             raise RuntimeError(f"Missing required field. Expected `{[f.name for f in fields]}` but got `{json}`")
@@ -126,10 +140,10 @@ class WaitResult(NamedTuple):
 class TenantDetails:
     id: str
     ds_type: str
-    regions_per_provider: dict[str, Set[str]]
+    regions_per_provider: Dict[str, Set[str]]
 
     @classmethod
-    def from_json(cls, json: dict[str, Any]) -> TenantDetails:
+    def from_json(cls, json: Dict[str, Any]) -> TenantDetails:
         regions_per_provider = defaultdict(set)
         instance_types = set()
         ds_type = None

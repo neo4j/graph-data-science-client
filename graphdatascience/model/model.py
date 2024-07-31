@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
@@ -21,34 +23,32 @@ class Model(ABC):
     def _endpoint_prefix(self) -> str:
         pass
 
-    def _list_info(self) -> DataFrame:
+    def _list_info(self) -> Series[Any]:
+        params = CallParameters(name=self.name())
+
+        result: Series[Any]
         if self._server_version < ServerVersion(2, 5, 0):
-            query = "CALL gds.beta.model.list($name)"
+            result = self._query_runner.call_procedure(
+                "gds.beta.model.list", params=params, custom_error=False
+            ).squeeze()
         else:
-            query = """
-                    CALL gds.model.list($name)
-                    YIELD
-                      modelName, modelType, modelInfo,
-                      creationTime, trainConfig, graphSchema,
-                      loaded, stored, published
-                    RETURN
-                      modelName, modelType,
-                      modelInfo {.*, modelName: modelName, modelType: modelType} AS modelInfo,
-                      creationTime, trainConfig, graphSchema,
-                      loaded, stored, published, published AS shared
-                    """
+            result = self._query_runner.call_procedure("gds.model.list", params=params, custom_error=False).squeeze()
 
-        params = {"name": self.name()}
+            if not result.empty:
+                #  2.5 compat format
+                result["modelInfo"] = {
+                    **result["modelInfo"],
+                    "modelName": result["modelName"],
+                    "modelType": result["modelType"],
+                }
+                result["shared"] = result["published"]
 
-        # FIXME use call procedure + do post processing on the client side
-        info = self._query_runner.run_cypher(query, params, custom_error=False)
-
-        if len(info) == 0:
+        if result.empty:
             raise ValueError(f"There is no '{self.name()}' in the model catalog")
 
-        return info
+        return result
 
-    def _estimate_predict(self, predict_mode: str, graph_name: str, config: Dict[str, Any]) -> "Series[Any]":
+    def _estimate_predict(self, predict_mode: str, graph_name: str, config: Dict[str, Any]) -> Series[Any]:
         endpoint = f"{self._endpoint_prefix()}{predict_mode}.estimate"
         config["modelName"] = self.name()
         params = CallParameters(graph_name=graph_name, config=config)
@@ -76,9 +76,9 @@ class Model(ABC):
             The type of the model.
 
         """
-        return self._list_info()["modelInfo"][0]["modelType"]  # type: ignore
+        return self._list_info()["modelInfo"]["modelType"]  # type: ignore
 
-    def train_config(self) -> "Series[Any]":
+    def train_config(self) -> Series[Any]:
         """
         Get the train config of the model.
 
@@ -86,10 +86,10 @@ class Model(ABC):
             The train config of the model.
 
         """
-        train_config: "Series[Any]" = Series(self._list_info()["trainConfig"][0])
+        train_config: Series[Any] = Series(self._list_info()["trainConfig"])
         return train_config
 
-    def graph_schema(self) -> "Series[Any]":
+    def graph_schema(self) -> Series[Any]:
         """
         Get the graph schema of the model.
 
@@ -97,7 +97,7 @@ class Model(ABC):
             The graph schema of the model.
 
         """
-        graph_schema: "Series[Any]" = Series(self._list_info()["graphSchema"][0])
+        graph_schema: Series[Any] = Series(self._list_info()["graphSchema"])
         return graph_schema
 
     def loaded(self) -> bool:
@@ -108,7 +108,7 @@ class Model(ABC):
             True if the model is loaded in memory, False otherwise.
 
         """
-        return self._list_info()["loaded"].squeeze()  # type: ignore
+        return self._list_info()["loaded"]  # type: ignore
 
     def stored(self) -> bool:
         """
@@ -118,7 +118,7 @@ class Model(ABC):
             True if the model is stored on disk, False otherwise.
 
         """
-        return self._list_info()["stored"].squeeze()  # type: ignore
+        return self._list_info()["stored"]  # type: ignore
 
     def creation_time(self) -> Any:  # neo4j.time.DateTime not exported
         """
@@ -128,7 +128,7 @@ class Model(ABC):
             The creation time of the model.
 
         """
-        return self._list_info()["creationTime"].squeeze()
+        return self._list_info()["creationTime"]
 
     def shared(self) -> bool:
         """
@@ -138,7 +138,7 @@ class Model(ABC):
             True if the model is shared, False otherwise.
 
         """
-        return self._list_info()["shared"].squeeze()  # type: ignore
+        return self._list_info()["shared"]  # type: ignore
 
     @compatible_with("published", min_inclusive=ServerVersion(2, 5, 0))
     def published(self) -> bool:
@@ -149,9 +149,9 @@ class Model(ABC):
             True if the model is published, False otherwise.
 
         """
-        return self._list_info()["published"].squeeze()  # type: ignore
+        return self._list_info()["published"]  # type: ignore
 
-    def model_info(self) -> "Series[Any]":
+    def model_info(self) -> Dict[str, Any]:
         """
         Get the model info of the model.
 
@@ -159,7 +159,7 @@ class Model(ABC):
             The model info of the model.
 
         """
-        return Series(self._list_info()["modelInfo"].squeeze())
+        return Series(self._list_info()["modelInfo"])  # type: ignore
 
     def exists(self) -> bool:
         """
@@ -179,7 +179,7 @@ class Model(ABC):
             endpoint=endpoint, params=params, yields=yields, custom_error=False
         ).squeeze()
 
-    def drop(self, failIfMissing: bool = False) -> "Series[Any]":
+    def drop(self, failIfMissing: bool = False) -> Series[Any]:
         """
         Drop the model.
 
@@ -190,27 +190,29 @@ class Model(ABC):
             The result of the drop operation.
 
         """
+        params = CallParameters(model_name=self._name, fail_if_missing=failIfMissing)
         if self._server_version < ServerVersion(2, 5, 0):
-            query = "CALL gds.beta.model.drop($model_name, $fail_if_missing)"
+            return self._query_runner.call_procedure(  # type: ignore
+                "gds.beta.model.drop", params=params, custom_error=False
+            ).squeeze()
         else:
-            query = """
-                    CALL gds.model.drop($model_name, $fail_if_missing)
-                    YIELD
-                      modelName, modelType, modelInfo,
-                      creationTime, trainConfig, graphSchema,
-                      loaded, stored, published
-                    RETURN
-                      modelName, modelType,
-                      modelInfo {.*, modelName: modelName, modelType: modelType} AS modelInfo,
-                      creationTime, trainConfig, graphSchema,
-                      loaded, stored, published, published AS shared
-                    """
+            result: Series[Any] = self._query_runner.call_procedure(
+                "gds.model.drop", params=params, custom_error=False
+            ).squeeze()
 
-        params = {"model_name": self._name, "fail_if_missing": failIfMissing}
-        # FIXME use call procedure + do post processing on the client side
-        return self._query_runner.run_cypher(query, params, custom_error=False).squeeze()  # type: ignore
+            if result.empty:
+                return result
 
-    def metrics(self) -> "Series[Any]":
+            #  modelInfo {.*, modelName: modelName, modelType: modelType} AS modelInfo
+            result["modelInfo"] = {
+                **result["modelInfo"],
+                "modelName": result["modelName"],
+                "modelType": result["modelType"],
+            }
+            result["shared"] = result["published"]
+            return result
+
+    def metrics(self) -> Series[Any]:
         """
         Get the metrics of the model.
 
@@ -218,8 +220,8 @@ class Model(ABC):
             The metrics of the model.
 
         """
-        model_info = self._list_info()["modelInfo"][0]
-        metrics: "Series[Any]" = Series(model_info["metrics"])
+        model_info = self._list_info()["modelInfo"]
+        metrics: Series[Any] = Series(model_info["metrics"])
         return metrics
 
     @graph_type_check
@@ -242,7 +244,7 @@ class Model(ABC):
         return self._query_runner.call_procedure(endpoint=endpoint, params=params, logging=True)
 
     @graph_type_check
-    def predict_stream_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
+    def predict_stream_estimate(self, G: Graph, **config: Any) -> Series[Any]:
         """
         Estimate the prediction on the given graph using the model and stream the results as DataFrame
 
@@ -257,7 +259,7 @@ class Model(ABC):
         return self._estimate_predict("stream", G.name(), config)
 
     @graph_type_check
-    def predict_mutate(self, G: Graph, **config: Any) -> "Series[Any]":
+    def predict_mutate(self, G: Graph, **config: Any) -> Series[Any]:
         """
         Predict on the given graph using the model and mutate the graph with the results.
 
@@ -278,7 +280,7 @@ class Model(ABC):
         ).squeeze()
 
     @graph_type_check
-    def predict_mutate_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
+    def predict_mutate_estimate(self, G: Graph, **config: Any) -> Series[Any]:
         """
         Estimate the memory needed to predict on the given graph using the model.
 
