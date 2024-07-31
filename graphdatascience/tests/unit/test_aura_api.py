@@ -35,15 +35,17 @@ def test_create_session(requests_mock: Mocker) -> None:
     requests_mock.post(
         "https://api.neo4j.io/v1beta5/data-science/sessions",
         json={
-            "id": "id0",
-            "name": "name-0",
-            "status": "Creating",
-            "instance_id": "dbid-1",
-            "created_at": "1970-01-01T00:00:00Z",
-            "host": "1.2.3.4",
-            "memory": "4Gi",
-            "tenant_id": "tenant-0",
-            "user_id": "user-0",
+            "data": {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Creating",
+                "instance_id": "dbid-1",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "1.2.3.4",
+                "memory": "4Gi",
+                "tenant_id": "tenant-0",
+                "user_id": "user-0",
+            }
         },
     )
 
@@ -73,16 +75,18 @@ def test_list_session(requests_mock: Mocker) -> None:
     requests_mock.get(
         "https://api.neo4j.io/v1beta5/data-science/sessions/id0?instanceId=dbid-1",
         json={
-            "id": "id0",
-            "name": "name-0",
-            "status": "Ready",
-            "instance_id": "dbid-1",
-            "created_at": "1970-01-01T00:00:00Z",
-            "host": "1.2.3.4",
-            "memory": "4Gi",
-            "expiry_date": "1977-01-01T00:00:00Z",
-            "tenant_id": "tenant-0",
-            "user_id": "user-0",
+            "data": {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Ready",
+                "instance_id": "dbid-1",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "1.2.3.4",
+                "memory": "4Gi",
+                "expiry_date": "1977-01-01T00:00:00Z",
+                "tenant_id": "tenant-0",
+                "user_id": "user-0",
+            }
         },
     )
 
@@ -109,31 +113,33 @@ def test_list_sessions(requests_mock: Mocker) -> None:
 
     requests_mock.get(
         "https://api.neo4j.io/v1beta5/data-science/sessions?instanceId=dbid-1",
-        json=[
-            {
-                "id": "id0",
-                "name": "name-0",
-                "status": "Ready",
-                "instance_id": "dbid-1",
-                "created_at": "1970-01-01T00:00:00Z",
-                "host": "1.2.3.4",
-                "memory": "4Gi",
-                "expiry_date": "1977-01-01T00:00:00Z",
-                "tenant_id": "tenant-1",
-                "user_id": "user-1",
-            },
-            {
-                "id": "id1",
-                "name": "name-2",
-                "status": "Creating",
-                "instance_id": "dbid-3",
-                "created_at": "2012-01-01T00:00:00Z",
-                "memory": "8Gi",
-                "host": "foo.bar",
-                "tenant_id": "tenant-2",
-                "user_id": "user-2",
-            },
-        ],
+        json={
+            "data": [
+                {
+                    "id": "id0",
+                    "name": "name-0",
+                    "status": "Ready",
+                    "instance_id": "dbid-1",
+                    "created_at": "1970-01-01T00:00:00Z",
+                    "host": "1.2.3.4",
+                    "memory": "4Gi",
+                    "expiry_date": "1977-01-01T00:00:00Z",
+                    "tenant_id": "tenant-1",
+                    "user_id": "user-1",
+                },
+                {
+                    "id": "id1",
+                    "name": "name-2",
+                    "status": "Creating",
+                    "instance_id": "dbid-3",
+                    "created_at": "2012-01-01T00:00:00Z",
+                    "memory": "8Gi",
+                    "host": "foo.bar",
+                    "tenant_id": "tenant-2",
+                    "user_id": "user-2",
+                },
+            ]
+        },
     )
 
     result = api.list_sessions("dbid-1")
@@ -218,16 +224,18 @@ def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCapture
     requests_mock.get(
         "https://api.neo4j.io/v1beta5/data-science/sessions/id0?instanceId=dbid-1",
         json={
-            "id": "id0",
-            "name": "name-0",
-            "status": "Creating",
-            "instance_id": "dbid-1",
-            "created_at": "1970-01-01T00:00:00Z",
-            "host": "foo.bar",
-            "memory": "4Gi",
-            "expiry_date": "1977-01-01T00:00:00Z",
-            "tenant_id": "tenant-1",
-            "user_id": "user-1",
+            "data": {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Creating",
+                "instance_id": "dbid-1",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "foo.bar",
+                "memory": "4Gi",
+                "expiry_date": "1977-01-01T00:00:00Z",
+                "tenant_id": "tenant-1",
+                "user_id": "user-1",
+            }
         },
     )
 
@@ -247,16 +255,18 @@ def test_wait_for_session_running(requests_mock: Mocker) -> None:
     requests_mock.get(
         "https://api.neo4j.io/v1beta5/data-science/sessions/id0?instanceId=db2",
         json={
-            "id": "id0",
-            "name": "name-0",
-            "status": "Ready",
-            "instance_id": "dbid-1",
-            "created_at": "1970-01-01T00:00:00Z",
-            "host": "foo.bar",
-            "memory": "4Gi",
-            "expiry_date": "1977-01-01T00:00:00Z",
-            "tenant_id": "tenant-1",
-            "user_id": "user-1",
+            "data": {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Ready",
+                "instance_id": "dbid-1",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "foo.bar",
+                "memory": "4Gi",
+                "expiry_date": "1977-01-01T00:00:00Z",
+                "tenant_id": "tenant-1",
+                "user_id": "user-1",
+            }
         },
     )
 

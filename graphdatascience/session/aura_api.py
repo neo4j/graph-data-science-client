@@ -69,7 +69,7 @@ class AuraApi:
 
         self._check_resp(response)
 
-        return SessionDetails.fromJson(response.json())
+        return SessionDetails.fromJson(response.json()["data"])
 
     def list_session(self, session_id: str, dbid: str) -> Optional[SessionDetails]:
         response = self._request_session.get(
@@ -81,7 +81,7 @@ class AuraApi:
 
         self._check_resp(response)
 
-        return SessionDetails.fromJson(response.json())
+        return SessionDetails.fromJson(response.json()["data"])
 
     def list_sessions(self, dbid: str) -> List[SessionDetails]:
         response = self._request_session.get(
@@ -90,7 +90,7 @@ class AuraApi:
 
         self._check_resp(response)
 
-        return [SessionDetails.fromJson(s) for s in response.json()]
+        return [SessionDetails.fromJson(s) for s in response.json()["data"]]
 
     def wait_for_session_running(
         self,
