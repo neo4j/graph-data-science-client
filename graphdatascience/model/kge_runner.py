@@ -70,6 +70,7 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         filtered_metrics: bool = False,
         epochs_per_val: int = 0,
         inner_norm: bool = True,
+        random_seed: Optional[int] = None,
         init_bound: Optional[float] = None,
         mlflow_experiment_name: Optional[str] = None,
     ) -> Series:
