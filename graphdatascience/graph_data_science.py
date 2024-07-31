@@ -1,17 +1,13 @@
 from __future__ import annotations
 
-import pathlib
-import sys
 from typing import Any, Dict, Optional, Tuple, Type, Union
 
-import rsa
 from neo4j import Driver
 from pandas import DataFrame
 
 from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
-from .model.kge_runner import KgeRunner
 from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
@@ -86,31 +82,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                 None if arrow is True else arrow,
             )
 
-        if auth is not None:
-            if self._query_runner.encrypted():
-                with open(self._path("graphdatascience.resources.field-testing", "pub.pem"), "rb") as f:
-                    pub_key = rsa.PublicKey.load_pkcs1(f.read())
-                self._encrypted_db_password = rsa.encrypt(auth[1].encode(), pub_key).hex()
-
-        self._compute_cluster_ip = None
-
-        super().__init__(self._query_runner, "gds", self._server_version)
-
-    def set_compute_cluster_ip(self, ip: str) -> None:
-        self._compute_cluster_ip = ip
-
-    @staticmethod
-    def _path(package: str, resource: str) -> pathlib.Path:
-        if sys.version_info >= (3, 9):
-            from importlib.resources import files
-
-            # files() returns a Traversable, but usages require a Path object
-            return pathlib.Path(str(files(package) / resource))
-        else:
-            from importlib.resources import path
-
-            # we dont want to use a context manager here, so we need to call __enter__ manually
-            return path(package, resource).__enter__()
+        super().__init__(self._query_runner, namespace="gds", server_version=self._server_version)
 
     @property
     def graph(self) -> GraphProcRunner:
@@ -127,23 +99,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     @property
     def beta(self) -> BetaEndpoints:
         return BetaEndpoints(self._query_runner, "gds.beta", self._server_version)
-
-    @property
-    def kge(self) -> KgeRunner:
-        if not isinstance(self._query_runner, ArrowQueryRunner):
-            raise ValueError("Running FastPath requires GDS with the Arrow server enabled")
-        if self._compute_cluster_ip is None:
-            raise ValueError(
-                "You must set a valid computer cluster ip with the method `set_compute_cluster_ip` to use this feature"
-            )
-        return KgeRunner(
-            self._query_runner,
-            "gds.kge.model",
-            self._server_version,
-            self._compute_cluster_ip,
-            self._encrypted_db_password if self._query_runner.encrypted() else None,
-            self._query_runner._gds_arrow_client._host + ":" + str(self._query_runner._gds_arrow_client._port),
-        )
 
     def __getattr__(self, attr: str) -> IndirectCallBuilder:
         return IndirectCallBuilder(self._query_runner, f"gds.{attr}", self._server_version)
