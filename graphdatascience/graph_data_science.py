@@ -4,9 +4,11 @@ import pathlib
 import sys
 from typing import Any, Dict, Optional, Tuple, Type, Union
 
-import rsa
 from neo4j import Driver
 from pandas import DataFrame
+
+from graphdatascience.graph.graph_proc_runner import GraphProcRunner
+from graphdatascience.utils.util_proc_runner import UtilProcRunner
 
 from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
@@ -16,8 +18,6 @@ from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
-from graphdatascience.graph.graph_proc_runner import GraphProcRunner
-from graphdatascience.utils.util_proc_runner import UtilProcRunner
 
 
 class GraphDataScience(DirectEndpoints, UncallableNamespace):
@@ -53,11 +53,11 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         database: Optional[str], default None
             The Neo4j database to query against.
         arrow : Union[str, bool], default True
-            Arrow connection information. This is either a bool or a string.
-            If it is a string, it will be interpreted as a connection URL to a GDS Arrow Server.
-            If it is a bool,
-                True will make the client discover the connection URI to the GDS Arrow server via the Neo4j endpoint,
-                while False will make the client use Bolt for all operations.
+           Arrow connection information. This is either a string or a bool.
+            - If it is a string, it will be interpreted as a connection URL to a GDS Arrow Server.
+            - If it is a bool:
+                - True will make the client discover the connection URI to the GDS Arrow server via the Neo4j endpoint.
+                - False will make the client use Bolt for all operations.
         arrow_disable_server_verification : bool, default True
             A flag that overrides other TLS settings and disables server verification for TLS connections.
         arrow_tls_root_certs : Optional[bytes], default None
@@ -91,6 +91,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         #         pub_key = rsa.PublicKey.load_pkcs1(f.read())
         #     self._encrypted_db_password = rsa.encrypt(auth[1].encode(), pub_key).hex()
 
+        self._encrypted_db_password = None
         self._compute_cluster_ip = None
 
         super().__init__(self._query_runner, "gds", self._server_version)

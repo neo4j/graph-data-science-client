@@ -4,7 +4,7 @@ import os
 import time
 from typing import Any, Dict, Optional
 
-import pandas as pd
+import pyarrow
 import requests
 from pandas import DataFrame, Series
 
@@ -32,12 +32,13 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         self._namespace = namespace
         self._server_version = server_version
         self._compute_cluster_web_uri = f"http://{compute_cluster_ip}:5005"
+        self._compute_cluster_arrow_uri = f"grpc://{compute_cluster_ip}:8815"
         self._compute_cluster_mlflow_uri = f"http://{compute_cluster_ip}:8080"
         self._encrypted_db_password = encrypted_db_password
         self._arrow_uri = arrow_uri
 
     @property
-    def model(self):
+    def model(self) -> "KgeRunner":
         return self
 
     # @compatible_with("stream", min_inclusive=ServerVersion(2, 5, 0))
@@ -75,7 +76,7 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         mlflow_experiment_name: Optional[str] = None,
     ) -> Series:
         if epochs_per_checkpoint is None:
-            epochs_per_checkpoint = max(num_epochs / 10, 1)
+            epochs_per_checkpoint = max(int(num_epochs / 10), 1)
         if loss_function_kwargs is None:
             loss_function_kwargs = dict(margin=1.0, adversarial_temperature=1.0, gamma=20.0)
         if lr_scheduler_kwargs is None:
@@ -92,7 +93,7 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         }
         print(algo_config)
 
-        graph_config = {"name": G.name()}
+        graph_config = {"name": G.name(), "config_type": "GdsGraphConfig"}
 
         config = {
             "user_name": "DUMMY_USER",
@@ -133,7 +134,6 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         rel_types: list[str],
         mlflow_experiment_name: Optional[str] = None,
     ) -> DataFrame:
-
         algo_config = {
             "top_k": top_k,
             "node_ids": node_ids,
@@ -144,8 +144,10 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
             "user_name": "DUMMY_USER",
             "task": "KGE_PREDICT_PYG",
             "task_config": {
+                "graph_config": {"config_type": "GdsGraphConfig", "name": "NOGRAPH"},
                 "modelname": model_name,
                 "task_config": algo_config,
+                "stream_rel_results": True,
             },
             "graph_arrow_uri": self._arrow_uri,
         }
@@ -162,7 +164,7 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
 
         self._wait_for_job(job_id)
 
-        return self._stream_results(config["user_name"], config["task_config"]["modelname"], job_id)
+        return self._stream_results(config, job_id)
 
     @client_only_endpoint("gds.kge.model")
     def score_triplets(
@@ -171,7 +173,6 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
         triplets: list[tuple[int, str, int]],
         mlflow_experiment_name: Optional[str] = None,
     ) -> DataFrame:
-
         algo_config = {
             "triplets": triplets,
         }
@@ -180,8 +181,10 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
             "user_name": "DUMMY_USER",
             "task": "KGE_SCORE_TRIPLETS_PYG",
             "task_config": {
+                "graph_config": {"config_type": "GdsGraphConfig", "name": "NOGRAPH"},
                 "modelname": model_name,
                 "task_config": algo_config,
+                "stream_rel_results": True,
             },
             "graph_arrow_uri": self._arrow_uri,
         }
@@ -198,22 +201,20 @@ class KgeRunner(UncallableNamespace, IllegalAttrChecker):
 
         self._wait_for_job(job_id)
 
-        return self._stream_results(config["user_name"], config["task_config"]["modelname"], job_id)
+        return self._stream_results(config, job_id)
 
-    def _stream_results(self, user_name: str, model_name: str, job_id: str) -> DataFrame:
-        res = requests.get(
-            f"{self._compute_cluster_web_uri}/internal/fetch-result",
-            params={"user_name": user_name, "modelname": model_name, "job_id": job_id},
-        )
-        res.raise_for_status()
+    def _stream_results(self, config: dict, job_id: str) -> DataFrame:
+        client = pyarrow.flight.connect(self._compute_cluster_arrow_uri)
 
-        res_file_name = f"res_{job_id}.json"
-        with open(res_file_name, mode="wb+") as f:
-            f.write(res.content)
+        if config["task_config"].get("stream_rel_results", False):
+            upload_descriptor = pyarrow.flight.FlightDescriptor.for_path(f"{job_id}.relationships")
+        else:
+            raise ValueError("No results to fetch: need to set stream_rel_results or stream_graph_results to True")
+        flight = client.get_flight_info(upload_descriptor)
+        reader = client.do_get(flight.endpoints[0].ticket)
+        read_table = reader.read_all()
 
-        df = pd.read_json(res_file_name, orient="records", lines=True)
-        os.remove(res_file_name)
-        return df
+        return read_table.to_pandas()
 
     def _get_metrics(self, user_name: str, model_name: str, job_id: str) -> DataFrame:
         res = requests.get(

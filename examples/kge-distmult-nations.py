@@ -195,11 +195,11 @@ if __name__ == "__main__":
     res = gds.kge.model.train(
         G_train,
         model_name=model_name,
-        scoring_function="distmult",
-        num_epochs=1,
-        embedding_dimension=10,
+        scoring_function="TransE",
+        num_epochs=30,
+        embedding_dimension=64,
         epochs_per_checkpoint=0,
-        epochs_per_val=5,
+        epochs_per_val=0,
         split_ratios={"TRAIN": 0.8, "VALID": 0.1, "TEST": 0.1},
     )
     print(res["metrics"])
@@ -218,7 +218,7 @@ if __name__ == "__main__":
     print(predict_result.to_string())
 
     for index, row in predict_result.iterrows():
-        h = row["head"]
+        h = row["sourceNodeId"]
         r = row["rel"]
         gds.run_cypher(
             f"""
@@ -227,7 +227,7 @@ if __name__ == "__main__":
             MATCH (b:Entity WHERE id(b) = t)
             MERGE (a)-[:NEW_REL_{r}]->(b)
         """,
-            params={"tt": row["tail"]},
+            params={"tt": row["targetNodeIdTopK"]},
         )
 
     brazil_node = gds.find_node_id(["Entity"], {"text": "brazil"})
