@@ -143,6 +143,7 @@ When `filtered_metrics` is set to `True`, the ranking is done among only the tri
 
 [[algorithms-embeddings-kge-syntax]]
 == Syntax
+=== Training
 
 [source, python, role=no-test]
 ----
@@ -267,8 +268,8 @@ When all three keys are present, the sum of values must be equal to 1.0.
 
 | epochs_per_val
 | int
-| 50
-| Number of epochs between validations (must be greater than or equal to 0)
+| 0
+| Number of epochs between validations (must be greater than or equal to 0). If 0, validation is not performed.
 
 | inner_norm
 | bool
@@ -283,7 +284,186 @@ Xavier initializationfootnote:[Xavier Glorot, Yoshua Bengio "Understanding the d
  is used if None.
 |====
 
+=== Prediction
+
+Function `predict` is used to predict the tail entities for a given heads entity and relationship types.
+For each head entity and relationship type, the top `k` tail entities are returned with their scores.
+To get `node_id` for the entities, use the `gds.find_node_id` function.
+
+[source, python, role=no-test]
+----
+predict_result = gds.kge.model.predict(
+    model_name=model_name,
+    top_k=3,
+    node_ids=[node_id1, node_id2, ... ],
+    rel_types=["RELATIONSHIP_TYPE1", "RELATIONSHIP_TYPE2", ... ],
+)
+----
+.Parameters
+[cols="1m,1m,1m,1", options="header"]
+|====
+| Parameter | Type | Default value | Description
+
+| model_name
+| str
+| N/A
+| The name of the model to use for prediction
+
+| top_k
+| int
+| N/A
+| Number of top tail entities to return for each head entity and relationship type
+
+| node_ids
+| list[int]
+| N/A
+| List of node IDs for the head entities
+
+| rel_types
+| list[str]
+| N/A
+| List of relationship types
+
+|====
+
+For every `N` head entities and `M` relationship types, the function returns `N*M` rows
+The result object is pandas DataFrame with the following columns:
+
+.Predict result
+[cols="1m,1m,1", options="header"]
+|====
+| Column name | Type | Description
+
+| sourceNodeId
+| int
+| id of the head entity
+
+| rel
+| str
+| Relationship type
+
+| targetNodeIdTopK
+| list[int]
+| List of suggested `top_k` tail entities, sorted by score
+
+| scoreTopK
+| list[double]
+| List of scores for the suggested tail entities
+
+|====
+
+=== Triplets scoring
+
+Function `score_triplets` is used to compute the scores for the given triplets.
+Triplets are represented as a list of tuples `(head, relation, tail)`, where `head` and `tail` are node IDs and can be obtained using the `gds.find_node_id` function.
+`relation` is a string representing the relationship type.
+[source, python, role=no-test]
+----
+predict_result = gds.kge.model.score_triplets(
+    model_name=model_name,
+    triplets=[(node_id1, "RELATIONSHIP_TYPE1", node_id2), ... ],
+)
+----
+.Parameters
+[cols="1m,1m,1m,1", options="header"]
+|====
+| Parameter | Type | Default value | Description
+
+| model_name
+| str
+| N/A
+| The name of the model to use for prediction
+
+| triplets
+| list[tuple[int, str, int]]
+| N/A
+| List of triplets to score
+
+|====
+
+Score triplets function returns a list of scores where each score corresponds to the score of the triplet at the same index in the input list.
 
 [[algorithms-embeddings-kge-examples]]
 == Examples
-TODO
+
+Let's train the `TransE` model on the `Nations` dataset and predict the tail entities for a given head entity and relationship type.
+Upload the `Nations` dataset into neo4j database and project graph `G_train` for training.
+
+Ensure that projected graph has multiple relationship types by calling `G_train.relationship_types()` function.
+
+[source, python, role=no-test]
+----
+model_name = "my_transe_model"
+
+gds.kge.model.train(
+    G_train,
+    model_name=model_name,
+    scoring_function="transe",
+    num_epochs=30,
+    embedding_dimension=64,
+    split_ratios={"TRAIN": 0.8, "VALID": 0.1, "TEST": 0.1},
+)
+----
+
+This will train the `TransE` model and this model can be used for prediction.
+Prediction of topk tail entities for a given head entity and relationship type can be done as follows:
+
+[source, python, role=no-test]
+----
+brazil_node = gds.find_node_id(["Entity"], {"text": "brazil"})
+uk_node = gds.find_node_id(["Entity"], {"text": "uk"})
+jordan_node = gds.find_node_id(["Entity"], {"text": "jordan"})
+
+predict_result = gds.kge.model.predict(
+    model_name=model_name,
+    top_k=3,
+    node_ids=[brazil_node, uk_node, jordan_node],
+    rel_types=["REL_RELDIPLOMACY", "REL_RELNGO"],
+)
+
+print(predict_result.to_string())
+----
+
+Metrics will be printed after training stage which is computed on the test set.
+[source, python, role=no-test]
+----
+{'mean_rank': 6.062, 'mean_reciprocal_rank': 0.238, 'hits_at_k': 0.742}
+----
+
+
+Result will be a pandas DataFrame with top 3 tail entities and their scores for each head entity and relationship type.
+
+[source, python, role=no-test]
+----
+   sourceNodeId               rel    targetNodeIdTopK                                                        scoreTopK
+0          8115  REL_RELDIPLOMACY  [8109, 8116, 8118]     [-4.326232433319092, -4.508733749389648, -4.542135715484619]
+1          8115        REL_RELNGO  [8109, 8116, 8117]  [-4.3115034103393555, -4.3574066162109375, -4.5306196212768555]
+2          8116  REL_RELDIPLOMACY  [8109, 8116, 8118]    [-5.225207328796387, -5.367417335510254, -5.4092488288879395]
+3          8116        REL_RELNGO  [8109, 8116, 8117]      [-4.960464954376221, -4.990216255187988, -5.14272403717041]
+4          8119  REL_RELDIPLOMACY  [8109, 8120, 8116]    [-4.9556193351745605, -5.094477653503418, -5.164356708526611]
+5          8119        REL_RELNGO  [8109, 8116, 8117]    [-3.9914486408233643, -4.040783882141113, -4.112575054168701]
+----
+
+There is also a function to score the triplets.
+
+[source, python, role=no-test]
+----
+triplets = [
+    (brazil_node, "REL_RELNGO", uk_node),
+    (brazil_node, "REL_RELDIPLOMACY", jordan_node),
+]
+
+scores = gds.kge.model.score_triplets(
+    model_name=model_name,
+    triplets=triplets,
+)
+----
+
+Result will be a dataframe with score for each triplet.
+
+[source, python, role=no-test]
+----
+   sourceNodeId               rel  targetNodeId     score
+0          8115        REL_RELNGO          8116 -4.357407
+1          8115  REL_RELDIPLOMACY          8119 -5.142065
+----
