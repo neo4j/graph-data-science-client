@@ -17,14 +17,17 @@ The Python client supports the following versions of the other three components:
 [opts=header, cols="m,m,m,m"]
 |===
 | Python Client | GDS version  | Python version | Neo4j Python Driver version
+.1+<.^| 1.12
+.1+<.^| >= 2.6, < 2.9
+.3+<.^| >= 3.8, < 3.13
+.2+<.^| >= 4.4.12, < 6.0.0
 
 .1+<.^| 1.11
-.1+<.^| >= 2.6, < 2.8
-.2+<.^| >= 3.8, < 3.13
-.8+<.^| >= 4.4.2, < 6.0.0
+.1+<.^| >= 2.6, < 2.9
 
 .1+<.^| 1.10
 .1+<.^| >= 2.4, < 2.7
+.7+<.^| >= 4.4.2, < 6.0.0
 
 .1+<.^| 1.9
 .2+<.^| >= 2.4, < 2.6
