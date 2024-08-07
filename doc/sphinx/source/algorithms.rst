@@ -812,6 +812,14 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     BFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth
     prior to moving on to the nodes at the next depth level.
 
+.. py:function:: gds.bridges.stream(G: Graph, **config: Any) -> DataFrame
+
+    An algorithm to find Bridge edges in a graph.
+
+.. py:function:: gds.bridges.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    An algorithm to find Bridge edges in a graph.
+
 .. py:function:: gds.closeness.mutate(G: Graph, **config: Any) -> Series[Any]
 
     Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
