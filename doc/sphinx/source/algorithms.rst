@@ -1858,26 +1858,6 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
         * **G** - Graph
 
-.. py:function:: gds.bridges.stream(G: Graph, **config: Any) -> DataFrame
-
-    An algorithm to find Bridge edges in a graph.
-
-    |
-
-    **Parameters:**
-
-        * **G** - Graph
-
-.. py:function:: gds.bridges.stream.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    An algorithm to find Bridge edges in a graph.
-
-    |
-
-    **Parameters:**
-
-        * **G** - Graph
-
 .. py:function:: gds.closeness.mutate(G: Graph, **config: Any) -> Series[Any]
 
     Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
