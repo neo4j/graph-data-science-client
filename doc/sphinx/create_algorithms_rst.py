@@ -60,32 +60,65 @@ def write_param(param, optional):
         return f"        * **{name}** - *(Optional)* {description} *Default*: {default}{default_placeholder}."
     else:
         return f"        * **{name}** - {description}"
+    
+def get_required_conf(config):
+    return [conf for conf in config if not conf["optional"]]
 
-configs = []
+def get_optional_conf(config):
+    return [conf for conf in config if conf["optional"]]
+    
+def enrich_conf_string(config, proc_mode):
+    conf_string = []
+
+    if config and proc_mode == "stream":
+        required = get_required_conf(config)
+        optional = get_optional_conf(config)
+        # TODO: refactor this
+        optional = get_optional_conf(modes[proc_mode]["config"]) + optional
+
+        for conf in required:
+            conf_string.append(conf["name"])
+
+        for conf in optional:
+            conf_name, conf_type, conf_default = conf["name"], conf["type"], conf["default"]
+            # if conf_type == "Float":
+            #     try:
+            #         conf_default = float(conf_default)
+            #     except:
+            #         print(f"{conf_default} not a float")
+            # elif conf_type == "Integer":
+            #     try:
+            #         conf_default = int(conf_default)
+            #     except:
+            #         print(f"{conf_default} not an int")
+            
+            if conf_default == "null":
+                conf_default = None
+            
+            conf_string.append(f"{conf_name}={conf_default}")
+    
+    return conf_string
+
 with open("algorithms-conf.json") as f:
     j = json.load(f)
-    configs = j["algorithms"]
     modes = j["modes"]
+    algorithms = {algo["procedure"]: algo for algo in j["algorithms"] if algo["name"] in INCLUDED_ALGORITHMS}
 
-procedures = {config["procedure"]: config for config in configs if config["name"] in INCLUDED_ALGORITHMS}
+PREAMBLE = """\
+    ..
+        DO NOT EDIT - File generated automatically
+
+    Algorithms procedures
+    ----------------------
+    Listing of all algorithm procedures in the Neo4j Graph Data Science Python Client API.
+    These all assume that an object of :class:`.GraphDataScience` is available as `gds`.
+
+"""
 
 with open("algorithms.json") as f, open("source/algorithms.rst", "w") as fw:
     functions = json.load(f)
 
-    fw.write(
-        dedent(
-            """\
-        ..
-            DO NOT EDIT - File generated automatically
-
-        Algorithms procedures
-        ----------------------
-        Listing of all algorithm procedures in the Neo4j Graph Data Science Python Client API.
-        These all assume that an object of :class:`.GraphDataScience` is available as `gds`.
-
-        """
-        )
-    )
+    fw.write(dedent(PREAMBLE))
 
     for function in functions:
         name, sig, ret_type = (
@@ -94,33 +127,11 @@ with open("algorithms.json") as f, open("source/algorithms.rst", "w") as fw:
             function["function"]["return_type"],
         )
 
+        # Example: gds.triangleCount.stream -> (gds.triangleCount, stream)
+        proc_name, proc_mode = name.rsplit(".", maxsplit=1)
         conf_string = []
-        proc_name = name.rsplit(".", maxsplit=1)
-        if proc_name[0] in procedures and len(procedures[proc_name[0]]["config"]) and proc_name[1] == "stream":
-            required = [conf for conf in procedures[proc_name[0]]["config"] if not conf["optional"]]
-            optional = [conf for conf in procedures[proc_name[0]]["config"] if conf["optional"]]
-            optional = [conf for conf in modes["stream"]["config"] if conf["optional"]] + optional
-
-            for conf in required:
-                conf_string.append(conf["name"])
-
-            for conf in optional:
-                conf_name, conf_type, conf_default = conf["name"], conf["type"], conf["default"]
-                # if conf_type == "Float":
-                #     try:
-                #         conf_default = float(conf_default)
-                #     except:
-                #         print(f"{conf_default} not a float")
-                # elif conf_type == "Integer":
-                #     try:
-                #         conf_default = int(conf_default)
-                #     except:
-                #         print(f"{conf_default} not an int")
-                
-                if conf_default == "null":
-                    conf_default = None
-                
-                conf_string.append(f"{conf_name}={conf_default}")
+        if proc_name in algorithms:
+            conf_string = enrich_conf_string(algorithms[proc_name]["config"], proc_mode)
         
         if conf_string:
             sig_fixed = sig.replace("**config: Any", f"*, {', '.join(conf_string)}")
@@ -152,12 +163,14 @@ with open("algorithms.json") as f, open("source/algorithms.rst", "w") as fw:
             if param_name != "**config":
                 fw.write(f"        * **{param_name}** - {param_type}\n\n")
             else:
-                proc_name = name.rsplit(".", maxsplit=1)
-                if proc_name[0] in procedures and len(procedures[proc_name[0]]["config"]) and proc_name[1] == "stream":
-                    required = [conf for conf in procedures[proc_name[0]]["config"] if not conf["optional"]]
-                    optional = [conf for conf in procedures[proc_name[0]]["config"] if conf["optional"]]
-
-                    optional = [conf for conf in modes["stream"]["config"] if conf["optional"]] + optional
+                proc_name, proc_mode = name.rsplit(".", maxsplit=1)
+                if proc_name in algorithms and len(algorithms[proc_name]["config"]) and proc_mode == "stream":
+                    config = algorithms[proc_name]["config"]
+                    
+                    required = get_required_conf(config)
+                    optional = get_optional_conf(config)
+                    # TODO: refactor this
+                    optional = get_optional_conf(modes[proc_mode]["config"]) + optional
 
                     for conf in required:
                         fw.write(write_param(conf, False) + "\n\n")
