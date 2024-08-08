@@ -1415,6 +1415,22 @@
   },
   {
     "function": {
+      "name": "gds.bridges.stream",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "DataFrame"
+    },
+    "description": "An algorithm to find Bridge edges in a graph."
+  },
+  {
+    "function": {
+      "name": "gds.bridges.stream.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "An algorithm to find Bridge edges in a graph."
+  },
+  {
+    "function": {
       "name": "gds.closeness.mutate",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
