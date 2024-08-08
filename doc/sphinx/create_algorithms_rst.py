@@ -51,6 +51,7 @@ INCLUDED_ALGORITHMS = {
     "HashGNN",
 }
 
+
 def write_param(param, optional):
     name, description, default = conf["name"], conf["description"], conf["default"]
     default_placeholder = f' ({conf["default_placeholder"]})' if "default_placeholder" in conf else ""
@@ -60,13 +61,16 @@ def write_param(param, optional):
         return f"        * **{name}** - *(Optional)* {description} *Default*: {default}{default_placeholder}."
     else:
         return f"        * **{name}** - {description}"
-    
+
+
 def get_required_conf(config):
     return [conf for conf in config if not conf["optional"]]
 
+
 def get_optional_conf(config):
     return [conf for conf in config if conf["optional"]]
-    
+
+
 def enrich_signature(sig, required, optional):
     conf_string = []
 
@@ -85,17 +89,17 @@ def enrich_signature(sig, required, optional):
         #         conf_default = int(conf_default)
         #     except:
         #         print(f"{conf_default} not an int")
-        
+
         if conf_default == "null":
             conf_default = None
-        
+
         conf_string.append(f"{conf_name}={conf_default}")
 
     if conf_string:
         return sig.replace("**config: Any", f"*, {', '.join(conf_string)}")
     else:
         return sig
-    
+
 
 with open("algorithms-conf.json") as f:
     j = json.load(f)
@@ -125,7 +129,7 @@ with open("algorithms.json") as f, open("source/algorithms.rst", "w") as fw:
             function["function"]["return_type"],
         )
 
-        # Example: gds.triangleCount.stream -> (gds.triangleCount, stream)
+        # Example: gds.triangleCount.stream -> (gds.triangleCount, stream)
         proc_name, proc_mode = name.rsplit(".", maxsplit=1)
         required = []
         optional = []
@@ -135,7 +139,7 @@ with open("algorithms.json") as f, open("source/algorithms.rst", "w") as fw:
             config = algorithms[proc_name]["config"]
 
             required = get_required_conf(mode_config) + get_required_conf(config)
-            optional = get_optional_conf(mode_config) + get_optional_conf(config)     
+            optional = get_optional_conf(mode_config) + get_optional_conf(config)
 
         fw.write(f".. py:function:: {name}({enrich_signature(sig, required, optional)}) -> {ret_type}\n\n")
 
@@ -167,6 +171,6 @@ with open("algorithms.json") as f, open("source/algorithms.rst", "w") as fw:
 
                 for conf in optional:
                     fw.write(write_param(conf, True) + "\n\n")
-                    
-                if required or optional:    
+
+                if required or optional:
                     fw.write("\n\n")
