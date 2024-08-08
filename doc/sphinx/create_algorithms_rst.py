@@ -67,37 +67,35 @@ def get_required_conf(config):
 def get_optional_conf(config):
     return [conf for conf in config if conf["optional"]]
     
-def enrich_conf_string(config, proc_mode):
+def enrich_signature(sig, required, optional):
     conf_string = []
 
-    if config and proc_mode == "stream":
-        required = get_required_conf(config)
-        optional = get_optional_conf(config)
-        # TODO: refactor this
-        optional = get_optional_conf(modes[proc_mode]["config"]) + optional
+    for conf in required:
+        conf_string.append(conf["name"])
 
-        for conf in required:
-            conf_string.append(conf["name"])
+    for conf in optional:
+        conf_name, conf_type, conf_default = conf["name"], conf["type"], conf["default"]
+        # if conf_type == "Float":
+        #     try:
+        #         conf_default = float(conf_default)
+        #     except:
+        #         print(f"{conf_default} not a float")
+        # elif conf_type == "Integer":
+        #     try:
+        #         conf_default = int(conf_default)
+        #     except:
+        #         print(f"{conf_default} not an int")
+        
+        if conf_default == "null":
+            conf_default = None
+        
+        conf_string.append(f"{conf_name}={conf_default}")
 
-        for conf in optional:
-            conf_name, conf_type, conf_default = conf["name"], conf["type"], conf["default"]
-            # if conf_type == "Float":
-            #     try:
-            #         conf_default = float(conf_default)
-            #     except:
-            #         print(f"{conf_default} not a float")
-            # elif conf_type == "Integer":
-            #     try:
-            #         conf_default = int(conf_default)
-            #     except:
-            #         print(f"{conf_default} not an int")
-            
-            if conf_default == "null":
-                conf_default = None
-            
-            conf_string.append(f"{conf_name}={conf_default}")
+    if conf_string:
+        return sig.replace("**config: Any", f"*, {', '.join(conf_string)}")
+    else:
+        return sig
     
-    return conf_string
 
 with open("algorithms-conf.json") as f:
     j = json.load(f)
@@ -129,16 +127,17 @@ with open("algorithms.json") as f, open("source/algorithms.rst", "w") as fw:
 
         # Example: gds.triangleCount.stream -> (gds.triangleCount, stream)
         proc_name, proc_mode = name.rsplit(".", maxsplit=1)
-        conf_string = []
-        if proc_name in algorithms:
-            conf_string = enrich_conf_string(algorithms[proc_name]["config"], proc_mode)
-        
-        if conf_string:
-            sig_fixed = sig.replace("**config: Any", f"*, {', '.join(conf_string)}")
-        else:
-            sig_fixed = sig
+        required = []
+        optional = []
 
-        fw.write(f".. py:function:: {name}({sig_fixed}) -> {ret_type}\n\n")
+        if proc_name in algorithms and proc_mode == "stream":
+            mode_config = modes[proc_mode]["config"]
+            config = algorithms[proc_name]["config"]
+
+            required = get_required_conf(mode_config) + get_required_conf(config)
+            optional = get_optional_conf(mode_config) + get_optional_conf(config)     
+
+        fw.write(f".. py:function:: {name}({enrich_signature(sig, required, optional)}) -> {ret_type}\n\n")
 
         if "description" in function:
             description = function["description"].strip()
@@ -163,19 +162,11 @@ with open("algorithms.json") as f, open("source/algorithms.rst", "w") as fw:
             if param_name != "**config":
                 fw.write(f"        * **{param_name}** - {param_type}\n\n")
             else:
-                proc_name, proc_mode = name.rsplit(".", maxsplit=1)
-                if proc_name in algorithms and len(algorithms[proc_name]["config"]) and proc_mode == "stream":
-                    config = algorithms[proc_name]["config"]
+                for conf in required:
+                    fw.write(write_param(conf, False) + "\n\n")
+
+                for conf in optional:
+                    fw.write(write_param(conf, True) + "\n\n")
                     
-                    required = get_required_conf(config)
-                    optional = get_optional_conf(config)
-                    # TODO: refactor this
-                    optional = get_optional_conf(modes[proc_mode]["config"]) + optional
-
-                    for conf in required:
-                        fw.write(write_param(conf, False) + "\n\n")
-
-                    for conf in optional:
-                        fw.write(write_param(conf, True) + "\n\n")
-                        
+                if required or optional:    
                     fw.write("\n\n")
