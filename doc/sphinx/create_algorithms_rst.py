@@ -155,22 +155,22 @@ with open("algorithms.json") as f, open("source/algorithms.rst", "w") as fw:
             fw.write(f".. deprecated:: {version}\n")
             fw.write(f"   {message}\n\n")
 
-        fw.write("    |\n\n")
-        fw.write("    **Parameters:**\n\n")
+        if required or optional:
+            fw.write("    |\n\n")
+            fw.write("    **Parameters:**\n\n")
 
-        for param in sig.split(","):
-            param_name, param_type = param.split(":")
-            param_name = param_name.strip()
-            param_type = param_type.strip()
+            for param in sig.split(","):
+                param_name, param_type = param.split(":")
+                param_name = param_name.strip()
+                param_type = param_type.strip()
 
-            if param_name != "**config":
-                fw.write(f"        * **{param_name}** - {param_type}\n\n")
-            else:
-                for conf in required:
-                    fw.write(write_param(conf, False) + "\n\n")
+                if param_name != "**config":
+                    fw.write(f"        * **{param_name}** - {param_type}\n\n")
+                else:
+                    for conf in required:
+                        fw.write(write_param(conf, False) + "\n\n")
 
-                for conf in optional:
-                    fw.write(write_param(conf, True) + "\n\n")
+                    for conf in optional:
+                        fw.write(write_param(conf, True) + "\n\n")
 
-                if required or optional:
                     fw.write("\n\n")
