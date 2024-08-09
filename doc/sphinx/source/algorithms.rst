@@ -388,6 +388,38 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.articulationPoints.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    Articulation Points is an algorithm that finds nodes that disconnect components if removed.
+
+.. py:function:: gds.articulationPoints.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.articulationPoints.stats(G: Graph, **config: Any) -> Series[Any]
+
+    Articulation Points is an algorithm that finds nodes that disconnect components if removed.
+
+.. py:function:: gds.articulationPoints.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.articulationPoints.stream(G: Graph, **config: Any) -> Series[Any]
+
+    Articulation Points is an algorithm that finds nodes that disconnect components if removed.
+
+.. py:function:: gds.articulationPoints.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.articulationPoints.write(G: Graph, **config: Any) -> Series[Any]
+
+    Articulation Points is an algorithm that finds nodes that disconnect components if removed.
+
+.. py:function:: gds.articulationPoints.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.bellmanFord.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The Bellman-Ford shortest path algorithm computes the shortest (weighted) path between one node
@@ -812,13 +844,13 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     BFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth
     prior to moving on to the nodes at the next depth level.
 
-.. py:function:: gds.bridges.stream(G: Graph, **config: Any) -> DataFrame
+.. py:function:: gds.bridges.stream(G: Graph, **config: Any) -> Series[Any]
 
     An algorithm to find Bridge edges in a graph.
 
 .. py:function:: gds.bridges.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
-    An algorithm to find Bridge edges in a graph.
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.closeness.mutate(G: Graph, **config: Any) -> Series[Any]
 
