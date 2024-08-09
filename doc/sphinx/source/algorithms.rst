@@ -400,7 +400,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Articulation Points is an algorithm that finds nodes that disconnect components if removed.
 
-.. py:function:: gds.articulationPoints.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.articulationPoints.stats.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
 
