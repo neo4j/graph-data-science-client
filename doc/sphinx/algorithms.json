@@ -664,7 +664,7 @@
   },
   {
     "function": {
-      "name": "gds.articulationPoints.stream.estimate",
+      "name": "gds.articulationPoints.stats.estimate",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
