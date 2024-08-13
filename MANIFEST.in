@@ -1,6 +1,7 @@
 include requirements/base/base.txt
 include requirements/base/ogb.txt
 include requirements/base/networkx.txt
+include requirements/base/rust-ext.txt
 include LICENSE
 prune graphdatascience/tests
 prune graphdatascience/resources/cora/serialize_cora.py

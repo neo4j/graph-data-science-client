@@ -1,0 +1,2 @@
+# Should be the same as the `neo4j` reqs in `base.txt`
+neo4j-rust-ext >= 4.4.2, < 6.0

@@ -9,6 +9,9 @@ with open("requirements/base/base.txt", "r", encoding="utf-8") as f:
 with open("requirements/base/ogb.txt", "r", encoding="utf-8") as f:
     ogb_reqs = f.read().splitlines()
 
+with open("requirements/base/rust-ext.txt", "r", encoding="utf-8") as f:
+    rust_ext_reqs = f.read().splitlines()
+
 with open("requirements/base/networkx.txt", "r", encoding="utf-8") as f:
     nx_reqs = f.read().splitlines()
 
@@ -57,5 +60,5 @@ setuptools.setup(
     python_requires=">=3.8",
     install_requires=reqs,
     zip_safe=False,
-    extras_require={"ogb": ogb_reqs, "networkx": nx_reqs},
+    extras_require={"ogb": ogb_reqs, "networkx": nx_reqs, "rust_ext": rust_ext_reqs},
 )
