@@ -71,21 +71,23 @@ class AuraApi:
 
         return SessionDetails.fromJson(response.json()["data"])
 
-    def list_session(self, session_id: str, dbid: str) -> Optional[SessionDetails]:
-        response = self._request_session.get(
-            f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}?instanceId={dbid}",
-        )
-
-        if response.status_code == 404:
-            return None
+    def list_session(self, session_id: str) -> Optional[SessionDetails]:
+        response = self._request_session.get(f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}")
 
         self._check_resp(response)
 
         return SessionDetails.fromJson(response.json()["data"])
 
-    def list_sessions(self, dbid: str) -> List[SessionDetails]:
+    def list_sessions(self, dbid: Optional[str] = None) -> List[SessionDetails]:
+        params = {
+            "tenantId": self._tenant_id,
+        }
+
+        if dbid:
+            params["instanceId"] = dbid
+
         response = self._request_session.get(
-            f"{self._base_uri}/v1beta5/data-science/sessions?instanceId={dbid}",
+            f"{self._base_uri}/v1beta5/data-science/sessions?instanceId={dbid}", params=params
         )
 
         self._check_resp(response)
@@ -95,16 +97,15 @@ class AuraApi:
     def wait_for_session_running(
         self,
         session_id: str,
-        dbid: str,
         sleep_time: float = 0.2,
         max_sleep_time: float = 10,
         max_wait_time: float = 300,
     ) -> WaitResult:
         waited_time = 0.0
         while waited_time < max_wait_time:
-            session = self.list_session(session_id, dbid)
+            session = self.list_session(session_id)
             if session is None:
-                return WaitResult.from_error(f"Session `{session_id}` for database `{dbid}` not found -- please retry")
+                return WaitResult.from_error(f"Session `{session_id}` not found -- please retry")
             elif session.status == "Ready" and session.host:  # check host needed until dns based routing
                 return WaitResult.from_connection_url(session.bolt_connection_url())
             else:
@@ -117,14 +118,11 @@ class AuraApi:
             time.sleep(sleep_time)
             sleep_time = min(sleep_time * 2, max_sleep_time, max_wait_time - waited_time)
 
-        return WaitResult.from_error(
-            f"Session `{session_id}` for database `{dbid}` is not running after {waited_time} seconds"
-        )
+        return WaitResult.from_error(f"Session `{session_id}` is not running after {waited_time} seconds")
 
-    def delete_session(self, session_id: str, dbid: str) -> bool:
+    def delete_session(self, session_id: str) -> bool:
         response = self._request_session.delete(
             f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}",
-            json={"instance_id": dbid},
         )
 
         self._check_endpoint_expiry(response)

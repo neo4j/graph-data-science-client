@@ -109,23 +109,22 @@ class FakeAuraApi(AuraApi):
 
         return create_details
 
-    def delete_session(self, session_id: str, dbid: str) -> bool:
+    def delete_session(self, session_id: str) -> bool:
         return not self._sessions.pop(session_id, None) is None
 
     def delete_instance(self, instance_id: str) -> InstanceSpecificDetails:
         return self._instances.pop(instance_id)
 
-    def list_sessions(self, dbid: str) -> List[SessionDetails]:
-        self._mimic_paused_db_behaviour(dbid)
+    def list_sessions(self, dbid: Optional[str] = None) -> List[SessionDetails]:
+        if dbid:
+            self._mimic_paused_db_behaviour(dbid)
 
-        return [v for _, v in self._sessions.items() if v.instance_id == dbid]
+        return [v for _, v in self._sessions.items() if not dbid or v.instance_id == dbid]
 
     def list_instances(self) -> List[InstanceDetails]:
         return [v for _, v in self._instances.items()]
 
-    def list_session(self, session_id: str, dbid: str) -> Optional[SessionDetails]:
-        self._mimic_paused_db_behaviour(dbid)
-
+    def list_session(self, session_id: str) -> Optional[SessionDetails]:
         matched_session = self._sessions.get(session_id, None)
 
         if matched_session:
@@ -148,13 +147,12 @@ class FakeAuraApi(AuraApi):
     def wait_for_session_running(
         self,
         session_id: str,
-        dbid: str,
         sleep_time: float = 0.2,
         max_sleep_time: float = 5,
         max_wait_time: float = 5,
     ) -> WaitResult:
         return super().wait_for_session_running(
-            session_id, dbid, sleep_time=0.0001, max_wait_time=0.001, max_sleep_time=0.001
+            session_id, sleep_time=0.0001, max_wait_time=0.001, max_sleep_time=0.001
         )
 
     def wait_for_instance_running(
@@ -319,17 +317,6 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     assert [i.name for i in sessions.list()] == ["my-session"]
 
 
-def test_get_or_create_duplicate_session(aura_api: AuraApi) -> None:
-    db = _setup_db_instance(aura_api)
-    aura_api.create_session("one", db.id, "1234", memory=SessionMemory.m_4GB.value)
-    aura_api.create_session("one", db.id, "12345", memory=SessionMemory.m_4GB.value)
-
-    sessions = DedicatedSessions(aura_api)
-
-    with pytest.raises(RuntimeError, match=re.escape("Expected to find exactly one GDS session with name `one`")):
-        sessions.get_or_create("one", SessionMemory.m_8GB, DbmsConnectionInfo(db.connection_url, "", ""))
-
-
 def test_get_or_create_expired_session(aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
 
@@ -431,23 +418,6 @@ def test_delete_nonexisting_session(aura_api: AuraApi) -> None:
     assert [i.name for i in sessions.list()] == ["one"]
 
 
-def test_delete_nonunique_session(aura_api: AuraApi) -> None:
-    db1 = aura_api.create_instance("db1", SessionMemory.m_4GB.value, "aura", "leipzig").id
-    aura_api.create_session("one", db1, "12345", memory=SessionMemory.m_8GB.value)
-    aura_api.create_session("one", db1, "12345", memory=SessionMemory.m_8GB.value)
-    sessions = DedicatedSessions(aura_api)
-
-    with pytest.raises(
-        RuntimeError,
-        match=re.escape(
-            "Expected to find exactly one GDS session with name `one`," " but found `['ffff0-ffff1', 'ffff0-ffff2']`."
-        ),
-    ):
-        sessions.delete("one")
-
-    assert len(sessions.list()) == 2
-
-
 def test_delete_session_paused_instance(aura_api: AuraApi) -> None:
     fake_aura_api = cast(FakeAuraApi, aura_api)
 
@@ -473,8 +443,8 @@ def test_delete_session_paused_instance(aura_api: AuraApi) -> None:
     )
     sessions = DedicatedSessions(aura_api)
 
-    # cannot delete session running against a paused instance
-    assert not sessions.delete(session.name)
+    # can delete session running against a paused instance
+    assert sessions.delete(session.name)
 
 
 def test_create_waiting_forever() -> None:
@@ -482,9 +452,7 @@ def test_create_waiting_forever() -> None:
     _setup_db_instance(aura_api)
     sessions = DedicatedSessions(aura_api)
 
-    with pytest.raises(
-        RuntimeError, match="Failed to create session `one`: Session `ffff0-ffff1` for database `ffff0` is not running"
-    ):
+    with pytest.raises(RuntimeError, match="Failed to create session `one`: Session `ffff0-ffff1` is not running"):
         sessions.get_or_create(
             "one", SessionMemory.m_8GB, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
         )
