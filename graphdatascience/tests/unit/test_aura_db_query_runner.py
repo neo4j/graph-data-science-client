@@ -16,12 +16,12 @@ class FakeArrowClient:
         return "myToken"
 
 
-def test_extracts_parameters_projection() -> None:
+def test_extracts_parameters_projection_v1() -> None:
     version = ServerVersion(2, 7, 0)
     db_query_runner = CollectingQueryRunner(version)
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
+    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False, ["v1"])  # type: ignore
 
     qr.call_procedure(
         endpoint="gds.arrow.project",
@@ -58,12 +58,56 @@ def test_extracts_parameters_projection() -> None:
     }
 
 
-def test_extracts_parameters_algo_write() -> None:
+def test_extracts_parameters_projection_v2() -> None:
     version = ServerVersion(2, 7, 0)
     db_query_runner = CollectingQueryRunner(version)
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
+    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False, ["v2"])  # type: ignore
+
+    qr.call_procedure(
+        endpoint="gds.arrow.project.v2",
+        params=CallParameters(
+            graph_name="g",
+            query="RETURN 1",
+            arrow_configuration={"batchSize": 100},
+            configuration={
+                "concurrency": 2,
+                "undirectedRelationshipTypes": ["FOO"]
+            }
+        ),
+    )
+
+    # doesn't run anything on GDS
+    assert gds_query_runner.last_query() == ""
+    assert gds_query_runner.last_params() == {}
+    assert (
+            db_query_runner.last_query()
+            == "CALL gds.arrow.project.v2($graph_name, $query, $arrow_configuration, $configuration)"
+    )
+    assert db_query_runner.last_params() == {
+        "graph_name": "g",
+        "query": "RETURN 1",
+        "arrow_configuration": {
+            "encrypted": False,
+            "host": "myHost",
+            "port": "1234",
+            "token": "myToken",
+            "batchSize": 100,
+        },
+        "configuration": {
+            "concurrency": 2,
+            "undirectedRelationshipTypes": ["FOO"]
+        }
+    }
+
+
+def test_extracts_parameters_algo_write_v1() -> None:
+    version = ServerVersion(2, 7, 0)
+    db_query_runner = CollectingQueryRunner(version)
+    gds_query_runner = CollectingQueryRunner(version)
+    gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
+    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False, ["v1"])  # type: ignore
 
     qr.call_procedure(endpoint="gds.degree.write", params=CallParameters(graph_name="g", config={"jobId": "my-job"}))
 
@@ -80,6 +124,31 @@ def test_extracts_parameters_algo_write() -> None:
         "databaseName": "dummy",
         "jobId": "my-job",
         "arrowConfiguration": {"encrypted": False, "host": "myHost", "port": "1234", "token": "myToken"},
+    }
+
+
+def test_extracts_parameters_algo_write_v2() -> None:
+    version = ServerVersion(2, 7, 0)
+    db_query_runner = CollectingQueryRunner(version)
+    gds_query_runner = CollectingQueryRunner(version)
+    gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
+    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False, ["v1", "v2"])  # type: ignore
+
+    qr.call_procedure(endpoint="gds.degree.write", params=CallParameters(graph_name="g", config={"jobId": "my-job", "concurrency": 2}))
+
+    assert gds_query_runner.last_query() == "CALL gds.degree.write($graph_name, $config)"
+    assert gds_query_runner.last_params() == {
+        "graph_name": "g",
+        "config": {"jobId": "my-job", "writeToResultStore": True, "concurrency": 2},
+    }
+    assert (
+            db_query_runner.last_query() == "CALL gds.arrow.write.v2($graphName, $jobId, $arrowConfiguration, $configuration)"
+    )
+    assert db_query_runner.last_params() == {
+        "graphName": "g",
+        "jobId": "my-job",
+        "arrowConfiguration": {"encrypted": False, "host": "myHost", "port": "1234", "token": "myToken"},
+        "configuration": {"concurrency": 2}
     }
 
 

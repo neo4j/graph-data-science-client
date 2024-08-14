@@ -20,11 +20,13 @@ class AuraDbQueryRunner(QueryRunner):
         db_query_runner: QueryRunner,
         arrow_client: GdsArrowClient,
         encrypted: bool,
+        protocol_versions: List[str],
     ):
         self._gds_query_runner = gds_query_runner
         self._db_query_runner = db_query_runner
         self._gds_arrow_client = arrow_client
         self._encrypted = encrypted
+        self._protocol_versions = protocol_versions
 
     def run_cypher(
         self,
@@ -50,8 +52,15 @@ class AuraDbQueryRunner(QueryRunner):
         if params is None:
             params = CallParameters()
 
-        if AuraDbQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME == endpoint:
-            return self._remote_projection(endpoint, params, yields, database, logging)
+        if AuraDbQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME in endpoint:
+            if self._endpoint_has_supported_version(endpoint):
+                return self._remote_projection(endpoint, params, yields, database, logging)
+            else:
+                raise RuntimeError(
+                    f"Unsupported procedure: {endpoint}. \
+                    The database supports the following procedure protocol versions: {self._protocol_versions}. \
+                    Please use a matching project procedure."
+                )
 
         elif ".write" in endpoint and self.is_remote_projected_graph(params["graph_name"]):
             return self._remote_write_back(endpoint, params, yields, database, logging, custom_error)
@@ -136,16 +145,23 @@ class AuraDbQueryRunner(QueryRunner):
             endpoint, params, yields, database, logging, custom_error
         )
 
-        db_write_proc_params = {
-            "graphName": params["graph_name"],
-            "databaseName": self._gds_query_runner.database(),
-            "jobId": job_id,
-            "arrowConfiguration": db_arrow_config,
-        }
+        graph_name = params["graph_name"]
+        if "v2" in self._protocol_versions:
+            db_write_proc_params = self._write_back_params_v2(graph_name, job_id, db_arrow_config, params["config"])
+            version_suffix = ".v2"
+        elif "v1" in self._protocol_versions:
+            db_write_proc_params = self._write_back_params_v1(graph_name, job_id, db_arrow_config)
+            version_suffix = ""
+        else:
+            raise RuntimeError(
+                f"Unsupported procedure: {endpoint}. \
+                The database supports the following procedure protocol versions: {self._protocol_versions}. \
+                Please use a matching write procedure."
+            )
 
         write_back_start = time.time()
         database_write_result = self._db_query_runner.call_procedure(
-            "gds.arrow.write", CallParameters(db_write_proc_params), yields, None, False, False
+            f"gds.arrow.write{version_suffix}", CallParameters(db_write_proc_params), yields, None, False, False
         )
         write_millis = (time.time() - write_back_start) * 1000
         gds_write_result["writeMillis"] = write_millis
@@ -161,6 +177,29 @@ class AuraDbQueryRunner(QueryRunner):
 
         return gds_write_result
 
+    def _write_back_params_v2(
+        self, graph_name: str, job_id: str, db_arrow_config: Dict[str, Any], config: Optional[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        configuration = {}
+
+        if "concurrency" in config:
+            configuration["concurrency"] = config["concurrency"]
+
+        return {
+            "graphName": graph_name,
+            "jobId": job_id,
+            "arrowConfiguration": db_arrow_config,
+            "configuration": configuration,
+        }
+
+    def _write_back_params_v1(self, graph_name: str, job_id: str, db_arrow_config: Dict[str, Any]) -> Dict[str, Any]:
+        return {
+            "graphName": graph_name,
+            "databaseName": self._gds_query_runner.database(),
+            "jobId": job_id,
+            "arrowConfiguration": db_arrow_config,
+        }
+
     def _inject_arrow_config(self, params: Dict[str, Any]) -> None:
         host, port = self._gds_arrow_client.connection_info()
         token = self._gds_arrow_client.request_token()
@@ -171,3 +210,14 @@ class AuraDbQueryRunner(QueryRunner):
         params["port"] = port
         params["token"] = token
         params["encrypted"] = self._encrypted
+
+    def _endpoint_has_supported_version(self, endpoint: str) -> bool:
+        for version in self._protocol_versions:
+            if version == "v1":
+                if AuraDbQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME == endpoint:
+                    return True
+            elif version == "v2":
+                if version in endpoint:
+                    return True
+
+        return False
