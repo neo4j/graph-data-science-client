@@ -458,9 +458,27 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.articulationPoints.stream(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.articulationPoints.stream(G: Graph, *, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True) -> Series[Any]
 
     Articulation Points is an algorithm that finds nodes that disconnect components if removed.
+
+    |
+
+    **Parameters:**
+
+        * **G** - Graph
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
+
+
 
 .. py:function:: gds.articulationPoints.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
@@ -946,9 +964,27 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     BFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth
     prior to moving on to the nodes at the next depth level.
 
-.. py:function:: gds.bridges.stream(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.bridges.stream(G: Graph, *, nodeLabels=['*'], relationshipTypes=['*'], concurrency=4, jobId=None, logProgress=True) -> Series[Any]
 
     An algorithm to find Bridge edges in a graph.
+
+    |
+
+    **Parameters:**
+
+        * **G** - Graph
+
+        * **nodeLabels** - *(Optional)* Filter the named graph using the given node labels. Nodes with any of the given labels will be included. *Default*: ['*'].
+
+        * **relationshipTypes** - *(Optional)* Filter the named graph using the given relationship types. Relationships with any of the given types will be included. *Default*: ['*'].
+
+        * **concurrency** - *(Optional)* The number of concurrent threads used for running the algorithm. *Default*: 4.
+
+        * **jobId** - *(Optional)* An ID that can be provided to more easily track the algorithm’s progress. *Default*: None (Generated internally).
+
+        * **logProgress** - *(Optional)* If disabled the progress percentage will not be logged. *Default*: True.
+
+
 
 .. py:function:: gds.bridges.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 

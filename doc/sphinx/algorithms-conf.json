@@ -93,6 +93,12 @@
       "page_path": "algorithms/article-rank/"
     },
     {
+      "name": "Articulation Points",
+      "procedure": "gds.articulationPoints",
+      "config": [],
+      "page_path": "algorithms/articulation-points/"
+    },
+    {
       "name": "Betweenness Centrality",
       "procedure": "gds.betweenness",
       "config": [
@@ -119,6 +125,12 @@
         }
       ],
       "page_path": "algorithms/betweenness-centrality/"
+    },
+    {
+      "name": "Bridges",
+      "procedure": "gds.bridges",
+      "config": [],
+      "page_path": "algorithms/bridges/"
     },
     {
       "name": "CELF",

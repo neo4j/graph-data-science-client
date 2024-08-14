@@ -3,7 +3,9 @@ from textwrap import dedent
 
 INCLUDED_ALGORITHMS = {
     "Article Rank",
+    "Articulation Points",
     "Betweenness Centrality",
+    "Bridges",
     # "CELF",
     # "Closeness Centrality",
     "Degree Centrality",
