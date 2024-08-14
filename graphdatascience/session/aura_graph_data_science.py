@@ -14,6 +14,10 @@ from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.aura_db_query_runner import AuraDbQueryRunner
 from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.query_runner.protocol_version import (
+    ProtocolVersion,
+    ProtocolVersions,
+)
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.utils.util_remote_proc_runner import UtilRemoteProcRunner
@@ -198,15 +202,19 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         """
         self._query_runner.close()
 
-    def _db_protocol_versions(self) -> List[str]:
+    def _db_protocol_versions(self) -> List[ProtocolVersion]:
         """
         Get the protocol versions supported by the AuraDB instance.
         Returns 'v1' if the procedure was not found, which indicates an older version of the database.
         """
         try:
-            return (
-                self._db_query_runner.call_procedure("gds.protocol.versions", yields=["version"])["version"]
-                .to_list()
-            )
+            return [
+                ProtocolVersions.from_str(version_string)
+                for version_string in (
+                    self._db_query_runner.call_procedure("gds.protocol.versions", yields=["version"])[
+                        "version"
+                    ].to_list()
+                )
+            ]
         except SyntaxError:
-            return ["v1"]
+            return [ProtocolVersion.V1]

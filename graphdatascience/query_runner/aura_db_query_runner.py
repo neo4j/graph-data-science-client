@@ -8,6 +8,7 @@ from ..call_parameters import CallParameters
 from ..query_runner.graph_constructor import GraphConstructor
 from ..server_version.server_version import ServerVersion
 from .gds_arrow_client import GdsArrowClient
+from .protocol_version import ProtocolVersion
 from .query_runner import QueryRunner
 
 
@@ -20,7 +21,7 @@ class AuraDbQueryRunner(QueryRunner):
         db_query_runner: QueryRunner,
         arrow_client: GdsArrowClient,
         encrypted: bool,
-        protocol_versions: List[str],
+        protocol_versions: List[ProtocolVersion],
     ):
         self._gds_query_runner = gds_query_runner
         self._db_query_runner = db_query_runner
@@ -129,29 +130,28 @@ class AuraDbQueryRunner(QueryRunner):
         logging: bool = False,
         custom_error: bool = True,
     ) -> DataFrame:
-        if params["config"] is None:
-            params["config"] = {}
+        config = params["config"] if "config" in params else {}
 
         # we pop these out so that they are not retained for the GDS proc call
-        db_arrow_config = params["config"].pop("arrowConfiguration", {})  # type: ignore
+        db_arrow_config = config.pop("arrowConfiguration", {})
         self._inject_arrow_config(db_arrow_config)
 
-        job_id = params["config"]["jobId"] if "jobId" in params["config"] else str(uuid4())  # type: ignore
-        params["config"]["jobId"] = job_id  # type: ignore
+        job_id = config["jobId"] if "jobId" in config else str(uuid4())
+        config["jobId"] = job_id
 
-        params["config"]["writeToResultStore"] = True  # type: ignore
+        config["writeToResultStore"] = True
 
         gds_write_result = self._gds_query_runner.call_procedure(
             endpoint, params, yields, database, logging, custom_error
         )
 
         graph_name = params["graph_name"]
-        if "v2" in self._protocol_versions:
-            db_write_proc_params = self._write_back_params_v2(graph_name, job_id, db_arrow_config, params["config"])
-            version_suffix = ".v2"
-        elif "v1" in self._protocol_versions:
+        if ProtocolVersion.V2 in self._protocol_versions:
+            db_write_proc_params = self._write_back_params_v2(graph_name, job_id, db_arrow_config, config)
+            protocol_version = ProtocolVersion.V2
+        elif ProtocolVersion.V1 in self._protocol_versions:
             db_write_proc_params = self._write_back_params_v1(graph_name, job_id, db_arrow_config)
-            version_suffix = ""
+            protocol_version = ProtocolVersion.V1
         else:
             raise RuntimeError(
                 f"Unsupported procedure: {endpoint}. \
@@ -161,7 +161,12 @@ class AuraDbQueryRunner(QueryRunner):
 
         write_back_start = time.time()
         database_write_result = self._db_query_runner.call_procedure(
-            f"gds.arrow.write{version_suffix}", CallParameters(db_write_proc_params), yields, None, False, False
+            protocol_version.versioned_procedure_name("gds.arrow.write"),
+            CallParameters(db_write_proc_params),
+            yields,
+            None,
+            False,
+            False,
         )
         write_millis = (time.time() - write_back_start) * 1000
         gds_write_result["writeMillis"] = write_millis
@@ -178,7 +183,7 @@ class AuraDbQueryRunner(QueryRunner):
         return gds_write_result
 
     def _write_back_params_v2(
-        self, graph_name: str, job_id: str, db_arrow_config: Dict[str, Any], config: Optional[Dict[str, Any]]
+        self, graph_name: str, job_id: str, db_arrow_config: Dict[str, Any], config: Dict[str, Any]
     ) -> Dict[str, Any]:
         configuration = {}
 
@@ -212,12 +217,4 @@ class AuraDbQueryRunner(QueryRunner):
         params["encrypted"] = self._encrypted
 
     def _endpoint_has_supported_version(self, endpoint: str) -> bool:
-        for version in self._protocol_versions:
-            if version == "v1":
-                if AuraDbQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME == endpoint:
-                    return True
-            elif version == "v2":
-                if version in endpoint:
-                    return True
-
-        return False
+        return any(version.supports_endpoint(endpoint) for version in self._protocol_versions)
