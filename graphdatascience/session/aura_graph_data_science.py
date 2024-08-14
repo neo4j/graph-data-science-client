@@ -1,5 +1,6 @@
 from typing import Any, Callable, Dict, List, Optional
 
+from neo4j.exceptions import Neo4jError
 from pandas import DataFrame
 
 from graphdatascience.call_builder import IndirectCallBuilder
@@ -216,5 +217,5 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
                     ].to_list()
                 )
             ]
-        except SyntaxError:
+        except Neo4jError:
             return [ProtocolVersion.V1]
