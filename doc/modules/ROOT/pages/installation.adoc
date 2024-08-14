@@ -78,8 +78,26 @@ Instead, the Python client may be released independently and one has to consult 
 == Optional dependencies
 
 Some functionality of the `graphdatascience` library requires extra dependencies.
-These dependencies are not installed by default since they are somewhat sizeable, and the functionality they enable is not necessarily something every user of the library needs.
+These dependencies are not installed by default since
+
+* They may be somewhat sizeable, and the functionality they enable is not necessarily something every user of the library needs, or
+* They may require additional system specific installation steps in addition to `pip install`.
+
 Instructions on how to install these extra dependencies and what they enable is outlined in this section.
+
+
+=== Neo4j python driver speedup extension
+
+The `graphdatascience` library utilizes the Neo4j Python Driver under the hood to communicate with Neo4j DBMSs.
+In order to enable the driver speedup given by the https://github.com/neo4j/neo4j-python-driver-rust-ext[Neo4j python driver rust extension], one has to install the optional `rust_ext` dependency:
+
+[source,bash]
+----
+pip install graphdatascience[rust_ext]
+----
+
+Though unlikely, depending on your system, additional steps may be required.
+If this is the case, those steps are outlined in the https://github.com/neo4j/neo4j-python-driver-rust-ext?tab=readme-ov-file#requirements[Neo4j python driver rust extension README].
 
 
 === OGB dataset loading

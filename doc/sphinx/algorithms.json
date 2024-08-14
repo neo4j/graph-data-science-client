@@ -639,6 +639,71 @@
   },
   {
     "function": {
+      "name": "gds.articulationPoints.mutate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Articulation Points is an algorithm that finds nodes that disconnect components if removed."
+  },
+  {
+    "function": {
+      "name": "gds.articulationPoints.mutate.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+
+  {
+    "function": {
+      "name": "gds.articulationPoints.stats",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Articulation Points is an algorithm that finds nodes that disconnect components if removed."
+  },
+  {
+    "function": {
+      "name": "gds.articulationPoints.stats.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
+      "name": "gds.articulationPoints.stream",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Articulation Points is an algorithm that finds nodes that disconnect components if removed."
+  },
+  {
+    "function": {
+      "name": "gds.articulationPoints.stream.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
+      "name": "gds.articulationPoints.write",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Articulation Points is an algorithm that finds nodes that disconnect components if removed."
+  },
+  {
+    "function": {
+      "name": "gds.articulationPoints.write.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
       "name": "gds.bellmanFord.mutate",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
@@ -1412,6 +1477,22 @@
       "return_type": "Series[Any]"
     },
     "description": "BFS is a traversal algorithm, which explores all of the neighbor nodes at the present depth\nprior to moving on to the nodes at the next depth level."
+  },
+  {
+    "function": {
+      "name": "gds.bridges.stream",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "An algorithm to find Bridge edges in a graph."
+  },
+  {
+    "function": {
+      "name": "gds.bridges.stream.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
