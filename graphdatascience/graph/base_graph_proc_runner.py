@@ -517,7 +517,8 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         ).squeeze()
 
     @multimethod
-    def removeNodeProperties(self) -> None: ...
+    def removeNodeProperties(self) -> None:
+        ...
 
     @removeNodeProperties.register
     @graph_type_check

@@ -22,7 +22,9 @@ def test_extracts_parameters_projection_v1() -> None:
     db_query_runner = CollectingQueryRunner(version)
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False, [ProtocolVersion.V1])  # type: ignore
+    qr = AuraDbQueryRunner(
+        gds_query_runner, db_query_runner, FakeArrowClient(), False, [ProtocolVersion.V1]  # type: ignore
+    )
 
     qr.call_procedure(
         endpoint="gds.arrow.project",
@@ -64,7 +66,9 @@ def test_extracts_parameters_projection_v2() -> None:
     db_query_runner = CollectingQueryRunner(version)
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False, [ProtocolVersion.V2])  # type: ignore
+    qr = AuraDbQueryRunner(
+        gds_query_runner, db_query_runner, FakeArrowClient(), False, [ProtocolVersion.V2]  # type: ignore
+    )
 
     qr.call_procedure(
         endpoint="gds.arrow.project.v2",
@@ -102,7 +106,9 @@ def test_extracts_parameters_algo_write_v1() -> None:
     db_query_runner = CollectingQueryRunner(version)
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False, [ProtocolVersion.V1])  # type: ignore
+    qr = AuraDbQueryRunner(
+        gds_query_runner, db_query_runner, FakeArrowClient(), False, [ProtocolVersion.V1]  # type: ignore
+    )
 
     qr.call_procedure(endpoint="gds.degree.write", params=CallParameters(graph_name="g", config={"jobId": "my-job"}))
 
@@ -127,7 +133,13 @@ def test_extracts_parameters_algo_write_v2() -> None:
     db_query_runner = CollectingQueryRunner(version)
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False, [ProtocolVersion.V1, ProtocolVersion.V2])  # type: ignore
+    qr = AuraDbQueryRunner(
+        gds_query_runner,
+        db_query_runner,
+        FakeArrowClient(),  # type: ignore
+        False,
+        [ProtocolVersion.V1, ProtocolVersion.V2],
+    )
 
     qr.call_procedure(
         endpoint="gds.degree.write", params=CallParameters(graph_name="g", config={"jobId": "my-job", "concurrency": 2})
@@ -155,7 +167,9 @@ def test_arrow_and_write_configuration() -> None:
     db_query_runner = CollectingQueryRunner(version)
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False, [ProtocolVersion.V1])  # type: ignore
+    qr = AuraDbQueryRunner(
+        gds_query_runner, db_query_runner, FakeArrowClient(), False, [ProtocolVersion.V1]  # type: ignore
+    )
 
     qr.call_procedure(
         endpoint="gds.degree.write",
@@ -192,7 +206,9 @@ def test_arrow_and_write_configuration_graph_write() -> None:
     db_query_runner = CollectingQueryRunner(version)
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False, [ProtocolVersion.V1])  # type: ignore
+    qr = AuraDbQueryRunner(
+        gds_query_runner, db_query_runner, FakeArrowClient(), False, [ProtocolVersion.V1]  # type: ignore
+    )
 
     qr.call_procedure(
         endpoint="gds.graph.nodeProperties.write",
