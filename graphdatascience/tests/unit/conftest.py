@@ -60,6 +60,9 @@ class CollectingQueryRunner(QueryRunner):
         self.queries.append(query)
         self.params.append(dict(params.items()))
 
+        if query == "CALL gds.protocol.versions() YIELD version":
+            return DataFrame([{"version": "v1"}])
+
         # This "mock" lets us initialize the GDS object without issues.
         return (
             self._mock_result if self._mock_result is not None else DataFrame([{"version": str(self._server_version)}])
