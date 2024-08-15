@@ -81,13 +81,11 @@ class AuraApi:
     def list_sessions(self, dbid: Optional[str] = None) -> List[SessionDetails]:
         params = {
             "tenantId": self._tenant_id,
+            "instanceId": dbid,
         }
 
-        if dbid:
-            params["instanceId"] = dbid
-
         response = self._request_session.get(
-            f"{self._base_uri}/v1beta5/data-science/sessions?instanceId={dbid}", params=params
+            f"{self._base_uri}/v1beta5/data-science/sessions", params=params
         )
 
         self._check_resp(response)
