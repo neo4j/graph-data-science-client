@@ -73,7 +73,7 @@ def test_list_session(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
 
     requests_mock.get(
-        "https://api.neo4j.io/v1beta5/data-science/sessions/id0?instanceId=dbid-1",
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
         json={
             "data": {
                 "id": "id0",
@@ -90,7 +90,7 @@ def test_list_session(requests_mock: Mocker) -> None:
         },
     )
 
-    result = api.list_session("id0", "dbid-1")
+    result = api.list_session("id0")
 
     assert result == SessionDetails(
         id="id0",
@@ -112,7 +112,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
 
     requests_mock.get(
-        "https://api.neo4j.io/v1beta5/data-science/sessions?instanceId=dbid-1",
+        "https://api.neo4j.io/v1beta5/data-science/sessions?tenantId=some-tenant",
         json={
             "data": [
                 {
@@ -142,7 +142,75 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         },
     )
 
-    result = api.list_sessions("dbid-1")
+    result = api.list_sessions()
+
+    expected1 = SessionDetails(
+        id="id0",
+        name="name-0",
+        status="Ready",
+        instance_id="dbid-1",
+        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
+        host="1.2.3.4",
+        memory=SessionMemory.m_4GB.value,
+        expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
+        ttl=None,
+        tenant_id="tenant-1",
+        user_id="user-1",
+    )
+
+    expected2 = SessionDetails(
+        id="id1",
+        name="name-2",
+        status="Creating",
+        instance_id="dbid-3",
+        created_at=TimeParser.fromisoformat("2012-01-01T00:00:00Z"),
+        memory=SessionMemory.m_8GB.value,
+        host="foo.bar",
+        expiry_date=None,
+        ttl=None,
+        tenant_id="tenant-2",
+        user_id="user-2",
+    )
+
+    assert result == [expected1, expected2]
+
+
+def test_list_sessions_with_db_id(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1beta5/data-science/sessions?tenantId=some-tenant&instanceId=dbid",
+        json={
+            "data": [
+                {
+                    "id": "id0",
+                    "name": "name-0",
+                    "status": "Ready",
+                    "instance_id": "dbid-1",
+                    "created_at": "1970-01-01T00:00:00Z",
+                    "host": "1.2.3.4",
+                    "memory": "4Gi",
+                    "expiry_date": "1977-01-01T00:00:00Z",
+                    "tenant_id": "tenant-1",
+                    "user_id": "user-1",
+                },
+                {
+                    "id": "id1",
+                    "name": "name-2",
+                    "status": "Creating",
+                    "instance_id": "dbid-3",
+                    "created_at": "2012-01-01T00:00:00Z",
+                    "memory": "8Gi",
+                    "host": "foo.bar",
+                    "tenant_id": "tenant-2",
+                    "user_id": "user-2",
+                },
+            ]
+        },
+    )
+
+    result = api.list_sessions("dbid")
 
     expected1 = SessionDetails(
         id="id0",
@@ -184,7 +252,7 @@ def test_delete_session(requests_mock: Mocker) -> None:
         status_code=202,
     )
 
-    assert api.delete_session("id0", "dbid-1") is True
+    assert api.delete_session("id0") is True
 
 
 def test_delete_missing_session(requests_mock: Mocker) -> None:
@@ -196,7 +264,7 @@ def test_delete_missing_session(requests_mock: Mocker) -> None:
         status_code=404,
     )
 
-    assert api.delete_session("id0", "dbid-1") is False
+    assert api.delete_session("id0") is False
 
 
 def test_multiple_tenants(requests_mock: Mocker) -> None:
@@ -222,7 +290,7 @@ def test_multiple_tenants(requests_mock: Mocker) -> None:
 def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCaptureFixture) -> None:
     mock_auth_token(requests_mock)
     requests_mock.get(
-        "https://api.neo4j.io/v1beta5/data-science/sessions/id0?instanceId=dbid-1",
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
         json={
             "data": {
                 "id": "id0",
@@ -243,8 +311,8 @@ def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCapture
 
     with caplog.at_level(logging.DEBUG):
         assert (
-            "Session `id0` for database `dbid-1` is not running after 0.7 seconds"
-            in api.wait_for_session_running("id0", "dbid-1", max_wait_time=0.7).error
+            "Session `id0` is not running after 0.7 seconds"
+            in api.wait_for_session_running("id0", max_wait_time=0.7).error
         )
 
     assert "Session `id0` is not yet running. Current status: Creating Host: foo.bar. Retrying in 0.2" in caplog.text
@@ -253,7 +321,7 @@ def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCapture
 def test_wait_for_session_running(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
     requests_mock.get(
-        "https://api.neo4j.io/v1beta5/data-science/sessions/id0?instanceId=db2",
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
         json={
             "data": {
                 "id": "id0",
@@ -272,7 +340,7 @@ def test_wait_for_session_running(requests_mock: Mocker) -> None:
 
     api = AuraApi("", "", tenant_id="some-tenant")
 
-    assert api.wait_for_session_running("id0", "db2") == WaitResult.from_connection_url("neo4j+s://foo.bar")
+    assert api.wait_for_session_running("id0") == WaitResult.from_connection_url("neo4j+s://foo.bar")
 
 
 def test_delete_instance(requests_mock: Mocker) -> None:
@@ -394,7 +462,7 @@ def test_warn_about_expirying_endpoint(requests_mock: Mocker) -> None:
     )
 
     with pytest.warns(DeprecationWarning):
-        api.delete_session("id0", "dbid-1")
+        api.delete_session("id0")
 
 
 def test_auth_token(requests_mock: Mocker) -> None:
