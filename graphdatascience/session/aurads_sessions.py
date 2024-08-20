@@ -14,6 +14,7 @@ from graphdatascience.session.aura_api_responses import (
     InstanceSpecificDetails,
 )
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.region_suggester import closest_match
 from graphdatascience.session.session_info import SessionInfo
@@ -54,7 +55,11 @@ class AuraDsSessions:
         session_name: str,
         memory: SessionMemory,
         db_connection: DbmsConnectionInfo,
+        cloud_location: Optional[CloudLocation] = None,
     ) -> AuraGraphDataScience:
+        if cloud_location:
+            raise ValueError("cloud_location cannot be provided for AuraDS-based sessions.")
+
         existing_session = self._find_existing_session(session_name)
 
         if existing_session:

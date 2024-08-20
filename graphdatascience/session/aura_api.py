@@ -19,6 +19,7 @@ from graphdatascience.session.aura_api_responses import (
     TenantDetails,
     WaitResult,
 )
+from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.session_sizes import SessionMemoryValue
 from graphdatascience.version import __version__
 
@@ -68,10 +69,25 @@ class AuraApi:
             base_uri = f"https://api-{aura_env}.neo4j-dev.io"
         return base_uri
 
-    def create_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
+    def create_attached_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
+        return self._create_session(name, pwd, memory, instance_id=dbid)
+
+    def create_standalone_session(
+        self, name: str, pwd: str, memory: SessionMemoryValue, cloud_location: CloudLocation
+    ) -> SessionDetails:
+        return self._create_session(
+            name,
+            pwd,
+            memory,
+            tenant_id=self._tenant_id,
+            cloud_provider=cloud_location.provider,
+            region=cloud_location.region,
+        )
+
+    def _create_session(self, name: str, pwd: str, memory: SessionMemoryValue, **kwargs: Any) -> SessionDetails:
         response = self._request_session.post(
             f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions",
-            json={"name": name, "instance_id": dbid, "password": pwd, "memory": memory.value},
+            json={"name": name, "password": pwd, "memory": memory.value, **kwargs},
         )
 
         self._check_resp(response)

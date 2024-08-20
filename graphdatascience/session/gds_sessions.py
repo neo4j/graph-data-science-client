@@ -8,6 +8,7 @@ from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.aurads_sessions import AuraDsSessions
+from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.dedicated_sessions import DedicatedSessions
 from graphdatascience.session.session_info import SessionInfo
@@ -76,7 +77,9 @@ class GdsSessions:
         self,
         session_name: str,
         memory: SessionMemory,
+        # TODO support TTL and cloud_location
         db_connection: DbmsConnectionInfo,
+        cloud_location: Optional[CloudLocation] = None,
     ) -> AuraGraphDataScience:
         """
         Retrieves an existing session with the given session name and database connection,
@@ -90,7 +93,7 @@ class GdsSessions:
         Returns:
             AuraGraphDataScience: The session.
         """
-        return self._impl.get_or_create(session_name, memory, db_connection)
+        return self._impl.get_or_create(session_name, memory, db_connection, cloud_location=cloud_location)
 
     def delete(self, session_name: str) -> bool:
         """

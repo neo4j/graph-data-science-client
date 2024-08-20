@@ -8,6 +8,7 @@ __all__ = [
     "GdsSessions",
     "SessionInfo",
     "DbmsConnectionInfo",
+    "CloudLocation",
     "AuraAPICredentials",
     "SessionMemory",
     "SessionMemoryValue",
