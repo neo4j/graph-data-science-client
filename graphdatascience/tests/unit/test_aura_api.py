@@ -171,7 +171,7 @@ def test_list_session(requests_mock: Mocker) -> None:
         },
     )
 
-    result = api.list_session("id0")
+    result = api.get_session("id0")
 
     assert result == SessionDetails(
         id="id0",
@@ -874,7 +874,7 @@ def test_parse_session_info() -> None:
         "tenant_id": "tenant-1",
         "user_id": "user-1",
     }
-    session_info = SessionDetails.fromJson(session_details)
+    session_info = SessionDetails.from_json(session_details)
 
     assert session_info == SessionDetails(
         id="test_id",
@@ -903,7 +903,7 @@ def test_parse_session_info_without_optionals() -> None:
         "tenant_id": "tenant-1",
         "user_id": "user-1",
     }
-    session_info = SessionDetails.fromJson(session_details)
+    session_info = SessionDetails.from_json(session_details)
 
     assert session_info == SessionDetails(
         id="test_id",

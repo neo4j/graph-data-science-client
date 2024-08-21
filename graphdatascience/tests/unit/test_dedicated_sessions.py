@@ -146,7 +146,7 @@ class FakeAuraApi(AuraApi):
     def list_instances(self) -> List[InstanceDetails]:
         return [v for _, v in self._instances.items()]
 
-    def list_session(self, session_id: str) -> Optional[SessionDetails]:
+    def get_session(self, session_id: str) -> Optional[SessionDetails]:
         matched_session = self._sessions.get(session_id, None)
 
         if matched_session:
