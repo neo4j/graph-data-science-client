@@ -151,7 +151,7 @@ class DedicatedSessions:
         self, existing_session: SessionDetails, requested_memory: SessionMemoryValue
     ) -> None:
         if existing_session.memory != requested_memory:
-            raise RuntimeError(
+            raise ValueError(
                 f"Session `{existing_session.name}` exists with a different memory configuration. "
                 f"Current: {existing_session.memory}, Requested: {requested_memory}."
             )
@@ -159,7 +159,7 @@ class DedicatedSessions:
     def _check_dbid(self, existing_session: SessionDetails, dbid: str) -> None:
         # we cannot distinguish for self-managed DBs as we dont store the db-uri in the session
         if existing_session.instance_id and existing_session.instance_id != dbid:
-            raise RuntimeError(
+            raise ValueError(
                 f"Session `{existing_session.name}` exists against a different AuraDB. "
                 f"Current: `{existing_session.instance_id}`, Requested: `{dbid}`."
             )

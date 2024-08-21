@@ -440,7 +440,7 @@ def test_get_or_create_with_different_memory_config(aura_api: AuraApi) -> None:
     )
 
     with pytest.raises(
-        RuntimeError,
+        ValueError,
         match=re.escape("Session `one` exists with a different memory configuration. Current: 8GB, Requested: 16GB."),
     ):
         sessions = DedicatedSessions(aura_api)
@@ -503,9 +503,9 @@ def test_get_or_create_for_existing_session_with_different_dbid(aura_api: AuraAp
     )
 
     with pytest.raises(
-        RuntimeError,
+        ValueError,
         match=re.escape(
-            f"Session `one` exists against a different DB. Current: `different-db-id`, Requested: `{db.id}`."
+            f"Session `one` exists against a different AuraDB. Current: `different-db-id`, Requested: `{db.id}`."
         ),
     ):
         sessions = DedicatedSessions(aura_api)
