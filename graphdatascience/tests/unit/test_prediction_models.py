@@ -1,12 +1,13 @@
 import pytest
 
-from .conftest import CollectingQueryRunner
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.model.link_prediction_model import LPModel
 from graphdatascience.model.model import Model
 from graphdatascience.model.node_classification_model import NCModel
 from graphdatascience.model.node_regression_model import NRModel
+
+from .conftest import CollectingQueryRunner
 
 PIPE_NAME = "pipe"
 

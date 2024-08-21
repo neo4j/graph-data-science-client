@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from pandas import DataFrame, Series
 
+from ..call_parameters import CallParameters
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
@@ -13,7 +14,6 @@ from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
 from .model import Model
 from .model_resolver import ModelResolver
-from graphdatascience.call_parameters import CallParameters
 
 
 class DistMultCreator(UncallableNamespace, IllegalAttrChecker):

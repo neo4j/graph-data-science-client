@@ -7,9 +7,9 @@ from uuid import uuid4
 
 from pandas import DataFrame, concat
 
+from ..server_version.server_version import ServerVersion
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
-from graphdatascience.server_version.server_version import ServerVersion
 
 
 class CypherProjectionApi:

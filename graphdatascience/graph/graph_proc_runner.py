@@ -1,6 +1,6 @@
+from .base_graph_proc_runner import BaseGraphProcRunner
+from .graph_cypher_runner import GraphCypherRunner
 from .graph_project_runner import GraphProjectRunner
-from graphdatascience.graph.base_graph_proc_runner import BaseGraphProcRunner
-from graphdatascience.graph.graph_cypher_runner import GraphCypherRunner
 
 
 class GraphProcRunner(BaseGraphProcRunner):

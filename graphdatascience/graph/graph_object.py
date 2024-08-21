@@ -5,9 +5,9 @@ from typing import Any, List, Optional, Type, Union
 
 from pandas import Series
 
+from ..call_parameters import CallParameters
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
-from graphdatascience.call_parameters import CallParameters
 
 
 class Graph:

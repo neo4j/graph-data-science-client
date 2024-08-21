@@ -1,10 +1,10 @@
 from typing import Any, Dict, Optional
 
-from ..error.illegal_attr_checker import IllegalAttrChecker
-from ..error.uncallable_namespace import UncallableNamespace
-from graphdatascience.error.cypher_warning_handler import (
+from ..error.cypher_warning_handler import (
     filter_id_func_deprecation_warning,
 )
+from ..error.illegal_attr_checker import IllegalAttrChecker
+from ..error.uncallable_namespace import UncallableNamespace
 
 
 class TopologicalLPAlphaRunner(UncallableNamespace, IllegalAttrChecker):

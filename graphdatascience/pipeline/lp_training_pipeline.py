@@ -2,10 +2,10 @@ from typing import Any
 
 from pandas import DataFrame, Series
 
+from ..call_parameters import CallParameters
 from ..model.link_prediction_model import LPModel
 from ..query_runner.query_runner import QueryRunner
 from .classification_training_pipeline import ClassificationTrainingPipeline
-from graphdatascience.call_parameters import CallParameters
 
 
 class LPTrainingPipeline(ClassificationTrainingPipeline[LPModel]):

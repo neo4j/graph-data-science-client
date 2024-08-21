@@ -1,8 +1,9 @@
 import pytest
 
-from .conftest import CollectingQueryRunner
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
+
+from .conftest import CollectingQueryRunner
 
 
 def test_listProgress(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:

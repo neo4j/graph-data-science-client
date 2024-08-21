@@ -8,12 +8,6 @@ build-backend = "setuptools.build_meta"
 [tool.ruff]
 line-length = 120
 
-select = [
-    "E4", "E7", "E9", # default pycodestyle rules
-    "F", # flake8
-    "I" # isort
-]
-
 include = ["*.py", "*.py"]
 
 exclude = [
@@ -53,6 +47,9 @@ exclude = [
     "build",
 ]
 
-[tool.ruff.lint.isort]
-known-first-party = ["graphdatascience"]
-known-local-folder = ["graphdatascience"]
+[tool.ruff.lint]
+select = [
+    "E4", "E7", "E9", # default pycodestyle rules
+    "F", # flake8
+    "I" # isort
+]

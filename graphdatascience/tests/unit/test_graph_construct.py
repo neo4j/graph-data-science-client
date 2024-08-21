@@ -1,9 +1,10 @@
 import pytest
 from pandas import DataFrame
 
-from .conftest import CollectingQueryRunner
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
+
+from .conftest import CollectingQueryRunner
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])

@@ -2,9 +2,10 @@ import pytest
 from pandas import DataFrame
 from pyarrow.flight import FlightUnavailableError
 
-from .conftest import CollectingQueryRunner
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
+
+from .conftest import CollectingQueryRunner
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 6, 0)])
