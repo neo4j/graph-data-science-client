@@ -210,7 +210,6 @@ class AuraDbQueryRunner(QueryRunner):
 
         # we pop these out so that they are not retained for the GDS proc call
         db_arrow_config = config.pop("arrowConfiguration", {})
-        self._inject_arrow_config(db_arrow_config)
 
         job_id = config["jobId"] if "jobId" in config else str(uuid4())
         config["jobId"] = job_id
@@ -221,12 +220,14 @@ class AuraDbQueryRunner(QueryRunner):
             endpoint, params, yields, database, logging, custom_error
         )
 
+        self._inject_arrow_config(db_arrow_config)
+
         graph_name = params["graph_name"]
         if ProtocolVersion.V2 in self._server_protocol_versions:
             db_write_proc_params = self._write_back_params_v2(graph_name, job_id, db_arrow_config, config)
             protocol_version = ProtocolVersion.V2
         elif ProtocolVersion.V1 in self._server_protocol_versions:
-            db_write_proc_params = self._write_back_params_v1(graph_name, job_id, db_arrow_config)
+            db_write_proc_params = self._write_back_params_v1(graph_name, self._gds_query_runner.database(), job_id, db_arrow_config)
             protocol_version = ProtocolVersion.V1
         else:
             raise RuntimeError(
@@ -238,7 +239,7 @@ class AuraDbQueryRunner(QueryRunner):
         write_back_start = time.time()
         database_write_result = self._db_query_runner.call_procedure(
             protocol_version.versioned_procedure_name("gds.arrow.write"),
-            CallParameters(db_write_proc_params),
+            db_write_proc_params,
             yields,
             None,
             False,
@@ -261,26 +262,27 @@ class AuraDbQueryRunner(QueryRunner):
     @staticmethod
     def _write_back_params_v2(
         graph_name: str, job_id: str, db_arrow_config: Dict[str, Any], config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    ) -> CallParameters:
         configuration = {}
 
         if "concurrency" in config:
             configuration["concurrency"] = config["concurrency"]
 
-        return {
-            "graphName": graph_name,
-            "jobId": job_id,
-            "arrowConfiguration": db_arrow_config,
-            "configuration": configuration,
-        }
+        return CallParameters(
+            graphName=graph_name,
+            jobId=job_id,
+            arrowConfiguration=db_arrow_config,
+            configuration=configuration,
+        )
 
-    def _write_back_params_v1(self, graph_name: str, job_id: str, db_arrow_config: Dict[str, Any]) -> Dict[str, Any]:
-        return {
-            "graphName": graph_name,
-            "databaseName": self._gds_query_runner.database(),
-            "jobId": job_id,
-            "arrowConfiguration": db_arrow_config,
-        }
+    @staticmethod
+    def _write_back_params_v1(graph_name: str, database_name: str, job_id: str, db_arrow_config: Dict[str, Any]) -> CallParameters:
+        return CallParameters(
+            graphName=graph_name,
+            databaseName=database_name,
+            jobId=job_id,
+            arrowConfiguration=db_arrow_config,
+        )
 
     def _inject_arrow_config(self, params: Dict[str, Any]) -> None:
         host, port = self._gds_arrow_client.connection_info()
