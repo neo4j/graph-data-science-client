@@ -119,7 +119,80 @@ class AuraDbQueryRunner(QueryRunner):
         logging: bool = False,
     ) -> DataFrame:
         self._inject_arrow_config(params["arrow_configuration"])
-        return self._db_query_runner.call_procedure(endpoint, params, yields, database, logging, False)
+
+        graph_name = params["graph_name"]
+        query = params["query"]
+        concurrency = params["concurrency"]
+        arrow_config = params["arrow_configuration"]
+        undirected_relationship_types = params["undirected_relationship_types"]
+        inverse_indexed_relationship_types = params["inverse_indexed_relationship_types"]
+
+        if ProtocolVersion.V2.supports_endpoint(endpoint):
+            remote_project_proc_params = self._project_params_v2(
+                graph_name,
+                query,
+                concurrency,
+                arrow_config,
+                undirected_relationship_types,
+                inverse_indexed_relationship_types,
+            )
+        elif ProtocolVersion.V1.supports_endpoint(endpoint):
+            remote_project_proc_params = self._project_params_v1(
+                graph_name,
+                query,
+                concurrency,
+                arrow_config,
+                undirected_relationship_types,
+                inverse_indexed_relationship_types,
+            )
+        else:
+            raise RuntimeError(
+                f"Unsupported procedure: `{endpoint}`. \
+                    This client does not support the procedure protocol versions of the database.\
+                    Please update the GDS Python Client to a newer version."
+            )
+
+        return self._db_query_runner.call_procedure(
+            endpoint, remote_project_proc_params, yields, database, logging, False
+        )
+
+    @staticmethod
+    def _project_params_v2(
+        graph_name: str,
+        query: str,
+        concurrency: int,
+        arrow_config: Dict[str, Any],
+        undirected_relationship_types: List[str],
+        inverse_indexed_relationship_types: List[str],
+    ) -> CallParameters:
+        return CallParameters(
+            graph_name=graph_name,
+            query=query,
+            arrow_configuration=arrow_config,
+            configuration={
+                "concurrency": concurrency,
+                "undirectedRelationshipTypes": undirected_relationship_types,
+                "inverseIndexedRelationshipTypes": inverse_indexed_relationship_types,
+            },
+        )
+
+    @staticmethod
+    def _project_params_v1(
+        graph_name: str,
+        query: str,
+        concurrency: int,
+        arrow_config: Dict[str, Any],
+        undirected_relationship_types: Optional[List[str]],
+        inverse_indexed_relationship_types: Optional[List[str]],
+    ) -> CallParameters:
+        return CallParameters(
+            graph_name=graph_name,
+            query=query,
+            concurrency=concurrency,
+            undirected_relationship_types=undirected_relationship_types,
+            inverse_indexed_relationship_types=inverse_indexed_relationship_types,
+            arrow_configuration=arrow_config,
+        )
 
     def _remote_write_back(
         self,
@@ -185,8 +258,9 @@ class AuraDbQueryRunner(QueryRunner):
 
         return gds_write_result
 
+    @staticmethod
     def _write_back_params_v2(
-        self, graph_name: str, job_id: str, db_arrow_config: Dict[str, Any], config: Dict[str, Any]
+        graph_name: str, job_id: str, db_arrow_config: Dict[str, Any], config: Dict[str, Any]
     ) -> Dict[str, Any]:
         configuration = {}
 

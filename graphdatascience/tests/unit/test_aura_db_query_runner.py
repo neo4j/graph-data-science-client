@@ -32,8 +32,8 @@ def test_extracts_parameters_projection_v1() -> None:
             graph_name="g",
             query="RETURN 1",
             concurrency=2,
-            undirRels=[],
-            inverseRels=[],
+            undirected_relationship_types=[],
+            inverse_indexed_relationship_types=[],
             arrow_configuration={"batchSize": 100},
         ),
     )
@@ -43,14 +43,15 @@ def test_extracts_parameters_projection_v1() -> None:
     assert gds_query_runner.last_params() == {}
     assert (
         db_query_runner.last_query()
-        == "CALL gds.arrow.project($graph_name, $query, $concurrency, $undirRels, $inverseRels, $arrow_configuration)"
+        == "CALL gds.arrow.project($graph_name, $query, $concurrency, \
+        $undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_configuration)"
     )
     assert db_query_runner.last_params() == {
         "graph_name": "g",
         "query": "RETURN 1",
         "concurrency": 2,
-        "undirRels": [],
-        "inverseRels": [],
+        "undirected_relationship_types": [],
+        "inverse_indexed_relationship_types": [],
         "arrow_configuration": {
             "encrypted": False,
             "host": "myHost",
@@ -75,8 +76,10 @@ def test_extracts_parameters_projection_v2() -> None:
         params=CallParameters(
             graph_name="g",
             query="RETURN 1",
+            concurrency=2,
+            undirected_relationship_types=["FOO"],
+            inverse_indexed_relationship_types=[],
             arrow_configuration={"batchSize": 100},
-            configuration={"concurrency": 2, "undirectedRelationshipTypes": ["FOO"]},
         ),
     )
 
@@ -97,7 +100,11 @@ def test_extracts_parameters_projection_v2() -> None:
             "token": "myToken",
             "batchSize": 100,
         },
-        "configuration": {"concurrency": 2, "undirectedRelationshipTypes": ["FOO"]},
+        "configuration": {
+            "concurrency": 2,
+            "inverseIndexedRelationshipTypes": [],
+            "undirectedRelationshipTypes": ["FOO"],
+        },
     }
 
 
