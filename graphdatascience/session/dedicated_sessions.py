@@ -58,24 +58,7 @@ class DedicatedSessions:
 
             session_id = existing_session.id
         else:
-            db_instance = self._aura_api.list_instance(dbid)
-
-            if db_instance and cloud_location:
-                raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
-            if not db_instance and not cloud_location:
-                raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")
-
-            if db_instance:
-                create_details = self._create_attached_session(
-                    session_name, dbid, db_connection.uri, password, memory.value
-                )
-            elif cloud_location:
-                create_details = self._aura_api.create_standalone_session(
-                    name=session_name, pwd=password, memory=memory.value, cloud_location=cloud_location
-                )
-            else:
-                raise RuntimeError("Unexpected code path")  # FIXME
-
+            create_details = self._create_session(session_name, dbid, password, memory.value, cloud_location)
             session_id = create_details.id
 
         wait_result = self._aura_api.wait_for_session_running(session_id)
@@ -115,20 +98,34 @@ class DedicatedSessions:
 
         return matched_sessions[0]
 
-    def _create_attached_session(
-        self, session_name: str, dbid: str, dburi: str, pwd: str, memory: SessionMemoryValue
+    def _create_session(
+        self,
+        session_name: str,
+        dbid: str,
+        pwd: str,
+        memory: SessionMemoryValue,
+        cloud_location: Optional[CloudLocation] = None,
     ) -> SessionDetails:
         db_instance = self._aura_api.list_instance(dbid)
-        if not db_instance:
-            raise ValueError(f"Could not find AuraDB instance with the uri `{dburi}`")
 
-        create_details = self._aura_api.create_attached_session(
-            name=session_name,
-            dbid=dbid,
-            pwd=pwd,
-            memory=memory,
-        )
-        return create_details
+        if not (db_instance or cloud_location):
+            raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")
+
+        if cloud_location and db_instance:
+                raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
+
+        # If cloud location is provided we go for self managed DBs path
+        if cloud_location:
+            return self._aura_api.create_standalone_session(
+                name=session_name, pwd=pwd, memory=memory.value, cloud_location=cloud_location
+            )
+        else:
+            return self._aura_api.create_attached_session(
+                name=session_name,
+                dbid=dbid,
+                pwd=pwd,
+                memory=memory,
+            )
 
     def _construct_client(
         self, session_id: str, session_connection: DbmsConnectionInfo, db_connection: DbmsConnectionInfo

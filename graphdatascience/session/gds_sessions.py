@@ -77,7 +77,7 @@ class GdsSessions:
         self,
         session_name: str,
         memory: SessionMemory,
-        # TODO support TTL and cloud_location
+        # TODO support TTL
         db_connection: DbmsConnectionInfo,
         cloud_location: Optional[CloudLocation] = None,
     ) -> AuraGraphDataScience:
