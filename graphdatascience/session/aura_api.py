@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import os
 import time
 import warnings
 from typing import Any, Dict, List, Optional, Tuple
@@ -32,15 +31,13 @@ class AuraApiError(Exception):
 
 
 class AuraApi:
-    def __init__(self, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> None:
-        self._aura_env = os.environ.get("AURA_ENV")
 
-        if not self._aura_env or self._aura_env == "production":
-            self._base_uri = "https://api.neo4j.io"
-        elif self._aura_env == "staging":
-            self._base_uri = "https://api-staging.neo4j.io"
-        else:
-            self._base_uri = f"https://api-{self._aura_env}.neo4j-dev.io"
+    API_VERSION = "v1beta5"
+
+    def __init__(
+        self, client_id: str, client_secret: str, tenant_id: Optional[str] = None, aura_env: Optional[str] = None
+    ) -> None:
+        self._base_uri = AuraApi.base_uri(aura_env)
 
         self._auth = AuraApi.Auth(oauth_url=f"{self._base_uri}/oauth/token", credentials=(client_id, client_secret))
         self._logger = logging.getLogger()
@@ -61,9 +58,19 @@ class AuraApi:
 
         return host.split(".")[0].split("-")[0]
 
+    @staticmethod
+    def base_uri(aura_env: Optional[str] = None) -> str:
+        if aura_env is None or aura_env == "production":
+            base_uri = "https://api.neo4j.io"
+        elif aura_env == "staging":
+            base_uri = "https://api-staging.neo4j.io"
+        else:
+            base_uri = f"https://api-{aura_env}.neo4j-dev.io"
+        return base_uri
+
     def create_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
         response = self._request_session.post(
-            f"{self._base_uri}/v1beta5/data-science/sessions",
+            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions",
             json={"name": name, "instance_id": dbid, "password": pwd, "memory": memory.value},
         )
 
@@ -72,7 +79,9 @@ class AuraApi:
         return SessionDetails.fromJson(response.json()["data"])
 
     def list_session(self, session_id: str) -> Optional[SessionDetails]:
-        response = self._request_session.get(f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}")
+        response = self._request_session.get(
+            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions/{session_id}"
+        )
 
         self._check_resp(response)
 
@@ -84,7 +93,9 @@ class AuraApi:
             "instanceId": dbid,
         }
 
-        response = self._request_session.get(f"{self._base_uri}/v1beta5/data-science/sessions", params=params)
+        response = self._request_session.get(
+            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions", params=params
+        )
 
         self._check_resp(response)
 
@@ -118,7 +129,7 @@ class AuraApi:
 
     def delete_session(self, session_id: str) -> bool:
         response = self._request_session.delete(
-            f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}",
+            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions/{session_id}",
         )
 
         self._check_endpoint_expiry(response)

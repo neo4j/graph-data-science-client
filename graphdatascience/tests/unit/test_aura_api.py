@@ -27,6 +27,12 @@ def mock_auth_token(requests_mock: Mocker) -> None:
     )
 
 
+def test_base_uri_from_env() -> None:
+    assert AuraApi.base_uri("dev") == "https://api-dev.neo4j-dev.io"
+    assert AuraApi.base_uri(None) == "https://api.neo4j.io"
+    assert AuraApi.base_uri("staging") == "https://api-staging.neo4j.io"
+
+
 def test_create_session(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
 
