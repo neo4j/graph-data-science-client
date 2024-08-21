@@ -150,16 +150,13 @@ class AuraApi:
         response = self._request_session.delete(
             f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions/{session_id}",
         )
-
         self._check_endpoint_deprecation(response)
 
         if response.status_code == 404:
             return False
-        elif response.status_code == 202:
-            return True
-        self._check_endpoint_deprecation(response)
 
-        return False
+        self._check_status_code(response)
+        return response.status_code == 202
 
     def create_instance(
         self, name: str, memory: SessionMemoryValue, cloud_provider: str, region: str
