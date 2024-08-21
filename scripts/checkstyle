@@ -4,10 +4,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-python -m black --check .
-python -m isort --check .
-python -m flake8
-python -m mypy .
+python -m ruff check .
+python -m ruff format --check .
 
 NOTEBOOKS="./examples/*.ipynb" # ./examples/dev/*.ipynb"
 for f in $NOTEBOOKS

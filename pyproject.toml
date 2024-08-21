@@ -5,5 +5,54 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
-[tool.black]
+[tool.ruff]
 line-length = 120
+
+select = [
+    "E4", "E7", "E9", # default pycodestyle rules
+    "F", # flake8
+    "I" # isort
+]
+
+include = ["*.py", "*.py"]
+
+exclude = [
+    # default
+
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+
+    # custom
+    "venv*",
+    ".venv*",
+    ".tox",
+    "build",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["graphdatascience"]
+known-local-folder = ["graphdatascience"]
