@@ -54,14 +54,7 @@ class AuraDbQueryRunner(QueryRunner):
             params = CallParameters()
 
         if AuraDbQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME in endpoint:
-            if self._endpoint_has_supported_version(endpoint):
-                return self._remote_projection(endpoint, params, yields, database, logging)
-            else:
-                raise RuntimeError(
-                    f"Unsupported procedure: `{endpoint}`. \
-                    This client does not support the procedure protocol versions of the database.\
-                    Please update the GDS Python Client to a newer version."
-                )
+            return self._remote_projection(endpoint, params, yields, database, logging)
 
         elif ".write" in endpoint and self.is_remote_projected_graph(params["graph_name"]):
             return self._remote_write_back(endpoint, params, yields, database, logging, custom_error)
@@ -127,7 +120,7 @@ class AuraDbQueryRunner(QueryRunner):
         undirected_relationship_types = params["undirected_relationship_types"]
         inverse_indexed_relationship_types = params["inverse_indexed_relationship_types"]
 
-        if ProtocolVersion.V2.supports_endpoint(endpoint):
+        if ProtocolVersion.V2 in self._server_protocol_versions:
             remote_project_proc_params = self._project_params_v2(
                 graph_name,
                 query,
@@ -136,7 +129,7 @@ class AuraDbQueryRunner(QueryRunner):
                 undirected_relationship_types,
                 inverse_indexed_relationship_types,
             )
-        elif ProtocolVersion.V1.supports_endpoint(endpoint):
+        elif ProtocolVersion.V1 in self._server_protocol_versions:
             remote_project_proc_params = self._project_params_v1(
                 graph_name,
                 query,
@@ -227,7 +220,9 @@ class AuraDbQueryRunner(QueryRunner):
             db_write_proc_params = self._write_back_params_v2(graph_name, job_id, db_arrow_config, config)
             protocol_version = ProtocolVersion.V2
         elif ProtocolVersion.V1 in self._server_protocol_versions:
-            db_write_proc_params = self._write_back_params_v1(graph_name, self._gds_query_runner.database(), job_id, db_arrow_config)
+            db_write_proc_params = self._write_back_params_v1(
+                graph_name, self._gds_query_runner.database(), job_id, db_arrow_config
+            )
             protocol_version = ProtocolVersion.V1
         else:
             raise RuntimeError(
@@ -276,7 +271,9 @@ class AuraDbQueryRunner(QueryRunner):
         )
 
     @staticmethod
-    def _write_back_params_v1(graph_name: str, database_name: str, job_id: str, db_arrow_config: Dict[str, Any]) -> CallParameters:
+    def _write_back_params_v1(
+        graph_name: str, database_name: str, job_id: str, db_arrow_config: Dict[str, Any]
+    ) -> CallParameters:
         return CallParameters(
             graphName=graph_name,
             databaseName=database_name,
