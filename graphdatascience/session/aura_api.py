@@ -46,8 +46,8 @@ class AuraApi:
         self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
         self._tenant_details: Optional[TenantDetails] = None
 
-    @staticmethod
-    def create(client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> AuraApi:
+    @classmethod
+    def create(cls, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> AuraApi:
         aura_env = os.environ.get("AURA_ENV")
 
         if not aura_env or aura_env == "production":
@@ -57,7 +57,7 @@ class AuraApi:
         else:
             base_uri = f"https://api-{aura_env}.neo4j-dev.io"
 
-        return AuraApi(base_uri, client_id, client_secret, tenant_id)
+        return cls(base_uri, client_id, client_secret, tenant_id)
 
     @staticmethod
     def extract_id(uri: str) -> str:
