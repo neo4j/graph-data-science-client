@@ -27,7 +27,7 @@ class AuraDbQueryRunner(QueryRunner):
         self._db_query_runner = db_query_runner
         self._gds_arrow_client = arrow_client
         self._encrypted = encrypted
-        self._protocol_versions = protocol_versions
+        self._server_protocol_versions = protocol_versions
 
     def run_cypher(
         self,
@@ -58,9 +58,9 @@ class AuraDbQueryRunner(QueryRunner):
                 return self._remote_projection(endpoint, params, yields, database, logging)
             else:
                 raise RuntimeError(
-                    f"Unsupported procedure: {endpoint}. \
-                    The database supports the following procedure protocol versions: {self._protocol_versions}. \
-                    Please use a matching project procedure."
+                    f"Unsupported procedure: `{endpoint}`. \
+                    This client does not support the procedure protocol versions of the database.\
+                    Please update the GDS Python Client to a newer version."
                 )
 
         elif ".write" in endpoint and self.is_remote_projected_graph(params["graph_name"]):
@@ -130,7 +130,10 @@ class AuraDbQueryRunner(QueryRunner):
         logging: bool = False,
         custom_error: bool = True,
     ) -> DataFrame:
-        config = params["config"] if "config" in params else {}
+        if params["config"] is None:
+            params["config"] = {}
+
+        config = params["config"]
 
         # we pop these out so that they are not retained for the GDS proc call
         db_arrow_config = config.pop("arrowConfiguration", {})
@@ -146,17 +149,17 @@ class AuraDbQueryRunner(QueryRunner):
         )
 
         graph_name = params["graph_name"]
-        if ProtocolVersion.V2 in self._protocol_versions:
+        if ProtocolVersion.V2 in self._server_protocol_versions:
             db_write_proc_params = self._write_back_params_v2(graph_name, job_id, db_arrow_config, config)
             protocol_version = ProtocolVersion.V2
-        elif ProtocolVersion.V1 in self._protocol_versions:
+        elif ProtocolVersion.V1 in self._server_protocol_versions:
             db_write_proc_params = self._write_back_params_v1(graph_name, job_id, db_arrow_config)
             protocol_version = ProtocolVersion.V1
         else:
             raise RuntimeError(
-                f"Unsupported procedure: {endpoint}. \
-                The database supports the following procedure protocol versions: {self._protocol_versions}. \
-                Please use a matching write procedure."
+                f"Unsupported procedure: `{endpoint}`. \
+                This client does not support the procedure protocol versions of the database.\
+                Please update the GDS Python Client to a newer version."
             )
 
         write_back_start = time.time()
@@ -217,4 +220,4 @@ class AuraDbQueryRunner(QueryRunner):
         params["encrypted"] = self._encrypted
 
     def _endpoint_has_supported_version(self, endpoint: str) -> bool:
-        return any(version.supports_endpoint(endpoint) for version in self._protocol_versions)
+        return any(version.supports_endpoint(endpoint) for version in self._server_protocol_versions)
