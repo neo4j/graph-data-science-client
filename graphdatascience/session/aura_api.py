@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import os
 import time
 import warnings
 from typing import Any, Dict, List, Optional, Tuple
@@ -33,8 +32,10 @@ class AuraApiError(Exception):
 
 class AuraApi:
 
-    def __init__(self, base_uri: str, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> None:
-        self._base_uri = base_uri
+    def __init__(
+        self, client_id: str, client_secret: str, tenant_id: Optional[str] = None, aura_env: Optional[str] = None
+    ) -> None:
+        self._base_uri = AuraApi.base_uri(aura_env)
 
         self._auth = AuraApi.Auth(oauth_url=f"{self._base_uri}/oauth/token", credentials=(client_id, client_secret))
         self._logger = logging.getLogger()
@@ -46,19 +47,6 @@ class AuraApi:
         self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
         self._tenant_details: Optional[TenantDetails] = None
 
-    @classmethod
-    def create(cls, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> AuraApi:
-        aura_env = os.environ.get("AURA_ENV")
-
-        if not aura_env or aura_env == "production":
-            base_uri = "https://api.neo4j.io"
-        elif aura_env == "staging":
-            base_uri = "https://api-staging.neo4j.io"
-        else:
-            base_uri = f"https://api-{aura_env}.neo4j-dev.io"
-
-        return cls(base_uri, client_id, client_secret, tenant_id)
-
     @staticmethod
     def extract_id(uri: str) -> str:
         host = urlparse(uri).hostname
@@ -67,6 +55,16 @@ class AuraApi:
             raise RuntimeError(f"Could not parse the uri `{uri}`.")
 
         return host.split(".")[0].split("-")[0]
+
+    @staticmethod
+    def base_uri(aura_env: Optional[str] = None) -> str:
+        if aura_env is None or aura_env == "production":
+            base_uri = "https://api.neo4j.io"
+        elif aura_env == "staging":
+            base_uri = "https://api-staging.neo4j.io"
+        else:
+            base_uri = f"https://api-{aura_env}.neo4j-dev.io"
+        return base_uri
 
     def create_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
         response = self._request_session.post(
