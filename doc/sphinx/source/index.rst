@@ -35,3 +35,4 @@ This API reference manual lists all available endpoints in the Neo4j Graph Data 
    sessions/dbms_connection_info
    sessions/session_memory
    sessions/algorithm_category
+   sessions/cloud_location

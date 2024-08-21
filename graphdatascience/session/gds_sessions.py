@@ -89,6 +89,7 @@ class GdsSessions:
             session_name (str): The name of the session.
             memory (SessionMemory): The size of the session specified by memory.
             db_connection (DbmsConnectionInfo): The database connection information.
+            cloud_location (Optional[CloudLocation]): The cloud location.
 
         Returns:
             AuraGraphDataScience: The session.
