@@ -44,7 +44,7 @@ def test_extracts_parameters_projection_v1() -> None:
     assert (
         db_query_runner.last_query()
         == "CALL gds.arrow.project($graph_name, $query, $concurrency, \
-        $undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_configuration)"
+$undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_configuration)"
     )
     assert db_query_runner.last_params() == {
         "graph_name": "g",
