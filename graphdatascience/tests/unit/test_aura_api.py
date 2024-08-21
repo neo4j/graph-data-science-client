@@ -28,7 +28,7 @@ def mock_auth_token(requests_mock: Mocker) -> None:
 
 
 def test_create_session(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
@@ -68,7 +68,7 @@ def test_create_session(requests_mock: Mocker) -> None:
 
 def test_list_session(requests_mock: Mocker) -> None:
 
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
@@ -108,7 +108,7 @@ def test_list_session(requests_mock: Mocker) -> None:
 
 
 def test_list_sessions(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
     mock_auth_token(requests_mock)
 
     requests_mock.get(
@@ -176,7 +176,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
 
 
 def test_list_sessions_with_db_id(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
     mock_auth_token(requests_mock)
 
     requests_mock.get(
@@ -244,7 +244,7 @@ def test_list_sessions_with_db_id(requests_mock: Mocker) -> None:
 
 
 def test_delete_session(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
     requests_mock.delete(
@@ -256,7 +256,7 @@ def test_delete_session(requests_mock: Mocker) -> None:
 
 
 def test_delete_missing_session(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
     requests_mock.delete(
@@ -284,7 +284,7 @@ def test_multiple_tenants(requests_mock: Mocker) -> None:
         RuntimeError,
         match="This account has access to multiple tenants: `{'tenant1': 'Production', 'tenant2': 'Development'}`",
     ):
-        AuraApi(client_id="", client_secret="")
+        AuraApi.create(client_id="", client_secret="")
 
 
 def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCaptureFixture) -> None:
@@ -307,7 +307,7 @@ def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCapture
         },
     )
 
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi.create("", "", tenant_id="some-tenant")
 
     with caplog.at_level(logging.DEBUG):
         assert (
@@ -338,13 +338,13 @@ def test_wait_for_session_running(requests_mock: Mocker) -> None:
         },
     )
 
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi.create("", "", tenant_id="some-tenant")
 
     assert api.wait_for_session_running("id0") == WaitResult.from_connection_url("neo4j+s://foo.bar")
 
 
 def test_delete_instance(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
@@ -382,7 +382,7 @@ def test_delete_instance(requests_mock: Mocker) -> None:
 
 
 def test_delete_already_deleting_instance(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
     requests_mock.delete(
@@ -397,7 +397,7 @@ def test_delete_already_deleting_instance(requests_mock: Mocker) -> None:
 
 
 def test_delete_that_fails(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
     requests_mock.delete(
@@ -412,7 +412,7 @@ def test_delete_that_fails(requests_mock: Mocker) -> None:
 
 
 def test_create_instance(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
@@ -452,7 +452,7 @@ def test_create_instance(requests_mock: Mocker) -> None:
 
 
 def test_warn_about_expirying_endpoint(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
     requests_mock.delete(
@@ -466,7 +466,7 @@ def test_warn_about_expirying_endpoint(requests_mock: Mocker) -> None:
 
 
 def test_auth_token(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
 
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
@@ -484,7 +484,7 @@ def test_auth_token(requests_mock: Mocker) -> None:
 
 
 def test_auth_token_reused(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
 
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
@@ -503,7 +503,7 @@ def test_auth_token_reused(requests_mock: Mocker) -> None:
 
 
 def test_auth_token_use_short_token(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
 
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
@@ -522,7 +522,7 @@ def test_derive_tenant(requests_mock: Mocker) -> None:
         json={"data": [{"id": "6981ace7-efe8-4f5c-b7c5-267b5162ce91", "name": "Production"}]},
     )
 
-    AuraApi(client_id="", client_secret="")
+    AuraApi.create(client_id="", client_secret="")
 
 
 def test_raise_on_missing_tenant(requests_mock: Mocker) -> None:
@@ -540,11 +540,11 @@ def test_raise_on_missing_tenant(requests_mock: Mocker) -> None:
     )
 
     with pytest.raises(RuntimeError, match="This account has access to multiple tenants"):
-        AuraApi(client_id="", client_secret="")
+        AuraApi.create(client_id="", client_secret="")
 
 
 def test_list_instance(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="YOUR_TENANT_ID")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="YOUR_TENANT_ID")
 
     mock_auth_token(requests_mock)
     requests_mock.get(
@@ -573,7 +573,7 @@ def test_list_instance(requests_mock: Mocker) -> None:
 
 
 def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi.create(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
     requests_mock.get(
@@ -600,7 +600,7 @@ def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
 
 
 def test_list_missing_instance(requests_mock: Mocker) -> None:
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi.create("", "", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
@@ -633,7 +633,7 @@ def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> 
         },
     )
 
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi.create("", "", tenant_id="some-tenant")
 
     with caplog.at_level(logging.DEBUG):
         assert (
@@ -663,7 +663,7 @@ def test_wait_for_instance_running(requests_mock: Mocker) -> None:
         },
     )
 
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi.create("", "", tenant_id="some-tenant")
 
     assert api.wait_for_instance_running("id0") == WaitResult.from_connection_url("foo.bar")
 
@@ -703,7 +703,7 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
         },
     )
 
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi.create("", "", tenant_id="some-tenant")
 
     assert api.wait_for_instance_running("id0") == WaitResult.from_error("Instance is being deleted")
     assert api.wait_for_instance_running("id1") == WaitResult.from_error("Instance is being deleted")
@@ -716,7 +716,7 @@ def test_estimate_size(requests_mock: Mocker) -> None:
         json={"data": {"did_exceed_maximum": True, "min_required_memory": "307GB", "recommended_size": "96GB"}},
     )
 
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi.create("", "", tenant_id="some-tenant")
     assert api.estimate_size(100, 10, [AlgorithmCategory.NODE_EMBEDDING]) == EstimationDetails("307GB", "96GB", True)
 
 

@@ -32,15 +32,22 @@ class AuraApiError(Exception):
 
 
 class AuraApi:
-    def __init__(self, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> None:
-        self._aura_env = os.environ.get("AURA_ENV")
 
-        if not self._aura_env or self._aura_env == "production":
-            self._base_uri = "https://api.neo4j.io"
-        elif self._aura_env == "staging":
-            self._base_uri = "https://api-staging.neo4j.io"
+    @staticmethod
+    def create(client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> AuraApi:
+        aura_env = os.environ.get("AURA_ENV")
+
+        if not aura_env or aura_env == "production":
+            base_uri = "https://api.neo4j.io"
+        elif aura_env == "staging":
+            base_uri = "https://api-staging.neo4j.io"
         else:
-            self._base_uri = f"https://api-{self._aura_env}.neo4j-dev.io"
+            base_uri = f"https://api-{aura_env}.neo4j-dev.io"
+
+        return AuraApi(base_uri, client_id, client_secret, tenant_id)
+
+    def __init__(self, base_uri: str, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> None:
+        self._base_uri = base_uri
 
         self._auth = AuraApi.Auth(oauth_url=f"{self._base_uri}/oauth/token", credentials=(client_id, client_secret))
         self._logger = logging.getLogger()

@@ -28,7 +28,7 @@ class FakeAuraApi(AuraApi):
         status_after_creating: str = "running",
         size_estimation: Optional[EstimationDetails] = None,
     ) -> None:
-        super().__init__("", "", "tenant_id")
+        super().__init__("aura.api", "client_id", "client_secret", "tenant_id")
         if existing_instances is None:
             existing_instances = []
         self._instances = {details.id: details for details in existing_instances}
