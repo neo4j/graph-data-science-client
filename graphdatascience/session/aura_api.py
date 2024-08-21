@@ -33,19 +33,6 @@ class AuraApiError(Exception):
 
 class AuraApi:
 
-    @staticmethod
-    def create(client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> AuraApi:
-        aura_env = os.environ.get("AURA_ENV")
-
-        if not aura_env or aura_env == "production":
-            base_uri = "https://api.neo4j.io"
-        elif aura_env == "staging":
-            base_uri = "https://api-staging.neo4j.io"
-        else:
-            base_uri = f"https://api-{aura_env}.neo4j-dev.io"
-
-        return AuraApi(base_uri, client_id, client_secret, tenant_id)
-
     def __init__(self, base_uri: str, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> None:
         self._base_uri = base_uri
 
@@ -58,6 +45,19 @@ class AuraApi:
 
         self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
         self._tenant_details: Optional[TenantDetails] = None
+
+    @staticmethod
+    def create(client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> AuraApi:
+        aura_env = os.environ.get("AURA_ENV")
+
+        if not aura_env or aura_env == "production":
+            base_uri = "https://api.neo4j.io"
+        elif aura_env == "staging":
+            base_uri = "https://api-staging.neo4j.io"
+        else:
+            base_uri = f"https://api-{aura_env}.neo4j-dev.io"
+
+        return AuraApi(base_uri, client_id, client_secret, tenant_id)
 
     @staticmethod
     def extract_id(uri: str) -> str:
