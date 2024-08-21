@@ -32,6 +32,8 @@ class AuraApiError(Exception):
 
 class AuraApi:
 
+    API_VERSION = "v1beta5"
+
     def __init__(
         self, client_id: str, client_secret: str, tenant_id: Optional[str] = None, aura_env: Optional[str] = None
     ) -> None:
@@ -68,7 +70,7 @@ class AuraApi:
 
     def create_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
         response = self._request_session.post(
-            f"{self._base_uri}/v1beta5/data-science/sessions",
+            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions",
             json={"name": name, "instance_id": dbid, "password": pwd, "memory": memory.value},
         )
 
@@ -77,7 +79,9 @@ class AuraApi:
         return SessionDetails.fromJson(response.json()["data"])
 
     def list_session(self, session_id: str) -> Optional[SessionDetails]:
-        response = self._request_session.get(f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}")
+        response = self._request_session.get(
+            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions/{session_id}"
+        )
 
         self._check_resp(response)
 
@@ -89,7 +93,9 @@ class AuraApi:
             "instanceId": dbid,
         }
 
-        response = self._request_session.get(f"{self._base_uri}/v1beta5/data-science/sessions", params=params)
+        response = self._request_session.get(
+            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions", params=params
+        )
 
         self._check_resp(response)
 
@@ -123,7 +129,7 @@ class AuraApi:
 
     def delete_session(self, session_id: str) -> bool:
         response = self._request_session.delete(
-            f"{self._base_uri}/v1beta5/data-science/sessions/{session_id}",
+            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions/{session_id}",
         )
 
         self._check_endpoint_expiry(response)
