@@ -7,6 +7,12 @@ set -o pipefail
 python -m ruff check .
 python -m ruff format --check .
 
+if [ "${SKIP_NOTEBOOKS:-false}" == "true" ]; then
+  echo "Skipping notebooks"
+  exit 0
+fi
+
+echo "Checking notebooks"
 NOTEBOOKS="./examples/*.ipynb" # ./examples/dev/*.ipynb"
 for f in $NOTEBOOKS
 do
