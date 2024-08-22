@@ -166,7 +166,7 @@ class AuraDsSessions:
             gds_session_connection_info=DbmsConnectionInfo(
                 gds_url, AuraDsSessions.GDS_SESSION_USER, db_connection.password
             ),
-            aura_db_connection_info=db_connection,
+            db_connection_info=db_connection,
             delete_fn=lambda: self.delete(session_name),
         )
 
