@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -12,6 +13,7 @@ from nbconvert.preprocessors.execute import ExecutePreprocessor
 VERSION_CELL_TAG = "verify-version"
 TEARDOWN_CELL_TAG = "teardown"
 
+DEDICATED_SESSIONS_ONLY = "self-managed-db"
 
 class IndexedCell(NamedTuple):
     cell: Any
@@ -97,7 +99,15 @@ def main(run_session_nbs: bool) -> None:
                     f"Notebook {notebook_filename} does not have a cell tagged with '{VERSION_CELL_TAG}'."
                     "Required to run the notebook only against compatible versions."
                 )
-            ep.init_notebook(verify_version_cell_index[0], td_collector.tear_down_cells())
+            ep.init_notebook(version_cell_index=verify_version_cell_index[0], tear_down_cells=td_collector.tear_down_cells())
+
+            # Skip notebooks if they cannot run against AuraDS-based sessions
+            require_dedicated_sessions_cells = [
+                idx for idx, cell in enumerate(nb["cells"]) if DEDICATED_SESSIONS_ONLY in cell["metadata"].get("tags", [])
+            ]
+            if len(require_dedicated_sessions_cells) > 0 and not os.environ.get("USE_DEDICATED_SESSIONS", True):
+                print(f"Skipping notebook {notebook_filename} as it runs against a self-managed-db, which is not supported by AuraDS based sessions.")
+                continue
 
             # run the notebook
             try:
