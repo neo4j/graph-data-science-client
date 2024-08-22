@@ -3,7 +3,10 @@ from typing import List
 from neo4j.exceptions import Neo4jError
 
 from graphdatascience import QueryRunner
-from graphdatascience.query_runner.protocol_version import ProtocolVersion, ProtocolVersions
+from graphdatascience.session.dbms.protocol_version import (
+    ProtocolVersion,
+    ProtocolVersions,
+)
 
 
 class ProtocolVersionResolver:
@@ -28,4 +31,3 @@ class ProtocolVersionResolver:
             ]
         except Neo4jError:
             return [ProtocolVersion.V1]
-

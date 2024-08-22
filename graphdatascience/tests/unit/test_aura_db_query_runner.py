@@ -5,7 +5,6 @@ from pandas import DataFrame
 from graphdatascience import ServerVersion
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.query_runner.aura_db_query_runner import AuraDbQueryRunner
-from graphdatascience.query_runner.protocol_version import ProtocolVersion
 from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 
 
@@ -22,9 +21,7 @@ def test_extracts_parameters_projection_v1() -> None:
     db_query_runner = CollectingQueryRunner(version, result_or_exception=DataFrame([{"version": "v1"}]))
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbQueryRunner(
-        gds_query_runner, db_query_runner, FakeArrowClient(), False  # type: ignore
-    )
+    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
 
     qr.call_procedure(
         endpoint="gds.arrow.project",
@@ -64,7 +61,9 @@ $undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_conf
 
 def test_extracts_parameters_projection_v2() -> None:
     version = ServerVersion(2, 7, 0)
-    db_query_runner = CollectingQueryRunner(version, result_or_exception=DataFrame([{"version": "v1"}, {"version": "v2"}]))
+    db_query_runner = CollectingQueryRunner(
+        version, result_or_exception=DataFrame([{"version": "v1"}, {"version": "v2"}])
+    )
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
     qr = AuraDbQueryRunner(
@@ -116,9 +115,7 @@ def test_extracts_parameters_algo_write_v1() -> None:
     db_query_runner = CollectingQueryRunner(version, result_or_exception=DataFrame([{"version": "v1"}]))
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbQueryRunner(
-        gds_query_runner, db_query_runner, FakeArrowClient(), False  # type: ignore
-    )
+    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
 
     qr.call_procedure(endpoint="gds.degree.write", params=CallParameters(graph_name="g", config={"jobId": "my-job"}))
 
@@ -140,7 +137,9 @@ def test_extracts_parameters_algo_write_v1() -> None:
 
 def test_extracts_parameters_algo_write_v2() -> None:
     version = ServerVersion(2, 7, 0)
-    db_query_runner = CollectingQueryRunner(version, result_or_exception=DataFrame([{"version": "v1"}, {"version": "v2"}]))
+    db_query_runner = CollectingQueryRunner(
+        version, result_or_exception=DataFrame([{"version": "v1"}, {"version": "v2"}])
+    )
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
     qr = AuraDbQueryRunner(
@@ -176,9 +175,7 @@ def test_arrow_and_write_configuration() -> None:
     db_query_runner = CollectingQueryRunner(version, result_or_exception=DataFrame([{"version": "v1"}]))
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbQueryRunner(
-        gds_query_runner, db_query_runner, FakeArrowClient(), False  # type: ignore
-    )
+    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
 
     qr.call_procedure(
         endpoint="gds.degree.write",
@@ -215,9 +212,7 @@ def test_arrow_and_write_configuration_graph_write() -> None:
     db_query_runner = CollectingQueryRunner(version, result_or_exception=DataFrame([{"version": "v1"}]))
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = AuraDbQueryRunner(
-        gds_query_runner, db_query_runner, FakeArrowClient(), False  # type: ignore
-    )
+    qr = AuraDbQueryRunner(gds_query_runner, db_query_runner, FakeArrowClient(), False)  # type: ignore
 
     qr.call_procedure(
         endpoint="gds.graph.nodeProperties.write",

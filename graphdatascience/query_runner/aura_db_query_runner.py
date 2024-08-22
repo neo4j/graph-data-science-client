@@ -6,8 +6,8 @@ from pandas import DataFrame
 
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 from .gds_arrow_client import GdsArrowClient
-from .protocol_version import ProtocolVersion
 from .query_runner import QueryRunner
 from ..call_parameters import CallParameters
 from ..session.dbms.protocol_resolver import ProtocolVersionResolver

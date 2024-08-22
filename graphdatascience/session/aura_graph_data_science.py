@@ -1,6 +1,5 @@
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, Optional
 
-from neo4j.exceptions import Neo4jError
 from pandas import DataFrame
 
 from graphdatascience.call_builder import IndirectCallBuilder
@@ -15,10 +14,6 @@ from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.aura_db_query_runner import AuraDbQueryRunner
 from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.query_runner.protocol_version import (
-    ProtocolVersion,
-    ProtocolVersions,
-)
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.utils.util_remote_proc_runner import UtilRemoteProcRunner
