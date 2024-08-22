@@ -68,7 +68,11 @@ def test_extracts_parameters_projection_v2() -> None:
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
     qr = AuraDbQueryRunner(
-        gds_query_runner, db_query_runner, FakeArrowClient(), False, [ProtocolVersion.V2]  # type: ignore
+        gds_query_runner,
+        db_query_runner,
+        FakeArrowClient(),  # type: ignore
+        False,
+        [ProtocolVersion.V1, ProtocolVersion.V2],
     )
 
     qr.call_procedure(
