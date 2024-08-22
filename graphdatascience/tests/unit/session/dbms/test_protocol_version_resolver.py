@@ -20,7 +20,7 @@ def test_protocol_versions() -> None:
 
 def test_protocol_versions_proc_missing() -> None:
     runner = CollectingQueryRunner(
-        result_or_exception=Neo4jError("no such proc"), server_version=ServerVersion(1, 2, 3)  # type: ignore
+        result_or_exception=Neo4jError("no such proc"), server_version=ServerVersion(1, 2, 3)
     )
     resolver = ProtocolVersionResolver(runner)
 

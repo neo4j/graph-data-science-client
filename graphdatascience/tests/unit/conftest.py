@@ -20,7 +20,9 @@ DEFAULT_SERVER_VERSION = ServerVersion(2, 6, 0)
 
 
 class CollectingQueryRunner(QueryRunner):
-    def __init__(self, server_version: ServerVersion, result_or_exception: Optional[DataFrame] | Exception = None) -> None:
+    def __init__(
+        self, server_version: ServerVersion, result_or_exception: Optional[DataFrame] | Exception = None
+    ) -> None:
         self._result_or_exception = result_or_exception
         self.queries: List[str] = []
         self.params: List[Dict[str, Any]] = []
@@ -65,8 +67,9 @@ class CollectingQueryRunner(QueryRunner):
             raise self._result_or_exception
         else:
             return (
-                self._result_or_exception if self._result_or_exception is not None else DataFrame(
-                    [{"version": str(self._server_version)}])
+                self._result_or_exception
+                if self._result_or_exception is not None
+                else DataFrame([{"version": str(self._server_version)}])
             )
 
     def server_version(self) -> ServerVersion:
