@@ -13,7 +13,7 @@ from nbconvert.preprocessors.execute import ExecutePreprocessor
 VERSION_CELL_TAG = "verify-version"
 TEARDOWN_CELL_TAG = "teardown"
 
-DEDICATED_SESSIONS_ONLY = "self-managed-db"
+SESSIONS_AGAINST_LOCAL_DB = "self-managed-db"
 
 class IndexedCell(NamedTuple):
     cell: Any
@@ -101,11 +101,11 @@ def main(run_session_nbs: bool) -> None:
                 )
             ep.init_notebook(version_cell_index=verify_version_cell_index[0], tear_down_cells=td_collector.tear_down_cells())
 
-            # Skip notebooks if they cannot run against AuraDS-based sessions
+            # Skip notebooks if they cannot run against AuraDS-based sessions and no local db is setup
             require_dedicated_sessions_cells = [
-                idx for idx, cell in enumerate(nb["cells"]) if DEDICATED_SESSIONS_ONLY in cell["metadata"].get("tags", [])
+                idx for idx, cell in enumerate(nb["cells"]) if SESSIONS_AGAINST_LOCAL_DB in cell["metadata"].get("tags", [])
             ]
-            if len(require_dedicated_sessions_cells) > 0 and not os.environ.get("USE_DEDICATED_SESSIONS", True):
+            if len(require_dedicated_sessions_cells) > 0 and not os.environ.get("USE_DEDICATED_SESSIONS", True) and os.environ.get("NEO4J_URI"):
                 print(f"Skipping notebook {notebook_filename} as it runs against a self-managed-db, which is not supported by AuraDS based sessions.")
                 continue
 
