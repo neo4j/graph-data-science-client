@@ -1,33 +1,32 @@
 // DO NOT EDIT - AsciiDoc file generated automatically
 
-= GDS Sessions (For AuraDB)
+= GDS Sessions (For Self Managed DB)
 
 
-https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/gds-sessions.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
+https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/gds-sessions-self-managed.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
 In Colab]]
 
 
 This Jupyter notebook is hosted
-https://github.com/neo4j/graph-data-science-client/blob/main/examples/gds-sessions.ipynb[here]
+https://github.com/neo4j/graph-data-science-client/blob/main/examples/gds-sessions-self-managed.ipynb[here]
 in the Neo4j Graph Data Science Client Github repository.
 
 The notebook shows how to use the `graphdatascience` Python library to
 create, manage, and use a GDS Session.
 
 We consider a graph of people and fruits, which we’re using as a simple
-example to show how to connect your AuraDB instance to a GDS Session,
-run algorithms, and eventually write back your analytical results to the
-AuraDB database. We will cover all management operations: creation,
-listing, and deletion.
+example to show how to connect your self-managed Neo4j database to a GDS
+Session, run algorithms, and eventually write back your analytical
+results to your Neo4j database. We will cover all management operations:
+creation, listing, and deletion.
 
-If you are using self managed DB, follow
-link:../gds-sessions-self-managed[this example].
+If you are using AuraDB, follow link:../gds-sessions[this example].
 
 == Prerequisites
 
-This notebook requires having an AuraDB instance available and have the
-GDS sessions feature enabled for your tenant. Contact your account
-manager to get the features enabled.
+This notebook requires having an Neo4j instance instance available and
+have the GDS sessions feature enabled for your tenant. Contact your
+account manager to get the features enabled.
 
 We also need to have the `graphdatascience` Python library installed,
 version `1.11` or later.
@@ -66,16 +65,16 @@ sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secr
 
 A new session is created by calling `sessions.get_or_create()`. When we
 want to do this, we must identify a data source. We assume here that an
-AuraDB instance has been created and is available to access. We need to
-provide the database Bolt address, username, and password to the
-`DbmsConnectionInfo` class.
+self managed Neo4j database instance has been set up and is available to
+access. We need to provide the database Bolt address, username, and
+password to the `DbmsConnectionInfo` class.
 
 We also have to specify the size of the session. There are many possible
 sizes to choose from. Please refer to the API reference docs or the
 manual for a full list.
 
 Lastly, we need to give our session a name. We will call ours
-`people-and-fruits`. If we had already created a session and want to
+`people-and-fruits-sm`. If we had already created a session and want to
 reconnect to it, the same code is used. Doing that will not incur any
 additional costs, and will be a lot faster.
 
@@ -84,10 +83,10 @@ additional costs, and will be a lot faster.
 import os
 from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory, CloudLocation
 
-# Identify the AuraDB instance
-aura_db_address = os.environ["NEO4J_URI"]
-aura_db_user = os.environ["NEO4J_USER"]
-aura_db_pw = os.environ["NEO4J_PASSWORD"]
+# Identify the Neo4j database instance
+db_address = os.environ["NEO4J_URI"]
+db_user = os.environ["NEO4J_USER"]
+db_pw = os.environ["NEO4J_PASSWORD"]
 
 cloud_provider = os.environ["CLOUD_PROVIDER"]
 cloud_region = os.environ["CLOUD_REGION"]
@@ -100,9 +99,9 @@ memory = sessions.estimate(
 )
 gds = sessions.get_or_create(
     # we give it a representative name
-    session_name="people-and-fruits",
+    session_name="people-and-fruits-sm",
     memory=memory,
-    db_connection=DbmsConnectionInfo(aura_db_address, aura_db_user, aura_db_pw),
+    db_connection=DbmsConnectionInfo(db_address, db_user, db_pw),
 
     # Because we used self-managed DB we need to specify the cloud location.
     cloud_location=CloudLocation(cloud_provider, cloud_region)
@@ -121,8 +120,8 @@ sessions.list()
 
 == Adding a dataset
 
-We assume that the configured AuraDB instance is empty. We will add our
-dataset using standard Cypher.
+We assume that the configured Neo4j database instance is empty. We will
+add our dataset using standard Cypher.
 
 In a more realistic scenario, this step is already done, and we would
 just connect to the existing database.
@@ -249,12 +248,12 @@ print(f"Compute millis: {frp_result['computeMillis']}")
 gds.graph.nodeProperties.stream(G, ["pagerank", "fastRP"], separate_property_columns=True, db_node_properties=["name"])
 ----
 
-== Writing back to AuraDB
+== Writing back to Neo4j
 
 The GDS Session’s in-memory graph was projected from data in our
-specified AuraDB instance. Write back operations will thus persist the
-data back to the same AuraDB. Let’s write back the results of the
-PageRank and FastRP algorithms to the AuraDB instance.
+specified Neo4j database. Write back operations will thus persist the
+data back to the same Neo4j database. Let’s write back the results of
+the PageRank and FastRP algorithms to the Neo4j database.
 
 [source, python, role=no-test]
 ----
@@ -272,8 +271,8 @@ gds.louvain.write(G, writeProperty="louvain")
 ----
 
 We can now use the `gds.run_cypher()` method to query the updated graph.
-Note that the `run_cypher()` method will run the query on the AuraDB
-instance.
+Note that the `run_cypher()` method will run the query on the Neo4j
+database.
 
 [source, python, role=no-test]
 ----
@@ -289,7 +288,7 @@ gds.run_cypher(
 == Deleting the session
 
 Now that we have finished our analysis, we can delete the session. The
-results that we produced were written back to our AuraDB instance, and
+results that we produced were written back to our Neo4j database, and
 will not be lost. If we computed additional things that we did not write
 back, those will be lost.
 
