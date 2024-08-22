@@ -19,6 +19,7 @@ from graphdatascience.session.aura_api_responses import (
     TenantDetails,
     WaitResult,
 )
+from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.session_sizes import SessionMemoryValue
 from graphdatascience.version import __version__
 
@@ -67,24 +68,42 @@ class AuraApi:
             base_uri = f"https://api-{aura_env}.neo4j-dev.io"
         return base_uri
 
-    def create_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
+    def create_attached_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
+        return self._create_session(name, pwd, memory, instance_id=dbid)
+
+    def create_standalone_session(
+        self, name: str, pwd: str, memory: SessionMemoryValue, cloud_location: CloudLocation
+    ) -> SessionDetails:
+        return self._create_session(
+            name,
+            pwd,
+            memory,
+            tenant_id=self._tenant_id,
+            cloud_provider=cloud_location.provider,
+            region=cloud_location.region,
+        )
+
+    def _create_session(self, name: str, pwd: str, memory: SessionMemoryValue, **kwargs: Any) -> SessionDetails:
         response = self._request_session.post(
             f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions",
-            json={"name": name, "instance_id": dbid, "password": pwd, "memory": memory.value},
+            json={"name": name, "password": pwd, "memory": memory.value, **kwargs},
         )
 
         self._check_resp(response)
 
-        return SessionDetails.fromJson(response.json()["data"])
+        return SessionDetails.from_json(response.json()["data"])
 
-    def list_session(self, session_id: str) -> Optional[SessionDetails]:
+    def get_session(self, session_id: str) -> Optional[SessionDetails]:
         response = self._request_session.get(
             f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions/{session_id}"
         )
 
+        if response.status_code == 404:
+            return None
+
         self._check_resp(response)
 
-        return SessionDetails.fromJson(response.json()["data"])
+        return SessionDetails.from_json(response.json()["data"])
 
     def list_sessions(self, dbid: Optional[str] = None) -> List[SessionDetails]:
         params = {
@@ -98,7 +117,7 @@ class AuraApi:
 
         self._check_resp(response)
 
-        return [SessionDetails.fromJson(s) for s in response.json()["data"]]
+        return [SessionDetails.from_json(s) for s in response.json()["data"]]
 
     def wait_for_session_running(
         self,
@@ -109,7 +128,7 @@ class AuraApi:
     ) -> WaitResult:
         waited_time = 0.0
         while waited_time < max_wait_time:
-            session = self.list_session(session_id)
+            session = self.get_session(session_id)
             if session is None:
                 return WaitResult.from_error(f"Session `{session_id}` not found -- please retry")
             elif session.status == "Ready" and session.host:  # check host needed until dns based routing
@@ -130,16 +149,13 @@ class AuraApi:
         response = self._request_session.delete(
             f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions/{session_id}",
         )
-
-        self._check_endpoint_expiry(response)
+        self._check_endpoint_deprecation(response)
 
         if response.status_code == 404:
             return False
-        elif response.status_code == 202:
-            return True
-        self._check_endpoint_expiry(response)
 
-        return False
+        self._check_status_code(response)
+        return response.status_code == 202
 
     def create_instance(
         self, name: str, memory: SessionMemoryValue, cloud_provider: str, region: str
@@ -255,7 +271,7 @@ class AuraApi:
 
     def _check_resp(self, resp: requests.Response) -> None:
         self._check_status_code(resp)
-        self._check_endpoint_expiry(resp)
+        self._check_endpoint_deprecation(resp)
 
     def _check_status_code(self, resp: requests.Response) -> None:
         if resp.status_code >= 400:
@@ -264,7 +280,7 @@ class AuraApi:
                 status_code=resp.status_code,
             )
 
-    def _check_endpoint_expiry(self, resp: requests.Response) -> None:
+    def _check_endpoint_deprecation(self, resp: requests.Response) -> None:
         expiry_date = resp.headers.get("X-Tyk-Api-Expires")
         if expiry_date:
             warnings.warn(

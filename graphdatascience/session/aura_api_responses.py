@@ -27,7 +27,7 @@ class SessionDetails:
     tenant_id: str
 
     @classmethod
-    def fromJson(cls, json: Dict[str, Any]) -> SessionDetails:
+    def from_json(cls, json: Dict[str, Any]) -> SessionDetails:
         expiry_date = json.get("expiry_date")
         ttl: Any | None = json.get("ttl")
 

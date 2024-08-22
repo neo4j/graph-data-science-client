@@ -9,6 +9,7 @@ from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_api_responses import SessionDetails
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.session_info import SessionInfo
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
@@ -42,6 +43,7 @@ class DedicatedSessions:
         session_name: str,
         memory: SessionMemory,
         db_connection: DbmsConnectionInfo,
+        cloud_location: Optional[CloudLocation] = None,
     ) -> AuraGraphDataScience:
         dbid = AuraApi.extract_id(db_connection.uri)
         existing_session = self._find_existing_session(session_name)
@@ -52,9 +54,11 @@ class DedicatedSessions:
         if existing_session:
             self._check_expiry_date(existing_session)
             self._check_memory_configuration(existing_session, memory.value)
+            self._check_dbid(existing_session, dbid)
+
             session_id = existing_session.id
         else:
-            create_details = self._create_session(session_name, dbid, db_connection.uri, password, memory.value)
+            create_details = self._create_session(session_name, dbid, password, memory.value, cloud_location)
             session_id = create_details.id
 
         wait_result = self._aura_api.wait_for_session_running(session_id)
@@ -86,6 +90,7 @@ class DedicatedSessions:
 
     def _find_existing_session(self, session_name: str) -> Optional[SessionDetails]:
         matched_sessions: List[SessionDetails] = []
+        # TODO pass dbid to list sessions (fail if for different dbid)
         matched_sessions = [s for s in self._aura_api.list_sessions() if s.name == session_name]
 
         if len(matched_sessions) == 0:
@@ -94,19 +99,33 @@ class DedicatedSessions:
         return matched_sessions[0]
 
     def _create_session(
-        self, session_name: str, dbid: str, dburi: str, pwd: str, memory: SessionMemoryValue
+        self,
+        session_name: str,
+        dbid: str,
+        pwd: str,
+        memory: SessionMemoryValue,
+        cloud_location: Optional[CloudLocation] = None,
     ) -> SessionDetails:
         db_instance = self._aura_api.list_instance(dbid)
-        if not db_instance:
-            raise ValueError(f"Could not find AuraDB instance with the uri `{dburi}`")
 
-        create_details = self._aura_api.create_session(
-            name=session_name,
-            dbid=dbid,
-            pwd=pwd,
-            memory=memory,
-        )
-        return create_details
+        if not (db_instance or cloud_location):
+            raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")
+
+        if cloud_location and db_instance:
+            raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
+
+        # If cloud location is provided we go for self managed DBs path
+        if cloud_location:
+            return self._aura_api.create_standalone_session(
+                name=session_name, pwd=pwd, memory=memory, cloud_location=cloud_location
+            )
+        else:
+            return self._aura_api.create_attached_session(
+                name=session_name,
+                dbid=dbid,
+                pwd=pwd,
+                memory=memory,
+            )
 
     def _construct_client(
         self, session_id: str, session_connection: DbmsConnectionInfo, db_connection: DbmsConnectionInfo
@@ -129,7 +148,15 @@ class DedicatedSessions:
         self, existing_session: SessionDetails, requested_memory: SessionMemoryValue
     ) -> None:
         if existing_session.memory != requested_memory:
-            raise RuntimeError(
+            raise ValueError(
                 f"Session `{existing_session.name}` exists with a different memory configuration. "
                 f"Current: {existing_session.memory}, Requested: {requested_memory}."
+            )
+
+    def _check_dbid(self, existing_session: SessionDetails, dbid: str) -> None:
+        # we cannot distinguish for self-managed DBs as we dont store the db-uri in the session
+        if existing_session.instance_id and existing_session.instance_id != dbid:
+            raise ValueError(
+                f"Session `{existing_session.name}` exists against a different AuraDB. "
+                f"Current: `{existing_session.instance_id}`, Requested: `{dbid}`."
             )

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 import pytest
 from _pytest.logging import LogCaptureFixture
 from requests_mock import Mocker
+from requests_mock.request import _RequestObjectProxy
 
 from graphdatascience.session import SessionMemory
 from graphdatascience.session.algorithm_category import AlgorithmCategory
@@ -17,6 +18,7 @@ from graphdatascience.session.aura_api_responses import (
     TimeParser,
     WaitResult,
 )
+from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.session_sizes import SESSION_MEMORY_VALUE_UNKNOWN
 
 
@@ -33,7 +35,7 @@ def test_base_uri_from_env() -> None:
     assert AuraApi.base_uri("staging") == "https://api-staging.neo4j.io"
 
 
-def test_create_session(requests_mock: Mocker) -> None:
+def test_create_attached_session(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
@@ -55,7 +57,7 @@ def test_create_session(requests_mock: Mocker) -> None:
         },
     )
 
-    result = api.create_session("name-0", "dbid-1", "pwd-2", SessionMemory.m_4GB.value)
+    result = api.create_attached_session(name="name-0", dbid="dbid-1", pwd="pwd-2", memory=SessionMemory.m_4GB.value)
 
     assert result == SessionDetails(
         id="id0",
@@ -70,6 +72,79 @@ def test_create_session(requests_mock: Mocker) -> None:
         tenant_id="tenant-0",
         user_id="user-0",
     )
+
+
+def test_create_dedicated_session(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    def assert_params(request: _RequestObjectProxy) -> bool:
+        assert request.json() == {
+            "name": "name-0",
+            "tenant_id": "some-tenant",
+            "password": "pwd-2",
+            "memory": "4GB",
+            "cloud_provider": "aws",
+            "region": "leipzig-1",
+        }
+        return True
+
+    requests_mock.post(
+        "https://api.neo4j.io/v1beta5/data-science/sessions",
+        json={
+            "data": {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Creating",
+                "instance_id": "",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "1.2.3.4",
+                "memory": "4Gi",
+                "tenant_id": "tenant-0",
+                "user_id": "user-0",
+            }
+        },
+        additional_matcher=assert_params,
+    )
+
+    result = api.create_standalone_session(
+        "name-0", "pwd-2", SessionMemory.m_4GB.value, cloud_location=CloudLocation("aws", "leipzig-1")
+    )
+    assert result == SessionDetails(
+        id="id0",
+        name="name-0",
+        status="Creating",
+        instance_id="",
+        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
+        host="1.2.3.4",
+        memory=SessionMemory.m_4GB.value,
+        expiry_date=None,
+        ttl=None,
+        tenant_id="tenant-0",
+        user_id="user-0",
+    )
+
+
+def test_create_standalone_session_error_forwards(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    requests_mock.post(
+        "https://api.neo4j.io/v1beta5/data-science/sessions",
+        status_code=400,
+        json={
+            "errors": {
+                "message": "some validation error",
+            }
+        },
+    )
+
+    with pytest.raises(AuraApiError, match="some validation error"):
+        api.create_standalone_session(
+            "name-0", "pwd-2", SessionMemory.m_4GB.value, cloud_location=CloudLocation("invalidProvider", "leipzig-1")
+        )
 
 
 def test_list_session(requests_mock: Mocker) -> None:
@@ -95,7 +170,7 @@ def test_list_session(requests_mock: Mocker) -> None:
         },
     )
 
-    result = api.list_session("id0")
+    result = api.get_session("id0")
 
     assert result == SessionDetails(
         id="id0",
@@ -798,7 +873,7 @@ def test_parse_session_info() -> None:
         "tenant_id": "tenant-1",
         "user_id": "user-1",
     }
-    session_info = SessionDetails.fromJson(session_details)
+    session_info = SessionDetails.from_json(session_details)
 
     assert session_info == SessionDetails(
         id="test_id",
@@ -827,7 +902,7 @@ def test_parse_session_info_without_optionals() -> None:
         "tenant_id": "tenant-1",
         "user_id": "user-1",
     }
-    session_info = SessionDetails.fromJson(session_details)
+    session_info = SessionDetails.from_json(session_details)
 
     assert session_info == SessionDetails(
         id="test_id",
