@@ -5,12 +5,12 @@ from typing import Any, Dict
 
 from pandas import DataFrame, Series
 
+from ..call_parameters import CallParameters
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
-from graphdatascience.call_parameters import CallParameters
 
 
 class Model(ABC):

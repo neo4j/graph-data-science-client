@@ -3,10 +3,10 @@ from typing import Any, List, Union
 
 from pandas import Series
 
+from ..call_parameters import CallParameters
 from ..model.node_classification_model import NCModel
 from ..pipeline.classification_training_pipeline import ClassificationTrainingPipeline
 from ..query_runner.query_runner import QueryRunner
-from graphdatascience.call_parameters import CallParameters
 
 
 class NCTrainingPipeline(ClassificationTrainingPipeline[NCModel], ABC):

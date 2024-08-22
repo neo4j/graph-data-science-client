@@ -2,10 +2,10 @@ from typing import Any, Tuple
 
 from pandas import Series
 
+from ..call_parameters import CallParameters
 from .model import Model
 from .model_proc_runner import ModelProcRunner
 from .model_resolver import ModelResolver
-from graphdatascience.call_parameters import CallParameters
 
 
 class ModelAlphaProcRunner(ModelResolver):

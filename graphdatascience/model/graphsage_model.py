@@ -2,10 +2,10 @@ from typing import Any
 
 from pandas import Series
 
+from ..call_parameters import CallParameters
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
 from .model import Model
-from graphdatascience.call_parameters import CallParameters
 
 
 class GraphSageModel(Model):

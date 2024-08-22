@@ -2,10 +2,10 @@ from typing import Any, Dict, List
 
 from pandas import Series
 
+from ..call_parameters import CallParameters
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
 from .pipeline_model import PipelineModel
-from graphdatascience.call_parameters import CallParameters
 
 
 class NCModel(PipelineModel):

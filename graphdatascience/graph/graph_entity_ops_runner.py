@@ -5,6 +5,10 @@ from warnings import filterwarnings
 import pandas as pd
 from pandas import DataFrame, Series
 
+from ..call_parameters import CallParameters
+from ..error.cypher_warning_handler import (
+    filter_id_func_deprecation_warning,
+)
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..query_runner.query_runner import QueryRunner
@@ -13,10 +17,6 @@ from ..server_version.server_version import ServerVersion
 from ..utils.util_proc_runner import UtilProcRunner
 from .graph_object import Graph
 from .graph_type_check import graph_type_check
-from graphdatascience.call_parameters import CallParameters
-from graphdatascience.error.cypher_warning_handler import (
-    filter_id_func_deprecation_warning,
-)
 
 Strings = Union[str, List[str]]
 

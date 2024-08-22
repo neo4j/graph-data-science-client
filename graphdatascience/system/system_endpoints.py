@@ -3,13 +3,13 @@ from typing import Any, Optional
 
 from pandas import DataFrame, Series
 
+from ..call_parameters import CallParameters
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..server_version.compatible_with import compatible_with
-from graphdatascience.call_parameters import CallParameters
-from graphdatascience.server_version.server_version import ServerVersion
+from ..server_version.server_version import ServerVersion
 
 
 class DebugProcRunner(UncallableNamespace, IllegalAttrChecker):

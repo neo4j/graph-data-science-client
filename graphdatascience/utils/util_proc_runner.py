@@ -2,7 +2,7 @@ from typing import Any, List
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
-from graphdatascience.utils.util_node_property_func_runner import NodePropertyFuncRunner
+from ..utils.util_node_property_func_runner import NodePropertyFuncRunner
 
 
 class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):

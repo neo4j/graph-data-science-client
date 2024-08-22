@@ -1,11 +1,11 @@
 from typing import Any, List
 
-from ..error.illegal_attr_checker import IllegalAttrChecker
-from ..error.uncallable_namespace import UncallableNamespace
-from graphdatascience.error.cypher_warning_handler import (
+from ..error.cypher_warning_handler import (
     filter_id_func_deprecation_warning,
 )
-from graphdatascience.utils.util_node_property_func_runner import NodePropertyFuncRunner
+from ..error.illegal_attr_checker import IllegalAttrChecker
+from ..error.uncallable_namespace import UncallableNamespace
+from ..utils.util_node_property_func_runner import NodePropertyFuncRunner
 
 
 class UtilRemoteProcRunner(UncallableNamespace, IllegalAttrChecker):

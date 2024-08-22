@@ -1,9 +1,9 @@
 from typing import Any
 
-from graphdatascience.call_parameters import CallParameters
-from graphdatascience.error.illegal_attr_checker import IllegalAttrChecker
-from graphdatascience.graph.graph_object import Graph
-from graphdatascience.graph.graph_type_check import graph_type_check
+from ..call_parameters import CallParameters
+from ..error.illegal_attr_checker import IllegalAttrChecker
+from ..graph.graph_object import Graph
+from ..graph.graph_type_check import graph_type_check
 
 
 class NodePropertyFuncRunner(IllegalAttrChecker):

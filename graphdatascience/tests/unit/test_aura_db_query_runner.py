@@ -9,7 +9,6 @@ from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 
 
 class FakeArrowClient:
-
     def connection_info(self) -> Tuple[str, str]:
         return "myHost", "1234"
 

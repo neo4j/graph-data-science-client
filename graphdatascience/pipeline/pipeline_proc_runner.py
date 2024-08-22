@@ -2,16 +2,16 @@ from typing import Any, Optional
 
 from pandas import DataFrame, Series
 
+from ..call_parameters import CallParameters
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..model.pipeline_model import PipelineModel
+from ..server_version.server_version import ServerVersion
 from .lp_training_pipeline import LPTrainingPipeline
 from .nc_training_pipeline import NCTrainingPipeline
 from .nr_training_pipeline import NRTrainingPipeline
 from .training_pipeline import TrainingPipeline
-from graphdatascience.call_parameters import CallParameters
-from graphdatascience.server_version.server_version import ServerVersion
 
 
 class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):

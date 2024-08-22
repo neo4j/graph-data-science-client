@@ -2,10 +2,10 @@ from typing import Any, Optional
 
 from pandas import DataFrame, Series
 
+from ..call_parameters import CallParameters
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from .model import Model
-from graphdatascience.call_parameters import CallParameters
 
 
 class ModelBetaProcRunner(UncallableNamespace, IllegalAttrChecker):

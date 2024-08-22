@@ -5,14 +5,21 @@ set -o nounset
 set -o pipefail
 set -o xtrace
 
-python -m black .
-python -m isort .
+python -m ruff check . --fix
+python -m ruff format .
+
+if [ "${SKIP_NOTEBOOKS:-false}" == "true" ]; then
+  echo "Skipping notebooks"
+  exit 0
+fi
+
+echo "Cleaning notebooks"
 python -m jupyter nbconvert \
-  --clear-output \
-  --inplace \
-  --ClearOutputPreprocessor.enabled=True \
-  --ClearMetadataPreprocessor.enabled=True \
-    --ClearMetadataPreprocessor.preserve_cell_metadata_mask='tags' \
-  --log-level CRITICAL \
-  ./examples/*.ipynb \
-  ./examples/dev/*.ipynb
+--clear-output \
+--inplace \
+--ClearOutputPreprocessor.enabled=True \
+--ClearMetadataPreprocessor.enabled=True \
+  --ClearMetadataPreprocessor.preserve_cell_metadata_mask='tags' \
+--log-level CRITICAL \
+./examples/*.ipynb \
+./examples/dev/*.ipynb

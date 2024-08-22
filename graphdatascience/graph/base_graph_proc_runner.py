@@ -9,11 +9,13 @@ from multimethod import multimethod
 from neo4j import __version__ as neo4j_driver_version
 from pandas import DataFrame, Series, read_parquet
 
+from ..call_parameters import CallParameters
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
+from .graph_create_result import GraphCreateResult
 from .graph_entity_ops_runner import (
     GraphLabelRunner,
     GraphNodePropertiesRunner,
@@ -33,8 +35,6 @@ from .graph_type_check import (
     graph_type_check_optional,
 )
 from .ogb_loader import OGBLLoader, OGBNLoader
-from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.graph_create_result import GraphCreateResult
 
 Strings = Union[str, List[str]]
 

@@ -2,13 +2,13 @@ from typing import Any
 
 from pandas import Series
 
+from ..call_parameters import CallParameters
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
+from .graph_create_result import GraphCreateResult
 from .graph_object import Graph
 from .graph_type_check import from_graph_type_check
-from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.graph_create_result import GraphCreateResult
 
 
 class GraphAlphaSampleRunner(IllegalAttrChecker):

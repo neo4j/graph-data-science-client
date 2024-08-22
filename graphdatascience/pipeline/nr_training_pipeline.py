@@ -2,10 +2,10 @@ from typing import Any, List, Union
 
 from pandas import Series
 
+from ..call_parameters import CallParameters
 from ..model.node_regression_model import NRModel
 from ..query_runner.query_runner import QueryRunner
 from .training_pipeline import TrainingPipeline
-from graphdatascience.call_parameters import CallParameters
 
 
 class NRTrainingPipeline(TrainingPipeline[NRModel]):

@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import List, Optional
 
+from ..call_parameters import CallParameters
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..query_runner.aura_db_query_runner import AuraDbQueryRunner
 from ..server_version.compatible_with import compatible_with
+from ..server_version.server_version import ServerVersion
+from .graph_create_result import GraphCreateResult
 from .graph_object import Graph
-from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.graph_create_result import GraphCreateResult
-from graphdatascience.server_version.server_version import ServerVersion
 
 
 class GraphProjectRemoteRunner(IllegalAttrChecker):

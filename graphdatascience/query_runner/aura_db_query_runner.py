@@ -5,10 +5,10 @@ from uuid import uuid4
 from pandas import DataFrame
 
 from ..call_parameters import CallParameters
+from ..query_runner.graph_constructor import GraphConstructor
+from ..server_version.server_version import ServerVersion
 from .gds_arrow_client import GdsArrowClient
 from .query_runner import QueryRunner
-from graphdatascience.query_runner.graph_constructor import GraphConstructor
-from graphdatascience.server_version.server_version import ServerVersion
 
 
 class AuraDbQueryRunner(QueryRunner):

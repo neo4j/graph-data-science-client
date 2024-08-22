@@ -2,12 +2,12 @@ from typing import Any, Dict, Optional
 
 from pandas import DataFrame
 
-from graphdatascience.call_parameters import CallParameters
-from graphdatascience.caller_base import CallerBase
-from graphdatascience.error.illegal_attr_checker import IllegalAttrChecker
-from graphdatascience.error.uncallable_namespace import UncallableNamespace
-from graphdatascience.server_version.compatible_with import compatible_with
-from graphdatascience.server_version.server_version import ServerVersion
+from ..call_parameters import CallParameters
+from ..caller_base import CallerBase
+from ..error.illegal_attr_checker import IllegalAttrChecker
+from ..error.uncallable_namespace import UncallableNamespace
+from ..server_version.compatible_with import compatible_with
+from ..server_version.server_version import ServerVersion
 
 
 class ConfigProcRunner(IllegalAttrChecker, UncallableNamespace):

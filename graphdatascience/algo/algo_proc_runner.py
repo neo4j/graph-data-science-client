@@ -3,11 +3,11 @@ from typing import Any, Dict, Tuple
 
 from pandas import DataFrame, Series
 
+from ..call_parameters import CallParameters
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
 from ..model.graphsage_model import GraphSageModel
-from graphdatascience.call_parameters import CallParameters
 
 
 class AlgoProcRunner(IllegalAttrChecker, ABC):

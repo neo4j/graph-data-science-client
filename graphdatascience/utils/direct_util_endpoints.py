@@ -2,13 +2,13 @@ from typing import Any, Dict, List
 
 from pandas import DataFrame
 
+from ..call_parameters import CallParameters
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
-from graphdatascience.call_parameters import CallParameters
-from graphdatascience.error.cypher_warning_handler import (
+from ..error.cypher_warning_handler import (
     filter_id_func_deprecation_warning,
 )
-from graphdatascience.server_version.server_version import ServerVersion
+from ..server_version.server_version import ServerVersion
 
 
 class DirectUtilEndpoints(CallerBase):

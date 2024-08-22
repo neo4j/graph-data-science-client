@@ -3,12 +3,12 @@ from typing import Any, Dict, Generic, Tuple, TypeVar
 
 from pandas import DataFrame, Series
 
+from ..call_parameters import CallParameters
 from ..graph.graph_object import Graph
 from ..graph.graph_type_check import graph_type_check
 from ..model.pipeline_model import PipelineModel
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
-from graphdatascience.call_parameters import CallParameters
 
 MODEL_TYPE = TypeVar("MODEL_TYPE", bound=PipelineModel, covariant=True)
 
@@ -238,9 +238,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
             params=CallParameters(name=self.name()),
             yields=["exists"],
             custom_error=False,
-        )[
-            "exists"
-        ].squeeze()  # type: ignore
+        )["exists"].squeeze()  # type: ignore
 
     def drop(self, failIfMissing: bool = False) -> "Series[Any]":
         """

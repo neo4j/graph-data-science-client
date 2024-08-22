@@ -110,7 +110,7 @@ class FakeAuraApi(AuraApi):
         return create_details
 
     def delete_session(self, session_id: str) -> bool:
-        return not self._sessions.pop(session_id, None) is None
+        return self._sessions.pop(session_id, None) is not None
 
     def delete_instance(self, instance_id: str) -> InstanceSpecificDetails:
         return self._instances.pop(instance_id)

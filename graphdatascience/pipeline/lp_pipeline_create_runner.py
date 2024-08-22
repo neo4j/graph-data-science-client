@@ -2,10 +2,10 @@ from typing import Any, Tuple
 
 from pandas import Series
 
+from ..call_parameters import CallParameters
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from .lp_training_pipeline import LPTrainingPipeline
-from graphdatascience.call_parameters import CallParameters
 
 
 class LPPipelineCreateRunner(UncallableNamespace, IllegalAttrChecker):

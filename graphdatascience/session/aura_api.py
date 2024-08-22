@@ -31,7 +31,6 @@ class AuraApiError(Exception):
 
 
 class AuraApi:
-
     API_VERSION = "v1beta5"
 
     def __init__(

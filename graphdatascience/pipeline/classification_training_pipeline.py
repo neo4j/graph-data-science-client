@@ -3,9 +3,9 @@ from typing import Any
 
 from pandas import Series
 
+from ..call_parameters import CallParameters
 from ..server_version.server_version import ServerVersion
 from .training_pipeline import MODEL_TYPE, TrainingPipeline
-from graphdatascience.call_parameters import CallParameters
 
 
 class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):

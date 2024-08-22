@@ -6,14 +6,14 @@ from typing import Any, Dict, List, Optional, Tuple
 from pandas import DataFrame
 
 from ..call_parameters import CallParameters
+from ..server_version.compatible_with import (
+    IncompatibleServerVersionError,
+)
 from ..server_version.server_version import ServerVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .gds_arrow_client import GdsArrowClient
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
-from graphdatascience.server_version.compatible_with import (
-    IncompatibleServerVersionError,
-)
 
 
 class ArrowQueryRunner(QueryRunner):
