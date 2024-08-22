@@ -18,6 +18,18 @@ def test_protocol_versions() -> None:
     assert runner.last_params() == {}
 
 
+def test_protocol_versions_caching() -> None:
+    runner = CollectingQueryRunner(
+        result_or_exception=DataFrame([{"version": "v2"}]), server_version=ServerVersion(1, 2, 3)
+    )
+    resolver = ProtocolVersionResolver(runner)
+
+    resolver.protocol_versions_from_server()
+    resolver.protocol_versions_from_server()
+    resolver.protocol_versions_from_server()
+    assert runner.queries == ["CALL gds.session.dbms.protocol.version() YIELD version"]
+
+
 def test_protocol_versions_proc_missing() -> None:
     runner = CollectingQueryRunner(
         result_or_exception=Neo4jError("no such proc"), server_version=ServerVersion(1, 2, 3)

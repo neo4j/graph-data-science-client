@@ -13,6 +13,7 @@ class ProtocolVersionResolver:
 
     def __init__(self, query_runner: QueryRunner):
         self._query_runner = query_runner
+        self._cached_protocol_versions: List[ProtocolVersion] = []
 
     def protocol_versions_from_server(self) -> List[ProtocolVersion]:
         """
@@ -20,6 +21,12 @@ class ProtocolVersionResolver:
         Returns 'v1' if the procedure was not found, which indicates an older version of the database.
         """
 
+        if not self._cached_protocol_versions:
+            self._cached_protocol_versions = self._fetch_from_server()
+
+        return self._cached_protocol_versions
+
+    def _fetch_from_server(self) -> List[ProtocolVersion]:
         try:
             return [
                 ProtocolVersions.from_str(version_string)
