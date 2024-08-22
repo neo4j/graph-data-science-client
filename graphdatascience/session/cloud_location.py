@@ -10,5 +10,6 @@ class CloudLocation:
         provider (str): Cloud provider: "gcp", "aws" or "azure".
         region (str): Cloud region, e.g. "europe-west1".
     """
+
     provider: str
     region: str

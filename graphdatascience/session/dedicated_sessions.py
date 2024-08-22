@@ -112,12 +112,12 @@ class DedicatedSessions:
             raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")
 
         if cloud_location and db_instance:
-                raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
+            raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
 
         # If cloud location is provided we go for self managed DBs path
         if cloud_location:
             return self._aura_api.create_standalone_session(
-                name=session_name, pwd=pwd, memory=memory.value, cloud_location=cloud_location
+                name=session_name, pwd=pwd, memory=memory, cloud_location=cloud_location
             )
         else:
             return self._aura_api.create_attached_session(
