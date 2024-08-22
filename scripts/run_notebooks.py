@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, List, NamedTuple
+from typing import Any, List, NamedTuple, Optional
 
 import nbformat
 from nbclient.exceptions import CellExecutionError
@@ -13,7 +12,6 @@ from nbconvert.preprocessors.execute import ExecutePreprocessor
 VERSION_CELL_TAG = "verify-version"
 TEARDOWN_CELL_TAG = "teardown"
 
-SESSIONS_AGAINST_LOCAL_DB = "self-managed-db"
 
 class IndexedCell(NamedTuple):
     cell: Any
@@ -65,13 +63,13 @@ class GdsTearDownCollector(ExecutePreprocessor):
         return self._tear_down_cells
 
 
-def main(run_session_nbs: bool) -> None:
+def main(notebook_files: Optional[List[str]] = None) -> None:
     examples_path = Path("examples")
 
     notebook_files = [
         f
         for f in examples_path.iterdir()
-        if f.is_file() and ("session" in f.name) == run_session_nbs and f.suffix == ".ipynb"
+        if f.is_file() and f.suffix == ".ipynb" and (notebook_files is None or f.name in notebook_files)
     ]
 
     ep = GdsExecutePreprocessor(kernel_name="python3")
@@ -99,15 +97,9 @@ def main(run_session_nbs: bool) -> None:
                     f"Notebook {notebook_filename} does not have a cell tagged with '{VERSION_CELL_TAG}'."
                     "Required to run the notebook only against compatible versions."
                 )
-            ep.init_notebook(version_cell_index=verify_version_cell_index[0], tear_down_cells=td_collector.tear_down_cells())
-
-            # Skip notebooks if they cannot run against AuraDS-based sessions and no local db is setup
-            require_dedicated_sessions_cells = [
-                idx for idx, cell in enumerate(nb["cells"]) if SESSIONS_AGAINST_LOCAL_DB in cell["metadata"].get("tags", [])
-            ]
-            if len(require_dedicated_sessions_cells) > 0 and not os.environ.get("USE_DEDICATED_SESSIONS", True) and os.environ.get("NEO4J_URI"):
-                print(f"Skipping notebook {notebook_filename} as it runs against a self-managed-db, which is not supported by AuraDS based sessions.")
-                continue
+            ep.init_notebook(
+                version_cell_index=verify_version_cell_index[0], tear_down_cells=td_collector.tear_down_cells()
+            )
 
             # run the notebook
             try:
@@ -126,6 +118,11 @@ def main(run_session_nbs: bool) -> None:
 
 if __name__ == "__main__":
     notebook_filter = sys.argv[1] if len(sys.argv) >= 2 else ""
-    only_session_nbs = True if notebook_filter == "sessions" else False
 
-    main(only_session_nbs)
+    notebooks: Optional[List[str]] = None
+    if notebook_filter == "sessions-attached":
+        notebooks = ["gds-sessions.ipynb"]
+    elif notebook_filter == "sessions-self-managed-db":
+        notebooks = ["gds-sessions-self-managed.ipynb"]
+
+    main(notebooks)
