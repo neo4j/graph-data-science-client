@@ -4,12 +4,13 @@ from uuid import uuid4
 
 from pandas import DataFrame
 
-from ..call_parameters import CallParameters
-from ..query_runner.graph_constructor import GraphConstructor
-from ..server_version.server_version import ServerVersion
+from graphdatascience.query_runner.graph_constructor import GraphConstructor
+from graphdatascience.server_version.server_version import ServerVersion
 from .gds_arrow_client import GdsArrowClient
 from .protocol_version import ProtocolVersion
 from .query_runner import QueryRunner
+from ..call_parameters import CallParameters
+from ..session.dbms.protocol_resolver import ProtocolVersionResolver
 
 
 class AuraDbQueryRunner(QueryRunner):
@@ -21,13 +22,12 @@ class AuraDbQueryRunner(QueryRunner):
         db_query_runner: QueryRunner,
         arrow_client: GdsArrowClient,
         encrypted: bool,
-        protocol_versions: List[ProtocolVersion],
     ):
         self._gds_query_runner = gds_query_runner
         self._db_query_runner = db_query_runner
         self._gds_arrow_client = arrow_client
         self._encrypted = encrypted
-        self._server_protocol_versions = protocol_versions
+        self._server_protocol_versions = ProtocolVersionResolver(db_query_runner).protocol_versions_from_server()
 
     def run_cypher(
         self,

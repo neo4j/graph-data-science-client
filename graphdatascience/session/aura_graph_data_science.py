@@ -80,10 +80,8 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_tls_root_certs,
         )
 
-        protocol_versions = self._db_protocol_versions()
-
         self._query_runner = AuraDbQueryRunner(
-            gds_query_runner, self._db_query_runner, arrow_client, self._db_query_runner.encrypted(), protocol_versions
+            gds_query_runner, self._db_query_runner, arrow_client, self._db_query_runner.encrypted()
         )
 
         self._delete_fn = delete_fn
@@ -202,20 +200,3 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         Close the GraphDataScience object and release any resources held by it.
         """
         self._query_runner.close()
-
-    def _db_protocol_versions(self) -> List[ProtocolVersion]:
-        """
-        Get the protocol versions supported by the AuraDB instance.
-        Returns 'v1' if the procedure was not found, which indicates an older version of the database.
-        """
-        try:
-            return [
-                ProtocolVersions.from_str(version_string)
-                for version_string in (
-                    self._db_query_runner.call_procedure("gds.protocol.versions", yields=["version"])[
-                        "version"
-                    ].to_list()
-                )
-            ]
-        except Neo4jError:
-            return [ProtocolVersion.V1]
