@@ -6,7 +6,6 @@ class ProtocolVersion(Enum):
     V2 = "v2"
 
     def versioned_procedure_name(self, procedure_name: str) -> str:
-
         if self == ProtocolVersion.V1:
             return procedure_name
         else:
