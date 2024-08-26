@@ -1,4 +1,4 @@
-from typing import Any, Dict, Generator, List, Optional
+from typing import Any, Dict, Generator, List, Optional, Union
 
 import pytest
 from pandas import DataFrame
@@ -21,7 +21,7 @@ DEFAULT_SERVER_VERSION = ServerVersion(2, 6, 0)
 
 class CollectingQueryRunner(QueryRunner):
     def __init__(
-        self, server_version: ServerVersion, result_or_exception: Optional[DataFrame] | Exception = None
+        self, server_version: ServerVersion, result_or_exception: Optional[Union[DataFrame, Exception]] = None
     ) -> None:
         self._result_or_exception = result_or_exception
         self.queries: List[str] = []
