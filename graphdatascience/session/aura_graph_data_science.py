@@ -31,7 +31,6 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         delete_fn: Callable[[], bool],
         arrow_disable_server_verification: bool = False,
         arrow_tls_root_certs: Optional[bytes] = None,
-        arrow_db_to_session_encrypted: Optional[bool] = True,
         bookmarks: Optional[Any] = None,
     ):
         gds_neo4j_query_runner = Neo4jQueryRunner.create(
@@ -69,9 +68,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_tls_root_certs,
         )
 
-        self._query_runner = AuraDbQueryRunner(
-            gds_query_runner, self._db_query_runner, arrow_client, arrow_db_to_session_encrypted
-        )
+        self._query_runner = AuraDbQueryRunner(gds_query_runner, self._db_query_runner, arrow_client)
 
         self._delete_fn = delete_fn
 

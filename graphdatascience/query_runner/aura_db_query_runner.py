@@ -22,12 +22,10 @@ class AuraDbQueryRunner(QueryRunner):
         gds_query_runner: QueryRunner,
         db_query_runner: QueryRunner,
         arrow_client: GdsArrowClient,
-        encrypted: bool,
     ):
         self._gds_query_runner = gds_query_runner
         self._db_query_runner = db_query_runner
         self._gds_arrow_client = arrow_client
-        self._encrypted = encrypted
         self._resolved_protocol_version = ProtocolVersionResolver(db_query_runner).resolve()
 
     def run_cypher(
@@ -272,4 +270,4 @@ class AuraDbQueryRunner(QueryRunner):
         params["host"] = host
         params["port"] = port
         params["token"] = token
-        params["encrypted"] = self._encrypted
+        params["encrypted"] = self._gds_query_runner.encrypted()
