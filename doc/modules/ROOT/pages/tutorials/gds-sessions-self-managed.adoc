@@ -29,11 +29,18 @@ have the GDS sessions feature enabled for your tenant. Contact your
 account manager to get the features enabled.
 
 We also need to have the `graphdatascience` Python library installed,
-version `1.11` or later.
+version `1.12a1` or later.
 
 [source, python, role=no-test]
 ----
-%pip install "graphdatascience"
+%pip install "graphdatascience>=1.12a1"
+----
+
+[source, python, role=no-test]
+----
+from dotenv import load_dotenv
+
+load_dotenv("staging_self_managed.env", override=True)
 ----
 
 == Aura API credentials
@@ -63,33 +70,30 @@ sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secr
 
 == Creating a new session
 
-A new session is created by calling `sessions.get_or_create()`. When we
-want to do this, we must identify a data source. We assume here that an
-self managed Neo4j database instance has been set up and is available to
-access. We need to provide the database Bolt address, username, and
-password to the `DbmsConnectionInfo` class.
+A new session is created by calling `sessions.get_or_create()`. To do
+this, we need to identify a data source. We assume that a self-managed
+Neo4j DBMS instance has been set up and is accessible. We need to pass
+the database address, user name and password to the `DbmsConnectionInfo`
+class.
 
-We also have to specify the size of the session. There are many possible
-sizes to choose from. Please refer to the API reference docs or the
+We also need to specify the session size. There are many possible sizes
+to choose from. Please refer to the API reference documentation or the
 manual for a full list.
 
-Lastly, we need to give our session a name. We will call ours
-`people-and-fruits-sm`. If we had already created a session and want to
-reconnect to it, the same code is used. Doing that will not incur any
-additional costs, and will be a lot faster.
+Finally, we need to give our session a name. We will call ours
+`people-and-fruits-sm’. If we have already created a session and want to
+reconnect to it, the same code will be used. There is no extra cost in
+doing this, and it is much faster.
 
 [source, python, role=no-test]
 ----
 import os
 from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory, CloudLocation
 
-# Identify the Neo4j database instance
-db_address = os.environ["NEO4J_URI"]
-db_user = os.environ["NEO4J_USER"]
-db_pw = os.environ["NEO4J_PASSWORD"]
-
-cloud_provider = os.environ["CLOUD_PROVIDER"]
-cloud_region = os.environ["CLOUD_REGION"]
+# Identify the Neo4j DBMS
+db_connection = DbmsConnectionInfo(uri=os.environ["NEO4J_URI"], username=os.environ["NEO4J_USER"], password=os.environ["NEO4J_PASSWORD"])
+# Specify where to create the GDS session
+cloud_location = CloudLocation(provider="gcp", region="europe-west1")
 
 # Create a GDS session!
 memory = sessions.estimate(
@@ -101,10 +105,8 @@ gds = sessions.get_or_create(
     # we give it a representative name
     session_name="people-and-fruits-sm",
     memory=memory,
-    db_connection=DbmsConnectionInfo(db_address, db_user, db_pw),
-
-    # Because we used self-managed DB we need to specify the cloud location.
-    cloud_location=CloudLocation(cloud_provider, cloud_region)
+    db_connection=db_connection,
+    cloud_location=cloud_location,
 )
 ----
 

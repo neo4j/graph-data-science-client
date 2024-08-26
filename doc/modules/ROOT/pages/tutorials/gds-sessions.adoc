@@ -34,7 +34,7 @@ version `1.11` or later.
 
 [source, python, role=no-test]
 ----
-%pip install "graphdatascience"
+%pip install "graphdatascience>=1.11"
 ----
 
 == Aura API credentials
@@ -64,34 +64,28 @@ sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secr
 
 == Creating a new session
 
-A new session is created by calling `sessions.get_or_create()`. When we
-want to do this, we must identify a data source. We assume here that an
-AuraDB instance has been created and is available to access. We need to
-provide the database Bolt address, username, and password to the
-`DbmsConnectionInfo` class.
+A new session is created by calling `sessions.get_or_create()`. To do
+this, we need to identify a data source. We assume here that an AuraDB
+instance has been created and is available for access. We need to pass
+the database address, username and password to the `DbmsConnectionInfo`
+class.
 
-We also have to specify the size of the session. There are many possible
-sizes to choose from. Please refer to the API reference docs or the
-manual for a full list.
+We also need to specify the size of the session. There are many possible
+sizes to choose from. Please refer to the API reference documentation or
+the manual for a full list.
 
-Lastly, we need to give our session a name. We will call ours
-`people-and-fruits`. If we had already created a session and want to
-reconnect to it, the same code is used. Doing that will not incur any
-additional costs, and will be a lot faster.
+Finally, we need to give our session a name. We will call ours
+`people-and-fruits’. If we have already created a session and want to
+reconnect to it, the same code will be used. There is no extra cost in
+doing this, and it is much faster.
 
 [source, python, role=no-test]
 ----
 import os
-from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory, CloudLocation
+from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory
 
 # Identify the AuraDB instance
-aura_db_address = os.environ["NEO4J_URI"]
-aura_db_user = os.environ["NEO4J_USER"]
-aura_db_pw = os.environ["NEO4J_PASSWORD"]
-
-cloud_provider = os.environ["CLOUD_PROVIDER"]
-cloud_region = os.environ["CLOUD_REGION"]
-
+db_connection = DbmsConnectionInfo(uri=os.environ["AURA_DB_ADDRESS"], username=os.environ["AURA_DB_USER"], password=os.environ["AURA_DB_PW"])
 # Create a GDS session!
 memory = sessions.estimate(
     node_count=20,
@@ -102,10 +96,7 @@ gds = sessions.get_or_create(
     # we give it a representative name
     session_name="people-and-fruits",
     memory=memory,
-    db_connection=DbmsConnectionInfo(aura_db_address, aura_db_user, aura_db_pw),
-
-    # Because we used self-managed DB we need to specify the cloud location.
-    cloud_location=CloudLocation(cloud_provider, cloud_region)
+    db_connection=db_connection,
 )
 ----
 
