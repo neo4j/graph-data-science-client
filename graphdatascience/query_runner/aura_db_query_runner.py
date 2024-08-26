@@ -4,9 +4,12 @@ from uuid import uuid4
 
 from pandas import DataFrame
 
+from graphdatascience.query_runner.graph_constructor import GraphConstructor
+from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.session.dbms.protocol_version import ProtocolVersion
+
 from ..call_parameters import CallParameters
-from ..query_runner.graph_constructor import GraphConstructor
-from ..server_version.server_version import ServerVersion
+from ..session.dbms.protocol_resolver import ProtocolVersionResolver
 from .gds_arrow_client import GdsArrowClient
 from .query_runner import QueryRunner
 
@@ -25,6 +28,7 @@ class AuraDbQueryRunner(QueryRunner):
         self._db_query_runner = db_query_runner
         self._gds_arrow_client = arrow_client
         self._encrypted = encrypted
+        self._resolved_protocol_version = ProtocolVersionResolver(db_query_runner).resolve()
 
     def run_cypher(
         self,
@@ -50,7 +54,7 @@ class AuraDbQueryRunner(QueryRunner):
         if params is None:
             params = CallParameters()
 
-        if AuraDbQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME == endpoint:
+        if AuraDbQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME in endpoint:
             return self._remote_projection(endpoint, params, yields, database, logging)
 
         elif ".write" in endpoint and self.is_remote_projected_graph(params["graph_name"]):
@@ -109,7 +113,67 @@ class AuraDbQueryRunner(QueryRunner):
         logging: bool = False,
     ) -> DataFrame:
         self._inject_arrow_config(params["arrow_configuration"])
-        return self._db_query_runner.call_procedure(endpoint, params, yields, database, logging, False)
+
+        graph_name = params["graph_name"]
+        query = params["query"]
+        concurrency = params["concurrency"]
+        arrow_config = params["arrow_configuration"]
+        undirected_relationship_types = params["undirected_relationship_types"]
+        inverse_indexed_relationship_types = params["inverse_indexed_relationship_types"]
+
+        protocol_mapping = {ProtocolVersion.V1: self._project_params_v1, ProtocolVersion.V2: self._project_params_v2}
+        remote_project_proc_params = protocol_mapping[self._resolved_protocol_version](
+            graph_name,
+            query,
+            concurrency,
+            arrow_config,
+            undirected_relationship_types,
+            inverse_indexed_relationship_types,
+        )
+
+        versioned_endpoint = self._resolved_protocol_version.versioned_procedure_name(endpoint)
+
+        return self._db_query_runner.call_procedure(
+            versioned_endpoint, remote_project_proc_params, yields, database, logging, False
+        )
+
+    @staticmethod
+    def _project_params_v2(
+        graph_name: str,
+        query: str,
+        concurrency: int,
+        arrow_config: Dict[str, Any],
+        undirected_relationship_types: List[str],
+        inverse_indexed_relationship_types: List[str],
+    ) -> CallParameters:
+        return CallParameters(
+            graph_name=graph_name,
+            query=query,
+            arrow_configuration=arrow_config,
+            configuration={
+                "concurrency": concurrency,
+                "undirectedRelationshipTypes": undirected_relationship_types,
+                "inverseIndexedRelationshipTypes": inverse_indexed_relationship_types,
+            },
+        )
+
+    @staticmethod
+    def _project_params_v1(
+        graph_name: str,
+        query: str,
+        concurrency: int,
+        arrow_config: Dict[str, Any],
+        undirected_relationship_types: Optional[List[str]],
+        inverse_indexed_relationship_types: Optional[List[str]],
+    ) -> CallParameters:
+        return CallParameters(
+            graph_name=graph_name,
+            query=query,
+            concurrency=concurrency,
+            undirected_relationship_types=undirected_relationship_types,
+            inverse_indexed_relationship_types=inverse_indexed_relationship_types,
+            arrow_configuration=arrow_config,
+        )
 
     def _remote_write_back(
         self,
@@ -123,29 +187,40 @@ class AuraDbQueryRunner(QueryRunner):
         if params["config"] is None:
             params["config"] = {}
 
+        config = params["config"]
+
         # we pop these out so that they are not retained for the GDS proc call
-        db_arrow_config = params["config"].pop("arrowConfiguration", {})  # type: ignore
-        self._inject_arrow_config(db_arrow_config)
+        db_arrow_config = config.pop("arrowConfiguration", {})
 
-        job_id = params["config"]["jobId"] if "jobId" in params["config"] else str(uuid4())  # type: ignore
-        params["config"]["jobId"] = job_id  # type: ignore
+        job_id = config["jobId"] if "jobId" in config else str(uuid4())
+        config["jobId"] = job_id
 
-        params["config"]["writeToResultStore"] = True  # type: ignore
+        config["writeToResultStore"] = True
 
         gds_write_result = self._gds_query_runner.call_procedure(
             endpoint, params, yields, database, logging, custom_error
         )
 
-        db_write_proc_params = {
-            "graphName": params["graph_name"],
-            "databaseName": self._gds_query_runner.database(),
-            "jobId": job_id,
-            "arrowConfiguration": db_arrow_config,
+        self._inject_arrow_config(db_arrow_config)
+
+        graph_name = params["graph_name"]
+
+        protocol_mapping = {
+            ProtocolVersion.V1: lambda: self._write_back_params_v1(
+                graph_name, self._db_query_runner.database(), job_id, db_arrow_config
+            ),
+            ProtocolVersion.V2: lambda: self._write_back_params_v2(graph_name, job_id, db_arrow_config, config),
         }
+        db_write_proc_params = protocol_mapping[self._resolved_protocol_version]()  # type: ignore
 
         write_back_start = time.time()
         database_write_result = self._db_query_runner.call_procedure(
-            "gds.arrow.write", CallParameters(db_write_proc_params), yields, None, False, False
+            self._resolved_protocol_version.versioned_procedure_name("gds.arrow.write"),
+            db_write_proc_params,
+            yields,
+            None,
+            False,
+            False,
         )
         write_millis = (time.time() - write_back_start) * 1000
         gds_write_result["writeMillis"] = write_millis
@@ -160,6 +235,33 @@ class AuraDbQueryRunner(QueryRunner):
             gds_write_result["relationshipsWritten"] = database_write_result["writtenRelationships"]
 
         return gds_write_result
+
+    @staticmethod
+    def _write_back_params_v2(
+        graph_name: str, job_id: str, db_arrow_config: Dict[str, Any], config: Dict[str, Any]
+    ) -> CallParameters:
+        configuration = {}
+
+        if "concurrency" in config:
+            configuration["concurrency"] = config["concurrency"]
+
+        return CallParameters(
+            graphName=graph_name,
+            jobId=job_id,
+            arrowConfiguration=db_arrow_config,
+            configuration=configuration,
+        )
+
+    @staticmethod
+    def _write_back_params_v1(
+        graph_name: str, database_name: str, job_id: str, db_arrow_config: Dict[str, Any]
+    ) -> CallParameters:
+        return CallParameters(
+            graphName=graph_name,
+            databaseName=database_name,
+            jobId=job_id,
+            arrowConfiguration=db_arrow_config,
+        )
 
     def _inject_arrow_config(self, params: Dict[str, Any]) -> None:
         host, port = self._gds_arrow_client.connection_info()

@@ -74,6 +74,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_disable_server_verification,
             arrow_tls_root_certs,
         )
+
         self._query_runner = AuraDbQueryRunner(
             gds_query_runner, self._db_query_runner, arrow_client, self._db_query_runner.encrypted()
         )

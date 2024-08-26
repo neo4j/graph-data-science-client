@@ -1,4 +1,4 @@
-from typing import Any, Dict, Generator, List, Optional
+from typing import Any, Dict, Generator, List, Optional, Union
 
 import pytest
 from pandas import DataFrame
@@ -20,8 +20,10 @@ DEFAULT_SERVER_VERSION = ServerVersion(2, 6, 0)
 
 
 class CollectingQueryRunner(QueryRunner):
-    def __init__(self, server_version: ServerVersion) -> None:
-        self._mock_result: Optional[DataFrame] = None
+    def __init__(
+        self, server_version: ServerVersion, result_or_exception: Optional[Union[DataFrame, Exception]] = None
+    ) -> None:
+        self._result_or_exception = result_or_exception
         self.queries: List[str] = []
         self.params: List[Dict[str, Any]] = []
         self._server_version = server_version
@@ -61,9 +63,14 @@ class CollectingQueryRunner(QueryRunner):
         self.params.append(dict(params.items()))
 
         # This "mock" lets us initialize the GDS object without issues.
-        return (
-            self._mock_result if self._mock_result is not None else DataFrame([{"version": str(self._server_version)}])
-        )
+        if isinstance(self._result_or_exception, Exception):
+            raise self._result_or_exception
+        else:
+            return (
+                self._result_or_exception
+                if self._result_or_exception is not None
+                else DataFrame([{"version": str(self._server_version)}])
+            )
 
     def server_version(self) -> ServerVersion:
         return self._server_version
@@ -107,7 +114,7 @@ class CollectingQueryRunner(QueryRunner):
         )
 
     def set__mock_result(self, result: DataFrame) -> None:
-        self._mock_result = result
+        self._result_or_exception = result
 
 
 @pytest.fixture
