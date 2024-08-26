@@ -2,10 +2,11 @@ from enum import Enum
 
 
 class ProtocolVersion(Enum):
-    V1 = ("v1",)
+    V1 = "v1"
     V2 = "v2"
 
     def versioned_procedure_name(self, procedure_name: str) -> str:
+
         if self == ProtocolVersion.V1:
             return procedure_name
         else:
@@ -16,14 +17,3 @@ class ProtocolVersion(Enum):
             return endpoint.endswith(".v2")
         else:
             return True
-
-
-class ProtocolVersions:
-    @staticmethod
-    def from_str(version_string: str) -> ProtocolVersion:
-        if version_string == "v1":
-            return ProtocolVersion.V1
-        elif version_string == "v2":
-            return ProtocolVersion.V2
-        else:
-            raise ValueError(f"Invalid protocol version: {version_string}")

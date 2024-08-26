@@ -27,7 +27,7 @@ class AuraDbQueryRunner(QueryRunner):
         self._db_query_runner = db_query_runner
         self._gds_arrow_client = arrow_client
         self._encrypted = encrypted
-        self._server_protocol_versions = ProtocolVersionResolver(db_query_runner).protocol_versions_from_server()
+        self._resolved_protocol_version = ProtocolVersionResolver(db_query_runner).resolve()
 
     def run_cypher(
         self,
@@ -120,30 +120,15 @@ class AuraDbQueryRunner(QueryRunner):
         undirected_relationship_types = params["undirected_relationship_types"]
         inverse_indexed_relationship_types = params["inverse_indexed_relationship_types"]
 
-        if ProtocolVersion.V2 in self._server_protocol_versions:
-            remote_project_proc_params = self._project_params_v2(
-                graph_name,
-                query,
-                concurrency,
-                arrow_config,
-                undirected_relationship_types,
-                inverse_indexed_relationship_types,
-            )
-        elif ProtocolVersion.V1 in self._server_protocol_versions:
-            remote_project_proc_params = self._project_params_v1(
-                graph_name,
-                query,
-                concurrency,
-                arrow_config,
-                undirected_relationship_types,
-                inverse_indexed_relationship_types,
-            )
-        else:
-            raise RuntimeError(
-                f"Unsupported procedure: `{endpoint}`. \
-                    This client does not support the procedure protocol versions of the database.\
-                    Please update the GDS Python Client to a newer version."
-            )
+        protocol_mapping = {ProtocolVersion.V1: self._project_params_v1, ProtocolVersion.V2: self._project_params_v2}
+        remote_project_proc_params = protocol_mapping[self._resolved_protocol_version](
+            graph_name,
+            query,
+            concurrency,
+            arrow_config,
+            undirected_relationship_types,
+            inverse_indexed_relationship_types,
+        )
 
         return self._db_query_runner.call_procedure(
             endpoint, remote_project_proc_params, yields, database, logging, False
@@ -216,24 +201,18 @@ class AuraDbQueryRunner(QueryRunner):
         self._inject_arrow_config(db_arrow_config)
 
         graph_name = params["graph_name"]
-        if ProtocolVersion.V2 in self._server_protocol_versions:
-            db_write_proc_params = self._write_back_params_v2(graph_name, job_id, db_arrow_config, config)
-            protocol_version = ProtocolVersion.V2
-        elif ProtocolVersion.V1 in self._server_protocol_versions:
-            db_write_proc_params = self._write_back_params_v1(
-                graph_name, self._gds_query_runner.database(), job_id, db_arrow_config
-            )
-            protocol_version = ProtocolVersion.V1
-        else:
-            raise RuntimeError(
-                f"Unsupported procedure: `{endpoint}`. \
-                This client does not support the procedure protocol versions of the database.\
-                Please update the GDS Python Client to a newer version."
-            )
+
+        protocol_mapping = {
+            ProtocolVersion.V1: lambda: self._write_back_params_v1(
+                graph_name, self._db_query_runner.database(), job_id, db_arrow_config
+            ),
+            ProtocolVersion.V2: lambda: self._write_back_params_v2(graph_name, job_id, db_arrow_config, config),
+        }
+        db_write_proc_params = protocol_mapping[self._resolved_protocol_version]()  # type: ignore
 
         write_back_start = time.time()
         database_write_result = self._db_query_runner.call_procedure(
-            protocol_version.versioned_procedure_name("gds.arrow.write"),
+            self._resolved_protocol_version.versioned_procedure_name("gds.arrow.write"),
             db_write_proc_params,
             yields,
             None,
@@ -291,6 +270,3 @@ class AuraDbQueryRunner(QueryRunner):
         params["port"] = port
         params["token"] = token
         params["encrypted"] = self._encrypted
-
-    def _endpoint_has_supported_version(self, endpoint: str) -> bool:
-        return any(version.supports_endpoint(endpoint) for version in self._server_protocol_versions)
