@@ -45,6 +45,7 @@ class DedicatedSessions:
         session_name: str,
         memory: SessionMemory,
         db_connection: DbmsConnectionInfo,
+        ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
     ) -> AuraGraphDataScience:
         self._validate_db_connection(db_connection)
@@ -63,7 +64,7 @@ class DedicatedSessions:
 
             session_id = existing_session.id
         else:
-            create_details = self._create_session(session_name, dbid, password, memory.value, cloud_location)
+            create_details = self._create_session(session_name, dbid, password, memory.value, ttl, cloud_location)
             session_id = create_details.id
 
         wait_result = self._aura_api.wait_for_session_running(session_id)
@@ -123,9 +124,13 @@ class DedicatedSessions:
         dbid: str,
         pwd: str,
         memory: SessionMemoryValue,
+        ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
     ) -> SessionDetails:
         db_instance = self._aura_api.list_instance(dbid)
+
+        if ttl is not None:
+            ttl = f"{ttl.total_seconds()}s"
 
         if not (db_instance or cloud_location):
             raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")
@@ -136,7 +141,7 @@ class DedicatedSessions:
         # If cloud location is provided we go for self managed DBs path
         if cloud_location:
             return self._aura_api.create_standalone_session(
-                name=session_name, pwd=pwd, memory=memory, cloud_location=cloud_location
+                name=session_name, pwd=pwd, memory=memory, ttl=ttl, cloud_location=cloud_location
             )
         else:
             return self._aura_api.create_attached_session(
@@ -144,6 +149,7 @@ class DedicatedSessions:
                 dbid=dbid,
                 pwd=pwd,
                 memory=memory,
+                ttl=ttl
             )
 
     def _construct_client(

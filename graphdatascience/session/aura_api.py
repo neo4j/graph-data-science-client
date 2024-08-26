@@ -68,11 +68,11 @@ class AuraApi:
             base_uri = f"https://api-{aura_env}.neo4j-dev.io"
         return base_uri
 
-    def create_attached_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
-        return self._create_session(name, pwd, memory, instance_id=dbid)
+    def create_attached_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue, ttl: Optional[str]) -> SessionDetails:
+        return self._create_session(name, pwd, memory, instance_id=dbid, ttl=ttl)
 
     def create_standalone_session(
-        self, name: str, pwd: str, memory: SessionMemoryValue, cloud_location: CloudLocation
+        self, name: str, pwd: str, memory: SessionMemoryValue, ttl: Optional[str], cloud_location: CloudLocation
     ) -> SessionDetails:
         return self._create_session(
             name,
@@ -81,6 +81,7 @@ class AuraApi:
             tenant_id=self._tenant_id,
             cloud_provider=cloud_location.provider,
             region=cloud_location.region,
+            ttl=ttl,
         )
 
     def _create_session(self, name: str, pwd: str, memory: SessionMemoryValue, **kwargs: Any) -> SessionDetails:

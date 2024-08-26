@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional, cast
 
 import pytest
+from pandas import Timedelta
 from pytest_mock import MockerFixture
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
@@ -44,7 +45,7 @@ class FakeAuraApi(AuraApi):
         self._status_after_creating = status_after_creating
         self._size_estimation = size_estimation or EstimationDetails("1GB", "8GB", False)
 
-    def create_attached_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
+    def create_attached_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue, **kwargs) -> SessionDetails:
         details = SessionDetails(
             id=f"{dbid}-ffff{self.id_counter}",
             name=name,
@@ -54,7 +55,7 @@ class FakeAuraApi(AuraApi):
             created_at=datetime.fromisoformat("2021-01-01T00:00:00+00:00"),
             host="foo.bar",
             expiry_date=None,
-            ttl=None,
+            ttl=Timedelta(kwargs.get("ttl")).to_pytimedelta() if kwargs.get("ttl") is not None else None,
             user_id="user-1",
             tenant_id=self._tenant_id,
         )
@@ -64,9 +65,7 @@ class FakeAuraApi(AuraApi):
 
         return details
 
-    def create_standalone_session(
-        self, name: str, pwd: str, memory: SessionMemoryValue, cloud_location: CloudLocation
-    ) -> SessionDetails:
+    def create_standalone_session(self, name: str, pwd: str, memory: SessionMemoryValue, cloud_location: CloudLocation, **kwargs) -> SessionDetails:
         details = SessionDetails(
             id=f"s-{self.id_counter}",
             name=name,
@@ -76,7 +75,7 @@ class FakeAuraApi(AuraApi):
             created_at=datetime.fromisoformat("2021-01-01T00:00:00+00:00"),
             host="foo.bar",
             expiry_date=None,
-            ttl=None,
+            ttl=Timedelta(kwargs.get("ttl")).to_pytimedelta() if kwargs.get("ttl") is not None else None,
             user_id="user-1",
             tenant_id=self._tenant_id,
             cloud_location=cloud_location,
@@ -285,10 +284,12 @@ def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> No
     patch_construct_client(mocker)
     patch_validate_db_connection(mocker)
 
+    ttl = timedelta(hours=42)
     gds_credentials = sessions.get_or_create(
         "my-session",
         SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+s://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
+        ttl=ttl,
     )
 
     assert gds_credentials == {  # type: ignore
@@ -307,6 +308,7 @@ def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> No
     assert isinstance(actual_session, ExtendedSessionInfo)
     assert actual_session.name == "my-session"
     assert actual_session.user_id == "user-1"
+    assert actual_session.ttl == ttl
 
 
 def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
@@ -315,11 +317,14 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
     patch_construct_client(mocker)
     patch_validate_db_connection(mocker)
 
+    ttl = timedelta(hours=42)
+
     gds_credentials = sessions.get_or_create(
         "my-session",
         SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+s://foo.bar", "dbuser", "db_pw"),
         cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
+        ttl=ttl
     )
 
     assert gds_credentials == {  # type: ignore
@@ -336,6 +341,7 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
     assert isinstance(actual_session, ExtendedSessionInfo)
     assert actual_session.name == "my-session"
     assert actual_session.user_id == "user-1"
+    assert actual_session.ttl == ttl
 
 
 def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:

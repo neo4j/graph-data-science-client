@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from datetime import timedelta
 from typing import List, Optional, Union
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
@@ -77,8 +78,8 @@ class GdsSessions:
         self,
         session_name: str,
         memory: SessionMemory,
-        # TODO support TTL
         db_connection: DbmsConnectionInfo,
+        ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
     ) -> AuraGraphDataScience:
         """
@@ -89,12 +90,13 @@ class GdsSessions:
             session_name (str): The name of the session.
             memory (SessionMemory): The size of the session specified by memory.
             db_connection (DbmsConnectionInfo): The database connection information.
+            ttl: Optional[timedelta]: The sessions time to live after inactivity in seconds.
             cloud_location (Optional[CloudLocation]): The cloud location. Required if the GDS session is for a self-managed database.
 
         Returns:
             AuraGraphDataScience: The session.
         """
-        return self._impl.get_or_create(session_name, memory, db_connection, cloud_location=cloud_location)
+        return self._impl.get_or_create(session_name, memory, db_connection, ttl=ttl, cloud_location=cloud_location)
 
     def delete(self, session_name: str) -> bool:
         """
