@@ -4,13 +4,10 @@ import logging
 import re
 import time
 import warnings
-from concurrent.futures import Future, ThreadPoolExecutor, wait
-from typing import Any, Dict, List, NoReturn, Optional, Tuple, Union
-from uuid import uuid4
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import neo4j
 from pandas import DataFrame
-from tqdm.auto import tqdm
 
 from ..call_parameters import CallParameters
 from ..error.endpoint_suggester import generate_suggestive_error_message
@@ -21,6 +18,7 @@ from ..version import __version__
 from .cypher_graph_constructor import CypherGraphConstructor
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
+from .QueryProgressLogger import QueryProgressLogger
 
 
 class Neo4jQueryRunner(QueryRunner):
@@ -94,6 +92,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._bookmarks = bookmarks
         self._last_bookmarks: Optional[Any] = None
         self._server_version = server_version if server_version else self.server_version()
+        self._progress_logger = QueryProgressLogger(self.run_cypher, self._server_version)
 
     def run_cypher(
         self,
@@ -172,38 +171,9 @@ class Neo4jQueryRunner(QueryRunner):
         query = f"CALL {endpoint}({params.placeholder_str()}){yields_clause}"
 
         if logging:
-            return self.run_cypher_with_logging(query, params, database)
+            return self._progress_logger.run_cypher_with_progress_logging(query, params, database)
         else:
             return self.run_cypher(query, params, database, custom_error)
-
-    def run_cypher_with_logging(
-        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
-    ) -> DataFrame:
-        if params is None:
-            params = {}
-
-        if self._server_version < ServerVersion(2, 1, 0):
-            return self.run_cypher(query, params, database)
-
-        if "config" in params:
-            if "jobId" in params["config"]:
-                job_id = params["config"]["jobId"]
-            else:
-                job_id = str(uuid4())
-                params["config"]["jobId"] = job_id
-        else:
-            job_id = str(uuid4())
-            params["config"] = {"jobId": job_id}
-
-        with ThreadPoolExecutor() as executor:
-            future = executor.submit(self.run_cypher, query, params, database)
-
-            self._log(job_id, future, database)
-
-            if future.exception():
-                raise future.exception()  # type: ignore
-            else:
-                return future.result()
 
     def server_version(self) -> ServerVersion:
         if hasattr(self, "_server_version"):
@@ -249,48 +219,6 @@ class Neo4jQueryRunner(QueryRunner):
             warnings.warn(warning)
         elif severity == "INFORMATION":
             self._logger.info(notification)
-
-    def _log(self, job_id: str, future: "Future[Any]", database: Optional[str] = None) -> None:
-        pbar: Optional[tqdm[NoReturn]] = None
-        warn_if_failure = True
-
-        while wait([future], timeout=self._LOG_POLLING_INTERVAL).not_done:
-            try:
-                tier = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
-                # we only retrieve the progress of the root task
-                progress = self.run_cypher(
-                    f"CALL gds.{tier}listProgress('{job_id}')"
-                    + " YIELD taskName, progress"
-                    + " RETURN taskName, progress"
-                    + " LIMIT 1",
-                    database=database,
-                )
-            except Exception as e:
-                # Do nothing if the procedure either:
-                # * has not started yet,
-                # * has already completed.
-                if f"No task with job id `{job_id}` was found" in str(e):
-                    continue
-                else:
-                    if warn_if_failure:
-                        warnings.warn(f"Unable to get progress: {str(e)}", RuntimeWarning)
-                        warn_if_failure = False
-                    continue
-
-            progress_percent = progress["progress"][0]
-            if progress_percent == "n/a":
-                return
-
-            root_task_name = progress["taskName"][0].split("|--")[-1][1:]
-            if not pbar:
-                pbar = tqdm(total=100, unit="%", desc=root_task_name, maxinterval=self._LOG_POLLING_INTERVAL)
-
-            parsed_progress = float(progress_percent[:-1])
-            pbar.update(parsed_progress - pbar.n)
-
-        if pbar:
-            pbar.update(100 - pbar.n)
-            pbar.refresh()
 
     def set_database(self, database: str) -> None:
         self._database = database
