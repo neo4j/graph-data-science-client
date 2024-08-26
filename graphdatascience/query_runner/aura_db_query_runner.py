@@ -131,8 +131,10 @@ class AuraDbQueryRunner(QueryRunner):
             inverse_indexed_relationship_types,
         )
 
+        versioned_endpoint = self._resolved_protocol_version.versioned_procedure_name(endpoint)
+
         return self._db_query_runner.call_procedure(
-            endpoint, remote_project_proc_params, yields, database, logging, False
+            versioned_endpoint, remote_project_proc_params, yields, database, logging, False
         )
 
     @staticmethod
