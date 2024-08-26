@@ -74,7 +74,7 @@ def test_extracts_parameters_projection_v2() -> None:
     )
 
     qr.call_procedure(
-        endpoint="gds.arrow.project.v2",
+        endpoint="gds.arrow.project",
         params=CallParameters(
             graph_name="g",
             query="RETURN 1",
