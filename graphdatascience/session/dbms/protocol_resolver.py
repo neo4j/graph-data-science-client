@@ -9,7 +9,6 @@ from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 class ProtocolVersionResolver:
     def __init__(self, query_runner: QueryRunner):
         self._query_runner = query_runner
-        self._cached_protocol_versions: List[ProtocolVersion] = []
 
     def resolve(self) -> ProtocolVersion:
         """
@@ -29,11 +28,10 @@ class ProtocolVersionResolver:
         )
 
     def _protocol_versions_from_server(self) -> List[ProtocolVersion]:
-        if not self._cached_protocol_versions:
-            self._cached_protocol_versions = self._fetch_from_server()
-            self._cached_protocol_versions.sort(reverse=True, key=lambda x: x.value)
+        cached_protocol_versions = self._fetch_from_server()
+        cached_protocol_versions.sort(reverse=True, key=lambda x: x.value)
 
-        return self._cached_protocol_versions
+        return cached_protocol_versions
 
     def _fetch_from_server(self) -> List[ProtocolVersion]:
         try:
