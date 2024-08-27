@@ -185,7 +185,7 @@ def test_warning_when_logging_fails(runner: Neo4jQueryRunner) -> None:
     with f.ThreadPoolExecutor(1) as pool:
         future = pool.submit(lambda: time.sleep(2))
         with pytest.warns(RuntimeWarning, match=r"^Unable to get progress:"):
-            runner._log("DUMMY", future, "bad_database")
+            runner._progress_logger._log(future, "DUMMY", "bad_database")
 
 
 def test_bookmarks(runner: Neo4jQueryRunner) -> None:
