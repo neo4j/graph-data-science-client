@@ -168,12 +168,13 @@ gds.graph.project(
 .Parameters:
 [opts="header",cols="3m,1,6", role="no-break"]
 |===
-| Name                            | Optional | Description
-| graph_name                      | no       | Name of the graph.
-| query                           | no       | Projection query.
-| concurrency                     | yes      | Concurrency to use for building the graph within the session.
-| undirectedRelationshipTypes     | yes      | List of relationship type names that should be treated as undirected.
-| inverseIndexedRelationshipTypes | yes      | List of relationship type names that should be indexed in reverse.
+| Name                               | Optional | Description
+| graph_name                         | no       | Name of the graph.
+| query                              | no       | Projection query.
+| concurrency                        | yes      | Concurrency to use for building the graph within the session.
+| batch_size                         | yes      | Size of batches transmitted from the DBMS to the session.
+| undirected_relationship_types      | yes      | List of relationship type names that should be treated as undirected.
+| inverse_indexed_relationship_types | yes      | List of relationship type names that should be indexed in reverse.
 |===
 
 .Results:
@@ -183,6 +184,8 @@ gds.graph.project(
 | graph  | Graph       | Graph object representing the projected graph.
 | result | Series[Any] | Statistical data about the projection.
 |===
+
+The `concurrency` and `batch_size` configuration parameters can be used to tune the performance of the remote projection.
 
 
 ==== Remote projection query syntax
