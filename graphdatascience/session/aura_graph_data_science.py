@@ -50,7 +50,6 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             db_connection_info.uri,
             db_connection_info.auth(),
             aura_ds=True,
-            server_version=self._server_version,
         )
         self._db_query_runner.set_bookmarks(bookmarks)
 
