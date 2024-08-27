@@ -5,6 +5,8 @@ import warnings
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
+import neo4j
+
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_api_responses import SessionDetails
@@ -45,6 +47,8 @@ class DedicatedSessions:
         db_connection: DbmsConnectionInfo,
         cloud_location: Optional[CloudLocation] = None,
     ) -> AuraGraphDataScience:
+        self._validate_db_connection(db_connection)
+
         dbid = AuraApi.extract_id(db_connection.uri)
         existing_session = self._find_existing_session(session_name)
 
@@ -97,6 +101,20 @@ class DedicatedSessions:
             return None
 
         return matched_sessions[0]
+
+    @staticmethod
+    def _validate_db_connection(db_connection):
+        with neo4j.GraphDatabase.driver(
+            db_connection.uri, auth=(db_connection.username, db_connection.password)
+        ) as driver:
+            try:
+                driver.verify_connectivity()
+            except Exception as e:
+                raise RuntimeError(f"Failed to connect to the Neo4j database: {e}")
+            try:
+                driver.verify_authentication()
+            except Exception as e:
+                raise RuntimeError(f"Failed to authenticate to the Neo4j database: {e}")
 
     def _create_session(
         self,

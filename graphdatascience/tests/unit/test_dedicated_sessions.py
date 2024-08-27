@@ -282,6 +282,7 @@ def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> No
     sessions = DedicatedSessions(aura_api)
 
     patch_construct_client(mocker)
+    patch_validate_db_connection(mocker)
 
     gds_credentials = sessions.get_or_create(
         "my-session",
@@ -311,6 +312,7 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
     sessions = DedicatedSessions(aura_api)
 
     patch_construct_client(mocker)
+    patch_validate_db_connection(mocker)
 
     gds_credentials = sessions.get_or_create(
         "my-session",
@@ -341,6 +343,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     sessions = DedicatedSessions(aura_api)
 
     patch_construct_client(mocker)
+    patch_validate_db_connection(mocker)
 
     gds_args1 = sessions.get_or_create(
         "my-session",
@@ -367,8 +370,10 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     assert [i.name for i in sessions.list()] == ["my-session"]
 
 
-def test_get_or_create_expired_session(aura_api: AuraApi) -> None:
+def test_get_or_create_expired_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
+
+    patch_validate_db_connection(mocker)
 
     fake_aura_api = cast(FakeAuraApi, aura_api)
     fake_aura_api.add_session(
@@ -394,8 +399,10 @@ def test_get_or_create_expired_session(aura_api: AuraApi) -> None:
         sessions.get_or_create("one", SessionMemory.m_8GB, DbmsConnectionInfo(db.connection_url, "", ""))
 
 
-def test_get_or_create_soon_expired_session(aura_api: AuraApi) -> None:
+def test_get_or_create_soon_expired_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
+
+    patch_validate_db_connection(mocker)
 
     fake_aura_api = cast(FakeAuraApi, aura_api)
     fake_aura_api.add_session(
@@ -419,8 +426,10 @@ def test_get_or_create_soon_expired_session(aura_api: AuraApi) -> None:
         sessions.get_or_create("one", SessionMemory.m_8GB, DbmsConnectionInfo(db.connection_url, "", ""))
 
 
-def test_get_or_create_with_different_memory_config(aura_api: AuraApi) -> None:
+def test_get_or_create_with_different_memory_config(mocker: MockerFixture, aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
+
+    patch_validate_db_connection(mocker)
 
     fake_aura_api = cast(FakeAuraApi, aura_api)
     fake_aura_api.add_session(
@@ -452,10 +461,11 @@ def test_get_or_create_with_different_memory_config(aura_api: AuraApi) -> None:
 # existing session with different cloud_location
 
 
-def test_get_or_create_for_auradb_with_cloud_location(aura_api: AuraApi) -> None:
+def test_get_or_create_for_auradb_with_cloud_location(mocker: MockerFixture, aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
 
     sessions = DedicatedSessions(aura_api)
+    patch_validate_db_connection(mocker)
 
     with pytest.raises(
         ValueError, match=re.escape("cloud_location cannot be provided for sessions against an AuraDB.")
@@ -468,8 +478,9 @@ def test_get_or_create_for_auradb_with_cloud_location(aura_api: AuraApi) -> None
         )
 
 
-def test_get_or_create_for_without_cloud_location(aura_api: AuraApi) -> None:
+def test_get_or_create_for_without_cloud_location(mocker: MockerFixture, aura_api: AuraApi) -> None:
     sessions = DedicatedSessions(aura_api)
+    patch_validate_db_connection(mocker)
 
     with pytest.raises(
         ValueError, match=re.escape("cloud_location must be provided for sessions against a self-managed DB.")
@@ -482,8 +493,10 @@ def test_get_or_create_for_without_cloud_location(aura_api: AuraApi) -> None:
         )
 
 
-def test_get_or_create_for_existing_session_with_different_dbid(aura_api: AuraApi) -> None:
+def test_get_or_create_for_existing_session_with_different_dbid(mocker: MockerFixture, aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
+
+    patch_validate_db_connection(mocker)
 
     fake_aura_api = cast(FakeAuraApi, aura_api)
     fake_aura_api.add_session(
@@ -562,10 +575,13 @@ def test_delete_session_paused_instance(aura_api: AuraApi) -> None:
     assert sessions.delete(session.name)
 
 
-def test_create_waiting_forever() -> None:
+def test_create_waiting_forever(
+    mocker: MockerFixture,
+) -> None:
     aura_api = FakeAuraApi(status_after_creating="updating")
     _setup_db_instance(aura_api)
     sessions = DedicatedSessions(aura_api)
+    patch_validate_db_connection(mocker)
 
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Session `ffff0-ffff1` is not running"):
         sessions.get_or_create(
@@ -600,3 +616,7 @@ def patch_construct_client(mocker: MockerFixture) -> None:
         "graphdatascience.session.dedicated_sessions.DedicatedSessions._construct_client",
         lambda *args, **kwargs: kwargs,
     )
+
+
+def patch_validate_db_connection(mocker: MockerFixture) -> None:
+    mocker.patch("graphdatascience.session.dedicated_sessions.DedicatedSessions._validate_db_connection")
