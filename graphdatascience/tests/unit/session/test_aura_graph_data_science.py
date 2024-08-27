@@ -60,3 +60,94 @@ def test_remote_projection_defaults() -> None:
         "inverse_indexed_relationship_types": [],
         "arrow_configuration": {},
     }
+
+
+def test_remote_algo_write() -> None:
+    v = ServerVersion(9, 9, 9)
+    query_runner = CollectingQueryRunner(v)
+    gds = AuraGraphDataScience(
+        query_runner=query_runner,
+        delete_fn=lambda: True,
+        gds_version=v,
+    )
+
+    G, _ = gds.graph.project("foo", "RETURN gds.graph.project(0, 1)")
+    gds.pageRank.write(G, writeProperty="pr")
+
+    assert query_runner.last_query() == "CALL gds.pageRank.write($graph_name, $config)"
+    assert query_runner.last_params() == {
+        "graph_name": "foo",
+        "config": {"writeProperty": "pr"},
+    }
+
+
+def test_remote_algo_write_configuration() -> None:
+    v = ServerVersion(9, 9, 9)
+    query_runner = CollectingQueryRunner(v)
+    gds = AuraGraphDataScience(
+        query_runner=query_runner,
+        delete_fn=lambda: True,
+        gds_version=v,
+    )
+
+    G, _ = gds.graph.project("foo", "RETURN gds.graph.project(0, 1)")
+    gds.pageRank.write(G, writeProperty="pr", concurrency=12, arrowConfiguration={"batch_size": 98})
+
+    assert query_runner.last_query() == "CALL gds.pageRank.write($graph_name, $config)"
+    assert query_runner.last_params() == {
+        "graph_name": "foo",
+        "config": {
+            "writeProperty": "pr",
+            "concurrency": 12,
+            "arrowConfiguration": {"batch_size": 98},
+        },
+    }
+
+
+def test_remote_graph_write() -> None:
+    v = ServerVersion(9, 9, 9)
+    query_runner = CollectingQueryRunner(v)
+    gds = AuraGraphDataScience(
+        query_runner=query_runner,
+        delete_fn=lambda: True,
+        gds_version=v,
+    )
+
+    G, _ = gds.graph.project("foo", "RETURN gds.graph.project(0, 1)")
+    gds.graph.nodeProperties.write(G, node_properties="pr")
+
+    assert (
+        query_runner.last_query() == "CALL gds.graph.nodeProperties.write($graph_name, $properties, $entities, $config)"
+    )
+    assert query_runner.last_params() == {
+        "graph_name": "foo",
+        "properties": "pr",
+        "entities": ["*"],
+        "config": {},
+    }
+
+
+def test_remote_graph_write_configuration() -> None:
+    v = ServerVersion(9, 9, 9)
+    query_runner = CollectingQueryRunner(v)
+    gds = AuraGraphDataScience(
+        query_runner=query_runner,
+        delete_fn=lambda: True,
+        gds_version=v,
+    )
+
+    G, _ = gds.graph.project("foo", "RETURN gds.graph.project(0, 1)")
+    gds.graph.nodeProperties.write(G, node_properties="pr", concurrency=13, arrowConfiguration={"batchSize": 99})
+
+    assert (
+        query_runner.last_query() == "CALL gds.graph.nodeProperties.write($graph_name, $properties, $entities, $config)"
+    )
+    assert query_runner.last_params() == {
+        "graph_name": "foo",
+        "properties": "pr",
+        "entities": ["*"],
+        "config": {
+            "concurrency": 13,
+            "arrowConfiguration": {"batchSize": 99},
+        },
+    }

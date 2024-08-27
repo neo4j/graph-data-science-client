@@ -166,15 +166,15 @@ gds.graph.project(
 ----
 
 .Parameters:
-[opts="header",cols="3m,1,6", role="no-break"]
+[opts="header",cols="3m,1,1m,6", role="no-break"]
 |===
-| Name                               | Optional | Description
-| graph_name                         | no       | Name of the graph.
-| query                              | no       | Projection query.
-| concurrency                        | yes      | Concurrency to use for building the graph within the session.
-| batch_size                         | yes      | Size of batches transmitted from the DBMS to the session.
-| undirected_relationship_types      | yes      | List of relationship type names that should be treated as undirected.
-| inverse_indexed_relationship_types | yes      | List of relationship type names that should be indexed in reverse.
+| Name                               | Optional | Default | Description
+| graph_name                         | no       | -       | Name of the graph.
+| query                              | no       | -       | Projection query.
+| concurrency                        | yes      | 4       | Concurrency to use for building the graph within the session.
+| batch_size                         | yes      | 10000   | Size of batches transmitted from the DBMS to the session.
+| undirected_relationship_types      | yes      | []      | List of relationship type names that should be treated as undirected.
+| inverse_indexed_relationship_types | yes      | []      | List of relationship type names that should be indexed in reverse.
 |===
 
 .Results:
@@ -186,6 +186,11 @@ gds.graph.project(
 |===
 
 The `concurrency` and `batch_size` configuration parameters can be used to tune the performance of the remote projection.
+
+[NOTE]
+The concurrency of the remote projection query is controlled by the Cypher runtime on the DBMS server.
+Use `CYPHER runtime=parallel` as a query prefix to maximise performance.
+The actual concurrency used depends on the DBMS server's available processors and current operational load.
 
 
 ==== Remote projection query syntax
@@ -302,13 +307,85 @@ The GDS Session's in-memory graph was projected from data in AuraDB, so write-ba
 When calling any write operations, the GDS Python client will automatically use the remote write-back functionality.
 This includes all `.write` algorithm modes as well as all `.write` graph operations.
 
+By default, write back will happen concurrently, in one transaction per batch.
+The behaviour is controlled by three aspects:
 
-Extending the previous example, you can write back the FastRP embeddings to the AuraDB instance as follows:
+- the size of the dataset (e.g., node count or relationship count)
+- the configured batch size
+- the configured concurrency
 
-.Write the FastRP embeddings back to the database:
+
+=== Syntax
+
+[.tabbed-example, caption = asd]
+====
+[.include-with-graph-operation]
+======
+.Remote graph write-back:
+[source, role=no-test]
+----
+gds.graph.<operation>.write(
+    graph_name: str,
+    # additional parameters,
+    **config: Any,
+): Series[Any]
+----
+======
+
+[.include-with-algorithm-write-mode]
+======
+.Remote graph write-back:
+[source, role=no-test]
+----
+gds.<algo>.write(
+    graph_name: str,
+    **config: Any,
+): Series[Any]
+----
+======
+====
+
+
+All write-back endpoints support the following additional configuration:
+
+.Parameters:
+[opts="header",cols="1m,1,1,6", role="no-break"]
+|===
+| Name               | Optional | Default | Description
+| concurrency        | yes      | dynamic footnote:[Twice the number of processors on the DBMS server] | Concurrency to use for writing back to the DBMS.
+| arrowConfiguration | yes      | -       | Dict containing additional configuration for the connection from the DBMS to the GDS Arrow Server.
+|===
+
+.Arrow configuration:
+[opts="header",cols="1m,1,1m,6", role="no-break"]
+|===
+| Name      | Optional | Default | Description
+| batchSize | yes      | 10000   | Size of batches retrieved by the DBMS from the session.
+|===
+
+
+=== Examples
+
+Extending the previous example, we can write back the FastRP embeddings to the AuraDB instance as follows:
+
+.Write mutated FastRP embeddings back to the database:
 [source,python,role=no-test]
 ----
 gds.graph.nodeProperties.write(G, "embedding")
+----
+
+If we want to tune the performance of the write-back, we can configure `batchSize` and `concurrency`.
+In this example we show how to do this with an algorithm `.write` mode:
+
+.Compute WCC and write the component ids back as node properties, with custom concurrency configuration:
+[source,python,role=no-test]
+----
+gds.wcc.write(
+  G,
+  writeProperty="wcc",
+  concurrency=12,
+  arrowConfiguration={"batchSize": 25000}
+)
 ----
 
 
