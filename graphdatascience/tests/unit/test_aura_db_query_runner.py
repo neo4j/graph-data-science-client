@@ -70,7 +70,6 @@ def test_extracts_parameters_projection_v2() -> None:
         gds_query_runner,
         db_query_runner,
         FakeArrowClient(),  # type: ignore
-        False,
     )
 
     qr.call_procedure(
@@ -146,7 +145,6 @@ def test_extracts_parameters_algo_write_v2() -> None:
         gds_query_runner,
         db_query_runner,
         FakeArrowClient(),  # type: ignore
-        False,
     )
 
     qr.call_procedure(
