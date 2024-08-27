@@ -136,7 +136,7 @@ def aura_gds(runner: CollectingQueryRunner, mocker: MockerFixture) -> Generator[
     mocker.patch("graphdatascience.query_runner.session_query_runner.SessionQueryRunner.create", return_value=runner)
     mocker.patch("graphdatascience.query_runner.arrow_query_runner.ArrowQueryRunner.create", return_value=runner)
     mocker.patch("graphdatascience.query_runner.gds_arrow_client.GdsArrowClient.create", return_value=None)
-    aura_gds = AuraGraphDataScience(
+    aura_gds = AuraGraphDataScience.create(
         gds_session_connection_info=DbmsConnectionInfo("address", "some", "auth"),
         db_connection_info=DbmsConnectionInfo("address", "some", "auth"),
         delete_fn=lambda: True,

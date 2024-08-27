@@ -2,6 +2,7 @@ from typing import Any, Callable, Dict, Optional
 
 from pandas import DataFrame
 
+from graphdatascience import QueryRunner, ServerVersion
 from graphdatascience.call_builder import IndirectCallBuilder
 from graphdatascience.endpoints import (
     AlphaRemoteEndpoints,
@@ -24,8 +25,9 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
     Always bind this object to a variable called `gds`.
     """
 
-    def __init__(
-        self,
+    @classmethod
+    def create(
+        cls,
         gds_session_connection_info: DbmsConnectionInfo,
         db_connection_info: DbmsConnectionInfo,
         delete_fn: Callable[[], bool],
@@ -33,42 +35,43 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
     ):
-        gds_neo4j_query_runner = Neo4jQueryRunner.create(
+        session_neo4j_query_runner = Neo4jQueryRunner.create(
             gds_session_connection_info.uri, gds_session_connection_info.auth(), aura_ds=True
         )
-        gds_query_runner = ArrowQueryRunner.create(
-            gds_neo4j_query_runner,
+        session_arrow_query_runner = ArrowQueryRunner.create(
+            session_neo4j_query_runner,
             gds_session_connection_info.auth(),
-            gds_neo4j_query_runner.encrypted(),
+            session_neo4j_query_runner.encrypted(),
             arrow_disable_server_verification,
             arrow_tls_root_certs,
         )
-
-        self._server_version = gds_query_runner.server_version()
-
-        self._db_query_runner = Neo4jQueryRunner.create(
+        db_query_runner = Neo4jQueryRunner.create(
             db_connection_info.uri,
             db_connection_info.auth(),
             aura_ds=True,
         )
-        self._db_query_runner.set_bookmarks(bookmarks)
+        db_query_runner.set_bookmarks(bookmarks)
 
-        # we need to explicitly set these as the default value is None
-        # which signals the driver to use the default configured database
-        # from the dbms.
-        gds_query_runner.set_database("neo4j")
-        self._db_query_runner.set_database("neo4j")
-
-        arrow_client = GdsArrowClient.create(
-            gds_neo4j_query_runner,
+        session_arrow_client = GdsArrowClient.create(
+            session_neo4j_query_runner,
             gds_session_connection_info.auth(),
-            gds_neo4j_query_runner.encrypted(),
+            session_neo4j_query_runner.encrypted(),
             arrow_disable_server_verification,
             arrow_tls_root_certs,
         )
+        aura_db_query_runner = SessionQueryRunner.create(session_arrow_query_runner, db_query_runner, session_arrow_client)
 
-        self._query_runner = SessionQueryRunner.create(gds_query_runner, self._db_query_runner, arrow_client)
+        gds_version = session_neo4j_query_runner.server_version()
+        return cls(query_runner=aura_db_query_runner, delete_fn=delete_fn, gds_version=gds_version)
 
+    def __init__(
+        self,
+        query_runner: QueryRunner,
+        delete_fn: Callable[[], bool],
+        gds_version: ServerVersion,
+    ):
+        self._server_version = gds_version
+        self._query_runner = query_runner
         self._delete_fn = delete_fn
 
         super().__init__(self._query_runner, namespace="gds", server_version=self._server_version)
@@ -92,7 +95,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             The query result as a DataFrame
         """
         # This will avoid calling valid gds procedures through a raw string
-        return self._db_query_runner.run_cypher(query, params, database, False)
+        return self._query_runner.run_cypher(query, params, database, False)
 
     @property
     def graph(self) -> GraphRemoteProcRunner:
@@ -122,7 +125,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         database: str
             The name of the database to run queries against.
         """
-        self._db_query_runner.set_database(database)
+        self._query_runner.set_database(database)
 
     def set_bookmarks(self, bookmarks: Any) -> None:
         """
@@ -133,7 +136,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         bookmarks: Bookmark(s)
             The Neo4j bookmarks defining the required state
         """
-        self._db_query_runner.set_bookmarks(bookmarks)
+        self._query_runner.set_bookmarks(bookmarks)
 
     def database(self) -> Optional[str]:
         """
@@ -142,7 +145,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         Returns:
             The name of the database.
         """
-        return self._db_query_runner.database()
+        return self._query_runner.database()
 
     def bookmarks(self) -> Optional[Any]:
         """
@@ -152,7 +155,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         -------
         The (possibly None) Neo4j bookmarks defining the currently required state
         """
-        return self._db_query_runner.bookmarks()
+        return self._query_runner.bookmarks()
 
     def last_bookmarks(self) -> Optional[Any]:
         """
@@ -162,7 +165,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         -------
         The (possibly None) Neo4j bookmarks defining the state following the most recently called query
         """
-        return self._db_query_runner.last_bookmarks()
+        return self._query_runner.last_bookmarks()
 
     def driver_config(self) -> Dict[str, Any]:
         """
