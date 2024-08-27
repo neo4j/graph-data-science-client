@@ -1,7 +1,6 @@
 import warnings
-from collections.abc import Callable
 from concurrent.futures import Future, ThreadPoolExecutor, wait
-from typing import Any, Dict, NoReturn, Optional
+from typing import Any, Callable, Dict, NoReturn, Optional
 from uuid import uuid4
 
 from pandas import DataFrame
