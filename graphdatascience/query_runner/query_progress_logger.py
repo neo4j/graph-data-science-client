@@ -15,21 +15,14 @@ class QueryProgressLogger:
 
     def __init__(
         self,
-        query_fn: Callable[[str, Optional[Dict[str, Any]], Optional[str]], DataFrame],
+        progress_update_query_fn: Callable[[str, Optional[str]], DataFrame],
         server_version: ServerVersion,
     ):
-        self._query_fn = query_fn
+        self._progress_update_query_fn = progress_update_query_fn
         self._server_version = server_version
 
-    def run_cypher_with_progress_logging(
-        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
-    ) -> DataFrame:
-        if params is None:
-            params = {}
-
-        if self._server_version < ServerVersion(2, 1, 0):
-            return self._query_fn(query, params, database)
-
+    @staticmethod
+    def extract_or_create_job_id(params: Dict[str, Any]) -> str:
         if "config" in params:
             if "jobId" in params["config"]:
                 job_id = params["config"]["jobId"]
@@ -40,17 +33,25 @@ class QueryProgressLogger:
             job_id = str(uuid4())
             params["config"] = {"jobId": job_id}
 
-        with ThreadPoolExecutor() as executor:
-            future = executor.submit(self._query_fn, query, params, database)
+        return job_id
 
-            self._log(job_id, future, database)
+    def run_cypher_with_progress_logging(
+        self, runnable: Callable[[], DataFrame], job_id: str, database: Optional[str] = None
+    ) -> DataFrame:
+        if self._server_version < ServerVersion(2, 1, 0):
+            return runnable()
+
+        with ThreadPoolExecutor() as executor:
+            future = executor.submit(runnable)
+
+            self._log(future, job_id, database)
 
             if future.exception():
                 raise future.exception()  # type: ignore
             else:
                 return future.result()
 
-    def _log(self, job_id: str, future: "Future[Any]", database: Optional[str] = None) -> None:
+    def _log(self, future: "Future[Any]", job_id: str, database: Optional[str] = None) -> None:
         pbar: Optional[tqdm[NoReturn]] = None
         warn_if_failure = True
 
@@ -58,12 +59,11 @@ class QueryProgressLogger:
             try:
                 tier = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
                 # we only retrieve the progress of the root task
-                progress = self._query_fn(
+                progress = self._progress_update_query_fn(
                     f"CALL gds.{tier}listProgress('{job_id}')"
                     + " YIELD taskName, progress"
                     + " RETURN taskName, progress"
                     + " LIMIT 1",
-                    {},
                     database,
                 )
             except Exception as e:

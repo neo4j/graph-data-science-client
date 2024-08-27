@@ -17,8 +17,8 @@ from ..server_version.server_version import ServerVersion
 from ..version import __version__
 from .cypher_graph_constructor import CypherGraphConstructor
 from .graph_constructor import GraphConstructor
+from .query_progress_logger import QueryProgressLogger
 from .query_runner import QueryRunner
-from .QueryProgressLogger import QueryProgressLogger
 
 
 class Neo4jQueryRunner(QueryRunner):
@@ -171,7 +171,10 @@ class Neo4jQueryRunner(QueryRunner):
         query = f"CALL {endpoint}({params.placeholder_str()}){yields_clause}"
 
         if logging:
-            return self._progress_logger.run_cypher_with_progress_logging(query, params, database)
+            job_id = self._progress_logger.extract_or_create_job_id(params)
+            return self._progress_logger.run_cypher_with_progress_logging(
+                lambda: self.run_cypher(query, params, database, custom_error), job_id, database
+            )
         else:
             return self.run_cypher(query, params, database, custom_error)
 

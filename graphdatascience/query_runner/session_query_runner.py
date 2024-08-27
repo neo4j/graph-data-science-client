@@ -13,6 +13,7 @@ from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 from ..call_parameters import CallParameters
 from ..session.dbms.protocol_resolver import ProtocolVersionResolver
 from .gds_arrow_client import GdsArrowClient
+from .query_progress_logger import QueryProgressLogger
 from .query_runner import QueryRunner
 
 
@@ -35,6 +36,7 @@ class SessionQueryRunner(QueryRunner):
         self._db_query_runner = db_query_runner
         self._gds_arrow_client = arrow_client
         self._resolved_protocol_version = ProtocolVersionResolver(db_query_runner).resolve()
+        self._progress_logger = QueryProgressLogger(self._gds_query_runner.run_cypher, self._gds_query_runner.server_version())
 
     def run_cypher(
         self,
@@ -220,14 +222,13 @@ class SessionQueryRunner(QueryRunner):
         db_write_proc_params = protocol_mapping[self._resolved_protocol_version]()  # type: ignore
 
         write_back_start = time.time()
-        database_write_result = self._db_query_runner.call_procedure(
-            self._resolved_protocol_version.versioned_procedure_name("gds.arrow.write"),
-            db_write_proc_params,
-            yields,
-            None,
-            False,
-            False,
-        )
+        if logging:
+            database_write_result = self._progress_logger.run_cypher_with_progress_logging(
+                lambda: self._run_remote_write_back_query(db_write_proc_params, yields), job_id, database
+            )
+        else:
+            database_write_result = self._run_remote_write_back_query(db_write_proc_params, yields)
+
         write_millis = (time.time() - write_back_start) * 1000
         gds_write_result["writeMillis"] = write_millis
 
@@ -241,6 +242,16 @@ class SessionQueryRunner(QueryRunner):
             gds_write_result["relationshipsWritten"] = database_write_result["writtenRelationships"]
 
         return gds_write_result
+
+    def _run_remote_write_back_query(self, params: CallParameters, yields: Optional[List[str]] = None) -> DataFrame:
+        return self._db_query_runner.call_procedure(
+            self._resolved_protocol_version.versioned_procedure_name("gds.arrow.write"),
+            params,
+            yields,
+            None,
+            False,
+            False,
+        )
 
     @staticmethod
     def _write_back_params_v2(
