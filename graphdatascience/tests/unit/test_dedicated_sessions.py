@@ -4,7 +4,6 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional, cast
 
 import pytest
-from pandas import Timedelta
 from pytest_mock import MockerFixture
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
@@ -46,7 +45,13 @@ class FakeAuraApi(AuraApi):
         self._size_estimation = size_estimation or EstimationDetails("1GB", "8GB", False)
 
     def create_session(
-            self, name: str, pwd: str, memory: SessionMemoryValue, dbid: Optional[str] = None, ttl: Optional[timedelta] = None, cloud_location: Optional[CloudLocation] = None
+        self,
+        name: str,
+        pwd: str,
+        memory: SessionMemoryValue,
+        dbid: Optional[str] = None,
+        ttl: Optional[timedelta] = None,
+        cloud_location: Optional[CloudLocation] = None,
     ) -> SessionDetails:
         details = SessionDetails(
             id=f"{dbid}-ffff{self.id_counter}",

@@ -69,13 +69,16 @@ class AuraApi:
             base_uri = f"https://api-{aura_env}.neo4j-dev.io"
         return base_uri
 
-    def create_session(self, name: str, pwd: str, memory: SessionMemoryValue, dbid: Optional[str] = None, ttl: Optional[timedelta] = None, cloud_location: Optional[CloudLocation] = None) -> SessionDetails:
-
-        json = {
-            "name": name,
-            "password": pwd,
-            "memory": memory.value
-        }
+    def create_session(
+        self,
+        name: str,
+        pwd: str,
+        memory: SessionMemoryValue,
+        dbid: Optional[str] = None,
+        ttl: Optional[timedelta] = None,
+        cloud_location: Optional[CloudLocation] = None,
+    ) -> SessionDetails:
+        json = {"name": name, "password": pwd, "memory": memory.value}
 
         if dbid:
             json["instanceId"] = dbid
@@ -88,10 +91,8 @@ class AuraApi:
             json["cloud_provider"] = cloud_location.provider
             json["region"] = cloud_location.region
 
-
         response = self._request_session.post(
-            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions",
-            json= json
+            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions", json=json
         )
 
         self._check_resp(response)
