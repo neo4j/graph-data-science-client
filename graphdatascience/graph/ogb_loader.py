@@ -96,7 +96,7 @@ class OGBLoader(UncallableNamespace, IllegalAttrChecker, ABC):
         constructor = self._query_runner.create_graph_constructor(graph_name, concurrency, [])
         constructor.run(nodes, rels)
 
-        return Graph(graph_name, self._query_runner, self._server_version)
+        return Graph(graph_name, self._query_runner)
 
 
 class OGBNLoader(OGBLoader):

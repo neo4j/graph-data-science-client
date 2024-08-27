@@ -25,7 +25,7 @@ class NXLoader(UncallableNamespace, IllegalAttrChecker):
         constructor = self._query_runner.create_graph_constructor(graph_name, concurrency, undirected_rel_types)
         constructor.run(nodes, rels)
 
-        return Graph(graph_name, self._query_runner, self._server_version)
+        return Graph(graph_name, self._query_runner)
 
     @staticmethod
     def _attr_to_labels_key(labels_attr: Any, node_id: Any, no_node_labels: Optional[bool]) -> Tuple[str, ...]:
