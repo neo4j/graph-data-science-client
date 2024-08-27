@@ -45,7 +45,9 @@ class FakeAuraApi(AuraApi):
         self._status_after_creating = status_after_creating
         self._size_estimation = size_estimation or EstimationDetails("1GB", "8GB", False)
 
-    def create_attached_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue, **kwargs) -> SessionDetails:
+    def create_attached_session(
+        self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue, **kwargs
+    ) -> SessionDetails:
         details = SessionDetails(
             id=f"{dbid}-ffff{self.id_counter}",
             name=name,
@@ -65,7 +67,9 @@ class FakeAuraApi(AuraApi):
 
         return details
 
-    def create_standalone_session(self, name: str, pwd: str, memory: SessionMemoryValue, cloud_location: CloudLocation, **kwargs) -> SessionDetails:
+    def create_standalone_session(
+        self, name: str, pwd: str, memory: SessionMemoryValue, cloud_location: CloudLocation, **kwargs
+    ) -> SessionDetails:
         details = SessionDetails(
             id=f"s-{self.id_counter}",
             name=name,
@@ -324,7 +328,7 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
         SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+s://foo.bar", "dbuser", "db_pw"),
         cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
-        ttl=ttl
+        ttl=ttl,
     )
 
     assert gds_credentials == {  # type: ignore

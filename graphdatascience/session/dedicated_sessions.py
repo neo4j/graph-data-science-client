@@ -144,13 +144,7 @@ class DedicatedSessions:
                 name=session_name, pwd=pwd, memory=memory, ttl=ttl, cloud_location=cloud_location
             )
         else:
-            return self._aura_api.create_attached_session(
-                name=session_name,
-                dbid=dbid,
-                pwd=pwd,
-                memory=memory,
-                ttl=ttl
-            )
+            return self._aura_api.create_attached_session(name=session_name, dbid=dbid, pwd=pwd, memory=memory, ttl=ttl)
 
     def _construct_client(
         self, session_id: str, session_connection: DbmsConnectionInfo, db_connection: DbmsConnectionInfo

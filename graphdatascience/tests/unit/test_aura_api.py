@@ -58,7 +58,9 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
         },
     )
 
-    result = api.create_attached_session(name="name-0", dbid="dbid-1", pwd="pwd-2", memory=SessionMemory.m_4GB.value, ttl="42s")
+    result = api.create_attached_session(
+        name="name-0", dbid="dbid-1", pwd="pwd-2", memory=SessionMemory.m_4GB.value, ttl="42s"
+    )
 
     assert result == SessionDetails(
         id="id0",
@@ -112,7 +114,14 @@ def test_create_dedicated_session(requests_mock: Mocker) -> None:
     )
 
     result = api.create_standalone_session(
-        "name-0", "pwd-2", SessionMemory.m_4GB.value, ttl="42s", cloud_location=CloudLocation("aws", "leipzig-1",)
+        "name-0",
+        "pwd-2",
+        SessionMemory.m_4GB.value,
+        ttl="42s",
+        cloud_location=CloudLocation(
+            "aws",
+            "leipzig-1",
+        ),
     )
     assert result == SessionDetails(
         id="id0",
@@ -146,7 +155,11 @@ def test_create_standalone_session_error_forwards(requests_mock: Mocker) -> None
 
     with pytest.raises(AuraApiError, match="some validation error"):
         api.create_standalone_session(
-            "name-0", "pwd-2", SessionMemory.m_4GB.value, ttl="42s", cloud_location=CloudLocation("invalidProvider", "leipzig-1")
+            "name-0",
+            "pwd-2",
+            SessionMemory.m_4GB.value,
+            ttl="42s",
+            cloud_location=CloudLocation("invalidProvider", "leipzig-1"),
         )
 
 
