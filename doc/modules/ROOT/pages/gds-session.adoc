@@ -62,7 +62,9 @@ You can use the `sessions.estimate()` method to estimate the size required.
 This is a `DbmsConnectionInfo` object that contains the URI of an Neo4j instance, a username, and a password.
 
 - **TTL**.
-This optional parameter specifies the time-to-live of the session. The session will be automatically deleted after the TTL has expired after the last user activity.
+This optional parameter specifies the time-to-live of the session.
+The session will be automatically deleted if the session was unused for the provided duration.
+Usage is defined as the computation of an algorithm or the projection of a graph.
 
 - **Cloud location**.
 This is a `CloudLocation` object that specifies the cloud provider and region where the GDS Session will run. Required if the DBMS connection is for a self-managed database.
@@ -94,6 +96,7 @@ gds = sessions.get_or_create(
 .Creating a GDS Session for a self-managed Neo4j database:
 [source,python,role=no-test]
 ----
+from datetime import timedelta
 from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory, CloudLocation
 
 name = "my-new-session-sm"
@@ -109,6 +112,7 @@ gds = sessions.get_or_create(
     session_name=name,
     memory=memory,
     db_connection=db_connection_info,
+    ttl=timedelta(hours=5),
     cloud_location=cloud_location,
 )
 ----
