@@ -36,13 +36,6 @@ version `1.12a1` or later.
 %pip install "graphdatascience>=1.12a1"
 ----
 
-[source, python, role=no-test]
-----
-from dotenv import load_dotenv
-
-load_dotenv("staging_self_managed.env", override=True)
-----
-
 == Aura API credentials
 
 A GDS Session is managed via the Aura API. In order to use the Aura API,
