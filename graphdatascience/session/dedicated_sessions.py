@@ -129,9 +129,6 @@ class DedicatedSessions:
     ) -> SessionDetails:
         db_instance = self._aura_api.list_instance(dbid)
 
-        if ttl is not None:
-            ttl = f"{ttl.total_seconds()}s"
-
         if not (db_instance or cloud_location):
             raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")
 
@@ -140,11 +137,11 @@ class DedicatedSessions:
 
         # If cloud location is provided we go for self managed DBs path
         if cloud_location:
-            return self._aura_api.create_standalone_session(
+            return self._aura_api.create_session(
                 name=session_name, pwd=pwd, memory=memory, ttl=ttl, cloud_location=cloud_location
             )
         else:
-            return self._aura_api.create_attached_session(name=session_name, dbid=dbid, pwd=pwd, memory=memory, ttl=ttl)
+            return self._aura_api.create_session(name=session_name, dbid=dbid, pwd=pwd, memory=memory, ttl=ttl)
 
     def _construct_client(
         self, session_id: str, session_connection: DbmsConnectionInfo, db_connection: DbmsConnectionInfo
