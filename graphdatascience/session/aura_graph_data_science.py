@@ -11,7 +11,7 @@ from graphdatascience.endpoints import (
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
 from graphdatascience.graph.graph_remote_proc_runner import GraphRemoteProcRunner
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
-from graphdatascience.query_runner.aura_db_query_runner import AuraDbQueryRunner
+from graphdatascience.query_runner.session_query_runner import SessionQueryRunner
 from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
@@ -68,7 +68,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_tls_root_certs,
         )
 
-        self._query_runner = AuraDbQueryRunner(gds_query_runner, self._db_query_runner, arrow_client)
+        self._query_runner = SessionQueryRunner(gds_query_runner, self._db_query_runner, arrow_client)
 
         self._delete_fn = delete_fn
 
