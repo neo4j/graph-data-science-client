@@ -24,9 +24,9 @@ If you are using AuraDB, follow link:../gds-sessions[this example].
 
 == Prerequisites
 
-This notebook requires having an Neo4j instance instance available and
-have the GDS sessions feature enabled for your tenant. Contact your
-account manager to get the features enabled.
+This notebook requires having a Neo4j instance instance available and
+that the GDS sessions feature is enabled for your Neo4j Aura tenant.
+Contact your account manager to get the features enabled.
 
 We also need to have the `graphdatascience` Python library installed,
 version `1.12a1` or later.
@@ -45,11 +45,10 @@ load_dotenv("staging_self_managed.env", override=True)
 
 == Aura API credentials
 
-A GDS Session is created and accessed via the Aura API. In order to use
-the Aura API, we need to have Aura API credentials. For how to create
-these credentials, see the
+A GDS Session is managed via the Aura API. In order to use the Aura API,
+we need to have
 https://neo4j.com/docs/aura/platform/api/authentication/#_creating_credentials[Aura
-documentation].
+API credentialsn].
 
 Using these credentials, we can create our `GdsSessions` object, which
 is the main entry point for managing GDS Sessions.
@@ -70,20 +69,17 @@ sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secr
 
 == Creating a new session
 
-A new session is created by calling `sessions.get_or_create()`. To do
-this, we need to identify a data source. We assume that a self-managed
-Neo4j DBMS instance has been set up and is accessible. We need to pass
-the database address, user name and password to the `DbmsConnectionInfo`
-class.
+A new session is created by calling `sessions.get_or_create()`. As the
+data source, we assume that a self-managed Neo4j DBMS instance has been
+set up and is accessible. We need to pass the database address, user
+name and password to the `DbmsConnectionInfo` class.
 
-We also need to specify the session size. There are many possible sizes
-to choose from. Please refer to the API reference documentation or the
-manual for a full list.
+We also need to specify the session size. Please refer to the API
+reference documentation or the manual for a full list.
 
 Finally, we need to give our session a name. We will call ours
-`people-and-fruits-sm’. If we have already created a session and want to
-reconnect to it, the same code will be used. There is no extra cost in
-doing this, and it is much faster.
+`people-and-fruits-sm'. It is possible to reconnect to an existing session by calling`get_or_create`
+with the same session name and configuration.
 
 [source, python, role=no-test]
 ----
