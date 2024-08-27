@@ -115,7 +115,7 @@ def test_create_dedicated_session(requests_mock: Mocker) -> None:
         id="id0",
         name="name-0",
         status="Creating",
-        instance_id="",
+        instance_id=None,
         created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
         host="1.2.3.4",
         memory=SessionMemory.m_4GB.value,
@@ -147,7 +147,7 @@ def test_create_standalone_session_error_forwards(requests_mock: Mocker) -> None
         )
 
 
-def test_list_session(requests_mock: Mocker) -> None:
+def test_get_session(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
@@ -206,6 +206,8 @@ def test_list_sessions(requests_mock: Mocker) -> None:
                     "expiry_date": "1977-01-01T00:00:00Z",
                     "tenant_id": "tenant-1",
                     "user_id": "user-1",
+                    "cloud_provider": "gcp",
+                    "region": "leipzig",
                 },
                 {
                     "id": "id1",
@@ -236,6 +238,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         ttl=None,
         tenant_id="tenant-1",
         user_id="user-1",
+        cloud_location=CloudLocation("gcp", "leipzig"),
     )
 
     expected2 = SessionDetails(
@@ -250,6 +253,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         ttl=None,
         tenant_id="tenant-2",
         user_id="user-2",
+        cloud_location=None,
     )
 
     assert result == [expected1, expected2]

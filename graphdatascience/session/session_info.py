@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Optional
 
 from graphdatascience.session.aura_api_responses import SessionDetails
+from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.session_sizes import SessionMemoryValue
 
 
@@ -31,13 +32,15 @@ class SessionInfo:
             expiry_date=details.expiry_date,
             created_at=details.created_at,
             user_id=details.user_id,
+            cloud_location=details.cloud_location,
         )
 
 
 @dataclass(frozen=True)
 class ExtendedSessionInfo(SessionInfo):
-    instance_id: str
+    instance_id: Optional[str]
     status: str
     expiry_date: Optional[datetime]
     created_at: datetime
     user_id: str
+    cloud_location: Optional[CloudLocation]

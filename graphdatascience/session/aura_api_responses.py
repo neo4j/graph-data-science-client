@@ -9,6 +9,8 @@ from typing import Any, Dict, NamedTuple, Optional, Set
 
 from pandas import Timedelta
 
+from graphdatascience.session.cloud_location import CloudLocation
+
 from .session_sizes import SessionMemoryValue
 
 
@@ -16,7 +18,7 @@ from .session_sizes import SessionMemoryValue
 class SessionDetails:
     id: str
     name: str
-    instance_id: str
+    instance_id: Optional[str]
     memory: SessionMemoryValue
     status: str
     host: str
@@ -25,16 +27,19 @@ class SessionDetails:
     ttl: Optional[timedelta]
     user_id: str
     tenant_id: str
+    cloud_location: Optional[CloudLocation] = None
 
     @classmethod
     def from_json(cls, json: Dict[str, Any]) -> SessionDetails:
         expiry_date = json.get("expiry_date")
         ttl: Any | None = json.get("ttl")
+        instance_id = json.get("instance_id")
+        cloud_location = CloudLocation(json["cloud_provider"], json["region"]) if json.get("cloud_provider") else None
 
         return cls(
             id=json["id"],
             name=json["name"],
-            instance_id=json["instance_id"],
+            instance_id=instance_id if instance_id else None,
             memory=SessionMemoryValue.fromApiResponse(json["memory"]),
             status=json["status"],
             host=json["host"],
@@ -43,6 +48,7 @@ class SessionDetails:
             ttl=Timedelta(ttl).to_pytimedelta() if ttl else None,  # datetime has no support for parsing timedelta
             tenant_id=json["tenant_id"],
             user_id=json["user_id"],
+            cloud_location=cloud_location,
         )
 
     def bolt_connection_url(self) -> str:
