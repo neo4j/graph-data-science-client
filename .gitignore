@@ -201,3 +201,6 @@ build-iPhoneSimulator/
 
 # ignore any credential files stored in the project
 *credentials.env
+
+# Avoid accidental commiting of dev notebooks
+examples/dev/*

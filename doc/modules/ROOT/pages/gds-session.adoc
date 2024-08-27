@@ -36,6 +36,17 @@ sessions = GdsSessions(api_credentials=AuraAPICredentials(CLIENT_ID, CLIENT_SECR
 
 === Creating a GDS Session
 
+To create a GDS Session, use the `get_or_create()` method.
+It will create a new session if it does not exist, or connect to an existing one if it does.
+If the session options differ from the existing one, an error is thrown.
+
+The return value of `get_or_create()` is an `AuraGraphDataScience` object.
+It offers a similar API to the `GraphDataScience` object, but it is configured to run on a GDS Session.
+As a convention, always use the variable name `gds` for the return value of `get_or_create()`.
+
+
+==== Syntax
+
 To create a GDS Session, you need to provide the following information:
 
 - **Session name**.
@@ -44,13 +55,18 @@ The name must be unique.
 - **Session memory**.
 This configuration determines the amount of memory and CPU available to the session.
 It also determines the cost of running the session.
-Available configurations are listed <<gds-session-memory, below>>.
+Available configurations are listed in our API https://neo4j.com/docs/graph-data-science-client/current/api/sessions/session_memory/#graphdatascience.session.session_sizes.SessionMemory[reference].
 You can use the `sessions.estimate()` method to estimate the size required.
 
 - **DBMS connection**.
-This is a `DbmsConnectionInfo` object that contains the URI of an AuraDB instance, a username, and a password.
+This is a `DbmsConnectionInfo` object that contains the URI of an Neo4j instance, a username, and a password.
 
-.Creating a GDS Session:
+- **Cloud location**.
+This is a `CloudLocation` object that specifies the cloud provider and region where the GDS Session will run. Required if the DBMS connection is for a self-managed database.
+
+==== Examples
+
+.Creating a GDS Session for an AuraDB instance:
 [source,python,role=no-test]
 ----
 from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory
@@ -70,19 +86,27 @@ gds = sessions.get_or_create(
 )
 ----
 
-The `get_or_create()` method creates a new GDS Session if it does not exist, or connects to an existing one if it does.
-If the session memory configuration is different from the existing one, an error is raised.
+.Creating a GDS Session for a self-managed Neo4j database:
+[source,python,role=no-test]
+----
+from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory, CloudLocation
 
-The return value of `get_or_create()` is an `AuraGraphDataScience` object.
-It offers a similar API to the `GraphDataScience` object, but it is configured to run on a GDS Session.
-As a convention, always use the variable name `gds` for the return value of `get_or_create()`.
+name = "my-new-session-sm"
+memory = sessions.estimate(
+    node_count=20,
+    relationship_count=50,
+    algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
+)
+db_connection_info = DbmsConnectionInfo("neo4j://localhost", "my-user", "my-password")
+cloud_location = CloudLocation(provider="gcp", region="europe-west1")
 
-
-[[gds-session-memory]]
-==== Session memory configuration
-
-Session memory configuration is specified using the `SessionMemory` enum.
-Supported values are: `8GB`, `16GB`, `24GB`, `32GB`, `48GB`, `64GB`, `96GB`, `128GB`, `192GB`, `256GB`, `384GB`.
+gds = sessions.get_or_create(
+    session_name=name,
+    memory=memory,
+    db_connection=db_connection_info,
+    cloud_location=cloud_location,
+)
+----
 
 
 === Listing GDS Sessions

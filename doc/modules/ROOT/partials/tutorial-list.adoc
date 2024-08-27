@@ -8,3 +8,4 @@
 * xref:tutorials/heterogeneous-node-classification-with-hashgnn.adoc[]
 * xref:tutorials/kge-predict-transe-pyg-train.adoc[]
 * xref:tutorials/gds-sessions.adoc[] (Beta)
+* xref:tutorials/gds-sessions-self-managed.adoc[] (Beta)

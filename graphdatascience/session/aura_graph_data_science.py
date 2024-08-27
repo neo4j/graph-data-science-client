@@ -14,23 +14,22 @@ from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.aura_db_query_runner import AuraDbQueryRunner
 from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.utils.util_remote_proc_runner import UtilRemoteProcRunner
 
 
 class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
     """
-    Primary API class for interacting with Neo4j AuraDB + Graph Data Science.
+    Primary API class for interacting with Neo4j database + Graph Data Science Session.
     Always bind this object to a variable called `gds`.
     """
 
     def __init__(
         self,
         gds_session_connection_info: DbmsConnectionInfo,
-        aura_db_connection_info: DbmsConnectionInfo,
+        db_connection_info: DbmsConnectionInfo,
         delete_fn: Callable[[], bool],
-        arrow_disable_server_verification: bool = True,
+        arrow_disable_server_verification: bool = False,
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
     ):
@@ -47,15 +46,9 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
 
         self._server_version = gds_query_runner.server_version()
 
-        if self._server_version < ServerVersion(2, 6, 0):
-            raise RuntimeError(
-                f"AuraDB connection info was provided but GDS version {self._server_version} \
-                    does not support connecting to AuraDB"
-            )
-
         self._db_query_runner = Neo4jQueryRunner.create(
-            aura_db_connection_info.uri,
-            aura_db_connection_info.auth(),
+            db_connection_info.uri,
+            db_connection_info.auth(),
             aura_ds=True,
             server_version=self._server_version,
         )
@@ -75,9 +68,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_tls_root_certs,
         )
 
-        self._query_runner = AuraDbQueryRunner(
-            gds_query_runner, self._db_query_runner, arrow_client, self._db_query_runner.encrypted()
-        )
+        self._query_runner = AuraDbQueryRunner(gds_query_runner, self._db_query_runner, arrow_client)
 
         self._delete_fn = delete_fn
 
@@ -87,7 +78,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
     ) -> DataFrame:
         """
-        Run a Cypher query against the AuraDB instance.
+        Run a Cypher query against the Neo4j database.
 
         Parameters
         ----------
@@ -125,7 +116,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def set_database(self, database: str) -> None:
         """
-        Set the database which queries are run against.
+        Set the database which cypher queries are run against.
 
         Parameters
         -------
@@ -147,7 +138,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def database(self) -> Optional[str]:
         """
-        Get the database which queries are run against.
+        Get the database which cypher queries are run against.
 
         Returns:
             The name of the database.
@@ -156,7 +147,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def bookmarks(self) -> Optional[Any]:
         """
-        Get the Neo4j bookmarks defining the currently required states for queries to execute
+        Get the Neo4j bookmarks defining the currently required states for cypher queries to execute
 
         Returns
         -------

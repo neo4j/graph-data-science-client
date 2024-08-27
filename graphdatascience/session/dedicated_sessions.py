@@ -132,7 +132,7 @@ class DedicatedSessions:
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience(
             gds_session_connection_info=session_connection,
-            aura_db_connection_info=db_connection,
+            db_connection_info=db_connection,
             delete_fn=lambda: self._aura_api.delete_session(session_id=session_id),
         )
 
