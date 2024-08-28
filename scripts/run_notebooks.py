@@ -67,9 +67,7 @@ def main(filter_func: Callable[[str], bool]) -> None:
     examples_path = Path("examples")
 
     notebook_files = [
-        f
-        for f in examples_path.iterdir()
-        if f.is_file() and f.suffix == ".ipynb" and filter_func(f.name)
+        f for f in examples_path.iterdir() if f.is_file() and f.suffix == ".ipynb" and filter_func(f.name)
     ]
 
     ep = GdsExecutePreprocessor(kernel_name="python3")
@@ -124,10 +122,16 @@ if __name__ == "__main__":
 
     notebooks: Optional[List[str]] = None
     if notebook_filter == "sessions-attached":
-        filter_func = lambda notebook: notebook in session_notebooks
+
+        def filter_func(notebook):
+            return notebook in session_notebooks
     elif notebook_filter == "sessions-self-managed-db":
-        filter_func = lambda notebook: notebook in session_self_managed_notebooks
+
+        def filter_func(notebook):
+            return notebook in session_self_managed_notebooks
     else:
-        filter_func = lambda notebook: notebook not in (session_notebooks + session_self_managed_notebooks)
+
+        def filter_func(notebook):
+            return notebook not in session_notebooks + session_self_managed_notebooks
 
     main(filter_func)
