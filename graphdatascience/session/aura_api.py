@@ -9,6 +9,8 @@ from urllib.parse import urlparse
 
 import requests
 import requests.auth
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api_responses import (
@@ -46,6 +48,15 @@ class AuraApi:
         self._request_session = requests.Session()
         self._request_session.headers = {"User-agent": f"neo4j-graphdatascience-v{__version__}"}
         self._request_session.auth = self._auth
+        # dont retry on POST as its not idempotent
+        self._request_session.mount(
+            "https://",
+            HTTPAdapter(
+                max_retries=Retry(
+                    allowed_methods=["GET", "DELETE"], total=10, status_forcelist=[429, 500, 502, 503, 504]
+                )
+            ),
+        )
 
         self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
         self._tenant_details: Optional[TenantDetails] = None
