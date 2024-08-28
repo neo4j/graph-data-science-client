@@ -66,7 +66,7 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
                 "ttl": "42s",
             }
         },
-        additional_matcher=assert_body
+        additional_matcher=assert_body,
     )
 
     result = api.create_session(
