@@ -11,7 +11,7 @@ This Jupyter notebook is hosted
 https://github.com/neo4j/graph-data-science-client/blob/main/examples/load-data-via-graph-construction.ipynb[here]
 in the Neo4j Graph Data Science Client Github repository.
 
-The notebook shows the usage of the `gds.graph.construct` method
+The notebook shows the usage of the `+gds.graph.construct+` method
 (available only in GDS 2.1+) to build a graph directly in memory.
 
 NOTE: If you are using AuraDS, it is currently not possible to write the
@@ -23,7 +23,7 @@ We need an environment where Neo4j and GDS are available, for example
 AuraDS (which comes with GDS preinstalled) or Neo4j Desktop.
 
 Once the credentials to this environment are available, we can install
-the `graphdatascience` package and import the client class.
+the `+graphdatascience+` package and import the client class.
 
 [source, python, role=no-test]
 ----
@@ -37,7 +37,7 @@ from graphdatascience import GraphDataScience
 ----
 
 When using a local Neo4j setup, the default connection URI is
-`bolt://localhost:7687`:
+`+bolt://localhost:7687+`:
 
 [source, python, role=no-test]
 ----
@@ -54,8 +54,8 @@ gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 ----
 
 When using AuraDS, the connection URI is slightly different as it uses
-the `neo4j+s` protocol. The client should also include the
-`aura_ds=True` flag to enable AuraDS-recommended settings.
+the `+neo4j+s+` protocol. The client should also include the
+`+aura_ds=True+` flag to enable AuraDS-recommended settings.
 
 [source, python, role=no-test]
 ----
@@ -71,8 +71,8 @@ from graphdatascience.server_version.server_version import ServerVersion
 assert gds.server_version() >= ServerVersion(2, 1, 0)
 ----
 
-We also import `pandas` to create a Pandas `DataFrame` from the original
-data source.
+We also import `+pandas+` to create a Pandas `+DataFrame+` from the
+original data source.
 
 [source, python, role=no-test]
 ----
@@ -87,7 +87,7 @@ CORA_CONTENT = "https://data.neo4j.com/cora/cora.content"
 CORA_CITES = "https://data.neo4j.com/cora/cora.cites"
 ----
 
-We can load each CSV locally as a Pandas `DataFrame`.
+We can load each CSV locally as a Pandas `+DataFrame+`.
 
 [source, python, role=no-test]
 ----
@@ -96,7 +96,7 @@ cites = pd.read_csv(CORA_CITES, header=None)
 ----
 
 We need to perform an additional preprocessing step to convert the
-`subject` field (which is a string in the dataset) into an integer,
+`+subject+` field (which is a string in the dataset) into an integer,
 because node properties have to be numerical in order to be projected
 into a graph. We can use a map for this.
 
@@ -113,9 +113,9 @@ SUBJECT_TO_ID = {
 }
 ----
 
-We can now create a new `DataFrame` with a `nodeId` field, a list of
-node labels, and the additional node properties `subject` (using the
-`SUBJECT_TO_ID` mapping) and `features` (converting all the feature
+We can now create a new `+DataFrame+` with a `+nodeId+` field, a list of
+node labels, and the additional node properties `+subject+` (using the
+`+SUBJECT_TO_ID+` mapping) and `+features+` (converting all the feature
 columns to a single array column).
 
 [source, python, role=no-test]
@@ -128,16 +128,16 @@ nodes = pd.DataFrame().assign(
 )
 ----
 
-Let’s check the first 5 rows of the new `DataFrame`:
+Let’s check the first 5 rows of the new `+DataFrame+`:
 
 [source, python, role=no-test]
 ----
 nodes.head()
 ----
 
-Now we create a new `DataFrame` containing the relationships between the
-nodes. To create the equivalent of an undirected graph, we need to add
-direct and inverse relationships explicitly.
+Now we create a new `+DataFrame+` containing the relationships between
+the nodes. To create the equivalent of an undirected graph, we need to
+add direct and inverse relationships explicitly.
 
 [source, python, role=no-test]
 ----
@@ -147,7 +147,7 @@ inv_relationships = pd.DataFrame().assign(sourceNodeId=cites[1], targetNodeId=ci
 relationships = pd.concat([dir_relationships, inv_relationships]).drop_duplicates()
 ----
 
-Again, let’s check the first 5 rows of the new `DataFrame`:
+Again, let’s check the first 5 rows of the new `+DataFrame+`:
 
 [source, python, role=no-test]
 ----
@@ -184,8 +184,8 @@ The count matches with the number of rows in the Pandas dataset:
 len(content)
 ----
 
-We can stream the value of the `subject` node property for each node in
-the graph, printing only the first 10.
+We can stream the value of the `+subject+` node property for each node
+in the graph, printing only the first 10.
 
 [source, python, role=no-test]
 ----

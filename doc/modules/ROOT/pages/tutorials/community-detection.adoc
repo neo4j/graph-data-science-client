@@ -11,11 +11,11 @@ This Jupyter notebook is hosted
 https://github.com/neo4j/graph-data-science-client/blob/main/examples/community-detection.ipynb[here]
 in the Neo4j Graph Data Science Client Github repository.
 
-The notebook shows the usage of the `graphdatascience` library for
+The notebook shows the usage of the `+graphdatascience+` library for
 community detection on the Reddit Hyperlink Network dataset that can be
 downloaded
 https://snap.stanford.edu/data/soc-RedditHyperlinks.html[here]. We will
-use the `soc-redditHyperlinks-body.tsv` file.
+use the `+soc-redditHyperlinks-body.tsv+` file.
 
 The tasks we cover here include performing initial graph preprocessing
 using Weakly Connected Components and then performing community
@@ -71,7 +71,7 @@ df = df[df["TIMESTAMP"] < "2014-03-01 02:51:13"]
 df.head()
 ----
 
-The `LINK_SENTIMENT` column tells if there is a positive (+1) or
+The `+LINK_SENTIMENT+` column tells if there is a positive (+1) or
 negative (-1) relationship from the source subreddit to destination
 subreddit. We filter out the negative sentiment relationships as they
 won’t add to any meaningful communities. We also drop duplicate
@@ -170,8 +170,8 @@ G.node_properties()
 Next, we will see the size of each connected component and depending on
 that, we can pick the subgraph that needs further analysis.
 
-We use `run_cypher` here instead of the direct GDS client call since we
-want to see the size of the connected components.
+We use `+run_cypher+` here instead of the direct GDS client call since
+we want to see the size of the connected components.
 
 [source, python, role=no-test]
 ----
@@ -211,7 +211,7 @@ largest_component_graph
 We use the
 https://neo4j.com/docs/graph-data-science/current/algorithms/louvain/[Louvain]
 algorithm to detect communities in our subgraph and assign a
-`louvainCommunityId` to each community.
+`+louvainCommunityId+` to each community.
 
 [source, python, role=no-test]
 ----

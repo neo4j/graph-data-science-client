@@ -11,8 +11,8 @@ This Jupyter notebook is hosted
 https://github.com/neo4j/graph-data-science-client/blob/main/examples/kge-predict-transe-pyg-train.ipynb[here]
 in the Neo4j Graph Data Science Client Github repository.
 
-The notebook demonstrates how to use the `graphdatascience` and PyTorch
-Geometric (PyG) Python libraries to:
+The notebook demonstrates how to use the `+graphdatascience+` and
+PyTorch Geometric (PyG) Python libraries to:
 
 [arabic]
 . Import the
@@ -29,10 +29,10 @@ version (2.5+ or later) installed.
 
 Additionally, the following Python libraries are required:
 
-* `graphdatascience`,
+* `+graphdatascience+`,
 https://neo4j.com/docs/graph-data-science-client/current/installation/[see
 documentation for installation instructions]
-* `pytorch-geometric` version >= 2.5.0,
+* `+pytorch-geometric+` version >= 2.5.0,
 https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html[see
 PyG documentation for installation instructions]
 
@@ -106,19 +106,19 @@ Set a constraint for unique id entries to speed up data uploads.
 gds.run_cypher("CREATE CONSTRAINT entity_id FOR (e:Entity) REQUIRE e.id IS UNIQUE")
 ----
 
-*Creating Entity Nodes*: Create a node with the label `Entity`. This
-node should have properties `id` and `text`. - Syntax:
-`(:Entity {id: int, text: str})`
+*Creating Entity Nodes*: Create a node with the label `+Entity+`. This
+node should have properties `+id+` and `+text+`. - Syntax:
+`+(:Entity {id: int, text: str})+`
 
 *Creating Relationships for Training with PyG*: Based on the training
-stage, create relationships of type `TRAIN`, `TEST`, or `VALID`. Each of
-these relationships should have a `rel_id` property. - Example Syntax:
-`[:TRAIN {rel_id: int}]`
+stage, create relationships of type `+TRAIN+`, `+TEST+`, or `+VALID+`.
+Each of these relationships should have a `+rel_id+` property. - Example
+Syntax: `+[:TRAIN {rel_id: int}]+`
 
 *Creating Relationships for Prediction with GDS*: For the prediction
-stage, create relationships of a specific type denoted as `REL_i`. Each
-of these relationships should have `rel_id` and `text` properties. -
-Example Syntax: `[:REL_7 {rel_id: int, text: str}]`
+stage, create relationships of a specific type denoted as `+REL_i+`.
+Each of these relationships should have `+rel_id+` and `+text+`
+properties. - Example Syntax: `+[:REL_7 {rel_id: int, text: str}]+`
 
 [source, python, role=no-test]
 ----
@@ -197,8 +197,8 @@ def process():
 process()
 ----
 
-Project all data in graph to get mapping between `id` and internal
-`nodeId` field from database.
+Project all data in graph to get mapping between `+id+` and internal
+`+nodeId+` field from database.
 
 [source, python, role=no-test]
 ----
@@ -228,7 +228,7 @@ id_to_nodeId = dict(zip(node_properties.id, node_properties.nodeId))
 == Training the TransE Model with PyG
 
 Retrieve data from the database, convert it into torch tensors, and
-format it into a `Data` structure suitable for training with PyG.
+format it into a `+Data+` structure suitable for training with PyG.
 
 [source, python, role=no-test]
 ----
@@ -433,8 +433,8 @@ print(result)
 == Using Write Mode
 
 Write mode allows you to write results directly to the database as a new
-relationship type. This approach helps to avoid mapping from `nodeId` to
-`id`.
+relationship type. This approach helps to avoid mapping from `+nodeId+`
+to `+id+`.
 
 [source, python, role=no-test]
 ----
