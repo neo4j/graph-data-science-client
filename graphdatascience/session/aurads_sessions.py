@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import warnings
+from datetime import timedelta
 from typing import List, Optional
 
 from neo4j import GraphDatabase
@@ -56,9 +57,12 @@ class AuraDsSessions:
         memory: SessionMemory,
         db_connection: DbmsConnectionInfo,
         cloud_location: Optional[CloudLocation] = None,
+        ttl: Optional[timedelta] = None,
     ) -> AuraGraphDataScience:
         if cloud_location:
             raise ValueError("cloud_location cannot be provided for AuraDS-based sessions.")
+        if ttl:
+            raise ValueError("ttl cannot be provided for AuraDS-based sessions.")
 
         existing_session = self._find_existing_session(session_name)
 
