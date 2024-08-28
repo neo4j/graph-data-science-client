@@ -97,7 +97,7 @@ class AuraApi:
         json = {"name": name, "password": pwd, "memory": memory.value}
 
         if dbid:
-            json["instanceId"] = dbid
+            json["instance_id"] = dbid
 
         if ttl:
             json["ttl"] = f"{ttl.total_seconds()}s"
