@@ -573,14 +573,14 @@ def test_auth_token(requests_mock: Mocker) -> None:
         json={"access_token": "very_short_token", "expires_in": 0, "token_type": "Bearer"},
     )
 
-    assert api._auth._auth_token() == "very_short_token"
+    assert api._request_session.auth._auth_token() == "very_short_token"
 
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
         json={"access_token": "longer_token", "expires_in": 3600, "token_type": "Bearer"},
     )
 
-    assert api._auth._auth_token() == "longer_token"
+    assert api._request_session.auth._auth_token() == "longer_token"
 
 
 def test_auth_token_reused(requests_mock: Mocker) -> None:
@@ -591,7 +591,7 @@ def test_auth_token_reused(requests_mock: Mocker) -> None:
         json={"access_token": "one_token", "expires_in": 3600, "token_type": "Bearer"},
     )
 
-    assert api._auth._auth_token() == "one_token"
+    assert api._request_session.auth._auth_token() == "one_token"
 
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
@@ -599,7 +599,7 @@ def test_auth_token_reused(requests_mock: Mocker) -> None:
     )
 
     # no new token requested
-    assert api._auth._auth_token() == "one_token"
+    assert api._request_session.auth._auth_token() == "one_token"
 
 
 def test_auth_token_use_short_token(requests_mock: Mocker) -> None:
@@ -610,8 +610,8 @@ def test_auth_token_use_short_token(requests_mock: Mocker) -> None:
         json={"access_token": "one_token", "expires_in": 10, "token_type": "Bearer"},
     )
 
-    assert api._auth._auth_token() == "one_token"
-    assert api._auth._auth_token() == "one_token"
+    assert api._request_session.auth._auth_token() == "one_token"
+    assert api._request_session.auth._auth_token() == "one_token"
 
 
 def test_derive_tenant(requests_mock: Mocker) -> None:

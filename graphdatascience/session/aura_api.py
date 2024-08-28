@@ -42,14 +42,18 @@ class AuraApi:
     ) -> None:
         self._base_uri = AuraApi.base_uri(aura_env)
 
-        self._auth = AuraApi.Auth(oauth_url=f"{self._base_uri}/oauth/token", credentials=(client_id, client_secret))
+        self._request_session = self._init_request_session((client_id, client_secret))
         self._logger = logging.getLogger()
 
-        self._request_session = requests.Session()
-        self._request_session.headers = {"User-agent": f"neo4j-graphdatascience-v{__version__}"}
-        self._request_session.auth = self._auth
+        self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
+        self._tenant_details: Optional[TenantDetails] = None
+
+    def _init_request_session(self, credentials: Tuple[str, str]) -> requests.Session:
+        request_session = requests.Session()
+        request_session.headers = {"User-agent": f"neo4j-graphdatascience-v{__version__}"}
+        request_session.auth = AuraApi.Auth(oauth_url=f"{self._base_uri}/oauth/token", credentials=credentials)
         # dont retry on POST as its not idempotent
-        self._request_session.mount(
+        request_session.mount(
             "https://",
             HTTPAdapter(
                 max_retries=Retry(
@@ -60,9 +64,7 @@ class AuraApi:
                 )
             ),
         )
-
-        self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
-        self._tenant_details: Optional[TenantDetails] = None
+        return request_session
 
     @staticmethod
     def extract_id(uri: str) -> str:
