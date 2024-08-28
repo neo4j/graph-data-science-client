@@ -79,6 +79,7 @@ class FakeAuraApi(AuraApi):
             ttl=None,
             user_id="user-1",
             tenant_id=self._tenant_id,
+            cloud_location=cloud_location,
         )
         self.id_counter += 1
         self._sessions[details.id] = details
@@ -456,11 +457,6 @@ def test_get_or_create_with_different_memory_config(mocker: MockerFixture, aura_
         sessions.get_or_create("one", SessionMemory.m_16GB, DbmsConnectionInfo(db.connection_url, "", ""))
 
 
-# cases
-# existing session with different dbid
-# existing session with different cloud_location
-
-
 def test_get_or_create_for_auradb_with_cloud_location(mocker: MockerFixture, aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
 
@@ -523,6 +519,44 @@ def test_get_or_create_for_existing_session_with_different_dbid(mocker: MockerFi
     ):
         sessions = DedicatedSessions(aura_api)
         sessions.get_or_create("one", SessionMemory.m_8GB, DbmsConnectionInfo(db.connection_url, "", ""))
+
+
+def test_get_or_create_for_existing_session_with_different_cloud_location(
+    mocker: MockerFixture, aura_api: AuraApi
+) -> None:
+    db = _setup_db_instance(aura_api)
+
+    patch_validate_db_connection(mocker)
+
+    fake_aura_api = cast(FakeAuraApi, aura_api)
+    fake_aura_api.add_session(
+        SessionDetails(
+            id="ffff0-ffff1",
+            name="one",
+            instance_id=None,
+            memory=SessionMemory.m_8GB.value,
+            status="Ready",
+            created_at=datetime.now(),
+            host="foo.bar",
+            expiry_date=None,
+            ttl=None,
+            tenant_id="tenant-0",
+            user_id="user-0",
+            cloud_location=CloudLocation(region="dresden", provider="aws"),
+        )
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape("Session `one` exists in a different cloud location."),
+    ):
+        sessions = DedicatedSessions(aura_api)
+        sessions.get_or_create(
+            "one",
+            SessionMemory.m_8GB,
+            DbmsConnectionInfo(db.connection_url, "", ""),
+            cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
+        )
 
 
 def test_delete_session(aura_api: AuraApi) -> None:

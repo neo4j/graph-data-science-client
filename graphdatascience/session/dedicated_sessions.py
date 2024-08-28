@@ -59,6 +59,7 @@ class DedicatedSessions:
             self._check_expiry_date(existing_session)
             self._check_memory_configuration(existing_session, memory.value)
             self._check_dbid(existing_session, dbid)
+            self._check_cloud_location(existing_session, cloud_location)
 
             session_id = existing_session.id
         else:
@@ -177,4 +178,13 @@ class DedicatedSessions:
             raise ValueError(
                 f"Session `{existing_session.name}` exists against a different AuraDB. "
                 f"Current: `{existing_session.instance_id}`, Requested: `{dbid}`."
+            )
+
+    def _check_cloud_location(self, existing_session: SessionDetails, cloud_location: Optional[CloudLocation]) -> None:
+        # cloud_location was only recently stored. if the existing session has none, we dont know if its the same or not
+        # (should be save to always check on 27.09.2024)
+        if existing_session.cloud_location and existing_session.cloud_location != cloud_location:
+            raise ValueError(
+                f"Session `{existing_session.name}` exists in a different cloud location. "
+                f"Current: `{existing_session.cloud_location}`, Requested: `{cloud_location}`."
             )
