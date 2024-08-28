@@ -3,7 +3,7 @@
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, List, NamedTuple, Optional
+from typing import Any, Callable, List, NamedTuple, Optional
 
 import nbformat
 from nbclient.exceptions import CellExecutionError
@@ -63,13 +63,13 @@ class GdsTearDownCollector(ExecutePreprocessor):
         return self._tear_down_cells
 
 
-def main(notebook_files: Optional[List[str]] = None) -> None:
+def main(filter_func: Callable[[str], bool]) -> None:
     examples_path = Path("examples")
 
     notebook_files = [
         f
         for f in examples_path.iterdir()
-        if f.is_file() and f.suffix == ".ipynb" and (notebook_files is None or f.name in notebook_files)
+        if f.is_file() and f.suffix == ".ipynb" and filter_func(f.name)
     ]
 
     ep = GdsExecutePreprocessor(kernel_name="python3")
@@ -119,10 +119,15 @@ def main(notebook_files: Optional[List[str]] = None) -> None:
 if __name__ == "__main__":
     notebook_filter = sys.argv[1] if len(sys.argv) >= 2 else ""
 
+    session_notebooks = ["gds-sessions.ipynb"]
+    session_self_managed_notebooks = ["gds-sessions-self-managed.ipynb"]
+
     notebooks: Optional[List[str]] = None
     if notebook_filter == "sessions-attached":
-        notebooks = ["gds-sessions.ipynb"]
+        filter_func = lambda notebook: notebook in session_notebooks
     elif notebook_filter == "sessions-self-managed-db":
-        notebooks = ["gds-sessions-self-managed.ipynb"]
+        filter_func = lambda notebook: notebook in session_self_managed_notebooks
+    else:
+        filter_func = lambda notebook: notebook not in (session_notebooks + session_self_managed_notebooks)
 
-    main(notebooks)
+    main(filter_func)
