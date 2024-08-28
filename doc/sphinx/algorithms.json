@@ -2796,6 +2796,22 @@
   },
   {
     "function": {
+      "name": "gds.randomWalk.mutate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Random Walk is an algorithm that provides random paths in a graph. It\u2019s similar to how a drunk person traverses a city. The mutate procedure produces the count a node occurs on a random walk."
+  },
+  {
+    "function": {
+      "name": "gds.randomWalk.mutate.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
       "name": "gds.randomWalk.stats",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
