@@ -44,7 +44,15 @@ class FakeAuraApi(AuraApi):
         self._status_after_creating = status_after_creating
         self._size_estimation = size_estimation or EstimationDetails("1GB", "8GB", False)
 
-    def create_attached_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
+    def create_session(
+        self,
+        name: str,
+        pwd: str,
+        memory: SessionMemoryValue,
+        dbid: Optional[str] = None,
+        ttl: Optional[timedelta] = None,
+        cloud_location: Optional[CloudLocation] = None,
+    ) -> SessionDetails:
         details = SessionDetails(
             id=f"{dbid}-ffff{self.id_counter}",
             name=name,
@@ -54,33 +62,12 @@ class FakeAuraApi(AuraApi):
             created_at=datetime.fromisoformat("2021-01-01T00:00:00+00:00"),
             host="foo.bar",
             expiry_date=None,
-            ttl=None,
-            user_id="user-1",
-            tenant_id=self._tenant_id,
-        )
-
-        self.id_counter += 1
-        self._sessions[details.id] = details
-
-        return details
-
-    def create_standalone_session(
-        self, name: str, pwd: str, memory: SessionMemoryValue, cloud_location: CloudLocation
-    ) -> SessionDetails:
-        details = SessionDetails(
-            id=f"s-{self.id_counter}",
-            name=name,
-            instance_id="",
-            memory=memory,
-            status="Creating",
-            created_at=datetime.fromisoformat("2021-01-01T00:00:00+00:00"),
-            host="foo.bar",
-            expiry_date=None,
-            ttl=None,
+            ttl=ttl,
             user_id="user-1",
             tenant_id=self._tenant_id,
             cloud_location=cloud_location,
         )
+
         self.id_counter += 1
         self._sessions[details.id] = details
 
@@ -208,7 +195,7 @@ HASHED_DB_PASSWORD = "722cbc618c015c7c062f071868d9bb5f207f35a317e71054740716642c
 
 def test_list_session(aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
-    session = aura_api.create_attached_session(
+    session = aura_api.create_session(
         name="gds-session-my-session-name",
         dbid=aura_api.list_instances()[0].id,
         pwd="some_pwd",
@@ -237,7 +224,7 @@ def test_list_session_paused_instance(aura_api: AuraApi) -> None:
     )
     fake_aura_api._instances[paused_db.id] = paused_db
 
-    session = aura_api.create_attached_session(
+    session = aura_api.create_session(
         name="gds-session-my-session-name",
         dbid=db.id,
         pwd="some_pwd",
@@ -266,7 +253,7 @@ def test_list_session_gds_instance(aura_api: AuraApi) -> None:
     )
     fake_aura_api._instances[gds_instance.id] = gds_instance
 
-    session = aura_api.create_attached_session(
+    session = aura_api.create_session(
         name="gds-session-my-session-name",
         dbid=db.id,
         pwd="some_pwd",
@@ -285,10 +272,12 @@ def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> No
     patch_construct_client(mocker)
     patch_validate_db_connection(mocker)
 
+    ttl = timedelta(hours=42)
     gds_credentials = sessions.get_or_create(
         "my-session",
         SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+s://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
+        ttl=ttl,
     )
 
     assert gds_credentials == {  # type: ignore
@@ -307,6 +296,7 @@ def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> No
     assert isinstance(actual_session, ExtendedSessionInfo)
     assert actual_session.name == "my-session"
     assert actual_session.user_id == "user-1"
+    assert actual_session.ttl == ttl
 
 
 def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
@@ -315,11 +305,14 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
     patch_construct_client(mocker)
     patch_validate_db_connection(mocker)
 
+    ttl = timedelta(hours=42)
+
     gds_credentials = sessions.get_or_create(
         "my-session",
         SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+s://foo.bar", "dbuser", "db_pw"),
         cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
+        ttl=ttl,
     )
 
     assert gds_credentials == {  # type: ignore
@@ -327,7 +320,7 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
         "session_connection": DbmsConnectionInfo(
             uri="neo4j+s://foo.bar", username="neo4j", password=HASHED_DB_PASSWORD
         ),
-        "session_id": "s-0",
+        "session_id": "None-ffff0",
     }
 
     assert len(sessions.list()) == 1
@@ -336,6 +329,7 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
     assert isinstance(actual_session, ExtendedSessionInfo)
     assert actual_session.name == "my-session"
     assert actual_session.user_id == "user-1"
+    assert actual_session.ttl == ttl
 
 
 def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
@@ -562,8 +556,8 @@ def test_get_or_create_for_existing_session_with_different_cloud_location(
 def test_delete_session(aura_api: AuraApi) -> None:
     db1 = aura_api.create_instance("db1", SessionMemory.m_4GB.value, "aura", "leipzig").id
     db2 = aura_api.create_instance("db2", SessionMemory.m_4GB.value, "aura", "dresden").id
-    aura_api.create_attached_session("one", db1, "12345", memory=SessionMemory.m_8GB.value)
-    aura_api.create_attached_session("other", db2, "123123", memory=SessionMemory.m_8GB.value)
+    aura_api.create_session("one", db1, memory=SessionMemory.m_8GB.value, dbid="12345")
+    aura_api.create_session("other", db2, memory=SessionMemory.m_8GB.value, dbid="123123")
 
     sessions = DedicatedSessions(aura_api)
 
@@ -573,7 +567,7 @@ def test_delete_session(aura_api: AuraApi) -> None:
 
 def test_delete_nonexisting_session(aura_api: AuraApi) -> None:
     db1 = aura_api.create_instance("db1", SessionMemory.m_4GB.value, "aura", "leipzig").id
-    aura_api.create_attached_session("one", db1, "12345", memory=SessionMemory.m_8GB.value)
+    aura_api.create_session("one", db1, memory=SessionMemory.m_8GB.value, dbid="12345")
     sessions = DedicatedSessions(aura_api)
 
     assert sessions.delete("other") is False
@@ -597,7 +591,7 @@ def test_delete_session_paused_instance(aura_api: AuraApi) -> None:
     )
     fake_aura_api._instances[paused_db.id] = paused_db
 
-    session = aura_api.create_attached_session(
+    session = aura_api.create_session(
         name="gds-session-my-session-name",
         dbid=paused_db.id,
         pwd="some_pwd",

@@ -53,11 +53,14 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
                 "memory": "4Gi",
                 "tenant_id": "tenant-0",
                 "user_id": "user-0",
+                "ttl": "42s",
             }
         },
     )
 
-    result = api.create_attached_session(name="name-0", dbid="dbid-1", pwd="pwd-2", memory=SessionMemory.m_4GB.value)
+    result = api.create_session(
+        name="name-0", dbid="dbid-1", pwd="pwd-2", memory=SessionMemory.m_4GB.value, ttl=timedelta(seconds=42)
+    )
 
     assert result == SessionDetails(
         id="id0",
@@ -68,7 +71,7 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
         host="1.2.3.4",
         memory=SessionMemory.m_4GB.value,
         expiry_date=None,
-        ttl=None,
+        ttl=timedelta(seconds=42),
         tenant_id="tenant-0",
         user_id="user-0",
     )
@@ -87,6 +90,7 @@ def test_create_dedicated_session(requests_mock: Mocker) -> None:
             "memory": "4GB",
             "cloud_provider": "aws",
             "region": "leipzig-1",
+            "ttl": "42.0s",
         }
         return True
 
@@ -103,13 +107,21 @@ def test_create_dedicated_session(requests_mock: Mocker) -> None:
                 "memory": "4Gi",
                 "tenant_id": "tenant-0",
                 "user_id": "user-0",
+                "ttl": "42.0s",
             }
         },
         additional_matcher=assert_params,
     )
 
-    result = api.create_standalone_session(
-        "name-0", "pwd-2", SessionMemory.m_4GB.value, cloud_location=CloudLocation("aws", "leipzig-1")
+    result = api.create_session(
+        "name-0",
+        "pwd-2",
+        SessionMemory.m_4GB.value,
+        ttl=timedelta(seconds=42),
+        cloud_location=CloudLocation(
+            "aws",
+            "leipzig-1",
+        ),
     )
     assert result == SessionDetails(
         id="id0",
@@ -120,7 +132,7 @@ def test_create_dedicated_session(requests_mock: Mocker) -> None:
         host="1.2.3.4",
         memory=SessionMemory.m_4GB.value,
         expiry_date=None,
-        ttl=None,
+        ttl=timedelta(seconds=42),
         tenant_id="tenant-0",
         user_id="user-0",
     )
@@ -142,8 +154,12 @@ def test_create_standalone_session_error_forwards(requests_mock: Mocker) -> None
     )
 
     with pytest.raises(AuraApiError, match="some validation error"):
-        api.create_standalone_session(
-            "name-0", "pwd-2", SessionMemory.m_4GB.value, cloud_location=CloudLocation("invalidProvider", "leipzig-1")
+        api.create_session(
+            "name-0",
+            "pwd-2",
+            SessionMemory.m_4GB.value,
+            ttl=timedelta(seconds=42),
+            cloud_location=CloudLocation("invalidProvider", "leipzig-1"),
         )
 
 

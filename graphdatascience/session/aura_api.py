@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import time
 import warnings
+from datetime import timedelta
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
@@ -68,25 +69,30 @@ class AuraApi:
             base_uri = f"https://api-{aura_env}.neo4j-dev.io"
         return base_uri
 
-    def create_attached_session(self, name: str, dbid: str, pwd: str, memory: SessionMemoryValue) -> SessionDetails:
-        return self._create_session(name, pwd, memory, instance_id=dbid)
-
-    def create_standalone_session(
-        self, name: str, pwd: str, memory: SessionMemoryValue, cloud_location: CloudLocation
+    def create_session(
+        self,
+        name: str,
+        pwd: str,
+        memory: SessionMemoryValue,
+        dbid: Optional[str] = None,
+        ttl: Optional[timedelta] = None,
+        cloud_location: Optional[CloudLocation] = None,
     ) -> SessionDetails:
-        return self._create_session(
-            name,
-            pwd,
-            memory,
-            tenant_id=self._tenant_id,
-            cloud_provider=cloud_location.provider,
-            region=cloud_location.region,
-        )
+        json = {"name": name, "password": pwd, "memory": memory.value}
 
-    def _create_session(self, name: str, pwd: str, memory: SessionMemoryValue, **kwargs: Any) -> SessionDetails:
+        if dbid:
+            json["instanceId"] = dbid
+
+        if ttl:
+            json["ttl"] = f"{ttl.total_seconds()}s"
+
+        if cloud_location:
+            json["tenant_id"] = self._tenant_id
+            json["cloud_provider"] = cloud_location.provider
+            json["region"] = cloud_location.region
+
         response = self._request_session.post(
-            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions",
-            json={"name": name, "password": pwd, "memory": memory.value, **kwargs},
+            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions", json=json
         )
 
         self._check_resp(response)

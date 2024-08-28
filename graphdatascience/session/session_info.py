@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 from graphdatascience.session.aura_api_responses import SessionDetails
@@ -33,6 +33,7 @@ class SessionInfo:
             created_at=details.created_at,
             user_id=details.user_id,
             cloud_location=details.cloud_location,
+            ttl=details.ttl,
         )
 
 
@@ -44,3 +45,4 @@ class ExtendedSessionInfo(SessionInfo):
     created_at: datetime
     user_id: str
     cloud_location: Optional[CloudLocation]
+    ttl: Optional[timedelta] = None
