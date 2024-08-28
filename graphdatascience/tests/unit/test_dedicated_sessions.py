@@ -53,6 +53,11 @@ class FakeAuraApi(AuraApi):
         ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
     ) -> SessionDetails:
+        if not cloud_location:
+            instance_details = self.list_instance(dbid)
+            if instance_details:
+                cloud_location = CloudLocation(instance_details.cloud_provider, instance_details.region)
+
         details = SessionDetails(
             id=f"{dbid}-ffff{self.id_counter}",
             name=name,
@@ -65,7 +70,8 @@ class FakeAuraApi(AuraApi):
             ttl=ttl,
             user_id="user-1",
             tenant_id=self._tenant_id,
-            cloud_location=cloud_location,
+            # we derive the location from the db
+            cloud_location=cloud_location if cloud_location else CloudLocation("default", "default"),
         )
 
         self.id_counter += 1

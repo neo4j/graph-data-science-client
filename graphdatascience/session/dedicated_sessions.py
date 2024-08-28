@@ -180,7 +180,8 @@ class DedicatedSessions:
     def _check_cloud_location(self, existing_session: SessionDetails, cloud_location: Optional[CloudLocation]) -> None:
         # cloud_location was only recently stored. if the existing session has none, we dont know if its the same or not
         # (should be save to always check on 27.09.2024)
-        if existing_session.cloud_location and existing_session.cloud_location != cloud_location:
+        # if no cloud_location was provided the location is derived from the db -> no need to check
+        if existing_session.cloud_location and cloud_location and existing_session.cloud_location != cloud_location:
             raise ValueError(
                 f"Session `{existing_session.name}` exists in a different cloud location. "
                 f"Current: `{existing_session.cloud_location}`, Requested: `{cloud_location}`."
