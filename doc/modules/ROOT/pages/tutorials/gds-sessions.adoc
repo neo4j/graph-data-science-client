@@ -75,9 +75,15 @@ Finally, we need to give our session a name. We will call ours
 `+people-and-fruits'. It is possible to reconnect to an existing session by calling+`get_or_create`
 with the same session name and configuration.
 
+We will also set a time-to-live (TTL) for the session. This ensures that
+our session is automatically deleted after being unused for 5 hours.
+This is a good practice to avoid incurring costs should we forget to
+delete the session ourselves.
+
 [source, python, role=no-test]
 ----
 import os
+from datetime import timedelta
 from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory
 
 # Identify the AuraDB instance
@@ -93,6 +99,7 @@ gds = sessions.get_or_create(
     session_name="people-and-fruits",
     memory=memory,
     db_connection=db_connection,
+    ttl=timedelta(hours=5),
 )
 ----
 
