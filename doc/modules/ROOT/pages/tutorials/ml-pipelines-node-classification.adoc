@@ -27,7 +27,7 @@ Neo4j Desktop with a dedicated database.
 *Please note that we will be writing to and deleting data from Neo4j.*
 
 Once the credentials to access this environment are available, we can
-install the `graphdatascience` package and import the client class.
+install the `+graphdatascience+` package and import the client class.
 
 [source, python, role=no-test]
 ----
@@ -41,9 +41,9 @@ from graphdatascience import GraphDataScience
 ----
 
 When using a local Neo4j setup, the default connection URI is
-`bolt://localhost:7687`; when using AuraDS, instead, the connection URI
-is slightly different as it uses the `neo4j+s` protocol. In this case,
-the client should also include the `aura_ds=True` flag to enable
+`+bolt://localhost:7687+`; when using AuraDS, instead, the connection
+URI is slightly different as it uses the `+neo4j+s+` protocol. In this
+case, the client should also include the `+aura_ds=True+` flag to enable
 AuraDS-recommended settings. Check the
 https://neo4j.com/docs/graph-data-science-client/current/getting-started/[Neo4j
 GDS Client docs] for more details.
@@ -67,7 +67,7 @@ gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 ----
 
 We also need to check that the version of the GDS library is 2.2.0 or
-newer, because we will use the concept of ``context'' introduced in
+newer, because we will use the concept of "`context`" introduced in
 https://github.com/neo4j/graph-data-science/releases/tag/2.2.0[GDS
 2.2.0].
 
@@ -76,8 +76,9 @@ https://github.com/neo4j/graph-data-science/releases/tag/2.2.0[GDS
 assert gds.version() >= "2.2.0"
 ----
 
-Finally, we import `json` to help in writing the Cypher queries used to
-load the data, and `numpy` and `pandas` for further data processing.
+Finally, we import `+json+` to help in writing the Cypher queries used
+to load the data, and `+numpy+` and `+pandas+` for further data
+processing.
 
 [source, python, role=no-test]
 ----
@@ -114,7 +115,7 @@ CORA_CITES = "https://data.neo4j.com/cora/cora.cites"
 ----
 
 Upon loading, we need to perform an additional preprocessing step to
-convert the `subject` field (which is a string in the dataset) into an
+convert the `+subject+` field (which is a string in the dataset) into an
 integer, because node properties have to be numerical in order to be
 projected into a graph; although we could assign consecutive IDs, we
 assign an ID other than 0 to the first subject to later show how the
@@ -139,8 +140,8 @@ SUBJECT_TO_ID = {
 HOLDOUT_NODES = 10
 ----
 
-We can now load the CSV files using the `LOAD CSV` Cypher statement and
-some basic data transformation:
+We can now load the CSV files using the `+LOAD CSV+` Cypher statement
+and some basic data transformation:
 
 [source, python, role=no-test]
 ----
@@ -177,9 +178,9 @@ gds.run_cypher(load_relationships)
 ----
 
 With the data loaded on Neo4j, we can now project a graph including all
-the nodes and the `CITES` relationship as undirected (and with `SINGLE`
-aggregation, to skip repeated relationships as a result of adding the
-inverse direction).
+the nodes and the `+CITES+` relationship as undirected (and with
+`+SINGLE+` aggregation, to skip repeated relationships as a result of
+adding the inverse direction).
 
 [source, python, role=no-test]
 ----
@@ -211,8 +212,8 @@ machine learning pipeline.
 node_pipeline, _ = gds.beta.pipeline.nodeClassification.create("cora-pipeline")
 ----
 
-We can check that the pipeline has actually been created with the `list`
-method:
+We can check that the pipeline has actually been created with the
+`+list+` method:
 
 [source, python, role=no-test]
 ----
@@ -239,12 +240,13 @@ Regression as a candidate model for the training, but other algorithms
 reasonable starting parameters that can be further tuned according to
 the needed metrics.
 
-Some hyperparameters such as `penalty` can be single values or ranges.
+Some hyperparameters such as `+penalty+` can be single values or ranges.
 If they are expressed as ranges, autotuning is used to search their best
 value.
 
-The `configureAutoTuning` method can be used to set the number of model
-candidates to try. Here we choose 5 to keep the training time short.
+The `+configureAutoTuning+` method can be used to set the number of
+model candidates to try. Here we choose 5 to keep the training time
+short.
 
 [source, python, role=no-test]
 ----
@@ -269,11 +271,11 @@ also run a training estimate, to make sure there are enough resources to
 run the actual training afterwards.
 
 The Node Classification model supports several evaluation metrics. Here
-we use the global metric `F1_WEIGHTED`.
+we use the global metric `+F1_WEIGHTED+`.
 
-*NOTE:* The `concurrency` parameter is explicitly set to 4 (the default
-value) for demonstration purposes. The maximum concurrency in the
-library is limited to 4 for Neo4j Community Edition.
+*NOTE:* The `+concurrency+` parameter is explicitly set to 4 (the
+default value) for demonstration purposes. The maximum concurrency in
+the library is limited to 4 for Neo4j Community Edition.
 
 [source, python, role=no-test]
 ----
@@ -319,9 +321,9 @@ stats["modelInfo"]["metrics"]["F1_WEIGHTED"]["test"]
 
 After training, the model is ready to classify unclassified data.
 
-One simple way to use the `predict` mode is to just stream the result of
-the prediction. This can be impractical when a graph is very large, so
-it should be only used for experimentation purposes.
+One simple way to use the `+predict+` mode is to just stream the result
+of the prediction. This can be impractical when a graph is very large,
+so it should be only used for experimentation purposes.
 
 [source, python, role=no-test]
 ----
@@ -330,7 +332,7 @@ predicted = model.predict_stream(
 )
 ----
 
-The result of the prediction is a Pandas `DataFrame` containing the
+The result of the prediction is a Pandas `+DataFrame+` containing the
 predicted class and the predicted probabilities for all the classes for
 each node.
 
@@ -339,13 +341,13 @@ each node.
 predicted
 ----
 
-The order of the classes in the `predictedProbabilities` field is given
-in the model information, and can be used to retrieve the predicted
-probability for the predicted class.
+The order of the classes in the `+predictedProbabilities+` field is
+given in the model information, and can be used to retrieve the
+predicted probability for the predicted class.
 
 Please note that the order in which the classes appear in the
-`predictedProbabilities` field is somewhat arbitrary, so the correct way
-to access each probability is via the class index obtained from the
+`+predictedProbabilities+` field is somewhat arbitrary, so the correct
+way to access each probability is via the class index obtained from the
 model, _not_ its position.
 
 [source, python, role=no-test]
@@ -368,10 +370,11 @@ The quality of the model can potentially be increased by adding more
 features or by using different features altogether. One way is to use
 algorithms such as FastRP that create embeddings based on both node
 properties and graph features, which can be added via the
-`addNodeProperty` pipeline method. Such properties are ``transient'', in
-that they are automatically created and removed by the pipeline itself.
+`+addNodeProperty+` pipeline method. Such properties are "`transient`",
+in that they are automatically created and removed by the pipeline
+itself.
 
-In this example we also use the `contextNodeLabels` parameter to
+In this example we also use the `+contextNodeLabels+` parameter to
 explicitly set the types of nodes we calculate the embeddings for, and
 we include both the classified and the unclassified nodes. This is
 useful because the more nodes are used, the better the generated
@@ -422,14 +425,14 @@ model_fastrp, stats_fastrp = node_pipeline_fastrp.train(
 )
 ----
 
-The `F1_WEIGHTED` metrics is better with embeddings:
+The `+F1_WEIGHTED+` metrics is better with embeddings:
 
 [source, python, role=no-test]
 ----
 print(stats_fastrp["modelInfo"]["metrics"]["F1_WEIGHTED"]["test"])
 ----
 
-The classification using `predict_stream` can be run in the same way:
+The classification using `+predict_stream+` can be run in the same way:
 
 [source, python, role=no-test]
 ----
@@ -446,10 +449,11 @@ predicted_fastrp = model_fastrp.predict_stream(
 print(len(predicted_fastrp))
 ----
 
-Instead of streaming the results, the prediction can be run in `mutate`
-mode to be more performant, especially when the predicted values are
-used multiple times. The predicted nodes can be retrieved using the
-`streamNodeProperty` method with the `UnclassifiedPaper` class.
+Instead of streaming the results, the prediction can be run in
+`+mutate+` mode to be more performant, especially when the predicted
+values are used multiple times. The predicted nodes can be retrieved
+using the `+streamNodeProperty+` method with the `+UnclassifiedPaper+`
+class.
 
 [source, python, role=no-test]
 ----
@@ -470,7 +474,7 @@ predicted_fastrp
 ----
 
 This is useful to compare the result of classification with the original
-`subject` value of the test nodes, which must be retrieved from the
+`+subject+` value of the test nodes, which must be retrieved from the
 Neo4j database since it has been excluded from the projected graph.
 
 [source, python, role=no-test]

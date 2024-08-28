@@ -16,7 +16,7 @@ https://www.youtube.com/watch?v=c66u_wsPz-U&t=1082s[GNNs at Scale With
 Graph Data Science Sampling and Python Client Integration] that was
 given at the NODES 2022 conference.
 
-The notebook exemplifies how to use the `graphdatascience` and PyTorch
+The notebook exemplifies how to use the `+graphdatascience+` and PyTorch
 Geometric (PyG) Python libraries to:
 
 * Import the https://paperswithcode.com/dataset/cora[CORA dataset]
@@ -36,7 +36,7 @@ Running this notebook requires a Neo4j server with a recent GDS version
 
 Also required are of course the Python libraries:
 
-* `graphdatascience` (see
+* `+graphdatascience+` (see
 https://neo4j.com/docs/graph-data-science-client/current/installation/[docs]
 for installation instructions)
 * PyG (see
@@ -175,7 +175,7 @@ print(len(sample_topology["CITES"][0]))
 ----
 
 Great, it looks like we have the format we need to create a PyG
-`edge_index` later.
+`+edge_index+` later.
 
 [source, python, role=no-test]
 ----
@@ -197,9 +197,9 @@ display(sample_node_properties)
 == Constructing GCN input
 
 Now that we have all information we need client side, we can construct
-the PyG `Data` object we will use as training input. We will remap the
+the PyG `+Data+` object we will use as training input. We will remap the
 node IDs to be consecutive and starting from zero. We use the ordering
-of node ids in `sample_node_properties` as our remapping so that the
+of node ids in `+sample_node_properties+` as our remapping so that the
 index is aligned with the node properties.
 
 [source, python, role=no-test]

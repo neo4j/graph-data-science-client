@@ -333,9 +333,9 @@ print(wcc_result[["computeMillis", "componentCount"]])
 == Component separation
 
 Learning that our graph consists of three components, we will next
-separate the components into separate graphs. We will use the `subgraph`
-projection to accomplish this. We will create one subgraph for each of
-the components.
+separate the components into separate graphs. We will use the
+`+subgraph+` projection to accomplish this. We will create one subgraph
+for each of the components.
 
 [source, python, role=no-test]
 ----

@@ -11,12 +11,12 @@ This Jupyter notebook is hosted
 https://github.com/neo4j/graph-data-science-client/blob/main/examples/heterogeneous-node-classification-with-hashgnn.ipynb[here]
 in the Neo4j Graph Data Science Client Github repository.
 
-The notebook exemplifies how to use the `graphdatascience` library to:
+The notebook exemplifies how to use the `+graphdatascience+` library to:
 
-* Import an IMDB dataset with `Movie`, `Actor` and `Director` nodes
-directly into GDS using a convenience data loader
+* Import an IMDB dataset with `+Movie+`, `+Actor+` and `+Director+`
+nodes directly into GDS using a convenience data loader
 * Configure a node classification pipeline with HashGNN embeddings for
-predicting the genre of `Movie` nodes
+predicting the genre of `+Movie+` nodes
 * Train the pipeline with autotuning and inspecting the results
 * Make predictions for movie nodes missing without a specified genre
 
@@ -26,8 +26,8 @@ Running this notebook requires a Neo4j database server with a recent
 version (2.3 or newer) of the Neo4j Graph Data Science library (GDS)
 plugin installed. We recommend using Neo4j Desktop with GDS, or AuraDS.
 
-Additionally, the version of the `graphdatascience` library used must be
-1.6 or newer.
+Additionally, the version of the `+graphdatascience+` library used must
+be 1.6 or newer.
 
 [source, python, role=no-test]
 ----
@@ -70,15 +70,15 @@ assert gds.server_version() >= ServerVersion(2, 3, 0)
 
 == Loading the IMDB dataset
 
-Next we use the `graphdatascience`
+Next we use the `+graphdatascience+`
 https://neo4j.com/docs/graph-data-science-client/current/common-datasets/#_imdb[built-in
 IMDB loader] to get data into our GDS server. This should give us a
-graph with `Movie`, `Actor` and `Director` nodes, connected by
-`ACTED_IN` and `DIRECTED_IN` relationships.
+graph with `+Movie+`, `+Actor+` and `+Director+` nodes, connected by
+`+ACTED_IN+` and `+DIRECTED_IN+` relationships.
 
-Note that a ``real world scenario'', we would probably project our own
+Note that a "`real world scenario`", we would probably project our own
 data from a Neo4j database into GDS instead, or using
-`gds.graph.construct` to create a graph from our own client side data.
+`+gds.graph.construct+` to create a graph from our own client side data.
 
 [source, python, role=no-test]
 ----
@@ -96,7 +96,7 @@ print(f"Relationship types in G: {G.relationship_types()}")
 ----
 
 It looks as expected, though we notice that some nodes are of a
-`UnclassifiedMovie` label. Indeed, these are the nodes whose genre we
+`+UnclassifiedMovie+` label. Indeed, these are the nodes whose genre we
 wish to predict with a node classification model. Let’s look at the node
 properties present on the various node labels to see this more clearly.
 
@@ -105,21 +105,22 @@ properties present on the various node labels to see this more clearly.
 print(f"Node properties per label:\n{G.node_properties()}")
 ----
 
-So we see that the `Movie` nodes have the `genre` property, which means
-that we can use these nodes when training our model later. The
-`UnclassifiedMovie` nodes as expected does not have the `genre`
+So we see that the `+Movie+` nodes have the `+genre+` property, which
+means that we can use these nodes when training our model later. The
+`+UnclassifiedMovie+` nodes as expected does not have the `+genre+`
 property, which is exactly what we want to predict.
 
-Additionally, we notice that all nodes have a `plot_keywords` property.
-This is a binary ``bag-of-words'' type feature vector representing which
-out of 1256 plot keywords describe a certain node. These feature vectors
-will be used as input to our HashGNN node embedding algorithm later.
+Additionally, we notice that all nodes have a `+plot_keywords+`
+property. This is a binary "`bag-of-words`" type feature vector
+representing which out of 1256 plot keywords describe a certain node.
+These feature vectors will be used as input to our HashGNN node
+embedding algorithm later.
 
 == Configuring the training pipeline
 
 Now that we loaded and understood the data we want to analyze, we can
 move on to look at the tools for actually making the aforementioned
-genre predictions of the `UnclassifiedMovie` nodes.
+genre predictions of the `+UnclassifiedMovie+` nodes.
 
 Since we want to predict discrete valued properties of nodes, we will
 use a
@@ -151,7 +152,7 @@ the way to go for real use cases.
 == The HashGNN node embedding algorithm
 
 As the last part of the training pipeline, there will be an ML training
-algorithm. If we use the `plot_keywords` directly as our feature input
+algorithm. If we use the `+plot_keywords+` directly as our feature input
 to the ML algorithm, we will not utilize any of the relationship data we
 have in our graph. Since relationships would likely enrich our features
 with more valuable information, we will use a node embedding algorithm
@@ -169,18 +170,18 @@ done by locality sensitive min-hashing. Since the hash functions used
 are randomly chosen independent of the input data, there is no need for
 training.
 
-We will give hashGNN the `plot_keywords` node properties as input, and
+We will give hashGNN the `+plot_keywords+` node properties as input, and
 it will output new feature vectors for each node that has been enriched
-by message passing over relationships. Since the `plot_keywords` vectors
-are already binary we don’t have to do any
+by message passing over relationships. Since the `+plot_keywords+`
+vectors are already binary we don’t have to do any
 https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/hashgnn/#_feature_binarization_2[binarization]
 of the input.
 
 Since we have multiple node labels and relationships, we make sure to
 enable the heterogeneous capabilities of HashGNN by setting
-`heterogeneous=True`. Notably we also declare that we want to include
-all kinds of nodes, not only the `Movie` nodes we will train on, by
-explicitly specifying the `contextNodeLabels`.
+`+heterogeneous=True+`. Notably we also declare that we want to include
+all kinds of nodes, not only the `+Movie+` nodes we will train on, by
+explicitly specifying the `+contextNodeLabels+`.
 
 Please see the
 https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/hashgnn/[HashGNN
@@ -222,9 +223,9 @@ metric, will be chosen.
 It is hard to know how much regularization we need so as not to overfit
 our models on the training dataset, and for this reason we will use the
 autotuning capabilities of GDS to help us out. The autotuning algorithm
-will try out several values for the regularization parameters `penalty`
-(of logistic regression) and `minSplitSize` (of random forest) and
-choose the best ones it finds.
+will try out several values for the regularization parameters
+`+penalty+` (of logistic regression) and `+minSplitSize+` (of random
+forest) and choose the best ones it finds.
 
 Please see the GDS manual to learn more about
 https://neo4j.com/docs/graph-data-science/current/machine-learning/auto-tuning/[autotuning],
@@ -282,7 +283,7 @@ print(f"Winning ML algorithm candidate config:\n{model.best_parameters()}")
 ----
 
 As we can see the best ML algorithm configuration that the autotuning
-found was logistic regression with `penalty=0.159748`.
+found was logistic regression with `+penalty=0.159748+`.
 
 Further we note that the test set F1 score is 0.59118347, which is
 really good to when comparing to scores of other algorithms on this
@@ -292,7 +293,7 @@ link:#Conclusion[Conclusion] section below.
 == Making new predictions
 
 We can now use the model produced by our training pipeline to predict
-genres of the `UnclassifiedMovie` nodes.
+genres of the `+UnclassifiedMovie+` nodes.
 
 [source, python, role=no-test]
 ----
@@ -304,7 +305,7 @@ print(f"First predictions of unclassified movie nodes:\n{predictions.head()}")
 
 In this case we streamed the prediction results back to our client
 application, but we could for example also have mutated our GDS graph
-represented by `G` by calling `model.predict_mutate` instead.
+represented by `+G+` by calling `+model.predict_mutate+` instead.
 
 == Cleaning up
 
@@ -339,8 +340,8 @@ algorithms (like random forest with various configurations) through a
 process of autotuning. We were able to achieve this with very little
 code, and with very good scores.
 
-Though we used a convenience method of the `graphdatascience` library to
-load an IMDB dataset into GDS, it would be very easy to replace this
+Though we used a convenience method of the `+graphdatascience+` library
+to load an IMDB dataset into GDS, it would be very easy to replace this
 part with something like a
 https://neo4j.com/docs/graph-data-science-client/current/graph-object/#_projecting_a_graph_object[projection
 from a Neo4j database] to create a more realistic production workflow.
