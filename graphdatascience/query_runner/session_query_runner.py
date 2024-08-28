@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import time
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
@@ -14,8 +16,14 @@ from .gds_arrow_client import GdsArrowClient
 from .query_runner import QueryRunner
 
 
-class AuraDbQueryRunner(QueryRunner):
+class SessionQueryRunner(QueryRunner):
     GDS_REMOTE_PROJECTION_PROC_NAME = "gds.arrow.project"
+
+    @staticmethod
+    def create(
+        gds_query_runner: QueryRunner, db_query_runner: QueryRunner, arrow_client: GdsArrowClient
+    ) -> SessionQueryRunner:
+        return SessionQueryRunner(gds_query_runner, db_query_runner, arrow_client)
 
     def __init__(
         self,
@@ -52,7 +60,7 @@ class AuraDbQueryRunner(QueryRunner):
         if params is None:
             params = CallParameters()
 
-        if AuraDbQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME in endpoint:
+        if SessionQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME in endpoint:
             return self._remote_projection(endpoint, params, yields, database, logging)
 
         elif ".write" in endpoint and self.is_remote_projected_graph(params["graph_name"]):
