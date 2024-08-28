@@ -224,12 +224,14 @@ class SessionQueryRunner(QueryRunner):
         db_write_proc_params = protocol_mapping[self._resolved_protocol_version]()  # type: ignore
 
         write_back_start = time.time()
+
+        def run_write_back():
+            return self._run_remote_write_back_query(db_write_proc_params, yields)
+
         if logging:
-            database_write_result = self._progress_logger.run_cypher_with_progress_logging(
-                lambda: self._run_remote_write_back_query(db_write_proc_params, yields), job_id, database
-            )
+            database_write_result = self._progress_logger.run_with_progress_logging(run_write_back, job_id, database)
         else:
-            database_write_result = self._run_remote_write_back_query(db_write_proc_params, yields)
+            database_write_result = run_write_back()
 
         write_millis = (time.time() - write_back_start) * 1000
         gds_write_result["writeMillis"] = write_millis

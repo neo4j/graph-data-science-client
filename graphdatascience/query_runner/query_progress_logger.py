@@ -8,16 +8,20 @@ from tqdm.auto import tqdm
 
 from ..server_version.server_version import ServerVersion
 
+# takes a query str, optional db str and returns the result as a DataFrame
+CypherQueryFunction = Callable[[str, Optional[str]], DataFrame]
+DataFrameProducer = Callable[[], DataFrame]
+
 
 class QueryProgressLogger:
     _LOG_POLLING_INTERVAL = 0.5
 
     def __init__(
         self,
-        progress_update_query_fn: Callable[[str, Optional[str]], DataFrame],
+        run_cypher_func: CypherQueryFunction,
         server_version: ServerVersion,
     ):
-        self._progress_update_query_fn = progress_update_query_fn
+        self.run_cypher_func = run_cypher_func
         self._server_version = server_version
 
     @staticmethod
@@ -34,8 +38,8 @@ class QueryProgressLogger:
 
         return job_id
 
-    def run_cypher_with_progress_logging(
-        self, runnable: Callable[[], DataFrame], job_id: str, database: Optional[str] = None
+    def run_with_progress_logging(
+        self, runnable: DataFrameProducer, job_id: str, database: Optional[str] = None
     ) -> DataFrame:
         if self._server_version < ServerVersion(2, 1, 0):
             return runnable()
@@ -58,7 +62,7 @@ class QueryProgressLogger:
             try:
                 tier = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
                 # we only retrieve the progress of the root task
-                progress = self._progress_update_query_fn(
+                progress = self.run_cypher_func(
                     f"CALL gds.{tier}listProgress('{job_id}')"
                     + " YIELD taskName, progress"
                     + " RETURN taskName, progress"

@@ -170,13 +170,14 @@ class Neo4jQueryRunner(QueryRunner):
         yields_clause = "" if yields is None else " YIELD " + ", ".join(yields)
         query = f"CALL {endpoint}({params.placeholder_str()}){yields_clause}"
 
+        def run_cypher_query() -> DataFrame:
+            return self.run_cypher(query, params, database, custom_error)
+
         if logging:
             job_id = self._progress_logger.extract_or_create_job_id(params)
-            return self._progress_logger.run_cypher_with_progress_logging(
-                lambda: self.run_cypher(query, params, database, custom_error), job_id, database
-            )
+            return self._progress_logger.run_with_progress_logging(run_cypher_query, job_id, database)
         else:
-            return self.run_cypher(query, params, database, custom_error)
+            return run_cypher_query()
 
     def server_version(self) -> ServerVersion:
         if hasattr(self, "_server_version"):
