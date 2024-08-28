@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import time
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
@@ -16,6 +18,12 @@ from .query_runner import QueryRunner
 
 class SessionQueryRunner(QueryRunner):
     GDS_REMOTE_PROJECTION_PROC_NAME = "gds.arrow.project"
+
+    @staticmethod
+    def create(
+        gds_query_runner: QueryRunner, db_query_runner: QueryRunner, arrow_client: GdsArrowClient
+    ) -> SessionQueryRunner:
+        return SessionQueryRunner(gds_query_runner, db_query_runner, arrow_client)
 
     def __init__(
         self,

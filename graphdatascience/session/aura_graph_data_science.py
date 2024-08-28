@@ -68,7 +68,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_tls_root_certs,
         )
 
-        self._query_runner = SessionQueryRunner(gds_query_runner, self._db_query_runner, arrow_client)
+        self._query_runner = SessionQueryRunner.create(gds_query_runner, self._db_query_runner, arrow_client)
 
         self._delete_fn = delete_fn
 
