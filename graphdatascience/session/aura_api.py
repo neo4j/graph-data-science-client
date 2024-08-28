@@ -87,7 +87,7 @@ class AuraApi:
             json["ttl"] = f"{ttl.total_seconds()}s"
 
         if cloud_location:
-            json["tenantId"] = self._tenant_id
+            json["tenant_id"] = self._tenant_id
             json["cloud_provider"] = cloud_location.provider
             json["region"] = cloud_location.region
 
