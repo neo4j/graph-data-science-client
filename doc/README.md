@@ -73,7 +73,7 @@ In addition to having followed the setup steps in [the contribution guidelines](
    ```bash
    bundler install --gemfile tests/Gemfile
    ```
- * Install the version of the `graphdatascience` library that you want to test the docs against 
+ * Install the version of the `graphdatascience` library that you want to test the docs against
 
 
 ### Configuring
@@ -134,7 +134,7 @@ The script `../scripts/nb2doc/convert.sh` can be used:
 * to generate documents from new notebooks;
 * to ensure that any changes to the existing notebooks are reflected in the existing documents (for instance in a CI setting).
 
-The script must be run from the project root directory and requires [Pandoc](https://pandoc.org/) to be already installed. The latest supported version of Pandoc is 2.19.2; version 3.0.1 seems to work the same but raises some warnings.
+The script must be run from the project root directory and requires [Pandoc](https://pandoc.org/) to be already installed. The latest supported version of Pandoc is 3.3
 
 ```bash
 ./scripts/nb2doc/convert.sh
