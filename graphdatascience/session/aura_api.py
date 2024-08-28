@@ -9,6 +9,8 @@ from urllib.parse import urlparse
 
 import requests
 import requests.auth
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api_responses import (
@@ -40,15 +42,29 @@ class AuraApi:
     ) -> None:
         self._base_uri = AuraApi.base_uri(aura_env)
 
-        self._auth = AuraApi.Auth(oauth_url=f"{self._base_uri}/oauth/token", credentials=(client_id, client_secret))
+        self._request_session = self._init_request_session((client_id, client_secret))
         self._logger = logging.getLogger()
-
-        self._request_session = requests.Session()
-        self._request_session.headers = {"User-agent": f"neo4j-graphdatascience-v{__version__}"}
-        self._request_session.auth = self._auth
 
         self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
         self._tenant_details: Optional[TenantDetails] = None
+
+    def _init_request_session(self, credentials: Tuple[str, str]) -> requests.Session:
+        request_session = requests.Session()
+        request_session.headers = {"User-agent": f"neo4j-graphdatascience-v{__version__}"}
+        request_session.auth = AuraApi.Auth(oauth_url=f"{self._base_uri}/oauth/token", credentials=credentials)
+        # dont retry on POST as its not idempotent
+        request_session.mount(
+            "https://",
+            HTTPAdapter(
+                max_retries=Retry(
+                    allowed_methods=["GET", "DELETE"],
+                    total=10,
+                    status_forcelist=[429, 500, 502, 503, 504],
+                    backoff_factor=0.1,
+                )
+            ),
+        )
+        return request_session
 
     @staticmethod
     def extract_id(uri: str) -> str:
