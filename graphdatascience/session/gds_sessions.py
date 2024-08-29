@@ -3,12 +3,11 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
-from graphdatascience.session.aurads_sessions import AuraDsSessions
 from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.dedicated_sessions import DedicatedSessions
@@ -51,10 +50,7 @@ class GdsSessions:
             client_secret=api_credentials.client_secret,
             tenant_id=api_credentials.tenant_id,
         )
-        session_type_flag = os.environ.get("USE_DEDICATED_SESSIONS", "true").lower() == "true"
-        self._impl: Union[DedicatedSessions, AuraDsSessions] = (
-            DedicatedSessions(aura_api) if session_type_flag else AuraDsSessions(aura_api)
-        )
+        self._impl: DedicatedSessions = DedicatedSessions(aura_api)
 
     def estimate(
         self, node_count: int, relationship_count: int, algorithm_categories: Optional[List[AlgorithmCategory]] = None

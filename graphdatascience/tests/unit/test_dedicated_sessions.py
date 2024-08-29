@@ -20,7 +20,7 @@ from graphdatascience.session.aura_api_responses import (
 from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.dedicated_sessions import DedicatedSessions
-from graphdatascience.session.session_info import ExtendedSessionInfo, SessionInfo
+from graphdatascience.session.session_info import SessionInfo
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
 
 
@@ -299,7 +299,6 @@ def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> No
     assert len(sessions.list()) == 1
     actual_session = sessions.list()[0]
 
-    assert isinstance(actual_session, ExtendedSessionInfo)
     assert actual_session.name == "my-session"
     assert actual_session.user_id == "user-1"
     assert actual_session.ttl == ttl
@@ -332,7 +331,6 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
     assert len(sessions.list()) == 1
     actual_session = sessions.list()[0]
 
-    assert isinstance(actual_session, ExtendedSessionInfo)
     assert actual_session.name == "my-session"
     assert actual_session.user_id == "user-1"
     assert actual_session.ttl == ttl
