@@ -59,7 +59,9 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_disable_server_verification,
             arrow_tls_root_certs,
         )
-        aura_db_query_runner = SessionQueryRunner.create(session_arrow_query_runner, db_query_runner, session_arrow_client)
+        aura_db_query_runner = SessionQueryRunner.create(
+            session_arrow_query_runner, db_query_runner, session_arrow_client
+        )
 
         gds_version = session_neo4j_query_runner.server_version()
         return cls(query_runner=aura_db_query_runner, delete_fn=delete_fn, gds_version=gds_version)
