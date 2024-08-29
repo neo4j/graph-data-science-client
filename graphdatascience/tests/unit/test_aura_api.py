@@ -40,6 +40,16 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
 
     mock_auth_token(requests_mock)
 
+    def assert_body(request: _RequestObjectProxy) -> bool:
+        assert request.json() == {
+            "name": "name-0",
+            "password": "pwd-2",
+            "memory": "4GB",
+            "instance_id": "dbid-1",
+            "ttl": "42.0s",
+        }
+        return True
+
     requests_mock.post(
         "https://api.neo4j.io/v1beta5/data-science/sessions",
         json={
@@ -56,6 +66,7 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
                 "ttl": "42s",
             }
         },
+        additional_matcher=assert_body,
     )
 
     result = api.create_session(
@@ -82,7 +93,7 @@ def test_create_dedicated_session(requests_mock: Mocker) -> None:
 
     mock_auth_token(requests_mock)
 
-    def assert_params(request: _RequestObjectProxy) -> bool:
+    def assert_body(request: _RequestObjectProxy) -> bool:
         assert request.json() == {
             "name": "name-0",
             "tenant_id": "some-tenant",
@@ -110,7 +121,7 @@ def test_create_dedicated_session(requests_mock: Mocker) -> None:
                 "ttl": "42.0s",
             }
         },
-        additional_matcher=assert_params,
+        additional_matcher=assert_body,
     )
 
     result = api.create_session(
