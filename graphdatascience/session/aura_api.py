@@ -97,7 +97,7 @@ class AuraApi:
         json = {"name": name, "password": pwd, "memory": memory.value}
 
         if dbid:
-            json["instanceId"] = dbid
+            json["instance_id"] = dbid
 
         if ttl:
             json["ttl"] = f"{ttl.total_seconds()}s"
@@ -128,6 +128,7 @@ class AuraApi:
         return SessionDetails.from_json(response.json()["data"])
 
     def list_sessions(self, dbid: Optional[str] = None) -> List[SessionDetails]:
+        # these are query parameters (not passed in the body)
         params = {
             "tenantId": self._tenant_id,
             "instanceId": dbid,
