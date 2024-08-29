@@ -308,6 +308,13 @@ Extending the previous example, you can write back the FastRP embeddings to the 
 gds.graph.nodeProperties.write(G, "embedding")
 ----
 
+It is possible to control the concurrency of the write operation by setting the `concurrency` parameter:
+
+.Write the FastRP embeddings back to the database with specified concurrency:
+[source,python,role=no-test]
+----
+gds.graph.nodeProperties.write(G, "embedding", concurrency="2")
+----
 
 == Querying the database
 
