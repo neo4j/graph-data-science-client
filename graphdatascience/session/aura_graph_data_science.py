@@ -45,6 +45,11 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_disable_server_verification,
             arrow_tls_root_certs,
         )
+
+        # we need to explicitly set this as the default value is None
+        # database in the session is always neo4j
+        session_arrow_query_runner.set_database("neo4j")
+
         db_query_runner = Neo4jQueryRunner.create(
             db_connection_info.uri,
             db_connection_info.auth(),
