@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, Optional
 
 
 @dataclass
@@ -13,6 +13,7 @@ class DbmsConnectionInfo:
     uri: str
     username: str
     password: str
+    database: Optional[str] = None
 
     def auth(self) -> Tuple[str, str]:
         """

@@ -42,6 +42,15 @@ def test_remote_projection(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     assert G.name() == GRAPH_NAME
     assert result["nodeCount"] == 3
 
+@pytest.mark.cloud_architecture
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
+def test_remote_projection_custom_database_name(gds_with_cloud_setup: AuraGraphDataScience) -> None:
+    gds_with_cloud_setup.run_cypher("CREATE DATABASE test1234 IF NOT EXISTS")
+    gds_with_cloud_setup.set_database("test1234")
+    G, result = gds_with_cloud_setup.graph.project(GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
+
+    assert G.name() == GRAPH_NAME
+    assert result["nodeCount"] == 3
 
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
