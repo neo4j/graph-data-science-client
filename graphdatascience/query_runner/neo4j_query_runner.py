@@ -33,7 +33,6 @@ class Neo4jQueryRunner(QueryRunner):
         aura_ds: bool = False,
         database: Optional[str] = None,
         bookmarks: Optional[Any] = None,
-        server_version: Optional[ServerVersion] = None,
     ) -> Neo4jQueryRunner:
         if isinstance(endpoint, str):
             config: Dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
@@ -48,7 +47,6 @@ class Neo4jQueryRunner(QueryRunner):
                 auto_close=True,
                 bookmarks=bookmarks,
                 config=config,
-                server_version=server_version,
                 database=database,
             )
 
@@ -82,7 +80,6 @@ class Neo4jQueryRunner(QueryRunner):
         database: Optional[str] = neo4j.DEFAULT_DATABASE,
         auto_close: bool = False,
         bookmarks: Optional[Any] = None,
-        server_version: Optional[ServerVersion] = None,
     ):
         self._driver = driver
         self._config = config
@@ -91,8 +88,13 @@ class Neo4jQueryRunner(QueryRunner):
         self._logger = logging.getLogger()
         self._bookmarks = bookmarks
         self._last_bookmarks: Optional[Any] = None
-        self._server_version = server_version if server_version else self.server_version()
-        self._progress_logger = QueryProgressLogger(self.run_cypher, self._server_version)
+        self._server_version = None
+        self._progress_logger = QueryProgressLogger(
+            self.__run_cypher_simplified_for_query_progress_logger, self.server_version
+        )
+
+    def __run_cypher_simplified_for_query_progress_logger(self, query: str, database: Optional[str]) -> DataFrame:
+        return self.run_cypher(query=query, database=database)
 
     def run_cypher(
         self,
@@ -180,12 +182,13 @@ class Neo4jQueryRunner(QueryRunner):
             return run_cypher_query()
 
     def server_version(self) -> ServerVersion:
-        if hasattr(self, "_server_version"):
+        if self._server_version:
             return self._server_version
 
         try:
             server_version_string = self.run_cypher("RETURN gds.version()", custom_error=False).squeeze()
-            return ServerVersion.from_string(server_version_string)
+            self._server_version = ServerVersion.from_string(server_version_string)
+            return self._server_version
         except Exception as e:
             if "Unknown function 'gds.version'" in str(e):
                 # Some Python versions appear to not call __del__ of self._query_runner when an exception
@@ -250,7 +253,7 @@ class Neo4jQueryRunner(QueryRunner):
         self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
     ) -> GraphConstructor:
         return CypherGraphConstructor(
-            self, graph_name, concurrency, undirected_relationship_types, self._server_version
+            self, graph_name, concurrency, undirected_relationship_types, self.server_version()
         )
 
     @staticmethod

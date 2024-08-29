@@ -44,4 +44,4 @@ class GraphProjectRemoteRunner(IllegalAttrChecker):
             endpoint=SessionQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME,
             params=params,
         ).squeeze()
-        return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
+        return GraphCreateResult(Graph(graph_name, self._query_runner), result)

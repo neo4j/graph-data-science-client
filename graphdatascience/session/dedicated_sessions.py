@@ -146,7 +146,7 @@ class DedicatedSessions:
     def _construct_client(
         self, session_id: str, session_connection: DbmsConnectionInfo, db_connection: DbmsConnectionInfo
     ) -> AuraGraphDataScience:
-        return AuraGraphDataScience(
+        return AuraGraphDataScience.create(
             gds_session_connection_info=session_connection,
             db_connection_info=db_connection,
             delete_fn=lambda: self._aura_api.delete_session(session_id=session_id),

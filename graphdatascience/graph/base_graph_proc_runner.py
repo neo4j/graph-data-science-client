@@ -120,7 +120,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         )
         constructor.run(nodes, relationships)
 
-        return Graph(graph_name, self._query_runner, self._server_version)
+        return Graph(graph_name, self._query_runner)
 
     @client_only_endpoint("gds.graph")
     def load_cora(self, graph_name: str = "cora", undirected: bool = False) -> Graph:
@@ -250,7 +250,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             params=params,
         ).squeeze()
 
-        return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
+        return GraphCreateResult(Graph(graph_name, self._query_runner), result)
 
     @from_graph_type_check
     @compatible_with("filter", min_inclusive=ServerVersion(2, 5, 0))
@@ -276,7 +276,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
             params=params,
         ).squeeze()
 
-        return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
+        return GraphCreateResult(Graph(graph_name, self._query_runner), result)
 
     @property
     def export(self) -> GraphExportRunner:
@@ -357,7 +357,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
                 f"No projected graph named '{graph_name}' exists in current database '{self._query_runner.database()}'"
             )
 
-        return Graph(graph_name, self._query_runner, self._server_version)
+        return Graph(graph_name, self._query_runner)
 
     @graph_type_check
     def _handle_properties(

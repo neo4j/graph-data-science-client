@@ -41,7 +41,7 @@ class RWRRunner(IllegalAttrChecker):
 
         result = self._query_runner.call_procedure(endpoint=self._namespace, params=params, logging=True).squeeze()
 
-        return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
+        return GraphCreateResult(Graph(graph_name, self._query_runner), result)
 
 
 class CNARWRunner(IllegalAttrChecker):
@@ -55,7 +55,7 @@ class CNARWRunner(IllegalAttrChecker):
         )
         result = self._query_runner.call_procedure(endpoint=self._namespace, params=params, logging=True).squeeze()
 
-        return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
+        return GraphCreateResult(Graph(graph_name, self._query_runner), result)
 
     def estimate(self, from_G: Graph, **config: Any) -> "Series[Any]":
         self._namespace += ".estimate"

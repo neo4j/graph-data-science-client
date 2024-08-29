@@ -79,4 +79,4 @@ class GraphAlphaProcRunner(UncallableNamespace, IllegalAttrChecker):
         )
         constructor.run(nodes, relationships)
 
-        return Graph(graph_name, self._query_runner, self._server_version)
+        return Graph(graph_name, self._query_runner)

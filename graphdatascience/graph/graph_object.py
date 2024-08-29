@@ -7,7 +7,6 @@ from pandas import Series
 
 from ..call_parameters import CallParameters
 from ..query_runner.query_runner import QueryRunner
-from ..server_version.server_version import ServerVersion
 
 
 class Graph:
@@ -17,11 +16,10 @@ class Graph:
     It contains summary information about the graph.
     """
 
-    def __init__(self, name: str, query_runner: QueryRunner, server_version: ServerVersion):
+    def __init__(self, name: str, query_runner: QueryRunner):
         self._name = name
         self._query_runner = query_runner
         self._db = query_runner.database()
-        self._server_version = server_version
 
     def __enter__(self: Graph) -> Graph:
         return self

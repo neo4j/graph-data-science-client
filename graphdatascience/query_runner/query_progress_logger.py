@@ -10,6 +10,7 @@ from ..server_version.server_version import ServerVersion
 
 # takes a query str, optional db str and returns the result as a DataFrame
 CypherQueryFunction = Callable[[str, Optional[str]], DataFrame]
+ServerVersionFunction = Callable[[], ServerVersion]
 DataFrameProducer = Callable[[], DataFrame]
 
 
@@ -19,10 +20,10 @@ class QueryProgressLogger:
     def __init__(
         self,
         run_cypher_func: CypherQueryFunction,
-        server_version: ServerVersion,
+        server_version_func: ServerVersionFunction,
     ):
-        self.run_cypher_func = run_cypher_func
-        self._server_version = server_version
+        self._run_cypher_func = run_cypher_func
+        self._server_version_func = server_version_func
 
     @staticmethod
     def extract_or_create_job_id(params: Dict[str, Any]) -> str:
@@ -41,7 +42,7 @@ class QueryProgressLogger:
     def run_with_progress_logging(
         self, runnable: DataFrameProducer, job_id: str, database: Optional[str] = None
     ) -> DataFrame:
-        if self._server_version < ServerVersion(2, 1, 0):
+        if self._server_version_func() < ServerVersion(2, 1, 0):
             return runnable()
 
         with ThreadPoolExecutor() as executor:
@@ -60,9 +61,9 @@ class QueryProgressLogger:
 
         while wait([future], timeout=self._LOG_POLLING_INTERVAL).not_done:
             try:
-                tier = "beta." if self._server_version < ServerVersion(2, 5, 0) else ""
+                tier = "beta." if self._server_version_func() < ServerVersion(2, 5, 0) else ""
                 # we only retrieve the progress of the root task
-                progress = self.run_cypher_func(
+                progress = self._run_cypher_func(
                     f"CALL gds.{tier}listProgress('{job_id}')"
                     + " YIELD taskName, progress"
                     + " RETURN taskName, progress"

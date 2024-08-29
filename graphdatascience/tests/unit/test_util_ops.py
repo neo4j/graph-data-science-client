@@ -42,7 +42,7 @@ def test_remote_as_nodes(runner: CollectingQueryRunner, aura_gds: AuraGraphDataS
 
 
 def test_node_property(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    G = Graph("g", runner, gds._server_version)
+    G = Graph("g", runner)
     gds.util.nodeProperty(G, 1, "my_prop", "my_label")
 
     assert runner.last_query() == "RETURN gds.util.nodeProperty($graph_name, $node_id, $property_key, $node_label)"
@@ -55,7 +55,7 @@ def test_node_property(runner: CollectingQueryRunner, gds: GraphDataScience) -> 
 
 
 def test_remote_node_property(runner: CollectingQueryRunner, aura_gds: AuraGraphDataScience) -> None:
-    G = Graph("g", runner, aura_gds._server_version)
+    G = Graph("g", runner)
     aura_gds.util.nodeProperty(G, 1, "my_prop", "my_label")
 
     assert runner.last_query() == "RETURN gds.util.nodeProperty($graph_name, $node_id, $property_key, $node_label)"

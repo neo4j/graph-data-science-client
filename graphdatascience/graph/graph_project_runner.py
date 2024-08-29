@@ -25,7 +25,7 @@ class GraphProjectRunner(IllegalAttrChecker):
             logging=True,
         ).squeeze()
 
-        return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
+        return GraphCreateResult(Graph(graph_name, self._query_runner), result)
 
     def estimate(self, node_projection: Any, relationship_projection: Any, **config: Any) -> "Series[Any]":
         self._namespace += ".estimate"
@@ -69,4 +69,4 @@ class GraphProjectBetaRunner(IllegalAttrChecker):
             logging=True,
         ).squeeze()
 
-        return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
+        return GraphCreateResult(Graph(graph_name, self._query_runner), result)

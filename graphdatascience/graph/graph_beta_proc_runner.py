@@ -40,4 +40,4 @@ class GraphBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         result = self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()
 
-        return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), result)
+        return GraphCreateResult(Graph(graph_name, self._query_runner), result)

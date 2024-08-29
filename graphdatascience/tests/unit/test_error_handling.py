@@ -17,7 +17,7 @@ from graphdatascience.tests.unit.resources.example_server_endpoints import (
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])  # Something later than 2.1.0
 def test_incompatible_server_version(runner: QueryRunner, gds: GraphDataScience) -> None:
-    G = Graph("dummy", runner, ServerVersion(0, 0, 0))  # This version object is not relevant for the test
+    G = Graph("dummy", runner)
     with pytest.raises(
         IncompatibleServerVersionError,
         match=re.escape(

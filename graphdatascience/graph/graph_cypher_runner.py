@@ -57,7 +57,7 @@ class GraphCypherRunner(CallerBase):
                 f"Invalid query, the query must end with the `RETURN {self._namespace}(...)` call: {query}"
             )
 
-        return GraphCreateResult(Graph(graph_name, self._query_runner, self._server_version), Series(data=result))
+        return GraphCreateResult(Graph(graph_name, self._query_runner), Series(data=result))
 
     __separators = re.compile(r"[,(.]")
 
