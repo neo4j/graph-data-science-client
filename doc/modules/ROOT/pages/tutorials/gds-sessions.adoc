@@ -111,10 +111,6 @@ what that looks like
 [source, python, role=no-test]
 ----
 sessions.list()
-
-# Display the sessions
-from pandas import DataFrame
-DataFrame(sessions)
 ----
 
 == Adding a dataset

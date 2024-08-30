@@ -84,6 +84,7 @@ delete the session ourselves.
 ----
 import os
 from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory, CloudLocation
+from datetime import timedelta
 
 # Identify the Neo4j DBMS
 db_connection = DbmsConnectionInfo(uri=os.environ["NEO4J_URI"], username=os.environ["NEO4J_USER"], password=os.environ["NEO4J_PASSWORD"])
@@ -113,11 +114,12 @@ what that looks like
 
 [source, python, role=no-test]
 ----
-gds_sessions = sessions.list()
+%uv pip show pandas
+----
 
-# Display the sessions
-from pandas import DataFrame
-DataFrame(gds_sessions)
+[source, python, role=no-test]
+----
+gds_sessions = sessions.list()
 ----
 
 == Adding a dataset
