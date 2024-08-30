@@ -102,15 +102,18 @@ class DedicatedSessions:
 
     def _find_existing_session(self, session_name: str) -> Optional[SessionDetails]:
         matched_sessions: List[SessionDetails] = []
-        # only allow connecting to own session (admins can only list/delete sessions from others)
-        matched_sessions = [
-            s
-            for s in self._aura_api.list_sessions()
-            if s.name == session_name and s.user_id == self._aura_api.client_id
-        ]
+        matched_sessions = [s for s in self._aura_api.list_sessions() if s.name == session_name]
 
         if len(matched_sessions) == 0:
             return None
+
+        # this will only occur for admins as we cannot resolve Aura-API client_id -> console_user_id we fail for now
+        if len(matched_sessions) > 1:
+            users = [s.user_id for s in matched_sessions]
+            raise RuntimeError(
+                "Admin users need to chose a unique session name for now."
+                f" Multiple sessions with the name `{session_name}` across multiple users exist. Sessions found for users: {users}"
+            )
 
         return matched_sessions[0]
 

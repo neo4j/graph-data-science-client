@@ -41,7 +41,6 @@ class AuraApi:
         self, client_id: str, client_secret: str, tenant_id: Optional[str] = None, aura_env: Optional[str] = None
     ) -> None:
         self._base_uri = AuraApi.base_uri(aura_env)
-        self.client_id = client_id
 
         self._request_session = self._init_request_session((client_id, client_secret))
         self._logger = logging.getLogger()
