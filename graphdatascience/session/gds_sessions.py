@@ -94,16 +94,17 @@ class GdsSessions:
         """
         return self._impl.get_or_create(session_name, memory, db_connection, ttl=ttl, cloud_location=cloud_location)
 
-    def delete(self, session_name: str) -> bool:
+    def delete(self, *, session_name: Optional[str] = None, session_id: Optional[str] = None) -> bool:
         """
-        Delete a GDS session.
+        Delete a GDS session either by name or id.
         Args:
             session_name: the name of the session to delete
+            session_id: the id of the session to delete
 
         Returns:
             True iff a session was deleted as a result of this call.
         """
-        return self._impl.delete(session_name)
+        return self._impl.delete(session_name=session_name, session_id=session_id)
 
     def list(self) -> List[SessionInfo]:
         """

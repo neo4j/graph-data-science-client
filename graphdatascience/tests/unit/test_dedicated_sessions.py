@@ -596,16 +596,23 @@ def test_create_session_ignorning_other_user(mocker: MockerFixture) -> None:
     assert len(sessions.list()) == 2
 
 
-def test_delete_session(aura_api: AuraApi) -> None:
-    db1 = aura_api.create_instance("db1", SessionMemory.m_4GB.value, "aura", "leipzig").id
-    db2 = aura_api.create_instance("db2", SessionMemory.m_4GB.value, "aura", "dresden").id
-    aura_api.create_session("one", db1, memory=SessionMemory.m_8GB.value, dbid="12345")
-    aura_api.create_session("other", db2, memory=SessionMemory.m_8GB.value, dbid="123123")
+def test_delete_session_by_name(aura_api: AuraApi) -> None:
+    aura_api.create_session("one", "pwd", memory=SessionMemory.m_8GB.value, dbid="12345")
+    aura_api.create_session("other", "pwd", memory=SessionMemory.m_8GB.value, dbid="123123")
 
     sessions = DedicatedSessions(aura_api)
 
-    assert sessions.delete("one")
+    assert sessions.delete(session_name="one")
     assert [i.name for i in sessions.list()] == ["other"]
+
+
+def test_delete_session_by_id(aura_api: AuraApi) -> None:
+    s1 = aura_api.create_session("one", "pwd", memory=SessionMemory.m_8GB.value, dbid="12345")
+    s2 = aura_api.create_session("other", "pwd", memory=SessionMemory.m_8GB.value, dbid="123123")
+
+    sessions = DedicatedSessions(aura_api)
+    assert sessions.delete(session_id=s1.id)
+    assert [i.name for i in sessions.list()] == [s2.name]
 
 
 def test_delete_nonexisting_session(aura_api: AuraApi) -> None:
@@ -613,7 +620,7 @@ def test_delete_nonexisting_session(aura_api: AuraApi) -> None:
     aura_api.create_session("one", db1, memory=SessionMemory.m_8GB.value, dbid="12345")
     sessions = DedicatedSessions(aura_api)
 
-    assert sessions.delete("other") is False
+    assert sessions.delete(session_name="other") is False
     assert [i.name for i in sessions.list()] == ["one"]
 
 
@@ -643,7 +650,7 @@ def test_delete_session_paused_instance(aura_api: AuraApi) -> None:
     sessions = DedicatedSessions(aura_api)
 
     # can delete session running against a paused instance
-    assert sessions.delete(session.name)
+    assert sessions.delete(session_name=session.name)
 
 
 def test_create_waiting_forever(

@@ -81,11 +81,17 @@ class DedicatedSessions:
             session_id=session_id, session_connection=session_connection, db_connection=db_connection
         )
 
-    def delete(self, session_name: str) -> bool:
-        candidate = self._find_existing_session(session_name)
+    def delete(self, *, session_name: Optional[str] = None, session_id: Optional[str] = None) -> bool:
+        if not session_name and not session_id:
+            raise ValueError("Either session_name or session_id must be provided.")
 
-        if candidate:
-            return self._aura_api.delete_session(candidate.id) is not None
+        if session_id:
+            return self._aura_api.delete_session(session_id) is not None
+
+        if session_name:
+            candidate = self._find_existing_session(session_name)
+            if candidate:
+                return self._aura_api.delete_session(candidate.id) is not None
 
         return False
 

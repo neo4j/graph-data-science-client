@@ -133,13 +133,13 @@ sessions.list()
 
 Use the `delete()` method to delete a GDS Session.
 This will terminate the session and stop any running costs from accumulating further.
-Deleting a session will not affect the configured AuraDB data source.
-However, any data not written back to the AuraDB instance will be lost.
+Deleting a session will not affect the configured Neo4j data source.
+However, any data not written back to the Neo4j instance will be lost.
 
 .Deleting a GDS Session:
 [source, python, role=no-test]
 ----
-sessions.delete("my-new-session")
+sessions.delete(session_name="my-new-session")
 ----
 
 

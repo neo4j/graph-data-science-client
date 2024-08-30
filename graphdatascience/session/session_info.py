@@ -15,6 +15,7 @@ class SessionInfo:
     Represents information about a session.
 
     Attributes:
+        id (str): The ID of the session.
         name (str): The name of the session.
         memory (str): The size of the session.
         instance_id (Optional[str]): The ID of the AuraDB instance the session is attached to.
@@ -26,6 +27,7 @@ class SessionInfo:
         ttl (Optional[timedelta]): The time until the session is deleted if unused. The TTL gets renewed on every activity.
     """
 
+    id: str
     name: str
     memory: SessionMemoryValue
     instance_id: Optional[str]
@@ -39,6 +41,7 @@ class SessionInfo:
     @classmethod
     def from_session_details(cls, details: SessionDetails) -> SessionInfo:
         return SessionInfo(
+            id=details.id,
             name=details.name,
             memory=details.memory,
             instance_id=details.instance_id,
