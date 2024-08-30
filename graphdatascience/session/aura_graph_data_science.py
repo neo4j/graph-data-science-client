@@ -35,41 +35,48 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
     ):
-        session_neo4j_query_runner = Neo4jQueryRunner.create(
-            gds_session_connection_info.uri, gds_session_connection_info.auth(), aura_ds=True
+        # we need to explicitly set this as the default value is None
+        # database in the session is always neo4j
+        session_bolt_query_runner = Neo4jQueryRunner.create(
+            endpoint=gds_session_connection_info.uri,
+            auth=gds_session_connection_info.auth(),
+            aura_ds=True,
+            database="neo4j",
         )
         session_arrow_query_runner = ArrowQueryRunner.create(
-            session_neo4j_query_runner,
+            fallback_query_runner=session_bolt_query_runner,
+            auth=gds_session_connection_info.auth(),
+            encrypted=session_bolt_query_runner.encrypted(),
+            disable_server_verification=arrow_disable_server_verification,
+            tls_root_certs=arrow_tls_root_certs,
+        )
+
+        # TODO: merge with the gds_arrow_client created inside ArrowQueryRunner
+        session_arrow_client = GdsArrowClient.create(
+            session_bolt_query_runner,
             gds_session_connection_info.auth(),
-            session_neo4j_query_runner.encrypted(),
+            session_bolt_query_runner.encrypted(),
             arrow_disable_server_verification,
             arrow_tls_root_certs,
         )
 
-        # we need to explicitly set this as the default value is None
-        # database in the session is always neo4j
-        session_arrow_query_runner.set_database("neo4j")
-
-        db_query_runner = Neo4jQueryRunner.create(
+        db_bolt_query_runner = Neo4jQueryRunner.create(
             db_connection_info.uri,
             db_connection_info.auth(),
             aura_ds=True,
         )
-        db_query_runner.set_bookmarks(bookmarks)
+        db_bolt_query_runner.set_bookmarks(bookmarks)
 
-        session_arrow_client = GdsArrowClient.create(
-            session_neo4j_query_runner,
-            gds_session_connection_info.auth(),
-            session_neo4j_query_runner.encrypted(),
-            arrow_disable_server_verification,
-            arrow_tls_root_certs,
-        )
-        aura_db_query_runner = SessionQueryRunner.create(
-            session_arrow_query_runner, db_query_runner, session_arrow_client
+        session_query_runner = SessionQueryRunner.create(
+            session_arrow_query_runner, db_bolt_query_runner, session_arrow_client
         )
 
-        gds_version = session_neo4j_query_runner.server_version()
-        return cls(query_runner=aura_db_query_runner, delete_fn=delete_fn, gds_version=gds_version)
+        gds_version = session_bolt_query_runner.server_version()
+        return cls(
+            query_runner=session_query_runner,
+            delete_fn=delete_fn,
+            gds_version=gds_version,
+        )
 
     def __init__(
         self,
@@ -77,14 +84,17 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         delete_fn: Callable[[], bool],
         gds_version: ServerVersion,
     ):
-        self._server_version = gds_version
         self._query_runner = query_runner
         self._delete_fn = delete_fn
+        self._server_version = gds_version
 
         super().__init__(self._query_runner, namespace="gds", server_version=self._server_version)
 
     def run_cypher(
-        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
+        self,
+        query: str,
+        params: Optional[Dict[str, Any]] = None,
+        database: Optional[str] = None,
     ) -> DataFrame:
         """
         Run a Cypher query against the Neo4j database.
