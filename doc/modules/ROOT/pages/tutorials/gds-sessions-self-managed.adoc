@@ -114,11 +114,6 @@ what that looks like
 
 [source, python, role=no-test]
 ----
-%uv pip show pandas
-----
-
-[source, python, role=no-test]
-----
 gds_sessions = sessions.list()
 ----
 
