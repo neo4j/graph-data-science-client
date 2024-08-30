@@ -1,4 +1,4 @@
-# Changes in 1.11
+# Changes in 1.12
 
 
 ## Breaking changes
@@ -12,6 +12,7 @@
 * Return the id of a session and allow deletion by id or name.
 * Add `ttl` parameter to `GdsSessions.get_or_create` to control if and when an unused session will be automatically deleted.
 * Add concurrency control for remote write-back procedures using the `concurrency` parameter.
+* Add progress logging for remote write-back when using GDS Sessions.
 
 ## Bug fixes
 
