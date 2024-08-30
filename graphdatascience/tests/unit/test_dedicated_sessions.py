@@ -31,8 +31,9 @@ class FakeAuraApi(AuraApi):
         existing_sessions: Optional[List[SessionDetails]] = None,
         status_after_creating: str = "Ready",
         size_estimation: Optional[EstimationDetails] = None,
+        client_id: str = "client_id",
     ) -> None:
-        super().__init__("https://aura.api", "client_id", "client_secret", "tenant_id")
+        super().__init__(client_id=client_id, client_secret="client_secret", tenant_id="tenant_id", aura_env="test")
         if existing_instances is None:
             existing_instances = []
         if existing_sessions is None:
@@ -68,7 +69,7 @@ class FakeAuraApi(AuraApi):
             host="foo.bar",
             expiry_date=None,
             ttl=ttl,
-            user_id="user-1",
+            user_id=self.client_id,
             tenant_id=self._tenant_id,
             # we derive the location from the db
             cloud_location=cloud_location if cloud_location else CloudLocation("default", "default"),
@@ -193,7 +194,7 @@ class FakeAuraApi(AuraApi):
 
 @pytest.fixture
 def aura_api() -> AuraApi:
-    return FakeAuraApi()
+    return FakeAuraApi(client_id="user-1")
 
 
 HASHED_DB_PASSWORD = "722cbc618c015c7c062f071868d9bb5f207f35a317e71054740716642cfd0f61"
@@ -386,8 +387,8 @@ def test_get_or_create_expired_session(mocker: MockerFixture, aura_api: AuraApi)
             host="foo.bar",
             expiry_date=None,
             ttl=None,
-            tenant_id="tenant-0",
-            user_id="user-0",
+            tenant_id=aura_api._tenant_id,
+            user_id=aura_api.client_id,
         )
     )
 
@@ -415,8 +416,8 @@ def test_get_or_create_soon_expired_session(mocker: MockerFixture, aura_api: Aur
             host="foo.bar",
             expiry_date=datetime.now(tz=timezone.utc) - timedelta(hours=23),
             ttl=None,
-            tenant_id="tenant-0",
-            user_id="user-0",
+            tenant_id=aura_api._tenant_id,
+            user_id=aura_api.client_id,
         )
     )
 
@@ -442,8 +443,8 @@ def test_get_or_create_with_different_memory_config(mocker: MockerFixture, aura_
             host="foo.bar",
             expiry_date=None,
             ttl=None,
-            tenant_id="tenant-0",
-            user_id="user-0",
+            tenant_id=aura_api._tenant_id,
+            user_id=aura_api.client_id,
         )
     )
 
@@ -504,8 +505,8 @@ def test_get_or_create_for_existing_session_with_different_dbid(mocker: MockerFi
             host="foo.bar",
             expiry_date=None,
             ttl=None,
-            tenant_id="tenant-0",
-            user_id="user-0",
+            tenant_id=aura_api._tenant_id,
+            user_id=aura_api.client_id,
         )
     )
 
@@ -538,8 +539,8 @@ def test_get_or_create_for_existing_session_with_different_cloud_location(
             host="foo.bar",
             expiry_date=None,
             ttl=None,
-            tenant_id="tenant-0",
-            user_id="user-0",
+            tenant_id=aura_api._tenant_id,
+            user_id=aura_api.client_id,
             cloud_location=CloudLocation(region="dresden", provider="aws"),
         )
     )
@@ -555,6 +556,44 @@ def test_get_or_create_for_existing_session_with_different_cloud_location(
             DbmsConnectionInfo(db.connection_url, "", ""),
             cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
         )
+
+
+def test_create_session_ignorning_other_user(mocker: MockerFixture) -> None:
+    aura_api = FakeAuraApi(client_id="another_user")
+    patch_validate_db_connection(mocker)
+    patch_construct_client(mocker)
+
+    cloud_location = CloudLocation(region="dresden", provider="aws")
+    session_name = "one"
+
+    fake_aura_api = cast(FakeAuraApi, aura_api)
+    fake_aura_api.add_session(
+        SessionDetails(
+            id="ffff0-ffff1",
+            name=session_name,
+            instance_id="",
+            memory=SessionMemory.m_8GB.value,
+            status="Ready",
+            created_at=datetime.now(),
+            host="foo.bar",
+            expiry_date=None,
+            ttl=None,
+            tenant_id="tenant-0",
+            user_id="user-0",
+            cloud_location=cloud_location,
+        )
+    )
+
+    sessions = DedicatedSessions(aura_api)
+
+    sessions.get_or_create(
+        session_name,
+        SessionMemory.m_8GB,
+        DbmsConnectionInfo("neo4j://localhost", "", ""),
+        cloud_location=cloud_location,
+    )
+
+    assert len(sessions.list()) == 2
 
 
 def test_delete_session(aura_api: AuraApi) -> None:

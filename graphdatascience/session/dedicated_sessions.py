@@ -96,8 +96,12 @@ class DedicatedSessions:
 
     def _find_existing_session(self, session_name: str) -> Optional[SessionDetails]:
         matched_sessions: List[SessionDetails] = []
-        # TODO pass dbid to list sessions (fail if for different dbid)
-        matched_sessions = [s for s in self._aura_api.list_sessions() if s.name == session_name]
+        # only allow connecting to own session (admins can only list/delete sessions from others)
+        matched_sessions = [
+            s
+            for s in self._aura_api.list_sessions()
+            if s.name == session_name and s.user_id == self._aura_api.client_id
+        ]
 
         if len(matched_sessions) == 0:
             return None
