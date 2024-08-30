@@ -113,7 +113,11 @@ what that looks like
 
 [source, python, role=no-test]
 ----
-sessions.list()
+gds_sessions = sessions.list()
+
+# Display the sessions
+from pandas import DataFrame
+DataFrame(gds_sessions)
 ----
 
 == Adding a dataset
@@ -297,7 +301,7 @@ stop incurring costs.
 ----
 gds.delete()
 
-# or sessions.delete("people-and-fruits")
+# or sessions.delete(session_name="people-and-fruits")
 ----
 
 [source, python, role=no-test]

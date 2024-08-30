@@ -30,11 +30,11 @@ GDS sessions feature enabled for your tenant. Contact your account
 manager to get the features enabled.
 
 We also need to have the `+graphdatascience+` Python library installed,
-version `+1.11+` or later.
+version `+1.12a1+` or later.
 
 [source, python, role=no-test]
 ----
-%pip install "graphdatascience>=1.11"
+%pip install "graphdatascience>=1.12a1"
 ----
 
 == Aura API credentials
@@ -111,6 +111,10 @@ what that looks like
 [source, python, role=no-test]
 ----
 sessions.list()
+
+# Display the sessions
+from pandas import DataFrame
+DataFrame(sessions)
 ----
 
 == Adding a dataset

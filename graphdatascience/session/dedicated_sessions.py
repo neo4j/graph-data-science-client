@@ -81,11 +81,17 @@ class DedicatedSessions:
             session_id=session_id, session_connection=session_connection, db_connection=db_connection
         )
 
-    def delete(self, session_name: str) -> bool:
-        candidate = self._find_existing_session(session_name)
+    def delete(self, *, session_name: Optional[str] = None, session_id: Optional[str] = None) -> bool:
+        if not session_name and not session_id:
+            raise ValueError("Either session_name or session_id must be provided.")
 
-        if candidate:
-            return self._aura_api.delete_session(candidate.id) is not None
+        if session_id:
+            return self._aura_api.delete_session(session_id) is not None
+
+        if session_name:
+            candidate = self._find_existing_session(session_name)
+            if candidate:
+                return self._aura_api.delete_session(candidate.id) is not None
 
         return False
 
@@ -96,11 +102,18 @@ class DedicatedSessions:
 
     def _find_existing_session(self, session_name: str) -> Optional[SessionDetails]:
         matched_sessions: List[SessionDetails] = []
-        # TODO pass dbid to list sessions (fail if for different dbid)
         matched_sessions = [s for s in self._aura_api.list_sessions() if s.name == session_name]
 
         if len(matched_sessions) == 0:
             return None
+
+        # this will only occur for admins as we cannot resolve Aura-API client_id -> console_user_id we fail for now
+        if len(matched_sessions) > 1:
+            users = [s.user_id for s in matched_sessions]
+            raise RuntimeError(
+                "Admin users need to chose a unique session name for now."
+                f" Multiple sessions with the name `{session_name}` across multiple users exist. Sessions found for users: {users}"
+            )
 
         return matched_sessions[0]
 

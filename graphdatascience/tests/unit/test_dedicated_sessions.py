@@ -31,8 +31,11 @@ class FakeAuraApi(AuraApi):
         existing_sessions: Optional[List[SessionDetails]] = None,
         status_after_creating: str = "Ready",
         size_estimation: Optional[EstimationDetails] = None,
+        client_id: str = "client_id",
+        console_user: str = "user-1",
+        admin_user: str = False,
     ) -> None:
-        super().__init__("https://aura.api", "client_id", "client_secret", "tenant_id")
+        super().__init__(client_id=client_id, client_secret="client_secret", tenant_id="tenant_id", aura_env="test")
         if existing_instances is None:
             existing_instances = []
         if existing_sessions is None:
@@ -43,6 +46,8 @@ class FakeAuraApi(AuraApi):
         self.time = 0
         self._status_after_creating = status_after_creating
         self._size_estimation = size_estimation or EstimationDetails("1GB", "8GB", False)
+        self._console_user = console_user
+        self._admin_user = admin_user
 
     def create_session(
         self,
@@ -68,7 +73,7 @@ class FakeAuraApi(AuraApi):
             host="foo.bar",
             expiry_date=None,
             ttl=ttl,
-            user_id="user-1",
+            user_id=self.console_user_id(),
             tenant_id=self._tenant_id,
             # we derive the location from the db
             cloud_location=cloud_location if cloud_location else CloudLocation("default", "default"),
@@ -78,6 +83,9 @@ class FakeAuraApi(AuraApi):
         self._sessions[details.id] = details
 
         return details
+
+    def console_user_id(self) -> str:
+        return self._console_user
 
     def add_session(self, session: SessionDetails) -> None:
         if session.id in self._sessions:
@@ -135,7 +143,11 @@ class FakeAuraApi(AuraApi):
         if dbid:
             self._mimic_paused_db_behaviour(dbid)
 
-        return [v for _, v in self._sessions.items() if not dbid or v.instance_id == dbid]
+        matching_for_dbid = [v for _, v in self._sessions.items() if not dbid or v.instance_id == dbid]
+        matching_for_user = [v for v in matching_for_dbid if v.user_id == self._console_user or self._admin_user]
+
+        # assume user is not admin
+        return matching_for_user
 
     def list_instances(self) -> List[InstanceDetails]:
         return [v for _, v in self._instances.items()]
@@ -193,7 +205,7 @@ class FakeAuraApi(AuraApi):
 
 @pytest.fixture
 def aura_api() -> AuraApi:
-    return FakeAuraApi()
+    return FakeAuraApi(client_id="client-id")
 
 
 HASHED_DB_PASSWORD = "722cbc618c015c7c062f071868d9bb5f207f35a317e71054740716642cfd0f61"
@@ -386,8 +398,8 @@ def test_get_or_create_expired_session(mocker: MockerFixture, aura_api: AuraApi)
             host="foo.bar",
             expiry_date=None,
             ttl=None,
-            tenant_id="tenant-0",
-            user_id="user-0",
+            tenant_id=aura_api._tenant_id,
+            user_id="user-1",
         )
     )
 
@@ -415,8 +427,8 @@ def test_get_or_create_soon_expired_session(mocker: MockerFixture, aura_api: Aur
             host="foo.bar",
             expiry_date=datetime.now(tz=timezone.utc) - timedelta(hours=23),
             ttl=None,
-            tenant_id="tenant-0",
-            user_id="user-0",
+            tenant_id=aura_api._tenant_id,
+            user_id="user-1",
         )
     )
 
@@ -442,8 +454,8 @@ def test_get_or_create_with_different_memory_config(mocker: MockerFixture, aura_
             host="foo.bar",
             expiry_date=None,
             ttl=None,
-            tenant_id="tenant-0",
-            user_id="user-0",
+            tenant_id=aura_api._tenant_id,
+            user_id="user-1",
         )
     )
 
@@ -504,8 +516,8 @@ def test_get_or_create_for_existing_session_with_different_dbid(mocker: MockerFi
             host="foo.bar",
             expiry_date=None,
             ttl=None,
-            tenant_id="tenant-0",
-            user_id="user-0",
+            tenant_id=aura_api._tenant_id,
+            user_id="user-1",
         )
     )
 
@@ -538,8 +550,8 @@ def test_get_or_create_for_existing_session_with_different_cloud_location(
             host="foo.bar",
             expiry_date=None,
             ttl=None,
-            tenant_id="tenant-0",
-            user_id="user-0",
+            tenant_id=aura_api._tenant_id,
+            user_id="user-1",
             cloud_location=CloudLocation(region="dresden", provider="aws"),
         )
     )
@@ -557,16 +569,162 @@ def test_get_or_create_for_existing_session_with_different_cloud_location(
         )
 
 
-def test_delete_session(aura_api: AuraApi) -> None:
-    db1 = aura_api.create_instance("db1", SessionMemory.m_4GB.value, "aura", "leipzig").id
-    db2 = aura_api.create_instance("db2", SessionMemory.m_4GB.value, "aura", "dresden").id
-    aura_api.create_session("one", db1, memory=SessionMemory.m_8GB.value, dbid="12345")
-    aura_api.create_session("other", db2, memory=SessionMemory.m_8GB.value, dbid="123123")
+def test_create_session_ignorning_other_user(mocker: MockerFixture) -> None:
+    patch_validate_db_connection(mocker)
+    patch_construct_client(mocker)
+
+    cloud_location = CloudLocation(region="dresden", provider="aws")
+    session_name = "one"
+    size = SessionMemory.m_8GB
+
+    aura_api = FakeAuraApi(console_user="user-1", admin_user=False)
+    aura_api.add_session(
+        SessionDetails(
+            id="ffff0-ffff1",
+            name=session_name,
+            instance_id=None,
+            memory=size.value,
+            status="Ready",
+            created_at=datetime.now(),
+            host="foo.bar",
+            expiry_date=None,
+            ttl=None,
+            tenant_id=aura_api._tenant_id,
+            user_id="user-0",  # different user
+            cloud_location=cloud_location,
+        )
+    )
 
     sessions = DedicatedSessions(aura_api)
 
-    assert sessions.delete("one")
+    sessions.get_or_create(
+        session_name,
+        size,
+        DbmsConnectionInfo("neo4j://localhost", "", ""),
+        cloud_location=cloud_location,
+    )
+
+    assert {(i.name, i.user_id) for _, i in aura_api._sessions.items()} == {
+        (session_name, "user-0"),
+        (session_name, "user-1"),
+    }
+
+
+def test_create_or_get_session_return_others_for_admin_user(mocker: MockerFixture) -> None:
+    patch_validate_db_connection(mocker)
+    patch_construct_client(mocker)
+
+    cloud_location = CloudLocation(region="dresden", provider="aws")
+    session_name = "one"
+    size = SessionMemory.m_8GB
+
+    aura_api = FakeAuraApi(console_user="user-1", admin_user=True)
+    aura_api.add_session(
+        SessionDetails(
+            id="ffff0-ffff1",
+            name=session_name,
+            instance_id=None,
+            memory=size.value,
+            status="Ready",
+            created_at=datetime.now(),
+            host="foo.bar",
+            expiry_date=None,
+            ttl=None,
+            tenant_id=aura_api._tenant_id,
+            user_id="user-0",  # different user
+            cloud_location=cloud_location,
+        )
+    )
+    sessions = DedicatedSessions(aura_api)
+
+    sessions.get_or_create(
+        session_name,
+        size,
+        DbmsConnectionInfo("neo4j://localhost", "", ""),
+        cloud_location=cloud_location,
+    )
+    # (wrongly) returns the session created by the other user
+    # Will create a new one once get_or_create is implemented on the server side which knows the console-user-id
+    assert {(i.name, i.user_id) for i in sessions.list()} == {(session_name, "user-0")}
+
+
+def test_create_or_get_session_fail_for_admin_user(mocker: MockerFixture) -> None:
+    patch_validate_db_connection(mocker)
+    patch_construct_client(mocker)
+
+    cloud_location = CloudLocation(region="dresden", provider="aws")
+    session_name = "one"
+    size = SessionMemory.m_8GB
+
+    aura_api = FakeAuraApi(console_user="user-1", admin_user=True)
+    aura_api.add_session(
+        SessionDetails(
+            id="ffff0-ffff1",
+            name=session_name,
+            instance_id=None,
+            memory=size.value,
+            status="Ready",
+            created_at=datetime.now(),
+            host="foo.bar",
+            expiry_date=None,
+            ttl=None,
+            tenant_id=aura_api._tenant_id,
+            user_id="user-0",  # different user
+            cloud_location=cloud_location,
+        )
+    )
+    aura_api.add_session(
+        SessionDetails(
+            id="ffff0-ffff2",
+            name=session_name,
+            instance_id=None,
+            memory=size.value,
+            status="Ready",
+            created_at=datetime.now(),
+            host="foo.bar",
+            expiry_date=None,
+            ttl=None,
+            tenant_id=aura_api._tenant_id,
+            user_id="user-2",  # different user
+            cloud_location=cloud_location,
+        )
+    )
+    sessions = DedicatedSessions(aura_api)
+
+    # needs to be fixed on server-side
+    with pytest.raises(
+        RuntimeError,
+        match=re.escape(
+            "Admin users need to chose a unique session name for now."
+            " Multiple sessions with the name `one` across multiple users exist."
+            " Sessions found for users: ['user-0', 'user-2']"
+        ),
+    ):
+        sessions.get_or_create(
+            session_name,
+            size,
+            DbmsConnectionInfo("neo4j://localhost", "", ""),
+            cloud_location=cloud_location,
+        )
+
+
+def test_delete_session_by_name(aura_api: AuraApi) -> None:
+    aura_api.create_session("one", "pwd", memory=SessionMemory.m_8GB.value, dbid="12345")
+    aura_api.create_session("other", "pwd", memory=SessionMemory.m_8GB.value, dbid="123123")
+
+    sessions = DedicatedSessions(aura_api)
+
+    assert sessions.delete(session_name="one")
     assert [i.name for i in sessions.list()] == ["other"]
+
+
+def test_delete_session_by_id(aura_api: AuraApi) -> None:
+    s1 = aura_api.create_session("one", "pwd", memory=SessionMemory.m_8GB.value, dbid="12345")
+    s2 = aura_api.create_session("other", "pwd", memory=SessionMemory.m_8GB.value, dbid="123123")
+
+    sessions = DedicatedSessions(aura_api)
+    assert sessions.delete(session_id=s1.id)
+    assert [i.name for i in sessions.list()] == [s2.name]
 
 
 def test_delete_nonexisting_session(aura_api: AuraApi) -> None:
@@ -574,7 +732,7 @@ def test_delete_nonexisting_session(aura_api: AuraApi) -> None:
     aura_api.create_session("one", db1, memory=SessionMemory.m_8GB.value, dbid="12345")
     sessions = DedicatedSessions(aura_api)
 
-    assert sessions.delete("other") is False
+    assert sessions.delete(session_name="other") is False
     assert [i.name for i in sessions.list()] == ["one"]
 
 
@@ -604,7 +762,7 @@ def test_delete_session_paused_instance(aura_api: AuraApi) -> None:
     sessions = DedicatedSessions(aura_api)
 
     # can delete session running against a paused instance
-    assert sessions.delete(session.name)
+    assert sessions.delete(session_name=session.name)
 
 
 def test_create_waiting_forever(
