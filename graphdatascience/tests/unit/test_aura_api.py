@@ -47,6 +47,7 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
             "memory": "4GB",
             "instance_id": "dbid-1",
             "ttl": "42.0s",
+            "tenant_id": "some-tenant",
         }
         return True
 
@@ -61,7 +62,7 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
                 "created_at": "1970-01-01T00:00:00Z",
                 "host": "1.2.3.4",
                 "memory": "4Gi",
-                "tenant_id": "tenant-0",
+                "tenant_id": "some-tenant",
                 "user_id": "user-0",
                 "ttl": "42s",
             }
@@ -83,7 +84,7 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
         memory=SessionMemory.m_4GB.value,
         expiry_date=None,
         ttl=timedelta(seconds=42),
-        tenant_id="tenant-0",
+        tenant_id="some-tenant",
         user_id="user-0",
     )
 
