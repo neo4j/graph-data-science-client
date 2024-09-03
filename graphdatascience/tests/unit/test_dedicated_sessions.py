@@ -526,7 +526,7 @@ def test_delete_session_by_name_admin() -> None:
 
     sessions = DedicatedSessions(aura_api)
     with pytest.raises(
-            RuntimeError, match=re.escape("The use has access to multiple session with the name `one`. Please specify the id of the session that should be deleted.")
+            RuntimeError, match=re.escape("The user has access to multiple session with the name `one`. Please specify the id of the session that should be deleted.")
     ):
         sessions.delete(session_name="one")
 

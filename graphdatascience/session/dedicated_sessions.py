@@ -107,7 +107,7 @@ class DedicatedSessions:
         # this will only occur for admins as we cannot resolve Aura-API client_id -> console_user_id we fail for now
         if len(matched_sessions) > 1:
             raise RuntimeError(
-                f"The use has access to multiple session with the name `{session_name}`. Please specify the id of the session that should be deleted."
+                f"The user has access to multiple session with the name `{session_name}`. Please specify the id of the session that should be deleted."
             )
 
         return matched_sessions[0]
