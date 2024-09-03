@@ -94,7 +94,7 @@ class AuraApi:
         ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
     ) -> SessionDetails:
-        json = {"name": name, "password": pwd, "memory": memory.value}
+        json = {"name": name, "password": pwd, "memory": memory.value, "tenant_id": self._tenant_id}
 
         if dbid:
             json["instance_id"] = dbid
@@ -103,7 +103,6 @@ class AuraApi:
             json["ttl"] = f"{ttl.total_seconds()}s"
 
         if cloud_location:
-            json["tenant_id"] = self._tenant_id
             json["cloud_provider"] = cloud_location.provider
             json["region"] = cloud_location.region
 
