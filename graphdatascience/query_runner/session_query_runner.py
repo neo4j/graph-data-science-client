@@ -7,13 +7,14 @@ from uuid import uuid4
 from pandas import DataFrame
 
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
+from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 
 from ..call_parameters import CallParameters
 from ..session.dbms.protocol_resolver import ProtocolVersionResolver
 from .gds_arrow_client import GdsArrowClient
-from .query_progress_logger import QueryProgressLogger
+from .progress.static_progress_provider import StaticProgressStore
 from .query_runner import QueryRunner
 
 
@@ -144,6 +145,9 @@ class SessionQueryRunner(QueryRunner):
         versioned_endpoint = self._resolved_protocol_version.versioned_procedure_name(endpoint)
 
         try:
+            job_id = self._progress_logger.extract_or_create_job_id(params)
+            StaticProgressStore.register_task_with_unknown_volume(job_id, "Project from remote database")
+
             return self._db_query_runner.call_procedure(
                 versioned_endpoint, remote_project_proc_params, yields, database, logging, False
             )

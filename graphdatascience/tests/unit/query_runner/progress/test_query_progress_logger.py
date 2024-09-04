@@ -4,7 +4,10 @@ from typing import Optional
 from pandas import DataFrame
 
 from graphdatascience import ServerVersion
-from graphdatascience.query_runner.query_progress_logger import QueryProgressLogger
+from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
+from graphdatascience.query_runner.progress.query_progress_provider import QueryProgressProvider
+from graphdatascience.query_runner.progress.static_progress_provider import StaticProgressProvider, StaticProgressStore
+from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 
 
 def test_call_through_functions() -> None:
@@ -53,3 +56,22 @@ def test_uses_beta_endpoint() -> None:
     df = qpl.run_with_progress_logging(fake_query, "foo", "database")
 
     assert df["result"][0] == 42
+
+
+def test_uses_query_provider() -> None:
+    server_version = ServerVersion(3, 0, 0)
+    query_runner = CollectingQueryRunner(server_version)
+    qpl = QueryProgressLogger(query_runner.run_cypher, lambda: server_version)
+    progress_provider = qpl._select_progress_provider("test-job")
+    assert isinstance(progress_provider, QueryProgressProvider)
+
+
+def test_uses_static_store() -> None:
+    qpl = QueryProgressLogger(None, lambda: ServerVersion(3, 0, 0))
+    StaticProgressStore.register_task_with_unknown_volume("test-job", "Test task")
+
+    progress_provider = qpl._select_progress_provider("test-job")
+    assert isinstance(progress_provider, StaticProgressProvider)
+    task_with_volume = progress_provider.root_task_with_progress("test-job")
+    assert task_with_volume.task_name == "Test task"
+    assert task_with_volume.progress_percent == "n/a"
