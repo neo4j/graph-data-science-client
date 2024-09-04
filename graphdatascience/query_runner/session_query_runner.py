@@ -38,7 +38,8 @@ class SessionQueryRunner(QueryRunner):
         self._gds_arrow_client = arrow_client
         self._resolved_protocol_version = ProtocolVersionResolver(db_query_runner).resolve()
         self._progress_logger = QueryProgressLogger(
-            self._gds_query_runner.run_cypher, self._gds_query_runner.server_version
+            lambda query, database: self._gds_query_runner.run_cypher(query=query, database=database),
+            self._gds_query_runner.server_version,
         )
 
     def run_cypher(
