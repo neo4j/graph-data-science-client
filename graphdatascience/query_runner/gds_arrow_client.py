@@ -229,7 +229,7 @@ class GdsArrowClient:
             )
             improved_message = re.sub(r"(\. )?gRPC client debug context: .+$", "", improved_message)
 
-            raise RuntimeError(improved_message)
+            raise flight.FlightServerError(improved_message)
         else:
             raise e
 
