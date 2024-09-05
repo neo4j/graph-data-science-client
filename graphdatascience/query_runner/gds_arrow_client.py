@@ -1,9 +1,11 @@
 import base64
 import json
+import re
 import time
 import warnings
 from typing import Any, Dict, Optional, Tuple
 
+from neo4j.exceptions import ClientError
 from pandas import DataFrame
 from pyarrow import ChunkedArray, Schema, Table, chunked_array, flight
 from pyarrow._flight import FlightStreamReader, FlightStreamWriter
@@ -128,8 +130,12 @@ class GdsArrowClient:
             }
 
         ticket = flight.Ticket(json.dumps(payload).encode("utf-8"))
-        get = self._flight_client.do_get(ticket)
-        arrow_table = get.read_all()
+
+        try:
+            get = self._flight_client.do_get(ticket)
+            arrow_table = get.read_all()
+        except Exception as e:
+            self.handle_flight_error(e)
 
         if configuration.get("list_node_labels", False):
             # GDS 2.5 had an inconsistent naming of the node labels column
@@ -147,13 +153,17 @@ class GdsArrowClient:
 
     def send_action(self, action_type: str, meta_data: Dict[str, Any]) -> None:
         action_type = self._versioned_action_type(action_type)
-        result = self._flight_client.do_action(flight.Action(action_type, json.dumps(meta_data).encode("utf-8")))
 
-        # Consume result fully to sanity check and avoid cancelled streams
-        collected_result = list(result)
-        assert len(collected_result) == 1
+        try:
+            result = self._flight_client.do_action(flight.Action(action_type, json.dumps(meta_data).encode("utf-8")))
 
-        json.loads(collected_result[0].body.to_pybytes().decode())
+            # Consume result fully to sanity check and avoid cancelled streams
+            collected_result = list(result)
+            assert len(collected_result) == 1
+
+            json.loads(collected_result[0].body.to_pybytes().decode())
+        except Exception as e:
+            self.handle_flight_error(e)
 
     def start_put(self, payload: Dict[str, Any], schema: Schema) -> Tuple[FlightStreamWriter, FlightStreamReader]:
         flight_descriptor = self._versioned_flight_descriptor(payload)
@@ -198,6 +208,30 @@ class GdsArrowClient:
                     decoded_col = arrow_table[field.name].dictionary_decode()
                 arrow_table = arrow_table.set_column(idx, field.name, decoded_col)
         return arrow_table
+
+    @staticmethod
+    def handle_flight_error(e: Exception):
+        if (
+            isinstance(e, flight.FlightServerError)
+            or isinstance(e, flight.FlightInternalError)
+            or isinstance(e, ClientError)
+        ):
+            original_message = e.args[0]
+            improved_message = original_message.replace(
+                "Flight RPC failed with message: org.apache.arrow.flight.FlightRuntimeException: ", ""
+            )
+            improved_message = improved_message.replace(
+                "Flight returned internal error, with message: org.apache.arrow.flight.FlightRuntimeException: ", ""
+            )
+            improved_message = improved_message.replace(
+                "Failed to invoke procedure `gds.arrow.project`: Caused by: org.apache.arrow.flight.FlightRuntimeException: ",
+                "",
+            )
+            improved_message = re.sub(r"(\. )?gRPC client debug context: .+$", "", improved_message)
+
+            raise flight.FlightServerError(improved_message)
+        else:
+            raise e
 
 
 class AuthFactory(ClientMiddlewareFactory):  # type: ignore

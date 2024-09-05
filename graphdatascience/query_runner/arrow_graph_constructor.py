@@ -88,13 +88,16 @@ class ArrowGraphConstructor(GraphConstructor):
 
         writer, _ = self._client.start_put(flight_descriptor, table.schema)
 
-        with writer:
-            # Write table in chunks
-            for partition in batches:
-                writer.write_batch(partition)
-                pbar.update(partition.num_rows)
-        # Force a refresh to avoid the progress bar getting stuck at 0%
-        pbar.refresh()
+        try:
+            with writer:
+                # Write table in chunks
+                for partition in batches:
+                    writer.write_batch(partition)
+                    pbar.update(partition.num_rows)
+            # Force a refresh to avoid the progress bar getting stuck at 0%
+            pbar.refresh()
+        except Exception as e:
+            GdsArrowClient.handle_flight_error(e)
 
     def _send_dfs(self, dfs: List[DataFrame], entity_type: str) -> None:
         desc = "Uploading Nodes" if entity_type == "node" else "Uploading Relationships"

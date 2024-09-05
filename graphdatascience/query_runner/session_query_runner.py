@@ -143,9 +143,12 @@ class SessionQueryRunner(QueryRunner):
 
         versioned_endpoint = self._resolved_protocol_version.versioned_procedure_name(endpoint)
 
-        return self._db_query_runner.call_procedure(
-            versioned_endpoint, remote_project_proc_params, yields, database, logging, False
-        )
+        try:
+            return self._db_query_runner.call_procedure(
+                versioned_endpoint, remote_project_proc_params, yields, database, logging, False
+            )
+        except Exception as e:
+            GdsArrowClient.handle_flight_error(e)
 
     @staticmethod
     def _project_params_v2(
