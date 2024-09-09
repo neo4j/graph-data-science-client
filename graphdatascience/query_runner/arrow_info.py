@@ -20,7 +20,7 @@ class ArrowInfo:
         if query_runner.server_version() > ServerVersion(2, 6, 0):
             debugYields.append("versions")
 
-        procResult = query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False, yields=debugYields)[0]
+        procResult = query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False, yields=debugYields).iloc[0]
 
         return ArrowInfo(
             listenAddress=procResult["listenAddress"],
