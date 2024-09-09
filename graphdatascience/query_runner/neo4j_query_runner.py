@@ -17,7 +17,7 @@ from ..server_version.server_version import ServerVersion
 from ..version import __version__
 from .cypher_graph_constructor import CypherGraphConstructor
 from .graph_constructor import GraphConstructor
-from .query_progress_logger import QueryProgressLogger
+from .progress.query_progress_logger import QueryProgressLogger
 from .query_runner import QueryRunner
 
 
