@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import base64
 import json
 import re
@@ -14,48 +16,31 @@ from pyarrow.types import is_dictionary
 
 from ..server_version.server_version import ServerVersion
 from .arrow_endpoint_version import ArrowEndpointVersion
+from .arrow_info import ArrowInfo
 from .query_runner import QueryRunner
 
 
 class GdsArrowClient:
     @staticmethod
-    def is_arrow_enabled(query_runner: QueryRunner) -> bool:
-        arrow_server_running = query_runner.call_procedure(
-            endpoint="gds.debug.arrow", custom_error=False, yields=["running", "listenAddress"]
-        ).squeeze()
-        return not not arrow_server_running["running"]
-
-    @staticmethod
     def create(
         query_runner: QueryRunner,
+        arrow_info: ArrowInfo,
         auth: Optional[Tuple[str, str]] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
         connection_string_override: Optional[str] = None,
-    ) -> "GdsArrowClient":
-        if query_runner.server_version() > ServerVersion(2, 6, 0):
-            debugYields = ["listenAddress", "versions"]
-        else:
-            # return enabled to avoid squeeze returning a single str
-            debugYields = ["listenAddress", "enabled"]
-
-        arrow_info = (
-            query_runner.call_procedure(endpoint="gds.debug.arrow", custom_error=False, yields=debugYields)
-            .squeeze()
-            .to_dict()
-        )
-
+    ) -> GdsArrowClient:
         server_version = query_runner.server_version()
         connection_string: str
         if connection_string_override is not None:
             connection_string = connection_string_override
         else:
-            connection_string = arrow_info.get("listenAddress")
+            connection_string = arrow_info.listenAddress
 
         host, port = connection_string.split(":")
 
-        arrow_endpoint_version = ArrowEndpointVersion.from_arrow_info(arrow_info.get("versions", []))
+        arrow_endpoint_version = ArrowEndpointVersion.from_arrow_info(arrow_info.versions)
 
         return GdsArrowClient(
             host,

@@ -7,6 +7,7 @@ from pytest_mock import MockerFixture
 from graphdatascience import QueryRunner
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.cypher_graph_constructor import (
     CypherGraphConstructor,
 )
@@ -61,7 +62,6 @@ class CollectingQueryRunner(QueryRunner):
 
         self.queries.append(query)
         self.params.append(dict(params.items()))
-
         # This "mock" lets us initialize the GDS object without issues.
         if isinstance(self._result_or_exception, Exception):
             raise self._result_or_exception
@@ -132,10 +132,14 @@ def gds(runner: CollectingQueryRunner) -> Generator[GraphDataScience, None, None
 
 @pytest.fixture
 def aura_gds(runner: CollectingQueryRunner, mocker: MockerFixture) -> Generator[AuraGraphDataScience, None, None]:
+    arrow_info = ArrowInfo(listenAddress="foo.bar", enabled=True, running=True, versions=[])
+
     mocker.patch("graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner.create", return_value=runner)
     mocker.patch("graphdatascience.query_runner.session_query_runner.SessionQueryRunner.create", return_value=runner)
     mocker.patch("graphdatascience.query_runner.arrow_query_runner.ArrowQueryRunner.create", return_value=runner)
     mocker.patch("graphdatascience.query_runner.gds_arrow_client.GdsArrowClient.create", return_value=None)
+    mocker.patch("graphdatascience.query_runner.arrow_info.ArrowInfo.create", return_value=arrow_info)
+
     aura_gds = AuraGraphDataScience.create(
         gds_session_connection_info=DbmsConnectionInfo("address", "some", "auth"),
         db_connection_info=DbmsConnectionInfo("address", "some", "auth"),

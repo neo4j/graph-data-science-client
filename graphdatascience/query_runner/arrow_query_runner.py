@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from pandas import DataFrame
 
 from ..call_parameters import CallParameters
+from ..query_runner.arrow_info import ArrowInfo
 from ..server_version.compatible_with import (
     IncompatibleServerVersionError,
 )
@@ -20,17 +21,19 @@ class ArrowQueryRunner(QueryRunner):
     @staticmethod
     def create(
         fallback_query_runner: QueryRunner,
+        arrow_info: ArrowInfo,
         auth: Optional[Tuple[str, str]] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
         connection_string_override: Optional[str] = None,
     ) -> QueryRunner:
-        if not GdsArrowClient.is_arrow_enabled(fallback_query_runner):
+        if not arrow_info.enabled:
             return fallback_query_runner
 
         gds_arrow_client = GdsArrowClient.create(
             fallback_query_runner,
+            arrow_info,
             auth,
             encrypted,
             disable_server_verification,
