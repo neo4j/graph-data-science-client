@@ -65,12 +65,17 @@ class FakeAuraApi(AuraApi):
 
         for s in self._sessions.values():
             if s.name == name:
-                if s.memory == memory and s.user_id == self._console_user and (not dbid or s.instance_id == dbid) and (not cloud_location or s.cloud_location == cloud_location):
+                if (
+                    s.memory == memory
+                    and s.user_id == self._console_user
+                    and (not dbid or s.instance_id == dbid)
+                    and (not cloud_location or s.cloud_location == cloud_location)
+                ):
                     if s.is_expired():
                         raise RuntimeError(f"Session `{s.name}` is expired. Please delete it and create a new one.")
                     return s
                 else:
-                    raise RuntimeError(f"Session exists with different config")
+                    raise RuntimeError("Session exists with different config")
 
         details = SessionDetails(
             id=f"{dbid}-ffff{self.id_counter}",
@@ -479,6 +484,7 @@ def test_get_or_create_for_without_cloud_location(mocker: MockerFixture, aura_ap
             cloud_location=None,
         )
 
+
 def test_delete_session_by_name(aura_api: AuraApi) -> None:
     aura_api.create_session("one", "pwd", memory=SessionMemory.m_8GB.value, dbid="12345")
     aura_api.create_session("other", "pwd", memory=SessionMemory.m_8GB.value, dbid="123123")
@@ -487,6 +493,7 @@ def test_delete_session_by_name(aura_api: AuraApi) -> None:
 
     assert sessions.delete(session_name="one")
     assert [i.name for i in sessions.list()] == ["other"]
+
 
 def test_delete_session_by_name_admin() -> None:
     aura_api = FakeAuraApi(console_user="user-1", admin_user=True)
@@ -526,7 +533,10 @@ def test_delete_session_by_name_admin() -> None:
 
     sessions = DedicatedSessions(aura_api)
     with pytest.raises(
-            RuntimeError, match=re.escape("The user has access to multiple session with the name `one`. Please specify the id of the session that should be deleted.")
+        RuntimeError,
+        match=re.escape(
+            "The user has access to multiple session with the name `one`. Please specify the id of the session that should be deleted."
+        ),
     ):
         sessions.delete(session_name="one")
 
