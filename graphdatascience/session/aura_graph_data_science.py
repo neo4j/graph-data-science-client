@@ -11,6 +11,7 @@ from graphdatascience.endpoints import (
 )
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
 from graphdatascience.graph.graph_remote_proc_runner import GraphRemoteProcRunner
+from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
@@ -43,8 +44,11 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             aura_ds=True,
             database="neo4j",
         )
+
+        arrow_info = ArrowInfo.create(session_bolt_query_runner)
         session_arrow_query_runner = ArrowQueryRunner.create(
             fallback_query_runner=session_bolt_query_runner,
+            arrow_info=arrow_info,
             auth=gds_session_connection_info.auth(),
             encrypted=session_bolt_query_runner.encrypted(),
             disable_server_verification=arrow_disable_server_verification,
@@ -54,6 +58,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         # TODO: merge with the gds_arrow_client created inside ArrowQueryRunner
         session_arrow_client = GdsArrowClient.create(
             session_bolt_query_runner,
+            arrow_info,
             gds_session_connection_info.auth(),
             session_bolt_query_runner.encrypted(),
             arrow_disable_server_verification,

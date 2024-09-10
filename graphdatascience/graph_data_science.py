@@ -9,6 +9,7 @@ from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
 from .graph.graph_proc_runner import GraphProcRunner
+from .query_runner.arrow_info import ArrowInfo
 from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
@@ -74,8 +75,10 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         self._server_version = self._query_runner.server_version()
 
         if arrow and self._server_version >= ServerVersion(2, 1, 0):
+            arrow_info = ArrowInfo.create(self._query_runner)
             self._query_runner = ArrowQueryRunner.create(
                 self._query_runner,
+                arrow_info,
                 auth,
                 self._query_runner.encrypted(),
                 arrow_disable_server_verification,
