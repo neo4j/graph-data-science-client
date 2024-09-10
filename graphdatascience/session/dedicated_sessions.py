@@ -51,21 +51,18 @@ class DedicatedSessions:
         self._validate_db_connection(db_connection)
 
         dbid = AuraApi.extract_id(db_connection.uri)
-        existing_session = self._find_existing_session(session_name)
 
         # hashing the password to avoid storing the actual db password in Aura
         password = hashlib.sha256(db_connection.password.encode()).hexdigest()
 
-        if existing_session:
-            self._check_expiry_date(existing_session)
-            self._check_memory_configuration(existing_session, memory.value)
-            self._check_dbid(existing_session, dbid)
-            self._check_cloud_location(existing_session, cloud_location)
+        create_details = self._create_session(session_name, dbid, password, memory.value, ttl, cloud_location)
 
-            session_id = existing_session.id
-        else:
-            create_details = self._create_session(session_name, dbid, password, memory.value, ttl, cloud_location)
-            session_id = create_details.id
+        if create_details.expiry_date:
+            until_expiry: timedelta = create_details.expiry_date - datetime.now(timezone.utc)
+            if until_expiry < timedelta(days=1):
+                raise Warning(f"Session `{create_details.name}` is expiring in less than a day.")
+
+        session_id = create_details.id
 
         wait_result = self._aura_api.wait_for_session_running(session_id)
         if err := wait_result.error:
@@ -109,10 +106,8 @@ class DedicatedSessions:
 
         # this will only occur for admins as we cannot resolve Aura-API client_id -> console_user_id we fail for now
         if len(matched_sessions) > 1:
-            users = [s.user_id for s in matched_sessions]
             raise RuntimeError(
-                "Admin users need to chose a unique session name for now."
-                f" Multiple sessions with the name `{session_name}` across multiple users exist. Sessions found for users: {users}"
+                f"The user has access to multiple session with the name `{session_name}`. Please specify the id of the session that should be deleted."
             )
 
         return matched_sessions[0]
@@ -164,38 +159,3 @@ class DedicatedSessions:
             db_connection_info=db_connection,
             delete_fn=lambda: self._aura_api.delete_session(session_id=session_id),
         )
-
-    def _check_expiry_date(self, session: SessionDetails) -> None:
-        if session.is_expired():
-            raise RuntimeError(f"Session `{session.name}` is expired. Please delete it and create a new one.")
-        if session.expiry_date:
-            until_expiry: timedelta = session.expiry_date - datetime.now(timezone.utc)
-            if until_expiry < timedelta(days=1):
-                raise Warning(f"Session `{session.name}` is expiring in less than a day.")
-
-    def _check_memory_configuration(
-        self, existing_session: SessionDetails, requested_memory: SessionMemoryValue
-    ) -> None:
-        if existing_session.memory != requested_memory:
-            raise ValueError(
-                f"Session `{existing_session.name}` exists with a different memory configuration. "
-                f"Current: {existing_session.memory}, Requested: {requested_memory}."
-            )
-
-    def _check_dbid(self, existing_session: SessionDetails, dbid: str) -> None:
-        # we cannot distinguish for self-managed DBs as we dont store the db-uri in the session
-        if existing_session.instance_id and existing_session.instance_id != dbid:
-            raise ValueError(
-                f"Session `{existing_session.name}` exists against a different AuraDB. "
-                f"Current: `{existing_session.instance_id}`, Requested: `{dbid}`."
-            )
-
-    def _check_cloud_location(self, existing_session: SessionDetails, cloud_location: Optional[CloudLocation]) -> None:
-        # cloud_location was only recently stored. if the existing session has none, we dont know if its the same or not
-        # (should be save to always check on 27.09.2024)
-        # if no cloud_location was provided the location is derived from the db -> no need to check
-        if existing_session.cloud_location and cloud_location and existing_session.cloud_location != cloud_location:
-            raise ValueError(
-                f"Session `{existing_session.name}` exists in a different cloud location. "
-                f"Current: `{existing_session.cloud_location}`, Requested: `{cloud_location}`."
-            )

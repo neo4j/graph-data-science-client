@@ -82,6 +82,8 @@ class GdsSessions:
         Retrieves an existing session with the given session name and database connection,
         or creates a new session if one does not exist.
 
+        If the session is close to expiration, a warning will be raised.
+
         Args:
             session_name (str): The name of the session.
             memory (SessionMemory): The size of the session specified by memory.
