@@ -23,7 +23,7 @@ from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 DEFAULT_SERVER_VERSION = ServerVersion(2, 6, 0)
 
 QueryResult = Union[DataFrame, Exception]
-QueryResultMap = Dict[str, QueryResult] # Substring -> QueryResult
+QueryResultMap = Dict[str, QueryResult]  # Substring -> QueryResult
 
 
 class CollectingQueryRunner(QueryRunner):
@@ -74,21 +74,7 @@ class CollectingQueryRunner(QueryRunner):
         self.queries.append(query)
         self.params.append(dict(params.items()))
 
-        # This "mock" lets us initialize the GDS object without issues.
-        if query.startswith("CALL gds.version"):
-            return DataFrame([{"version": str(self._server_version)}])
-
-        matched_results = [
-            (sub_string, result) for sub_string, result in self._result_map.items() if sub_string in query
-        ]
-        if len(matched_results) > 1:
-            raise RuntimeError(
-                f"Could not find exactly one result mocks for the query `{query}`. Matched sub_strings `{[sub_strings for sub_strings, _ in matched_results]}."
-            )
-        if len(matched_results) == 0:
-            return DataFrame()
-
-        _, result = matched_results[0]
+        result = self.get_mock_result(query)
 
         if isinstance(result, Exception):
             raise result
@@ -143,6 +129,22 @@ class CollectingQueryRunner(QueryRunner):
     def add__mock_result(self, query_sub_string: str, result: DataFrame) -> None:
         self._result_map[query_sub_string] = result
 
+    def get_mock_result(self, query: str) -> QueryResult:
+        # This "mock" lets us initialize the GDS object without issues.
+        if query.startswith("CALL gds.version"):
+            return DataFrame([{"version": str(self._server_version)}])
+
+        matched_results = [
+            (sub_string, result) for sub_string, result in self._result_map.items() if sub_string in query
+        ]
+        if len(matched_results) > 1:
+            raise RuntimeError(
+                f"Could not find exactly one result mocks for the query `{query}`. Matched sub_strings `{[sub_strings for sub_strings, _ in matched_results]}."
+            )
+        if len(matched_results) == 0:
+            return DataFrame()
+        return matched_results[0][1]
+
 
 @pytest.fixture
 def runner(server_version: ServerVersion) -> CollectingQueryRunner:
@@ -150,7 +152,7 @@ def runner(server_version: ServerVersion) -> CollectingQueryRunner:
 
 
 @pytest.fixture
-def gds(runner: CollectingQueryRunner, mocker: MockerFixture) -> Generator[GraphDataScience, None, None]:
+def gds(runner: CollectingQueryRunner) -> Generator[GraphDataScience, None, None]:
     arrow_info = ArrowInfo(listenAddress="foo.bar", enabled=True, running=True, versions=[])
     runner.add__mock_result("gds.debug.arrow", DataFrame([asdict(arrow_info)]))
 
