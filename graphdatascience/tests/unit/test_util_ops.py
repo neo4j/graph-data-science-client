@@ -1,3 +1,5 @@
+from pandas import DataFrame
+
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
@@ -16,6 +18,8 @@ def test_list(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
 
 
 def test_as_node(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    runner.add__mock_result("gds.util.asNode", DataFrame([{"node": {"name": "A"}}]))
+
     gds.util.asNode(1)
 
     assert runner.last_query() == "RETURN gds.util.asNode(1) AS node"
@@ -29,6 +33,7 @@ def test_remote_as_node(runner: CollectingQueryRunner, aura_gds: AuraGraphDataSc
 
 
 def test_as_nodes(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
+    runner.add__mock_result("gds.util.asNodes", DataFrame([{"nodes": {"foo": "bar"}}]))
     gds.util.asNodes([1, 2, 3])
 
     assert runner.last_query() == "RETURN gds.util.asNodes([1, 2, 3]) AS nodes"

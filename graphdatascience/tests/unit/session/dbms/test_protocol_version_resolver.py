@@ -12,9 +12,7 @@ from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 
 
 def test_protocol_versions() -> None:
-    runner = CollectingQueryRunner(
-        result_or_exception=DataFrame([{"version": "v1"}]), server_version=ServerVersion(1, 2, 3)
-    )
+    runner = CollectingQueryRunner(result_mock=DataFrame([{"version": "v1"}]), server_version=ServerVersion(1, 2, 3))
     resolver = ProtocolVersionResolver(runner)
 
     assert resolver.resolve() == ProtocolVersion.V1
@@ -23,9 +21,7 @@ def test_protocol_versions() -> None:
 
 
 def test_protocol_versions_proc_missing() -> None:
-    runner = CollectingQueryRunner(
-        result_or_exception=Neo4jError("no such proc"), server_version=ServerVersion(1, 2, 3)
-    )
+    runner = CollectingQueryRunner(result_mock=Neo4jError("no such proc"), server_version=ServerVersion(1, 2, 3))
     resolver = ProtocolVersionResolver(runner)
 
     assert resolver.resolve() == ProtocolVersion.V1
@@ -35,7 +31,7 @@ def test_protocol_versions_proc_missing() -> None:
 
 def test_protocol_versions_multiple_matching() -> None:
     runner = CollectingQueryRunner(
-        result_or_exception=DataFrame([{"version": "v1"}, {"version": "v2"}]), server_version=ServerVersion(1, 2, 3)
+        result_mock=DataFrame([{"version": "v1"}, {"version": "v2"}]), server_version=ServerVersion(1, 2, 3)
     )
     resolver = ProtocolVersionResolver(runner)
 
@@ -46,7 +42,7 @@ def test_protocol_versions_multiple_matching() -> None:
 
 def test_protocol_versions_newer_dbms() -> None:
     runner = CollectingQueryRunner(
-        result_or_exception=DataFrame([{"version": "v1"}, {"version": "v2"}, {"version": "v100"}]),
+        result_mock=DataFrame([{"version": "v1"}, {"version": "v2"}, {"version": "v100"}]),
         server_version=ServerVersion(1, 2, 3),
     )
     resolver = ProtocolVersionResolver(runner)
@@ -57,9 +53,7 @@ def test_protocol_versions_newer_dbms() -> None:
 
 
 def test_protocol_versions_newer_dbms_no_matching() -> None:
-    runner = CollectingQueryRunner(
-        result_or_exception=DataFrame([{"version": "v100"}]), server_version=ServerVersion(1, 2, 3)
-    )
+    runner = CollectingQueryRunner(result_mock=DataFrame([{"version": "v100"}]), server_version=ServerVersion(1, 2, 3))
     resolver = ProtocolVersionResolver(runner)
 
     with pytest.raises(

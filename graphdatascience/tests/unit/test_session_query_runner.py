@@ -18,7 +18,7 @@ class FakeArrowClient:
 
 def test_extracts_parameters_projection_v1() -> None:
     version = ServerVersion(2, 7, 0)
-    db_query_runner = CollectingQueryRunner(version, result_or_exception=DataFrame([{"version": "v1"}]))
+    db_query_runner = CollectingQueryRunner(version, result_mock=DataFrame([{"version": "v1"}]))
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
     qr = SessionQueryRunner.create(gds_query_runner, db_query_runner, FakeArrowClient())  # type: ignore
@@ -61,9 +61,7 @@ $undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_conf
 
 def test_extracts_parameters_projection_v2() -> None:
     version = ServerVersion(2, 7, 0)
-    db_query_runner = CollectingQueryRunner(
-        version, result_or_exception=DataFrame([{"version": "v1"}, {"version": "v2"}])
-    )
+    db_query_runner = CollectingQueryRunner(version, result_mock=DataFrame([{"version": "v1"}, {"version": "v2"}]))
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
     qr = SessionQueryRunner.create(
@@ -111,7 +109,7 @@ def test_extracts_parameters_projection_v2() -> None:
 
 def test_extracts_parameters_algo_write_v1() -> None:
     version = ServerVersion(2, 7, 0)
-    db_query_runner = CollectingQueryRunner(version, result_or_exception=DataFrame([{"version": "v1"}]))
+    db_query_runner = CollectingQueryRunner(version, result_mock=DataFrame([{"version": "v1"}]))
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
     qr = SessionQueryRunner.create(gds_query_runner, db_query_runner, FakeArrowClient())  # type: ignore
@@ -136,9 +134,7 @@ def test_extracts_parameters_algo_write_v1() -> None:
 
 def test_extracts_parameters_algo_write_v2() -> None:
     version = ServerVersion(2, 7, 0)
-    db_query_runner = CollectingQueryRunner(
-        version, result_or_exception=DataFrame([{"version": "v1"}, {"version": "v2"}])
-    )
+    db_query_runner = CollectingQueryRunner(version, result_mock=DataFrame([{"version": "v1"}, {"version": "v2"}]))
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
     qr = SessionQueryRunner.create(
@@ -170,7 +166,7 @@ def test_extracts_parameters_algo_write_v2() -> None:
 
 def test_arrow_and_write_configuration() -> None:
     version = ServerVersion(2, 7, 0)
-    db_query_runner = CollectingQueryRunner(version, result_or_exception=DataFrame([{"version": "v1"}]))
+    db_query_runner = CollectingQueryRunner(version, result_mock=DataFrame([{"version": "v1"}]))
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
     qr = SessionQueryRunner.create(gds_query_runner, db_query_runner, FakeArrowClient())  # type: ignore
@@ -207,7 +203,7 @@ def test_arrow_and_write_configuration() -> None:
 
 def test_arrow_and_write_configuration_graph_write() -> None:
     version = ServerVersion(2, 7, 0)
-    db_query_runner = CollectingQueryRunner(version, result_or_exception=DataFrame([{"version": "v1"}]))
+    db_query_runner = CollectingQueryRunner(version, result_mock=DataFrame([{"version": "v1"}]))
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
     qr = SessionQueryRunner.create(gds_query_runner, db_query_runner, FakeArrowClient())  # type: ignore
