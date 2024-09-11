@@ -1,0 +1,88 @@
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Optional
+
+from pandas import DataFrame
+
+from graphdatascience import QueryRunner
+from graphdatascience.call_parameters import CallParameters
+from graphdatascience.session.dbms.protocol_version import ProtocolVersion
+
+
+class ProjectProtocol(ABC):
+    @abstractmethod
+    def project_params(
+        self, graph_name: str, query: str, params: Dict[str, Any], arrow_config: Dict[str, Any]
+    ) -> CallParameters:
+        """Transforms the given parameters into CallParameters that correspond to the right protocol version."""
+        pass
+
+    @abstractmethod
+    def run_projection(
+        self,
+        query_runner: QueryRunner,
+        endpoint: str,
+        params: CallParameters,
+        yields: Optional[List[str]] = None,
+        database: Optional[str] = None,
+        logging: bool = False,
+    ) -> DataFrame:
+        """Returns the procedure name for the corresponding protocol version."""
+        pass
+
+    @staticmethod
+    def select(protocol_version: ProtocolVersion) -> "ProjectProtocol":
+        return {ProtocolVersion.V1: ProjectProtocolV1(), ProtocolVersion.V2: ProjectProtocolV2()}[protocol_version]
+
+
+class ProjectProtocolV1(ProjectProtocol):
+    def project_params(
+        self, graph_name: str, query: str, params: Dict[str, Any], arrow_config: Dict[str, Any]
+    ) -> CallParameters:
+        return CallParameters(
+            graph_name=graph_name,
+            query=query,
+            concurrency=params["concurrency"],
+            undirected_relationship_types=params["undirected_relationship_types"],
+            inverse_indexed_relationship_types=params["inverse_indexed_relationship_types"],
+            arrow_configuration=arrow_config,
+        )
+
+    def run_projection(
+        self,
+        query_runner: QueryRunner,
+        endpoint: str,
+        params: CallParameters,
+        yields: Optional[List[str]] = None,
+        database: Optional[str] = None,
+        logging: bool = False,
+    ) -> DataFrame:
+        versioned_endpoint = ProtocolVersion.V1.versioned_procedure_name(endpoint)
+        return query_runner.call_procedure(versioned_endpoint, params, yields, database, logging, False)
+
+
+class ProjectProtocolV2(ProjectProtocol):
+    def project_params(
+        self, graph_name: str, query: str, params: Dict[str, Any], arrow_config: Dict[str, Any]
+    ) -> CallParameters:
+        return CallParameters(
+            graph_name=graph_name,
+            query=query,
+            arrow_configuration=arrow_config,
+            configuration={
+                "concurrency": params["concurrency"],
+                "undirectedRelationshipTypes": params["undirected_relationship_types"],
+                "inverseIndexedRelationshipTypes": params["inverse_indexed_relationship_types"],
+            },
+        )
+
+    def run_projection(
+        self,
+        query_runner: QueryRunner,
+        endpoint: str,
+        params: CallParameters,
+        yields: Optional[List[str]] = None,
+        database: Optional[str] = None,
+        logging: bool = False,
+    ) -> DataFrame:
+        versioned_endpoint = ProtocolVersion.V2.versioned_procedure_name(endpoint)
+        return query_runner.call_procedure(versioned_endpoint, params, yields, database, logging, False)

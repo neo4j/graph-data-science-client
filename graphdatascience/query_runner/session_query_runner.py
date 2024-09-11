@@ -9,12 +9,13 @@ from pandas import DataFrame
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 
 from ..call_parameters import CallParameters
 from ..session.dbms.protocol_resolver import ProtocolVersionResolver
 from .gds_arrow_client import GdsArrowClient
 from .progress.static_progress_provider import StaticProgressStore
+from .protocol.project_protocols import ProjectProtocol
+from .protocol.write_protocols import WriteProtocol
 from .query_runner import QueryRunner
 
 
@@ -128,70 +129,20 @@ class SessionQueryRunner(QueryRunner):
 
         graph_name = params["graph_name"]
         query = params["query"]
-        concurrency = params["concurrency"]
         arrow_config = params["arrow_configuration"]
-        undirected_relationship_types = params["undirected_relationship_types"]
-        inverse_indexed_relationship_types = params["inverse_indexed_relationship_types"]
 
-        protocol_mapping = {ProtocolVersion.V1: self._project_params_v1, ProtocolVersion.V2: self._project_params_v2}
-        remote_project_proc_params = protocol_mapping[self._resolved_protocol_version](
-            graph_name,
-            query,
-            concurrency,
-            arrow_config,
-            undirected_relationship_types,
-            inverse_indexed_relationship_types,
-        )
-
-        versioned_endpoint = self._resolved_protocol_version.versioned_procedure_name(endpoint)
+        project_protocol = ProjectProtocol.select(self._resolved_protocol_version)
+        project_params = project_protocol.project_params(graph_name, query, params, arrow_config)
 
         try:
             job_id = self._progress_logger.extract_or_create_job_id(params)
             StaticProgressStore.register_task_with_unknown_volume(job_id, "Project from remote database")
 
-            return self._db_query_runner.call_procedure(
-                versioned_endpoint, remote_project_proc_params, yields, database, logging, False
+            return project_protocol.run_projection(
+                self._db_query_runner, endpoint, project_params, yields, database, logging
             )
         except Exception as e:
             GdsArrowClient.handle_flight_error(e)
-
-    @staticmethod
-    def _project_params_v2(
-        graph_name: str,
-        query: str,
-        concurrency: int,
-        arrow_config: Dict[str, Any],
-        undirected_relationship_types: List[str],
-        inverse_indexed_relationship_types: List[str],
-    ) -> CallParameters:
-        return CallParameters(
-            graph_name=graph_name,
-            query=query,
-            arrow_configuration=arrow_config,
-            configuration={
-                "concurrency": concurrency,
-                "undirectedRelationshipTypes": undirected_relationship_types,
-                "inverseIndexedRelationshipTypes": inverse_indexed_relationship_types,
-            },
-        )
-
-    @staticmethod
-    def _project_params_v1(
-        graph_name: str,
-        query: str,
-        concurrency: int,
-        arrow_config: Dict[str, Any],
-        undirected_relationship_types: Optional[List[str]],
-        inverse_indexed_relationship_types: Optional[List[str]],
-    ) -> CallParameters:
-        return CallParameters(
-            graph_name=graph_name,
-            query=query,
-            concurrency=concurrency,
-            undirected_relationship_types=undirected_relationship_types,
-            inverse_indexed_relationship_types=inverse_indexed_relationship_types,
-            arrow_configuration=arrow_config,
-        )
 
     def _remote_write_back(
         self,
@@ -223,18 +174,15 @@ class SessionQueryRunner(QueryRunner):
 
         graph_name = params["graph_name"]
 
-        protocol_mapping = {
-            ProtocolVersion.V1: lambda: self._write_back_params_v1(
-                graph_name, self._db_query_runner.database(), job_id, db_arrow_config
-            ),
-            ProtocolVersion.V2: lambda: self._write_back_params_v2(graph_name, job_id, db_arrow_config, config),
-        }
-        db_write_proc_params = protocol_mapping[self._resolved_protocol_version]()  # type: ignore
+        write_protocol = WriteProtocol.select(self._resolved_protocol_version)
+        write_back_params = write_protocol.write_back_params(
+            graph_name, job_id, config, db_arrow_config, self._db_query_runner.database()
+        )
 
         write_back_start = time.time()
 
         def run_write_back():
-            return self._run_remote_write_back_query(db_write_proc_params, yields)
+            return write_protocol.run_write_back(self._db_query_runner, write_back_params, yields)
 
         if logging:
             database_write_result = self._progress_logger.run_with_progress_logging(run_write_back, job_id, database)
@@ -254,43 +202,6 @@ class SessionQueryRunner(QueryRunner):
             gds_write_result["relationshipsWritten"] = database_write_result["writtenRelationships"]
 
         return gds_write_result
-
-    def _run_remote_write_back_query(self, params: CallParameters, yields: Optional[List[str]] = None) -> DataFrame:
-        return self._db_query_runner.call_procedure(
-            self._resolved_protocol_version.versioned_procedure_name("gds.arrow.write"),
-            params,
-            yields,
-            None,
-            False,
-            False,
-        )
-
-    @staticmethod
-    def _write_back_params_v2(
-        graph_name: str, job_id: str, db_arrow_config: Dict[str, Any], config: Dict[str, Any]
-    ) -> CallParameters:
-        configuration = {}
-
-        if "concurrency" in config:
-            configuration["concurrency"] = config["concurrency"]
-
-        return CallParameters(
-            graphName=graph_name,
-            jobId=job_id,
-            arrowConfiguration=db_arrow_config,
-            configuration=configuration,
-        )
-
-    @staticmethod
-    def _write_back_params_v1(
-        graph_name: str, database_name: str, job_id: str, db_arrow_config: Dict[str, Any]
-    ) -> CallParameters:
-        return CallParameters(
-            graphName=graph_name,
-            databaseName=database_name,
-            jobId=job_id,
-            arrowConfiguration=db_arrow_config,
-        )
 
     def _inject_arrow_config(self, params: Dict[str, Any]) -> None:
         host, port = self._gds_arrow_client.connection_info()
