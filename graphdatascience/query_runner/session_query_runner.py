@@ -175,7 +175,9 @@ class SessionQueryRunner(QueryRunner):
         graph_name = params["graph_name"]
 
         write_protocol = WriteProtocol.select(self._resolved_protocol_version)
-        write_back_params = write_protocol.write_back_params(graph_name, job_id, config, db_arrow_config, database)
+        write_back_params = write_protocol.write_back_params(
+            graph_name, job_id, config, db_arrow_config, self._db_query_runner.database()
+        )
 
         write_back_start = time.time()
 
