@@ -18,10 +18,7 @@ class WriteProtocol(ABC):
         arrow_config: Dict[str, Any],
         database: Optional[str] = None,
     ) -> CallParameters:
-        """
-        Transforms the given parameters into CallParameters that correspond to the
-        right protocol version.
-        """
+        """Transforms the given parameters into CallParameters that correspond to the right protocol version."""
         pass
 
     @abstractmethod
