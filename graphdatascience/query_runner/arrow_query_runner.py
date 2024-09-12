@@ -27,9 +27,9 @@ class ArrowQueryRunner(QueryRunner):
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
         connection_string_override: Optional[str] = None,
-    ) -> QueryRunner:
+    ) -> ArrowQueryRunner:
         if not arrow_info.enabled:
-            return fallback_query_runner
+            raise ValueError("Arrow is not enabled on the server")
 
         gds_arrow_client = GdsArrowClient.create(
             fallback_query_runner,

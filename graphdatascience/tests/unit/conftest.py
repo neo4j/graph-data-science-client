@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from dataclasses import asdict
 from typing import Any, Dict, Generator, List, Optional, Union
 
 import pytest
@@ -19,12 +22,20 @@ from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 # Should mirror the latest GDS server version under development.
 DEFAULT_SERVER_VERSION = ServerVersion(2, 6, 0)
 
+QueryResult = Union[DataFrame, Exception]
+QueryResultMap = Dict[str, QueryResult]  # Substring -> QueryResult
+
 
 class CollectingQueryRunner(QueryRunner):
     def __init__(
-        self, server_version: ServerVersion, result_or_exception: Optional[Union[DataFrame, Exception]] = None
+        self, server_version: ServerVersion, result_mock: Optional[Union[QueryResult, QueryResultMap]] = None
     ) -> None:
-        self._result_or_exception = result_or_exception
+        self._result_map: Dict[str, QueryResult] = {}
+        if isinstance(result_mock, DataFrame) or isinstance(result_mock, Exception):
+            self._result_map = {"": result_mock}
+        elif isinstance(result_mock, dict):
+            self._result_map = result_mock
+
         self.queries: List[str] = []
         self.params: List[Dict[str, Any]] = []
         self._server_version = server_version
@@ -62,15 +73,13 @@ class CollectingQueryRunner(QueryRunner):
 
         self.queries.append(query)
         self.params.append(dict(params.items()))
-        # This "mock" lets us initialize the GDS object without issues.
-        if isinstance(self._result_or_exception, Exception):
-            raise self._result_or_exception
+
+        result = self.get_mock_result(query)
+
+        if isinstance(result, Exception):
+            raise result
         else:
-            return (
-                self._result_or_exception
-                if self._result_or_exception is not None
-                else DataFrame([{"version": str(self._server_version)}])
-            )
+            return result
 
     def server_version(self) -> ServerVersion:
         return self._server_version
@@ -114,7 +123,27 @@ class CollectingQueryRunner(QueryRunner):
         )
 
     def set__mock_result(self, result: DataFrame) -> None:
-        self._result_or_exception = result
+        self._result_map.clear()
+        self._result_map[""] = result
+
+    def add__mock_result(self, query_sub_string: str, result: DataFrame) -> None:
+        self._result_map[query_sub_string] = result
+
+    def get_mock_result(self, query: str) -> QueryResult:
+        # This "mock" lets us initialize the GDS object without issues.
+        if query.startswith("CALL gds.version"):
+            return DataFrame([{"version": str(self._server_version)}])
+
+        matched_results = [
+            (sub_string, result) for sub_string, result in self._result_map.items() if sub_string in query
+        ]
+        if len(matched_results) > 1:
+            raise RuntimeError(
+                f"Could not find exactly one result mocks for the query `{query}`. Matched sub_strings `{[sub_strings for sub_strings, _ in matched_results]}."
+            )
+        if len(matched_results) == 0:
+            return DataFrame()
+        return matched_results[0][1]
 
 
 @pytest.fixture
@@ -124,6 +153,9 @@ def runner(server_version: ServerVersion) -> CollectingQueryRunner:
 
 @pytest.fixture
 def gds(runner: CollectingQueryRunner) -> Generator[GraphDataScience, None, None]:
+    arrow_info = ArrowInfo(listenAddress="foo.bar", enabled=True, running=True, versions=[])
+    runner.add__mock_result("gds.debug.arrow", DataFrame([asdict(arrow_info)]))
+
     gds = GraphDataScience(runner, arrow=False)
     yield gds
 
@@ -133,12 +165,12 @@ def gds(runner: CollectingQueryRunner) -> Generator[GraphDataScience, None, None
 @pytest.fixture
 def aura_gds(runner: CollectingQueryRunner, mocker: MockerFixture) -> Generator[AuraGraphDataScience, None, None]:
     arrow_info = ArrowInfo(listenAddress="foo.bar", enabled=True, running=True, versions=[])
+    runner.add__mock_result("gds.debug.arrow", DataFrame([asdict(arrow_info)]))
 
     mocker.patch("graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner.create", return_value=runner)
     mocker.patch("graphdatascience.query_runner.session_query_runner.SessionQueryRunner.create", return_value=runner)
     mocker.patch("graphdatascience.query_runner.arrow_query_runner.ArrowQueryRunner.create", return_value=runner)
     mocker.patch("graphdatascience.query_runner.gds_arrow_client.GdsArrowClient.create", return_value=None)
-    mocker.patch("graphdatascience.query_runner.arrow_info.ArrowInfo.create", return_value=arrow_info)
 
     aura_gds = AuraGraphDataScience.create(
         gds_session_connection_info=DbmsConnectionInfo("address", "some", "auth"),

@@ -23,9 +23,8 @@ def test_create(runner: CollectingQueryRunner) -> None:
 def test_return_fallback_when_arrow_is_not_enabled(runner: CollectingQueryRunner) -> None:
     arrow_info = ArrowInfo(listenAddress="localhost:1234", enabled=False, running=False, versions=[])
 
-    arrow_runner = ArrowQueryRunner.create(runner, arrow_info)
-
-    assert arrow_runner is runner
+    with pytest.raises(ValueError, match="Arrow is not enabled"):
+        ArrowQueryRunner.create(runner, arrow_info)
 
 
 @pytest.mark.parametrize("server_version", [ServerVersion(2, 6, 0)])

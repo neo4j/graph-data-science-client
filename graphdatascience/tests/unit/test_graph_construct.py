@@ -24,7 +24,8 @@ def test_graph_project_based_construct_without_arrow(runner: CollectingQueryRunn
             "relPropA": [1337.2, 42],
         }
     )
-
+    runner.add__mock_result("gds.graph.exists", DataFrame([{"exists": False}]))
+    runner.add__mock_result("gds.debug.sysInfo", DataFrame([{"gdsEdition": "Unlicensed"}]))
     gds.graph.construct("hello", nodes, relationships, concurrency=2)
 
     expected_node_query = "UNWIND $nodes as node RETURN node[0] as id, node[1] as labels, node[2] as propA"
@@ -86,6 +87,8 @@ def test_multi_df(
         ),
         DataFrame({"sourceNodeId": [2, 3], "targetNodeId": [3, 0], "relationshipType": ["B", "B"]}),
     ]
+    runner.add__mock_result("gds.graph.exists", DataFrame([{"exists": False}]))
+    runner.add__mock_result("gds.debug.sysInfo", DataFrame([{"gdsEdition": "Unlicensed"}]))
 
     gds.graph.construct("hello", nodes, relationships)
 
@@ -170,6 +173,8 @@ def test_graph_aggregation_based_construct_without_arrow(
         }
     )
 
+    runner.add__mock_result("gds.graph.exists", DataFrame([{"exists": False}]))
+    runner.add__mock_result("gds.debug.sysInfo", DataFrame([{"gdsEdition": "Unlicensed"}]))
     gds.graph.construct("hello", nodes, relationships, concurrency=2, undirected_relationship_types=["REL"])
 
     expected_proc_query = (
@@ -230,6 +235,9 @@ def test_graph_aggregation_based_construct_without_arrow_with_overlapping_proper
         }
     )
 
+    runner.add__mock_result("gds.graph.exists", DataFrame([{"exists": False}]))
+    runner.add__mock_result("gds.debug.sysInfo", DataFrame([{"gdsEdition": "Unlicensed"}]))
+
     with pytest.raises(ValueError, match="Expected disjoint column names in node and relationship df but the columns"):
         gds.graph.construct("hello", nodes, relationships, concurrency=2)
 
@@ -238,6 +246,9 @@ def test_graph_aggregation_based_construct_without_arrow_with_overlapping_proper
 def test_graph_construct_validate_df_columns(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     nodes = DataFrame({"nodeIds": [0, 1]})
     relationships = DataFrame({"sourceNodeId": [0, 1], "TargetNodeIds": [1, 0]})
+
+    runner.add__mock_result("gds.graph.exists", DataFrame([{"exists": False}]))
+    runner.add__mock_result("gds.debug.sysInfo", DataFrame([{"gdsEdition": "Unlicensed"}]))
 
     with pytest.raises(ValueError, match=r"(.*'nodeId'.*\s.*'targetNodeId'.*)|(.*'targetNodeId'.*\s.*'nodeId'.*)"):
         gds.graph.construct("hello", nodes, relationships, concurrency=2)
@@ -261,11 +272,17 @@ def test_graph_alpha_construct_backward_compat(runner: CollectingQueryRunner, gd
         }
     )
 
+    runner.add__mock_result("gds.graph.exists", DataFrame([{"exists": False}]))
+    runner.add__mock_result("gds.debug.sysInfo", DataFrame([{"gdsEdition": "Unlicensed"}]))
+
     with pytest.warns(DeprecationWarning):
         gds.alpha.graph.construct("hello", nodes, relationships, concurrency=2)
 
 
 def test_nodes_graph(gds: GraphDataScience, runner: CollectingQueryRunner) -> None:
+    runner.add__mock_result("gds.graph.exists", DataFrame([{"exists": False}]))
+    runner.add__mock_result("gds.debug.sysInfo", DataFrame([{"gdsEdition": "Unlicensed"}]))
+
     gds.graph.construct("hello", nodes=DataFrame({"nodeId": [0, 1]}), concurrency=2)
 
     query = runner.last_query()
