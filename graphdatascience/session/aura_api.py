@@ -51,7 +51,9 @@ class AuraApi:
     def _init_request_session(self, credentials: Tuple[str, str]) -> requests.Session:
         request_session = requests.Session()
         request_session.headers = {"User-agent": f"neo4j-graphdatascience-v{__version__}"}
-        request_session.auth = AuraApi.Auth(oauth_url=f"{self._base_uri}/oauth/token", credentials=credentials)
+        request_session.auth = AuraApi.Auth(
+            oauth_url=f"{self._base_uri}/oauth/token", credentials=credentials, headers=request_session.headers
+        )
         # dont retry on POST as its not idempotent
         request_session.mount(
             "https://",
@@ -329,11 +331,28 @@ class AuraApi:
             def should_refresh(self) -> bool:
                 return self.refresh_at <= int(time.time())
 
-        def __init__(self, oauth_url: str, credentials: Tuple[str, str]) -> None:
+        def __init__(self, oauth_url: str, credentials: Tuple[str, str], headers: Dict[str, Any]) -> None:
             self._token: Optional[AuraApi.Auth.Token] = None
             self._logger = logging.getLogger()
             self._oauth_url = oauth_url
             self._credentials = credentials
+            self._request_session = self._init_request_session(headers)
+
+        def _init_request_session(self, headers: Dict[str, Any]) -> requests.Session:
+            request_session = requests.Session()
+            request_session.mount(
+                "https://",
+                HTTPAdapter(
+                    max_retries=Retry(
+                        allowed_methods=["POST"],  # auth POST request is okay to retry
+                        total=5,
+                        status_forcelist=[429, 500, 502, 503, 504],
+                        backoff_factor=0.1,
+                    )
+                ),
+            )
+            request_session.headers = headers
+            return request_session
 
         def __call__(self, r: requests.PreparedRequest) -> requests.PreparedRequest:
             r.headers["Authorization"] = f"Bearer {self._auth_token()}"
@@ -351,7 +370,9 @@ class AuraApi:
 
             self._logger.debug("Updating oauth token")
 
-            resp = requests.post(self._oauth_url, data=data, auth=(self._credentials[0], self._credentials[1]))
+            resp = self._request_session.post(
+                self._oauth_url, data=data, auth=(self._credentials[0], self._credentials[1])
+            )
 
             if resp.status_code >= 400:
                 raise AuraApiError(
