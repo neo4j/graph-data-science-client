@@ -20,5 +20,6 @@
 ## Improvements
 
 * The database connection is now validated before a session is created.
+* Retry authentication requests.
 
 ## Other changes
