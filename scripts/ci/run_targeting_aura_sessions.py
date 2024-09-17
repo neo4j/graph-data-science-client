@@ -24,13 +24,14 @@ def main() -> None:
     instance_id = create_result["id"]
     logging.info(f"Creation of database with id '{instance_id}'")
 
-    # Teardown instance on SIGINT
-    def handle_sigint(sig, frame):
-        logging.info("Received SIGINT, tearing down instance")
+    # Teardown instance on SIGNAL
+    def handle_signal(sig, frame):
+        logging.info("Received SIGNAL, tearing down instance")
         aura_api.teardown_instance(instance_id)
         sys.exit(1)
 
-    signal.signal(signal.SIGINT, handle_sigint)
+    signal.signal(signal.SIGINT, handle_signal)
+    signal.signal(signal.SIGTERM, handle_signal)
 
     try:
         aura_api.check_running(instance_id)

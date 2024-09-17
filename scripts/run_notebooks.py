@@ -32,12 +32,13 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
     def preprocess_cell(self, cell: Any, resources: Any, index: int) -> None:
         if index == 0:
 
-            def handle_sigint(sig, frame):
-                print("Received SIGINT, running tear down cells")
+            def handle_signal(sig, frame):
+                print("Received SIGNAL, running tear down cells")
                 self.teardown(resources)
                 sys.exit(1)
 
-            signal.signal(signal.SIGINT, handle_sigint)
+            signal.signal(signal.SIGINT, handle_signal)
+            signal.signal(signal.SIGTERM, handle_signal)
 
         try:
             if not self._skip_rest:
