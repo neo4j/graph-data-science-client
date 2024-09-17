@@ -237,7 +237,7 @@ class UserAgentMiddleware(ClientMiddleware):
         self._useragent = useragent
 
     def sending_headers(self) -> Dict[str, str]:
-        return {"User-Agent": self._useragent}
+        return {"gds-user-agent": self._useragent}
 
     def received_headers(self, headers: Dict[str, Any]) -> None:
         pass
