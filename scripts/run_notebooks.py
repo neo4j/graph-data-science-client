@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import signal
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -29,6 +30,14 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
 
     # run the cell of a notebook
     def preprocess_cell(self, cell: Any, resources: Any, index: int) -> None:
+        if index == 0:
+            def handle_sigint(sig, frame):
+                print("Received SIGINT, running tear down cells")
+                self.teardown(resources)
+                sys.exit(1)
+
+            signal.signal(signal.SIGINT, handle_sigint)
+
         try:
             if not self._skip_rest:
                 super().preprocess_cell(cell, resources, index)  # type: ignore
@@ -40,12 +49,15 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
 
             if self.tear_down_cells:
                 print(f"Running tear down cells due to error in notebook execution: {e}")
-                for td_cell, td_idx in self.tear_down_cells:
-                    try:
-                        super().preprocess_cell(td_cell, resources, td_idx)  # type: ignore
-                    except CellExecutionError as td_e:
-                        print(f"Error running tear down cell {td_idx}: {td_e}")
+                self.teardown(resources)
             raise e
+
+    def teardown(self, resources) -> None:
+        for td_cell, td_idx in self.tear_down_cells:
+            try:
+                super().preprocess_cell(td_cell, resources, td_idx)  # type: ignore
+            except CellExecutionError as td_e:
+                print(f"Error running tear down cell {td_idx}: {td_e}")
 
 
 class GdsTearDownCollector(ExecutePreprocessor):

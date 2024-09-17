@@ -3,6 +3,7 @@
 import logging
 import os
 import random as rd
+import signal
 import sys
 
 from aura_api_ci import AuraApiCI
@@ -22,6 +23,14 @@ def main() -> None:
     create_result = aura_api.create_instance(instance_name, memory="1GB", type="professional-db")
     instance_id = create_result["id"]
     logging.info(f"Creation of database with id '{instance_id}'")
+
+    # Teardown instance on SIGINT
+    def handle_sigint(sig, frame):
+        logging.info("Received SIGINT, tearing down instance")
+        aura_api.teardown_instance(instance_id)
+        sys.exit(1)
+
+    signal.signal(signal.SIGINT, handle_sigint)
 
     try:
         aura_api.check_running(instance_id)
