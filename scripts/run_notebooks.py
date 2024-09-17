@@ -31,6 +31,7 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
     # run the cell of a notebook
     def preprocess_cell(self, cell: Any, resources: Any, index: int) -> None:
         if index == 0:
+
             def handle_sigint(sig, frame):
                 print("Received SIGINT, running tear down cells")
                 self.teardown(resources)
