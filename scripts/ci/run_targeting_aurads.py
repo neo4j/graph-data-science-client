@@ -1,6 +1,7 @@
 import logging
 import os
 import random as rd
+import signal
 import sys
 
 from aura_api_ci import AuraApiCI
@@ -28,7 +29,7 @@ def run_notebooks(uri: str, username: str, password: str) -> None:
 def main() -> None:
     client_id = os.environ["AURA_API_CLIENT_ID"]
     client_secret = os.environ["AURA_API_CLIENT_SECRET"]
-    tenant_id = os.environ.get("TENANT_ID")
+    tenant_id = os.environ.get("AURA_API_TENANT_ID")
     aura_api = AuraApiCI(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
 
     MAX_INT = 1000000
@@ -37,6 +38,14 @@ def main() -> None:
     create_result = aura_api.create_ds_instance(instance_name)
     instance_id = create_result["id"]
     logging.info("Creation of database accepted")
+
+    def handle_signal(sig, frame):
+        logging.info("Received SIGNAL, tearing down instance")
+        aura_api.teardown_instance(instance_id)
+        sys.exit(1)
+
+    signal.signal(signal.SIGINT, handle_signal)
+    signal.signal(signal.SIGTERM, handle_signal)
 
     try:
         aura_api.check_running(instance_id)

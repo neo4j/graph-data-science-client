@@ -81,8 +81,6 @@ class AuraApiCI:
             if should_retry:
                 logging.debug(f"Error code: {response.status_code} - Retrying in {wait_time} s")
 
-        response.raise_for_status()
-
         return response.json()["data"]  # type: ignore
 
     def check_running(self, db_id: str) -> None:
@@ -115,7 +113,7 @@ class AuraApiCI:
 
         response.raise_for_status()
 
-    def teardown_instance(self, db_id: str) -> None:
+    def teardown_instance(self, db_id: str) -> bool:
         TEARDOWN_MAX_WAIT_TIME = 10
 
         should_retry = True
@@ -138,7 +136,12 @@ class AuraApiCI:
             if should_retry:
                 logging.debug(f"Status code: {response.status_code} - Retrying in {wait_time} s")
 
+        if response.status_code == 404:
+            return False
+
         response.raise_for_status()
+
+        return True
 
     def get_tenant_id(self) -> str:
         if self._tenant_id:
