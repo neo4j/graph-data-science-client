@@ -44,13 +44,25 @@ def test_remote_projection(gds_with_cloud_setup: AuraGraphDataScience) -> None:
 
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
-def test_remote_projection_custom_database_name(gds_with_cloud_setup: AuraGraphDataScience) -> None:
+def test_remote_projection_and_writeback_custom_database_name(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     gds_with_cloud_setup.run_cypher("CREATE DATABASE test1234 IF NOT EXISTS")
     gds_with_cloud_setup.set_database("test1234")
-    G, result = gds_with_cloud_setup.graph.project(GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
+    gds_with_cloud_setup.run_cypher("CREATE ()-->()")
+    G, projection_result = gds_with_cloud_setup.graph.project(GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
 
     assert G.name() == GRAPH_NAME
-    assert result["nodeCount"] == 3
+    assert projection_result["nodeCount"] == 2
+    assert projection_result["relationshipCount"] == 1
+
+    write_result = gds_with_cloud_setup.wcc.write(G, writeProperty="wcc")
+
+    assert write_result["nodePropertiesWritten"] == 2
+    db_state = gds_with_cloud_setup.run_cypher("MATCH (n WHERE n.wcc IS NOT NULL) RETURN count(*) AS c")
+    assert db_state["c"] == 2
+    gds_with_cloud_setup.set_database("neo4j")
+    other_db_state = gds_with_cloud_setup.run_cypher("MATCH (n WHERE n.wcc IS NOT NULL) RETURN count(*) AS c")
+    assert other_db_state["c"] == 0
+
 
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
