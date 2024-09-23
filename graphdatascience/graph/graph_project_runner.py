@@ -12,7 +12,7 @@ from .graph_type_check import from_graph_type_check
 
 
 class GraphProjectRunner(IllegalAttrChecker):
-    def __call__(self, graph_name: str, node_spec: Any, relationship_spec: Any, **config: Any) -> GraphCreateResult:
+    def __call__(self, graph_name: str, node_spec: Any, relationship_spec: Any, logging=True, **config: Any) -> GraphCreateResult:
         params = CallParameters(
             graph_name=graph_name,
             node_spec=node_spec,
@@ -22,7 +22,7 @@ class GraphProjectRunner(IllegalAttrChecker):
         result = self._query_runner.call_procedure(
             endpoint=self._namespace,
             params=params,
-            logging=True,
+            logging=logging,
         ).squeeze()
 
         return GraphCreateResult(Graph(graph_name, self._query_runner), result)
