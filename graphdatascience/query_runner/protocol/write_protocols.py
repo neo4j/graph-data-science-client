@@ -1,4 +1,6 @@
+import time
 from abc import ABC, abstractmethod
+from enum import Enum, auto
 from typing import Any, Dict, List, Optional
 
 from pandas import DataFrame
@@ -30,7 +32,11 @@ class WriteProtocol(ABC):
 
     @staticmethod
     def select(protocol_version: ProtocolVersion) -> "WriteProtocol":
-        return {ProtocolVersion.V1: RemoteWriteBackV1(), ProtocolVersion.V2: RemoteWriteBackV2()}[protocol_version]
+        return {
+            ProtocolVersion.V1: RemoteWriteBackV1(),
+            ProtocolVersion.V2: RemoteWriteBackV2(),
+            ProtocolVersion.V3: RemoteWriteBackV3()
+        }[protocol_version]
 
 
 class RemoteWriteBackV1(WriteProtocol):
@@ -94,3 +100,36 @@ class RemoteWriteBackV2(WriteProtocol):
             False,
             False,
         )
+
+
+class Status(Enum):
+    RUNNING = auto()
+    COMPLETED = auto()
+
+
+class RemoteWriteBackV3(WriteProtocol):
+
+    def write_back_params(self, graph_name: str, job_id: str, config: Dict[str, Any], arrow_config: Dict[str, Any],
+                          database: Optional[str] = None) -> CallParameters:
+        return RemoteWriteBackV2().write_back_params(graph_name, job_id, config, arrow_config, database)
+
+    def run_write_back(self, query_runner: QueryRunner, parameters: CallParameters,
+                       yields: Optional[List[str]]) -> DataFrame:
+        def write_fn() -> DataFrame:
+            return query_runner.call_procedure(
+                ProtocolVersion.V3.versioned_procedure_name("gds.arrow.write"),
+                parameters,
+                yields,
+                None,
+                False,
+                False,
+            )
+
+        while True:
+            result = write_fn()
+            if result["status"] == Status.COMPLETED.name:
+                return result
+
+            # wait for 10 ms, then retry
+            time.sleep(0.1)
+
