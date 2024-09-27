@@ -21,7 +21,7 @@ def test_extracts_parameters_projection_v1() -> None:
     db_query_runner = CollectingQueryRunner(version, result_mock=DataFrame([{"version": "v1"}]))
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = SessionQueryRunner.create(gds_query_runner, db_query_runner, FakeArrowClient())  # type: ignore
+    qr = SessionQueryRunner.create(gds_query_runner, db_query_runner, FakeArrowClient(), True)  # type: ignore
 
     qr.call_procedure(
         endpoint="gds.arrow.project",
@@ -68,6 +68,7 @@ def test_extracts_parameters_projection_v2() -> None:
         gds_query_runner,
         db_query_runner,
         FakeArrowClient(),  # type: ignore
+        True,
     )
 
     qr.call_procedure(
@@ -112,7 +113,7 @@ def test_extracts_parameters_algo_write_v1() -> None:
     db_query_runner = CollectingQueryRunner(version, result_mock=DataFrame([{"version": "v1"}]))
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = SessionQueryRunner.create(gds_query_runner, db_query_runner, FakeArrowClient())  # type: ignore
+    qr = SessionQueryRunner.create(gds_query_runner, db_query_runner, FakeArrowClient(), True)  # type: ignore
 
     qr.call_procedure(endpoint="gds.degree.write", params=CallParameters(graph_name="g", config={"jobId": "my-job"}))
 
@@ -141,6 +142,7 @@ def test_extracts_parameters_algo_write_v2() -> None:
         gds_query_runner,
         db_query_runner,
         FakeArrowClient(),  # type: ignore
+        True,
     )
 
     qr.call_procedure(
@@ -169,7 +171,7 @@ def test_arrow_and_write_configuration() -> None:
     db_query_runner = CollectingQueryRunner(version, result_mock=DataFrame([{"version": "v1"}]))
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = SessionQueryRunner.create(gds_query_runner, db_query_runner, FakeArrowClient())  # type: ignore
+    qr = SessionQueryRunner.create(gds_query_runner, db_query_runner, FakeArrowClient(), True)  # type: ignore
 
     qr.call_procedure(
         endpoint="gds.degree.write",
@@ -206,7 +208,7 @@ def test_arrow_and_write_configuration_graph_write() -> None:
     db_query_runner = CollectingQueryRunner(version, result_mock=DataFrame([{"version": "v1"}]))
     gds_query_runner = CollectingQueryRunner(version)
     gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
-    qr = SessionQueryRunner.create(gds_query_runner, db_query_runner, FakeArrowClient())  # type: ignore
+    qr = SessionQueryRunner.create(gds_query_runner, db_query_runner, FakeArrowClient(), True)  # type: ignore
 
     qr.call_procedure(
         endpoint="gds.graph.nodeProperties.write",
