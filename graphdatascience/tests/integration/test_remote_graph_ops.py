@@ -48,7 +48,7 @@ def test_remote_projection(gds_with_cloud_setup: AuraGraphDataScience) -> None:
 def test_remote_projection_and_writeback_custom_database_name(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     gds_with_cloud_setup.run_cypher("CREATE DATABASE test1234 IF NOT EXISTS")
     gds_with_cloud_setup.set_database("test1234")
-    gds_with_cloud_setup.run_cypher("CREATE ()-->()")
+    gds_with_cloud_setup.run_cypher("CREATE ()-[:T]->()")
     G, projection_result = gds_with_cloud_setup.graph.project(
         GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)"
     )
