@@ -64,6 +64,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             GDS Arrow Flight server.
         bookmarks : Optional[Any], default None
             The Neo4j bookmarks to require a certain state before the next query gets executed.
+        show_progress : bool, default True
+            A flag to indicate whether to show progress bars for running procedures.
         """
         if aura_ds:
             GraphDataScience._validate_endpoint(endpoint)

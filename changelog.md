@@ -13,6 +13,7 @@
 * Add `ttl` parameter to `GdsSessions.get_or_create` to control if and when an unused session will be automatically deleted.
 * Add concurrency control for remote write-back procedures using the `concurrency` parameter.
 * Add progress logging for remote write-back when using GDS Sessions.
+* Added a flag to GraphDataScience and AuraGraphDataScience classes to disable displaying progress bars when running procedures.
 
 ## Bug fixes
 
