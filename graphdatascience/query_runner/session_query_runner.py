@@ -210,10 +210,7 @@ class SessionQueryRunner(QueryRunner):
         return gds_write_result
 
     def _resolve_show_progress(self, show_progress: bool) -> bool:
-        if self._show_progress is False:
-            return False
-
-        return show_progress
+        return self._show_progress and show_progress
 
     def _inject_arrow_config(self, params: Dict[str, Any]) -> None:
         host, port = self._gds_arrow_client.connection_info()

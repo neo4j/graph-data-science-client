@@ -187,10 +187,7 @@ class Neo4jQueryRunner(QueryRunner):
             return run_cypher_query()
 
     def _resolve_show_progress(self, show_progress: bool) -> bool:
-        if self._show_progress is False:
-            return False
-
-        return show_progress
+        return self._show_progress and show_progress
 
     def server_version(self) -> ServerVersion:
         if self._server_version:
