@@ -76,5 +76,9 @@ class QueryRunner(ABC):
     def last_bookmarks(self) -> Optional[Any]:
         pass
 
+    @abstractmethod
+    def set_show_progress(self, show_progress: bool) -> None:
+        pass
+
     def set_server_version(self, _: ServerVersion) -> None:
         pass

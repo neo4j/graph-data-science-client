@@ -33,6 +33,7 @@ class Neo4jQueryRunner(QueryRunner):
         aura_ds: bool = False,
         database: Optional[str] = None,
         bookmarks: Optional[Any] = None,
+        show_progress: bool = True,
     ) -> Neo4jQueryRunner:
         if isinstance(endpoint, str):
             config: Dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
@@ -51,7 +52,9 @@ class Neo4jQueryRunner(QueryRunner):
             )
 
         elif isinstance(endpoint, neo4j.Driver):
-            query_runner = Neo4jQueryRunner(endpoint, auto_close=False, bookmarks=bookmarks, database=database)
+            query_runner = Neo4jQueryRunner(
+                endpoint, auto_close=False, bookmarks=bookmarks, database=database, show_progress=show_progress
+            )
 
         else:
             raise ValueError(f"Invalid endpoint type: {type(endpoint)}")
@@ -80,6 +83,7 @@ class Neo4jQueryRunner(QueryRunner):
         database: Optional[str] = neo4j.DEFAULT_DATABASE,
         auto_close: bool = False,
         bookmarks: Optional[Any] = None,
+        show_progress: bool = True,
     ):
         self._driver = driver
         self._config = config
@@ -89,6 +93,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._bookmarks = bookmarks
         self._last_bookmarks: Optional[Any] = None
         self._server_version = None
+        self._show_progress = show_progress
         self._progress_logger = QueryProgressLogger(
             self.__run_cypher_simplified_for_query_progress_logger, self.server_version
         )
@@ -175,11 +180,14 @@ class Neo4jQueryRunner(QueryRunner):
         def run_cypher_query() -> DataFrame:
             return self.run_cypher(query, params, database, custom_error)
 
-        if logging:
+        if self._resolve_show_progress(logging):
             job_id = self._progress_logger.extract_or_create_job_id(params)
             return self._progress_logger.run_with_progress_logging(run_cypher_query, job_id, database)
         else:
             return run_cypher_query()
+
+    def _resolve_show_progress(self, show_progress: bool) -> bool:
+        return self._show_progress and show_progress
 
     def server_version(self) -> ServerVersion:
         if self._server_version:
@@ -255,6 +263,9 @@ class Neo4jQueryRunner(QueryRunner):
         return CypherGraphConstructor(
             self, graph_name, concurrency, undirected_relationship_types, self.server_version()
         )
+
+    def set_show_progress(self, show_progress: bool) -> None:
+        self._show_progress = show_progress
 
     @staticmethod
     def handle_driver_exception(session: neo4j.Session, e: Exception) -> None:

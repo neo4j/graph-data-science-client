@@ -115,6 +115,9 @@ class CollectingQueryRunner(QueryRunner):
     def last_bookmarks(self) -> Optional[Any]:
         return None
 
+    def set_show_progress(self, show_progress: bool) -> None:
+        pass
+
     def create_graph_constructor(
         self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
     ) -> GraphConstructor:

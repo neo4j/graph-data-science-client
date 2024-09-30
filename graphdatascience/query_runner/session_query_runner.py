@@ -24,20 +24,22 @@ class SessionQueryRunner(QueryRunner):
 
     @staticmethod
     def create(
-        gds_query_runner: QueryRunner, db_query_runner: QueryRunner, arrow_client: GdsArrowClient
+        gds_query_runner: QueryRunner, db_query_runner: QueryRunner, arrow_client: GdsArrowClient, show_progress: bool
     ) -> SessionQueryRunner:
-        return SessionQueryRunner(gds_query_runner, db_query_runner, arrow_client)
+        return SessionQueryRunner(gds_query_runner, db_query_runner, arrow_client, show_progress)
 
     def __init__(
         self,
         gds_query_runner: QueryRunner,
         db_query_runner: QueryRunner,
         arrow_client: GdsArrowClient,
+        show_progress: bool,
     ):
         self._gds_query_runner = gds_query_runner
         self._db_query_runner = db_query_runner
         self._gds_arrow_client = arrow_client
         self._resolved_protocol_version = ProtocolVersionResolver(db_query_runner).resolve()
+        self._show_progress = show_progress
         self._progress_logger = QueryProgressLogger(
             lambda query, database: self._gds_query_runner.run_cypher(query=query, database=database),
             self._gds_query_runner.server_version,
@@ -112,6 +114,10 @@ class SessionQueryRunner(QueryRunner):
     ) -> GraphConstructor:
         return self._gds_query_runner.create_graph_constructor(graph_name, concurrency, undirected_relationship_types)
 
+    def set_show_progress(self, show_progress: bool) -> None:
+        self._show_progress = show_progress
+        self._gds_query_runner.set_show_progress(show_progress)
+
     def close(self) -> None:
         self._gds_arrow_client.close()
         self._gds_query_runner.close()
@@ -184,7 +190,7 @@ class SessionQueryRunner(QueryRunner):
         def run_write_back():
             return write_protocol.run_write_back(self._db_query_runner, write_back_params, yields)
 
-        if logging:
+        if self._resolve_show_progress(logging):
             database_write_result = self._progress_logger.run_with_progress_logging(run_write_back, job_id, database)
         else:
             database_write_result = run_write_back()
@@ -202,6 +208,9 @@ class SessionQueryRunner(QueryRunner):
             gds_write_result["relationshipsWritten"] = database_write_result["writtenRelationships"]
 
         return gds_write_result
+
+    def _resolve_show_progress(self, show_progress: bool) -> bool:
+        return self._show_progress and show_progress
 
     def _inject_arrow_config(self, params: Dict[str, Any]) -> None:
         host, port = self._gds_arrow_client.connection_info()

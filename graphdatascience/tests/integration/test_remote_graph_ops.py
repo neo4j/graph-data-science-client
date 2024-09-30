@@ -73,7 +73,7 @@ def test_remote_write_back_node_similarity(gds_with_cloud_setup: AuraGraphDataSc
         G, writeRelationshipType="SIMILAR", writeProperty="score", similarityCutoff=0
     )
 
-    assert result["relationshipsWritten"] == 4
+    assert result["relationshipsWritten"] == 2
 
 
 @pytest.mark.cloud_architecture

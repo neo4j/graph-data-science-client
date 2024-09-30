@@ -34,6 +34,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
+        show_progress: bool = True,
     ):
         """
         Construct a new GraphDataScience object.
@@ -63,6 +64,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             GDS Arrow Flight server.
         bookmarks : Optional[Any], default None
             The Neo4j bookmarks to require a certain state before the next query gets executed.
+        show_progress : bool, default True
+            A flag to indicate whether to show progress bars for running procedures.
         """
         if aura_ds:
             GraphDataScience._validate_endpoint(endpoint)
@@ -70,7 +73,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         if isinstance(endpoint, QueryRunner):
             self._query_runner = endpoint
         else:
-            self._query_runner = Neo4jQueryRunner.create(endpoint, auth, aura_ds, database, bookmarks)
+            self._query_runner = Neo4jQueryRunner.create(endpoint, auth, aura_ds, database, bookmarks, show_progress)
 
         self._server_version = self._query_runner.server_version()
 
@@ -86,6 +89,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                 None if arrow is True else arrow,
             )
 
+        self._query_runner.set_show_progress(show_progress)
         super().__init__(self._query_runner, namespace="gds", server_version=self._server_version)
 
     @property
@@ -128,6 +132,17 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             The Neo4j bookmarks defining the required state
         """
         self._query_runner.set_bookmarks(bookmarks)
+
+    def set_show_progress(self, show_progress: bool) -> None:
+        """
+        Set whether to show progress for running procedures.
+
+        Parameters
+        ----------
+        show_progress: bool
+            Whether to show progress for procedures.
+        """
+        self._query_runner.set_show_progress(show_progress)
 
     def database(self) -> Optional[str]:
         """

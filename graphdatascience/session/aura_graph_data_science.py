@@ -35,6 +35,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_disable_server_verification: bool = False,
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
+        show_progress: bool = True,
     ):
         # we need to explicitly set this as the default value is None
         # database in the session is always neo4j
@@ -43,6 +44,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             auth=gds_session_connection_info.auth(),
             aura_ds=True,
             database="neo4j",
+            show_progress=show_progress,
         )
 
         arrow_info = ArrowInfo.create(session_bolt_query_runner)
@@ -66,14 +68,12 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         )
 
         db_bolt_query_runner = Neo4jQueryRunner.create(
-            db_connection_info.uri,
-            db_connection_info.auth(),
-            aura_ds=True,
+            db_connection_info.uri, db_connection_info.auth(), aura_ds=True, show_progress=False
         )
         db_bolt_query_runner.set_bookmarks(bookmarks)
 
         session_query_runner = SessionQueryRunner.create(
-            session_arrow_query_runner, db_bolt_query_runner, session_arrow_client
+            session_arrow_query_runner, db_bolt_query_runner, session_arrow_client, show_progress
         )
 
         gds_version = session_bolt_query_runner.server_version()
@@ -158,6 +158,17 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             The Neo4j bookmarks defining the required state
         """
         self._query_runner.set_bookmarks(bookmarks)
+
+    def set_show_progress(self, show_progress: bool) -> None:
+        """
+        Set whether to show progress for running procedures.
+
+        Parameters
+        ----------
+        show_progress: bool
+            Whether to show progress for procedures.
+        """
+        self._query_runner.set_show_progress(show_progress)
 
     def database(self) -> Optional[str]:
         """

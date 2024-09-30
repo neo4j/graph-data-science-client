@@ -236,6 +236,9 @@ class ArrowQueryRunner(QueryRunner):
     def fallback_query_runner(self) -> QueryRunner:
         return self._fallback_query_runner
 
+    def set_show_progress(self, show_progress: bool) -> None:
+        self._fallback_query_runner.set_show_progress(show_progress)
+
     def create_graph_constructor(
         self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
     ) -> GraphConstructor:
