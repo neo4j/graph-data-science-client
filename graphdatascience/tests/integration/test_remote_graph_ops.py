@@ -45,6 +45,33 @@ def test_remote_projection(gds_with_cloud_setup: AuraGraphDataScience) -> None:
 
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
+def test_remote_projection_and_writeback_custom_database_name(gds_with_cloud_setup: AuraGraphDataScience) -> None:
+    gds_with_cloud_setup.run_cypher("CREATE DATABASE test1234 IF NOT EXISTS")
+    gds_with_cloud_setup.set_database("test1234")
+    gds_with_cloud_setup.run_cypher("CREATE ()-[:T]->()")
+    G, projection_result = gds_with_cloud_setup.graph.project(
+        GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)"
+    )
+
+    assert G.name() == GRAPH_NAME
+    assert projection_result["nodeCount"] == 2
+    assert projection_result["relationshipCount"] == 1
+
+    write_result = gds_with_cloud_setup.wcc.write(G, writeProperty="wcc")
+
+    assert write_result["nodePropertiesWritten"] == 2
+    count_wcc_nodes_query = "MATCH (n WHERE n.wcc IS NOT NULL) RETURN count(*) AS c"
+    nodes_with_wcc_custom_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
+    assert nodes_with_wcc_custom_db == 2
+    gds_with_cloud_setup.set_database("neo4j")
+    # we get a warning because property wcc doesn't exist in the database -- which is good!
+    with pytest.warns(RuntimeWarning):
+        nodes_with_wcc_default_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
+        assert nodes_with_wcc_default_db == 0
+
+
+@pytest.mark.cloud_architecture
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_projection_with_small_batch_size(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(
         GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)", batch_size=10

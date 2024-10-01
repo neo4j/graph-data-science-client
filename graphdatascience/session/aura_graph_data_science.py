@@ -68,7 +68,11 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         )
 
         db_bolt_query_runner = Neo4jQueryRunner.create(
-            db_connection_info.uri, db_connection_info.auth(), aura_ds=True, show_progress=False
+            db_connection_info.uri,
+            db_connection_info.auth(),
+            aura_ds=True,
+            show_progress=False,
+            database=db_connection_info.database,
         )
         db_bolt_query_runner.set_bookmarks(bookmarks)
 
