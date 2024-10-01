@@ -60,11 +60,12 @@ def test_remote_projection_and_writeback_custom_database_name(gds_with_cloud_set
     write_result = gds_with_cloud_setup.wcc.write(G, writeProperty="wcc")
 
     assert write_result["nodePropertiesWritten"] == 2
-    db_state = gds_with_cloud_setup.run_cypher("MATCH (n WHERE n.wcc IS NOT NULL) RETURN count(*) AS c").squeeze()
-    assert db_state["c"] == 2
+    count_wcc_nodes_query = "MATCH (n WHERE n.wcc IS NOT NULL) RETURN count(*) AS c"
+    nodes_with_wcc_custom_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
+    assert nodes_with_wcc_custom_db == 2
     gds_with_cloud_setup.set_database("neo4j")
-    other_db_state = gds_with_cloud_setup.run_cypher("MATCH (n WHERE n.wcc IS NOT NULL) RETURN count(*) AS c").squeeze()
-    assert other_db_state["c"] == 0
+    nodes_with_wcc_default_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
+    assert nodes_with_wcc_default_db["c"] == 0
 
 
 @pytest.mark.cloud_architecture
