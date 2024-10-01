@@ -64,8 +64,10 @@ def test_remote_projection_and_writeback_custom_database_name(gds_with_cloud_set
     nodes_with_wcc_custom_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
     assert nodes_with_wcc_custom_db == 2
     gds_with_cloud_setup.set_database("neo4j")
-    nodes_with_wcc_default_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
-    assert nodes_with_wcc_default_db["c"] == 0
+    # we get a warning because property wcc doesn't exist in the database -- which is good!
+    with pytest.warns(RuntimeWarning):
+        nodes_with_wcc_default_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
+        assert nodes_with_wcc_default_db["c"] == 0
 
 
 @pytest.mark.cloud_architecture
