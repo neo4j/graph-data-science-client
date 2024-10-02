@@ -83,8 +83,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             warnings.warn(
                 DeprecationWarning(
                     f"Client does not support the given server version `{self._server_version}`."
-                    + "We recommend to either update the GDS server version or use a compatible version of the `graphdatascience` package."
-                    + "Please refer to the compatibility matrix at https://neo4j.com/docs/graph-data-science-client/current/installation/#python-client-system-requirements."
+                    + " We recommend to either update the GDS server version or use a compatible version of the `graphdatascience` package."
+                    + " Please refer to the compatibility matrix at https://neo4j.com/docs/graph-data-science-client/current/installation/#python-client-system-requirements."
                 )
             )
 

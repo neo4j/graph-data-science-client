@@ -2,12 +2,10 @@ import pytest
 from pandas import DataFrame
 
 from graphdatascience.graph_data_science import GraphDataScience
-from graphdatascience.server_version.server_version import ServerVersion
 
 from .conftest import CollectingQueryRunner
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
 def test_graph_project_based_construct_without_arrow(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     nodes = DataFrame(
         {
@@ -28,54 +26,22 @@ def test_graph_project_based_construct_without_arrow(runner: CollectingQueryRunn
     runner.add__mock_result("gds.debug.sysInfo", DataFrame([{"gdsEdition": "Unlicensed"}]))
     gds.graph.construct("hello", nodes, relationships, concurrency=2)
 
-    expected_node_query = "UNWIND $nodes as node RETURN node[0] as id, node[1] as labels, node[2] as propA"
-    expected_relationship_query = (
-        "UNWIND $relationships as relationship RETURN "
-        "relationship[0] as source, relationship[1] as target, "
-        "relationship[2] as type, relationship[3] as relPropA"
-    )
-    expected_proc_query = (
-        "CALL gds.graph.project.cypher("
-        "$graph_name, "
-        "$node_query, "
-        "$relationship_query, "
-        "{readConcurrency: $read_concurrency, parameters: { nodes: $nodes, relationships: $relationships }})"
+    expected_query = (
+        "UNWIND $data AS data WITH data, "
+        "CASE WHEN data[6] THEN data[5] ELSE null END AS sourceNodeLabels, "
+        "CASE WHEN data[3] THEN data[2] ELSE null END AS relationshipType, "
+        "CASE WHEN data[10] THEN data[9] ELSE null END AS targetNodeId, "
+        "\nCASE WHEN data[8] THEN data[7] ELSE null END AS sourceNodeProperties, "
+        "\nCASE WHEN data[1] THEN data[0] ELSE null END AS relationshipProperties "
+        "RETURN gds.graph.project($graph_name, data[4], targetNodeId, {sourceNodeLabels: sourceNodeLabels, targetNodeLabels: NULL, sourceNodeProperties: sourceNodeProperties, targetNodeProperties: NULL, relationshipType: relationshipType, relationshipProperties: relationshipProperties}, $configuration)"
     )
 
-    assert runner.last_query() == expected_proc_query
-    assert runner.last_params() == {
-        "nodes": nodes.values.tolist(),
-        "relationships": relationships.values.tolist(),
-        "read_concurrency": 2,
-        "graph_name": "hello",
-        "node_query": expected_node_query,
-        "relationship_query": expected_relationship_query,
-    }
+    assert runner.last_query() == expected_query
 
 
-@pytest.mark.parametrize(
-    "server_version, tier, target_node_labels, target_node_properties, properties_key, in_between_configs",
-    [
-        (ServerVersion(2, 3, 0), ".alpha", "", "", "properties", "}, {"),
-        (
-            ServerVersion(2, 4, 0),
-            "",
-            ", targetNodeLabels: NULL",
-            ", targetNodeProperties: NULL",
-            "relationshipProperties",
-            ", ",
-        ),
-    ],
-    ids=["2.3.0 - Alpha Cypher Aggregation", "2.4.0 - New Cypher projection"],
-)
 def test_multi_df(
     runner: CollectingQueryRunner,
     gds: GraphDataScience,
-    tier: str,
-    target_node_labels: str,
-    target_node_properties: str,
-    properties_key: str,
-    in_between_configs: str,
 ) -> None:
     nodes = [
         DataFrame({"nodeId": [0, 1], "labels": ["a", "a"], "property": [6.0, 7.0]}),
@@ -99,13 +65,12 @@ def test_multi_df(
         " CASE WHEN data[3] THEN data[2] ELSE null END AS relationshipType,"
         " CASE WHEN data[10] THEN data[9] ELSE null END AS targetNodeId,"
         " CASE WHEN data[8] THEN data[7] ELSE null END AS sourceNodeProperties,"
-        f" CASE WHEN data[1] THEN data[0] ELSE null END AS {properties_key}"
-        f" RETURN gds{tier}.graph.project("
+        " CASE WHEN data[1] THEN data[0] ELSE null END AS relationshipProperties"
+        " RETURN gds.graph.project("
         "$graph_name, data[4], targetNodeId, {"
-        f"sourceNodeLabels: sourceNodeLabels{target_node_labels}, "
-        f"sourceNodeProperties: sourceNodeProperties{target_node_properties}"
-        f"{in_between_configs}"
-        f"relationshipType: relationshipType, {properties_key}: {properties_key}"
+        "sourceNodeLabels: sourceNodeLabels, targetNodeLabels: NULL, "
+        "sourceNodeProperties: sourceNodeProperties, targetNodeProperties: NULL, "
+        "relationshipType: relationshipType, relationshipProperties: relationshipProperties"
         "}, $configuration)"
     )
 
@@ -131,29 +96,9 @@ def test_multi_df(
     }
 
 
-@pytest.mark.parametrize(
-    "server_version, tier, target_node_labels, target_node_properties, properties_key, in_between_configs",
-    [
-        (ServerVersion(2, 3, 0), ".alpha", "", "", "properties", "}, {"),
-        (
-            ServerVersion(2, 4, 0),
-            "",
-            ", targetNodeLabels: NULL",
-            ", targetNodeProperties: NULL",
-            "relationshipProperties",
-            ", ",
-        ),
-    ],
-    ids=["2.3.0 - Alpha Cypher Aggregation", "2.4.0 - New Cypher projection"],
-)
 def test_graph_aggregation_based_construct_without_arrow(
     runner: CollectingQueryRunner,
     gds: GraphDataScience,
-    tier: str,
-    target_node_labels: str,
-    target_node_properties: str,
-    properties_key: str,
-    in_between_configs: str,
 ) -> None:
     nodes = DataFrame(
         {
@@ -184,13 +129,12 @@ def test_graph_aggregation_based_construct_without_arrow(
         " CASE WHEN data[3] THEN data[2] ELSE null END AS relationshipType,"
         " CASE WHEN data[10] THEN data[9] ELSE null END AS targetNodeId,"
         " CASE WHEN data[8] THEN data[7] ELSE null END AS sourceNodeProperties,"
-        f" CASE WHEN data[1] THEN data[0] ELSE null END AS {properties_key}"
-        f" RETURN gds{tier}.graph.project("
+        " CASE WHEN data[1] THEN data[0] ELSE null END AS relationshipProperties"
+        " RETURN gds.graph.project("
         "$graph_name, data[4], targetNodeId, {"
-        f"sourceNodeLabels: sourceNodeLabels{target_node_labels}, "
-        f"sourceNodeProperties: sourceNodeProperties{target_node_properties}"
-        f"{in_between_configs}"
-        f"relationshipType: relationshipType, {properties_key}: {properties_key}"
+        "sourceNodeLabels: sourceNodeLabels, targetNodeLabels: NULL, "
+        "sourceNodeProperties: sourceNodeProperties, targetNodeProperties: NULL, "
+        "relationshipType: relationshipType, relationshipProperties: relationshipProperties"
         "}, $configuration)"
     )
 
@@ -213,7 +157,6 @@ def test_graph_aggregation_based_construct_without_arrow(
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 3, 0)])
 def test_graph_aggregation_based_construct_without_arrow_with_overlapping_property_columns(
     runner: CollectingQueryRunner, gds: GraphDataScience
 ) -> None:
@@ -242,7 +185,6 @@ def test_graph_aggregation_based_construct_without_arrow_with_overlapping_proper
         gds.graph.construct("hello", nodes, relationships, concurrency=2)
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
 def test_graph_construct_validate_df_columns(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     nodes = DataFrame({"nodeIds": [0, 1]})
     relationships = DataFrame({"sourceNodeId": [0, 1], "TargetNodeIds": [1, 0]})
@@ -254,7 +196,6 @@ def test_graph_construct_validate_df_columns(runner: CollectingQueryRunner, gds:
         gds.graph.construct("hello", nodes, relationships, concurrency=2)
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
 def test_graph_alpha_construct_backward_compat(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     nodes = DataFrame(
         {
