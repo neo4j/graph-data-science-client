@@ -8,7 +8,7 @@ from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 
-GDS_INIT_VERSION_TESTDATA = [(2, 1, 0, "2.1.0"), (42, 1337, 99, "42.1337.99"), (1, 2, 3, "1.2.3-alpha2")]
+GDS_INIT_VERSION_TESTDATA = [(2, 10, 0, "2.10.0"), (42, 1337, 99, "42.1337.99"), (4, 5, 6, "4.5.6-alpha2")]
 
 
 @pytest.mark.parametrize("major, minor, patch, version_string", GDS_INIT_VERSION_TESTDATA)
@@ -25,6 +25,17 @@ def test_gds_init_version(major: int, minor: int, patch: int, version_string: st
     assert server_version.major == major
     assert server_version.minor == minor
     assert server_version.patch == patch
+
+
+def test_warn_old_gds_version() -> None:
+    arrow_info = ArrowInfo(listenAddress="foo.bar", enabled=True, running=True, versions=[])
+    query_runner = CollectingQueryRunner(
+        ServerVersion.from_string("2.1.0"),
+        result_mock=DataFrame([asdict(arrow_info)]),
+    )
+
+    with pytest.warns(DeprecationWarning, match=r"Client does not support the given server version `2.1.0`"):
+        GraphDataScience(endpoint=query_runner, arrow=False)
 
 
 def test_endpoint_as_required_kwparam(runner: CollectingQueryRunner) -> None:
