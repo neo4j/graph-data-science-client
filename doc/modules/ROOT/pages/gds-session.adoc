@@ -1,4 +1,3 @@
-[.beta]
 = GDS Sessions
 
 A GDS Session is a temporary compute environment for running GDS workloads.
