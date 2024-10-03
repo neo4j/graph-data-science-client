@@ -300,6 +300,16 @@ For a full list of the available algorithms, see the https://neo4j.com/docs/grap
 
 Topological Link Prediction algorithms are not yet supported.
 
+* Model Catalog is supported with limitations:
+** Trained models can only be used for prediction using the same Session in which they were trained.
+   After the Session is deleted, all trained models will be lost.
+** Model publishing is not supported, including
+*** `gds.model.publish`
+** Model persistence is not supported, including
+*** `gds.model.store`
+*** `gds.model.load`
+*** `gds.model.delete`
+
 
 == Remote write-back
 
