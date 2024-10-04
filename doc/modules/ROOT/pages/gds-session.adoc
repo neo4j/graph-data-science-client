@@ -1,4 +1,3 @@
-[.beta]
 = GDS Sessions
 
 A GDS Session is a temporary compute environment for running GDS workloads.
@@ -298,7 +297,22 @@ For a full list of the available algorithms, see the https://neo4j.com/docs/grap
 
 === Limitations
 
-Topological Link Prediction algorithms are not yet supported.
+* Model Catalog is supported with limitations:
+** Trained models can only be used for prediction using the same Session in which they were trained.
+   After the Session is deleted, all trained models will be lost.
+** Model publishing is not supported, including
+*** `gds.model.publish`
+** Model persistence is not supported, including
+*** `gds.model.store`
+*** `gds.model.load`
+*** `gds.model.delete`
+* Topological Link Prediction algorithms are not supported, including
+** `gds.alpha.linkprediction.adamicAdar`
+** `gds.alpha.linkprediction.commonNeighbors`
+** `gds.alpha.linkprediction.preferentialAttachment`
+** `gds.alpha.linkprediction.resourceAllocation`
+** `gds.alpha.linkprediction.sameCommunity`
+** `gds.alpha.linkprediction.totalNeighbors`
 
 
 == Remote write-back
