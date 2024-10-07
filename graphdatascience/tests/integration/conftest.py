@@ -27,7 +27,7 @@ GDS_SESSION_URI = os.environ.get("GDS_SESSION_URI", "bolt://host.docker.internal
 GDS_SESSION_AUTH = ("neo4j", "password")
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="package", autouse=False)
 def neo4j_driver() -> Generator[Driver, None, None]:
     driver = GraphDatabase.driver(URI, auth=AUTH)
 
@@ -36,7 +36,7 @@ def neo4j_driver() -> Generator[Driver, None, None]:
     driver.close()
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="package", autouse=False)
 def runner(neo4j_driver: Driver) -> Generator[Neo4jQueryRunner, None, None]:
     _runner = Neo4jQueryRunner.create(neo4j_driver)
     _runner.set_database(DB)
@@ -46,7 +46,7 @@ def runner(neo4j_driver: Driver) -> Generator[Neo4jQueryRunner, None, None]:
     _runner.close()
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="package", autouse=False)
 def gds() -> Generator[GraphDataScience, None, None]:
     _gds = GraphDataScience(URI, auth=AUTH)
     _gds.set_database(DB)
@@ -56,7 +56,7 @@ def gds() -> Generator[GraphDataScience, None, None]:
     _gds.close()
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="package", autouse=False)
 def gds_with_tls() -> Generator[GraphDataScience, None, None]:
     integration_test_dir = Path(__file__).resolve().parent
     cert = os.path.join(integration_test_dir, "resources", "arrow-flight-gds-test.crt")
@@ -78,7 +78,7 @@ def gds_with_tls() -> Generator[GraphDataScience, None, None]:
     _gds.close()
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="package", autouse=False)
 def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
     _gds = GraphDataScience(URI, auth=AUTH, arrow=False)
     _gds.set_database(DB)
