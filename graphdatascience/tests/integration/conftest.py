@@ -23,7 +23,7 @@ if os.environ.get("NEO4J_USER"):
 
 DB = os.environ.get("NEO4J_DB", "neo4j")
 
-GDS_SESSION_URI = os.environ.get("GDS_SESSION_URI", "bolt://localhost:7688")
+GDS_SESSION_URI = os.environ.get("GDS_SESSION_URI", "bolt://host.docker.internal:7688")
 GDS_SESSION_AUTH = ("neo4j", "password")
 
 
