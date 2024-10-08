@@ -133,6 +133,7 @@ def clean_up(gds: GraphDataScience):
     except neo4j.exceptions.ClientError as e:
         print(e)
 
+
 def pytest_collection_modifyitems(config: Any, items: Any) -> None:
     if config.getoption("--target-aura"):
         skip_on_aura = pytest.mark.skip(reason="skipping since targeting AuraDS")
