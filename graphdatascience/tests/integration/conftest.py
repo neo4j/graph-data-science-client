@@ -23,8 +23,11 @@ if os.environ.get("NEO4J_USER"):
 
 DB = os.environ.get("NEO4J_DB", "neo4j")
 
-GDS_SESSION_URI = os.environ.get("GDS_SESSION_URI", "bolt://host.docker.internal:7688")
+GDS_SESSION_URI = os.environ.get("GDS_SESSION_URI", "bolt://host.docker.internal:7687")
 GDS_SESSION_AUTH = ("neo4j", "password")
+
+AURA_DB_URI = os.environ.get("AURA_DB_URI", "bolt://localhost:7688")
+AURA_DB_AUTH = ("neo4j", "password")
 
 
 @pytest.fixture(scope="package", autouse=False)
@@ -53,7 +56,6 @@ def gds() -> Generator[GraphDataScience, None, None]:
 
     yield _gds
 
-    clean_up(_gds)
     _gds.close()
 
 
@@ -76,7 +78,6 @@ def gds_with_tls() -> Generator[GraphDataScience, None, None]:
 
     yield _gds
 
-    clean_up(_gds)
     _gds.close()
 
 
@@ -87,7 +88,6 @@ def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
 
     yield _gds
 
-    clean_up(_gds)
     _gds.close()
 
 
@@ -95,7 +95,7 @@ def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
 def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Generator[AuraGraphDataScience, None, None]:
     _gds = AuraGraphDataScience.create(
         gds_session_connection_info=DbmsConnectionInfo(GDS_SESSION_URI, GDS_SESSION_AUTH[0], GDS_SESSION_AUTH[1]),
-        db_connection_info=DbmsConnectionInfo(URI, AUTH[0], AUTH[1]),
+        db_connection_info=DbmsConnectionInfo(AURA_DB_URI, AURA_DB_AUTH[0], AURA_DB_AUTH[1]),
         delete_fn=lambda: True,
     )
     _gds.set_database(DB)
@@ -105,6 +105,7 @@ def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Generator[AuraGraphD
     _gds.close()
 
 
+@pytest.fixture(autouse=True)
 def clean_up(gds: GraphDataScience):
     res = gds.graph.list()
     for graph_name in res["graphName"]:
@@ -182,7 +183,7 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
         for item in items:
             if "cloud_architecture" not in item.keywords:
                 item.add_marker(skip_on_prem)
-        (uri, auth) = (GDS_SESSION_URI, GDS_SESSION_AUTH)
+        (uri, auth) = (AURA_DB_URI, AURA_DB_AUTH)
     else:
         skip_cloud_architecture = pytest.mark.skip(reason="need --include-cloud-architecture option to run")
         for item in items:
