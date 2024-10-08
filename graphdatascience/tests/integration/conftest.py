@@ -104,7 +104,9 @@ def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Generator[AuraGraphD
 
 
 @pytest.fixture(autouse=True)
-def clean_up(gds: GraphDataScience):
+def clean_up(gds: GraphDataScience) -> Generator[None, None, None]:
+    yield
+
     res = gds.graph.list()
     for graph_name in res["graphName"]:
         gds.graph.drop(graph_name, failIfMissing=True)
