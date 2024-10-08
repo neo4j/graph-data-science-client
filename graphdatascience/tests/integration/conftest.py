@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Any, Generator, Optional
+from typing import Any, Generator
 
 import pytest
 from neo4j import Driver, GraphDatabase
@@ -102,8 +102,11 @@ def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Generator[AuraGraphD
     _gds.close()
 
 
-@pytest.fixture(autouse=False)
-def clean_up(gds: GraphDataScience) -> Generator[None, None, None]:
+@pytest.fixture(autouse=True)
+def clean_up(gds: GraphDataScience, request: pytest.FixtureRequest) -> Generator[None, None, None]:
+    if "cloud_architecture" in request.keywords:
+        return
+
     yield
 
     res = gds.graph.list()
