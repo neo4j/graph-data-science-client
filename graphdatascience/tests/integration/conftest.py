@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from typing import Any, Generator
 
+import neo4j.exceptions
 import pytest
 from neo4j import Driver, GraphDatabase
 
@@ -127,8 +128,10 @@ def clean_up(gds: GraphDataScience):
         if model.exists():
             model.drop(failIfMissing=True)
 
-    gds.run_cypher("MATCH (n) DETACH DELETE (n)")
-
+    try:
+        gds.run_cypher("MATCH (n) DETACH DELETE (n)")
+    except neo4j.exceptions.ClientError as e:
+        print(e)
 
 def pytest_collection_modifyitems(config: Any, items: Any) -> None:
     if config.getoption("--target-aura"):
