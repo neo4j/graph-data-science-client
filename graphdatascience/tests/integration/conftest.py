@@ -53,6 +53,7 @@ def gds() -> Generator[GraphDataScience, None, None]:
 
     yield _gds
 
+    clean_up(_gds)
     _gds.close()
 
 
@@ -75,6 +76,7 @@ def gds_with_tls() -> Generator[GraphDataScience, None, None]:
 
     yield _gds
 
+    clean_up(_gds)
     _gds.close()
 
 
@@ -85,6 +87,7 @@ def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
 
     yield _gds
 
+    clean_up(_gds)
     _gds.close()
 
 
@@ -102,13 +105,7 @@ def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Generator[AuraGraphD
     _gds.close()
 
 
-@pytest.fixture(autouse=True)
-def clean_up(gds: GraphDataScience, request: pytest.FixtureRequest) -> Generator[None, None, None]:
-    if "cloud_architecture" in request.keywords:
-        return
-
-    yield
-
+def clean_up(gds: GraphDataScience):
     res = gds.graph.list()
     for graph_name in res["graphName"]:
         gds.graph.drop(graph_name, failIfMissing=True)
