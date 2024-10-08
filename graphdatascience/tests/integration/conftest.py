@@ -182,21 +182,20 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
         for item in items:
             if "cloud_architecture" not in item.keywords:
                 item.add_marker(skip_on_prem)
+        (uri, auth) = (GDS_SESSION_URI, GDS_SESSION_AUTH)
     else:
         skip_cloud_architecture = pytest.mark.skip(reason="need --include-cloud-architecture option to run")
         for item in items:
             if "cloud_architecture" in item.keywords:
                 item.add_marker(skip_cloud_architecture)
+        (uri, auth) = (URI, AUTH)
 
-    gds = GraphDataScience(URI, auth=AUTH)
-
-    try:
-        server_version = gds._server_version
-    except Exception as e:
-        print("Could not derive GDS library server version")
-        raise e
-    finally:
-        gds.close()
+    with GraphDataScience(uri, auth=auth) as gds:
+        try:
+            server_version = gds._server_version()
+        except Exception as e:
+            print("Could not derive GDS library server version")
+            raise e
 
     skip_incompatible_versions = pytest.mark.skip(reason=f"incompatible with GDS server version {server_version}")
 
