@@ -20,7 +20,7 @@ from graphdatascience.session.aura_graph_data_science import AuraGraphDataScienc
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 
 # Should mirror the latest GDS server version under development.
-DEFAULT_SERVER_VERSION = ServerVersion(2, 6, 0)
+DEFAULT_SERVER_VERSION = ServerVersion(2, 10, 0)
 
 QueryResult = Union[DataFrame, Exception]
 QueryResultMap = Dict[str, QueryResult]  # Substring -> QueryResult

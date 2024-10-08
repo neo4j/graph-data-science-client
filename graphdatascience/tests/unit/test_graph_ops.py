@@ -183,7 +183,6 @@ def test_graph_streamNodeProperty(runner: CollectingQueryRunner, gds: GraphDataS
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
 def test_graph_nodeProperty_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -232,7 +231,6 @@ def test_graph_streamNodeProperties(runner: CollectingQueryRunner, gds: GraphDat
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
 def test_graph_nodeProperties_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -283,7 +281,6 @@ def test_graph_streamRelationshipProperty(runner: CollectingQueryRunner, gds: Gr
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
 def test_graph_relationshipProperty_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -354,7 +351,6 @@ def test_graph_streamRelationshipProperties(runner: CollectingQueryRunner, gds: 
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
 def test_graph_relationshipProperties_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -397,7 +393,6 @@ def test_graph_relationshipProperties_stream(runner: CollectingQueryRunner, gds:
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_graph_relationshipProperties_write(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -441,7 +436,6 @@ def test_graph_writeNodeProperties(runner: CollectingQueryRunner, gds: GraphData
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
 def test_graph_nodeProperties_write(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -492,7 +486,6 @@ def test_graph_writeRelationship(runner: CollectingQueryRunner, gds: GraphDataSc
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
 def test_graph_relationship_write(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -521,7 +514,6 @@ def test_graph_relationship_write(runner: CollectingQueryRunner, gds: GraphDataS
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 5, 0)])
 def test_graph_nodeLabel_write(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -534,7 +526,6 @@ def test_graph_nodeLabel_write(runner: CollectingQueryRunner, gds: GraphDataScie
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 5, 0)])
 def test_graph_nodeLabel_mutate(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -547,34 +538,6 @@ def test_graph_nodeLabel_mutate(runner: CollectingQueryRunner, gds: GraphDataSci
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 0, 0)])
-def test_graph_removeNodeProperties_20(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project("g", "*", "*")
-
-    gds.graph.removeNodeProperties(G, ["dummyProp"], "dummyLabel", concurrency=2)
-    assert runner.last_query() == "CALL gds.graph.removeNodeProperties($graph_name, $properties, $entities, $config)"
-    assert runner.last_params() == {
-        "graph_name": "g",
-        "properties": ["dummyProp"],
-        "entities": "dummyLabel",
-        "config": {"concurrency": 2},
-    }
-
-
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 1, 0)])
-def test_graph_removeNodeProperties_21(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
-    G, _ = gds.graph.project("g", "*", "*")
-
-    gds.graph.removeNodeProperties(G, ["dummyProp"], concurrency=2)
-    assert runner.last_query() == "CALL gds.graph.removeNodeProperties($graph_name, $properties, $config)"
-    assert runner.last_params() == {
-        "graph_name": "g",
-        "properties": ["dummyProp"],
-        "config": {"concurrency": 2},
-    }
-
-
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
 def test_graph_nodeProperties_remove_drop(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -595,7 +558,6 @@ def test_graph_deleteRelationships(runner: CollectingQueryRunner, gds: GraphData
     assert runner.last_params() == {"graph_name": "g", "relationship_type": "REL_A"}
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
 def test_graph_relationships_drop(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -604,7 +566,6 @@ def test_graph_relationships_drop(runner: CollectingQueryRunner, gds: GraphDataS
     assert runner.last_params() == {"graph_name": "g", "relationship_type": "REL_A"}
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
 def test_graph_property_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -613,7 +574,6 @@ def test_graph_property_stream(runner: CollectingQueryRunner, gds: GraphDataScie
     assert runner.last_params() == {"graph_name": "g", "graph_property": "prop", "config": {}}
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
 def test_graph_property_drop(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -622,7 +582,6 @@ def test_graph_property_drop(runner: CollectingQueryRunner, gds: GraphDataScienc
     assert runner.last_params() == {"graph_name": "g", "graph_property": "prop", "config": {}}
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 2, 0)])
 def test_graph_relationships_stream(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")
 
@@ -704,7 +663,6 @@ def test_graph_relationships_to_undirected(runner: CollectingQueryRunner, gds: G
     }
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 7, 0)])
 def test_remote_projection_all_configuration(runner: CollectingQueryRunner, aura_gds: AuraGraphDataScience) -> None:
     G, _ = aura_gds.graph.project(
         graph_name="g",

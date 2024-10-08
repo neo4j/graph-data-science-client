@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import Any, Dict, Optional, Tuple, Type, Union
 
 from neo4j import Driver
@@ -15,6 +16,7 @@ from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
 from .utils.util_proc_runner import UtilProcRunner
+from .version import __min_server_version__
 
 
 class GraphDataScience(DirectEndpoints, UncallableNamespace):
@@ -76,6 +78,15 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             self._query_runner = Neo4jQueryRunner.create(endpoint, auth, aura_ds, database, bookmarks, show_progress)
 
         self._server_version = self._query_runner.server_version()
+
+        if self._server_version < ServerVersion.from_string(__min_server_version__):
+            warnings.warn(
+                DeprecationWarning(
+                    f"Client does not support the given server version `{self._server_version}`."
+                    + " We recommend to either update the GDS server version or use a compatible version of the `graphdatascience` package."
+                    + " Please refer to the compatibility matrix at https://neo4j.com/docs/graph-data-science-client/current/installation/#python-client-system-requirements."
+                )
+            )
 
         arrow_info = ArrowInfo.create(self._query_runner)
         if arrow and arrow_info.enabled and self._server_version >= ServerVersion(2, 1, 0):

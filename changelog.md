@@ -22,5 +22,6 @@
 
 * The database connection is now validated before a session is created.
 * Retry authentication requests.
+* Warn if client does not support given GDS server version as defined at https://neo4j.com/docs/graph-data-science-client/current/installation/#python-client-system-requirements.
 
 ## Other changes

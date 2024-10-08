@@ -3,12 +3,10 @@ from pandas import DataFrame
 
 from graphdatascience.graph.graph_cypher_runner import GraphCypherRunner
 from graphdatascience.graph_data_science import GraphDataScience
-from graphdatascience.server_version.server_version import ServerVersion
 
 from .conftest import CollectingQueryRunner
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_simple(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     runner.set__mock_result(DataFrame([[{"graphName": "g", "don't squeeze": "me now"}]]))
 
@@ -20,7 +18,6 @@ def test_simple(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project('g', s, t)"
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_fstring(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     runner.set__mock_result(DataFrame([[{"graphName": "g", "don't squeeze": "me now"}]]))
 
@@ -33,7 +30,6 @@ def test_fstring(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project('g', s, t)"
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_expression(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     runner.set__mock_result(DataFrame([[{"graphName": "gg", "don't squeeze": "me now"}]]))
 
@@ -45,7 +41,6 @@ def test_expression(runner: CollectingQueryRunner, gds: GraphDataScience) -> Non
     assert runner.last_query() == "WITH 'g' AS suffix MATCH (s)-->(t) RETURN gds.graph.project('g' + suffix, s, t)"
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_with_parameter(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     runner.set__mock_result(DataFrame([[{"graphName": "g", "don't squeeze": "me now"}]]))
 
@@ -57,7 +52,6 @@ def test_with_parameter(runner: CollectingQueryRunner, gds: GraphDataScience) ->
     assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project($the_graph, s, t)"
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_with_lots_of_whitespace(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     runner.set__mock_result(DataFrame([[{"graphName": "g", "don't squeeze": "me now"}]]))
 
@@ -69,7 +63,6 @@ def test_with_lots_of_whitespace(runner: CollectingQueryRunner, gds: GraphDataSc
     assert runner.last_query() == "MATCH (s)-->(t) RETURN gds .graph. project\n(\t'g'  ,s, t)"
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_extracting_graph_name(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     runner.set__mock_result(DataFrame([[{"graphName": "the graph", "don't squeeze": "me now"}]]))
 
@@ -81,7 +74,6 @@ def test_extracting_graph_name(runner: CollectingQueryRunner, gds: GraphDataScie
     assert runner.last_query() == "MATCH (s)-->(t) RETURN gds.graph.project('g', s, t)"
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_with_return_not_being_last(gds: GraphDataScience) -> None:
     with pytest.raises(
         ValueError,
@@ -90,7 +82,6 @@ def test_with_return_not_being_last(gds: GraphDataScience) -> None:
         gds.graph.cypher.project("MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t) AS graph")
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_with_no_return(gds: GraphDataScience) -> None:
     with pytest.raises(
         ValueError,
@@ -99,7 +90,6 @@ def test_with_no_return(gds: GraphDataScience) -> None:
         gds.graph.cypher.project("MATCH (s)-->(t)")
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 4, 0)])
 def test_with_multiple_returns(gds: GraphDataScience) -> None:
     with pytest.raises(
         ValueError,
