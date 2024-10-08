@@ -192,7 +192,7 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
 
     with GraphDataScience(uri, auth=auth) as gds:
         try:
-            server_version = gds._server_version()
+            server_version = gds._server_version
         except Exception as e:
             print("Could not derive GDS library server version")
             raise e
