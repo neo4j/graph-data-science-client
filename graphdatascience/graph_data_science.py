@@ -246,3 +246,10 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         Close the GraphDataScience object and release any resources held by it.
         """
         self._query_runner.close()
+
+    def __enter__(self) -> GraphDataScience:
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
+        self.close()
+        return False

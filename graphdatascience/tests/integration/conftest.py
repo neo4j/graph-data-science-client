@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
-from typing import Any, Generator, Optional
+from typing import Any, Generator
 
+import neo4j.exceptions
 import pytest
 from neo4j import Driver, GraphDatabase
 
@@ -23,11 +24,11 @@ if os.environ.get("NEO4J_USER"):
 
 DB = os.environ.get("NEO4J_DB", "neo4j")
 
-AURA_DB_URI = os.environ.get("NEO4J_AURA_DB_URI", "bolt://localhost:7689")
+AURA_DB_URI = os.environ.get("AURA_DB_URI", "bolt://localhost:7687")
 AURA_DB_AUTH = ("neo4j", "password")
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="package", autouse=False)
 def neo4j_driver() -> Generator[Driver, None, None]:
     driver = GraphDatabase.driver(URI, auth=AUTH)
 
@@ -36,7 +37,7 @@ def neo4j_driver() -> Generator[Driver, None, None]:
     driver.close()
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="package", autouse=False)
 def runner(neo4j_driver: Driver) -> Generator[Neo4jQueryRunner, None, None]:
     _runner = Neo4jQueryRunner.create(neo4j_driver)
     _runner.set_database(DB)
@@ -46,7 +47,7 @@ def runner(neo4j_driver: Driver) -> Generator[Neo4jQueryRunner, None, None]:
     _runner.close()
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="package", autouse=False)
 def gds() -> Generator[GraphDataScience, None, None]:
     _gds = GraphDataScience(URI, auth=AUTH)
     _gds.set_database(DB)
@@ -56,7 +57,7 @@ def gds() -> Generator[GraphDataScience, None, None]:
     _gds.close()
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="package", autouse=False)
 def gds_with_tls() -> Generator[GraphDataScience, None, None]:
     integration_test_dir = Path(__file__).resolve().parent
     cert = os.path.join(integration_test_dir, "resources", "arrow-flight-gds-test.crt")
@@ -78,7 +79,7 @@ def gds_with_tls() -> Generator[GraphDataScience, None, None]:
     _gds.close()
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="package", autouse=False)
 def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
     _gds = GraphDataScience(URI, auth=AUTH, arrow=False)
     _gds.set_database(DB)
@@ -89,19 +90,17 @@ def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
 
 
 @pytest.fixture(scope="package", autouse=False)
-def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Optional[Generator[AuraGraphDataScience, None, None]]:
-    if "cloud_architecture" not in request.keywords:
-        _gds = AuraGraphDataScience.create(
-            gds_session_connection_info=DbmsConnectionInfo(URI, AUTH[0], AUTH[1]),
-            db_connection_info=DbmsConnectionInfo(AURA_DB_URI, AURA_DB_AUTH[0], AURA_DB_AUTH[1]),
-            delete_fn=lambda: True,
-        )
-        _gds.set_database(DB)
+def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Generator[AuraGraphDataScience, None, None]:
+    _gds = AuraGraphDataScience.create(
+        gds_session_connection_info=DbmsConnectionInfo(URI, AUTH[0], AUTH[1]),
+        db_connection_info=DbmsConnectionInfo(AURA_DB_URI, AURA_DB_AUTH[0], AURA_DB_AUTH[1]),
+        delete_fn=lambda: True,
+    )
+    _gds.set_database(DB)
 
-        yield _gds
+    yield _gds
 
-        _gds.close()
-    return None
+    _gds.close()
 
 
 @pytest.fixture(autouse=True)
@@ -131,7 +130,10 @@ def clean_up(gds: GraphDataScience) -> Generator[None, None, None]:
         if model.exists():
             model.drop(failIfMissing=True)
 
-    gds.run_cypher("MATCH (n) DETACH DELETE (n)")
+    try:
+        gds.run_cypher("MATCH (n) DETACH DELETE (n)")
+    except neo4j.exceptions.ClientError as e:
+        print(e)
 
 
 def pytest_collection_modifyitems(config: Any, items: Any) -> None:
@@ -188,15 +190,12 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
             if "cloud_architecture" in item.keywords:
                 item.add_marker(skip_cloud_architecture)
 
-    gds = GraphDataScience(URI, auth=AUTH)
-
-    try:
-        server_version = gds._server_version
-    except Exception as e:
-        print("Could not derive GDS library server version")
-        raise e
-    finally:
-        gds.close()
+    with GraphDataScience(URI, auth=AUTH) as gds:
+        try:
+            server_version = gds._server_version
+        except Exception as e:
+            print("Could not derive GDS library server version")
+            raise e
 
     skip_incompatible_versions = pytest.mark.skip(reason=f"incompatible with GDS server version {server_version}")
 
