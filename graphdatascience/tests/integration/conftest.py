@@ -89,22 +89,20 @@ def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
 
 
 @pytest.fixture(scope="package", autouse=False)
-def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Optional[Generator[AuraGraphDataScience, None, None]]:
-    if "cloud_architecture" not in request.keywords:
-        _gds = AuraGraphDataScience.create(
-            gds_session_connection_info=DbmsConnectionInfo(GDS_SESSION_URI, GDS_SESSION_AUTH[0], GDS_SESSION_AUTH[1]),
-            db_connection_info=DbmsConnectionInfo(URI, AUTH[0], AUTH[1]),
-            delete_fn=lambda: True,
-        )
-        _gds.set_database(DB)
+def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Generator[AuraGraphDataScience, None, None]:
+    _gds = AuraGraphDataScience.create(
+        gds_session_connection_info=DbmsConnectionInfo(GDS_SESSION_URI, GDS_SESSION_AUTH[0], GDS_SESSION_AUTH[1]),
+        db_connection_info=DbmsConnectionInfo(URI, AUTH[0], AUTH[1]),
+        delete_fn=lambda: True,
+    )
+    _gds.set_database(DB)
 
-        yield _gds
+    yield _gds
 
-        _gds.close()
-    return None
+    _gds.close()
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(autouse=False)
 def clean_up(gds: GraphDataScience) -> Generator[None, None, None]:
     yield
 
@@ -176,6 +174,8 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
             if "model_store_location" in item.keywords:
                 item.add_marker(skip_stored_models)
 
+    (uri, auth) = (URI, AUTH)
+
     # `cloud-architecture` includes marked tests and excludes everything else
     if config.getoption("--include-cloud-architecture"):
         skip_on_prem = pytest.mark.skip(reason="not marked as `cloud-architecture`")
@@ -188,7 +188,6 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
         for item in items:
             if "cloud_architecture" in item.keywords:
                 item.add_marker(skip_cloud_architecture)
-        (uri, auth) = (URI, AUTH)
 
     with GraphDataScience(uri, auth=auth) as gds:
         try:
