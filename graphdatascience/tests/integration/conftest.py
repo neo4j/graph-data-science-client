@@ -172,22 +172,19 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
             if "model_store_location" in item.keywords:
                 item.add_marker(skip_stored_models)
 
-    (uri, auth) = (URI, AUTH)
-
     # `cloud-architecture` includes marked tests and excludes everything else
     if config.getoption("--include-cloud-architecture"):
         skip_on_prem = pytest.mark.skip(reason="not marked as `cloud-architecture`")
         for item in items:
             if "cloud_architecture" not in item.keywords:
                 item.add_marker(skip_on_prem)
-        (uri, auth) = (AURA_DB_URI, AURA_DB_AUTH)
     else:
         skip_cloud_architecture = pytest.mark.skip(reason="need --include-cloud-architecture option to run")
         for item in items:
             if "cloud_architecture" in item.keywords:
                 item.add_marker(skip_cloud_architecture)
 
-    with GraphDataScience(uri, auth=auth) as gds:
+    with GraphDataScience(URI, auth=AUTH) as gds:
         try:
             server_version = gds._server_version
         except Exception as e:
