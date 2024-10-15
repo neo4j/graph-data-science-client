@@ -101,8 +101,8 @@ gds.run_cypher(
 
 gds.run_cypher(
     """
-    UNWIND $rels AS rel 
-    MATCH (source:City {node_id: rel.Origin}), (target:City {node_id: rel.Destination}) 
+    UNWIND $rels AS rel
+    MATCH (source:City {node_id: rel.Origin}), (target:City {node_id: rel.Destination})
     CREATE (source)-[:HAS_FLIGHT_TO]->(target)
     """,
     params={"rels": routes_df.to_dict("records")},

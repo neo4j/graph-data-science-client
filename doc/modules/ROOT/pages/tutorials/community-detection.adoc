@@ -114,8 +114,8 @@ gds.run_cypher(
 
 gds.run_cypher(
     """
-    UNWIND $rels AS rel 
-    MATCH (source:Subreddit {name: rel.SOURCE_SUBREDDIT}), (target:Subreddit {name: rel.TARGET_SUBREDDIT}) 
+    UNWIND $rels AS rel
+    MATCH (source:Subreddit {name: rel.SOURCE_SUBREDDIT}), (target:Subreddit {name: rel.TARGET_SUBREDDIT})
     CREATE (source)-[:HYPERLINKED_TO]->(target)
     """,
     params={"rels": relationship_df.to_dict("records")},
@@ -232,7 +232,7 @@ We can also check that the property was written by the below command.
 ----
 gds.run_cypher(
     """
-    MATCH (n) WHERE 'louvainCommunityId' IN keys(n) 
+    MATCH (n) WHERE 'louvainCommunityId' IN keys(n)
     RETURN n.name, n.louvainCommunityId LIMIT 10
     """
 )
