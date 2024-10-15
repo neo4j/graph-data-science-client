@@ -85,6 +85,7 @@ Full end-to-end examples in Jupyter ready-to-run notebooks can be found in the [
 * [Load data to a projected graph via graph construction](examples/load-data-via-graph-construction.ipynb)
 * [Heterogeneous Node Classification with HashGNN and Autotuning](https://github.com/neo4j/graph-data-science-client/tree/main/examples/heterogeneous-node-classification-with-hashgnn.ipynb)
 * [Perform inference using pre-trained KGE models](examples/kge-predict-transe-pyg-train.ipynb)
+* [Visualize GDS Projections with PyVis](examples/visualize-with-pyvis.ipynb)
 
 
 ## Documentation
