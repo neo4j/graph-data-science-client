@@ -150,7 +150,7 @@ Please note that we would get a much better model by using a more
 standard train-test split, like 80/20 or so. And typically this would be
 the way to go for real use cases.
 
-=== The HashGNN node embedding algorithm
+== The HashGNN node embedding algorithm
 
 As the last part of the training pipeline, there will be an ML training
 algorithm. If we use the `+plot_keywords+` directly as our feature input

@@ -21,7 +21,7 @@ This notebook will show how you can apply eigenvector centrality,
 betweenness centrality, degree centrality and closeness centrality on a
 graph dataset.
 
-=== Setup
+== Setup
 
 We start by importing our dependencies and setting up our GDS client
 connection to the database.
@@ -61,7 +61,7 @@ from graphdatascience.server_version.server_version import ServerVersion
 assert gds.server_version() >= ServerVersion(1, 8, 0)
 ----
 
-=== Importing the dataset
+== Importing the dataset
 
 We import the dataset as a pandas dataframe first. We deal with two
 files here. The file `+reachability-meta.csv.gz+` stores the names of
@@ -103,8 +103,8 @@ gds.run_cypher(
 
 gds.run_cypher(
     """
-    UNWIND $rels AS rel 
-    MATCH (source:City {node_id: rel.Origin}), (target:City {node_id: rel.Destination}) 
+    UNWIND $rels AS rel
+    MATCH (source:City {node_id: rel.Origin}), (target:City {node_id: rel.Destination})
     CREATE (source)-[:HAS_FLIGHT_TO]->(target)
     """,
     params={"rels": routes_df.to_dict("records")},
@@ -123,7 +123,7 @@ print(f"Graph '{G.name()}' node labels: {G.node_labels()}")
 print(f"Graph '{G.name()}' relationship count: {G.relationship_count()}")
 ----
 
-=== Eigenvector Centrality
+== Eigenvector Centrality
 
 https://neo4j.com/docs/graph-data-science/current/algorithms/eigenvector-centrality/[Eigenvector
 centrality] measures the importance or influence of a node based on its
@@ -201,7 +201,7 @@ def display_top_20_cities(centrality_measure):
 display_top_20_cities("eigenvectorCentrality")
 ----
 
-=== Betweenness Centrality
+== Betweenness Centrality
 
 https://neo4j.com/docs/graph-data-science/current/algorithms/betweenness-centrality/[Betweenness
 Centrality] quantifies the importance of a node as a bridge or
@@ -251,7 +251,7 @@ between them.
 display_top_20_cities("betweennessCentrality")
 ----
 
-=== Degree Centrality
+== Degree Centrality
 
 https://neo4j.com/docs/graph-data-science/current/algorithms/degree-centrality/[Degree
 Centrality] measures the number of connections (edges) a node has in the
@@ -299,7 +299,7 @@ flights.
 display_top_20_cities("degreeCentrality")
 ----
 
-=== Cleanup
+== Cleanup
 
 Before finishing we can clean up the example data from both the GDS
 in-memory state and the database.
@@ -316,7 +316,7 @@ G.drop()
 gds.run_cypher("MATCH (n:City) DETACH DELETE n")
 ----
 
-=== References
+== References
 
 * For the network: Brendan J. Frey and Delbert Dueck. "`Clustering by
 passing messages between data points.`" Science 315.5814 (2007):

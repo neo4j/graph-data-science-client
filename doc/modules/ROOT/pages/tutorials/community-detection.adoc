@@ -21,7 +21,7 @@ The tasks we cover here include performing initial graph preprocessing
 using Weakly Connected Components and then performing community
 detection on the largest component using the Louvain algorithm.
 
-=== Setup
+== Setup
 
 We start by importing our dependencies and setting up our GDS client
 connection to the database.
@@ -61,7 +61,7 @@ from graphdatascience.server_version.server_version import ServerVersion
 assert gds.server_version() >= ServerVersion(1, 8, 0)
 ----
 
-=== Importing the dataset
+== Importing the dataset
 
 We import the dataset as a pandas dataframe first. We work with only a
 subset of the dataset. The sampled data is only till 1st March 2014.
@@ -116,8 +116,8 @@ gds.run_cypher(
 
 gds.run_cypher(
     """
-    UNWIND $rels AS rel 
-    MATCH (source:Subreddit {name: rel.SOURCE_SUBREDDIT}), (target:Subreddit {name: rel.TARGET_SUBREDDIT}) 
+    UNWIND $rels AS rel
+    MATCH (source:Subreddit {name: rel.SOURCE_SUBREDDIT}), (target:Subreddit {name: rel.TARGET_SUBREDDIT})
     CREATE (source)-[:HYPERLINKED_TO]->(target)
     """,
     params={"rels": relationship_df.to_dict("records")},
@@ -140,7 +140,7 @@ print(f"Graph '{G.name()}' node labels: {G.node_labels()}")
 gds.graph.list()
 ----
 
-=== Weakly Connected Components
+== Weakly Connected Components
 
 A graph dataset need not always be connected. That is, there may not
 exist a path from every node to every other node in the graph dataset
@@ -208,7 +208,7 @@ largest_component_graph, _ = gds.beta.graph.project.subgraph(
 largest_component_graph
 ----
 
-=== Community Detection using Louvain
+== Community Detection using Louvain
 
 We use the
 https://neo4j.com/docs/graph-data-science/current/algorithms/louvain/[Louvain]
@@ -234,7 +234,7 @@ We can also check that the property was written by the below command.
 ----
 gds.run_cypher(
     """
-    MATCH (n) WHERE 'louvainCommunityId' IN keys(n) 
+    MATCH (n) WHERE 'louvainCommunityId' IN keys(n)
     RETURN n.name, n.louvainCommunityId LIMIT 10
     """
 )
@@ -258,7 +258,7 @@ communities = gds.run_cypher(query)
 communities
 ----
 
-=== Further ideas
+== Further ideas
 
 * Inspect the produced communities using
 https://neo4j.com/docs/bloom-user-guide/current/[Bloom]. You can use
@@ -269,7 +269,7 @@ differ.
 https://neo4j.com/docs/graph-data-science/current/algorithms/community/[GDS
 docs].
 
-=== Cleanup
+== Cleanup
 
 Before finishing we can clean up the example data from both the GDS
 in-memory state and the database.
@@ -287,7 +287,7 @@ G.drop()
 gds.run_cypher("MATCH (n:Subreddit) DETACH DELETE n")
 ----
 
-=== References
+== References
 
 Srijan Kumar, William L. Hamilton, Jure Leskovec, and Dan Jurafsky.
 2018. Community Interaction and Conflict on the Web. In Proceedings of
