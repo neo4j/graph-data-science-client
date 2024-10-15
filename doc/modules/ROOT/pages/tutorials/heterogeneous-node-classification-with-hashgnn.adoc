@@ -44,6 +44,7 @@ connection to the database.
 ----
 # Import our dependencies
 import os
+
 from graphdatascience import GraphDataScience
 ----
 
@@ -149,7 +150,7 @@ Please note that we would get a much better model by using a more
 standard train-test split, like 80/20 or so. And typically this would be
 the way to go for real use cases.
 
-== The HashGNN node embedding algorithm
+=== The HashGNN node embedding algorithm
 
 As the last part of the training pipeline, there will be an ML training
 algorithm. If we use the `+plot_keywords+` directly as our feature input
@@ -346,7 +347,7 @@ part with something like a
 https://neo4j.com/docs/graph-data-science-client/current/graph-object/#_projecting_a_graph_object[projection
 from a Neo4j database] to create a more realistic production workflow.
 
-== Comparison with other methods
+=== Comparison with other methods
 
 As mentioned we tried to mimic the setup of the benchmarks in the
 NeurIPS paper
@@ -381,7 +382,7 @@ descent compared to the deep learning models above - HashGNN is an
 unsupervised algorithm - HashGNN runs a lot faster (even without a GPU)
 and requires a lot less memory
 
-== Further learning
+=== Further learning
 
 To learn more about the topics covered in this notebook, please check
 out the following pages of the GDS manual:
