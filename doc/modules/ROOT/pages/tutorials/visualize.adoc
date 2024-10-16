@@ -80,6 +80,10 @@ print(f"Metadata for our loaded Cora graph `G`: {G}")
 print(f"Node labels present in `G`: {G.node_labels()}")
 ----
 
+
+Metadata for our loaded Cora graph `G`: Graph(name=cora, node_count=2708, relationship_count=5429)
+Node labels present in `G`: ['Paper']
+
 It’s looks correct! Now let’s go ahead and sample the graph.
 
 We use the random walk with restarts sampling algorithm to get a smaller
@@ -104,6 +108,10 @@ print(f"Number of nodes in our sample: {G_sample.node_count()}")
 print(f"Number of relationships in our sample: {G_sample.relationship_count()}")
 ----
 
+
+Number of nodes in our sample: 406
+Number of relationships in our sample: 532
+
 Let’s also compute
 https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/[PageRank]
 on our sample graph, in order to get an importance score that we call
@@ -113,6 +121,19 @@ visualize the graph.
 [source, python, role=no-test]
 ----
 gds.pageRank.mutate(G_sample, mutateProperty="rank")
+----
+
+----
+mutateMillis                                                              0
+nodePropertiesWritten                                                   406
+ranIterations                                                            20
+didConverge                                                           False
+centralityDistribution    {'min': 0.14999961853027344, 'max': 2.27294921...
+postProcessingMillis                                                      1
+preProcessingMillis                                                       0
+computeMillis                                                             7
+configuration             {'mutateProperty': 'rank', 'jobId': '5ca450ff-...
+Name: 0, dtype: object
 ----
 
 == Exporting the sampled Cora graph
@@ -127,6 +148,24 @@ Let’s start by fetching the relationships.
 sample_topology_df = gds.graph.relationships.stream(G_sample)
 display(sample_topology_df)
 ----
+
+[cols=",,,",options="header",]
+|===
+| |sourceNodeId |targetNodeId |relationshipType
+|0 |31336 |31349 |CITES
+|1 |31336 |686532 |CITES
+|2 |31336 |1129442 |CITES
+|3 |31349 |686532 |CITES
+|4 |31353 |31336 |CITES
+|... |... |... |...
+|527 |34961 |31043 |CITES
+|528 |34961 |22883 |CITES
+|529 |102879 |9513 |CITES
+|530 |102884 |9513 |CITES
+|531 |767763 |1136631 |CITES
+|===
+
+532 rows × 3 columns
 
 We get the right amount of rows, one for each expected relationship. So
 that looks good.
@@ -146,6 +185,24 @@ sample_node_properties_df = gds.graph.nodeProperties.stream(
 )
 display(sample_node_properties_df)
 ----
+
+[cols=",,,",options="header",]
+|===
+| |nodeId |rank |subject
+|0 |164 |0.245964 |4.0
+|1 |434 |0.158500 |2.0
+|2 |1694 |0.961240 |5.0
+|3 |1949 |0.224912 |6.0
+|4 |1952 |0.150000 |6.0
+|... |... |... |...
+|401 |1154103 |0.319498 |3.0
+|402 |1154124 |0.627706 |0.0
+|403 |1154169 |0.154784 |0.0
+|404 |1154251 |0.187675 |0.0
+|405 |1154276 |0.277500 |0.0
+|===
+
+406 rows × 3 columns
 
 Now that we have all the data we want to visualize, we can create a
 network with PyVis. We color each node according to its ``subject'', and
@@ -173,6 +230,14 @@ net.add_edges(zip(sample_topology_df["sourceNodeId"], sample_topology_df["target
 
 net.show("cora-sample.html")
 ----
+
+
+ifdef::backend-html5[]
+++++
+include::ROOT:partial$/cora-sample.html[]
+++++
+endif::[]
+
 
 Unsurprisingly we can see that papers largely seem clustered by academic
 subject. We also note that some nodes appear larger in size, indicating
