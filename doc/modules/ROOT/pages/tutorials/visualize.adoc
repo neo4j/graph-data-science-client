@@ -1,6 +1,6 @@
 // DO NOT EDIT - AsciiDoc file generated automatically
 
-= GDS Projection Visualization with PyVis
+= Visualizing GDS Projections
 
 
 https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/import-sample-export-gnn.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
@@ -92,7 +92,7 @@ sampled.
 
 [source, python, role=no-test]
 ----
-G_sample, _ = gds.alpha.graph.sample.rwr("cora_sample", G, randomSeed=42, concurrency=1)
+G_sample, _ = gds.graph.sample.rwr("cora_sample", G, randomSeed=42, concurrency=1)
 ----
 
 We should have somewhere around 0.15 * 2708 ~ 406 nodes in our sample.
@@ -124,7 +124,7 @@ Let’s start by fetching the relationships.
 
 [source, python, role=no-test]
 ----
-sample_topology_df = gds.beta.graph.relationships.stream(G_sample)
+sample_topology_df = gds.graph.relationships.stream(G_sample)
 display(sample_topology_df)
 ----
 
@@ -174,7 +174,7 @@ net.add_edges(zip(sample_topology_df["sourceNodeId"], sample_topology_df["target
 net.show("cora-sample.html")
 ----
 
-Unsuprisingly we can see that papers largely seem clustered by academic
+Unsurprisingly we can see that papers largely seem clustered by academic
 subject. We also note that some nodes appear larger in size, indicating
 that they have a higher centrality score according to PageRank.
 
