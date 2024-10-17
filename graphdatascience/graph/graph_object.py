@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from types import TracebackType
 from typing import Any, List, Optional, Type, Union
+from uuid import uuid4
 
 from pandas import Series
 
@@ -230,3 +231,74 @@ class Graph:
             "memoryUsage",
         ]
         return f"{self.__class__.__name__}({self._graph_info(yields=yield_fields).to_dict()})"
+
+    def visualize(self, node_count: int = 100):
+        visual_graph = self._name
+        if self.node_count() > node_count:
+            ratio = float(node_count) / self.node_count()
+            visual_graph = str(uuid4())
+            self._query_runner.call_procedure(
+                endpoint="gds.graph.sample.rwr",
+                params=CallParameters(
+                    graph_name=visual_graph, fromGraphName=self._name, config=dict(samplingRatio=ratio)
+                ),
+                custom_error=False,
+            )
+
+        pr_prop = str(uuid4())
+        self._query_runner.call_procedure(
+            endpoint="gds.pageRank.mutate",
+            params=CallParameters(graph_name=visual_graph, config=dict(mutateProperty=pr_prop)),
+            custom_error=False,
+        )
+
+        result = self._query_runner.call_procedure(
+            endpoint="gds.graph.nodeProperties.stream",
+            params=CallParameters(graph_name=visual_graph, properties=[pr_prop]),
+            custom_error=False,
+        )
+
+        # new format was requested, but the query was run via Cypher
+        if "propertyValue" in result.keys():
+            wide_result = result.pivot(index=["nodeId"], columns=["nodeProperty"], values="propertyValue")
+            result = wide_result.reset_index()
+            result.columns.name = None
+        node_properties_df = result
+
+        relationships_df = self._query_runner.call_procedure(
+            endpoint="gds.graph.relationships.stream",
+            params=CallParameters(graph_name=visual_graph),
+            custom_error=False,
+        )
+
+        if visual_graph != self._name:
+            self._query_runner.call_procedure(
+                endpoint="gds.graph.drop",
+                params=CallParameters(graph_name=visual_graph),
+                custom_error=False,
+            )
+        else:
+            self._query_runner.call_procedure(
+                endpoint="gds.graph.nodeProperties.drop",
+                params=CallParameters(graph_name=visual_graph, nodeProperties=pr_prop),
+                custom_error=False,
+            )
+
+        from pyvis.network import Network
+
+        net = Network(
+            notebook=True,
+            cdn_resources="remote",
+            bgcolor="#222222",
+            font_color="white",
+            height="750px",  # Modify according to your screen size
+            width="100%",
+        )
+
+        for _, node in node_properties_df.iterrows():
+            net.add_node(int(node["nodeId"]), value=node[pr_prop])
+
+        # Add all the relationships
+        net.add_edges(zip(relationships_df["sourceNodeId"], relationships_df["targetNodeId"]))
+
+        return net.show(f"{self._name}.html")
