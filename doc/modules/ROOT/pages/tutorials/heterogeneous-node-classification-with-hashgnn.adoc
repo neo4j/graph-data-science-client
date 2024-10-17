@@ -44,6 +44,7 @@ connection to the database.
 ----
 # Import our dependencies
 import os
+
 from graphdatascience import GraphDataScience
 ----
 

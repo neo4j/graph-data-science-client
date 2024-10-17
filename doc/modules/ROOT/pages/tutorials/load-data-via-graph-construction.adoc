@@ -33,6 +33,7 @@ the `+graphdatascience+` package and import the client class.
 [source, python, role=no-test]
 ----
 import os
+
 from graphdatascience import GraphDataScience
 ----
 

@@ -34,6 +34,7 @@ version `+1.12a1+` or later.
 [source, python, role=no-test]
 ----
 from datetime import timedelta
+
 %pip install "graphdatascience>=1.12a1"
 ----
 
@@ -50,7 +51,8 @@ is the main entry point for managing GDS Sessions.
 [source, python, role=no-test]
 ----
 import os
-from graphdatascience.session import GdsSessions, AuraAPICredentials
+
+from graphdatascience.session import AuraAPICredentials, GdsSessions
 
 client_id = os.environ["AURA_API_CLIENT_ID"]
 client_secret = os.environ["AURA_API_CLIENT_SECRET"]
@@ -83,11 +85,13 @@ delete the session ourselves.
 [source, python, role=no-test]
 ----
 import os
-from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory, CloudLocation
-from datetime import timedelta
+
+from graphdatascience.session import AlgorithmCategory, CloudLocation, DbmsConnectionInfo
 
 # Identify the Neo4j DBMS
-db_connection = DbmsConnectionInfo(uri=os.environ["NEO4J_URI"], username=os.environ["NEO4J_USER"], password=os.environ["NEO4J_PASSWORD"])
+db_connection = DbmsConnectionInfo(
+    uri=os.environ["NEO4J_URI"], username=os.environ["NEO4J_USER"], password=os.environ["NEO4J_PASSWORD"]
+)
 # Specify where to create the GDS session
 cloud_location = CloudLocation(provider="gcp", region="europe-west1")
 

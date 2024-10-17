@@ -29,6 +29,7 @@ do
   if [[ "$FORMATTED_NB" != "$NB" ]];
   then
     echo "Notebook $f is not correctly formatted"
+    diff --color=always --suppress-common-lines --minimal --side-by-side $NB $FORMATTED_NB
     exit 1
   fi
 done

@@ -34,9 +34,11 @@ connection to the database.
 
 [source, python, role=no-test]
 ----
-from graphdatascience import GraphDataScience
-import pandas as pd
 import os
+
+import pandas as pd
+
+from graphdatascience import GraphDataScience
 ----
 
 [source, python, role=no-test]
@@ -101,8 +103,8 @@ gds.run_cypher(
 
 gds.run_cypher(
     """
-    UNWIND $rels AS rel 
-    MATCH (source:City {node_id: rel.Origin}), (target:City {node_id: rel.Destination}) 
+    UNWIND $rels AS rel
+    MATCH (source:City {node_id: rel.Origin}), (target:City {node_id: rel.Destination})
     CREATE (source)-[:HAS_FLIGHT_TO]->(target)
     """,
     params={"rels": routes_df.to_dict("records")},

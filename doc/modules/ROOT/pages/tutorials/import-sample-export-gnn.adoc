@@ -57,15 +57,16 @@ connection to the database.
 [source, python, role=no-test]
 ----
 import os
-import pandas as pd
-from graphdatascience import GraphDataScience
+import random
+
+import numpy as np
 import torch
-from torch_geometric.data import Data
 import torch.nn.functional as F
+from torch_geometric.data import Data
 from torch_geometric.nn import GCNConv
 from torch_geometric.transforms import RandomNodeSplit
-import random
-import numpy as np
+
+from graphdatascience import GraphDataScience
 ----
 
 [source, python, role=no-test]

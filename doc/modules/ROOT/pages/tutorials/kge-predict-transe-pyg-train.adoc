@@ -48,15 +48,17 @@ connection to the database.
 
 [source, python, role=no-test]
 ----
+import collections
 import os
-from graphdatascience import GraphDataScience
+
+import pandas as pd
 import torch
 import torch.optim as optim
 from torch_geometric.data import Data, download_url
 from torch_geometric.nn import TransE
-import collections
 from tqdm import tqdm
-import pandas as pd
+
+from graphdatascience import GraphDataScience
 ----
 
 [source, python, role=no-test]

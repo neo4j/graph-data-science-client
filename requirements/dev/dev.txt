@@ -1,6 +1,6 @@
 ruff == 0.6.1
 mypy == 1.8.0
-nbconvert == 7.11.0
+nbconvert == 7.16.4
 pandas-stubs == 2.2.2.240603
 tox == 4.11.3
 types-setuptools == 68.1.0.1
