@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import colorsys
+import random
 from types import TracebackType
 from typing import Any, List, Optional, Type, Union
 from uuid import uuid4
@@ -232,16 +234,18 @@ class Graph:
         ]
         return f"{self.__class__.__name__}({self._graph_info(yields=yield_fields).to_dict()})"
 
-    def visualize(self, node_count: int = 100):
+    def visualize(self, node_count: int = 100, center_nodes: Optional[List[int]] = None) -> Any:
         visual_graph = self._name
         if self.node_count() > node_count:
-            ratio = float(node_count) / self.node_count()
             visual_graph = str(uuid4())
+            config = dict(samplingRatio=float(node_count) / self.node_count())
+
+            if center_nodes is not None:
+                config["startNodes"] = center_nodes
+
             self._query_runner.call_procedure(
                 endpoint="gds.graph.sample.rwr",
-                params=CallParameters(
-                    graph_name=visual_graph, fromGraphName=self._name, config=dict(samplingRatio=ratio)
-                ),
+                params=CallParameters(graph_name=visual_graph, fromGraphName=self._name, config=config),
                 custom_error=False,
             )
 
@@ -254,13 +258,22 @@ class Graph:
 
         result = self._query_runner.call_procedure(
             endpoint="gds.graph.nodeProperties.stream",
-            params=CallParameters(graph_name=visual_graph, properties=[pr_prop]),
+            params=CallParameters(
+                graph_name=visual_graph,
+                properties=[pr_prop],
+                nodeLabels=self.node_labels(),
+                config=dict(listNodeLabels=True),
+            ),
             custom_error=False,
         )
 
         # new format was requested, but the query was run via Cypher
         if "propertyValue" in result.keys():
             wide_result = result.pivot(index=["nodeId"], columns=["nodeProperty"], values="propertyValue")
+            # nodeLabels cannot be an index column of the pivot as its not hashable
+            # so we need to manually join it back in
+            labels_df = result[["nodeId", "nodeLabels"]].set_index("nodeId")
+            wide_result = wide_result.join(labels_df, on="nodeId")
             result = wide_result.reset_index()
             result.columns.name = None
         node_properties_df = result
@@ -271,6 +284,7 @@ class Graph:
             custom_error=False,
         )
 
+        # Clean up
         if visual_graph != self._name:
             self._query_runner.call_procedure(
                 endpoint="gds.graph.drop",
@@ -289,16 +303,28 @@ class Graph:
         net = Network(
             notebook=True,
             cdn_resources="remote",
-            bgcolor="#222222",
+            bgcolor="#222222",  # Dark background
             font_color="white",
             height="750px",  # Modify according to your screen size
             width="100%",
         )
 
+        label_to_color = {label: self._random_bright_color() for label in self.node_labels()}
+
         for _, node in node_properties_df.iterrows():
-            net.add_node(int(node["nodeId"]), value=node[pr_prop])
+            net.add_node(
+                int(node["nodeId"]),
+                value=node[pr_prop],
+                color=label_to_color[node["nodeLabels"][0]],
+                title=str(node["nodeId"]),
+            )
 
         # Add all the relationships
         net.add_edges(zip(relationships_df["sourceNodeId"], relationships_df["targetNodeId"]))
 
         return net.show(f"{self._name}.html")
+
+    @staticmethod
+    def _random_bright_color() -> str:
+        h = random.randint(0, 255) / 255.0
+        return "#%02X%02X%02X" % tuple(map(lambda x: int(x * 255), colorsys.hls_to_rgb(h, 0.7, 1.0)))
