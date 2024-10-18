@@ -234,7 +234,9 @@ class Graph:
         ]
         return f"{self.__class__.__name__}({self._graph_info(yields=yield_fields).to_dict()})"
 
-    def visualize(self, node_count: int = 100, center_nodes: Optional[List[int]] = None) -> Any:
+    def visualize(
+        self, node_count: int = 100, center_nodes: Optional[List[int]] = None, include_node_properties: List[str] = None
+    ) -> Any:
         visual_graph = self._name
         if self.node_count() > node_count:
             visual_graph = str(uuid4())
@@ -256,11 +258,15 @@ class Graph:
             custom_error=False,
         )
 
+        node_properties = [pr_prop]
+        if include_node_properties is not None:
+            node_properties.extend(include_node_properties)
+
         result = self._query_runner.call_procedure(
             endpoint="gds.graph.nodeProperties.stream",
             params=CallParameters(
                 graph_name=visual_graph,
-                properties=[pr_prop],
+                properties=node_properties,
                 nodeLabels=self.node_labels(),
                 config=dict(listNodeLabels=True),
             ),
@@ -312,11 +318,17 @@ class Graph:
         label_to_color = {label: self._random_bright_color() for label in self.node_labels()}
 
         for _, node in node_properties_df.iterrows():
+            title = f"Node ID: {node['nodeId']}\nLabels: {node['nodeLabels']}"
+            if include_node_properties is not None:
+                title += f"\nNode properties:"
+                for prop in include_node_properties:
+                    title += f"\n{prop} = {node[prop]}"
+
             net.add_node(
                 int(node["nodeId"]),
                 value=node[pr_prop],
                 color=label_to_color[node["nodeLabels"][0]],
-                title=str(node["nodeId"]),
+                title=title,
             )
 
         # Add all the relationships
