@@ -235,7 +235,12 @@ class Graph:
         return f"{self.__class__.__name__}({self._graph_info(yields=yield_fields).to_dict()})"
 
     def visualize(
-        self, node_count: int = 100, center_nodes: Optional[List[int]] = None, include_node_properties: List[str] = None
+        self,
+        notebook: bool = True,
+        node_count: int = 100,
+        center_nodes: Optional[List[int]] = None,
+        include_node_properties: List[str] = None,
+        color_property: Optional[str] = None,
     ) -> Any:
         visual_graph = self._name
         if self.node_count() > node_count:
@@ -261,6 +266,12 @@ class Graph:
         node_properties = [pr_prop]
         if include_node_properties is not None:
             node_properties.extend(include_node_properties)
+
+        if color_property is not None:
+            node_properties.append(color_property)
+
+        # Remove possible duplicates
+        node_properties = list(set(node_properties))
 
         result = self._query_runner.call_procedure(
             endpoint="gds.graph.nodeProperties.stream",
@@ -307,15 +318,20 @@ class Graph:
         from pyvis.network import Network
 
         net = Network(
-            notebook=True,
-            cdn_resources="remote",
+            notebook=True if notebook else False,
+            cdn_resources="remote" if notebook else "local",
             bgcolor="#222222",  # Dark background
             font_color="white",
             height="750px",  # Modify according to your screen size
             width="100%",
         )
 
-        label_to_color = {label: self._random_bright_color() for label in self.node_labels()}
+        if color_property is None:
+            color_map = {label: self._random_bright_color() for label in self.node_labels()}
+        else:
+            color_map = {
+                prop_val: self._random_bright_color() for prop_val in node_properties_df[color_property].unique()
+            }
 
         for _, node in node_properties_df.iterrows():
             title = f"Node ID: {node['nodeId']}\nLabels: {node['nodeLabels']}"
@@ -324,10 +340,15 @@ class Graph:
                 for prop in include_node_properties:
                     title += f"\n{prop} = {node[prop]}"
 
+            if color_property is None:
+                color = color_map[node["nodeLabels"][0]]
+            else:
+                color = color_map[node[color_property]]
+
             net.add_node(
                 int(node["nodeId"]),
                 value=node[pr_prop],
-                color=label_to_color[node["nodeLabels"][0]],
+                color=color,
                 title=title,
             )
 
