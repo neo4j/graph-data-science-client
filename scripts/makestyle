@@ -13,13 +13,4 @@ if [ "${SKIP_NOTEBOOKS:-false}" == "true" ]; then
   exit 0
 fi
 
-echo "Cleaning notebooks"
-python -m jupyter nbconvert \
---clear-output \
---inplace \
---ClearOutputPreprocessor.enabled=True \
---ClearMetadataPreprocessor.enabled=True \
-  --ClearMetadataPreprocessor.preserve_cell_metadata_mask='tags' \
---log-level CRITICAL \
-./examples/*.ipynb \
-./examples/dev/*.ipynb
+python scripts/clean_notebooks.py -i examples/ -o inplace
