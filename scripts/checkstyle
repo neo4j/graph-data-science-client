@@ -17,19 +17,12 @@ NOTEBOOKS="./examples/*.ipynb" # ./examples/dev/*.ipynb"
 for f in $NOTEBOOKS
 do
   NB=$(cat $f)
-  FORMATTED_NB=$(python -m jupyter nbconvert \
-    --clear-output \
-    --stdout \
-    --ClearOutputPreprocessor.enabled=True \
-    --ClearMetadataPreprocessor.enabled=True \
-    --ClearMetadataPreprocessor.preserve_cell_metadata_mask='tags' \
-    --log-level CRITICAL \
-    $f)
+  FORMATTED_NB=$(python scripts/clean_notebooks.py -i "$f" -o stdout)
 
   if [[ "$FORMATTED_NB" != "$NB" ]];
   then
-    echo "Notebook $f is not correctly formatted"
-    diff --color=always --suppress-common-lines --minimal --side-by-side $NB $FORMATTED_NB
+    echo "Notebook $f is not correctly formatted. See diff above for more details."
+    diff --color=always --suppress-common-lines --minimal --side-by-side <(echo "$NB") <(echo "$FORMATTED_NB")
     exit 1
   fi
 done
