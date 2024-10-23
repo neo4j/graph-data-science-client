@@ -3,13 +3,8 @@
 This folder contains example notebooks on how to use the `graphdatascience` python client.
 
 
-## Custom tooling for notebooks
+## Custom cell tags for notebooks
 
-As for the rest of this repository, you can run `../scripts/makestyle` and `../scripts/checkstyle` to apply and check the style of the notebook.
+*Preserve cell outputs*
+
 By default, `makestyle` will remove all cell outputs. If you want to preserve some outputs, tag the cell with `preserve-output`.
-
-To generate documenatation, you can run `../scripts/nb2doc/convert`.
-
-If you only want to let CI run the notebook given a certain condition, tag a given cell in the notebook with `verify-version`.
-As the name suggests, the tag was introduced to only run for given GDS server versions.
-To make sure certain cells are run even in case of failure, tag the cell with `teardown`.

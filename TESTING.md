@@ -78,7 +78,7 @@ To run only integration tests that are marked as `encrypted_only`, call:
 
 ```bash
 pytest graphdatascience/tests/integration --encrypted-only
-````
+```
 
 
 ### GDS library versions
@@ -90,42 +90,12 @@ For this reason only tests compatible with the GDS library server version you ar
 
 ## Style guide
 
-The code follows a rather opinionated style based on [pep8](https://www.python.org/dev/peps/pep-0008/).
+The code and examples use [ruff](hhttps://docs.astral.sh/ruff/) to format and lint.
 You can check all code using all the below mentioned code checking tools by running the `scripts/checkstyle` bash script.
 There's also a `scripts/makestyle` to do formatting.
+Use `SKIP_NOTEBOOKS=true` to only format the code.
 
-
-### Linting
-
-To enforce pep8 conformity (with the exception of using max line length = 120) [flake8](https://flake8.pycqa.org/en/latest/) is used.
-To run it to check the entire repository, simply call:
-
-```bash
-flake8
-```
-
-from the root. See `.flake8` for our custom flake8 settings.
-
-
-### Formatting
-
-For general formatting we use [black](https://black.readthedocs.io/en/stable/) with default settings.
-black can be run to format the entire repository by calling:
-
-```bash
-black .
-```
-
-from the root. See the `[tool.black]` section of `pyproject.toml` for our custom black settings.
-
-Additionally [isort](https://pycqa.github.io/isort/) is used for consistent import sorting.
-It can similarly be run to format all source code by calling:
-
-```bash
-isort .
-```
-
-from the root. See `.isort.cfg` for our custom isort settings.
+See `pyproject.toml` for the configuration.
 
 
 ### Static typing
@@ -139,3 +109,19 @@ mypy .
 ```
 
 from the root. See `mypy.ini` for our custom mypy settings.
+
+
+## Notebook examples
+
+The notebooks under `/examples` can be run using `scripts/run_notebooks`.
+
+
+### Cell Tags
+
+*Verify version*
+If you only want to let CI run the notebook given a certain condition, tag a given cell in the notebook with `verify-version`.
+As the name suggests, the tag was introduced to only run for given GDS server versions.
+
+*Teardown*
+
+To make sure certain cells are always run even in case of failure, tag the cell with `teardown`.
