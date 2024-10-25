@@ -5,11 +5,12 @@ import json
 import re
 import time
 import warnings
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
+import pyarrow
 from neo4j.exceptions import ClientError
 from pandas import DataFrame
-from pyarrow import ChunkedArray, Schema, Table, chunked_array, flight
+from pyarrow import ChunkedArray, Table, chunked_array, flight
 from pyarrow import __version__ as arrow_version
 from pyarrow._flight import FlightMetadataReader, FlightStreamWriter
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
@@ -139,7 +140,67 @@ class GdsArrowClient:
 
         return self._sanitize_arrow_table(arrow_table).to_pandas()  # type: ignore
 
-    def send_action(self, action_type: str, meta_data: Dict[str, Any]) -> None:
+    def create_graph(
+        self,
+        graph_name: str,
+        database: str,
+        undirected_relationship_types: Optional[List[str]] = None,
+        inverse_indexed_relationship_types: Optional[List[str]] = None,
+        concurrency: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        config: Dict[str, Any] = {
+            "name": graph_name,
+            "database_name": database,
+        }
+
+        if concurrency:
+            config["concurrency"] = concurrency
+        if undirected_relationship_types:
+            config["undirected_relationship_types"] = undirected_relationship_types
+        if inverse_indexed_relationship_types:
+            config["inverse_indexed_relationship_types"] = inverse_indexed_relationship_types
+
+        return self._send_action("CREATE_GRAPH", config)
+
+    def create_database(
+        self,
+        database: str,
+        id_type: Optional[str] = None,
+        id_property: Optional[str] = None,
+        db_format: Optional[str] = None,
+        concurrency: Optional[int] = None,
+        force: bool = False,
+        high_io: bool = False,
+        use_bad_collector: bool = False,
+    ) -> Dict[str, Any]:
+        config: Dict[str, Any] = {
+            "name": database,
+            "force": force,
+            "high_io": high_io,
+            "use_bad_collector": use_bad_collector,
+        }
+
+        if concurrency:
+            config["concurrency"] = concurrency
+        if id_type:
+            config["id_type"] = id_type
+        if id_property:
+            config["id_property"] = id_property
+        if db_format:
+            config["db_format"] = db_format
+
+        return self._send_action("CREATE_DATABASE", config)
+
+    def node_load_done(self, graph_name: str) -> Dict[str, Any]:
+        return self._send_action("NODE_LOAD_DONE", {"name": graph_name})
+
+    def relationship_load_done(self, graph_name: str) -> Dict[str, Any]:
+        return self._send_action("RELATIONSHIP_LOAD_DONE", {"name": graph_name})
+
+    def abort(self, graph_name: str) -> Dict[str, Any]:
+        return self._send_action("ABORT", {"name": graph_name})
+
+    def _send_action(self, action_type: str, meta_data: Dict[str, Any]) -> Dict[str, Any]:
         action_type = self._versioned_action_type(action_type)
 
         try:
@@ -149,14 +210,54 @@ class GdsArrowClient:
             collected_result = list(result)
             assert len(collected_result) == 1
 
-            json.loads(collected_result[0].body.to_pybytes().decode())
+            return json.loads(collected_result[0].body.to_pybytes().decode())
         except Exception as e:
             self.handle_flight_error(e)
 
-    def start_put(self, payload: Dict[str, Any], schema: Schema) -> Tuple[FlightStreamWriter, FlightMetadataReader]:
-        flight_descriptor = self._versioned_flight_descriptor(payload)
+    def upload_nodes(
+        self,
+        graph_name: str,
+        node_data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame],
+        batch_size: int = 10_000,
+        progress_callback: Callable[[int], None] = lambda x: None,
+    ) -> None:
+        self._upload_data(graph_name, "node", node_data, batch_size, progress_callback)
+
+    def upload_relationships(
+        self,
+        graph_name: str,
+        relationship_data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame],
+        batch_size: int = 10_000,
+        progress_callback: Callable[[int], None] = lambda x: None,
+    ) -> None:
+        self._upload_data(graph_name, "relationship", relationship_data, batch_size, progress_callback)
+
+    def _upload_data(
+        self,
+        graph_name: str,
+        entity_type: str,
+        data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame],
+        batch_size: int,
+        progress_callback: Callable[[int], None],
+    ) -> None:
+        if isinstance(data, pyarrow.Table):
+            data = data.to_batches(batch_size)
+        if isinstance(data, DataFrame):
+            data = pyarrow.Table.from_pandas(data).to_batches(batch_size)
+
+        flight_descriptor = self._versioned_flight_descriptor({"name": graph_name, "entity_type": entity_type})
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
-        return self._flight_client.do_put(upload_descriptor, schema)  # type: ignore
+        put_stream, ack_stream = self._flight_client.do_put(upload_descriptor, data[0].schema())
+
+        try:
+            with put_stream:
+                for partition in data:
+                    # TODO implement retry
+                    put_stream.write_batch(partition)
+                    ack_stream.read()
+                    progress_callback(partition.num_rows)
+        except Exception as e:
+            GdsArrowClient.handle_flight_error(e)
 
     def close(self) -> None:
         self._flight_client.close()
