@@ -163,6 +163,28 @@ class GdsArrowClient:
 
         return self._send_action("CREATE_GRAPH", config)
 
+    def create_graph_from_triplets(
+        self,
+        graph_name: str,
+        database: str,
+        undirected_relationship_types: Optional[List[str]] = None,
+        inverse_indexed_relationship_types: Optional[List[str]] = None,
+        concurrency: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        config: Dict[str, Any] = {
+            "name": graph_name,
+            "database_name": database,
+        }
+
+        if concurrency:
+            config["concurrency"] = concurrency
+        if undirected_relationship_types:
+            config["undirected_relationship_types"] = undirected_relationship_types
+        if inverse_indexed_relationship_types:
+            config["inverse_indexed_relationship_types"] = inverse_indexed_relationship_types
+
+        return self._send_action("CREATE_GRAPH_FROM_TRIPLETS", config)
+
     def create_database(
         self,
         database: str,
@@ -198,6 +220,9 @@ class GdsArrowClient:
     def relationship_load_done(self, graph_name: str) -> Dict[str, Any]:
         return self._send_action("RELATIONSHIP_LOAD_DONE", {"name": graph_name})
 
+    def triplet_load_done(self, graph_name: str) -> Dict[str, Any]:
+        return self._send_action("TRIPLET_LOAD_DONE", {"name": graph_name})
+
     def abort(self, graph_name: str) -> Dict[str, Any]:
         return self._send_action("ABORT", {"name": graph_name})
 
@@ -232,6 +257,15 @@ class GdsArrowClient:
         progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
         self._upload_data(graph_name, "relationship", relationship_data, batch_size, progress_callback)
+
+    def upload_triplets(
+        self,
+        graph_name: str,
+        triplet_data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame],
+        batch_size: int = 10_000,
+        progress_callback: Callable[[int], None] = lambda x: None,
+    ) -> None:
+        self._upload_data(graph_name, "triplet", triplet_data, batch_size, progress_callback)
 
     def _upload_data(
         self,
