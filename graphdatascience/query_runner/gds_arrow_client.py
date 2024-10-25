@@ -10,11 +10,12 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 import pyarrow
 from neo4j.exceptions import ClientError
 from pandas import DataFrame
-from pyarrow import ChunkedArray, Table, chunked_array, flight
+from pyarrow import ChunkedArray, RecordBatch, Table, chunked_array, flight
 from pyarrow import __version__ as arrow_version
 from pyarrow._flight import FlightMetadataReader, FlightStreamWriter
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, stop_after_delay, wait_exponential
 
 from ..server_version.server_version import ServerVersion
 from ..version import __version__
@@ -236,24 +237,37 @@ class GdsArrowClient:
         self,
         graph_name: str,
         entity_type: str,
-        data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame],
+        data: Union[pyarrow.Table, List[pyarrow.RecordBatch], DataFrame],
         batch_size: int,
         progress_callback: Callable[[int], None],
     ) -> None:
         if isinstance(data, pyarrow.Table):
-            data = data.to_batches(batch_size)
-        if isinstance(data, DataFrame):
-            data = pyarrow.Table.from_pandas(data).to_batches(batch_size)
+            batches = data.to_batches(batch_size)
+        elif isinstance(data, DataFrame):
+            batches = pyarrow.Table.from_pandas(data).to_batches(batch_size)
+        else:
+            batches = data
 
         flight_descriptor = self._versioned_flight_descriptor({"name": graph_name, "entity_type": entity_type})
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
-        put_stream, ack_stream = self._flight_client.do_put(upload_descriptor, data[0].schema())
+        put_stream, ack_stream = self._flight_client.do_put(upload_descriptor, batches[0].schema())
+
+        @retry(
+            stop=(stop_after_delay(10) | stop_after_attempt(5)),
+            wait=wait_exponential(multiplier=1, min=1, max=10),
+            retry=(
+                retry_if_exception_type(flight.FlightUnavailableError)
+                | retry_if_exception_type(flight.FlightTimedOutError)
+                | retry_if_exception_type(flight.FlightInternalError)
+            ),
+        )
+        def upload_batch(p: RecordBatch) -> None:
+            put_stream.write_batch(p)
 
         try:
             with put_stream:
-                for partition in data:
-                    # TODO implement retry
-                    put_stream.write_batch(partition)
+                for partition in batches:
+                    upload_batch(partition)
                     ack_stream.read()
                     progress_callback(partition.num_rows)
         except Exception as e:
