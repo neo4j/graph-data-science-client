@@ -4,11 +4,10 @@ import concurrent
 import math
 import warnings
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Dict, List, NoReturn, Optional
+from typing import Any, Dict, List, Optional
 
 import numpy
 from pandas import DataFrame
-from pyarrow import Table
 from tqdm.auto import tqdm
 
 from .gds_arrow_client import GdsArrowClient
@@ -45,20 +44,23 @@ class ArrowGraphConstructor(GraphConstructor):
             if self._undirected_relationship_types:
                 config["undirected_relationship_types"] = self._undirected_relationship_types
 
-            self._client.send_action(
-                "CREATE_GRAPH",
-                config,
+            self._client.create_graph(
+                graph_name=self._graph_name,
+                database=self._database,
+                undirected_relationship_types=self._undirected_relationship_types,
+                inverse_indexed_relationship_types=None,
+                concurrency=self._concurrency,
             )
 
             self._send_dfs(node_dfs, "node")
 
-            self._client.send_action("NODE_LOAD_DONE", {"name": self._graph_name})
+            self._client.node_load_done(self._graph_name)
 
             self._send_dfs(relationship_dfs, "relationship")
 
-            self._client.send_action("RELATIONSHIP_LOAD_DONE", {"name": self._graph_name})
+            self._client.relationship_load_done(self._graph_name)
         except (Exception, KeyboardInterrupt) as e:
-            self._client.send_action("ABORT", {"name": self._graph_name})
+            self._client.abort(self._graph_name)
 
             raise e
 
@@ -81,24 +83,6 @@ class ArrowGraphConstructor(GraphConstructor):
 
         return partitioned_dfs
 
-    def _send_df(self, df: DataFrame, entity_type: str, pbar: tqdm[NoReturn]) -> None:
-        table = Table.from_pandas(df)
-        batches = table.to_batches(self._chunk_size)
-        flight_descriptor = {"name": self._graph_name, "entity_type": entity_type}
-
-        writer, _ = self._client.start_put(flight_descriptor, table.schema)
-
-        try:
-            with writer:
-                # Write table in chunks
-                for partition in batches:
-                    writer.write_batch(partition)
-                    pbar.update(partition.num_rows)
-            # Force a refresh to avoid the progress bar getting stuck at 0%
-            pbar.refresh()
-        except Exception as e:
-            GdsArrowClient.handle_flight_error(e)
-
     def _send_dfs(self, dfs: List[DataFrame], entity_type: str) -> None:
         desc = "Uploading Nodes" if entity_type == "node" else "Uploading Relationships"
         pbar = tqdm(total=sum([df.shape[0] for df in dfs]), unit="Records", desc=desc)
@@ -106,8 +90,15 @@ class ArrowGraphConstructor(GraphConstructor):
         partitioned_dfs = self._partition_dfs(dfs)
 
         with ThreadPoolExecutor(self._concurrency) as executor:
-            futures = [executor.submit(self._send_df, df, entity_type, pbar) for df in partitioned_dfs]
 
+            def run_upload(df):
+                if entity_type == "node":
+                    self._client.upload_nodes(self._graph_name, df, self._min_batch_size, pbar.update)
+                else:
+                    self._client.upload_relationships(self._graph_name, df, self._min_batch_size, pbar.update)
+                pbar.refresh()
+
+            futures = [executor.submit(run_upload, df) for df in partitioned_dfs]
             for future in concurrent.futures.as_completed(futures):
                 if not future.exception():
                     continue
