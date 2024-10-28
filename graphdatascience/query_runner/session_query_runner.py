@@ -50,6 +50,8 @@ class SessionQueryRunner(QueryRunner):
         database: Optional[str] = None,
         custom_error: bool = True,
     ) -> DataFrame:
+         # TODO dectect session failures errors? -- problem with delay in status update?
+         # should be off type - SessionExpired. Also needs to check for Arrow endpoints
         return self._db_query_runner.run_cypher(query, params, database, custom_error)
 
     def call_function(self, endpoint: str, params: Optional[CallParameters] = None) -> Any:

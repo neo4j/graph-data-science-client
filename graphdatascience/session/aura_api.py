@@ -157,6 +157,8 @@ class AuraApi:
                 return WaitResult.from_error(f"Session `{session_id}` not found -- please retry")
             elif session.status == "Ready" and session.host:  # check host needed until dns based routing
                 return WaitResult.from_connection_url(session.bolt_connection_url())
+            elif session.status == "Failed":
+                return WaitResult.from_error("session is in `Failed` state")
             else:
                 self._logger.debug(
                     f"Session `{session_id}` is not yet running. "
@@ -296,6 +298,7 @@ class AuraApi:
     def _check_resp(self, resp: requests.Response) -> None:
         self._check_status_code(resp)
         self._check_endpoint_deprecation(resp)
+        self._check_errors(resp)
 
     def _check_status_code(self, resp: requests.Response) -> None:
         if resp.status_code >= 400:
@@ -312,6 +315,13 @@ class AuraApi:
                 " Please update to a newer version of this client.",
                 DeprecationWarning,
             )
+
+    def _check_errors(self, resp: requests.Response) -> None:
+        errors = resp.json().get("errors")
+
+        if errors:
+            # TODO different Error class -- SessionUnvailable (also for expired sessions?)
+            raise AuraApiError(f"Request failed with errors: {errors}", status_code=resp.status_code)
 
     class Auth(requests.auth.AuthBase):
         class Token:
