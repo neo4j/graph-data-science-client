@@ -1,6 +1,6 @@
 // DO NOT EDIT - AsciiDoc file generated automatically
 
-= GDS Sessions (For Self Managed DB)
+= GDS Sessions - For Self Managed DB
 
 
 https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/gds-sessions-self-managed.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
