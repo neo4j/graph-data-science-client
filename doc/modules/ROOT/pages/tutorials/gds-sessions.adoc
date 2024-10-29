@@ -34,7 +34,7 @@ version `+1.12a1+` or later.
 
 [source, python, role=no-test]
 ----
-%pip install "graphdatascience>=1.12a1"
+%pip install "graphdatascience>=1.12"
 ----
 
 == Aura API credentials
@@ -83,21 +83,26 @@ delete the session ourselves.
 
 [source, python, role=no-test]
 ----
-import os
-from datetime import timedelta
-
 from graphdatascience.session import AlgorithmCategory, DbmsConnectionInfo
 
-# Identify the AuraDB instance
-db_connection = DbmsConnectionInfo(
-    uri=os.environ["AURA_DB_ADDRESS"], username=os.environ["AURA_DB_USER"], password=os.environ["AURA_DB_PW"]
-)
-# Create a GDS session!
+# Estimate the memory needed for the GDS session
 memory = sessions.estimate(
     node_count=20,
     relationship_count=50,
     algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
 )
+----
+
+[source, python, role=no-test]
+----
+from datetime import timedelta
+
+# Identify the AuraDB instance
+db_connection = DbmsConnectionInfo(
+    uri=os.environ["AURA_DB_ADDRESS"], username=os.environ["AURA_DB_USER"], password=os.environ["AURA_DB_PW"]
+)
+
+# Create a GDS session!
 gds = sessions.get_or_create(
     # we give it a representative name
     session_name="people-and-fruits",
@@ -186,7 +191,7 @@ algorithms, although we do not do that in this notebook.
 [source, python, role=no-test]
 ----
 G, result = gds.graph.project(
-    "people-and-fruits",
+    "people-and-fruits-2",
     """
     CALL {
         MATCH (p1:Person)
