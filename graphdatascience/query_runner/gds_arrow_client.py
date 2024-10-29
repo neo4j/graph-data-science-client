@@ -8,6 +8,7 @@ import warnings
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 import pyarrow
+from attr import dataclass
 from neo4j.exceptions import ClientError
 from pandas import DataFrame
 from pyarrow import ChunkedArray, RecordBatch, Table, chunked_array, flight
@@ -148,7 +149,24 @@ class GdsArrowClient:
         undirected_relationship_types: Optional[List[str]] = None,
         inverse_indexed_relationship_types: Optional[List[str]] = None,
         concurrency: Optional[int] = None,
-    ) -> Dict[str, Any]:
+    ) -> None:
+        """Starts a new graph import process on the GDS server.
+        The import process accepts separate node and relationship stream uploads.
+
+        Parameters
+        ----------
+        graph_name : str
+            The name used to identify the graph in the catalog and the import process
+        database: str
+            The name of the database from which the graph will be accessible
+        undirected_relationship_types : Optional[List[str]]
+            A list of relationship types that should be treated as undirected
+        inverse_indexed_relationship_types : Optional[List[str]]
+            A list of relationship types that should be indexed in reverse direction as well
+        concurrency : Optional[int]
+            The number of threads used on the server side when importing the graph
+        """
+
         config: Dict[str, Any] = {
             "name": graph_name,
             "database_name": database,
@@ -161,7 +179,7 @@ class GdsArrowClient:
         if inverse_indexed_relationship_types:
             config["inverse_indexed_relationship_types"] = inverse_indexed_relationship_types
 
-        return self._send_action("CREATE_GRAPH", config)
+        self._send_action("CREATE_GRAPH", config)
 
     def create_graph_from_triplets(
         self,
@@ -170,7 +188,24 @@ class GdsArrowClient:
         undirected_relationship_types: Optional[List[str]] = None,
         inverse_indexed_relationship_types: Optional[List[str]] = None,
         concurrency: Optional[int] = None,
-    ) -> Dict[str, Any]:
+    ) -> None:
+        """Starts a new graph import process on the GDS server.
+        The import process accepts triplets as input data.
+
+        Parameters
+        ----------
+        graph_name : str
+            The name used to identify the graph in the catalog and the import process
+        database: str
+            The name of the database from which the graph will be accessible
+        undirected_relationship_types : Optional[List[str]]
+            A list of relationship types that should be treated as undirected
+        inverse_indexed_relationship_types : Optional[List[str]]
+            A list of relationship types that should be indexed in reverse direction as well
+        concurrency : Optional[int]
+            The number of threads used on the server side when importing the graph
+        """
+
         config: Dict[str, Any] = {
             "name": graph_name,
             "database_name": database,
@@ -183,7 +218,7 @@ class GdsArrowClient:
         if inverse_indexed_relationship_types:
             config["inverse_indexed_relationship_types"] = inverse_indexed_relationship_types
 
-        return self._send_action("CREATE_GRAPH_FROM_TRIPLETS", config)
+        self._send_action("CREATE_GRAPH_FROM_TRIPLETS", config)
 
     def create_database(
         self,
@@ -195,7 +230,30 @@ class GdsArrowClient:
         force: bool = False,
         high_io: bool = False,
         use_bad_collector: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> None:
+        """Starts a new graph import process on the GDS server.
+        The import process accepts triplets as input data.
+
+        Parameters
+        ----------
+        database: str
+            The name used to identify the database and the import process
+        id_type : Optional[str]
+            Sets the node id type used in the input data. Can be either `INTEGER` or `STRING` (default is `INTEGER`)
+        id_property : Optional[str]
+            The node property key which stores the node id of the input data (default is `originalId`)
+        db_format
+            Database format. Valid values standard, aligned, high_limit or block (default is controlled by the db setting `db.db_format`)
+        concurrency : Optional[int]
+            The number of threads used on the server side when importing the graph
+        force: bool
+            Force deletes any existing database files prior to the import (default is False)
+        high_io: bool
+            Ignore environment-based heuristics, and specify whether the target storage subsystem can support parallel IO with high throughput (default is False)
+        use_bad_collector: bool
+            Collects bad node and relationship records during import and writes them into the log (default is false)
+        """
+
         config: Dict[str, Any] = {
             "name": database,
             "force": force,
@@ -212,19 +270,64 @@ class GdsArrowClient:
         if db_format:
             config["db_format"] = db_format
 
-        return self._send_action("CREATE_DATABASE", config)
+        self._send_action("CREATE_DATABASE", config)
 
-    def node_load_done(self, graph_name: str) -> Dict[str, Any]:
-        return self._send_action("NODE_LOAD_DONE", {"name": graph_name})
+    def node_load_done(self, graph_name: str) -> NodeLoadDoneResult:
+        """Notifies the server that all node data has been sent.
 
-    def relationship_load_done(self, graph_name: str) -> Dict[str, Any]:
-        return self._send_action("RELATIONSHIP_LOAD_DONE", {"name": graph_name})
+        Parameters
+        ----------
+        graph_name : str
+            The name of the import process
 
-    def triplet_load_done(self, graph_name: str) -> Dict[str, Any]:
-        return self._send_action("TRIPLET_LOAD_DONE", {"name": graph_name})
+        Returns
+        -------
+        NodeLoadDoneResult
+            A result object containing the name of the import process and the number of nodes loaded
+        """
+        return NodeLoadDoneResult.from_json(self._send_action("NODE_LOAD_DONE", {"name": graph_name}))
 
-    def abort(self, graph_name: str) -> Dict[str, Any]:
-        return self._send_action("ABORT", {"name": graph_name})
+    def relationship_load_done(self, graph_name: str) -> RelationshipLoadDoneResult:
+        """Notifies the server that all relationship data has been sent.
+        This will trigger the finalization of the import process and make the graph or database available.
+
+        Parameters
+        ----------
+        graph_name : str
+            The name of the import process
+
+         Returns
+        -------
+        RelationshipLoadDoneResult
+            A result object containing the name of the import process and the number of relationships loaded
+        """
+        return RelationshipLoadDoneResult.from_json(self._send_action("RELATIONSHIP_LOAD_DONE", {"name": graph_name}))
+
+    def triplet_load_done(self, graph_name: str) -> TripletLoadDoneResult:
+        """Notifies the server that all triplet data has been sent.
+        This will trigger the finalization of the import process and make the graph available in the graph catalog.
+
+        Parameters
+        ----------
+        graph_name : str
+            The name of the import process
+
+        Returns
+        -------
+        TripletLoadDoneResult
+            A result object containing the name of the import process and the number of nodes and relationships loaded
+        """
+        return TripletLoadDoneResult.from_json(self._send_action("TRIPLET_LOAD_DONE", {"name": graph_name}))
+
+    def abort(self, graph_name: str) -> None:
+        """Aborts the specified import process.
+
+        Parameters
+        ----------
+        graph_name : str
+            The name of the import process
+        """
+        self._send_action("ABORT", {"name": graph_name})
 
     def _send_action(self, action_type: str, meta_data: Dict[str, Any]) -> Dict[str, Any]:
         action_type = self._versioned_action_type(action_type)
@@ -247,6 +350,19 @@ class GdsArrowClient:
         batch_size: int = 10_000,
         progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
+        """Uploads node data to the server.
+
+        Parameters
+        ----------
+        graph_name : str
+            The name of the import process
+        node_data : Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame]
+            The node data to upload
+        batch_size : int
+            The number of rows per batch
+        progress_callback : Callable[[int], None]
+            A callback function that is called with the number of rows uploaded after each batch
+        """
         self._upload_data(graph_name, "node", node_data, batch_size, progress_callback)
 
     def upload_relationships(
@@ -256,6 +372,19 @@ class GdsArrowClient:
         batch_size: int = 10_000,
         progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
+        """Uploads relationship data to the server.
+
+        Parameters
+        ----------
+        graph_name : str
+            The name of the import process
+        relationship_data : Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame]
+            The relationship data to upload
+        batch_size : int
+            The number of rows per batch
+        progress_callback : Callable[[int], None]
+            A callback function that is called with the number of rows uploaded after each batch
+        """
         self._upload_data(graph_name, "relationship", relationship_data, batch_size, progress_callback)
 
     def upload_triplets(
@@ -265,6 +394,19 @@ class GdsArrowClient:
         batch_size: int = 10_000,
         progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
+        """Uploads triplet data to the server.
+
+        Parameters
+        ----------
+        graph_name : str
+            The name of the import process
+        triplet_data : Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame]
+            The triplet data to upload
+        batch_size : int
+            The number of rows per batch
+        progress_callback : Callable[[int], None]
+            A callback function that is called with the number of rows uploaded after each batch
+        """
         self._upload_data(graph_name, "triplet", triplet_data, batch_size, progress_callback)
 
     def _upload_data(
@@ -444,3 +586,40 @@ class AuthMiddleware(ClientMiddleware):  # type: ignore
             return {"authorization": auth_token}
         else:
             return {"authorization": "Bearer " + token}
+
+
+@dataclass(repr=True, frozen=True)
+class NodeLoadDoneResult:
+    name: str
+    node_count: int
+
+    @classmethod
+    def from_json(cls, json: Dict[str, Any]) -> NodeLoadDoneResult:
+        return cls(
+            name=json["name"],
+            node_count=json["node_count"],
+        )
+
+
+@dataclass(repr=True, frozen=True)
+class RelationshipLoadDoneResult:
+    name: str
+    relationship_count: int
+
+    @classmethod
+    def from_json(cls, json: Dict[str, Any]) -> RelationshipLoadDoneResult:
+        return cls(
+            name=json["name"],
+            relationship_count=json["relationship_count"],
+        )
+
+
+@dataclass(repr=True, frozen=True)
+class TripletLoadDoneResult:
+    name: str
+    node_count: int
+    relationship_count: int
+
+    @classmethod
+    def from_json(cls, json: Dict[str, Any]) -> TripletLoadDoneResult:
+        return cls(name=json["name"], node_count=json["node_count"], relationship_count=json["relationship_count"])
