@@ -30,7 +30,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
     def create(
         cls,
         gds_session_connection_info: DbmsConnectionInfo,
-        db_connection_info: DbmsConnectionInfo,
+        db_endpoint: Neo4jQueryRunner | DbmsConnectionInfo,
         delete_fn: Callable[[], bool],
         arrow_disable_server_verification: bool = False,
         arrow_tls_root_certs: Optional[bytes] = None,
@@ -67,13 +67,16 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_tls_root_certs,
         )
 
-        db_bolt_query_runner = Neo4jQueryRunner.create(
-            db_connection_info.uri,
-            db_connection_info.auth(),
-            aura_ds=True,
-            show_progress=False,
-            database=db_connection_info.database,
-        )
+        if isinstance(db_endpoint, Neo4jQueryRunner):
+            db_bolt_query_runner = db_endpoint
+        else:
+            db_bolt_query_runner = Neo4jQueryRunner.create(
+                db_endpoint.uri,
+                db_endpoint.auth(),
+                aura_ds=True,
+                show_progress=False,
+                database=db_endpoint.database,
+            )
         db_bolt_query_runner.set_bookmarks(bookmarks)
 
         session_query_runner = SessionQueryRunner.create(

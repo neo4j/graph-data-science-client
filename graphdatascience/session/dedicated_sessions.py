@@ -5,8 +5,7 @@ import warnings
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
-import neo4j
-
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_api_responses import SessionDetails
@@ -48,7 +47,15 @@ class DedicatedSessions:
         ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
     ) -> AuraGraphDataScience:
-        self._validate_db_connection(db_connection)
+        db_runner = Neo4jQueryRunner.create(
+            db_connection.uri,
+            db_connection.auth(),
+            aura_ds=True,
+            show_progress=False,
+            database=db_connection.database,
+        )
+
+        self._validate_db_connection(db_runner)
 
         dbid = AuraApi.extract_id(db_connection.uri)
 
@@ -74,9 +81,7 @@ class DedicatedSessions:
             password=password,
         )
 
-        return self._construct_client(
-            session_id=session_id, session_connection=session_connection, db_connection=db_connection
-        )
+        return self._construct_client(session_id=session_id, session_connection=session_connection, db_runner=db_runner)
 
     def delete(self, *, session_name: Optional[str] = None, session_id: Optional[str] = None) -> bool:
         if not session_name and not session_id:
@@ -113,18 +118,15 @@ class DedicatedSessions:
         return matched_sessions[0]
 
     @staticmethod
-    def _validate_db_connection(db_connection):
-        with neo4j.GraphDatabase.driver(
-            db_connection.uri, auth=(db_connection.username, db_connection.password)
-        ) as driver:
-            try:
-                driver.verify_connectivity()
-            except Exception as e:
-                raise RuntimeError(f"Failed to connect to the Neo4j database: {e}")
-            try:
-                driver.verify_authentication()
-            except Exception as e:
-                raise RuntimeError(f"Failed to authenticate to the Neo4j database: {e}")
+    def _validate_db_connection(db_runner: Neo4jQueryRunner):
+        try:
+            db_runner.verify_connectivity()
+        except Exception as e:
+            raise RuntimeError(f"Failed to connect to the Neo4j database: {e}")
+        try:
+            db_runner.verify_authentication()
+        except Exception as e:
+            raise RuntimeError(f"Failed to authenticate to the Neo4j database: {e}")
 
     def _create_session(
         self,
@@ -152,10 +154,10 @@ class DedicatedSessions:
             return self._aura_api.create_session(name=session_name, dbid=dbid, pwd=pwd, memory=memory, ttl=ttl)
 
     def _construct_client(
-        self, session_id: str, session_connection: DbmsConnectionInfo, db_connection: DbmsConnectionInfo
+        self, session_id: str, session_connection: DbmsConnectionInfo, db_runner: Neo4jQueryRunner
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience.create(
             gds_session_connection_info=session_connection,
-            db_connection_info=db_connection,
+            db_endpoint=db_runner,
             delete_fn=lambda: self._aura_api.delete_session(session_id=session_id),
         )
