@@ -27,9 +27,10 @@ from graphdatascience.session import GdsSessions, AuraAPICredentials
 
 CLIENT_ID = "my-aura-api-client-id"
 CLIENT_SECRET = "my-aura-api-client-secret"
+TENANT_ID = None # Needs to be specified if your Aura account has multiple tenants
 
 # Create a new GdsSessions object
-sessions = GdsSessions(api_credentials=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET))
+sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, tenant_id=TENANT_ID))
 ----
 
 
