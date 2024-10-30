@@ -137,11 +137,11 @@ class SessionQueryRunner(QueryRunner):
         query = params["query"]
         arrow_config = params["arrow_configuration"]
 
+        job_id = self._progress_logger.extract_or_create_job_id(params)
         project_protocol = ProjectProtocol.select(self._resolved_protocol_version)
-        project_params = project_protocol.project_params(graph_name, query, params, arrow_config)
+        project_params = project_protocol.project_params(graph_name, query, job_id, params, arrow_config)
 
         try:
-            job_id = self._progress_logger.extract_or_create_job_id(params)
             StaticProgressStore.register_task_with_unknown_volume(job_id, "Project from remote database")
 
             return project_protocol.run_projection(

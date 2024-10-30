@@ -54,6 +54,8 @@ class ProtocolVersionResolver:
             return ProtocolVersion.V1
         elif version_string == "v2":
             return ProtocolVersion.V2
+        elif version_string == "v3":
+            return ProtocolVersion.V3
         else:
             return None
 

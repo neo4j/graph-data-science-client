@@ -29,6 +29,9 @@ class QueryProgressLogger:
 
     @staticmethod
     def extract_or_create_job_id(params: Dict[str, Any]) -> str:
+        if "job_id" in params:
+            return params["job_id"]
+
         if "config" in params:
             if "jobId" in params["config"]:
                 job_id = params["config"]["jobId"]
