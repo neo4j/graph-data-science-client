@@ -48,8 +48,8 @@ class DedicatedSessions:
         cloud_location: Optional[CloudLocation] = None,
     ) -> AuraGraphDataScience:
         db_runner = Neo4jQueryRunner.create(
-            db_connection.uri,
-            db_connection.auth(),
+            endpoint=db_connection.uri,
+            auth=db_connection.auth(),
             aura_ds=True,
             show_progress=False,
             database=db_connection.database,

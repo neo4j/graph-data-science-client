@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional, Union
 
 from pandas import DataFrame
 
@@ -30,7 +30,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
     def create(
         cls,
         gds_session_connection_info: DbmsConnectionInfo,
-        db_endpoint: Neo4jQueryRunner | DbmsConnectionInfo,
+        db_endpoint: Union[Neo4jQueryRunner, DbmsConnectionInfo],
         delete_fn: Callable[[], bool],
         arrow_disable_server_verification: bool = False,
         arrow_tls_root_certs: Optional[bytes] = None,
