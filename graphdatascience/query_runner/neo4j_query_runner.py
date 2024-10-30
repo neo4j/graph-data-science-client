@@ -5,20 +5,21 @@ import re
 import time
 import warnings
 from typing import Any, Dict, List, Optional, Tuple, Union
+from uuid import uuid4
 
 import neo4j
 from pandas import DataFrame
 
+from .cypher_graph_constructor import CypherGraphConstructor
+from .graph_constructor import GraphConstructor
+from .progress.query_progress_logger import QueryProgressLogger
+from .query_runner import QueryRunner
 from ..call_parameters import CallParameters
 from ..error.endpoint_suggester import generate_suggestive_error_message
 from ..error.gds_not_installed import GdsNotFound
 from ..error.unable_to_connect import UnableToConnectError
 from ..server_version.server_version import ServerVersion
 from ..version import __version__
-from .cypher_graph_constructor import CypherGraphConstructor
-from .graph_constructor import GraphConstructor
-from .progress.query_progress_logger import QueryProgressLogger
-from .query_runner import QueryRunner
 
 
 class Neo4jQueryRunner(QueryRunner):
@@ -181,7 +182,7 @@ class Neo4jQueryRunner(QueryRunner):
             return self.run_cypher(query, params, database, custom_error)
 
         if self._resolve_show_progress(logging):
-            job_id = self._progress_logger.extract_or_create_job_id(params)
+            job_id = self._extract_or_create_job_id(params)
             return self._progress_logger.run_with_progress_logging(run_cypher_query, job_id, database)
         else:
             return run_cypher_query()
@@ -266,6 +267,22 @@ class Neo4jQueryRunner(QueryRunner):
 
     def set_show_progress(self, show_progress: bool) -> None:
         self._show_progress = show_progress
+
+    @staticmethod
+    def _extract_or_create_job_id(params: CallParameters) -> str:
+        if "config" not in params:
+            params["config"] = {}
+            return str(uuid4())
+
+        config = params["config"]
+
+        if "jobId" not in config and "job_id" not in config:
+            return str(uuid4())
+
+        if "job_id" in config:
+            return config["job_id"]
+
+        return config["jobId"]
 
     @staticmethod
     def handle_driver_exception(session: neo4j.Session, e: Exception) -> None:
