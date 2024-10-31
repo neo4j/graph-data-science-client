@@ -302,20 +302,24 @@ def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> No
     sessions = DedicatedSessions(aura_api)
 
     patch_construct_client(mocker)
-    patch_validate_db_connection(mocker)
+    patch_neo4j_query_runner(mocker)
 
     ttl = timedelta(hours=42)
-    gds_credentials = sessions.get_or_create(
+    gds_parameters = sessions.get_or_create(
         "my-session",
         SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+s://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
         ttl=ttl,
     )
 
-    assert gds_credentials == {  # type: ignore
-        "db_connection": DbmsConnectionInfo(
-            uri="neo4j+s://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
-        ),
+    assert gds_parameters == {  # type: ignore
+        "db_runner": {
+            "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
+            "auth": ("dbuser", "db_pw"),
+            "aura_ds": True,
+            "database": None,
+            "show_progress": False,
+        },
         "session_connection": DbmsConnectionInfo(
             uri="neo4j+s://foo.bar", username="neo4j", password=HASHED_DB_PASSWORD
         ),
@@ -334,7 +338,7 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
     sessions = DedicatedSessions(aura_api)
 
     patch_construct_client(mocker)
-    patch_validate_db_connection(mocker)
+    patch_neo4j_query_runner(mocker)
 
     ttl = timedelta(hours=42)
 
@@ -347,7 +351,13 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
     )
 
     assert gds_credentials == {  # type: ignore
-        "db_connection": DbmsConnectionInfo(uri="neo4j+s://foo.bar", username="dbuser", password="db_pw"),
+        "db_runner": {
+            "endpoint": "neo4j+s://foo.bar",
+            "auth": ("dbuser", "db_pw"),
+            "aura_ds": True,
+            "database": None,
+            "show_progress": False,
+        },
         "session_connection": DbmsConnectionInfo(
             uri="neo4j+s://foo.bar", username="neo4j", password=HASHED_DB_PASSWORD
         ),
@@ -368,7 +378,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     sessions = DedicatedSessions(aura_api)
 
     patch_construct_client(mocker)
-    patch_validate_db_connection(mocker)
+    patch_neo4j_query_runner(mocker)
 
     gds_args1 = sessions.get_or_create(
         "my-session",
@@ -382,9 +392,13 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     )
 
     assert gds_args1 == {  # type: ignore
-        "db_connection": DbmsConnectionInfo(
-            uri="neo4j+s://ffff0.databases.neo4j.io", username="dbuser", password="db_pw"
-        ),
+        "db_runner": {
+            "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
+            "auth": ("dbuser", "db_pw"),
+            "aura_ds": True,
+            "database": None,
+            "show_progress": False,
+        },
         "session_connection": DbmsConnectionInfo(
             uri="neo4j+s://foo.bar", username="neo4j", password=HASHED_DB_PASSWORD
         ),
@@ -398,7 +412,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
 def test_get_or_create_expired_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
 
-    patch_validate_db_connection(mocker)
+    patch_neo4j_query_runner(mocker)
 
     fake_aura_api = cast(FakeAuraApi, aura_api)
     fake_aura_api.add_session(
@@ -427,8 +441,7 @@ def test_get_or_create_expired_session(mocker: MockerFixture, aura_api: AuraApi)
 
 def test_get_or_create_soon_expired_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
-
-    patch_validate_db_connection(mocker)
+    patch_neo4j_query_runner(mocker)
 
     fake_aura_api = cast(FakeAuraApi, aura_api)
     fake_aura_api.add_session(
@@ -457,7 +470,7 @@ def test_get_or_create_for_auradb_with_cloud_location(mocker: MockerFixture, aur
     db = _setup_db_instance(aura_api)
 
     sessions = DedicatedSessions(aura_api)
-    patch_validate_db_connection(mocker)
+    patch_neo4j_query_runner(mocker)
 
     with pytest.raises(
         ValueError, match=re.escape("cloud_location cannot be provided for sessions against an AuraDB.")
@@ -472,7 +485,7 @@ def test_get_or_create_for_auradb_with_cloud_location(mocker: MockerFixture, aur
 
 def test_get_or_create_for_without_cloud_location(mocker: MockerFixture, aura_api: AuraApi) -> None:
     sessions = DedicatedSessions(aura_api)
-    patch_validate_db_connection(mocker)
+    patch_neo4j_query_runner(mocker)
 
     with pytest.raises(
         ValueError, match=re.escape("cloud_location must be provided for sessions against a self-managed DB.")
@@ -594,7 +607,7 @@ def test_create_waiting_forever(
     aura_api = FakeAuraApi(status_after_creating="updating")
     _setup_db_instance(aura_api)
     sessions = DedicatedSessions(aura_api)
-    patch_validate_db_connection(mocker)
+    patch_neo4j_query_runner(mocker)
 
     with pytest.raises(RuntimeError, match="Failed to create session `one`: Session `ffff0-ffff1` is not running"):
         sessions.get_or_create(
@@ -624,12 +637,16 @@ def _setup_db_instance(aura_api: AuraApi) -> InstanceCreateDetails:
     return aura_api.create_instance("test", SessionMemory.m_8GB.value, "aws", "leipzig-1")
 
 
+def patch_neo4j_query_runner(mocker: MockerFixture) -> None:
+    mocker.patch(
+        "graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner.create",
+        lambda *args, **kwargs: kwargs,
+    )
+    mocker.patch("graphdatascience.session.dedicated_sessions.DedicatedSessions._validate_db_connection")
+
+
 def patch_construct_client(mocker: MockerFixture) -> None:
     mocker.patch(
         "graphdatascience.session.dedicated_sessions.DedicatedSessions._construct_client",
         lambda *args, **kwargs: kwargs,
     )
-
-
-def patch_validate_db_connection(mocker: MockerFixture) -> None:
-    mocker.patch("graphdatascience.session.dedicated_sessions.DedicatedSessions._validate_db_connection")
