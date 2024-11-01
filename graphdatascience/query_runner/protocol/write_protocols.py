@@ -1,8 +1,8 @@
-import time
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 
 from pandas import DataFrame
+from tenacity import retry, retry_if_result, wait_incrementing
 
 from graphdatascience import QueryRunner
 from graphdatascience.call_parameters import CallParameters
@@ -116,6 +116,11 @@ class RemoteWriteBackV3(WriteProtocol):
     def run_write_back(
         self, query_runner: QueryRunner, parameters: CallParameters, yields: Optional[List[str]]
     ) -> DataFrame:
+        def is_not_completed(result: DataFrame) -> bool:
+            result = write_fn().squeeze()
+            return result["status"] != Status.COMPLETED.name
+
+        @retry(retry=retry_if_result(is_not_completed), wait=wait_incrementing(start=0.2, increment=0.2, max=2))
         def write_fn() -> DataFrame:
             return query_runner.call_procedure(
                 ProtocolVersion.V3.versioned_procedure_name("gds.arrow.write"),
@@ -126,10 +131,4 @@ class RemoteWriteBackV3(WriteProtocol):
                 False,
             )
 
-        while True:
-            result = write_fn().squeeze()
-            if result["status"] == Status.COMPLETED.name:
-                return result
-
-            # wait for 100 ms, then retry
-            time.sleep(0.1)
+        return write_fn()
