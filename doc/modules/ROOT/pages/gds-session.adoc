@@ -6,6 +6,8 @@ A GDS Session reads data from a Neo4j DBMS through a _remote projection_, runs c
 
 NOTE: GDS Sessions are not available by default. Contact your account manager to get the features enabled.
 
+TIP: For ready-to-run notebooks, see our tutorials on GDS Sessions for xref:tutorials/gds-sessions.adoc[AuraDB] and xref:tutorials/gds-sessions-self-managed[self-managed databases].
+
 
 == GDS Session management
 
@@ -27,9 +29,11 @@ from graphdatascience.session import GdsSessions, AuraAPICredentials
 
 CLIENT_ID = "my-aura-api-client-id"
 CLIENT_SECRET = "my-aura-api-client-secret"
+# Needs to be specified if your Aura account has multiple tenants
+TENANT_ID = None
 
 # Create a new GdsSessions object
-sessions = GdsSessions(api_credentials=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET))
+sessions = GdsSessions(api_credentials=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET, TENANT_ID))
 ----
 
 
@@ -54,8 +58,10 @@ The name must be unique.
 - **Session memory**.
 This configuration determines the amount of memory and CPU available to the session.
 It also determines the cost of running the session.
-Available configurations are listed in our API https://neo4j.com/docs/graph-data-science-client/current/api/sessions/session_memory/#graphdatascience.session.session_sizes.SessionMemory[reference].
+Available configurations are listed in our API https://neo4j.com/docs/graph-data-science-client/current/api/sessions/session_memory[reference].
+
 You can use the `sessions.estimate()` method to estimate the size required.
+Available algorithm categories are listed in our API https://neo4j.com/docs/graph-data-science-client/current/api/sessions/algorithm_category[reference].
 
 - **DBMS connection**.
 This is a `DbmsConnectionInfo` object that contains the URI of an Neo4j instance, a username, and a password.
