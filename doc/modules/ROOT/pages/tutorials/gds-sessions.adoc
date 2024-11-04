@@ -191,7 +191,7 @@ algorithms, although we do not do that in this notebook.
 [source, python, role=no-test]
 ----
 G, result = gds.graph.project(
-    "people-and-fruits-2",
+    "people-and-fruits",
     """
     CALL {
         MATCH (p1:Person)
