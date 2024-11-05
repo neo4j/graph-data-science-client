@@ -17,6 +17,7 @@ class GraphProjectRemoteRunner(IllegalAttrChecker):
         self,
         graph_name: str,
         query: str,
+        job_id: Optional[str] = None,
         concurrency: int = 4,
         undirected_relationship_types: Optional[List[str]] = None,
         inverse_indexed_relationship_types: Optional[List[str]] = None,
@@ -34,6 +35,7 @@ class GraphProjectRemoteRunner(IllegalAttrChecker):
         params = CallParameters(
             graph_name=graph_name,
             query=query,
+            job_id=job_id,
             concurrency=concurrency,
             undirected_relationship_types=undirected_relationship_types,
             inverse_indexed_relationship_types=inverse_indexed_relationship_types,

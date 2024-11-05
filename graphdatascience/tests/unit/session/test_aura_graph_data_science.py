@@ -15,6 +15,7 @@ def test_remote_projection_configuration() -> None:
     g = gds.graph.project(
         "foo",
         "RETURN gds.graph.project(0, 1)",
+        job_id="test_job",
         concurrency=3,
         batch_size=99,
         undirected_relationship_types=["FOO"],
@@ -24,11 +25,12 @@ def test_remote_projection_configuration() -> None:
     assert g.graph.name() == "foo"
     assert (
         query_runner.last_query()
-        == "CALL gds.arrow.project($graph_name, $query, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_configuration)"
+        == "CALL gds.arrow.project($graph_name, $query, $job_id, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_configuration)"
     )
     assert query_runner.last_params() == {
         "graph_name": "foo",
         "query": "RETURN gds.graph.project(0, 1)",
+        "job_id": "test_job",
         "concurrency": 3,
         "undirected_relationship_types": ["FOO"],
         "inverse_indexed_relationship_types": ["BAR"],
@@ -50,11 +52,12 @@ def test_remote_projection_defaults() -> None:
     assert g.graph.name() == "foo"
     assert (
         query_runner.last_query()
-        == "CALL gds.arrow.project($graph_name, $query, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_configuration)"
+        == "CALL gds.arrow.project($graph_name, $query, $job_id, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_configuration)"
     )
     assert query_runner.last_params() == {
         "graph_name": "foo",
         "query": "RETURN gds.graph.project(0, 1)",
+        "job_id": None,
         "concurrency": 4,
         "undirected_relationship_types": [],
         "inverse_indexed_relationship_types": [],
