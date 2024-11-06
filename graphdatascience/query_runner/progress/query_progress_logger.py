@@ -1,7 +1,6 @@
 import warnings
 from concurrent.futures import Future, ThreadPoolExecutor, wait
-from typing import Any, Callable, Dict, NoReturn, Optional
-from uuid import uuid4
+from typing import Any, Callable, NoReturn, Optional
 
 from pandas import DataFrame
 from tqdm.auto import tqdm
@@ -26,23 +25,6 @@ class QueryProgressLogger:
         self._server_version_func = server_version_func
         self._static_progress_provider = StaticProgressProvider()
         self._query_progress_provider = QueryProgressProvider(run_cypher_func, server_version_func)
-
-    @staticmethod
-    def extract_or_create_job_id(params: Dict[str, Any]) -> str:
-        if "job_id" in params:
-            return params["job_id"]
-
-        if "config" in params:
-            if "jobId" in params["config"]:
-                job_id = params["config"]["jobId"]
-            else:
-                job_id = str(uuid4())
-                params["config"]["jobId"] = job_id
-        else:
-            job_id = str(uuid4())
-            params["config"] = {"jobId": job_id}
-
-        return job_id
 
     def run_with_progress_logging(
         self, runnable: DataFrameProducer, job_id: str, database: Optional[str] = None

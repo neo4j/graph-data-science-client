@@ -5,6 +5,7 @@ import re
 import time
 import warnings
 from typing import Any, Dict, List, Optional, Tuple, Union
+from uuid import uuid4
 
 import neo4j
 from pandas import DataFrame
@@ -181,7 +182,7 @@ class Neo4jQueryRunner(QueryRunner):
             return self.run_cypher(query, params, database, custom_error)
 
         if self._resolve_show_progress(logging):
-            job_id = self._progress_logger.extract_or_create_job_id(params)
+            job_id = self._extract_or_create_job_id(params)
             return self._progress_logger.run_with_progress_logging(run_cypher_query, job_id, database)
         else:
             return run_cypher_query()
@@ -266,6 +267,22 @@ class Neo4jQueryRunner(QueryRunner):
 
     def set_show_progress(self, show_progress: bool) -> None:
         self._show_progress = show_progress
+
+    @staticmethod
+    def _extract_or_create_job_id(params: CallParameters) -> str:
+        config = params["config"] if "config" in params else {}
+
+        job_id = None
+        if "jobId" in config:
+            job_id = config["jobId"]
+
+        if "job_id" in config:
+            job_id = config["job_id"]
+
+        if not job_id:
+            return str(uuid4())
+
+        return job_id
 
     @staticmethod
     def handle_driver_exception(session: neo4j.Session, e: Exception) -> None:

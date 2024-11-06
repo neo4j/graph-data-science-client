@@ -117,8 +117,7 @@ class RemoteWriteBackV3(WriteProtocol):
         self, query_runner: QueryRunner, parameters: CallParameters, yields: Optional[List[str]]
     ) -> DataFrame:
         def is_not_completed(result: DataFrame) -> bool:
-            result = write_fn().squeeze()
-            return result["status"] != Status.COMPLETED.name
+            return result.squeeze()["status"] != Status.COMPLETED.name
 
         @retry(retry=retry_if_result(is_not_completed), wait=wait_incrementing(start=0.2, increment=0.2, max=2))
         def write_fn() -> DataFrame:
