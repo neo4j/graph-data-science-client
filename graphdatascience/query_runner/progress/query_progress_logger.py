@@ -1,7 +1,6 @@
 import warnings
 from concurrent.futures import Future, ThreadPoolExecutor, wait
-from typing import Any, Callable, Dict, NoReturn, Optional
-from uuid import uuid4
+from typing import Any, Callable, NoReturn, Optional
 
 from pandas import DataFrame
 from tqdm.auto import tqdm

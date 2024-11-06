@@ -10,16 +10,16 @@ from uuid import uuid4
 import neo4j
 from pandas import DataFrame
 
-from .cypher_graph_constructor import CypherGraphConstructor
-from .graph_constructor import GraphConstructor
-from .progress.query_progress_logger import QueryProgressLogger
-from .query_runner import QueryRunner
 from ..call_parameters import CallParameters
 from ..error.endpoint_suggester import generate_suggestive_error_message
 from ..error.gds_not_installed import GdsNotFound
 from ..error.unable_to_connect import UnableToConnectError
 from ..server_version.server_version import ServerVersion
 from ..version import __version__
+from .cypher_graph_constructor import CypherGraphConstructor
+from .graph_constructor import GraphConstructor
+from .progress.query_progress_logger import QueryProgressLogger
+from .query_runner import QueryRunner
 
 
 class Neo4jQueryRunner(QueryRunner):

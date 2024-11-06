@@ -6,19 +6,19 @@ def test_job_id_extraction():
     # empty params
     params = CallParameters({})
     job_id = Neo4jQueryRunner._extract_or_create_job_id(params)
-    assert job_id is not None and job_id is not ""
+    assert job_id is not None and job_id != ""
 
     # empty job id
     params = CallParameters(config={job_id: None})
     job_id = Neo4jQueryRunner._extract_or_create_job_id(params)
-    assert job_id is not None and job_id is not ""
+    assert job_id is not None and job_id != ""
 
     # job_id given
     params = CallParameters(config={"job_id": "foo"})
     job_id = Neo4jQueryRunner._extract_or_create_job_id(params)
-    assert job_id is "foo"
+    assert job_id == "foo"
 
     # jobId given
     params = CallParameters(config={"jobId": "bar"})
     job_id = Neo4jQueryRunner._extract_or_create_job_id(params)
-    assert job_id is "bar"
+    assert job_id == "bar"
