@@ -177,7 +177,7 @@ def aura_gds(runner: CollectingQueryRunner, mocker: MockerFixture) -> Generator[
 
     aura_gds = AuraGraphDataScience.create(
         gds_session_connection_info=DbmsConnectionInfo("address", "some", "auth"),
-        db_connection_info=DbmsConnectionInfo("address", "some", "auth"),
+        db_endpoint=DbmsConnectionInfo("address", "some", "auth"),
         delete_fn=lambda: True,
     )
     yield aura_gds

@@ -283,6 +283,12 @@ class Neo4jQueryRunner(QueryRunner):
 
         raise SyntaxError(generate_suggestive_error_message(requested_endpoint, all_endpoints)) from e
 
+    def verify_connectivity(self) -> None:
+        self._driver.verify_connectivity()
+
+    def verify_authentication(self) -> None:
+        self._driver.verify_authentication()
+
     def _verify_connectivity(self, database: Optional[str] = None) -> None:
         WAIT_TIME = 1
         MAX_RETRYS = 10 * 60
