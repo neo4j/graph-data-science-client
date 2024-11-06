@@ -270,19 +270,19 @@ class Neo4jQueryRunner(QueryRunner):
 
     @staticmethod
     def _extract_or_create_job_id(params: CallParameters) -> str:
-        if "config" not in params:
-            params["config"] = {}
-            return str(uuid4())
+        config = params["config"] if "config" in params else {}
 
-        config = params["config"]
-
-        if "jobId" not in config and "job_id" not in config:
-            return str(uuid4())
+        job_id = None
+        if "jobId" in config:
+            job_id = config["jobId"]
 
         if "job_id" in config:
-            return config["job_id"]
+            job_id = config["job_id"]
 
-        return config["jobId"]
+        if not job_id:
+            return str(uuid4())
+
+        return job_id
 
     @staticmethod
     def handle_driver_exception(session: neo4j.Session, e: Exception) -> None:
