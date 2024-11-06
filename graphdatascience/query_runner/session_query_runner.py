@@ -137,7 +137,7 @@ class SessionQueryRunner(QueryRunner):
         query = params["query"]
         arrow_config = params["arrow_configuration"]
 
-        job_id = params["job_id"] if "job_id" in params else str(uuid4())
+        job_id = params["job_id"] if "job_id" in params and params["job_id"] else str(uuid4())
         project_protocol = ProjectProtocol.select(self._resolved_protocol_version)
         project_params = project_protocol.project_params(graph_name, query, job_id, params, arrow_config)
 
