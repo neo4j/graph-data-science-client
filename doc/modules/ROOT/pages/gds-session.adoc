@@ -73,6 +73,8 @@ Usage is defined as the computation of an algorithm or the projection of a graph
 
 - **Cloud location**.
 This is a `CloudLocation` object that specifies the cloud provider and region where the GDS Session will run. Required if the DBMS connection is for a self-managed database.
+Use `sessions.available_cloud_locations()` to find out which locations are available.
+
 
 ==== Examples
 

@@ -871,7 +871,13 @@ def test_parse_tenant_details() -> None:
     )
 
     expected_details = TenantDetails(
-        "42", ds_type="enterprise-ds", regions_per_provider={"gcp": {"eu-west3"}, "aws": {"us-central1", "us-central3"}}
+        "42",
+        cloud_locations={
+            CloudLocation("gcp", "eu-west3"),
+            CloudLocation("aws", "eu-west1"),
+            CloudLocation("aws", "us-central1"),
+            CloudLocation("aws", "us-central3"),
+        },
     )
     assert details == expected_details
 
