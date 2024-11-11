@@ -11,15 +11,15 @@ from neo4j.exceptions import ClientError
 from pandas import DataFrame
 from pyarrow import ChunkedArray, Schema, Table, chunked_array, flight
 from pyarrow import __version__ as arrow_version
-from pyarrow._flight import FlightStreamReader, FlightStreamWriter
+from pyarrow._flight import FlightStreamWriter, FlightMetadataReader
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary
 
-from ..server_version.server_version import ServerVersion
-from ..version import __version__
 from .arrow_endpoint_version import ArrowEndpointVersion
 from .arrow_info import ArrowInfo
 from .query_runner import QueryRunner
+from ..server_version.server_version import ServerVersion
+from ..version import __version__
 
 
 class GdsArrowClient:
@@ -153,7 +153,7 @@ class GdsArrowClient:
         except Exception as e:
             self.handle_flight_error(e)
 
-    def start_put(self, payload: Dict[str, Any], schema: Schema) -> Tuple[FlightStreamWriter, FlightStreamReader]:
+    def start_put(self, payload: Dict[str, Any], schema: Schema) -> Tuple[FlightStreamWriter, FlightMetadataReader]:
         flight_descriptor = self._versioned_flight_descriptor(payload)
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
         return self._flight_client.do_put(upload_descriptor, schema)  # type: ignore
