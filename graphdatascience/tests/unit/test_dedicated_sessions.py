@@ -16,6 +16,7 @@ from graphdatascience.session.aura_api_responses import (
     SessionDetails,
     SessionError,
     TenantDetails,
+    TimeParser,
     WaitResult,
 )
 from graphdatascience.session.cloud_location import CloudLocation
@@ -162,7 +163,10 @@ class FakeAuraApi(AuraApi):
         matching_for_user = [v for v in matching_for_dbid if v.user_id == self._console_user or self._admin_user]
 
         # assume user is not admin
-        return matching_for_user
+        if self._admin_user:
+            return matching_for_dbid
+        else:
+            return matching_for_user
 
     def list_instances(self) -> List[InstanceDetails]:
         return [v for _, v in self._instances.items()]
@@ -266,6 +270,34 @@ def test_list_session_paused_instance(aura_api: AuraApi) -> None:
     sessions = DedicatedSessions(aura_api)
 
     assert sessions.list() == [SessionInfo.from_session_details(session)]
+
+def test_list_session_failed_session(aura_api: AuraApi) -> None:
+    fake_aura_api = cast(FakeAuraApi, aura_api)
+
+    session_details = SessionDetails(
+        id="id0",
+        name="name-0",
+        status="Failed",
+        instance_id="",
+        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
+        host="1.2.3.4",
+        memory=SessionMemory.m_4GB.value,
+        expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
+        tenant_id=fake_aura_api._tenant_id,
+        user_id=fake_aura_api._console_user,
+        ttl=timedelta(seconds=42),
+        errors=[
+            SessionError(reason="OutOfMemory", message="Session reached its memory limit. Create a larger instance.")
+        ])
+    fake_aura_api.add_session(
+       session_details
+    )
+
+    sessions = DedicatedSessions(fake_aura_api)
+
+    actualSessions = sessions.list()
+    assert actualSessions == [SessionInfo.from_session_details(session_details)]
+    assert len(actualSessions[0].errors) == 1
 
 
 def test_list_session_gds_instance(aura_api: AuraApi) -> None:
@@ -646,7 +678,7 @@ def test_create_waiting_forever(
     sessions = DedicatedSessions(aura_api)
     patch_neo4j_query_runner(mocker)
 
-    with pytest.raises(RuntimeError, match="Failed to create session `one`: Session `ffff0-ffff1` is not running"):
+    with pytest.raises(RuntimeError, match="Failed to get or create session `one`: Session `ffff0-ffff1` is not running"):
         sessions.get_or_create(
             "one", SessionMemory.m_8GB, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
         )
