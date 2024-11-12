@@ -36,7 +36,7 @@ TENANT_ID = None
 sessions = GdsSessions(api_credentials=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET, TENANT_ID))
 ----
 
-All available methods and parameters are listed in our API https://neo4j.com/docs/graph-data-science-client/current/api/sessions/session_memory[reference].
+All available methods and parameters are listed in our API https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[reference].
 
 === Creating a GDS Session
 
@@ -59,10 +59,10 @@ The name must be unique.
 - **Session memory**.
 This configuration determines the amount of memory and CPU available to the session.
 It also determines the cost of running the session.
-Available configurations are listed in our API https://neo4j.com/docs/graph-data-science-client/current/api/sessions/session_memory[reference].
+Available configurations are listed in our API https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[reference].
 
 You can use the `sessions.estimate()` method to estimate the size required.
-Available algorithm categories are listed in our API https://neo4j.com/docs/graph-data-science-client/current/api/sessions/algorithm_category[reference].
+Available algorithm categories are listed in our API https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/algorithm_category[reference].
 
 - **DBMS connection**.
 This is a `DbmsConnectionInfo` object that contains the URI of an Neo4j instance, a username, and a password.
