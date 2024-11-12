@@ -11,15 +11,15 @@ from neo4j.exceptions import ClientError
 from pandas import DataFrame
 from pyarrow import ChunkedArray, Schema, Table, chunked_array, flight
 from pyarrow import __version__ as arrow_version
-from pyarrow._flight import FlightStreamWriter, FlightMetadataReader
+from pyarrow._flight import FlightMetadataReader, FlightStreamWriter
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary
 
+from ..server_version.server_version import ServerVersion
+from ..version import __version__
 from .arrow_endpoint_version import ArrowEndpointVersion
 from .arrow_info import ArrowInfo
 from .query_runner import QueryRunner
-from ..server_version.server_version import ServerVersion
-from ..version import __version__
 
 
 class GdsArrowClient:
