@@ -36,6 +36,7 @@ TENANT_ID = None
 sessions = GdsSessions(api_credentials=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET, TENANT_ID))
 ----
 
+All available methods and parameters are listed in our API https://neo4j.com/docs/graph-data-science-client/current/api/sessions/session_memory[reference].
 
 === Creating a GDS Session
 
