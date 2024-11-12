@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(frozen=True, repr=True)
 class CloudLocation:
     """
     Represent the location in Aura.

@@ -39,6 +39,16 @@ class DedicatedSessions:
 
         return SessionMemory(SessionMemoryValue(estimation.recommended_size))
 
+    def available_cloud_locations(self) -> List[CloudLocation]:
+        """
+        Retrieves the list of available cloud locations in Aura.
+
+        Returns:
+            List[CloudLocation]: The list of available cloud locations.
+        """
+        # return a list to allow index based access
+        return list(self._aura_api.tenant_details().cloud_locations)
+
     def get_or_create(
         self,
         session_name: str,

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import dataclasses
 import sys
-from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, NamedTuple, Optional, Set
@@ -145,32 +144,21 @@ class WaitResult(NamedTuple):
 @dataclass(repr=True, frozen=True)
 class TenantDetails:
     id: str
-    ds_type: str
-    regions_per_provider: Dict[str, Set[str]]
+    cloud_locations: Set[CloudLocation]
 
     @classmethod
     def from_json(cls, json: Dict[str, Any]) -> TenantDetails:
-        regions_per_provider = defaultdict(set)
-        instance_types = set()
-        ds_type = None
+        cloud_locations: Set[CloudLocation] = set()
 
         for configs in json["instance_configurations"]:
-            type = configs["type"]
-            if type.split("-")[1] == "ds":
-                regions_per_provider[configs["cloud_provider"]].add(configs["region"])
-                ds_type = type
-            instance_types.add(configs["type"])
+            # assuming Sessions can be spawned wherever instances can be created
+            cloud_locations.add(CloudLocation(configs["cloud_provider"], configs["region"]))
 
         id = json["id"]
-        if not ds_type:
-            raise RuntimeError(
-                f"Tenant with id `{id}` cannot create DS instances. Available instances are `{instance_types}`."
-            )
 
         return cls(
             id=id,
-            ds_type=ds_type,
-            regions_per_provider=regions_per_provider,
+            cloud_locations=cloud_locations,
         )
 
 

@@ -70,6 +70,15 @@ class GdsSessions:
             algorithm_categories = []
         return self._impl.estimate(node_count, relationship_count, algorithm_categories)
 
+    def available_cloud_locations(self) -> List[CloudLocation]:
+        """
+        Retrieves the list of available cloud locations in Aura.
+
+        Returns:
+            Set[CloudLocation]: The list of available cloud locations.
+        """
+        return self._impl.available_cloud_locations()
+
     def get_or_create(
         self,
         session_name: str,

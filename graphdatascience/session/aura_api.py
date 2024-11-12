@@ -182,16 +182,14 @@ class AuraApi:
         return response.status_code == 202
 
     def create_instance(
-        self, name: str, memory: SessionMemoryValue, cloud_provider: str, region: str
+        self, name: str, memory: SessionMemoryValue, cloud_provider: str, region: str, type: str = "dsenterprise"
     ) -> InstanceCreateDetails:
-        tenant_details = self.tenant_details()
-
         data = {
             "name": name,
             "memory": memory.value,
             "version": "5",
             "region": region,
-            "type": tenant_details.ds_type,
+            "type": type,
             "tenant_id": self._tenant_id,
             "cloud_provider": cloud_provider,
         }
