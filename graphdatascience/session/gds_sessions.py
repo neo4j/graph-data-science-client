@@ -92,6 +92,7 @@ class GdsSessions:
         or creates a new session if one does not exist.
 
         If the session is close to expiration, a warning will be raised.
+        If the session failed, an exception will be raised.
 
         Args:
             session_name (str): The name of the session.

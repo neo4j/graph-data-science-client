@@ -4,7 +4,7 @@ import dataclasses
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, NamedTuple, Optional, Set
+from typing import Any, Dict, List, NamedTuple, Optional, Set
 
 from pandas import Timedelta
 
@@ -27,27 +27,32 @@ class SessionDetails:
     user_id: str
     tenant_id: str
     cloud_location: Optional[CloudLocation] = None
+    errors: List[SessionError] = None
 
     @classmethod
-    def from_json(cls, json: Dict[str, Any]) -> SessionDetails:
-        expiry_date = json.get("expiry_date")
-        ttl: Any | None = json.get("ttl")
-        instance_id = json.get("instance_id")
-        cloud_location = CloudLocation(json["cloud_provider"], json["region"]) if json.get("cloud_provider") else None
+    def from_json(cls, data: Dict[str, Any], errors: List[Dict[str, Any]]) -> SessionDetails:
+        id = data["id"]
+        expiry_date = data.get("expiry_date")
+        ttl: Any | None = data.get("ttl")
+        instance_id = data.get("instance_id")
+        cloud_location = CloudLocation(data["cloud_provider"], data["region"]) if data.get("cloud_provider") else None
+
+        session_errors = [SessionError.from_json(error) for error in errors] if errors else None
 
         return cls(
-            id=json["id"],
-            name=json["name"],
+            id=id,
+            name=data["name"],
             instance_id=instance_id if instance_id else None,
-            memory=SessionMemoryValue.fromApiResponse(json["memory"]),
-            status=json["status"],
-            host=json["host"],
+            memory=SessionMemoryValue.fromApiResponse(data["memory"]),
+            status=data["status"],
+            host=data["host"],
             expiry_date=TimeParser.fromisoformat(expiry_date) if expiry_date else None,
-            created_at=TimeParser.fromisoformat(json["created_at"]),
+            created_at=TimeParser.fromisoformat(data["created_at"]),
             ttl=Timedelta(ttl).to_pytimedelta() if ttl else None,  # datetime has no support for parsing timedelta
-            tenant_id=json["tenant_id"],
-            user_id=json["user_id"],
+            tenant_id=data["tenant_id"],
+            user_id=data["user_id"],
             cloud_location=cloud_location,
+            errors=session_errors,
         )
 
     def bolt_connection_url(self) -> str:
@@ -55,6 +60,28 @@ class SessionDetails:
 
     def is_expired(self) -> bool:
         return self.status == "Expired"
+
+
+@dataclass(repr=True, frozen=True)
+class SessionError:
+    """
+    Represents information about a session errors.
+    Indicates that session is in `Failed` state.
+
+    Attributes:
+        message (str): Error message communicated by server.
+        reason (str): Error reason. Short identifier of encountered error.
+    """
+
+    message: str
+    reason: str
+
+    @classmethod
+    def from_json(cls, json: Dict[str, Any]) -> SessionError:
+        return cls(
+            reason=json["reason"],
+            message=json["message"],
+        )
 
 
 @dataclass(repr=True, frozen=True)

@@ -14,7 +14,9 @@ from graphdatascience.session.aura_api_responses import (
     InstanceDetails,
     InstanceSpecificDetails,
     SessionDetails,
+    SessionError,
     TenantDetails,
+    TimeParser,
     WaitResult,
 )
 from graphdatascience.session.cloud_location import CloudLocation
@@ -49,7 +51,7 @@ class FakeAuraApi(AuraApi):
         self._console_user = console_user
         self._admin_user = admin_user
 
-    def create_session(
+    def get_or_create_session(
         self,
         name: str,
         pwd: str,
@@ -161,7 +163,10 @@ class FakeAuraApi(AuraApi):
         matching_for_user = [v for v in matching_for_dbid if v.user_id == self._console_user or self._admin_user]
 
         # assume user is not admin
-        return matching_for_user
+        if self._admin_user:
+            return matching_for_dbid
+        else:
+            return matching_for_user
 
     def list_instances(self) -> List[InstanceDetails]:
         return [v for _, v in self._instances.items()]
@@ -227,7 +232,7 @@ HASHED_DB_PASSWORD = "722cbc618c015c7c062f071868d9bb5f207f35a317e71054740716642c
 
 def test_list_session(aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
-    session = aura_api.create_session(
+    session = aura_api.get_or_create_session(
         name="gds-session-my-session-name",
         dbid=aura_api.list_instances()[0].id,
         pwd="some_pwd",
@@ -256,7 +261,7 @@ def test_list_session_paused_instance(aura_api: AuraApi) -> None:
     )
     fake_aura_api._instances[paused_db.id] = paused_db
 
-    session = aura_api.create_session(
+    session = aura_api.get_or_create_session(
         name="gds-session-my-session-name",
         dbid=db.id,
         pwd="some_pwd",
@@ -265,6 +270,34 @@ def test_list_session_paused_instance(aura_api: AuraApi) -> None:
     sessions = DedicatedSessions(aura_api)
 
     assert sessions.list() == [SessionInfo.from_session_details(session)]
+
+
+def test_list_session_failed_session(aura_api: AuraApi) -> None:
+    fake_aura_api = cast(FakeAuraApi, aura_api)
+
+    session_details = SessionDetails(
+        id="id0",
+        name="name-0",
+        status="Failed",
+        instance_id="",
+        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
+        host="1.2.3.4",
+        memory=SessionMemory.m_4GB.value,
+        expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
+        tenant_id=fake_aura_api._tenant_id,
+        user_id=fake_aura_api._console_user,
+        ttl=timedelta(seconds=42),
+        errors=[
+            SessionError(reason="OutOfMemory", message="Session reached its memory limit. Create a larger instance.")
+        ],
+    )
+    fake_aura_api.add_session(session_details)
+
+    sessions = DedicatedSessions(fake_aura_api)
+
+    actualSessions = sessions.list()
+    assert actualSessions == [SessionInfo.from_session_details(session_details)]
+    assert len(actualSessions[0].errors) == 1
 
 
 def test_list_session_gds_instance(aura_api: AuraApi) -> None:
@@ -285,7 +318,7 @@ def test_list_session_gds_instance(aura_api: AuraApi) -> None:
     )
     fake_aura_api._instances[gds_instance.id] = gds_instance
 
-    session = aura_api.create_session(
+    session = aura_api.get_or_create_session(
         name="gds-session-my-session-name",
         dbid=db.id,
         pwd="some_pwd",
@@ -498,9 +531,45 @@ def test_get_or_create_for_without_cloud_location(mocker: MockerFixture, aura_ap
         )
 
 
+def test_get_or_create_failed_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
+    db = _setup_db_instance(aura_api)
+
+    patch_neo4j_query_runner(mocker)
+
+    fake_aura_api = cast(FakeAuraApi, aura_api)
+    fake_aura_api.add_session(
+        SessionDetails(
+            id="ffff0-ffff1",
+            name="one",
+            instance_id=db.id,
+            memory=SessionMemory.m_8GB.value,
+            status="Failed",
+            created_at=datetime.now(),
+            host="foo.bar",
+            expiry_date=None,
+            ttl=None,
+            tenant_id=aura_api._tenant_id,
+            user_id="user-1",
+            cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
+            errors=[SessionError(message="error", reason="reason")],
+        )
+    )
+
+    db_connection = DbmsConnectionInfo(db.connection_url, "", "")
+    sessions = DedicatedSessions(aura_api)
+
+    with pytest.raises(
+        RuntimeError,
+        match=re.escape(
+            "Failed to get or create session `one`: Session `ffff0-ffff1` failed due to: [SessionError(message='error', reason='reason')]"
+        ),
+    ):
+        sessions.get_or_create("one", SessionMemory.m_8GB, db_connection)
+
+
 def test_delete_session_by_name(aura_api: AuraApi) -> None:
-    aura_api.create_session("one", "pwd", memory=SessionMemory.m_8GB.value, dbid="12345")
-    aura_api.create_session("other", "pwd", memory=SessionMemory.m_8GB.value, dbid="123123")
+    aura_api.get_or_create_session("one", "pwd", memory=SessionMemory.m_8GB.value, dbid="12345")
+    aura_api.get_or_create_session("other", "pwd", memory=SessionMemory.m_8GB.value, dbid="123123")
 
     sessions = DedicatedSessions(aura_api)
 
@@ -555,8 +624,8 @@ def test_delete_session_by_name_admin() -> None:
 
 
 def test_delete_session_by_id(aura_api: AuraApi) -> None:
-    s1 = aura_api.create_session("one", "pwd", memory=SessionMemory.m_8GB.value, dbid="12345")
-    s2 = aura_api.create_session("other", "pwd", memory=SessionMemory.m_8GB.value, dbid="123123")
+    s1 = aura_api.get_or_create_session("one", "pwd", memory=SessionMemory.m_8GB.value, dbid="12345")
+    s2 = aura_api.get_or_create_session("other", "pwd", memory=SessionMemory.m_8GB.value, dbid="123123")
 
     sessions = DedicatedSessions(aura_api)
     assert sessions.delete(session_id=s1.id)
@@ -565,7 +634,7 @@ def test_delete_session_by_id(aura_api: AuraApi) -> None:
 
 def test_delete_nonexisting_session(aura_api: AuraApi) -> None:
     db1 = aura_api.create_instance("db1", SessionMemory.m_4GB.value, "aura", "leipzig").id
-    aura_api.create_session("one", db1, memory=SessionMemory.m_8GB.value, dbid="12345")
+    aura_api.get_or_create_session("one", db1, memory=SessionMemory.m_8GB.value, dbid="12345")
     sessions = DedicatedSessions(aura_api)
 
     assert sessions.delete(session_name="other") is False
@@ -589,7 +658,7 @@ def test_delete_session_paused_instance(aura_api: AuraApi) -> None:
     )
     fake_aura_api._instances[paused_db.id] = paused_db
 
-    session = aura_api.create_session(
+    session = aura_api.get_or_create_session(
         name="gds-session-my-session-name",
         dbid=paused_db.id,
         pwd="some_pwd",
@@ -609,7 +678,9 @@ def test_create_waiting_forever(
     sessions = DedicatedSessions(aura_api)
     patch_neo4j_query_runner(mocker)
 
-    with pytest.raises(RuntimeError, match="Failed to create session `one`: Session `ffff0-ffff1` is not running"):
+    with pytest.raises(
+        RuntimeError, match="Failed to get or create session `one`: Session `ffff0-ffff1` is not running"
+    ):
         sessions.get_or_create(
             "one", SessionMemory.m_8GB, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
         )
