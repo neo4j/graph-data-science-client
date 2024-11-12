@@ -33,13 +33,6 @@ version `+1.12a1+` or later.
 
 [source, python, role=no-test]
 ----
-from dotenv import load_dotenv
-
-load_dotenv("devrafal.env", override=True)
-----
-
-[source, python, role=no-test]
-----
 from datetime import timedelta
 
 %pip install "graphdatascience>=1.13"
