@@ -496,6 +496,17 @@ def test_list_session_state_error_forwards(requests_mock: Mocker) -> None:
                     "tenant_id": "tenant-2",
                     "user_id": "user-2",
                 },
+                {
+                    "id": "id3",
+                    "name": "name-3",
+                    "status": "Creating",
+                    "instance_id": "dbid-3",
+                    "created_at": "2012-01-01T00:00:00Z",
+                    "memory": "8Gi",
+                    "host": "foo.bar",
+                    "tenant_id": "tenant-2",
+                    "user_id": "user-2",
+                },
             ],
             "errors": [
                 {
@@ -503,12 +514,36 @@ def test_list_session_state_error_forwards(requests_mock: Mocker) -> None:
                     "message": "Session reached its memory limit. Create a larger instance.",
                     "reason": "OutOfMemory",
                 },
-                {"id": "id1", "message": "Encountered an unexpected error.", "reason": "Unknown"},
+                {
+                    "id": "id1",
+                    "message": "Error 1.",
+                    "reason": "Reason1",
+                },
+                {
+                    "id": "id1",
+                    "message": "Error 2.",
+                    "reason": "Reason2",
+                },
             ],
         },
     )
 
-    api.list_sessions()
+    sessions = api.list_sessions()
+    errors = {s.id: s.errors for s in sessions}
+
+    assert errors["id0"] == [
+        SessionError(
+            message="Session reached its memory limit. Create a larger instance.",
+            reason="OutOfMemory",
+        )
+    ]
+
+    assert errors["id1"] == [
+        SessionError(message="Error 1.", reason="Reason1"),
+        SessionError(message="Error 2.", reason="Reason2"),
+    ]
+
+    assert errors["id3"] is None
 
 
 def test_delete_session(requests_mock: Mocker) -> None:

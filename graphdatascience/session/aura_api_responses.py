@@ -65,6 +65,15 @@ class SessionDetails:
 
 @dataclass(repr=True, frozen=True)
 class SessionError:
+    """
+    Represents information about a session errors.
+    Indicates that session is in `Failed` state.
+
+    Attributes:
+        message (str): Error message communicated by server.
+        reason (str): Error reason. Short identifier of encountered error.
+    """
+
     message: str
     reason: str
 

@@ -116,7 +116,6 @@ class AuraApi:
         self._check_resp(response)
 
         raw_json: Dict[str, Any] = response.json()
-
         return SessionDetails.from_json(raw_json["data"], raw_json.get("errors", []))
 
     def get_session(self, session_id: str) -> Optional[SessionDetails]:
@@ -130,7 +129,6 @@ class AuraApi:
         self._check_resp(response)
 
         raw_json: Dict[str, Any] = response.json()
-
         return SessionDetails.from_json(raw_json["data"], raw_json.get("errors", []))
 
     def list_sessions(self, dbid: Optional[str] = None) -> List[SessionDetails]:
