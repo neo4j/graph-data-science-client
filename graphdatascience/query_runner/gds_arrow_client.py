@@ -18,17 +18,14 @@ from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, stop_after_delay, wait_exponential
 
-from ..server_version.server_version import ServerVersion
 from ..version import __version__
 from .arrow_endpoint_version import ArrowEndpointVersion
 from .arrow_info import ArrowInfo
-from .query_runner import QueryRunner
 
 
 class GdsArrowClient:
     @staticmethod
     def create(
-        query_runner: QueryRunner,
         arrow_info: ArrowInfo,
         auth: Optional[Tuple[str, str]] = None,
         encrypted: bool = False,
@@ -36,7 +33,6 @@ class GdsArrowClient:
         tls_root_certs: Optional[bytes] = None,
         connection_string_override: Optional[str] = None,
     ) -> GdsArrowClient:
-        server_version = query_runner.server_version()
         connection_string: str
         if connection_string_override is not None:
             connection_string = connection_string_override
@@ -50,7 +46,6 @@ class GdsArrowClient:
         return GdsArrowClient(
             host,
             int(port),
-            server_version,
             auth,
             encrypted,
             disable_server_verification,
@@ -61,15 +56,32 @@ class GdsArrowClient:
     def __init__(
         self,
         host: str,
-        port: int,
-        server_version: ServerVersion,
+        port: int = 8491,
         auth: Optional[Tuple[str, str]] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
-        arrow_endpoint_version: ArrowEndpointVersion = ArrowEndpointVersion.ALPHA,
+        arrow_endpoint_version: ArrowEndpointVersion = ArrowEndpointVersion.V1,
     ):
-        self._server_version = server_version
+        """Creates a new GdsArrowClient instance.
+
+        Parameters
+        ----------
+        host: str
+            The host address of the GDS Arrow server
+        port: int
+            The host port of the GDS Arrow server (default is 8491)
+        auth: Optional[Tuple[str, str]]
+            A tuple containing the username and password for authentication
+        encrypted: bool
+            A flag that indicates whether the connection should be encrypted (default is False)
+        disable_server_verification: bool
+            A flag that disables server verification for TLS connections (default is False)
+        tls_root_certs: Optional[bytes]
+            PEM-encoded certificates that are used for the connection to the GDS Arrow Flight server
+        arrow_endpoint_version:
+            The version of the Arrow endpoint to use (default is ArrowEndpointVersion.V1)
+        """
         self._arrow_endpoint_version = arrow_endpoint_version
         self._host = host
         self._port = port
@@ -88,59 +100,169 @@ class GdsArrowClient:
         self._flight_client = flight.FlightClient(location, **client_options)
 
     def connection_info(self) -> Tuple[str, int]:
+        """
+        Returns the host and port of the GDS Arrow server.
+
+        Returns
+        -------
+        Tuple[str, int]
+            the host and port of the GDS Arrow server
+        """
         return self._host, self._port
 
     def request_token(self) -> Optional[str]:
+        """
+        Requests a token from the server and returns it.
+
+        Returns
+        -------
+        Optional[str]
+            a token from the server and returns it.
+        """
         if self._auth:
             self._flight_client.authenticate_basic_token(self._auth[0], self._auth[1])
             return self._auth_middleware.token()
         else:
             return "IGNORED"
 
-    def get_property(
-        self, database: Optional[str], graph_name: str, procedure_name: str, configuration: Dict[str, Any]
+    def get_node_properties(
+        self,
+        graph_name: str,
+        database: str,
+        node_properties: Union[str, List[str]],
+        node_labels: Optional[List[str]] = None,
+        list_node_labels: bool = False,
+        concurrency: Optional[int] = None,
     ) -> DataFrame:
-        if not database:
-            raise ValueError(
-                "For this call you must have explicitly specified a valid Neo4j database to execute on, "
-                "using `GraphDataScience.set_database`."
-            )
+        """
+        Get node properties from the graph.
 
-        payload = {
-            "database_name": database,
-            "graph_name": graph_name,
-            "procedure_name": procedure_name,
-            "configuration": configuration,
+        Parameters
+        ----------
+        graph_name : str
+            The name of the graph
+        database : str
+            The name of the database to which the graph belongs
+        node_properties : Union[str, List[str]]
+            The name of the node properties to retrieve
+        node_labels : Optional[List[str]]
+            A list of node labels to filter the nodes
+        list_node_labels : bool
+            A flag that indicates whether the node labels should be included in the result
+        concurrency : Optional[int]
+            The number of threads used on the server side when serving the data
+
+        Returns
+        -------
+        DataFrame
+            The requested node property as a DataFrame
+        """
+        config = {
+            "list_node_labels": list_node_labels,
         }
 
-        if self._arrow_endpoint_version == ArrowEndpointVersion.V1:
-            payload = {
-                "name": "GET_COMMAND",
-                "version": ArrowEndpointVersion.V1.version(),
-                "body": payload,
-            }
+        if isinstance(node_properties, str):
+            config["node_property"] = (node_properties,)
+            proc = "gds.graph.nodeProperty.stream"
+        else:
+            config["node_properties"] = node_properties
+            proc = "gds.graph.nodeProperties.stream"
 
-        ticket = flight.Ticket(json.dumps(payload).encode("utf-8"))
+        if node_labels:
+            config["node_labels"] = node_labels
 
-        try:
-            get = self._flight_client.do_get(ticket)
-            arrow_table = get.read_all()
-        except Exception as e:
-            self.handle_flight_error(e)
+        return self._do_get(database, graph_name, proc, concurrency, config)
 
-        if configuration.get("list_node_labels", False):
-            # GDS 2.5 had an inconsistent naming of the node labels column
-            new_colum_names = ["nodeLabels" if i == "labels" else i for i in arrow_table.column_names]
-            arrow_table = arrow_table.rename_columns(new_colum_names)
+    def get_node_labels(self, graph_name: str, database: str, concurrency: Optional[int] = None) -> DataFrame:
+        """
+        Get all nodes and their labels from the graph.
 
-        # Pandas 2.2.0 deprecated an API used by ArrowTable.to_pandas() (< pyarrow 15.0)
-        warnings.filterwarnings(
-            "ignore",
-            category=DeprecationWarning,
-            message=r"Passing a BlockManager to DataFrame is deprecated",
+        Parameters
+        ----------
+        graph_name : str
+            The name of the graph
+        database : str
+            The name of the database to which the graph belongs
+        concurrency : Optional[int]
+            The number of threads used on the server side when serving the data
+
+        Returns
+        -------
+        DataFrame
+            The requested nodes as a DataFrame
+        """
+        return self._do_get(database, graph_name, "gds.graph.nodeLabels.stream", concurrency, {})
+
+    def get_relationships(
+        self, graph_name: str, database: str, relationship_types: List[str], concurrency: Optional[int] = None
+    ) -> DataFrame:
+        """
+        Get relationships from the graph.
+
+        Parameters
+        ----------
+        graph_name : str
+            The name of the graph
+        database : str
+            The name of the database to which the graph belongs
+        relationship_types : List[str]
+            The name of the relationship types to retrieve
+        concurrency : Optional[int]
+            The number of threads used on the server side when serving the data
+
+        Returns
+        -------
+        DataFrame
+            The requested relationships as a DataFrame
+        """
+        return self._do_get(
+            database,
+            graph_name,
+            "gds.graph.relationships.stream",
+            concurrency,
+            {"relationship_types": relationship_types},
         )
 
-        return self._sanitize_arrow_table(arrow_table).to_pandas()  # type: ignore
+    def get_relationship_properties(
+        self,
+        graph_name: str,
+        database: str,
+        relationship_properties: Union[str, List[str]],
+        relationship_types: List[str],
+        concurrency: Optional[int] = None,
+    ) -> DataFrame:
+        """
+        Get relationships and their properties from the graph.
+
+        Parameters
+        ----------
+        graph_name : str
+            The name of the graph
+        database : str
+            The name of the database to which the graph belongs
+        relationship_properties : Union[str, List[str]]
+            The name of the relationship properties to retrieve
+        relationship_types : List[str]
+            The name of the relationship types to retrieve
+        concurrency : Optional[int]
+            The number of threads used on the server side when serving the data
+
+        Returns
+        -------
+        DataFrame
+            The requested relationships as a DataFrame
+        """
+        if isinstance(relationship_properties, str):
+            config = {"relationship_property": relationship_properties}
+            proc = "gds.graph.relationshipProperty.stream"
+        else:
+            config = {"relationship_properties": relationship_properties}
+            proc = "gds.graph.relationshipProperties.stream"
+
+        if relationship_types:
+            config["relationship_types"] = relationship_types
+
+        return self._do_get(database, graph_name, proc, concurrency, config)
 
     def create_graph(
         self,
@@ -150,7 +272,9 @@ class GdsArrowClient:
         inverse_indexed_relationship_types: Optional[List[str]] = None,
         concurrency: Optional[int] = None,
     ) -> None:
-        """Starts a new graph import process on the GDS server.
+        """
+        Starts a new graph import process on the GDS server.
+
         The import process accepts separate node and relationship stream uploads.
 
         Parameters
@@ -189,7 +313,9 @@ class GdsArrowClient:
         inverse_indexed_relationship_types: Optional[List[str]] = None,
         concurrency: Optional[int] = None,
     ) -> None:
-        """Starts a new graph import process on the GDS server.
+        """
+        Starts a new graph import process on the GDS server.
+
         The import process accepts triplets as input data.
 
         Parameters
@@ -231,7 +357,9 @@ class GdsArrowClient:
         high_io: bool = False,
         use_bad_collector: bool = False,
     ) -> None:
-        """Starts a new graph import process on the GDS server.
+        """
+        Starts a new graph import process on the GDS server.
+
         The import process accepts triplets as input data.
 
         Parameters
@@ -273,7 +401,8 @@ class GdsArrowClient:
         self._send_action("CREATE_DATABASE", config)
 
     def node_load_done(self, graph_name: str) -> NodeLoadDoneResult:
-        """Notifies the server that all node data has been sent.
+        """
+        Notifies the server that all node data has been sent.
 
         Parameters
         ----------
@@ -288,7 +417,9 @@ class GdsArrowClient:
         return NodeLoadDoneResult.from_json(self._send_action("NODE_LOAD_DONE", {"name": graph_name}))
 
     def relationship_load_done(self, graph_name: str) -> RelationshipLoadDoneResult:
-        """Notifies the server that all relationship data has been sent.
+        """
+        Notifies the server that all relationship data has been sent.
+
         This will trigger the finalization of the import process and make the graph or database available.
 
         Parameters
@@ -304,7 +435,9 @@ class GdsArrowClient:
         return RelationshipLoadDoneResult.from_json(self._send_action("RELATIONSHIP_LOAD_DONE", {"name": graph_name}))
 
     def triplet_load_done(self, graph_name: str) -> TripletLoadDoneResult:
-        """Notifies the server that all triplet data has been sent.
+        """
+        Notifies the server that all triplet data has been sent.
+
         This will trigger the finalization of the import process and make the graph available in the graph catalog.
 
         Parameters
@@ -320,7 +453,8 @@ class GdsArrowClient:
         return TripletLoadDoneResult.from_json(self._send_action("TRIPLET_LOAD_DONE", {"name": graph_name}))
 
     def abort(self, graph_name: str) -> None:
-        """Aborts the specified import process.
+        """
+        Aborts the specified import process.
 
         Parameters
         ----------
@@ -329,20 +463,6 @@ class GdsArrowClient:
         """
         self._send_action("ABORT", {"name": graph_name})
 
-    def _send_action(self, action_type: str, meta_data: Dict[str, Any]) -> Dict[str, Any]:
-        action_type = self._versioned_action_type(action_type)
-
-        try:
-            result = self._flight_client.do_action(flight.Action(action_type, json.dumps(meta_data).encode("utf-8")))
-
-            # Consume result fully to sanity check and avoid cancelled streams
-            collected_result = list(result)
-            assert len(collected_result) == 1
-
-            return json.loads(collected_result[0].body.to_pybytes().decode())
-        except Exception as e:
-            self.handle_flight_error(e)
-
     def upload_nodes(
         self,
         graph_name: str,
@@ -350,7 +470,8 @@ class GdsArrowClient:
         batch_size: int = 10_000,
         progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
-        """Uploads node data to the server.
+        """
+        Uploads node data to the server.
 
         Parameters
         ----------
@@ -372,7 +493,8 @@ class GdsArrowClient:
         batch_size: int = 10_000,
         progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
-        """Uploads relationship data to the server.
+        """
+        Uploads relationship data to the server.
 
         Parameters
         ----------
@@ -394,7 +516,8 @@ class GdsArrowClient:
         batch_size: int = 10_000,
         progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
-        """Uploads triplet data to the server.
+        """
+        Uploads triplet data to the server.
 
         Parameters
         ----------
@@ -408,6 +531,20 @@ class GdsArrowClient:
             A callback function that is called with the number of rows uploaded after each batch
         """
         self._upload_data(graph_name, "triplet", triplet_data, batch_size, progress_callback)
+
+    def _send_action(self, action_type: str, meta_data: Dict[str, Any]) -> Dict[str, Any]:
+        action_type = self._versioned_action_type(action_type)
+
+        try:
+            result = self._flight_client.do_action(flight.Action(action_type, json.dumps(meta_data).encode("utf-8")))
+
+            # Consume result fully to sanity check and avoid cancelled streams
+            collected_result = list(result)
+            assert len(collected_result) == 1
+
+            return json.loads(collected_result[0].body.to_pybytes().decode())
+        except Exception as e:
+            self.handle_flight_error(e)
 
     def _upload_data(
         self,
@@ -448,6 +585,59 @@ class GdsArrowClient:
                     progress_callback(partition.num_rows)
         except Exception as e:
             GdsArrowClient.handle_flight_error(e)
+
+    def _do_get(
+            self,
+            database: Optional[str],
+            graph_name: str,
+            procedure_name: str,
+            concurrency: Optional[int],
+            configuration: Dict[str, Any],
+    ) -> DataFrame:
+        if not database:
+            raise ValueError(
+                "For this call you must have explicitly specified a valid Neo4j database to execute on, "
+                "using `GraphDataScience.set_database`."
+            )
+
+        payload = {
+            "database_name": database,
+            "graph_name": graph_name,
+            "procedure_name": procedure_name,
+            "configuration": configuration,
+        }
+
+        if concurrency:
+            payload["concurrency"] = concurrency
+
+        if self._arrow_endpoint_version == ArrowEndpointVersion.V1:
+            payload = {
+                "name": "GET_COMMAND",
+                "version": ArrowEndpointVersion.V1.version(),
+                "body": payload,
+            }
+
+        ticket = flight.Ticket(json.dumps(payload).encode("utf-8"))
+
+        try:
+            get = self._flight_client.do_get(ticket)
+            arrow_table = get.read_all()
+        except Exception as e:
+            self.handle_flight_error(e)
+
+        if configuration.get("list_node_labels", False):
+            # GDS 2.5 had an inconsistent naming of the node labels column
+            new_colum_names = ["nodeLabels" if i == "labels" else i for i in arrow_table.column_names]
+            arrow_table = arrow_table.rename_columns(new_colum_names)
+
+        # Pandas 2.2.0 deprecated an API used by ArrowTable.to_pandas() (< pyarrow 15.0)
+        warnings.filterwarnings(
+            "ignore",
+            category=DeprecationWarning,
+            message=r"Passing a BlockManager to DataFrame is deprecated",
+        )
+
+        return self._sanitize_arrow_table(arrow_table).to_pandas()  # type: ignore
 
     def close(self) -> None:
         self._flight_client.close()
