@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import time
 import warnings
+from collections import defaultdict
 from datetime import timedelta
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
@@ -114,7 +115,9 @@ class AuraApi:
 
         self._check_resp(response)
 
-        return SessionDetails.from_json(response.json()["data"])
+        raw_json: Dict[str, Any] = response.json()
+
+        return SessionDetails.from_json(raw_json["data"], raw_json.get("errors", []))
 
     def get_session(self, session_id: str) -> Optional[SessionDetails]:
         response = self._request_session.get(
@@ -126,7 +129,9 @@ class AuraApi:
 
         self._check_resp(response)
 
-        return SessionDetails.from_json(response.json()["data"])
+        raw_json: Dict[str, Any] = response.json()
+
+        return SessionDetails.from_json(raw_json["data"], raw_json.get("errors", []))
 
     def list_sessions(self, dbid: Optional[str] = None) -> List[SessionDetails]:
         # these are query parameters (not passed in the body)
@@ -141,7 +146,14 @@ class AuraApi:
 
         self._check_resp(response)
 
-        return [SessionDetails.from_json(s) for s in response.json()["data"]]
+        raw_json = response.json()
+
+        data: Dict[str, Any] = raw_json.get("data")
+        errors_per_session = defaultdict(list)
+        for error in raw_json.get("errors", []):
+            errors_per_session[error["id"]].append(error)
+
+        return [SessionDetails.from_json(s, errors_per_session[s["id"]]) for s in data]
 
     def wait_for_session_running(
         self,

@@ -14,6 +14,7 @@ from graphdatascience.session.aura_api_responses import (
     InstanceCreateDetails,
     InstanceSpecificDetails,
     SessionDetails,
+    SessionError,
     TenantDetails,
     TimeParser,
     WaitResult,
@@ -150,7 +151,7 @@ def test_create_dedicated_session(requests_mock: Mocker) -> None:
     )
 
 
-def test_create_standalone_session_error_forwards(requests_mock: Mocker) -> None:
+def test_create_standalone_session_http_error_forwards(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
 
     mock_auth_token(requests_mock)
@@ -173,6 +174,63 @@ def test_create_standalone_session_error_forwards(requests_mock: Mocker) -> None
             ttl=timedelta(seconds=42),
             cloud_location=CloudLocation("invalidProvider", "leipzig-1"),
         )
+
+
+def test_create_standalone_session_state_error_forwards(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    requests_mock.post(
+        "https://api.neo4j.io/v1beta5/data-science/sessions",
+        status_code=200,
+        json={
+            "data": {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Failed",
+                "instance_id": "",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "1.2.3.4",
+                "memory": "4Gi",
+                "tenant_id": "tenant-0",
+                "user_id": "user-0",
+                "ttl": "42.0s",
+            },
+            "errors": [
+                {
+                    "id": "id0",
+                    "message": "Session reached its memory limit. Create a larger instance.",
+                    "reason": "OutOfMemory",
+                }
+            ],
+        },
+    )
+
+    session = api.create_session(
+        "name-0",
+        "pwd-2",
+        SessionMemory.m_4GB.value,
+        ttl=timedelta(seconds=42),
+        cloud_location=CloudLocation("gcp", "leipzig-1"),
+    )
+
+    session == SessionDetails(
+        id="id0",
+        name="name-0",
+        status="Failed",
+        instance_id="",
+        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
+        host="1.2.3.4",
+        memory=SessionMemory.m_4GB.value,
+        expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
+        tenant_id="tenant-0",
+        user_id="user-0",
+        ttl=timedelta(seconds=42),
+        errors=[
+            SessionError(reason="OutOfMemory", message="Session reached its memory limit. Create a larger instance.")
+        ],
+    )
 
 
 def test_get_session(requests_mock: Mocker) -> None:
@@ -212,6 +270,57 @@ def test_get_session(requests_mock: Mocker) -> None:
         ttl=None,
         tenant_id="tenant-0",
         user_id="user-0",
+    )
+
+
+def test_get_session_state_error_forwards(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        json={
+            "data": {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Failed",
+                "instance_id": "dbid-1",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "1.2.3.4",
+                "memory": "4Gi",
+                "expiry_date": "1977-01-01T00:00:00Z",
+                "tenant_id": "tenant-0",
+                "user_id": "user-0",
+                "ttl": "42s",
+            },
+            "errors": [
+                {
+                    "id": "id0",
+                    "message": "Session reached its memory limit. Create a larger instance.",
+                    "reason": "OutOfMemory",
+                }
+            ],
+        },
+    )
+
+    session = api.get_session("id0")
+
+    assert session == SessionDetails(
+        id="id0",
+        name="name-0",
+        status="Failed",
+        instance_id="dbid-1",
+        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
+        host="1.2.3.4",
+        memory=SessionMemory.m_4GB.value,
+        expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
+        tenant_id="tenant-0",
+        user_id="user-0",
+        ttl=timedelta(seconds=42),
+        errors=[
+            SessionError(reason="OutOfMemory", message="Session reached its memory limit. Create a larger instance.")
+        ],
     )
 
 
@@ -353,6 +462,53 @@ def test_list_sessions_with_db_id(requests_mock: Mocker) -> None:
     )
 
     assert result == [expected1, expected2]
+
+
+def test_list_session_state_error_forwards(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1beta5/data-science/sessions",
+        json={
+            "data": [
+                {
+                    "id": "id0",
+                    "name": "name-0",
+                    "status": "Ready",
+                    "instance_id": "dbid-1",
+                    "created_at": "1970-01-01T00:00:00Z",
+                    "host": "1.2.3.4",
+                    "memory": "4Gi",
+                    "expiry_date": "1977-01-01T00:00:00Z",
+                    "tenant_id": "tenant-1",
+                    "user_id": "user-1",
+                },
+                {
+                    "id": "id1",
+                    "name": "name-2",
+                    "status": "Creating",
+                    "instance_id": "dbid-3",
+                    "created_at": "2012-01-01T00:00:00Z",
+                    "memory": "8Gi",
+                    "host": "foo.bar",
+                    "tenant_id": "tenant-2",
+                    "user_id": "user-2",
+                },
+            ],
+            "errors": [
+                {
+                    "id": "id0",
+                    "message": "Session reached its memory limit. Create a larger instance.",
+                    "reason": "OutOfMemory",
+                },
+                {"id": "id1", "message": "Encountered an unexpected error.", "reason": "Unknown"},
+            ],
+        },
+    )
+
+    api.list_sessions()
 
 
 def test_delete_session(requests_mock: Mocker) -> None:
@@ -905,7 +1061,7 @@ def test_parse_session_info() -> None:
         "tenant_id": "tenant-1",
         "user_id": "user-1",
     }
-    session_info = SessionDetails.from_json(session_details)
+    session_info = SessionDetails.from_json(session_details, errors=[])
 
     assert session_info == SessionDetails(
         id="test_id",
@@ -934,7 +1090,7 @@ def test_parse_session_info_without_optionals() -> None:
         "tenant_id": "tenant-1",
         "user_id": "user-1",
     }
-    session_info = SessionDetails.from_json(session_details)
+    session_info = SessionDetails.from_json(session_details, errors=[])
 
     assert session_info == SessionDetails(
         id="test_id",
