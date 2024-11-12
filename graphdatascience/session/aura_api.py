@@ -170,7 +170,7 @@ class AuraApi:
             elif session.status == "Ready" and session.host:  # check host needed until dns based routing
                 return WaitResult.from_connection_url(session.bolt_connection_url())
             elif session.status == "Failed":
-                return WaitResult.from_error(f"Session `{session_id}` failed to start due to: {session.errors}")
+                return WaitResult.from_error(f"Session `{session_id}` failed due to: {session.errors}")
             else:
                 self._logger.debug(
                     f"Session `{session_id}` is not yet running. "

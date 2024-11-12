@@ -641,7 +641,7 @@ def test_wait_for_session_running_until_failure(requests_mock: Mocker) -> None:
     api = AuraApi("", "", tenant_id="some-tenant")
 
     assert api.wait_for_session_running("id0") == WaitResult.from_error(
-        "Session `id0` failed to start due to: [SessionError(message='Session reached its memory limit. Create a larger instance.', reason='OutOfMemory')]"
+        "Session `id0` failed due to: [SessionError(message='Session reached its memory limit. Create a larger instance.', reason='OutOfMemory')]"
     )
 
 
