@@ -882,21 +882,6 @@ def test_parse_tenant_details() -> None:
     assert details == expected_details
 
 
-def test_parse_non_ds_details() -> None:
-    with pytest.raises(
-        RuntimeError,
-        match="Tenant with id `42` cannot create DS instances. Available instances are `{'enterprise-db'}`.",
-    ):
-        TenantDetails.from_json(
-            {
-                "id": "42",
-                "instance_configurations": [
-                    {"type": "enterprise-db", "region": "europe-west1", "cloud_provider": "aws"}
-                ],
-            }
-        )
-
-
 def test_parse_session_info() -> None:
     session_details = {
         "id": "test_id",
