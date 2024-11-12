@@ -271,6 +271,7 @@ def test_list_session_paused_instance(aura_api: AuraApi) -> None:
 
     assert sessions.list() == [SessionInfo.from_session_details(session)]
 
+
 def test_list_session_failed_session(aura_api: AuraApi) -> None:
     fake_aura_api = cast(FakeAuraApi, aura_api)
 
@@ -288,10 +289,9 @@ def test_list_session_failed_session(aura_api: AuraApi) -> None:
         ttl=timedelta(seconds=42),
         errors=[
             SessionError(reason="OutOfMemory", message="Session reached its memory limit. Create a larger instance.")
-        ])
-    fake_aura_api.add_session(
-       session_details
+        ],
     )
+    fake_aura_api.add_session(session_details)
 
     sessions = DedicatedSessions(fake_aura_api)
 
@@ -678,7 +678,9 @@ def test_create_waiting_forever(
     sessions = DedicatedSessions(aura_api)
     patch_neo4j_query_runner(mocker)
 
-    with pytest.raises(RuntimeError, match="Failed to get or create session `one`: Session `ffff0-ffff1` is not running"):
+    with pytest.raises(
+        RuntimeError, match="Failed to get or create session `one`: Session `ffff0-ffff1` is not running"
+    ):
         sessions.get_or_create(
             "one", SessionMemory.m_8GB, DbmsConnectionInfo("neo4j+ssc://ffff0.databases.neo4j.io", "", "")
         )
