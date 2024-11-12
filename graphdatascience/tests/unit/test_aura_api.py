@@ -71,7 +71,7 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
         additional_matcher=assert_body,
     )
 
-    result = api.create_session(
+    result = api.get_or_create_session(
         name="name-0", dbid="dbid-1", pwd="pwd-2", memory=SessionMemory.m_4GB.value, ttl=timedelta(seconds=42)
     )
 
@@ -126,7 +126,7 @@ def test_create_dedicated_session(requests_mock: Mocker) -> None:
         additional_matcher=assert_body,
     )
 
-    result = api.create_session(
+    result = api.get_or_create_session(
         "name-0",
         "pwd-2",
         SessionMemory.m_4GB.value,
@@ -167,7 +167,7 @@ def test_create_standalone_session_http_error_forwards(requests_mock: Mocker) ->
     )
 
     with pytest.raises(AuraApiError, match="some validation error"):
-        api.create_session(
+        api.get_or_create_session(
             "name-0",
             "pwd-2",
             SessionMemory.m_4GB.value,
@@ -207,7 +207,7 @@ def test_create_standalone_session_state_error_forwards(requests_mock: Mocker) -
         },
     )
 
-    session = api.create_session(
+    session = api.get_or_create_session(
         "name-0",
         "pwd-2",
         SessionMemory.m_4GB.value,
@@ -609,6 +609,40 @@ def test_wait_for_session_running(requests_mock: Mocker) -> None:
     api = AuraApi("", "", tenant_id="some-tenant")
 
     assert api.wait_for_session_running("id0") == WaitResult.from_connection_url("neo4j+s://foo.bar")
+
+
+def test_wait_for_session_running_until_failure(requests_mock: Mocker) -> None:
+    mock_auth_token(requests_mock)
+    requests_mock.get(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        json={
+            "data": {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Failed",
+                "instance_id": "dbid-1",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "foo.bar",
+                "memory": "4Gi",
+                "expiry_date": "1977-01-01T00:00:00Z",
+                "tenant_id": "tenant-1",
+                "user_id": "user-1",
+            },
+            "errors": [
+                {
+                    "id": "id0",
+                    "message": "Session reached its memory limit. Create a larger instance.",
+                    "reason": "OutOfMemory",
+                },
+            ],
+        },
+    )
+
+    api = AuraApi("", "", tenant_id="some-tenant")
+
+    assert api.wait_for_session_running("id0") == WaitResult.from_error(
+        "Session `id0` failed to start due to: [SessionError(message='Session reached its memory limit. Create a larger instance.', reason='OutOfMemory')]"
+    )
 
 
 def test_delete_instance(requests_mock: Mocker) -> None:
