@@ -76,8 +76,10 @@ gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 
 [source, python, role=no-test]
 ----
+from graphdatascience.server_version.server_version import ServerVersion
+
 # This notebook requires GDS 2.5.0 or later
-assert gds.version() >= "2.5.0"
+assert gds.version() >= ServerVersion(2, 5, 0)
 ----
 
 == Downloading and Storing the FB15k-237 Dataset in the Database

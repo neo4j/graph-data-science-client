@@ -74,7 +74,9 @@ https://github.com/neo4j/graph-data-science/releases/tag/2.2.0[GDS
 
 [source, python, role=no-test]
 ----
-assert gds.version() >= "2.2.0"
+from graphdatascience.server_version.server_version import ServerVersion
+
+assert gds.version() >= ServerVersion(2, 2, 0)
 ----
 
 Finally, we import `+json+` to help in writing the Cypher queries used
@@ -154,10 +156,10 @@ subject_map = json.dumps(SUBJECT_TO_ID).replace('"', "`")
 # replacing the node label for the holdout nodes
 load_nodes = f"""
     LOAD CSV FROM "{CORA_CONTENT}" AS row
-    WITH 
+    WITH
       {subject_map} AS subject_to_id,
-      toInteger(row[0]) AS extId, 
-      row[1] AS subject, 
+      toInteger(row[0]) AS extId,
+      row[1] AS subject,
       toIntegerList(row[2..]) AS features
     MERGE (p:Paper {{extId: extId, subject: subject_to_id[subject], features: features}})
     WITH p LIMIT {HOLDOUT_NODES}
@@ -168,7 +170,7 @@ load_nodes = f"""
 # Cypher command to load the relationships using `LOAD CSV`
 load_relationships = f"""
     LOAD CSV FROM "{CORA_CITES}" AS row
-    MATCH (n), (m) 
+    MATCH (n), (m)
     WHERE n.extId = toInteger(row[0]) AND m.extId = toInteger(row[1])
     MERGE (n)-[:CITES]->(m)
 """
