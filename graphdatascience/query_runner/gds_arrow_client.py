@@ -639,6 +639,12 @@ class GdsArrowClient:
 
         return self._sanitize_arrow_table(arrow_table).to_pandas()  # type: ignore
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._flight_client.close()
+
     def close(self) -> None:
         self._flight_client.close()
 
