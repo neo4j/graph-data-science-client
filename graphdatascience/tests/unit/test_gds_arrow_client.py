@@ -1,5 +1,6 @@
 import json
 import re
+from typing import Any, Dict
 
 import pyarrow as pa
 import pytest
@@ -10,7 +11,7 @@ from graphdatascience.query_runner.gds_arrow_client import AuthMiddleware, GdsAr
 
 
 class FlightServer(flight.FlightServerBase):
-    def __init__(self, location="grpc://0.0.0.0:8491", **kwargs):
+    def __init__(self, location="grpc://0.0.0.0:0", **kwargs):
         super(FlightServer, self).__init__(location, **kwargs)
         self._location = location
         self._actions = []
@@ -43,8 +44,8 @@ def flight_server():
 
 
 @pytest.fixture()
-def flight_client():
-    with GdsArrowClient("localhost") as client:
+def flight_client(flight_server):
+    with GdsArrowClient("localhost", flight_server.port) as client:
         yield client
 
 
@@ -181,7 +182,7 @@ def test_get_node_property(flight_server, flight_client):
         tickets[0],
         {
             "concurrency": 42,
-            "configuration": {"list_node_labels": False, "node_labels": ["Person"], "node_property": ["id"]},
+            "configuration": {"list_node_labels": False, "node_labels": ["Person"], "node_property": "id"},
             "database_name": "db",
             "graph_name": "g",
             "procedure_name": "gds.graph.nodeProperty.stream",
@@ -321,12 +322,12 @@ def test_handle_flight_error():
         )
 
 
-def assert_action(action, expected_type: str, expected_body: dict[str, any]):
+def assert_action(action, expected_type: str, expected_body: Dict[str, Any]):
     assert action.type == expected_type
     assert json.loads(action.body.to_pybytes().decode()) == expected_body
 
 
-def assert_ticket(ticket, expected_body: dict[str, any]):
+def assert_ticket(ticket, expected_body: Dict[str, Any]):
     parsed = json.loads(ticket.ticket.decode())
     assert parsed["name"] == "GET_COMMAND"
     assert parsed["body"] == expected_body

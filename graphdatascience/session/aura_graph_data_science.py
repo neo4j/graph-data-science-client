@@ -59,7 +59,6 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
 
         # TODO: merge with the gds_arrow_client created inside ArrowQueryRunner
         session_arrow_client = GdsArrowClient.create(
-            session_bolt_query_runner,
             arrow_info,
             gds_session_connection_info.auth(),
             session_bolt_query_runner.encrypted(),

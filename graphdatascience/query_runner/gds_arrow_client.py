@@ -5,15 +5,14 @@ import json
 import re
 import time
 import warnings
+from dataclasses import dataclass
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 import pyarrow
-from attr import dataclass
 from neo4j.exceptions import ClientError
 from pandas import DataFrame
 from pyarrow import ChunkedArray, RecordBatch, Table, chunked_array, flight
 from pyarrow import __version__ as arrow_version
-from pyarrow._flight import FlightMetadataReader, FlightStreamWriter
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, stop_after_delay, wait_exponential
@@ -162,7 +161,7 @@ class GdsArrowClient:
         }
 
         if isinstance(node_properties, str):
-            config["node_property"] = (node_properties,)
+            config["node_property"] = node_properties
             proc = "gds.graph.nodeProperty.stream"
         else:
             config["node_properties"] = node_properties
@@ -563,7 +562,7 @@ class GdsArrowClient:
 
         flight_descriptor = self._versioned_flight_descriptor({"name": graph_name, "entity_type": entity_type})
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
-        put_stream, ack_stream = self._flight_client.do_put(upload_descriptor, batches[0].schema())
+        put_stream, ack_stream = self._flight_client.do_put(upload_descriptor, batches[0].schema)
 
         @retry(
             stop=(stop_after_delay(10) | stop_after_attempt(5)),
@@ -587,12 +586,12 @@ class GdsArrowClient:
             GdsArrowClient.handle_flight_error(e)
 
     def _do_get(
-            self,
-            database: Optional[str],
-            graph_name: str,
-            procedure_name: str,
-            concurrency: Optional[int],
-            configuration: Dict[str, Any],
+        self,
+        database: Optional[str],
+        graph_name: str,
+        procedure_name: str,
+        concurrency: Optional[int],
+        configuration: Dict[str, Any],
     ) -> DataFrame:
         if not database:
             raise ValueError(

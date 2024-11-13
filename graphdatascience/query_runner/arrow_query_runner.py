@@ -7,9 +7,6 @@ from pandas import DataFrame
 
 from ..call_parameters import CallParameters
 from ..query_runner.arrow_info import ArrowInfo
-from ..server_version.compatible_with import (
-    IncompatibleServerVersionError,
-)
 from ..server_version.server_version import ServerVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .gds_arrow_client import GdsArrowClient
@@ -32,7 +29,6 @@ class ArrowQueryRunner(QueryRunner):
             raise ValueError("Arrow is not enabled on the server")
 
         gds_arrow_client = GdsArrowClient.create(
-            fallback_query_runner,
             arrow_info,
             auth,
             encrypted,
@@ -94,10 +90,12 @@ class ArrowQueryRunner(QueryRunner):
             graph_name = params["graph_name"]
             properties = params["properties"]
             node_labels = params["entities"]
-            list_node_labels = params["config"]["list_node_labels"]
-            concurrency = params["config"]["concurrency"]
+            list_node_labels = params["config"].get("listNodeLabels")
+            concurrency = params["config"].get("concurrency")
 
-            return self._gds_arrow_client.get_node_properties(graph_name, self.database(), properties, node_labels, list_node_labels, concurrency)
+            return self._gds_arrow_client.get_node_properties(
+                graph_name, self.database(), properties, node_labels, list_node_labels, concurrency
+            )
         elif (
             old_endpoint := ("gds.graph.streamNodeProperties" == endpoint)
         ) or "gds.graph.nodeProperties.stream" == endpoint:
@@ -109,10 +107,12 @@ class ArrowQueryRunner(QueryRunner):
             graph_name = params["graph_name"]
             properties = params["properties"]
             node_labels = params["entities"]
-            list_node_labels = params["config"]["list_node_labels"]
-            concurrency = params["config"]["concurrency"]
+            list_node_labels = params["config"].get("listNodeLabels")
+            concurrency = params["config"].get("concurrency")
 
-            return self._gds_arrow_client.get_node_properties(graph_name, self.database(), properties, node_labels, list_node_labels, concurrency)
+            return self._gds_arrow_client.get_node_properties(
+                graph_name, self.database(), properties, node_labels, list_node_labels, concurrency
+            )
 
         elif (
             old_endpoint := ("gds.graph.streamRelationshipProperty" == endpoint)
@@ -124,11 +124,13 @@ class ArrowQueryRunner(QueryRunner):
                 )
 
             graph_name = params["graph_name"]
-            property_name = params["property"]
+            property_name = params["properties"]
             relationship_types = params["entities"]
-            concurrency = params["config"]["concurrency"]
+            concurrency = params["config"].get("concurrency")
 
-            return self._gds_arrow_client.get_relationship_properties(graph_name, self.database(), property_name, relationship_types, concurrency)
+            return self._gds_arrow_client.get_relationship_properties(
+                graph_name, self.database(), property_name, relationship_types, concurrency
+            )
         elif (
             old_endpoint := ("gds.graph.streamRelationshipProperties" == endpoint)
         ) or "gds.graph.relationshipProperties.stream" == endpoint:
@@ -141,9 +143,11 @@ class ArrowQueryRunner(QueryRunner):
             graph_name = params["graph_name"]
             property_name = params["properties"]
             relationship_types = params["entities"]
-            concurrency = params["config"]["concurrency"]
+            concurrency = params["config"].get("concurrency")
 
-            return self._gds_arrow_client.get_relationship_properties(graph_name, self.database(), property_name, relationship_types, concurrency)
+            return self._gds_arrow_client.get_relationship_properties(
+                graph_name, self.database(), property_name, relationship_types, concurrency
+            )
 
         elif (
             old_endpoint := ("gds.beta.graph.relationships.stream" == endpoint)
@@ -154,12 +158,13 @@ class ArrowQueryRunner(QueryRunner):
                     new_endpoint="gds.graph.relationships.stream",
                 )
 
-
             graph_name = params["graph_name"]
             relationship_types = params["relationship_types"]
-            concurrency = params["config"]["concurrency"]
+            concurrency = params["config"].get("concurrency")
 
-            return self._gds_arrow_client.get_relationships(graph_name, self.database(), relationship_types, concurrency)
+            return self._gds_arrow_client.get_relationships(
+                graph_name, self.database(), relationship_types, concurrency
+            )
 
         return self._fallback_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
 
