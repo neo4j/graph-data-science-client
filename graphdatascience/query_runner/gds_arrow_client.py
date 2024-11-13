@@ -61,6 +61,7 @@ class GdsArrowClient:
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
         arrow_endpoint_version: ArrowEndpointVersion = ArrowEndpointVersion.V1,
+        user_agent: Optional[str] = None,
     ):
         """Creates a new GdsArrowClient instance.
 
@@ -80,6 +81,8 @@ class GdsArrowClient:
             PEM-encoded certificates that are used for the connection to the GDS Arrow Flight server
         arrow_endpoint_version:
             The version of the Arrow endpoint to use (default is ArrowEndpointVersion.V1)
+        user_agent: Optional[str]
+            The user agent string to use for the connection. (default is `neo4j-graphdatascience-v[VERSION] pyarrow-v[PYARROW_VERSION])
         """
         self._arrow_endpoint_version = arrow_endpoint_version
         self._host = host
@@ -91,7 +94,8 @@ class GdsArrowClient:
         client_options: Dict[str, Any] = {"disable_server_verification": disable_server_verification}
         if auth:
             self._auth_middleware = AuthMiddleware(auth)
-            user_agent = f"neo4j-graphdatascience-v{__version__} pyarrow-v{arrow_version}"
+            if not user_agent:
+                user_agent = f"neo4j-graphdatascience-v{__version__} pyarrow-v{arrow_version}"
             client_options["middleware"] = [AuthFactory(self._auth_middleware), UserAgentFactory(useragent=user_agent)]
         if tls_root_certs:
             client_options["tls_root_certs"] = tls_root_certs
