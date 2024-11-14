@@ -76,7 +76,7 @@ https://github.com/neo4j/graph-data-science/releases/tag/2.2.0[GDS
 ----
 from graphdatascience.server_version.server_version import ServerVersion
 
-assert gds.version() >= ServerVersion(2, 2, 0)
+assert gds.server_version() >= ServerVersion(2, 2, 0)
 ----
 
 Finally, we import `+json+` to help in writing the Cypher queries used

@@ -27,8 +27,8 @@ from graphdatascience import GraphDataScience
 gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
 
 # Check the installed GDS version on the server
-print(gds.version())
-assert gds.version()
+print(gds.server_version())
+assert gds.server_version()
 ----
 
 [source,python,role=no-test]

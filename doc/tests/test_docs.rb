@@ -71,7 +71,7 @@ end
 def block_to_raw_code(block)
   if block.attr?('min-server-version')
     min_gds_version = block.attr('min-server-version')
-    raw_code = "if ServerVersion.from_string(\"#{min_gds_version}\") <= ServerVersion.from_string(gds.version()):\n"
+    raw_code = "if ServerVersion.from_string(\"#{min_gds_version}\") <= gds.server_version():\n"
     block.source.each_line { |line| raw_code += "    #{line}" }
     raw_code
   else
