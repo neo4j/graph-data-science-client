@@ -7,9 +7,6 @@ from pandas import DataFrame
 
 from ..call_parameters import CallParameters
 from ..query_runner.arrow_info import ArrowInfo
-from ..server_version.compatible_with import (
-    IncompatibleServerVersionError,
-)
 from ..server_version.server_version import ServerVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .gds_arrow_client import GdsArrowClient
@@ -32,7 +29,6 @@ class ArrowQueryRunner(QueryRunner):
             raise ValueError("Arrow is not enabled on the server")
 
         gds_arrow_client = GdsArrowClient.create(
-            fallback_query_runner,
             arrow_info,
             auth,
             encrypted,
@@ -82,125 +78,92 @@ class ArrowQueryRunner(QueryRunner):
         if params is None:
             params = CallParameters()
 
-        new_endpoint_server_version = ServerVersion(2, 2, 0)
-        no_tier_in_namespace_server_version = ServerVersion(2, 5, 0)
-
         # We need to support the deprecated endpoints until they get removed on the server side
         if (
             old_endpoint := ("gds.graph.streamNodeProperty" == endpoint)
         ) or "gds.graph.nodeProperty.stream" == endpoint:
+            if old_endpoint:
+                self.warn_about_deprecation(
+                    old_endpoint="gds.graph.streamNodeProperty", new_endpoint="gds.graph.nodeProperty.stream"
+                )
+
             graph_name = params["graph_name"]
-            property_name = params["properties"]
+            properties = params["properties"]
             node_labels = params["entities"]
+            list_node_labels = params["config"].get("listNodeLabels")
+            concurrency = params["config"].get("concurrency")
 
-            config = {"node_property": property_name, "node_labels": node_labels}
-
-            if "listNodeLabels" in params["config"]:
-                config["list_node_labels"] = params["config"]["listNodeLabels"]
-
-            if self._server_version < new_endpoint_server_version:
-                endpoint = "gds.graph.streamNodeProperty"
-            else:
-                endpoint = "gds.graph.nodeProperty.stream"
-                if old_endpoint:
-                    self.warn_about_deprecation(
-                        old_endpoint="gds.graph.streamNodeProperty", new_endpoint="gds.graph.nodeProperty.stream"
-                    )
-
-            return self._gds_arrow_client.get_property(self.database(), graph_name, endpoint, config)
+            return self._gds_arrow_client.get_node_properties(
+                graph_name, self.database(), properties, node_labels, list_node_labels, concurrency
+            )
         elif (
             old_endpoint := ("gds.graph.streamNodeProperties" == endpoint)
         ) or "gds.graph.nodeProperties.stream" == endpoint:
+            if old_endpoint:
+                self.warn_about_deprecation(
+                    old_endpoint="gds.graph.streamNodeProperties", new_endpoint="gds.graph.nodeProperties.stream"
+                )
+
             graph_name = params["graph_name"]
+            properties = params["properties"]
+            node_labels = params["entities"]
+            list_node_labels = params["config"].get("listNodeLabels")
+            concurrency = params["config"].get("concurrency")
 
-            config = {"node_properties": params["properties"], "node_labels": params["entities"]}
-
-            if "listNodeLabels" in params["config"]:
-                config["list_node_labels"] = params["config"]["listNodeLabels"]
-
-            if self._server_version < new_endpoint_server_version:
-                endpoint = "gds.graph.streamNodeProperties"
-            else:
-                endpoint = "gds.graph.nodeProperties.stream"
-                if old_endpoint:
-                    self.warn_about_deprecation(
-                        old_endpoint="gds.graph.streamNodeProperties", new_endpoint="gds.graph.nodeProperties.stream"
-                    )
-            return self._gds_arrow_client.get_property(
-                self.database(),
-                graph_name,
-                endpoint,
-                config,
+            return self._gds_arrow_client.get_node_properties(
+                graph_name, self.database(), properties, node_labels, list_node_labels, concurrency
             )
+
         elif (
             old_endpoint := ("gds.graph.streamRelationshipProperty" == endpoint)
         ) or "gds.graph.relationshipProperty.stream" == endpoint:
+            if old_endpoint:
+                self.warn_about_deprecation(
+                    old_endpoint="gds.graph.streamRelationshipProperty",
+                    new_endpoint="gds.graph.relationshipProperty.stream",
+                )
+
             graph_name = params["graph_name"]
             property_name = params["properties"]
             relationship_types = params["entities"]
+            concurrency = params["config"].get("concurrency")
 
-            if self._server_version < new_endpoint_server_version:
-                endpoint = "gds.graph.streamRelationshipProperty"
-            else:
-                endpoint = "gds.graph.relationshipProperty.stream"
-                if old_endpoint:
-                    self.warn_about_deprecation(
-                        old_endpoint="gds.graph.streamRelationshipProperty",
-                        new_endpoint="gds.graph.relationshipProperty.stream",
-                    )
-            return self._gds_arrow_client.get_property(
-                self.database(),
-                graph_name,
-                endpoint,
-                {"relationship_property": property_name, "relationship_types": relationship_types},
+            return self._gds_arrow_client.get_relationship_properties(
+                graph_name, self.database(), property_name, relationship_types, concurrency
             )
         elif (
             old_endpoint := ("gds.graph.streamRelationshipProperties" == endpoint)
         ) or "gds.graph.relationshipProperties.stream" == endpoint:
+            if old_endpoint:
+                self.warn_about_deprecation(
+                    old_endpoint="gds.graph.streamRelationshipProperties",
+                    new_endpoint="gds.graph.relationshipProperties.stream",
+                )
+
             graph_name = params["graph_name"]
-            property_names = params["properties"]
+            property_name = params["properties"]
             relationship_types = params["entities"]
+            concurrency = params["config"].get("concurrency")
 
-            if self._server_version < new_endpoint_server_version:
-                endpoint = "gds.graph.streamRelationshipProperties"
-            else:
-                endpoint = "gds.graph.relationshipProperties.stream"
-                if old_endpoint:
-                    self.warn_about_deprecation(
-                        old_endpoint="gds.graph.streamRelationshipProperties",
-                        new_endpoint="gds.graph.relationshipProperties.stream",
-                    )
-
-            return self._gds_arrow_client.get_property(
-                self.database(),
-                graph_name,
-                endpoint,
-                {"relationship_properties": property_names, "relationship_types": relationship_types},
+            return self._gds_arrow_client.get_relationship_properties(
+                graph_name, self.database(), property_name, relationship_types, concurrency
             )
+
         elif (
             old_endpoint := ("gds.beta.graph.relationships.stream" == endpoint)
         ) or "gds.graph.relationships.stream" == endpoint:
+            if old_endpoint:
+                self.warn_about_deprecation(
+                    old_endpoint="gds.beta.graph.relationships.stream",
+                    new_endpoint="gds.graph.relationships.stream",
+                )
+
             graph_name = params["graph_name"]
             relationship_types = params["relationship_types"]
+            concurrency = params["config"].get("concurrency")
 
-            if self._server_version < new_endpoint_server_version:
-                raise IncompatibleServerVersionError(
-                    f"The call gds.beta.graph.relationships.stream with parameters {params} via Arrow requires GDS "
-                    f"server version >= 2.2.0. The current version is {self._server_version}"
-                )
-            else:
-                if self._server_version < no_tier_in_namespace_server_version:
-                    endpoint = "gds.beta.graph.relationships.stream"
-                else:
-                    endpoint = "gds.graph.relationships.stream"
-                    if old_endpoint:
-                        self.warn_about_deprecation(
-                            old_endpoint="gds.beta.graph.relationships.stream",
-                            new_endpoint="gds.graph.relationships.stream",
-                        )
-
-            return self._gds_arrow_client.get_property(
-                self.database(), graph_name, endpoint, {"relationship_types": relationship_types}
+            return self._gds_arrow_client.get_relationships(
+                graph_name, self.database(), relationship_types, concurrency
             )
 
         return self._fallback_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
