@@ -35,7 +35,7 @@ class FakeAuraApi(AuraApi):
         size_estimation: Optional[EstimationDetails] = None,
         client_id: str = "client_id",
         console_user: str = "user-1",
-        admin_user: str = False,
+        admin_user: str = "",
     ) -> None:
         super().__init__(client_id=client_id, client_secret="client_secret", tenant_id="tenant_id", aura_env="test")
         if existing_instances is None:
@@ -60,7 +60,7 @@ class FakeAuraApi(AuraApi):
         ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
     ) -> SessionDetails:
-        if not cloud_location:
+        if not cloud_location and dbid:
             instance_details = self.list_instance(dbid)
             if instance_details:
                 cloud_location = CloudLocation(instance_details.cloud_provider, instance_details.region)
@@ -122,7 +122,7 @@ class FakeAuraApi(AuraApi):
             )
 
     def create_instance(
-        self, name: str, memory: SessionMemoryValue, cloud_provider: str, region: str
+        self, name: str, memory: SessionMemoryValue, cloud_provider: str, region: str, type: str = "dsenterprise"
     ) -> InstanceCreateDetails:
         id = f"ffff{self.id_counter}"
         create_details = InstanceCreateDetails(
@@ -214,7 +214,7 @@ class FakeAuraApi(AuraApi):
         )
 
     def tenant_details(self) -> TenantDetails:
-        return TenantDetails(id=self._tenant_id, ds_type="fake-ds", regions_per_provider={"aws": {"leipzig-1"}})
+        return TenantDetails(id=self._tenant_id, cloud_locations={CloudLocation("aws", "leipzig-1")})
 
     def estimate_size(
         self, node_count: int, relationship_count: int, algorithm_categories: List[AlgorithmCategory]
@@ -297,7 +297,7 @@ def test_list_session_failed_session(aura_api: AuraApi) -> None:
 
     actualSessions = sessions.list()
     assert actualSessions == [SessionInfo.from_session_details(session_details)]
-    assert len(actualSessions[0].errors) == 1
+    assert actualSessions[0].errors and len(actualSessions[0].errors) == 1
 
 
 def test_list_session_gds_instance(aura_api: AuraApi) -> None:
@@ -578,7 +578,7 @@ def test_delete_session_by_name(aura_api: AuraApi) -> None:
 
 
 def test_delete_session_by_name_admin() -> None:
-    aura_api = FakeAuraApi(console_user="user-1", admin_user=True)
+    aura_api = FakeAuraApi(console_user="user-1", admin_user="user-1")
     aura_api.add_session(
         SessionDetails(
             id="ffff0-ffff1",

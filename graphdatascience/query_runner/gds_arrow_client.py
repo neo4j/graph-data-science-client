@@ -6,12 +6,13 @@ import re
 import time
 import warnings
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
+from types import TracebackType
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Type, Union
 
 import pyarrow
 from neo4j.exceptions import ClientError
 from pandas import DataFrame
-from pyarrow import ChunkedArray, RecordBatch, Table, chunked_array, flight
+from pyarrow import Array, ChunkedArray, DictionaryArray, RecordBatch, Table, chunked_array, flight
 from pyarrow import __version__ as arrow_version
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary
@@ -160,7 +161,7 @@ class GdsArrowClient:
         DataFrame
             The requested node property as a DataFrame
         """
-        config = {
+        config: Dict[str, Any] = {
             "list_node_labels": list_node_labels,
         }
 
@@ -255,6 +256,7 @@ class GdsArrowClient:
         DataFrame
             The requested relationships as a DataFrame
         """
+        config: Dict[str, Any] = {}
         if isinstance(relationship_properties, str):
             config = {"relationship_property": relationship_properties}
             proc = "gds.graph.relationshipProperty.stream"
@@ -545,9 +547,10 @@ class GdsArrowClient:
             collected_result = list(result)
             assert len(collected_result) == 1
 
-            return json.loads(collected_result[0].body.to_pybytes().decode())
+            return json.loads(collected_result[0].body.to_pybytes().decode())  # type: ignore
         except Exception as e:
             self.handle_flight_error(e)
+            raise e  # unreachable
 
     def _upload_data(
         self,
@@ -591,19 +594,13 @@ class GdsArrowClient:
 
     def _do_get(
         self,
-        database: Optional[str],
+        database: str,
         graph_name: str,
         procedure_name: str,
         concurrency: Optional[int],
         configuration: Dict[str, Any],
     ) -> DataFrame:
-        if not database:
-            raise ValueError(
-                "For this call you must have explicitly specified a valid Neo4j database to execute on, "
-                "using `GraphDataScience.set_database`."
-            )
-
-        payload = {
+        payload: Dict[str, Any] = {
             "database_name": database,
             "graph_name": graph_name,
             "procedure_name": procedure_name,
@@ -642,10 +639,15 @@ class GdsArrowClient:
 
         return self._sanitize_arrow_table(arrow_table).to_pandas()  # type: ignore
 
-    def __enter__(self):
+    def __enter__(self) -> GdsArrowClient:
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
         self._flight_client.close()
 
     def close(self) -> None:
@@ -681,14 +683,25 @@ class GdsArrowClient:
             except NotImplementedError:
                 # we need to decode the dictionary column before transforming to pandas
                 if isinstance(arrow_table[field.name], ChunkedArray):
-                    decoded_col = chunked_array([chunk.dictionary_decode() for chunk in arrow_table[field.name].chunks])
+                    decoded_col: Array = chunked_array(
+                        [GdsArrowClient._decode_pyarrow_array(chunk) for chunk in arrow_table[field.name].chunks]
+                    )
                 else:
-                    decoded_col = arrow_table[field.name].dictionary_decode()
+                    col = arrow_table[field.name]
+                    decoded_col = GdsArrowClient._decode_pyarrow_array(col)
                 arrow_table = arrow_table.set_column(idx, field.name, decoded_col)
         return arrow_table
 
     @staticmethod
-    def handle_flight_error(e: Exception):
+    def _decode_pyarrow_array(array: Array) -> Array:
+        if isinstance(array, DictionaryArray):
+            dictArr = array
+            return dictArr.dictionary_decode()
+        else:
+            return array
+
+    @staticmethod
+    def handle_flight_error(e: Exception) -> None:
         if (
             isinstance(e, flight.FlightServerError)
             or isinstance(e, flight.FlightInternalError)
@@ -712,7 +725,7 @@ class GdsArrowClient:
             raise e
 
 
-class UserAgentFactory(ClientMiddlewareFactory):
+class UserAgentFactory(ClientMiddlewareFactory):  # type: ignore
     def __init__(self, useragent: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._middleware = UserAgentMiddleware(useragent)
@@ -721,7 +734,7 @@ class UserAgentFactory(ClientMiddlewareFactory):
         return self._middleware
 
 
-class UserAgentMiddleware(ClientMiddleware):
+class UserAgentMiddleware(ClientMiddleware):  # type: ignore
     def __init__(self, useragent: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._useragent = useragent
@@ -733,7 +746,7 @@ class UserAgentMiddleware(ClientMiddleware):
         pass
 
 
-class AuthFactory(ClientMiddlewareFactory):
+class AuthFactory(ClientMiddlewareFactory):  # type: ignore
     def __init__(self, middleware: AuthMiddleware, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._middleware = middleware

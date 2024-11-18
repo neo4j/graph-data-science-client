@@ -7,6 +7,14 @@ set -o pipefail
 python -m ruff check .
 python -m ruff format --check .
 
+if [ "${MYPY_DAEMON:-false}" == "true" ]; then
+  dmypy start # using the daemon is a bit fast on multiple runs
+  dmypy .
+else
+  mypy .
+fi
+
+
 if [ "${SKIP_NOTEBOOKS:-false}" == "true" ]; then
   echo "Skipping notebooks"
   exit 0

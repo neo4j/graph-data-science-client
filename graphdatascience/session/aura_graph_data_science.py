@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Callable, Dict, Optional, Union
 
 from pandas import DataFrame
@@ -36,7 +38,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
         show_progress: bool = True,
-    ):
+    ) -> AuraGraphDataScience:
         # we need to explicitly set this as the default value is None
         # database in the session is always neo4j
         session_bolt_query_runner = Neo4jQueryRunner.create(

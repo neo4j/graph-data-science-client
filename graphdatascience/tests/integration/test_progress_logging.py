@@ -8,19 +8,19 @@ from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 from graphdatascience.tests.unit.test_session_query_runner import FakeArrowClient
 
 
-def test_disabled_progress_logging(neo4j_driver: Driver):
+def test_disabled_progress_logging(neo4j_driver: Driver) -> None:
     query_runner = Neo4jQueryRunner.create(neo4j_driver, show_progress=False)
     assert query_runner._resolve_show_progress(True) is False
     assert query_runner._resolve_show_progress(False) is False
 
 
-def test_enabled_progress_logging(neo4j_driver: Driver):
+def test_enabled_progress_logging(neo4j_driver: Driver) -> None:
     query_runner = Neo4jQueryRunner.create(neo4j_driver, show_progress=True)
     assert query_runner._resolve_show_progress(True) is True
     assert query_runner._resolve_show_progress(False) is False
 
 
-def test_disabled_progress_logging_session(neo4j_driver: Driver):
+def test_disabled_progress_logging_session(neo4j_driver: Driver) -> None:
     version = ServerVersion(2, 7, 0)
     db_query_runner = CollectingQueryRunner(version, result_mock=DataFrame([{"version": "v1"}]))
     gds_query_runner = CollectingQueryRunner(version)
@@ -34,7 +34,7 @@ def test_disabled_progress_logging_session(neo4j_driver: Driver):
     assert query_runner._resolve_show_progress(False) is False
 
 
-def test_enabled_progress_logging_session(neo4j_driver: Driver):
+def test_enabled_progress_logging_session(neo4j_driver: Driver) -> None:
     version = ServerVersion(2, 7, 0)
     db_query_runner = CollectingQueryRunner(version, result_mock=DataFrame([{"version": "v1"}]))
     gds_query_runner = CollectingQueryRunner(version)

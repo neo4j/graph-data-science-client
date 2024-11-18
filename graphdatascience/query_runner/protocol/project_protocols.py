@@ -120,7 +120,8 @@ class ProjectProtocolV3(ProjectProtocol):
         logging: bool = False,
     ) -> DataFrame:
         def is_not_done(result: DataFrame) -> bool:
-            return result.squeeze()["status"] != Status.DONE.name
+            status: str = result.squeeze()["status"]
+            return status != Status.DONE.name
 
         @retry(retry=retry_if_result(is_not_done), wait=wait_incrementing(start=0.2, increment=0.2, max=2))
         def project_fn() -> DataFrame:

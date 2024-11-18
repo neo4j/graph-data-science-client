@@ -94,7 +94,7 @@ class ArrowQueryRunner(QueryRunner):
             concurrency = params["config"].get("concurrency")
 
             return self._gds_arrow_client.get_node_properties(
-                graph_name, self.database(), properties, node_labels, list_node_labels, concurrency
+                graph_name, self._database_or_throw(), properties, node_labels, list_node_labels, concurrency
             )
         elif (
             old_endpoint := ("gds.graph.streamNodeProperties" == endpoint)
@@ -111,7 +111,7 @@ class ArrowQueryRunner(QueryRunner):
             concurrency = params["config"].get("concurrency")
 
             return self._gds_arrow_client.get_node_properties(
-                graph_name, self.database(), properties, node_labels, list_node_labels, concurrency
+                graph_name, self._database_or_throw(), properties, node_labels, list_node_labels, concurrency
             )
 
         elif (
@@ -129,7 +129,7 @@ class ArrowQueryRunner(QueryRunner):
             concurrency = params["config"].get("concurrency")
 
             return self._gds_arrow_client.get_relationship_properties(
-                graph_name, self.database(), property_name, relationship_types, concurrency
+                graph_name, self._database_or_throw(), property_name, relationship_types, concurrency
             )
         elif (
             old_endpoint := ("gds.graph.streamRelationshipProperties" == endpoint)
@@ -146,7 +146,7 @@ class ArrowQueryRunner(QueryRunner):
             concurrency = params["config"].get("concurrency")
 
             return self._gds_arrow_client.get_relationship_properties(
-                graph_name, self.database(), property_name, relationship_types, concurrency
+                graph_name, self._database_or_throw(), property_name, relationship_types, concurrency
             )
 
         elif (
@@ -163,7 +163,7 @@ class ArrowQueryRunner(QueryRunner):
             concurrency = params["config"].get("concurrency")
 
             return self._gds_arrow_client.get_relationships(
-                graph_name, self.database(), relationship_types, concurrency
+                graph_name, self._database_or_throw(), relationship_types, concurrency
             )
 
         return self._fallback_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
@@ -186,6 +186,16 @@ class ArrowQueryRunner(QueryRunner):
     def database(self) -> Optional[str]:
         return self._fallback_query_runner.database()
 
+    def _database_or_throw(self) -> str:
+        database = self.database()
+        if not database:
+            raise ValueError(
+                "For this call you must have explicitly specified a valid Neo4j database to target, "
+                "using `GraphDataScience.set_database`."
+            )
+
+        return database
+
     def bookmarks(self) -> Optional[Any]:
         return self._fallback_query_runner.bookmarks()
 
@@ -205,12 +215,7 @@ class ArrowQueryRunner(QueryRunner):
     def create_graph_constructor(
         self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
     ) -> GraphConstructor:
-        database = self.database()
-        if not database:
-            raise ValueError(
-                "For this call you must have explicitly specified a valid Neo4j database to target, "
-                "using `GraphDataScience.set_database`."
-            )
+        database = self._database_or_throw()
 
         return ArrowGraphConstructor(
             database,

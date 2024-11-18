@@ -38,7 +38,7 @@ class SessionInfo:
     user_id: str
     cloud_location: Optional[CloudLocation]
     ttl: Optional[timedelta] = None
-    errors: List[SessionError] = None
+    errors: Optional[List[SessionError]] = None
 
     @classmethod
     def from_session_details(cls, details: SessionDetails) -> SessionInfo:

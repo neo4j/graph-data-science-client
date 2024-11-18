@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC
 from dataclasses import dataclass
 from typing import Any, Dict, List
@@ -67,7 +69,7 @@ class NodePropertyStep:
 
 
 class PipelineModel(Model, ABC):
-    def best_parameters(self) -> "Series[Any]":
+    def best_parameters(self) -> Series[Any]:
         """
         Get the best parameters for the pipeline model.
 
@@ -76,7 +78,7 @@ class PipelineModel(Model, ABC):
 
         """
         best_params: Dict[str, Any] = self._list_info()["modelInfo"]["bestParameters"]
-        return Series(best_params)
+        return Series(best_params)  # type: ignore[no-any-return]
 
     def node_property_steps(self) -> List[NodePropertyStep]:
         """
@@ -89,7 +91,7 @@ class PipelineModel(Model, ABC):
         steps: List[Dict[str, Any]] = self._list_info()["modelInfo"]["pipeline"]["nodePropertySteps"]
         return [NodePropertyStep(s["name"], s["config"]) for s in steps]
 
-    def metrics(self) -> "Series[Any]":
+    def metrics(self) -> Series[Any]:
         """
         Get the metrics for the pipeline model.
 

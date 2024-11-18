@@ -46,7 +46,7 @@ class QueryProgressLogger:
             else:
                 return future.result()
 
-    def _select_progress_provider(self, job_id) -> ProgressProvider:
+    def _select_progress_provider(self, job_id: str) -> ProgressProvider:
         return (
             self._static_progress_provider
             if StaticProgressStore.contains_job_id(job_id)

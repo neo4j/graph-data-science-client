@@ -2,7 +2,7 @@ from graphdatascience.call_parameters import CallParameters
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
-def test_job_id_extraction():
+def test_job_id_extraction() -> None:
     # empty params
     params = CallParameters({})
     job_id = Neo4jQueryRunner._extract_or_create_job_id(params)

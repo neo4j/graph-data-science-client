@@ -4,6 +4,7 @@ import signal
 import sys
 from datetime import datetime
 from pathlib import Path
+from types import FrameType
 from typing import Any, Callable, List, NamedTuple, Optional
 
 import nbformat
@@ -32,7 +33,7 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
     def preprocess_cell(self, cell: Any, resources: Any, index: int) -> None:
         if index == 0:
 
-            def handle_signal(sig, frame):
+            def handle_signal(sig: int, frame: Optional[FrameType]) -> None:
                 print("Received SIGNAL, running tear down cells")
                 self.teardown(resources)
                 sys.exit(1)
@@ -54,7 +55,7 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
                 self.teardown(resources)
             raise e
 
-    def teardown(self, resources) -> None:
+    def teardown(self, resources: Any) -> None:
         for td_cell, td_idx in self.tear_down_cells:
             try:
                 super().preprocess_cell(td_cell, resources, td_idx)  # type: ignore
@@ -137,15 +138,15 @@ if __name__ == "__main__":
     notebooks: Optional[List[str]] = None
     if notebook_filter == "sessions-attached":
 
-        def filter_func(notebook):
+        def filter_func(notebook: str) -> bool:
             return notebook in session_notebooks
     elif notebook_filter == "sessions-self-managed-db":
 
-        def filter_func(notebook):
+        def filter_func(notebook: str) -> bool:
             return notebook in session_self_managed_notebooks
     else:
 
-        def filter_func(notebook):
+        def filter_func(notebook: str) -> bool:
             return notebook not in session_notebooks + session_self_managed_notebooks
 
     main(filter_func)
