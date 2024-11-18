@@ -1,36 +1,48 @@
 import json
 import re
-from typing import Any, Dict
+from typing import Any, Dict, Generator, List, Tuple, Union
 
 import pyarrow as pa
 import pytest
 from pyarrow import flight
 from pyarrow._flight import GeneratorStream
+from pyarrow.flight import Action, Ticket
 
 from graphdatascience.query_runner.gds_arrow_client import AuthMiddleware, GdsArrowClient
 
+ActionParam = Union[str, Tuple[str, Any], Action]
 
-class FlightServer(flight.FlightServerBase):
-    def __init__(self, location="grpc://0.0.0.0:0", **kwargs):
+
+class FlightServer(flight.FlightServerBase):  # type: ignore
+    def __init__(self, location: str = "grpc://0.0.0.0:0", **kwargs: Dict[str, Any]) -> None:
         super(FlightServer, self).__init__(location, **kwargs)
-        self._location = location
-        self._actions = []
-        self._tickets = []
+        self._location: str = location
+        self._actions: List[ActionParam] = []
+        self._tickets: List[Ticket] = []
 
-    def do_get(self, context, ticket):
+    def do_get(self, context: Any, ticket: Ticket) -> GeneratorStream:
         self._tickets.append(ticket)
         table = pa.Table.from_pydict({"ids": [42, 1337, 1234]})
         return GeneratorStream(schema=table.schema, generator=table.to_batches())
 
-    def do_action(self, context, action):
+    def do_action(self, context: Any, action: ActionParam) -> List[bytes]:
         self._actions.append(action)
-        if "CREATE" in action.type:
+
+        if isinstance(action, Action):
+            actionType = action.type
+        elif isinstance(action, tuple):
+            actionType = action[0]
+        elif isinstance(action, str):
+            actionType = action
+
+        response: Dict[str, Any] = {}
+        if "CREATE" in actionType:
             response = {"name": "g"}
-        elif "NODE_LOAD_DONE" in action.type:
+        elif "NODE_LOAD_DONE" in actionType:
             response = {"name": "g", "node_count": 42}
-        elif "RELATIONSHIP_LOAD_DONE" in action.type:
+        elif "RELATIONSHIP_LOAD_DONE" in actionType:
             response = {"name": "g", "relationship_count": 42}
-        elif "TRIPLET_LOAD_DONE" in action.type:
+        elif "TRIPLET_LOAD_DONE" in actionType:
             response = {"name": "g", "node_count": 42, "relationship_count": 1337}
         else:
             response = {}
@@ -38,25 +50,25 @@ class FlightServer(flight.FlightServerBase):
 
 
 @pytest.fixture()
-def flight_server():
+def flight_server() -> Generator[None, FlightServer, None]:
     with FlightServer() as server:
         yield server
 
 
 @pytest.fixture()
-def flight_client(flight_server):
+def flight_client(flight_server: FlightServer) -> Generator[GdsArrowClient, None, None]:
     with GdsArrowClient("localhost", flight_server.port) as client:
         yield client
 
 
-def test_create_graph_with_defaults(flight_server, flight_client):
+def test_create_graph_with_defaults(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     flight_client.create_graph("g", "DB")
     actions = flight_server._actions
     assert len(actions) == 1
     assert_action(actions[0], "v1/CREATE_GRAPH", {"name": "g", "database_name": "DB"})
 
 
-def test_create_graph_with_options(flight_server, flight_client):
+def test_create_graph_with_options(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     flight_client.create_graph(
         "g", "DB", undirected_relationship_types=["Foo"], inverse_indexed_relationship_types=["Bar"], concurrency=42
     )
@@ -75,14 +87,14 @@ def test_create_graph_with_options(flight_server, flight_client):
     )
 
 
-def test_create_graph_from_triplets_with_defaults(flight_server, flight_client):
+def test_create_graph_from_triplets_with_defaults(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     flight_client.create_graph_from_triplets("g", "DB")
     actions = flight_server._actions
     assert len(actions) == 1
     assert_action(actions[0], "v1/CREATE_GRAPH_FROM_TRIPLETS", {"name": "g", "database_name": "DB"})
 
 
-def test_create_graph_from_triplets_with_options(flight_server, flight_client):
+def test_create_graph_from_triplets_with_options(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     flight_client.create_graph_from_triplets(
         "g", "DB", undirected_relationship_types=["Foo"], inverse_indexed_relationship_types=["Bar"], concurrency=42
     )
@@ -101,7 +113,7 @@ def test_create_graph_from_triplets_with_options(flight_server, flight_client):
     )
 
 
-def test_create_database_with_defaults(flight_server, flight_client):
+def test_create_database_with_defaults(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     flight_client.create_database("g")
     actions = flight_server._actions
     assert len(actions) == 1
@@ -110,7 +122,7 @@ def test_create_database_with_defaults(flight_server, flight_client):
     )
 
 
-def test_create_database_with_options(flight_server, flight_client):
+def test_create_database_with_options(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     flight_client.create_database(
         "g",
         "DB",
@@ -139,7 +151,7 @@ def test_create_database_with_options(flight_server, flight_client):
     )
 
 
-def test_node_load_done_action(flight_server, flight_client):
+def test_node_load_done_action(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     response = flight_client.node_load_done("g")
     assert response.name == "g"
     assert response.node_count == 42
@@ -148,7 +160,7 @@ def test_node_load_done_action(flight_server, flight_client):
     assert_action(actions[0], "v1/NODE_LOAD_DONE", {"name": "g"})
 
 
-def test_relationship_load_done_action(flight_server, flight_client):
+def test_relationship_load_done_action(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     response = flight_client.relationship_load_done("g")
     assert response.name == "g"
     assert response.relationship_count == 42
@@ -157,7 +169,7 @@ def test_relationship_load_done_action(flight_server, flight_client):
     assert_action(actions[0], "v1/RELATIONSHIP_LOAD_DONE", {"name": "g"})
 
 
-def test_triplet_load_done_action(flight_server, flight_client):
+def test_triplet_load_done_action(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     response = flight_client.triplet_load_done("g")
     assert response.name == "g"
     assert response.node_count == 42
@@ -167,14 +179,14 @@ def test_triplet_load_done_action(flight_server, flight_client):
     assert_action(actions[0], "v1/TRIPLET_LOAD_DONE", {"name": "g"})
 
 
-def test_abort_action(flight_server, flight_client):
+def test_abort_action(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     flight_client.abort("g")
     actions = flight_server._actions
     assert len(actions) == 1
     assert_action(actions[0], "v1/ABORT", {"name": "g"})
 
 
-def test_get_node_property(flight_server, flight_client):
+def test_get_node_property(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     flight_client.get_node_properties("g", "db", "id", ["Person"], concurrency=42)
     tickets = flight_server._tickets
     assert len(tickets) == 1
@@ -190,7 +202,7 @@ def test_get_node_property(flight_server, flight_client):
     )
 
 
-def test_get_node_properties(flight_server, flight_client):
+def test_get_node_properties(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     flight_client.get_node_properties("g", "db", ["foo", "bar"], ["Person"], list_node_labels=True, concurrency=42)
     tickets = flight_server._tickets
     assert len(tickets) == 1
@@ -206,7 +218,7 @@ def test_get_node_properties(flight_server, flight_client):
     )
 
 
-def test_get_node_labels(flight_server, flight_client):
+def test_get_node_labels(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     flight_client.get_node_labels("g", "db", concurrency=42)
     tickets = flight_server._tickets
     assert len(tickets) == 1
@@ -222,7 +234,7 @@ def test_get_node_labels(flight_server, flight_client):
     )
 
 
-def test_get_relationship_property(flight_server, flight_client):
+def test_get_relationship_property(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     flight_client.get_relationship_properties(
         "g", "db", relationship_properties="prop", relationship_types=["FOO"], concurrency=42
     )
@@ -240,7 +252,7 @@ def test_get_relationship_property(flight_server, flight_client):
     )
 
 
-def test_get_relationship_properties(flight_server, flight_client):
+def test_get_relationship_properties(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     flight_client.get_relationship_properties(
         "g", "db", relationship_properties=["prop1", "prop2"], relationship_types=["FOO"], concurrency=42
     )
@@ -258,7 +270,7 @@ def test_get_relationship_properties(flight_server, flight_client):
     )
 
 
-def test_get_relationship_topologys(flight_server, flight_client):
+def test_get_relationship_topologys(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
     flight_client.get_relationships("g", "db", relationship_types=["FOO"], concurrency=42)
     tickets = flight_server._tickets
     assert len(tickets) == 1
@@ -322,12 +334,12 @@ def test_handle_flight_error() -> None:
         )
 
 
-def assert_action(action, expected_type: str, expected_body: Dict[str, Any]):
+def assert_action(action: Action, expected_type: str, expected_body: Dict[str, Any]) -> None:
     assert action.type == expected_type
     assert json.loads(action.body.to_pybytes().decode()) == expected_body
 
 
-def assert_ticket(ticket, expected_body: Dict[str, Any]):
+def assert_ticket(ticket: Ticket, expected_body: Dict[str, Any]) -> None:
     parsed = json.loads(ticket.ticket.decode())
     assert parsed["name"] == "GET_COMMAND"
     assert parsed["body"] == expected_body

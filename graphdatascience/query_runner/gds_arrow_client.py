@@ -6,12 +6,13 @@ import re
 import time
 import warnings
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
+from types import TracebackType
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Type, Union
 
 import pyarrow
 from neo4j.exceptions import ClientError
 from pandas import DataFrame
-from pyarrow import ChunkedArray, Array, DictionaryArray, RecordBatch, Table, chunked_array, flight
+from pyarrow import Array, ChunkedArray, DictionaryArray, RecordBatch, Table, chunked_array, flight
 from pyarrow import __version__ as arrow_version
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary
@@ -131,7 +132,7 @@ class GdsArrowClient:
     def get_node_properties(
         self,
         graph_name: str,
-        database: str,
+        database: Optional[str],
         node_properties: Union[str, List[str]],
         node_labels: Optional[List[str]] = None,
         list_node_labels: bool = False,
@@ -144,7 +145,7 @@ class GdsArrowClient:
         ----------
         graph_name : str
             The name of the graph
-        database : str
+        database : Optional[str]
             The name of the database to which the graph belongs
         node_properties : Union[str, List[str]]
             The name of the node properties to retrieve
@@ -160,7 +161,7 @@ class GdsArrowClient:
         DataFrame
             The requested node property as a DataFrame
         """
-        config = {
+        config: Dict[str, Any] = {
             "list_node_labels": list_node_labels,
         }
 
@@ -176,7 +177,7 @@ class GdsArrowClient:
 
         return self._do_get(database, graph_name, proc, concurrency, config)
 
-    def get_node_labels(self, graph_name: str, database: str, concurrency: Optional[int] = None) -> DataFrame:
+    def get_node_labels(self, graph_name: str, database: Optional[str], concurrency: Optional[int] = None) -> DataFrame:
         """
         Get all nodes and their labels from the graph.
 
@@ -184,7 +185,7 @@ class GdsArrowClient:
         ----------
         graph_name : str
             The name of the graph
-        database : str
+        database : Optional[str]
             The name of the database to which the graph belongs
         concurrency : Optional[int]
             The number of threads used on the server side when serving the data
@@ -197,7 +198,7 @@ class GdsArrowClient:
         return self._do_get(database, graph_name, "gds.graph.nodeLabels.stream", concurrency, {})
 
     def get_relationships(
-        self, graph_name: str, database: str, relationship_types: List[str], concurrency: Optional[int] = None
+        self, graph_name: str, database: Optional[str], relationship_types: List[str], concurrency: Optional[int] = None
     ) -> DataFrame:
         """
         Get relationships from the graph.
@@ -206,7 +207,7 @@ class GdsArrowClient:
         ----------
         graph_name : str
             The name of the graph
-        database : str
+        database : Optional[str]
             The name of the database to which the graph belongs
         relationship_types : List[str]
             The name of the relationship types to retrieve
@@ -229,7 +230,7 @@ class GdsArrowClient:
     def get_relationship_properties(
         self,
         graph_name: str,
-        database: str,
+        database: Optional[str],
         relationship_properties: Union[str, List[str]],
         relationship_types: List[str],
         concurrency: Optional[int] = None,
@@ -241,7 +242,7 @@ class GdsArrowClient:
         ----------
         graph_name : str
             The name of the graph
-        database : str
+        database : Optional[str]
             The name of the database to which the graph belongs
         relationship_properties : Union[str, List[str]]
             The name of the relationship properties to retrieve
@@ -255,6 +256,7 @@ class GdsArrowClient:
         DataFrame
             The requested relationships as a DataFrame
         """
+        config: Dict[str, Any] = {}
         if isinstance(relationship_properties, str):
             config = {"relationship_property": relationship_properties}
             proc = "gds.graph.relationshipProperty.stream"
@@ -545,9 +547,10 @@ class GdsArrowClient:
             collected_result = list(result)
             assert len(collected_result) == 1
 
-            return json.loads(collected_result[0].body.to_pybytes().decode())
+            return json.loads(collected_result[0].body.to_pybytes().decode())  # type: ignore
         except Exception as e:
             self.handle_flight_error(e)
+            raise e  # unreachable
 
     def _upload_data(
         self,
@@ -603,7 +606,7 @@ class GdsArrowClient:
                 "using `GraphDataScience.set_database`."
             )
 
-        payload = {
+        payload: Dict[str, Any] = {
             "database_name": database,
             "graph_name": graph_name,
             "procedure_name": procedure_name,
@@ -642,12 +645,17 @@ class GdsArrowClient:
 
         return self._sanitize_arrow_table(arrow_table).to_pandas()  # type: ignore
 
-    def __enter__(self):
+    def __enter__(self) -> GdsArrowClient:
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
         self._flight_client.close()
-    
+
     def close(self) -> None:
         self._flight_client.close()
 

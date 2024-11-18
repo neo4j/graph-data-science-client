@@ -91,11 +91,24 @@ class ArrowGraphConstructor(GraphConstructor):
 
         with ThreadPoolExecutor(self._concurrency) as executor:
 
-            def run_upload(df):
+            def run_upload(df: DataFrame) -> None:
+                def progress_callback(rows: int) -> None:
+                    pbar.update(rows)  # pbar would
+
                 if entity_type == "node":
-                    self._client.upload_nodes(self._graph_name, df, self._min_batch_size, pbar.update)
+                    self._client.upload_nodes(
+                        self._graph_name,
+                        node_data=df,
+                        batch_size=self._min_batch_size,
+                        progress_callback=progress_callback,
+                    )
                 else:
-                    self._client.upload_relationships(self._graph_name, df, self._min_batch_size, pbar.update)
+                    self._client.upload_relationships(
+                        self._graph_name,
+                        relationship_data=df,
+                        batch_size=self._min_batch_size,
+                        progress_callback=progress_callback,
+                    )
                 pbar.refresh()
 
             futures = [executor.submit(run_upload, df) for df in partitioned_dfs]
