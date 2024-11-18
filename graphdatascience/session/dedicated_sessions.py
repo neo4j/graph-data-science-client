@@ -130,7 +130,7 @@ class DedicatedSessions:
         return matched_sessions[0]
 
     @staticmethod
-    def _validate_db_connection(db_runner: Neo4jQueryRunner):
+    def _validate_db_connection(db_runner: Neo4jQueryRunner) -> None:
         try:
             db_runner.verify_connectivity()
         except Exception as e:

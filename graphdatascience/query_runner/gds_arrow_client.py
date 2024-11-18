@@ -11,7 +11,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 import pyarrow
 from neo4j.exceptions import ClientError
 from pandas import DataFrame
-from pyarrow import ChunkedArray, RecordBatch, Table, chunked_array, flight
+from pyarrow import ChunkedArray, DictionaryArray, RecordBatch, Table, chunked_array, flight
 from pyarrow import __version__ as arrow_version
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary
@@ -683,12 +683,16 @@ class GdsArrowClient:
                 if isinstance(arrow_table[field.name], ChunkedArray):
                     decoded_col = chunked_array([chunk.dictionary_decode() for chunk in arrow_table[field.name].chunks])
                 else:
-                    decoded_col = arrow_table[field.name].dictionary_decode()
+                    col = arrow_table[field.name]
+                    if isinstance(col, DictionaryArray):
+                        decoded_col = col.dictionary_decode()
+                    else:
+                        decoded_col = col
                 arrow_table = arrow_table.set_column(idx, field.name, decoded_col)
         return arrow_table
 
     @staticmethod
-    def handle_flight_error(e: Exception):
+    def handle_flight_error(e: Exception) -> None:
         if (
             isinstance(e, flight.FlightServerError)
             or isinstance(e, flight.FlightInternalError)
@@ -742,7 +746,7 @@ class AuthFactory(ClientMiddlewareFactory):
         return self._middleware
 
 
-class AuthMiddleware(ClientMiddleware):  # type: ignore
+class AuthMiddleware(ClientMiddleware):
     def __init__(self, auth: Tuple[str, str], *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._auth = auth

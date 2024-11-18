@@ -146,7 +146,7 @@ class AuraApi:
 
         raw_json = response.json()
 
-        data: Dict[str, Any] = raw_json.get("data")
+        data: List[Any] = raw_json.get("data", [])
         errors_per_session = defaultdict(list)
         for error in raw_json.get("errors", []):
             errors_per_session[error["id"]].append(error)

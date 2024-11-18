@@ -93,7 +93,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._logger = logging.getLogger()
         self._bookmarks = bookmarks
         self._last_bookmarks: Optional[Any] = None
-        self._server_version = None
+        self._server_version: Optional[ServerVersion] = None
         self._show_progress = show_progress
         self._progress_logger = QueryProgressLogger(
             self.__run_cypher_simplified_for_query_progress_logger, self.server_version
@@ -196,8 +196,9 @@ class Neo4jQueryRunner(QueryRunner):
 
         try:
             server_version_string = self.run_cypher("RETURN gds.version()", custom_error=False).squeeze()
-            self._server_version = ServerVersion.from_string(server_version_string)
-            return self._server_version
+            server_version = ServerVersion.from_string(server_version_string)
+            self._server_version = server_version
+            return server_version
         except Exception as e:
             if "Unknown function 'gds.version'" in str(e):
                 # Some Python versions appear to not call __del__ of self._query_runner when an exception
@@ -282,7 +283,7 @@ class Neo4jQueryRunner(QueryRunner):
         if not job_id:
             return str(uuid4())
 
-        return job_id
+        return str(job_id)
 
     @staticmethod
     def handle_driver_exception(session: neo4j.Session, e: Exception) -> None:

@@ -149,6 +149,7 @@ class SessionQueryRunner(QueryRunner):
             )
         except Exception as e:
             GdsArrowClient.handle_flight_error(e)
+            raise e  # above should already raise
 
     def _remote_write_back(
         self,
@@ -162,7 +163,7 @@ class SessionQueryRunner(QueryRunner):
         if params["config"] is None:
             params["config"] = {}
 
-        config = params["config"]
+        config: Dict[str, Any] = params.get("config", {})
 
         # we pop these out so that they are not retained for the GDS proc call
         db_arrow_config = config.pop("arrowConfiguration", {})
@@ -187,7 +188,7 @@ class SessionQueryRunner(QueryRunner):
 
         write_back_start = time.time()
 
-        def run_write_back():
+        def run_write_back() -> DataFrame:
             return write_protocol.run_write_back(self._db_query_runner, write_back_params, yields)
 
         if self._resolve_show_progress(logging):

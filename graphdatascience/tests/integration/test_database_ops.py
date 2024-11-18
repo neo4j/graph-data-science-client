@@ -7,6 +7,7 @@ from neo4j import Driver
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.query_runner.progress.static_progress_provider import StaticProgressProvider
 from graphdatascience.tests.integration.conftest import AUTH, URI
 from graphdatascience.version import __version__
 
@@ -185,7 +186,7 @@ def test_warning_when_logging_fails(runner: Neo4jQueryRunner) -> None:
     with f.ThreadPoolExecutor(1) as pool:
         future = pool.submit(lambda: time.sleep(2))
         with pytest.warns(RuntimeWarning, match=r"^Unable to get progress:"):
-            runner._progress_logger._log(future, "DUMMY", "bad_database")
+            runner._progress_logger._log(future, "DUMMY", StaticProgressProvider(), "bad_database")
 
 
 def test_bookmarks(runner: Neo4jQueryRunner) -> None:

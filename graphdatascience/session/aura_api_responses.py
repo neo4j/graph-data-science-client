@@ -27,7 +27,7 @@ class SessionDetails:
     user_id: str
     tenant_id: str
     cloud_location: Optional[CloudLocation] = None
-    errors: List[SessionError] = None
+    errors: Optional[List[SessionError]] = None
 
     @classmethod
     def from_json(cls, data: Dict[str, Any], errors: List[Dict[str, Any]]) -> SessionDetails:

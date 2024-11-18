@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import warnings
+from types import TracebackType
 from typing import Any, Dict, Optional, Tuple, Type, Union
 
 from neo4j import Driver
@@ -261,6 +262,10 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def __enter__(self) -> GraphDataScience:
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
         self.close()
-        return False

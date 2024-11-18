@@ -5,6 +5,7 @@ import argparse
 import logging
 from enum import Enum
 from pathlib import Path
+from typing import Any, Tuple
 
 import nbconvert
 from nbconvert.preprocessors import Preprocessor
@@ -24,7 +25,7 @@ class CustomClearOutputPreprocessor(Preprocessor):
     Option to keep cell output for cells with a given metadata tag
     """
 
-    def preprocess_cell(self, cell, resources, cell_index):
+    def preprocess_cell(self, cell: Any, resources: Any, cell_index: Any) -> Tuple[Any, Any]:
         """
         Apply a transformation on each cell. See base.py for details.
         """
@@ -34,14 +35,14 @@ class CustomClearOutputPreprocessor(Preprocessor):
         return cell, resources
 
 
-def main(input_path: Path, output_mode: str) -> None:
+def main(input_path: Path, output_mode: OutputMode) -> None:
     logger = logging.getLogger("NotebookCleaner")
     logger.info(f"Cleaning notebooks from `{input_path}`, mode: `{output_mode}`")
 
     exporter = nbconvert.NotebookExporter()
 
     metadata_cleaner = nbconvert.preprocessors.ClearMetadataPreprocessor(preserve_cell_metadata_mask=METADATA_TAG_KEY)
-    output_cleaner = CustomClearOutputPreprocessor()
+    output_cleaner = CustomClearOutputPreprocessor()  # type: ignore
 
     exporter.register_preprocessor(metadata_cleaner, enabled=True)
     exporter.register_preprocessor(output_cleaner, enabled=True)
@@ -54,13 +55,13 @@ def main(input_path: Path, output_mode: str) -> None:
     logger.info(f"Formatting {len(notebooks)} notebooks.")
 
     for notebook in notebooks:
-        output = exporter.from_filename(notebook)
+        output = exporter.from_filename(str(notebook))
 
         formatted_notebook = output[0]
 
         if output_mode == OutputMode.INPLACE:
             with notebook.open(mode="w") as file:
-                file.write(formatted_notebook)
+                file.write(str(formatted_notebook))
         elif output_mode == OutputMode.STDOUT:
             print(formatted_notebook)
 

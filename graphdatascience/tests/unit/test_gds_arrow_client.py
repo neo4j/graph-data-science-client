@@ -300,7 +300,7 @@ def test_auth_middleware_bad_headers() -> None:
         middleware.received_headers({"authorization": [12342]})
 
 
-def test_handle_flight_error():
+def test_handle_flight_error() -> None:
     with pytest.raises(
         flight.FlightServerError,
         match="FlightServerError: UNKNOWN: Graph with name `people-and-fruits` does not exist on database `neo4j`. It might exist on another database.",

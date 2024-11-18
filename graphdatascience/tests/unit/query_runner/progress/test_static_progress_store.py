@@ -1,3 +1,5 @@
+from typing import Any, Generator
+
 import pytest
 
 from graphdatascience.query_runner.progress.progress_provider import TaskWithProgress
@@ -5,24 +7,24 @@ from graphdatascience.query_runner.progress.static_progress_provider import Stat
 
 
 @pytest.fixture(autouse=True)
-def clear_progress_store():
+def clear_progress_store() -> Generator[None, Any, None]:
     StaticProgressStore._progress_store = {}
     yield
 
 
-def test_task_registration():
+def test_task_registration() -> None:
     StaticProgressStore.register_task_with_unknown_volume("test-job", "Test task")
     assert StaticProgressStore._progress_store == {"test-job": TaskWithProgress("Test task", "n/a")}
 
 
-def test_returns_task_by_job_id():
+def test_returns_task_by_job_id() -> None:
     StaticProgressStore._progress_store = {"test-job": TaskWithProgress("Test task", "n/a")}
     task = StaticProgressStore.get_task_with_volume("test-job")
     assert task.task_name == "Test task"
     assert task.progress_percent == "n/a"
 
 
-def test_contains_job_id():
+def test_contains_job_id() -> None:
     StaticProgressStore._progress_store = {"test-job": TaskWithProgress("Test task", "n/a")}
     assert StaticProgressStore.contains_job_id("test-job")
     assert not StaticProgressStore.contains_job_id("unknown-job")

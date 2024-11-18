@@ -38,7 +38,7 @@ class TopologyDataFrame(DataFrame):
 
         output = {}
         for rel_type, indices in gb.groups.items():
-            one_rel_df = self.take(indices)
+            one_rel_df = self.take(list(indices))
             output[str(rel_type)] = [list(one_rel_df["sourceNodeId"]), list(one_rel_df["targetNodeId"])]
 
         return output
