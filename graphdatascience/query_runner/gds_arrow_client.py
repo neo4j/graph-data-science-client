@@ -132,7 +132,7 @@ class GdsArrowClient:
     def get_node_properties(
         self,
         graph_name: str,
-        database: Optional[str],
+        database: str,
         node_properties: Union[str, List[str]],
         node_labels: Optional[List[str]] = None,
         list_node_labels: bool = False,
@@ -145,7 +145,7 @@ class GdsArrowClient:
         ----------
         graph_name : str
             The name of the graph
-        database : Optional[str]
+        database : str
             The name of the database to which the graph belongs
         node_properties : Union[str, List[str]]
             The name of the node properties to retrieve
@@ -177,7 +177,7 @@ class GdsArrowClient:
 
         return self._do_get(database, graph_name, proc, concurrency, config)
 
-    def get_node_labels(self, graph_name: str, database: Optional[str], concurrency: Optional[int] = None) -> DataFrame:
+    def get_node_labels(self, graph_name: str, database: str, concurrency: Optional[int] = None) -> DataFrame:
         """
         Get all nodes and their labels from the graph.
 
@@ -185,7 +185,7 @@ class GdsArrowClient:
         ----------
         graph_name : str
             The name of the graph
-        database : Optional[str]
+        database : str
             The name of the database to which the graph belongs
         concurrency : Optional[int]
             The number of threads used on the server side when serving the data
@@ -198,7 +198,7 @@ class GdsArrowClient:
         return self._do_get(database, graph_name, "gds.graph.nodeLabels.stream", concurrency, {})
 
     def get_relationships(
-        self, graph_name: str, database: Optional[str], relationship_types: List[str], concurrency: Optional[int] = None
+        self, graph_name: str, database: str, relationship_types: List[str], concurrency: Optional[int] = None
     ) -> DataFrame:
         """
         Get relationships from the graph.
@@ -207,7 +207,7 @@ class GdsArrowClient:
         ----------
         graph_name : str
             The name of the graph
-        database : Optional[str]
+        database : str
             The name of the database to which the graph belongs
         relationship_types : List[str]
             The name of the relationship types to retrieve
@@ -230,7 +230,7 @@ class GdsArrowClient:
     def get_relationship_properties(
         self,
         graph_name: str,
-        database: Optional[str],
+        database: str,
         relationship_properties: Union[str, List[str]],
         relationship_types: List[str],
         concurrency: Optional[int] = None,
@@ -242,7 +242,7 @@ class GdsArrowClient:
         ----------
         graph_name : str
             The name of the graph
-        database : Optional[str]
+        database : str
             The name of the database to which the graph belongs
         relationship_properties : Union[str, List[str]]
             The name of the relationship properties to retrieve
@@ -594,18 +594,12 @@ class GdsArrowClient:
 
     def _do_get(
         self,
-        database: Optional[str],
+        database: str,
         graph_name: str,
         procedure_name: str,
         concurrency: Optional[int],
         configuration: Dict[str, Any],
     ) -> DataFrame:
-        if not database:
-            raise ValueError(
-                "For this call you must have explicitly specified a valid Neo4j database to execute on, "
-                "using `GraphDataScience.set_database`."
-            )
-
         payload: Dict[str, Any] = {
             "database_name": database,
             "graph_name": graph_name,

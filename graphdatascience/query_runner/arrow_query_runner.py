@@ -183,8 +183,15 @@ class ArrowQueryRunner(QueryRunner):
     def set_bookmarks(self, bookmarks: Optional[Any]) -> None:
         self._fallback_query_runner.set_bookmarks(bookmarks)
 
-    def database(self) -> Optional[str]:
-        return self._fallback_query_runner.database()
+    def database(self) -> str:
+        database = self._fallback_query_runner.database()
+        if not database:
+            raise ValueError(
+                "For this call you must have explicitly specified a valid Neo4j database to target, "
+                "using `GraphDataScience.set_database`."
+            )
+
+        return database
 
     def bookmarks(self) -> Optional[Any]:
         return self._fallback_query_runner.bookmarks()
@@ -206,11 +213,6 @@ class ArrowQueryRunner(QueryRunner):
         self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
     ) -> GraphConstructor:
         database = self.database()
-        if not database:
-            raise ValueError(
-                "For this call you must have explicitly specified a valid Neo4j database to target, "
-                "using `GraphDataScience.set_database`."
-            )
 
         return ArrowGraphConstructor(
             database,
