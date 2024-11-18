@@ -11,7 +11,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 import pyarrow
 from neo4j.exceptions import ClientError
 from pandas import DataFrame
-from pyarrow import ChunkedArray, DictionaryArray, RecordBatch, Table, chunked_array, flight
+from pyarrow import ChunkedArray, Array, DictionaryArray, RecordBatch, Table, chunked_array, flight
 from pyarrow import __version__ as arrow_version
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary
@@ -647,7 +647,7 @@ class GdsArrowClient:
 
     def __exit__(self, exc_type, exc_value, traceback):
         self._flight_client.close()
-
+    
     def close(self) -> None:
         self._flight_client.close()
 
@@ -681,15 +681,22 @@ class GdsArrowClient:
             except NotImplementedError:
                 # we need to decode the dictionary column before transforming to pandas
                 if isinstance(arrow_table[field.name], ChunkedArray):
-                    decoded_col = chunked_array([chunk.dictionary_decode() for chunk in arrow_table[field.name].chunks])
+                    decoded_col: Array = chunked_array(
+                        [GdsArrowClient._decode_pyarrow_array(chunk) for chunk in arrow_table[field.name].chunks]
+                    )
                 else:
                     col = arrow_table[field.name]
-                    if isinstance(col, DictionaryArray):
-                        decoded_col = col.dictionary_decode()
-                    else:
-                        decoded_col = col
+                    decoded_col = GdsArrowClient._decode_pyarrow_array(col)
                 arrow_table = arrow_table.set_column(idx, field.name, decoded_col)
         return arrow_table
+
+    @staticmethod
+    def _decode_pyarrow_array(array: Array) -> Array:
+        if isinstance(array, DictionaryArray):
+            dictArr = array
+            return dictArr.dictionary_decode()
+        else:
+            return array
 
     @staticmethod
     def handle_flight_error(e: Exception) -> None:
@@ -716,7 +723,7 @@ class GdsArrowClient:
             raise e
 
 
-class UserAgentFactory(ClientMiddlewareFactory):
+class UserAgentFactory(ClientMiddlewareFactory):  # type: ignore
     def __init__(self, useragent: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._middleware = UserAgentMiddleware(useragent)
@@ -725,7 +732,7 @@ class UserAgentFactory(ClientMiddlewareFactory):
         return self._middleware
 
 
-class UserAgentMiddleware(ClientMiddleware):
+class UserAgentMiddleware(ClientMiddleware):  # type: ignore
     def __init__(self, useragent: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._useragent = useragent
@@ -737,7 +744,7 @@ class UserAgentMiddleware(ClientMiddleware):
         pass
 
 
-class AuthFactory(ClientMiddlewareFactory):
+class AuthFactory(ClientMiddlewareFactory):  # type: ignore
     def __init__(self, middleware: AuthMiddleware, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._middleware = middleware
@@ -746,7 +753,7 @@ class AuthFactory(ClientMiddlewareFactory):
         return self._middleware
 
 
-class AuthMiddleware(ClientMiddleware):
+class AuthMiddleware(ClientMiddleware):  # type: ignore
     def __init__(self, auth: Tuple[str, str], *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._auth = auth
