@@ -11,10 +11,10 @@ This Jupyter notebook is hosted
 https://github.com/neo4j/graph-data-science-client/blob/main/examples/node-regression-with-subgraph-and-graph-sample.ipynb[here]
 in the Neo4j Graph Data Science Client Github repository.
 
-For a video presentation on this notebook, see the talk
-https://youtu.be/7hx56qtf80Q?t=1759[Fundamentals of Neo4j Graph Data
-Science Series 2.x – Pipelines and More] that was given at the NODES
-2022 conference.
+For a video presentation of a former version of this notebook, see the
+talk https://youtu.be/7hx56qtf80Q?t=1759[Fundamentals of Neo4j Graph
+Data Science Series 2.x – Pipelines and More] that was given at the
+NODES 2022 conference.
 
 The notebook exemplifies using a Node Regression pipeline. It also
 contains many examples of using
@@ -47,14 +47,10 @@ https://snap.stanford.edu/data/wikipedia-article-networks.html[SNAP] on
 
 == Pre-requisites
 
-In order to run this pipeline, you must have the following:
-
-* A running Neo4j DBMS with
-** a recent version of Graph Data Science installed
-** a recent version of APOC installed
-
-These requirements are satisfied if you have an AuraDS instance active
-and running.
+In order to run this pipeline, you must have a running Neo4j DBMS with a
+recent version of the Neo4j Graph Data Science plugin installed. These
+requirements are satisfied if you have an AuraDS instance active and
+running.
 
 [source, python, role=no-test]
 ----
@@ -190,34 +186,25 @@ gds.run_cypher(
 # Create feature vectors
 gds.run_cypher(
     """
-    CALL apoc.load.json($baseUrl + '/chameleon/musae_chameleon_features.json') YIELD value
-    WITH value, keys(value) AS keys
-    UNWIND keys AS key
-    WITH value[key] AS feature, key
-    MATCH (c:Chameleon {id: key})
-    SET c.features = feature
+    LOAD CSV WITH HEADERS FROM $baseUrl + '/chameleon/musae_chameleon_features.csv' AS row
+    MATCH (c:Chameleon {id: row.id})
+    SET c.features = row.features
 """,
     {"baseUrl": baseUrl},
 )
 gds.run_cypher(
     """
-    CALL apoc.load.json($baseUrl + '/crocodile/musae_crocodile_features.json') YIELD value
-    WITH value, keys(value) AS keys
-    UNWIND keys AS key
-    WITH value[key] AS feature, key
-    MATCH (c:Crocodile {id: key})
-    SET c.features = feature
+    LOAD CSV WITH HEADERS FROM $baseUrl + '/crocodile/musae_crocodile_features.csv' AS row
+    MATCH (c:Crocodile {id: row.id})
+    SET c.features = row.features
 """,
     {"baseUrl": baseUrl},
 )
 gds.run_cypher(
     """
-    CALL apoc.load.json($baseUrl + '/squirrel/musae_squirrel_features.json') YIELD value
-    WITH value, keys(value) AS keys
-    UNWIND keys AS key
-    WITH value[key] AS feature, key
-    MATCH (c:Squirrel {id: key})
-    SET c.features = feature
+    LOAD CSV WITH HEADERS FROM $baseUrl + '/squirrel/musae_squirrel_features.csv' AS row
+    MATCH (c:Squirrel {id: row.id})
+    SET c.features = row.features
 """,
     {"baseUrl": baseUrl},
 )
