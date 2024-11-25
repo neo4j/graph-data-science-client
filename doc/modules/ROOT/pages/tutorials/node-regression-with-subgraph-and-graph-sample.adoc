@@ -188,7 +188,8 @@ gds.run_cypher(
     """
     LOAD CSV WITH HEADERS FROM $baseUrl + '/chameleon/musae_chameleon_features.csv' AS row
     MATCH (c:Chameleon {id: row.id})
-    SET c.features = row.features
+    WITH c, split(row.features, '|') AS features
+    SET c.features = features
 """,
     {"baseUrl": baseUrl},
 )
@@ -196,7 +197,8 @@ gds.run_cypher(
     """
     LOAD CSV WITH HEADERS FROM $baseUrl + '/crocodile/musae_crocodile_features.csv' AS row
     MATCH (c:Crocodile {id: row.id})
-    SET c.features = row.features
+    WITH c, split(row.features, '|') AS features
+    SET c.features = features
 """,
     {"baseUrl": baseUrl},
 )
@@ -204,7 +206,8 @@ gds.run_cypher(
     """
     LOAD CSV WITH HEADERS FROM $baseUrl + '/squirrel/musae_squirrel_features.csv' AS row
     MATCH (c:Squirrel {id: row.id})
-    SET c.features = row.features
+    WITH c, split(row.features, '|') AS features
+    SET c.features = features
 """,
     {"baseUrl": baseUrl},
 )
