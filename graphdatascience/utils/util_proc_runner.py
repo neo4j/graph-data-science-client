@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any
 
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
@@ -22,7 +22,7 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return result.iat[0, 0]
 
-    def asNodes(self, node_ids: List[int]) -> List[Any]:
+    def asNodes(self, node_ids: list[int]) -> list[Any]:
         """
         Get a list of nodes from a list of node ids.
 

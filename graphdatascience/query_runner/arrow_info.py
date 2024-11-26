@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List
 
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
@@ -12,7 +11,7 @@ class ArrowInfo:
     listenAddress: str
     enabled: bool
     running: bool
-    versions: List[str]
+    versions: list[str]
 
     @staticmethod
     def create(query_runner: QueryRunner) -> ArrowInfo:

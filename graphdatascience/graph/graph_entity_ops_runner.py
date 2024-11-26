@@ -1,5 +1,5 @@
 from functools import reduce
-from typing import Any, Dict, List, Type, Union
+from typing import Any, Type, Union
 from warnings import filterwarnings
 
 import pandas as pd
@@ -18,7 +18,7 @@ from ..utils.util_proc_runner import UtilProcRunner
 from .graph_object import Graph
 from .graph_type_check import graph_type_check
 
-Strings = Union[str, List[str]]
+Strings = Union[str, list[str]]
 
 
 class TopologyDataFrame(DataFrame):
@@ -26,7 +26,7 @@ class TopologyDataFrame(DataFrame):
     def _constructor(self) -> "Type[TopologyDataFrame]":
         return TopologyDataFrame
 
-    def by_rel_type(self) -> Dict[str, List[List[int]]]:
+    def by_rel_type(self) -> dict[str, list[list[int]]]:
         # Pandas 2.2.0 deprecated an internal API used by DF.take(indices)
         filterwarnings(
             "ignore",
@@ -55,7 +55,7 @@ class GraphEntityOpsBaseRunner(UncallableNamespace, IllegalAttrChecker):
         G: Graph,
         properties: Strings,
         entities: Strings,
-        config: Dict[str, Any],
+        config: dict[str, Any],
     ) -> DataFrame:
         params = CallParameters(
             graph_name=G.name(),
@@ -78,7 +78,7 @@ class GraphNodePropertyRunner(GraphEntityOpsBaseRunner):
         G: Graph,
         node_property: str,
         node_labels: Strings = ["*"],
-        db_node_properties: List[str] = [],
+        db_node_properties: list[str] = [],
         **config: Any,
     ) -> DataFrame:
         self._namespace += ".stream"
@@ -96,10 +96,10 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
     def stream(
         self,
         G: Graph,
-        node_properties: List[str],
+        node_properties: list[str],
         node_labels: Strings = ["*"],
         separate_property_columns: bool = False,
-        db_node_properties: List[str] = [],
+        db_node_properties: list[str] = [],
         **config: Any,
     ) -> DataFrame:
         self._namespace += ".stream"
@@ -113,11 +113,11 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
     @staticmethod
     def _process_result(
         query_runner: QueryRunner,
-        node_properties: List[str],
+        node_properties: list[str],
         separate_property_columns: bool,
-        db_node_properties: List[str],
+        db_node_properties: list[str],
         result: DataFrame,
-        config: Dict[str, Any],
+        config: dict[str, Any],
     ) -> DataFrame:
         # new format was requested, but the query was run via Cypher
         if separate_property_columns and "propertyValue" in result.keys():
@@ -161,7 +161,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         return result
 
     @staticmethod
-    def _build_query(db_node_properties: List[str]) -> str:
+    def _build_query(db_node_properties: list[str]) -> str:
         query_prefix = "MATCH (n) WHERE id(n) IN $ids RETURN id(n) AS nodeId"
 
         def add_property(query: str, prop: str) -> str:
@@ -176,7 +176,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
 
     @compatible_with("drop", min_inclusive=ServerVersion(2, 2, 0))
     @graph_type_check
-    def drop(self, G: Graph, node_properties: List[str], **config: Any) -> "Series[Any]":
+    def drop(self, G: Graph, node_properties: list[str], **config: Any) -> "Series[Any]":
         self._namespace += ".drop"
         params = CallParameters(
             graph_name=G.name(),
@@ -205,7 +205,7 @@ class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
     def stream(
         self,
         G: Graph,
-        relationship_properties: List[str],
+        relationship_properties: list[str],
         relationship_types: Strings = ["*"],
         separate_property_columns: bool = False,
         **config: Any,
@@ -239,7 +239,7 @@ class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
         self,
         G: Graph,
         relationship_type: str,
-        relationship_properties: List[str],
+        relationship_properties: list[str],
         **config: Any,
     ) -> "Series[Any]":
         self._namespace += ".write"
@@ -319,7 +319,7 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
 
     @compatible_with("stream", min_inclusive=ServerVersion(2, 5, 0))
     @graph_type_check
-    def stream(self, G: Graph, relationship_types: List[str] = ["*"], **config: Any) -> TopologyDataFrame:
+    def stream(self, G: Graph, relationship_types: list[str] = ["*"], **config: Any) -> TopologyDataFrame:
         self._namespace += ".stream"
         params = CallParameters(graph_name=G.name(), relationship_types=relationship_types, config=config)
         result = self._query_runner.call_procedure(endpoint=self._namespace, params=params)
@@ -336,7 +336,7 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
 class GraphRelationshipsBetaRunner(GraphEntityOpsBaseRunner):
     @compatible_with("stream", min_inclusive=ServerVersion(2, 2, 0))
     @graph_type_check
-    def stream(self, G: Graph, relationship_types: List[str] = ["*"], **config: Any) -> TopologyDataFrame:
+    def stream(self, G: Graph, relationship_types: list[str] = ["*"], **config: Any) -> TopologyDataFrame:
         self._namespace += ".stream"
         params = CallParameters(graph_name=G.name(), relationship_types=relationship_types, config=config)
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any
 
 from pandas import DataFrame, Series
 
@@ -48,7 +48,7 @@ class Model(ABC):
 
         return result
 
-    def _estimate_predict(self, predict_mode: str, graph_name: str, config: Dict[str, Any]) -> Series[Any]:
+    def _estimate_predict(self, predict_mode: str, graph_name: str, config: dict[str, Any]) -> Series[Any]:
         endpoint = f"{self._endpoint_prefix()}{predict_mode}.estimate"
         config["modelName"] = self.name()
         params = CallParameters(graph_name=graph_name, config=config)
@@ -151,7 +151,7 @@ class Model(ABC):
         """
         return self._list_info()["published"]  # type: ignore
 
-    def model_info(self) -> Dict[str, Any]:
+    def model_info(self) -> dict[str, Any]:
         """
         Get the model info of the model.
 

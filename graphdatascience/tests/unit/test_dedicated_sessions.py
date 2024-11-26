@@ -1,7 +1,7 @@
 import dataclasses
 import re
 from datetime import datetime, timedelta, timezone
-from typing import List, Optional, cast
+from typing import Optional, cast
 
 import pytest
 from pytest_mock import MockerFixture
@@ -29,8 +29,8 @@ from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryV
 class FakeAuraApi(AuraApi):
     def __init__(
         self,
-        existing_instances: Optional[List[InstanceSpecificDetails]] = None,
-        existing_sessions: Optional[List[SessionDetails]] = None,
+        existing_instances: Optional[list[InstanceSpecificDetails]] = None,
+        existing_sessions: Optional[list[SessionDetails]] = None,
         status_after_creating: str = "Ready",
         size_estimation: Optional[EstimationDetails] = None,
         client_id: str = "client_id",
@@ -155,7 +155,7 @@ class FakeAuraApi(AuraApi):
     def delete_instance(self, instance_id: str) -> InstanceSpecificDetails:
         return self._instances.pop(instance_id)
 
-    def list_sessions(self, dbid: Optional[str] = None) -> List[SessionDetails]:
+    def list_sessions(self, dbid: Optional[str] = None) -> list[SessionDetails]:
         if dbid:
             self._mimic_paused_db_behaviour(dbid)
 
@@ -168,7 +168,7 @@ class FakeAuraApi(AuraApi):
         else:
             return matching_for_user
 
-    def list_instances(self) -> List[InstanceDetails]:
+    def list_instances(self) -> list[InstanceDetails]:
         return [v for _, v in self._instances.items()]
 
     def get_session(self, session_id: str) -> Optional[SessionDetails]:
@@ -217,7 +217,7 @@ class FakeAuraApi(AuraApi):
         return TenantDetails(id=self._tenant_id, cloud_locations={CloudLocation("aws", "leipzig-1")})
 
     def estimate_size(
-        self, node_count: int, relationship_count: int, algorithm_categories: List[AlgorithmCategory]
+        self, node_count: int, relationship_count: int, algorithm_categories: list[AlgorithmCategory]
     ) -> EstimationDetails:
         return self._size_estimation
 

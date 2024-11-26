@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from pandas import Series
 
@@ -54,7 +54,7 @@ class NCModel(PipelineModel):
         """
         return self._estimate_predict("write", G.name(), config)
 
-    def classes(self) -> List[int]:
+    def classes(self) -> list[int]:
         """
         Get the classes of the model.
 
@@ -64,7 +64,7 @@ class NCModel(PipelineModel):
         """
         return self._list_info()["modelInfo"]["classes"]  # type: ignore
 
-    def feature_properties(self) -> List[str]:
+    def feature_properties(self) -> list[str]:
         """
         Get the feature properties of the model.
 
@@ -72,5 +72,5 @@ class NCModel(PipelineModel):
             The feature properties of the model.
 
         """
-        features: List[Dict[str, Any]] = self._list_info()["modelInfo"]["pipeline"]["featureProperties"]
+        features: list[dict[str, Any]] = self._list_info()["modelInfo"]["pipeline"]["featureProperties"]
         return [f["feature"] for f in features]

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from pandas import DataFrame
 
@@ -14,7 +14,7 @@ class QueryRunner(ABC):
         self,
         endpoint: str,
         params: Optional[CallParameters] = None,
-        yields: Optional[List[str]] = None,
+        yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
         custom_error: bool = True,
@@ -29,7 +29,7 @@ class QueryRunner(ABC):
     def run_cypher(
         self,
         query: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
     ) -> DataFrame:
@@ -40,7 +40,7 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
-    def driver_config(self) -> Dict[str, Any]:
+    def driver_config(self) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -60,7 +60,7 @@ class QueryRunner(ABC):
 
     @abstractmethod
     def create_graph_constructor(
-        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
+        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[list[str]]
     ) -> GraphConstructor:
         pass
 

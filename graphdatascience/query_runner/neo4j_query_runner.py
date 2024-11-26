@@ -4,7 +4,7 @@ import logging
 import re
 import time
 import warnings
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Optional, Union
 from uuid import uuid4
 
 import neo4j
@@ -30,14 +30,14 @@ class Neo4jQueryRunner(QueryRunner):
     @staticmethod
     def create(
         endpoint: Union[str, neo4j.Driver],
-        auth: Optional[Tuple[str, str]] = None,
+        auth: Optional[tuple[str, str]] = None,
         aura_ds: bool = False,
         database: Optional[str] = None,
         bookmarks: Optional[Any] = None,
         show_progress: bool = True,
     ) -> Neo4jQueryRunner:
         if isinstance(endpoint, str):
-            config: Dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
+            config: dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
 
             if aura_ds:
                 Neo4jQueryRunner._configure_aura(config)
@@ -72,7 +72,7 @@ class Neo4jQueryRunner(QueryRunner):
         return query_runner
 
     @staticmethod
-    def _configure_aura(config: Dict[str, Any]) -> None:
+    def _configure_aura(config: dict[str, Any]) -> None:
         config["max_connection_lifetime"] = 60 * 8  # 8 minutes
         config["keep_alive"] = True
         config["max_connection_pool_size"] = 50
@@ -80,7 +80,7 @@ class Neo4jQueryRunner(QueryRunner):
     def __init__(
         self,
         driver: neo4j.Driver,
-        config: Dict[str, Any] = {},
+        config: dict[str, Any] = {},
         database: Optional[str] = neo4j.DEFAULT_DATABASE,
         auto_close: bool = False,
         bookmarks: Optional[Any] = None,
@@ -105,7 +105,7 @@ class Neo4jQueryRunner(QueryRunner):
     def run_cypher(
         self,
         query: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
     ) -> DataFrame:
@@ -167,7 +167,7 @@ class Neo4jQueryRunner(QueryRunner):
         self,
         endpoint: str,
         params: Optional[CallParameters] = None,
-        yields: Optional[List[str]] = None,
+        yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
         custom_error: bool = True,
@@ -218,10 +218,10 @@ class Neo4jQueryRunner(QueryRunner):
     def encrypted(self) -> bool:
         return self._driver.encrypted
 
-    def driver_config(self) -> Dict[str, Any]:
+    def driver_config(self) -> dict[str, Any]:
         return self._config
 
-    def _forward_cypher_warnings(self, notification: Dict[str, Any]) -> None:
+    def _forward_cypher_warnings(self, notification: dict[str, Any]) -> None:
         # (see https://neo4j.com/docs/status-codes/current/notifications/ for more details)
         severity = notification["severity"]
         if severity == "WARNING":
@@ -260,7 +260,7 @@ class Neo4jQueryRunner(QueryRunner):
             self._driver.close()
 
     def create_graph_constructor(
-        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
+        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[list[str]]
     ) -> GraphConstructor:
         return CypherGraphConstructor(
             self, graph_name, concurrency, undirected_relationship_types, self.server_version()

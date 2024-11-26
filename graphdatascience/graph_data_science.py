@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from types import TracebackType
-from typing import Any, Dict, Optional, Tuple, Type, Union
+from typing import Any, Optional, Type, Union
 
 from neo4j import Driver
 from pandas import DataFrame
@@ -30,7 +30,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         self,
         /,
         endpoint: Union[str, Driver, QueryRunner],
-        auth: Optional[Tuple[str, str]] = None,
+        auth: Optional[tuple[str, str]] = None,
         aura_ds: bool = False,
         database: Optional[str] = None,
         arrow: Union[str, bool] = True,
@@ -186,7 +186,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         return self._query_runner.last_bookmarks()
 
     def run_cypher(
-        self, query: str, params: Optional[Dict[str, Any]] = None, database: Optional[str] = None
+        self, query: str, params: Optional[dict[str, Any]] = None, database: Optional[str] = None
     ) -> DataFrame:
         """
         Run a Cypher query
@@ -211,7 +211,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
         return qr.run_cypher(query, params, database, False)
 
-    def driver_config(self) -> Dict[str, Any]:
+    def driver_config(self) -> dict[str, Any]:
         """
         Get the configuration used to create the underlying driver used to make queries to Neo4j.
 
@@ -224,7 +224,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def from_neo4j_driver(
         cls: Type[GraphDataScience],
         driver: Driver,
-        auth: Optional[Tuple[str, str]] = None,
+        auth: Optional[tuple[str, str]] = None,
         database: Optional[str] = None,
         arrow: bool = True,
         arrow_disable_server_verification: bool = True,

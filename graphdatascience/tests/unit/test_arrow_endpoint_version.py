@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 import pytest
 
 from graphdatascience.query_runner.arrow_endpoint_version import (
@@ -20,7 +18,7 @@ from graphdatascience.query_runner.arrow_endpoint_version import (
         (ArrowEndpointVersion.ALPHA, ["alpha", "v2"]),
     ],
 )
-def test_from_arrow_info_multiple_versions(arrow_versions: Tuple[ArrowEndpointVersion, List[str]]) -> None:
+def test_from_arrow_info_multiple_versions(arrow_versions: tuple[ArrowEndpointVersion, list[str]]) -> None:
     actual = ArrowEndpointVersion.from_arrow_info(arrow_versions[1])
     assert actual == arrow_versions[0]
 

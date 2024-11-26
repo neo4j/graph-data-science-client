@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 from uuid import uuid4
 
 from pandas import DataFrame
@@ -48,7 +48,7 @@ class SessionQueryRunner(QueryRunner):
     def run_cypher(
         self,
         query: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
     ) -> DataFrame:
@@ -61,7 +61,7 @@ class SessionQueryRunner(QueryRunner):
         self,
         endpoint: str,
         params: Optional[CallParameters] = None,
-        yields: Optional[List[str]] = None,
+        yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
         custom_error: bool = True,
@@ -88,7 +88,7 @@ class SessionQueryRunner(QueryRunner):
     def server_version(self) -> ServerVersion:
         return self._db_query_runner.server_version()
 
-    def driver_config(self) -> Dict[str, Any]:
+    def driver_config(self) -> dict[str, Any]:
         return self._db_query_runner.driver_config()
 
     def encrypted(self) -> bool:
@@ -110,7 +110,7 @@ class SessionQueryRunner(QueryRunner):
         return self._db_query_runner.database()
 
     def create_graph_constructor(
-        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
+        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[list[str]]
     ) -> GraphConstructor:
         return self._gds_query_runner.create_graph_constructor(graph_name, concurrency, undirected_relationship_types)
 
@@ -127,7 +127,7 @@ class SessionQueryRunner(QueryRunner):
         self,
         endpoint: str,
         params: CallParameters,
-        yields: Optional[List[str]] = None,
+        yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
     ) -> DataFrame:
@@ -155,7 +155,7 @@ class SessionQueryRunner(QueryRunner):
         self,
         endpoint: str,
         params: CallParameters,
-        yields: Optional[List[str]] = None,
+        yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
         custom_error: bool = True,
@@ -163,7 +163,7 @@ class SessionQueryRunner(QueryRunner):
         if params["config"] is None:
             params["config"] = {}
 
-        config: Dict[str, Any] = params.get("config", {})
+        config: dict[str, Any] = params.get("config", {})
 
         # we pop these out so that they are not retained for the GDS proc call
         db_arrow_config = config.pop("arrowConfiguration", {})
@@ -213,7 +213,7 @@ class SessionQueryRunner(QueryRunner):
     def _resolve_show_progress(self, show_progress: bool) -> bool:
         return self._show_progress and show_progress
 
-    def _inject_arrow_config(self, params: Dict[str, Any]) -> None:
+    def _inject_arrow_config(self, params: dict[str, Any]) -> None:
         host, port = self._gds_arrow_client.connection_info()
         token = self._gds_arrow_client.request_token()
         if token is None:

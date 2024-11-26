@@ -1,7 +1,7 @@
 import logging
 import time
 from time import sleep
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 import requests
 
@@ -12,7 +12,7 @@ class AuraApiCI:
         expires_in: int
         token_type: str
 
-        def __init__(self, json: Dict[str, Any]) -> None:
+        def __init__(self, json: dict[str, Any]) -> None:
             self.access_token = json["access_token"]
             expires_in: int = json["expires_in"]
             self.expires_at = int(time.time()) + expires_in
@@ -27,7 +27,7 @@ class AuraApiCI:
         self._auth = (client_id, client_secret)
         self._tenant_id = tenant_id
 
-    def _build_header(self) -> Dict[str, str]:
+    def _build_header(self) -> dict[str, str]:
         return {"Authorization": f"Bearer {self._auth_token()}", "User-agent": "neo4j-graphdatascience-ci"}
 
     def _auth_token(self) -> str:
@@ -48,10 +48,10 @@ class AuraApiCI:
 
         return AuraApiCI.AuraAuthToken(response.json())
 
-    def create_ds_instance(self, name: str) -> Dict[str, Any]:
+    def create_ds_instance(self, name: str) -> dict[str, Any]:
         return self.create_instance(name, memory="8GB", type="gds")
 
-    def create_instance(self, name: str, memory: str, type: str) -> Dict[str, Any]:
+    def create_instance(self, name: str, memory: str, type: str) -> dict[str, Any]:
         CREATE_OK_MAX_WAIT_TIME = 10
 
         data = {

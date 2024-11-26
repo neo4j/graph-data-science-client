@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from pandas import DataFrame
 
@@ -14,7 +14,7 @@ from ..server_version.server_version import ServerVersion
 class DirectUtilEndpoints(CallerBase):
     @client_only_endpoint("gds")
     @filter_id_func_deprecation_warning()
-    def find_node_id(self, labels: List[str] = [], properties: Dict[str, Any] = {}) -> int:
+    def find_node_id(self, labels: list[str] = [], properties: dict[str, Any] = {}) -> int:
         """
         Find the node id of a node with the given labels and properties.
 
@@ -87,7 +87,7 @@ class DirectUtilEndpoints(CallerBase):
 
 
 class IndirectUtilAlphaEndpoints(CallerBase):
-    def oneHotEncoding(self, available_values: List[Any], selected_values: List[Any]) -> List[int]:
+    def oneHotEncoding(self, available_values: list[Any], selected_values: list[Any]) -> list[int]:
         """
         One hot encode a list of values.
 

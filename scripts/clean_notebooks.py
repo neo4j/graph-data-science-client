@@ -5,7 +5,7 @@ import argparse
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Any, Tuple
+from typing import Any
 
 import nbconvert
 from nbconvert.preprocessors import Preprocessor
@@ -25,7 +25,7 @@ class CustomClearOutputPreprocessor(Preprocessor):
     Option to keep cell output for cells with a given metadata tag
     """
 
-    def preprocess_cell(self, cell: Any, resources: Any, cell_index: Any) -> Tuple[Any, Any]:
+    def preprocess_cell(self, cell: Any, resources: Any, cell_index: Any) -> tuple[Any, Any]:
         """
         Apply a transformation on each cell. See base.py for details.
         """

@@ -4,7 +4,7 @@ import concurrent
 import math
 import warnings
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 import numpy
 from pandas import DataFrame
@@ -21,7 +21,7 @@ class ArrowGraphConstructor(GraphConstructor):
         graph_name: str,
         flight_client: GdsArrowClient,
         concurrency: int,
-        undirected_relationship_types: Optional[List[str]],
+        undirected_relationship_types: Optional[list[str]],
         chunk_size: int = 10_000,
     ):
         self._database = database
@@ -34,9 +34,9 @@ class ArrowGraphConstructor(GraphConstructor):
         self._chunk_size = chunk_size
         self._min_batch_size = chunk_size * 10
 
-    def run(self, node_dfs: List[DataFrame], relationship_dfs: List[DataFrame]) -> None:
+    def run(self, node_dfs: list[DataFrame], relationship_dfs: list[DataFrame]) -> None:
         try:
-            config: Dict[str, Any] = {
+            config: dict[str, Any] = {
                 "name": self._graph_name,
                 "database_name": self._database,
             }
@@ -64,8 +64,8 @@ class ArrowGraphConstructor(GraphConstructor):
 
             raise e
 
-    def _partition_dfs(self, dfs: List[DataFrame]) -> List[DataFrame]:
-        partitioned_dfs: List[DataFrame] = []
+    def _partition_dfs(self, dfs: list[DataFrame]) -> list[DataFrame]:
+        partitioned_dfs: list[DataFrame] = []
 
         for df in dfs:
             num_rows = df.shape[0]
@@ -83,7 +83,7 @@ class ArrowGraphConstructor(GraphConstructor):
 
         return partitioned_dfs
 
-    def _send_dfs(self, dfs: List[DataFrame], entity_type: str) -> None:
+    def _send_dfs(self, dfs: list[DataFrame], entity_type: str) -> None:
         desc = "Uploading Nodes" if entity_type == "node" else "Uploading Relationships"
         pbar = tqdm(total=sum([df.shape[0] for df in dfs]), unit="Records", desc=desc)
 

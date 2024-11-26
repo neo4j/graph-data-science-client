@@ -1,4 +1,4 @@
-from typing import Dict, Generator
+from typing import Generator
 
 import pytest
 
@@ -256,7 +256,7 @@ def test_metrics_nc_model(nc_model: NCModel) -> None:
 
     assert "ACCURACY" in metrics.keys()
     assert isinstance(metrics["ACCURACY"], MetricScores)
-    assert isinstance(metrics["ACCURACY"], Dict)
+    assert isinstance(metrics["ACCURACY"], dict)
 
 
 def test_metrics_nr_model(nr_model: NRModel) -> None:
@@ -264,7 +264,7 @@ def test_metrics_nr_model(nr_model: NRModel) -> None:
 
     assert "MEAN_SQUARED_ERROR" in metrics.keys()
     assert isinstance(metrics["MEAN_SQUARED_ERROR"], MetricScores)
-    assert isinstance(metrics["MEAN_SQUARED_ERROR"], Dict)
+    assert isinstance(metrics["MEAN_SQUARED_ERROR"], dict)
 
 
 def test_metrics_lp_model(lp_model: LPModel) -> None:
@@ -272,7 +272,7 @@ def test_metrics_lp_model(lp_model: LPModel) -> None:
 
     assert "AUCPR" in metrics.keys()
     assert isinstance(metrics["AUCPR"], MetricScores)
-    assert isinstance(metrics["AUCPR"], Dict)
+    assert isinstance(metrics["AUCPR"], dict)
 
 
 def test_best_parameters_nc_model(nc_model: NCModel) -> None:
@@ -283,14 +283,14 @@ def test_node_property_steps(nc_model: NCModel) -> None:
     steps = nc_model.node_property_steps()
     assert len(steps) > 0
     assert steps[0].proc == "gds.degree.mutate"
-    assert isinstance(steps[0].config, Dict)
+    assert isinstance(steps[0].config, dict)
 
 
 def test_link_features(lp_model: LPModel) -> None:
     features = lp_model.link_features()
     assert len(features) > 0
     assert features[0].name == "L2"
-    assert isinstance(features[0].config, Dict)
+    assert isinstance(features[0].config, dict)
 
 
 def test_feature_properties_nr(nr_model: NRModel) -> None:

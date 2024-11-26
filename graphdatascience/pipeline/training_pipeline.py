@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Generic, Tuple, TypeVar
+from typing import Any, Generic, TypeVar
 
 from pandas import DataFrame, Series
 
@@ -58,7 +58,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
     @staticmethod
-    def _expand_ranges(config: Dict[str, Any]) -> Dict[str, Any]:
+    def _expand_ranges(config: dict[str, Any]) -> dict[str, Any]:
         def _maybe_expand_tuple(value: Any) -> Any:
             return {"range": list(value)} if isinstance(value, tuple) else value
 
@@ -82,7 +82,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
     @graph_type_check
-    def train(self, G: Graph, **config: Any) -> Tuple[MODEL_TYPE, "Series[Any]"]:
+    def train(self, G: Graph, **config: Any) -> tuple[MODEL_TYPE, "Series[Any]"]:
         """
         Train a model on a given graph using the pipeline.
 

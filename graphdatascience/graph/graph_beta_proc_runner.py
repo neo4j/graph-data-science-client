@@ -1,4 +1,4 @@
-from typing import Any, List, Union
+from typing import Any, Union
 
 from ..call_parameters import CallParameters
 from ..error.illegal_attr_checker import IllegalAttrChecker
@@ -9,7 +9,7 @@ from .graph_export_runner import GraphExportCsvEndpoints
 from .graph_object import Graph
 from .graph_project_runner import GraphProjectBetaRunner
 
-Strings = Union[str, List[str]]
+Strings = Union[str, list[str]]
 
 
 class GraphBetaProcRunner(UncallableNamespace, IllegalAttrChecker):

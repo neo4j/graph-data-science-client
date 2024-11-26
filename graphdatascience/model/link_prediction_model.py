@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 from .pipeline_model import PipelineModel
 
@@ -17,7 +17,7 @@ class LinkFeature:
     """
 
     name: str
-    config: Dict[str, Any]
+    config: dict[str, Any]
 
     def __str__(self) -> str:
         return f"({self.name}, {self.config})"
@@ -33,7 +33,7 @@ class LPModel(PipelineModel):
     def _endpoint_prefix(self) -> str:
         return "gds.beta.pipeline.linkPrediction.predict."
 
-    def link_features(self) -> List[LinkFeature]:
+    def link_features(self) -> list[LinkFeature]:
         """
         Get the link features of the pipeline.
 
@@ -41,5 +41,5 @@ class LPModel(PipelineModel):
             A list of LinkFeatures of the pipeline.
 
         """
-        steps: List[Dict[str, Any]] = self._list_info()["modelInfo"]["pipeline"]["featureSteps"]
+        steps: list[dict[str, Any]] = self._list_info()["modelInfo"]["pipeline"]["featureSteps"]
         return [LinkFeature(s["name"], s["config"]) for s in steps]

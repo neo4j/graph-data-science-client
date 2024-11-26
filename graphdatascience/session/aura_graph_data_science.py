@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 from pandas import DataFrame
 
@@ -106,7 +106,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
     def run_cypher(
         self,
         query: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
     ) -> DataFrame:
         """
@@ -116,7 +116,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         ----------
         query: str
             the Cypher query
-        params: Dict[str, Any]
+        params: dict[str, Any]
             parameters to the query
         database: str
             the database on which to run the query
@@ -207,7 +207,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         """
         return self._query_runner.last_bookmarks()
 
-    def driver_config(self) -> Dict[str, Any]:
+    def driver_config(self) -> dict[str, Any]:
         """
         Get the configuration used to create the underlying driver used to make queries to Neo4j.
 

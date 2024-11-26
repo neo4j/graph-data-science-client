@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Any, List, Union
+from typing import Any, Union
 
 from pandas import Series
 
@@ -15,7 +15,7 @@ class NCTrainingPipeline(ClassificationTrainingPipeline[NCModel], ABC):
     Construct an instance of this class using :func:`graphdatascience.GraphDataScience.nc_pipe`.
     """
 
-    def selectFeatures(self, node_properties: Union[str, List[str]]) -> "Series[Any]":
+    def selectFeatures(self, node_properties: Union[str, list[str]]) -> "Series[Any]":
         """
         Select the node properties to use for training.
 

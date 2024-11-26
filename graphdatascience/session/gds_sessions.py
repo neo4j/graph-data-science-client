@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import List, Optional
+from typing import Optional
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
@@ -53,7 +53,7 @@ class GdsSessions:
         self._impl: DedicatedSessions = DedicatedSessions(aura_api)
 
     def estimate(
-        self, node_count: int, relationship_count: int, algorithm_categories: Optional[List[AlgorithmCategory]] = None
+        self, node_count: int, relationship_count: int, algorithm_categories: Optional[list[AlgorithmCategory]] = None
     ) -> SessionMemory:
         """
         Estimates the memory required for a session with the given node and relationship counts.
@@ -61,7 +61,7 @@ class GdsSessions:
         Args:
             node_count (int): The number of nodes.
             relationship_count (int): The number of relationships.
-            algorithm_categories (Optional[List[AlgorithmCategory]]): The algorithm categories to consider.
+            algorithm_categories (Optional[list[AlgorithmCategory]]): The algorithm categories to consider.
 
         Returns:
             SessionMemory: The estimated memory required for the session.
@@ -70,7 +70,7 @@ class GdsSessions:
             algorithm_categories = []
         return self._impl.estimate(node_count, relationship_count, algorithm_categories)
 
-    def available_cloud_locations(self) -> List[CloudLocation]:
+    def available_cloud_locations(self) -> list[CloudLocation]:
         """
         Retrieves the list of available cloud locations in Aura.
 
@@ -118,7 +118,7 @@ class GdsSessions:
         """
         return self._impl.delete(session_name=session_name, session_id=session_id)
 
-    def list(self) -> List[SessionInfo]:
+    def list(self) -> list[SessionInfo]:
         """
         Retrieves the list of GDS sessions visible by the user asscociated by the given api-credentials.
 

@@ -1,8 +1,7 @@
 import os
 import pathlib
-import sys
 import warnings
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, List, Optional, Union
 
 import pandas as pd
 from multimethod import multimethod
@@ -53,28 +52,22 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @staticmethod
     def _path(package: str, resource: str) -> pathlib.Path:
-        if sys.version_info >= (3, 9):
-            from importlib.resources import files
+        from importlib.resources import files
 
-            # files() returns a Traversable, but usages require a Path object
-            return pathlib.Path(str(files(package) / resource))
-        else:
-            from importlib.resources import path
-
-            # we dont want to use a context manager here, so we need to call __enter__ manually
-            return path(package, resource).__enter__()
+        # files() returns a Traversable, but usages require a Path object
+        return pathlib.Path(str(files(package) / resource))
 
     @client_only_endpoint("gds.graph")
     @compatible_with("construct", min_inclusive=ServerVersion(2, 1, 0))
     def construct(
         self,
         graph_name: str,
-        nodes: Union[DataFrame, List[DataFrame]],
-        relationships: Optional[Union[DataFrame, List[DataFrame]]] = None,
+        nodes: Union[DataFrame, list[DataFrame]],
+        relationships: Optional[Union[DataFrame, list[DataFrame]]] = None,
         concurrency: int = 4,
-        undirected_relationship_types: Optional[List[str]] = None,
+        undirected_relationship_types: Optional[list[str]] = None,
     ) -> Graph:
-        nodes = nodes if isinstance(nodes, List) else [nodes]
+        nodes = nodes if isinstance(nodes, list) else [nodes]
 
         if isinstance(relationships, DataFrame):
             relationships = [relationships]
@@ -365,7 +358,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         G: Graph,
         properties: Strings,
         entities: Strings,
-        config: Dict[str, Any],
+        config: dict[str, Any],
     ) -> DataFrame:
         params = CallParameters(
             graph_name=G.name(),

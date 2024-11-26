@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Optional
 
 from ..call_parameters import CallParameters
 from ..error.illegal_attr_checker import IllegalAttrChecker
@@ -19,8 +19,8 @@ class GraphProjectRemoteRunner(IllegalAttrChecker):
         query: str,
         job_id: Optional[str] = None,
         concurrency: int = 4,
-        undirected_relationship_types: Optional[List[str]] = None,
-        inverse_indexed_relationship_types: Optional[List[str]] = None,
+        undirected_relationship_types: Optional[list[str]] = None,
+        inverse_indexed_relationship_types: Optional[list[str]] = None,
         batch_size: Optional[int] = None,
     ) -> GraphCreateResult:
         if inverse_indexed_relationship_types is None:

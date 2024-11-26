@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 from pandas.core.series import Series
 
@@ -10,7 +10,7 @@ from .model import Model
 
 
 @dataclass(repr=True)
-class EvaluationScores(Dict[str, float]):
+class EvaluationScores(dict[str, float]):
     min: float
     avg: float
     max: float
@@ -20,7 +20,7 @@ class EvaluationScores(Dict[str, float]):
         self.__dict__ = self
 
     @staticmethod
-    def create(raw_metrics: Dict[str, float]) -> "EvaluationScores":
+    def create(raw_metrics: dict[str, float]) -> "EvaluationScores":
         return EvaluationScores(raw_metrics["min"], raw_metrics["avg"], raw_metrics["max"])
 
     def __str__(self) -> str:
@@ -28,7 +28,7 @@ class EvaluationScores(Dict[str, float]):
 
 
 @dataclass(repr=True)
-class MetricScores(Dict[str, Any]):
+class MetricScores(dict[str, Any]):
     train: EvaluationScores
     validation: EvaluationScores
     outer_train: float
@@ -41,7 +41,7 @@ class MetricScores(Dict[str, Any]):
         self.__dict__ = self
 
     @staticmethod
-    def create(raw_metrics: Dict[str, Any]) -> "MetricScores":
+    def create(raw_metrics: dict[str, Any]) -> "MetricScores":
         train_eval = EvaluationScores.create(raw_metrics["train"])
         validation_eval = EvaluationScores.create(raw_metrics["validation"])
         return MetricScores(train_eval, validation_eval, raw_metrics["outerTrain"], raw_metrics["test"])
@@ -62,7 +62,7 @@ class NodePropertyStep:
     """
 
     proc: str
-    config: Dict[str, Any]
+    config: dict[str, Any]
 
     def __str__(self) -> str:
         return f"({self.proc}, {self.config})"
@@ -77,10 +77,10 @@ class PipelineModel(Model, ABC):
             The best parameters for the pipeline model.
 
         """
-        best_params: Dict[str, Any] = self._list_info()["modelInfo"]["bestParameters"]
+        best_params: dict[str, Any] = self._list_info()["modelInfo"]["bestParameters"]
         return Series(best_params)  # type: ignore[no-any-return]
 
-    def node_property_steps(self) -> List[NodePropertyStep]:
+    def node_property_steps(self) -> list[NodePropertyStep]:
         """
         Get the node property steps for the pipeline model.
 
@@ -88,7 +88,7 @@ class PipelineModel(Model, ABC):
             The node property steps for the pipeline model.
 
         """
-        steps: List[Dict[str, Any]] = self._list_info()["modelInfo"]["pipeline"]["nodePropertySteps"]
+        steps: list[dict[str, Any]] = self._list_info()["modelInfo"]["pipeline"]["nodePropertySteps"]
         return [NodePropertyStep(s["name"], s["config"]) for s in steps]
 
     def metrics(self) -> Series[Any]:
@@ -99,6 +99,6 @@ class PipelineModel(Model, ABC):
             The metrics for the pipeline model.
 
         """
-        model_metrics: Dict[str, Any] = self._list_info()["modelInfo"]["metrics"]
-        metric_scores: Dict[str, MetricScores] = {k: MetricScores.create(v) for k, v in (model_metrics.items())}
+        model_metrics: dict[str, Any] = self._list_info()["modelInfo"]["metrics"]
+        metric_scores: dict[str, MetricScores] = {k: MetricScores.create(v) for k, v in (model_metrics.items())}
         return Series(metric_scores)
