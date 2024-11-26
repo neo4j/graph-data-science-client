@@ -1,6 +1,5 @@
 import os
 import pathlib
-import sys
 import warnings
 from typing import Any, List, Optional, Union
 
@@ -53,16 +52,10 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     @staticmethod
     def _path(package: str, resource: str) -> pathlib.Path:
-        if sys.version_info >= (3, 9):
-            from importlib.resources import files
+        from importlib.resources import files
 
-            # files() returns a Traversable, but usages require a Path object
-            return pathlib.Path(str(files(package) / resource))
-        else:
-            from importlib.resources import path
-
-            # we dont want to use a context manager here, so we need to call __enter__ manually
-            return path(package, resource).__enter__()
+        # files() returns a Traversable, but usages require a Path object
+        return pathlib.Path(str(files(package) / resource))
 
     @client_only_endpoint("gds.graph")
     @compatible_with("construct", min_inclusive=ServerVersion(2, 1, 0))
