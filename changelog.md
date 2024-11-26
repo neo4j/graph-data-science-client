@@ -3,6 +3,8 @@
 
 ## Breaking changes
 
+* Drop support for Python `3.8` as its EOL
+
 
 ## New features
 
