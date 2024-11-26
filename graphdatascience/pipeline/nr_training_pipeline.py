@@ -1,4 +1,4 @@
-from typing import Any, List, Union
+from typing import Any, Union
 
 from pandas import Series
 
@@ -46,7 +46,7 @@ class NRTrainingPipeline(TrainingPipeline[NRModel]):
 
         return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
-    def selectFeatures(self, node_properties: Union[str, List[str]]) -> "Series[Any]":
+    def selectFeatures(self, node_properties: Union[str, list[str]]) -> "Series[Any]":
         """
         Select the node properties to use for training.
 

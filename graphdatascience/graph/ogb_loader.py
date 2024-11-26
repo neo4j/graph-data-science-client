@@ -1,7 +1,6 @@
 import logging
-import sys
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Optional, Protocol, TypedDict, Union
 from warnings import warn
 
 import numpy as np
@@ -16,11 +15,6 @@ from ..query_runner.query_runner import QueryRunner
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
 
-if sys.version_info >= (3, 8):
-    from typing import Protocol, TypedDict
-else:
-    from typing_extensions import Protocol, TypedDict
-
 
 class _HomogeneousOGBGraphBase(TypedDict):
     edge_index: npt.NDArray[np.int64]
@@ -33,13 +27,13 @@ class HomogeneousOGBGraph(_HomogeneousOGBGraphBase, total=False):
 
 
 class _HeterogeneousOGBGraphBase(TypedDict):
-    edge_index_dict: Dict[Tuple[str, str, str], npt.NDArray[np.int64]]
-    num_nodes_dict: Dict[str, int]
+    edge_index_dict: dict[tuple[str, str, str], npt.NDArray[np.int64]]
+    num_nodes_dict: dict[str, int]
 
 
 class HeterogeneousOGBGraph(_HeterogeneousOGBGraphBase, total=False):
-    edge_feat_dict: Dict[Tuple[str, str, str], npt.NDArray[np.float64]]
-    node_feat_dict: Dict[str, npt.NDArray[np.float64]]
+    edge_feat_dict: dict[tuple[str, str, str], npt.NDArray[np.float64]]
+    node_feat_dict: dict[str, npt.NDArray[np.float64]]
 
 
 class HomogeneousOGBNDataset(Protocol):
@@ -50,7 +44,7 @@ class HomogeneousOGBNDataset(Protocol):
     meta_info: "pd.Series[Any]"
 
     @abstractmethod
-    def get_idx_split(self) -> Dict[str, npt.NDArray[np.int64]]:
+    def get_idx_split(self) -> dict[str, npt.NDArray[np.int64]]:
         pass
 
 
@@ -60,7 +54,7 @@ class HomogeneousOGBLDataset(Protocol):
     name: str
 
     @abstractmethod
-    def get_edge_split(self) -> Dict[str, Dict[str, npt.NDArray[np.int64]]]:
+    def get_edge_split(self) -> dict[str, dict[str, npt.NDArray[np.int64]]]:
         pass
 
 
@@ -68,11 +62,11 @@ class HeterogeneousOGBNDataset(Protocol):
     graph: HeterogeneousOGBGraph
     # `labels` here refers to class labels, not node labels in the Neo4j sense
     # The representation is a node_count x 1 shaped matrix
-    labels: Dict[str, npt.NDArray[np.int64]]
+    labels: dict[str, npt.NDArray[np.int64]]
     meta_info: "pd.Series[Any]"
 
     @abstractmethod
-    def get_idx_split(self) -> Dict[str, Dict[str, npt.NDArray[np.int64]]]:
+    def get_idx_split(self) -> dict[str, dict[str, npt.NDArray[np.int64]]]:
         pass
 
 
@@ -81,7 +75,7 @@ class HeterogeneousOGBLDataset(Protocol):
     meta_info: "pd.Series[Any]"
 
     @abstractmethod
-    def get_edge_split(self) -> Dict[str, Dict[str, Any]]:
+    def get_edge_split(self) -> dict[str, dict[str, Any]]:
         pass
 
 
@@ -92,7 +86,7 @@ class OGBLoader(UncallableNamespace, IllegalAttrChecker, ABC):
         self._server_version = server_version
         self._logger = logging.getLogger()
 
-    def _load(self, graph_name: str, nodes: List[pd.DataFrame], rels: List[pd.DataFrame], concurrency: int) -> Graph:
+    def _load(self, graph_name: str, nodes: list[pd.DataFrame], rels: list[pd.DataFrame], concurrency: int) -> Graph:
         constructor = self._query_runner.create_graph_constructor(graph_name, concurrency, [])
         constructor.run(nodes, rels)
 
@@ -100,7 +94,7 @@ class OGBLoader(UncallableNamespace, IllegalAttrChecker, ABC):
 
 
 class OGBNLoader(OGBLoader):
-    def _parse_homogeneous(self, dataset: HomogeneousOGBNDataset) -> Tuple[List[pd.DataFrame], List[pd.DataFrame]]:
+    def _parse_homogeneous(self, dataset: HomogeneousOGBNDataset) -> tuple[list[pd.DataFrame], list[pd.DataFrame]]:
         graph: HomogeneousOGBGraph = dataset.graph
 
         if dataset.meta_info["has_edge_attr"] == "True":
@@ -110,7 +104,7 @@ class OGBNLoader(OGBLoader):
 
         node_count = graph["num_nodes"]
 
-        node_dict: Dict[str, List[Any]] = {
+        node_dict: dict[str, list[Any]] = {
             "nodeId": list(range(node_count)),
         }
         if "node_feat" in graph and graph["node_feat"] is not None:
@@ -143,7 +137,7 @@ class OGBNLoader(OGBLoader):
 
         return [nodes], [relationships]
 
-    def _parse_heterogeneous(self, dataset: HeterogeneousOGBNDataset) -> Tuple[List[pd.DataFrame], List[pd.DataFrame]]:
+    def _parse_heterogeneous(self, dataset: HeterogeneousOGBNDataset) -> tuple[list[pd.DataFrame], list[pd.DataFrame]]:
         graph: HeterogeneousOGBGraph = dataset.graph
         class_labels = dataset.labels
 
@@ -162,7 +156,7 @@ class OGBNLoader(OGBLoader):
         nodes = []
 
         for node_label, node_count in graph["num_nodes_dict"].items():
-            node_labels: Union[str, List[List[str]]] = node_label
+            node_labels: Union[str, list[list[str]]] = node_label
             if node_label in split["train"]:
                 node_labels = [[node_label, "Train"] for _ in range(node_count)]
                 for node_id in split["valid"][node_label]:
@@ -236,7 +230,7 @@ class OGBNLoader(OGBLoader):
 
 
 class OGBLLoader(OGBLoader):
-    def _parse_homogeneous(self, dataset: HomogeneousOGBLDataset) -> Tuple[List[pd.DataFrame], List[pd.DataFrame]]:
+    def _parse_homogeneous(self, dataset: HomogeneousOGBLDataset) -> tuple[list[pd.DataFrame], list[pd.DataFrame]]:
         graph: HomogeneousOGBGraph = dataset.graph
 
         if dataset.meta_info["has_edge_attr"] == "True":
@@ -254,9 +248,9 @@ class OGBLLoader(OGBLoader):
 
         self._logger.info("Preparing relationship data for transfer to server...")
 
-        source_ids: List[int] = []
-        target_ids: List[int] = []
-        rel_types: List[str] = []
+        source_ids: list[int] = []
+        target_ids: list[int] = []
+        rel_types: list[str] = []
         split = dataset.get_edge_split()
 
         self._load_homogenous_ogbl_relationships(dataset.name, split, source_ids, target_ids, rel_types)
@@ -267,7 +261,7 @@ class OGBLLoader(OGBLoader):
 
         return [nodes], [relationships]
 
-    def _parse_heterogeneous(self, dataset: HeterogeneousOGBLDataset) -> Tuple[List[pd.DataFrame], List[pd.DataFrame]]:
+    def _parse_heterogeneous(self, dataset: HeterogeneousOGBLDataset) -> tuple[list[pd.DataFrame], list[pd.DataFrame]]:
         graph: HeterogeneousOGBGraph = dataset.graph
 
         if dataset.meta_info["has_edge_attr"] == "True":
@@ -364,10 +358,10 @@ class OGBLLoader(OGBLoader):
     def _load_homogenous_ogbl_relationships(
         self,
         dataset_name: str,
-        split: Dict[str, Any],
-        source_ids: List[int],
-        target_ids: List[int],
-        rel_types: List[str],
+        split: dict[str, Any],
+        source_ids: list[int],
+        target_ids: list[int],
+        rel_types: list[str],
     ) -> None:
         if dataset_name == "ogbl-wikikg2":
             for set_type, entity in split.items():

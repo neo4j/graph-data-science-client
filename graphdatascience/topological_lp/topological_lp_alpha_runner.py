@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from ..error.cypher_warning_handler import (
     filter_id_func_deprecation_warning,
@@ -9,7 +9,7 @@ from ..error.uncallable_namespace import UncallableNamespace
 
 class TopologicalLPAlphaRunner(UncallableNamespace, IllegalAttrChecker):
     @filter_id_func_deprecation_warning()
-    def _run_standard_function(self, node1: int, node2: int, config: Dict[str, Any]) -> float:
+    def _run_standard_function(self, node1: int, node2: int, config: dict[str, Any]) -> float:
         query = f"""
         MATCH (n1) WHERE id(n1) = {node1}
         MATCH (n2) WHERE id(n2) = {node2}

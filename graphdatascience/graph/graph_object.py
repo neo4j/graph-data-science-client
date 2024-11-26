@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from types import TracebackType
-from typing import Any, List, Optional, Type, Union
+from typing import Any, Optional, Type, Union
 
 from pandas import Series
 
@@ -39,7 +39,7 @@ class Graph:
         """
         return self._name
 
-    def _graph_info(self, yields: List[str] = []) -> "Series[Any]":
+    def _graph_info(self, yields: list[str] = []) -> Series[Any]:
         yield_db = "database" in yields
         yields_with_db = yields if yield_db else yields + ["database"]
 
@@ -90,21 +90,21 @@ class Graph:
         """
         return self._graph_info(["relationshipCount"])  # type: ignore
 
-    def node_labels(self) -> List[str]:
+    def node_labels(self) -> list[str]:
         """
         Returns:
             the node labels in the graph
         """
         return list(self._graph_info(["schema"])["nodes"].keys())
 
-    def relationship_types(self) -> List[str]:
+    def relationship_types(self) -> list[str]:
         """
         Returns:
             the relationship types in the graph
         """
         return list(self._graph_info(["schema"])["relationships"].keys())
 
-    def node_properties(self, label: Optional[str] = None) -> Union["Series[str]", List[str]]:
+    def node_properties(self, label: Optional[str] = None) -> Union[Series[str], list[str]]:
         """
         Args:
             label: the node label to get the properties for
@@ -123,7 +123,7 @@ class Graph:
 
         return list(labels_to_props[label].keys())
 
-    def relationship_properties(self, type: Optional[str] = None) -> Union["Series[str]", List[str]]:
+    def relationship_properties(self, type: Optional[str] = None) -> Union[Series[str], list[str]]:
         """
         Args:
             type: the relationship type to get the properties for

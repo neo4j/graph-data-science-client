@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Optional, Union
 
 from pandas import DataFrame, Series
 
@@ -20,7 +20,7 @@ class DistMultCreator(UncallableNamespace, IllegalAttrChecker):
     @compatible_with("create", min_inclusive=ServerVersion(2, 5, 0))
     @client_only_endpoint("gds.model.distmult")
     def create(
-        self, G: Graph, node_embedding_property: str, relationship_type_embeddings: Dict[str, List[float]]
+        self, G: Graph, node_embedding_property: str, relationship_type_embeddings: dict[str, list[float]]
     ) -> SimpleRelEmbeddingModel:
         return SimpleRelEmbeddingModel(
             "distmult",
@@ -36,7 +36,7 @@ class TransECreator(UncallableNamespace, IllegalAttrChecker):
     @compatible_with("create", min_inclusive=ServerVersion(2, 5, 0))
     @client_only_endpoint("gds.model.transe")
     def create(
-        self, G: Graph, node_embedding_property: str, relationship_type_embeddings: Dict[str, List[float]]
+        self, G: Graph, node_embedding_property: str, relationship_type_embeddings: dict[str, list[float]]
     ) -> SimpleRelEmbeddingModel:
         return SimpleRelEmbeddingModel(
             "transe",
@@ -96,7 +96,7 @@ class ModelProcRunner(ModelResolver):
         return self._resolve_model(model_type, model_name)
 
     @compatible_with("load", min_inclusive=ServerVersion(2, 5, 0))
-    def load(self, model_name: str) -> Tuple[Model, Series[Any]]:
+    def load(self, model_name: str) -> tuple[Model, Series[Any]]:
         self._namespace += ".load"
 
         params = CallParameters(model_name=model_name)

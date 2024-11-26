@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from pandas import Series
 
@@ -15,7 +15,7 @@ class GraphExportCsvRunner(IllegalAttrChecker):
         return self._export_call(G, config)
 
     @graph_type_check
-    def _export_call(self, G: Graph, config: Dict[str, Any]) -> "Series[Any]":
+    def _export_call(self, G: Graph, config: dict[str, Any]) -> "Series[Any]":
         params = CallParameters(graph_name=G.name(), config=config)
         return self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()  # type: ignore
 
@@ -39,7 +39,7 @@ class GraphExportRunner(IllegalAttrChecker):
         return self._export_call(G, config)
 
     @graph_type_check
-    def _export_call(self, G: Graph, config: Dict[str, Any]) -> "Series[Any]":
+    def _export_call(self, G: Graph, config: dict[str, Any]) -> "Series[Any]":
         params = CallParameters(graph_name=G.name(), config=config)
         return self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()  # type: ignore
 

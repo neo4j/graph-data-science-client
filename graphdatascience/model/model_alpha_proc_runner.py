@@ -1,4 +1,6 @@
-from typing import Any, Tuple
+from __future__ import annotations
+
+from typing import Any
 
 from pandas import Series
 
@@ -9,7 +11,7 @@ from .model_resolver import ModelResolver
 
 
 class ModelAlphaProcRunner(ModelResolver):
-    def store(self, model: Model, failIfUnsupportedType: bool = True) -> "Series[Any]":
+    def store(self, model: Model, failIfUnsupportedType: bool = True) -> Series[Any]:
         self._namespace += ".store"
         params = CallParameters(
             model_name=model.name(),
@@ -32,7 +34,7 @@ class ModelAlphaProcRunner(ModelResolver):
 
         return self._resolve_model(model_type, model_name)
 
-    def load(self, model_name: str) -> Tuple[Model, "Series[Any]"]:
+    def load(self, model_name: str) -> tuple[Model, Series[Any]]:
         self._namespace += ".load"
         params = CallParameters(model_name=model_name)
 
@@ -43,7 +45,7 @@ class ModelAlphaProcRunner(ModelResolver):
 
         return proc_runner.get(result["modelName"]), result
 
-    def delete(self, model: Model) -> "Series[Any]":
+    def delete(self, model: Model) -> Series[Any]:
         self._namespace += ".delete"
         params = CallParameters(model_name=model.name())
         return self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()  # type: ignore

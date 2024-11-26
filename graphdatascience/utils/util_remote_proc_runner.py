@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any
 
 from ..error.cypher_warning_handler import (
     filter_id_func_deprecation_warning,
@@ -27,7 +27,7 @@ class UtilRemoteProcRunner(UncallableNamespace, IllegalAttrChecker):
         return self._query_runner.run_cypher(query=query, params=params).squeeze()
 
     @filter_id_func_deprecation_warning()
-    def asNodes(self, node_ids: List[int]) -> List[Any]:
+    def asNodes(self, node_ids: list[int]) -> list[Any]:
         """
         Get a list of nodes from a list of node ids.
 

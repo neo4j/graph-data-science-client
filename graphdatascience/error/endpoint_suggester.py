@@ -1,11 +1,9 @@
-from typing import List
-
 import textdistance
 
 from ..ignored_server_endpoints import IGNORED_SERVER_ENDPOINTS
 
 
-def generate_suggestive_error_message(requested_endpoint: str, all_endpoints: List[str]) -> str:
+def generate_suggestive_error_message(requested_endpoint: str, all_endpoints: list[str]) -> str:
     MIN_SIMILARITY_FOR_SUGGESTION = 0.9
 
     closest_endpoint = None

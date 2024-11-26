@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 from pandas import DataFrame
 
@@ -36,13 +36,13 @@ class GraphAlphaProcRunner(UncallableNamespace, IllegalAttrChecker):
     def construct(
         self,
         graph_name: str,
-        nodes: Union[DataFrame, List[DataFrame]],
-        relationships: Union[DataFrame, List[DataFrame]],
+        nodes: Union[DataFrame, list[DataFrame]],
+        relationships: Union[DataFrame, list[DataFrame]],
         concurrency: int = 4,
-        undirected_relationship_types: Optional[List[str]] = None,
+        undirected_relationship_types: Optional[list[str]] = None,
     ) -> Graph:
-        nodes = nodes if isinstance(nodes, List) else [nodes]
-        relationships = relationships if isinstance(relationships, List) else [relationships]
+        nodes = nodes if isinstance(nodes, list) else [nodes]
+        relationships = relationships if isinstance(relationships, list) else [relationships]
 
         errors = []
 

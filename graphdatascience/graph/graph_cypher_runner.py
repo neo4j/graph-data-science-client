@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from itertools import chain, zip_longest
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from pandas import Series
 
@@ -45,7 +45,7 @@ class GraphCypherRunner(CallerBase):
 
         GraphCypherRunner._verify_query_ends_with_return_clause(self._namespace, query)
 
-        result: Optional[Dict[str, Any]] = self._query_runner.run_cypher(query, params, database, False).squeeze()
+        result: Optional[dict[str, Any]] = self._query_runner.run_cypher(query, params, database, False).squeeze()
 
         if not result:
             raise ValueError("Projected graph cannot be empty.")

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 from pandas import DataFrame
 
@@ -19,7 +19,7 @@ class ArrowQueryRunner(QueryRunner):
     def create(
         fallback_query_runner: QueryRunner,
         arrow_info: ArrowInfo,
-        auth: Optional[Tuple[str, str]] = None,
+        auth: Optional[tuple[str, str]] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
@@ -57,7 +57,7 @@ class ArrowQueryRunner(QueryRunner):
     def run_cypher(
         self,
         query: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
     ) -> DataFrame:
@@ -70,7 +70,7 @@ class ArrowQueryRunner(QueryRunner):
         self,
         endpoint: str,
         params: Optional[CallParameters] = None,
-        yields: Optional[List[str]] = None,
+        yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
         custom_error: bool = True,
@@ -171,7 +171,7 @@ class ArrowQueryRunner(QueryRunner):
     def server_version(self) -> ServerVersion:
         return self._fallback_query_runner.server_version()
 
-    def driver_config(self) -> Dict[str, Any]:
+    def driver_config(self) -> dict[str, Any]:
         return self._fallback_query_runner.driver_config()
 
     def encrypted(self) -> bool:
@@ -213,7 +213,7 @@ class ArrowQueryRunner(QueryRunner):
         self._fallback_query_runner.set_show_progress(show_progress)
 
     def create_graph_constructor(
-        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
+        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[list[str]]
     ) -> GraphConstructor:
         database = self._database_or_throw()
 

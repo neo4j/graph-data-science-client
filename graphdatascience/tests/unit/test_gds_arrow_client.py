@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Any, Dict, Generator, List, Tuple, Union
+from typing import Any, Generator, Union
 
 import pyarrow as pa
 import pytest
@@ -10,22 +10,22 @@ from pyarrow.flight import Action, Ticket
 
 from graphdatascience.query_runner.gds_arrow_client import AuthMiddleware, GdsArrowClient
 
-ActionParam = Union[str, Tuple[str, Any], Action]
+ActionParam = Union[str, tuple[str, Any], Action]
 
 
 class FlightServer(flight.FlightServerBase):  # type: ignore
-    def __init__(self, location: str = "grpc://0.0.0.0:0", **kwargs: Dict[str, Any]) -> None:
+    def __init__(self, location: str = "grpc://0.0.0.0:0", **kwargs: dict[str, Any]) -> None:
         super(FlightServer, self).__init__(location, **kwargs)
         self._location: str = location
-        self._actions: List[ActionParam] = []
-        self._tickets: List[Ticket] = []
+        self._actions: list[ActionParam] = []
+        self._tickets: list[Ticket] = []
 
     def do_get(self, context: Any, ticket: Ticket) -> GeneratorStream:
         self._tickets.append(ticket)
         table = pa.Table.from_pydict({"ids": [42, 1337, 1234]})
         return GeneratorStream(schema=table.schema, generator=table.to_batches())
 
-    def do_action(self, context: Any, action: ActionParam) -> List[bytes]:
+    def do_action(self, context: Any, action: ActionParam) -> list[bytes]:
         self._actions.append(action)
 
         if isinstance(action, Action):
@@ -35,7 +35,7 @@ class FlightServer(flight.FlightServerBase):  # type: ignore
         elif isinstance(action, str):
             actionType = action
 
-        response: Dict[str, Any] = {}
+        response: dict[str, Any] = {}
         if "CREATE" in actionType:
             response = {"name": "g"}
         elif "NODE_LOAD_DONE" in actionType:
@@ -334,12 +334,12 @@ def test_handle_flight_error() -> None:
         )
 
 
-def assert_action(action: Action, expected_type: str, expected_body: Dict[str, Any]) -> None:
+def assert_action(action: Action, expected_type: str, expected_body: dict[str, Any]) -> None:
     assert action.type == expected_type
     assert json.loads(action.body.to_pybytes().decode()) == expected_body
 
 
-def assert_ticket(ticket: Ticket, expected_body: Dict[str, Any]) -> None:
+def assert_ticket(ticket: Ticket, expected_body: dict[str, Any]) -> None:
     parsed = json.loads(ticket.ticket.decode())
     assert parsed["name"] == "GET_COMMAND"
     assert parsed["body"] == expected_body

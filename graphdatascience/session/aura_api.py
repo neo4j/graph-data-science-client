@@ -5,7 +5,7 @@ import time
 import warnings
 from collections import defaultdict
 from datetime import timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 from urllib.parse import urlparse
 
 import requests
@@ -49,7 +49,7 @@ class AuraApi:
         self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
         self._tenant_details: Optional[TenantDetails] = None
 
-    def _init_request_session(self, credentials: Tuple[str, str]) -> requests.Session:
+    def _init_request_session(self, credentials: tuple[str, str]) -> requests.Session:
         request_session = requests.Session()
         request_session.headers = {"User-agent": f"neo4j-graphdatascience-v{__version__}"}
         request_session.auth = AuraApi.Auth(
@@ -115,7 +115,7 @@ class AuraApi:
 
         self._check_resp(response)
 
-        raw_json: Dict[str, Any] = response.json()
+        raw_json: dict[str, Any] = response.json()
         return SessionDetails.from_json(raw_json["data"], raw_json.get("errors", []))
 
     def get_session(self, session_id: str) -> Optional[SessionDetails]:
@@ -128,10 +128,10 @@ class AuraApi:
 
         self._check_resp(response)
 
-        raw_json: Dict[str, Any] = response.json()
+        raw_json: dict[str, Any] = response.json()
         return SessionDetails.from_json(raw_json["data"], raw_json.get("errors", []))
 
-    def list_sessions(self, dbid: Optional[str] = None) -> List[SessionDetails]:
+    def list_sessions(self, dbid: Optional[str] = None) -> list[SessionDetails]:
         # these are query parameters (not passed in the body)
         params = {
             "tenantId": self._tenant_id,
@@ -146,7 +146,7 @@ class AuraApi:
 
         raw_json = response.json()
 
-        data: List[Any] = raw_json.get("data", [])
+        data: list[Any] = raw_json.get("data", [])
         errors_per_session = defaultdict(list)
         for error in raw_json.get("errors", []):
             errors_per_session[error["id"]].append(error)
@@ -222,7 +222,7 @@ class AuraApi:
 
         return InstanceSpecificDetails.fromJson(response.json()["data"])
 
-    def list_instances(self) -> List[InstanceDetails]:
+    def list_instances(self) -> list[InstanceDetails]:
         response = self._request_session.get(f"{self._base_uri}/v1/instances", params={"tenantId": self._tenant_id})
 
         self._check_resp(response)
@@ -268,7 +268,7 @@ class AuraApi:
         return WaitResult.from_error(f"Instance is not running after waiting for {waited_time} seconds")
 
     def estimate_size(
-        self, node_count: int, relationship_count: int, algorithm_categories: List[AlgorithmCategory]
+        self, node_count: int, relationship_count: int, algorithm_categories: list[AlgorithmCategory]
     ) -> EstimationDetails:
         data = {
             "node_count": node_count,
@@ -329,7 +329,7 @@ class AuraApi:
             expires_in: int
             token_type: str
 
-            def __init__(self, json: Dict[str, Any]) -> None:
+            def __init__(self, json: dict[str, Any]) -> None:
                 self.access_token = json["access_token"]
                 self.token_type = json["token_type"]
 
@@ -341,14 +341,14 @@ class AuraApi:
             def should_refresh(self) -> bool:
                 return self.refresh_at <= int(time.time())
 
-        def __init__(self, oauth_url: str, credentials: Tuple[str, str], headers: Dict[str, Any]) -> None:
+        def __init__(self, oauth_url: str, credentials: tuple[str, str], headers: dict[str, Any]) -> None:
             self._token: Optional[AuraApi.Auth.Token] = None
             self._logger = logging.getLogger()
             self._oauth_url = oauth_url
             self._credentials = credentials
             self._request_session = self._init_request_session(headers)
 
-        def _init_request_session(self, headers: Dict[str, Any]) -> requests.Session:
+        def _init_request_session(self, headers: dict[str, Any]) -> requests.Session:
             request_session = requests.Session()
             request_session.mount(
                 "https://",

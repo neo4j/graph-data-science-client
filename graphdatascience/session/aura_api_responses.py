@@ -4,7 +4,7 @@ import dataclasses
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, NamedTuple, Optional, Set
+from typing import Any, NamedTuple, Optional
 
 from pandas import Timedelta
 
@@ -27,10 +27,10 @@ class SessionDetails:
     user_id: str
     tenant_id: str
     cloud_location: Optional[CloudLocation] = None
-    errors: Optional[List[SessionError]] = None
+    errors: Optional[list[SessionError]] = None
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any], errors: List[Dict[str, Any]]) -> SessionDetails:
+    def from_json(cls, data: dict[str, Any], errors: list[dict[str, Any]]) -> SessionDetails:
         id = data["id"]
         expiry_date = data.get("expiry_date")
         ttl: Any | None = data.get("ttl")
@@ -77,7 +77,7 @@ class SessionError:
     reason: str
 
     @classmethod
-    def from_json(cls, json: Dict[str, Any]) -> SessionError:
+    def from_json(cls, json: dict[str, Any]) -> SessionError:
         return cls(
             reason=json["reason"],
             message=json["message"],
@@ -92,7 +92,7 @@ class InstanceDetails:
     cloud_provider: str
 
     @classmethod
-    def fromJson(cls, json: Dict[str, Any]) -> InstanceDetails:
+    def fromJson(cls, json: dict[str, Any]) -> InstanceDetails:
         return cls(
             id=json["id"],
             name=json["name"],
@@ -110,7 +110,7 @@ class InstanceSpecificDetails(InstanceDetails):
     region: str
 
     @classmethod
-    def fromJson(cls, json: Dict[str, Any]) -> InstanceSpecificDetails:
+    def fromJson(cls, json: dict[str, Any]) -> InstanceSpecificDetails:
         return cls(
             id=json["id"],
             name=json["name"],
@@ -132,7 +132,7 @@ class InstanceCreateDetails:
     connection_url: str
 
     @classmethod
-    def from_json(cls, json: Dict[str, Any]) -> InstanceCreateDetails:
+    def from_json(cls, json: dict[str, Any]) -> InstanceCreateDetails:
         fields = dataclasses.fields(cls)
         if any(f.name not in json for f in fields):
             raise RuntimeError(f"Missing required field. Expected `{[f.name for f in fields]}` but got `{json}`")
@@ -147,7 +147,7 @@ class EstimationDetails:
     did_exceed_maximum: bool
 
     @classmethod
-    def from_json(cls, json: Dict[str, Any]) -> EstimationDetails:
+    def from_json(cls, json: dict[str, Any]) -> EstimationDetails:
         fields = dataclasses.fields(cls)
         if any(f.name not in json for f in fields):
             raise RuntimeError(f"Missing required field. Expected `{[f.name for f in fields]}` but got `{json}`")
@@ -171,11 +171,11 @@ class WaitResult(NamedTuple):
 @dataclass(repr=True, frozen=True)
 class TenantDetails:
     id: str
-    cloud_locations: Set[CloudLocation]
+    cloud_locations: set[CloudLocation]
 
     @classmethod
-    def from_json(cls, json: Dict[str, Any]) -> TenantDetails:
-        cloud_locations: Set[CloudLocation] = set()
+    def from_json(cls, json: dict[str, Any]) -> TenantDetails:
+        cloud_locations: set[CloudLocation] = set()
 
         for configs in json["instance_configurations"]:
             # assuming Sessions can be spawned wherever instances can be created

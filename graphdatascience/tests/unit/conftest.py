@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import Any, Dict, Generator, List, Optional, Union
+from typing import Any, Generator, Optional, Union
 
 import pytest
 from pandas import DataFrame
@@ -23,21 +23,21 @@ from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 DEFAULT_SERVER_VERSION = ServerVersion(2, 10, 0)
 
 QueryResult = Union[DataFrame, Exception]
-QueryResultMap = Dict[str, QueryResult]  # Substring -> QueryResult
+QueryResultMap = dict[str, QueryResult]  # Substring -> QueryResult
 
 
 class CollectingQueryRunner(QueryRunner):
     def __init__(
         self, server_version: ServerVersion, result_mock: Optional[Union[QueryResult, QueryResultMap]] = None
     ) -> None:
-        self._result_map: Dict[str, QueryResult] = {}
+        self._result_map: dict[str, QueryResult] = {}
         if isinstance(result_mock, DataFrame) or isinstance(result_mock, Exception):
             self._result_map = {"": result_mock}
         elif isinstance(result_mock, dict):
             self._result_map = result_mock
 
-        self.queries: List[str] = []
-        self.params: List[Dict[str, Any]] = []
+        self.queries: list[str] = []
+        self.params: list[dict[str, Any]] = []
         self._server_version = server_version
         self._database = "dummy"
 
@@ -45,7 +45,7 @@ class CollectingQueryRunner(QueryRunner):
         self,
         endpoint: str,
         params: Optional[CallParameters] = None,
-        yields: Optional[List[str]] = None,
+        yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
         custom_error: bool = True,
@@ -66,7 +66,7 @@ class CollectingQueryRunner(QueryRunner):
         return self.run_cypher(query, params).squeeze()
 
     def run_cypher(
-        self, query: str, params: Optional[Dict[str, Any]] = None, db: Optional[str] = None, custom_error: bool = True
+        self, query: str, params: Optional[dict[str, Any]] = None, db: Optional[str] = None, custom_error: bool = True
     ) -> DataFrame:
         if params is None:
             params = {}
@@ -84,7 +84,7 @@ class CollectingQueryRunner(QueryRunner):
     def server_version(self) -> ServerVersion:
         return self._server_version
 
-    def driver_config(self) -> Dict[str, Any]:
+    def driver_config(self) -> dict[str, Any]:
         return {}
 
     def encrypted(self) -> bool:
@@ -95,7 +95,7 @@ class CollectingQueryRunner(QueryRunner):
             return ""
         return self.queries[-1]
 
-    def last_params(self) -> Dict[str, Any]:
+    def last_params(self) -> dict[str, Any]:
         if len(self.params) == 0:
             return {}
         return self.params[-1]
@@ -119,7 +119,7 @@ class CollectingQueryRunner(QueryRunner):
         pass
 
     def create_graph_constructor(
-        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[List[str]]
+        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[list[str]]
     ) -> GraphConstructor:
         return CypherGraphConstructor(
             self, graph_name, concurrency, undirected_relationship_types, self._server_version

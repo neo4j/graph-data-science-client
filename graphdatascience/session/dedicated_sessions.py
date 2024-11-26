@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import warnings
 from datetime import datetime, timedelta, timezone
-from typing import List, Optional
+from typing import Optional
 
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.algorithm_category import AlgorithmCategory
@@ -24,7 +24,7 @@ class DedicatedSessions:
         self._aura_api = aura_api
 
     def estimate(
-        self, node_count: int, relationship_count: int, algorithm_categories: Optional[List[AlgorithmCategory]] = None
+        self, node_count: int, relationship_count: int, algorithm_categories: Optional[list[AlgorithmCategory]] = None
     ) -> SessionMemory:
         if algorithm_categories is None:
             algorithm_categories = []
@@ -39,12 +39,12 @@ class DedicatedSessions:
 
         return SessionMemory(SessionMemoryValue(estimation.recommended_size))
 
-    def available_cloud_locations(self) -> List[CloudLocation]:
+    def available_cloud_locations(self) -> list[CloudLocation]:
         """
         Retrieves the list of available cloud locations in Aura.
 
         Returns:
-            List[CloudLocation]: The list of available cloud locations.
+            list[CloudLocation]: The list of available cloud locations.
         """
         # return a list to allow index based access
         return list(self._aura_api.tenant_details().cloud_locations)
@@ -109,13 +109,13 @@ class DedicatedSessions:
 
         return False
 
-    def list(self, dbid: Optional[str] = None) -> List[SessionInfo]:
-        sessions: List[SessionDetails] = self._aura_api.list_sessions(dbid)
+    def list(self, dbid: Optional[str] = None) -> list[SessionInfo]:
+        sessions: list[SessionDetails] = self._aura_api.list_sessions(dbid)
 
         return [SessionInfo.from_session_details(i) for i in sessions]
 
     def _find_existing_session(self, session_name: str) -> Optional[SessionDetails]:
-        matched_sessions: List[SessionDetails] = []
+        matched_sessions: list[SessionDetails] = []
         matched_sessions = [s for s in self._aura_api.list_sessions() if s.name == session_name]
 
         if len(matched_sessions) == 0:

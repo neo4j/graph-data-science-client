@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Union
 
 from pandas import DataFrame, Series
 
@@ -6,7 +6,7 @@ from ..call_parameters import CallParameters
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
 
-NodeFilter = Union[int, List[int], str]
+NodeFilter = Union[int, list[int], str]
 
 
 class SimpleRelEmbeddingModel:
@@ -23,7 +23,7 @@ class SimpleRelEmbeddingModel:
         server_version: ServerVersion,
         graph_name: str,
         node_embedding_property: str,
-        relationship_type_embeddings: Dict[str, List[float]],
+        relationship_type_embeddings: dict[str, list[float]],
     ):
         self._scoring_function = scoring_function
         self._query_runner = query_runner
@@ -184,7 +184,7 @@ class SimpleRelEmbeddingModel:
         """
         return self._node_embedding_property
 
-    def relationship_type_embeddings(self) -> Dict[str, List[float]]:
+    def relationship_type_embeddings(self) -> dict[str, list[float]]:
         """
         Get the relationship type embeddings of the model
 

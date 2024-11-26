@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional
+from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -59,7 +59,7 @@ class SessionMemory(Enum):
     m_384GB = SessionMemoryValue("384GB")
 
     @classmethod
-    def all_values(cls) -> List[SessionMemoryValue]:
+    def all_values(cls) -> list[SessionMemoryValue]:
         """
         All supported memory configurations.
 

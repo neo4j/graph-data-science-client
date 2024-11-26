@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Any, Dict, Tuple
+from typing import Any
 
 from pandas import DataFrame, Series
 
@@ -12,7 +12,7 @@ from ..model.graphsage_model import GraphSageModel
 
 class AlgoProcRunner(IllegalAttrChecker, ABC):
     @graph_type_check
-    def _run_procedure(self, G: Graph, config: Dict[str, Any], with_logging: bool = True) -> DataFrame:
+    def _run_procedure(self, G: Graph, config: dict[str, Any], with_logging: bool = True) -> DataFrame:
         params = CallParameters(graph_name=G.name(), config=config)
 
         return self._query_runner.call_procedure(endpoint=self._namespace, params=params, logging=with_logging)
@@ -35,7 +35,7 @@ class StandardModeRunner(AlgoProcRunner):
 
 class GraphSageRunner(AlgoProcRunner):
     @graph_type_check
-    def __call__(self, G: Graph, **config: Any) -> Tuple[GraphSageModel, "Series[Any]"]:
+    def __call__(self, G: Graph, **config: Any) -> tuple[GraphSageModel, "Series[Any]"]:
         result = self._run_procedure(G, config).squeeze()
         model_name = result["modelInfo"]["modelName"]
 

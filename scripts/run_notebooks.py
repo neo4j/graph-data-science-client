@@ -5,7 +5,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from types import FrameType
-from typing import Any, Callable, List, NamedTuple, Optional
+from typing import Any, Callable, NamedTuple, Optional
 
 import nbformat
 from nbclient.exceptions import CellExecutionError
@@ -24,7 +24,7 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
     def __init__(self, **kw: Any):
         super().__init__(**kw)  # type: ignore
 
-    def init_notebook(self, version_cell_index: int, tear_down_cells: List[IndexedCell]) -> None:
+    def init_notebook(self, version_cell_index: int, tear_down_cells: list[IndexedCell]) -> None:
         self.version_verify_cell_index = version_cell_index
         self.tear_down_cells = tear_down_cells
         self._skip_rest = False
@@ -68,13 +68,13 @@ class GdsTearDownCollector(ExecutePreprocessor):
         super().__init__(**kw)  # type: ignore
 
     def init_notebook(self) -> None:
-        self._tear_down_cells: List[IndexedCell] = []
+        self._tear_down_cells: list[IndexedCell] = []
 
     def preprocess_cell(self, cell: Any, resources: Any, index: int) -> None:
         if TEARDOWN_CELL_TAG in cell["metadata"].get("tags", []):
             self._tear_down_cells.append(IndexedCell(cell, index))
 
-    def tear_down_cells(self) -> List[IndexedCell]:
+    def tear_down_cells(self) -> list[IndexedCell]:
         return self._tear_down_cells
 
 
@@ -87,7 +87,7 @@ def main(filter_func: Callable[[str], bool]) -> None:
 
     ep = GdsExecutePreprocessor(kernel_name="python3")
     td_collector = GdsTearDownCollector(kernel_name="python3")
-    exceptions: List[RuntimeError] = []
+    exceptions: list[RuntimeError] = []
 
     for notebook_filename in notebook_files:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -135,7 +135,7 @@ if __name__ == "__main__":
     session_notebooks = ["gds-sessions.ipynb"]
     session_self_managed_notebooks = ["gds-sessions-self-managed.ipynb"]
 
-    notebooks: Optional[List[str]] = None
+    notebooks: Optional[list[str]] = None
     if notebook_filter == "sessions-attached":
 
         def filter_func(notebook: str) -> bool:

@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import numpy as np
 import numpy.typing as npt
@@ -31,7 +31,7 @@ class HomoOBGNTestDataset(HomogeneousOGBNDataset):
         self.labels = np.array([[cl] for cl in HOMOGENEOUS_CLASS_LABELS])
         self.meta_info = Series({"has_edge_attr": "False"})
 
-    def get_idx_split(self) -> Dict[str, npt.NDArray[np.int64]]:
+    def get_idx_split(self) -> dict[str, npt.NDArray[np.int64]]:
         return {"train": np.array([0]), "valid": np.array([1]), "test": np.array([2])}
 
 
@@ -45,7 +45,7 @@ class HomoOBGLTestDataset(HomogeneousOGBLDataset):
         self.meta_info = Series({"has_edge_attr": "False"})
         self.name = "ogb_test_graph"
 
-    def get_edge_split(self) -> Dict[str, Dict[str, npt.NDArray[np.int64]]]:
+    def get_edge_split(self) -> dict[str, dict[str, npt.NDArray[np.int64]]]:
         return {
             "train": {"edge": np.array([[0, 1]]), "edge_neg": np.array([[0, 2]])},
             "valid": {"edge": np.array([[1, 2]]), "edge_neg": np.array([[2, 1]])},
@@ -69,7 +69,7 @@ class HeteroOBGNTestDataset(HeterogeneousOGBNDataset):
         self.labels = HETEROGENEOUS_CLASS_LABELS
         self.meta_info = Series({"has_edge_attr": "False"})
 
-    def get_idx_split(self) -> Dict[str, Dict[str, npt.NDArray[np.int64]]]:
+    def get_idx_split(self) -> dict[str, dict[str, npt.NDArray[np.int64]]]:
         return {"train": {"A": np.array([0])}, "valid": {"A": np.array([])}, "test": {"A": np.array([])}}
 
 
@@ -82,7 +82,7 @@ class HeteroOBGLTestDataset(HeterogeneousOGBLDataset):
         }
         self.meta_info = Series({"has_edge_attr": "False"})
 
-    def get_edge_split(self) -> Dict[str, Dict[str, Any]]:
+    def get_edge_split(self) -> dict[str, dict[str, Any]]:
         return {
             "train": {"head_type": ["A"], "head": [0], "relation": [0], "tail_type": ["B"], "tail": [0]},
             "valid": {"head_type": ["B"], "head": [0], "relation": [1], "tail_type": ["C"], "tail": [0]},

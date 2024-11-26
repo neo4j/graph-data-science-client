@@ -7,7 +7,7 @@ import time
 import warnings
 from dataclasses import dataclass
 from types import TracebackType
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Type, Union
+from typing import Any, Callable, Iterable, Optional, Type, Union
 
 import pyarrow
 from neo4j.exceptions import ClientError
@@ -27,7 +27,7 @@ class GdsArrowClient:
     @staticmethod
     def create(
         arrow_info: ArrowInfo,
-        auth: Optional[Tuple[str, str]] = None,
+        auth: Optional[tuple[str, str]] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
@@ -57,7 +57,7 @@ class GdsArrowClient:
         self,
         host: str,
         port: int = 8491,
-        auth: Optional[Tuple[str, str]] = None,
+        auth: Optional[tuple[str, str]] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
@@ -72,7 +72,7 @@ class GdsArrowClient:
             The host address of the GDS Arrow server
         port: int
             The host port of the GDS Arrow server (default is 8491)
-        auth: Optional[Tuple[str, str]]
+        auth: Optional[tuple[str, str]]
             A tuple containing the username and password for authentication
         encrypted: bool
             A flag that indicates whether the connection should be encrypted (default is False)
@@ -92,7 +92,7 @@ class GdsArrowClient:
 
         location = flight.Location.for_grpc_tls(host, port) if encrypted else flight.Location.for_grpc_tcp(host, port)
 
-        client_options: Dict[str, Any] = {"disable_server_verification": disable_server_verification}
+        client_options: dict[str, Any] = {"disable_server_verification": disable_server_verification}
         if auth:
             self._auth_middleware = AuthMiddleware(auth)
             if not user_agent:
@@ -103,13 +103,13 @@ class GdsArrowClient:
 
         self._flight_client = flight.FlightClient(location, **client_options)
 
-    def connection_info(self) -> Tuple[str, int]:
+    def connection_info(self) -> tuple[str, int]:
         """
         Returns the host and port of the GDS Arrow server.
 
         Returns
         -------
-        Tuple[str, int]
+        tuple[str, int]
             the host and port of the GDS Arrow server
         """
         return self._host, self._port
@@ -133,8 +133,8 @@ class GdsArrowClient:
         self,
         graph_name: str,
         database: str,
-        node_properties: Union[str, List[str]],
-        node_labels: Optional[List[str]] = None,
+        node_properties: Union[str, list[str]],
+        node_labels: Optional[list[str]] = None,
         list_node_labels: bool = False,
         concurrency: Optional[int] = None,
     ) -> DataFrame:
@@ -161,7 +161,7 @@ class GdsArrowClient:
         DataFrame
             The requested node property as a DataFrame
         """
-        config: Dict[str, Any] = {
+        config: dict[str, Any] = {
             "list_node_labels": list_node_labels,
         }
 
@@ -198,7 +198,7 @@ class GdsArrowClient:
         return self._do_get(database, graph_name, "gds.graph.nodeLabels.stream", concurrency, {})
 
     def get_relationships(
-        self, graph_name: str, database: str, relationship_types: List[str], concurrency: Optional[int] = None
+        self, graph_name: str, database: str, relationship_types: list[str], concurrency: Optional[int] = None
     ) -> DataFrame:
         """
         Get relationships from the graph.
@@ -231,8 +231,8 @@ class GdsArrowClient:
         self,
         graph_name: str,
         database: str,
-        relationship_properties: Union[str, List[str]],
-        relationship_types: List[str],
+        relationship_properties: Union[str, list[str]],
+        relationship_types: list[str],
         concurrency: Optional[int] = None,
     ) -> DataFrame:
         """
@@ -256,7 +256,7 @@ class GdsArrowClient:
         DataFrame
             The requested relationships as a DataFrame
         """
-        config: Dict[str, Any] = {}
+        config: dict[str, Any] = {}
         if isinstance(relationship_properties, str):
             config = {"relationship_property": relationship_properties}
             proc = "gds.graph.relationshipProperty.stream"
@@ -273,8 +273,8 @@ class GdsArrowClient:
         self,
         graph_name: str,
         database: str,
-        undirected_relationship_types: Optional[List[str]] = None,
-        inverse_indexed_relationship_types: Optional[List[str]] = None,
+        undirected_relationship_types: Optional[list[str]] = None,
+        inverse_indexed_relationship_types: Optional[list[str]] = None,
         concurrency: Optional[int] = None,
     ) -> None:
         """
@@ -296,7 +296,7 @@ class GdsArrowClient:
             The number of threads used on the server side when importing the graph
         """
 
-        config: Dict[str, Any] = {
+        config: dict[str, Any] = {
             "name": graph_name,
             "database_name": database,
         }
@@ -314,8 +314,8 @@ class GdsArrowClient:
         self,
         graph_name: str,
         database: str,
-        undirected_relationship_types: Optional[List[str]] = None,
-        inverse_indexed_relationship_types: Optional[List[str]] = None,
+        undirected_relationship_types: Optional[list[str]] = None,
+        inverse_indexed_relationship_types: Optional[list[str]] = None,
         concurrency: Optional[int] = None,
     ) -> None:
         """
@@ -337,7 +337,7 @@ class GdsArrowClient:
             The number of threads used on the server side when importing the graph
         """
 
-        config: Dict[str, Any] = {
+        config: dict[str, Any] = {
             "name": graph_name,
             "database_name": database,
         }
@@ -387,7 +387,7 @@ class GdsArrowClient:
             Collects bad node and relationship records during import and writes them into the log (default is false)
         """
 
-        config: Dict[str, Any] = {
+        config: dict[str, Any] = {
             "name": database,
             "force": force,
             "high_io": high_io,
@@ -537,7 +537,7 @@ class GdsArrowClient:
         """
         self._upload_data(graph_name, "triplet", triplet_data, batch_size, progress_callback)
 
-    def _send_action(self, action_type: str, meta_data: Dict[str, Any]) -> Dict[str, Any]:
+    def _send_action(self, action_type: str, meta_data: dict[str, Any]) -> dict[str, Any]:
         action_type = self._versioned_action_type(action_type)
 
         try:
@@ -556,7 +556,7 @@ class GdsArrowClient:
         self,
         graph_name: str,
         entity_type: str,
-        data: Union[pyarrow.Table, List[pyarrow.RecordBatch], DataFrame],
+        data: Union[pyarrow.Table, list[pyarrow.RecordBatch], DataFrame],
         batch_size: int,
         progress_callback: Callable[[int], None],
     ) -> None:
@@ -598,9 +598,9 @@ class GdsArrowClient:
         graph_name: str,
         procedure_name: str,
         concurrency: Optional[int],
-        configuration: Dict[str, Any],
+        configuration: dict[str, Any],
     ) -> DataFrame:
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "database_name": database,
             "graph_name": graph_name,
             "procedure_name": procedure_name,
@@ -656,7 +656,7 @@ class GdsArrowClient:
     def _versioned_action_type(self, action_type: str) -> str:
         return self._arrow_endpoint_version.prefix() + action_type
 
-    def _versioned_flight_descriptor(self, flight_descriptor: Dict[str, Any]) -> Dict[str, Any]:
+    def _versioned_flight_descriptor(self, flight_descriptor: dict[str, Any]) -> dict[str, Any]:
         return (
             flight_descriptor
             if self._arrow_endpoint_version == ArrowEndpointVersion.ALPHA
@@ -739,10 +739,10 @@ class UserAgentMiddleware(ClientMiddleware):  # type: ignore
         super().__init__(*args, **kwargs)
         self._useragent = useragent
 
-    def sending_headers(self) -> Dict[str, str]:
+    def sending_headers(self) -> dict[str, str]:
         return {"x-gds-user-agent": self._useragent}
 
-    def received_headers(self, headers: Dict[str, Any]) -> None:
+    def received_headers(self, headers: dict[str, Any]) -> None:
         pass
 
 
@@ -756,7 +756,7 @@ class AuthFactory(ClientMiddlewareFactory):  # type: ignore
 
 
 class AuthMiddleware(ClientMiddleware):  # type: ignore
-    def __init__(self, auth: Tuple[str, str], *args: Any, **kwargs: Any) -> None:
+    def __init__(self, auth: tuple[str, str], *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._auth = auth
         self._token: Optional[str] = None
@@ -773,7 +773,7 @@ class AuthMiddleware(ClientMiddleware):  # type: ignore
         self._token = token
         self._token_timestamp = int(time.time())
 
-    def received_headers(self, headers: Dict[str, Any]) -> None:
+    def received_headers(self, headers: dict[str, Any]) -> None:
         auth_header = headers.get("authorization", None)
         if not auth_header:
             return
@@ -788,7 +788,7 @@ class AuthMiddleware(ClientMiddleware):  # type: ignore
         if auth_type == "Bearer":
             self._set_token(token)
 
-    def sending_headers(self) -> Dict[str, str]:
+    def sending_headers(self) -> dict[str, str]:
         token = self.token()
         if not token:
             username, password = self._auth
@@ -806,7 +806,7 @@ class NodeLoadDoneResult:
     node_count: int
 
     @classmethod
-    def from_json(cls, json: Dict[str, Any]) -> NodeLoadDoneResult:
+    def from_json(cls, json: dict[str, Any]) -> NodeLoadDoneResult:
         return cls(
             name=json["name"],
             node_count=json["node_count"],
@@ -819,7 +819,7 @@ class RelationshipLoadDoneResult:
     relationship_count: int
 
     @classmethod
-    def from_json(cls, json: Dict[str, Any]) -> RelationshipLoadDoneResult:
+    def from_json(cls, json: dict[str, Any]) -> RelationshipLoadDoneResult:
         return cls(
             name=json["name"],
             relationship_count=json["relationship_count"],
@@ -833,5 +833,5 @@ class TripletLoadDoneResult:
     relationship_count: int
 
     @classmethod
-    def from_json(cls, json: Dict[str, Any]) -> TripletLoadDoneResult:
+    def from_json(cls, json: dict[str, Any]) -> TripletLoadDoneResult:
         return cls(name=json["name"], node_count=json["node_count"], relationship_count=json["relationship_count"])

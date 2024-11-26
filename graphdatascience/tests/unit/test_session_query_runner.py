@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from pandas import DataFrame
 
 from graphdatascience import ServerVersion
@@ -9,7 +7,7 @@ from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 
 
 class FakeArrowClient:
-    def connection_info(self) -> Tuple[str, str]:
+    def connection_info(self) -> tuple[str, str]:
         return "myHost", "1234"
 
     def request_token(self) -> str:

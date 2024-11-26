@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from pandas import DataFrame
 from tenacity import retry, retry_if_result, wait_incrementing
@@ -13,7 +13,7 @@ from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 class ProjectProtocol(ABC):
     @abstractmethod
     def project_params(
-        self, graph_name: str, query: str, job_id: str, params: Dict[str, Any], arrow_config: Dict[str, Any]
+        self, graph_name: str, query: str, job_id: str, params: dict[str, Any], arrow_config: dict[str, Any]
     ) -> CallParameters:
         """Transforms the given parameters into CallParameters that correspond to the right protocol version."""
         pass
@@ -24,7 +24,7 @@ class ProjectProtocol(ABC):
         query_runner: QueryRunner,
         endpoint: str,
         params: CallParameters,
-        yields: Optional[List[str]] = None,
+        yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
     ) -> DataFrame:
@@ -42,7 +42,7 @@ class ProjectProtocol(ABC):
 
 class ProjectProtocolV1(ProjectProtocol):
     def project_params(
-        self, graph_name: str, query: str, job_id: str, params: Dict[str, Any], arrow_config: Dict[str, Any]
+        self, graph_name: str, query: str, job_id: str, params: dict[str, Any], arrow_config: dict[str, Any]
     ) -> CallParameters:
         return CallParameters(
             graph_name=graph_name,
@@ -58,7 +58,7 @@ class ProjectProtocolV1(ProjectProtocol):
         query_runner: QueryRunner,
         endpoint: str,
         params: CallParameters,
-        yields: Optional[List[str]] = None,
+        yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
     ) -> DataFrame:
@@ -68,7 +68,7 @@ class ProjectProtocolV1(ProjectProtocol):
 
 class ProjectProtocolV2(ProjectProtocol):
     def project_params(
-        self, graph_name: str, query: str, job_id: str, params: Dict[str, Any], arrow_config: Dict[str, Any]
+        self, graph_name: str, query: str, job_id: str, params: dict[str, Any], arrow_config: dict[str, Any]
     ) -> CallParameters:
         return CallParameters(
             graph_name=graph_name,
@@ -86,7 +86,7 @@ class ProjectProtocolV2(ProjectProtocol):
         query_runner: QueryRunner,
         endpoint: str,
         params: CallParameters,
-        yields: Optional[List[str]] = None,
+        yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
     ) -> DataFrame:
@@ -96,7 +96,7 @@ class ProjectProtocolV2(ProjectProtocol):
 
 class ProjectProtocolV3(ProjectProtocol):
     def project_params(
-        self, graph_name: str, query: str, job_id: str, params: Dict[str, Any], arrow_config: Dict[str, Any]
+        self, graph_name: str, query: str, job_id: str, params: dict[str, Any], arrow_config: dict[str, Any]
     ) -> CallParameters:
         return CallParameters(
             graph_name=graph_name,
@@ -115,7 +115,7 @@ class ProjectProtocolV3(ProjectProtocol):
         query_runner: QueryRunner,
         endpoint: str,
         params: CallParameters,
-        yields: Optional[List[str]] = None,
+        yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
     ) -> DataFrame:

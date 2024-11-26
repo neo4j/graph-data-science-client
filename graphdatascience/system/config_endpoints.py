@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from pandas import DataFrame
 
@@ -25,7 +25,7 @@ class ConfigProcRunner(IllegalAttrChecker, UncallableNamespace):
     def list(self, key: Optional[str] = None, username: Optional[str] = None) -> DataFrame:
         self._namespace += ".list"
 
-        config: Dict[str, Any] = {}
+        config: dict[str, Any] = {}
 
         if key:
             config["key"] = key

@@ -1,10 +1,10 @@
-from typing import Dict, Optional
+from typing import Optional
 
 from .progress_provider import ProgressProvider, TaskWithProgress
 
 
 class StaticProgressStore:
-    _progress_store: Dict[str, TaskWithProgress] = {}
+    _progress_store: dict[str, TaskWithProgress] = {}
 
     @staticmethod
     def register_task_with_unknown_volume(job_id: str, task_name: str) -> None:

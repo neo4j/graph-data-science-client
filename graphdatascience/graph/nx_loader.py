@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Optional
 
 import networkx as nx
 from pandas import DataFrame
@@ -28,8 +28,8 @@ class NXLoader(UncallableNamespace, IllegalAttrChecker):
         return Graph(graph_name, self._query_runner)
 
     @staticmethod
-    def _attr_to_labels_key(labels_attr: Any, node_id: Any, no_node_labels: Optional[bool]) -> Tuple[str, ...]:
-        node_labels: List[str]
+    def _attr_to_labels_key(labels_attr: Any, node_id: Any, no_node_labels: Optional[bool]) -> tuple[str, ...]:
+        node_labels: list[str]
         if no_node_labels:
             node_labels = ["N"]
         elif isinstance(labels_attr, str):
@@ -45,9 +45,9 @@ class NXLoader(UncallableNamespace, IllegalAttrChecker):
         return tuple(sorted(node_labels))
 
     @staticmethod
-    def _parse_nodes(nx_G: nx.Graph) -> List[DataFrame]:
-        node_dicts_by_labels: Dict[Tuple[str, ...], Dict[str, List[Any]]] = defaultdict(lambda: defaultdict(list))
-        node_props_schema: Dict[Tuple[str, ...], Set[str]] = defaultdict(set)
+    def _parse_nodes(nx_G: nx.Graph) -> list[DataFrame]:
+        node_dicts_by_labels: dict[tuple[str, ...], dict[str, list[Any]]] = defaultdict(lambda: defaultdict(list))
+        node_props_schema: dict[tuple[str, ...], set[str]] = defaultdict(set)
 
         no_node_labels = None
 
@@ -84,9 +84,9 @@ class NXLoader(UncallableNamespace, IllegalAttrChecker):
         return "R" if type_attr is None else type_attr
 
     @staticmethod
-    def _parse_rels(nx_G: nx.Graph) -> List[DataFrame]:
-        rel_dicts_by_types: Dict[str, Dict[str, List[Any]]] = defaultdict(lambda: defaultdict(list))
-        rel_props_schema: Dict[str, Set[str]] = defaultdict(set)
+    def _parse_rels(nx_G: nx.Graph) -> list[DataFrame]:
+        rel_dicts_by_types: dict[str, dict[str, list[Any]]] = defaultdict(lambda: defaultdict(list))
+        rel_props_schema: dict[str, set[str]] = defaultdict(set)
         no_rel_types = None
 
         for edge_data in nx_G.edges(data=True):
@@ -129,7 +129,7 @@ class NXLoader(UncallableNamespace, IllegalAttrChecker):
         ]
 
     @staticmethod
-    def _parse(nx_G: nx.Graph) -> Tuple[List[DataFrame], List[DataFrame]]:
+    def _parse(nx_G: nx.Graph) -> tuple[list[DataFrame], list[DataFrame]]:
         nodes = NXLoader._parse_nodes(nx_G)
         rels = NXLoader._parse_rels(nx_G)
 

@@ -2,7 +2,7 @@ import os
 import pathlib
 import sys
 import warnings
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, List, Optional, Union
 
 import pandas as pd
 from multimethod import multimethod
@@ -69,12 +69,12 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def construct(
         self,
         graph_name: str,
-        nodes: Union[DataFrame, List[DataFrame]],
-        relationships: Optional[Union[DataFrame, List[DataFrame]]] = None,
+        nodes: Union[DataFrame, list[DataFrame]],
+        relationships: Optional[Union[DataFrame, list[DataFrame]]] = None,
         concurrency: int = 4,
-        undirected_relationship_types: Optional[List[str]] = None,
+        undirected_relationship_types: Optional[list[str]] = None,
     ) -> Graph:
-        nodes = nodes if isinstance(nodes, List) else [nodes]
+        nodes = nodes if isinstance(nodes, list) else [nodes]
 
         if isinstance(relationships, DataFrame):
             relationships = [relationships]
@@ -365,7 +365,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         G: Graph,
         properties: Strings,
         entities: Strings,
-        config: Dict[str, Any],
+        config: dict[str, Any],
     ) -> DataFrame:
         params = CallParameters(
             graph_name=G.name(),

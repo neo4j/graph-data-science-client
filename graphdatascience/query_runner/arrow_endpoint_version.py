@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import List
 
 
 class ArrowEndpointVersion(Enum):
@@ -15,7 +14,7 @@ class ArrowEndpointVersion(Enum):
         return self._value_
 
     @staticmethod
-    def from_arrow_info(supported_arrow_versions: List[str]) -> ArrowEndpointVersion:
+    def from_arrow_info(supported_arrow_versions: list[str]) -> ArrowEndpointVersion:
         # Fallback for pre 2.6.0 servers that do not support versions
         if len(supported_arrow_versions) == 0:
             return ArrowEndpointVersion.ALPHA
@@ -31,5 +30,5 @@ class ArrowEndpointVersion(Enum):
 
 
 class UnsupportedArrowEndpointVersion(Exception):
-    def __init__(self, server_version: List[str]) -> None:
+    def __init__(self, server_version: list[str]) -> None:
         super().__init__(self, f"Unsupported Arrow endpoint versions: {server_version}")

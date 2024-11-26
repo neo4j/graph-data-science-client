@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from neo4j.exceptions import Neo4jError
 
@@ -27,13 +27,13 @@ class ProtocolVersionResolver:
             """.strip()
         )
 
-    def _protocol_versions_from_server(self) -> List[ProtocolVersion]:
+    def _protocol_versions_from_server(self) -> list[ProtocolVersion]:
         cached_protocol_versions = self._fetch_from_server()
         cached_protocol_versions.sort(reverse=True, key=lambda x: x.value)
 
         return cached_protocol_versions
 
-    def _fetch_from_server(self) -> List[ProtocolVersion]:
+    def _fetch_from_server(self) -> list[ProtocolVersion]:
         try:
             version_list = []
             for version_string in self._query_runner.call_procedure(
