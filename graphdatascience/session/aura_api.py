@@ -5,6 +5,7 @@ import time
 import warnings
 from collections import defaultdict
 from datetime import timedelta
+from http import HTTPStatus
 from typing import Any, Optional
 from urllib.parse import urlparse
 
@@ -62,7 +63,13 @@ class AuraApi:
                 max_retries=Retry(
                     allowed_methods=["GET", "DELETE"],
                     total=10,
-                    status_forcelist=[429, 500, 502, 503, 504],
+                    status_forcelist=[
+                        HTTPStatus.TOO_MANY_REQUESTS.value,
+                        HTTPStatus.INTERNAL_SERVER_ERROR.value,
+                        HTTPStatus.BAD_GATEWAY.value,
+                        HTTPStatus.SERVICE_UNAVAILABLE.value,
+                        HTTPStatus.GATEWAY_TIMEOUT.value,
+                    ],
                     backoff_factor=0.1,
                 )
             ),
@@ -123,7 +130,7 @@ class AuraApi:
             f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions/{session_id}"
         )
 
-        if response.status_code == 404:
+        if response.status_code == HTTPStatus.NOT_FOUND.value:
             return None
 
         self._check_resp(response)
@@ -187,11 +194,11 @@ class AuraApi:
         )
         self._check_endpoint_deprecation(response)
 
-        if response.status_code == 404:
+        if response.status_code == HTTPStatus.NOT_FOUND.value:
             return False
 
         self._check_status_code(response)
-        return response.status_code == 202
+        return response.status_code == HTTPStatus.ACCEPTED.value
 
     def create_instance(
         self, name: str, memory: SessionMemoryValue, cloud_provider: str, region: str, type: str = "dsenterprise"
@@ -215,7 +222,7 @@ class AuraApi:
     def delete_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = self._request_session.delete(f"{self._base_uri}/v1/instances/{instance_id}")
 
-        if response.status_code == 404:
+        if response.status_code == HTTPStatus.NOT_FOUND.value:
             return None
 
         self._check_resp(response)
@@ -234,7 +241,7 @@ class AuraApi:
     def list_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
         response = self._request_session.get(f"{self._base_uri}/v1/instances/{instance_id}")
 
-        if response.status_code == 404:
+        if response.status_code == HTTPStatus.NOT_FOUND.value:
             return None
 
         self._check_resp(response)
@@ -356,7 +363,13 @@ class AuraApi:
                     max_retries=Retry(
                         allowed_methods=["POST"],  # auth POST request is okay to retry
                         total=5,
-                        status_forcelist=[429, 500, 502, 503, 504],
+                        status_forcelist=[
+                            HTTPStatus.TOO_MANY_REQUESTS.value,
+                            HTTPStatus.INTERNAL_SERVER_ERROR.value,
+                            HTTPStatus.BAD_GATEWAY.value,
+                            HTTPStatus.SERVICE_UNAVAILABLE.value,
+                            HTTPStatus.GATEWAY_TIMEOUT.value,
+                        ],
                         backoff_factor=0.1,
                     )
                 ),
