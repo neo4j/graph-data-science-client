@@ -4,6 +4,7 @@
 ## Breaking changes
 
 * Drop support for Python `3.8` as its EOL
+* Drop support for PyArrow 14
 
 
 ## New features
@@ -20,3 +21,5 @@
 
 
 ## Other changes
+
+* Added support for PyArrow 18
