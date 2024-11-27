@@ -2796,6 +2796,14 @@
   },
   {
     "function": {
+      "name": "gds.prizeSteinerTree.stream",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "DataFrame"
+    },
+    "description": "An approximation algorithm for the prize collector steiner tree problem"
+  },
+  {
+    "function": {
       "name": "gds.randomWalk.mutate",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
