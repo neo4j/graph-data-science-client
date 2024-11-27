@@ -170,8 +170,10 @@ def aura_gds(runner: CollectingQueryRunner, mocker: MockerFixture) -> Generator[
     arrow_info = ArrowInfo(listenAddress="foo.bar", enabled=True, running=True, versions=[])
     runner.add__mock_result("gds.debug.arrow", DataFrame([asdict(arrow_info)]))
 
-    mocker.patch("graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner.create", return_value=runner)
-    mocker.patch("graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner.create_for_session", return_value=runner)
+    mocker.patch("graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner.create_for_db", return_value=runner)
+    mocker.patch(
+        "graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner.create_for_session", return_value=runner
+    )
     mocker.patch("graphdatascience.query_runner.session_query_runner.SessionQueryRunner.create", return_value=runner)
     mocker.patch("graphdatascience.query_runner.arrow_query_runner.ArrowQueryRunner.create", return_value=runner)
     mocker.patch("graphdatascience.query_runner.gds_arrow_client.GdsArrowClient.create", return_value=None)

@@ -69,7 +69,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         if isinstance(db_endpoint, Neo4jQueryRunner):
             db_bolt_query_runner = db_endpoint
         else:
-            db_bolt_query_runner = Neo4jQueryRunner.create(
+            db_bolt_query_runner = Neo4jQueryRunner.create_for_db(
                 db_endpoint.uri,
                 db_endpoint.auth(),
                 aura_ds=True,

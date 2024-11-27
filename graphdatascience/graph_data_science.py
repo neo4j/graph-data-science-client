@@ -76,7 +76,9 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         if isinstance(endpoint, QueryRunner):
             self._query_runner = endpoint
         else:
-            self._query_runner = Neo4jQueryRunner.create(endpoint, auth, aura_ds, database, bookmarks, show_progress)
+            self._query_runner = Neo4jQueryRunner.create_for_db(
+                endpoint, auth, aura_ds, database, bookmarks, show_progress
+            )
 
         self._server_version = self._query_runner.server_version()
 

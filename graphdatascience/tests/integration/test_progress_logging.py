@@ -9,13 +9,13 @@ from graphdatascience.tests.unit.test_session_query_runner import FakeArrowClien
 
 
 def test_disabled_progress_logging(neo4j_driver: Driver) -> None:
-    query_runner = Neo4jQueryRunner.create(neo4j_driver, show_progress=False)
+    query_runner = Neo4jQueryRunner.create_for_db(neo4j_driver, show_progress=False)
     assert query_runner._resolve_show_progress(True) is False
     assert query_runner._resolve_show_progress(False) is False
 
 
 def test_enabled_progress_logging(neo4j_driver: Driver) -> None:
-    query_runner = Neo4jQueryRunner.create(neo4j_driver, show_progress=True)
+    query_runner = Neo4jQueryRunner.create_for_db(neo4j_driver, show_progress=True)
     assert query_runner._resolve_show_progress(True) is True
     assert query_runner._resolve_show_progress(False) is False
 

@@ -28,7 +28,7 @@ class Neo4jQueryRunner(QueryRunner):
     _NEO4J_DRIVER_VERSION = ServerVersion.from_string(neo4j.__version__)
 
     @staticmethod
-    def create(
+    def create_for_db(
         endpoint: Union[str, neo4j.Driver],
         auth: Optional[tuple[str, str]] = None,
         aura_ds: bool = False,
