@@ -4,7 +4,7 @@ import logging
 import re
 import time
 import warnings
-from typing import Any, Optional, Union
+from typing import Any, NamedTuple, Optional, Union
 from uuid import uuid4
 
 import neo4j
@@ -100,7 +100,9 @@ class Neo4jQueryRunner(QueryRunner):
         )
 
     def __run_cypher_simplified_for_query_progress_logger(self, query: str, database: Optional[str]) -> DataFrame:
-        return self.run_cypher(query=query, database=database)
+        # progress logging should not retry a lot as it perodically fetches the latest progress anyway
+        connectivity_retry_config = Neo4jQueryRunner.ConnectivityRetriesConfig(max_retries=2)
+        return self.run_cypher(query=query, database=database, connectivity_retry_config=connectivity_retry_config)
 
     def run_cypher(
         self,
@@ -108,6 +110,7 @@ class Neo4jQueryRunner(QueryRunner):
         params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
+        connectivity_retry_config: Optional[ConnectivityRetriesConfig] = None,
     ) -> DataFrame:
         if params is None:
             params = {}
@@ -115,7 +118,9 @@ class Neo4jQueryRunner(QueryRunner):
         if database is None:
             database = self._database
 
-        self._verify_connectivity(database=database)
+        if connectivity_retry_config is None:
+            connectivity_retry_config = Neo4jQueryRunner.ConnectivityRetriesConfig()
+        self._verify_connectivity(database=database, retry_config=connectivity_retry_config)
 
         with self._driver.session(database=database, bookmarks=self.bookmarks()) as session:
             try:
@@ -307,17 +312,16 @@ class Neo4jQueryRunner(QueryRunner):
     def verify_authentication(self) -> None:
         self._driver.verify_authentication()
 
-    def _verify_connectivity(self, database: Optional[str] = None) -> None:
-        WAIT_TIME = 1
-        MAX_RETRYS = 10 * 60
-        WARN_INTERVAL = 10
-
+    def _verify_connectivity(
+        self, database: Optional[str], retry_config: Neo4jQueryRunner.ConnectivityRetriesConfig
+    ) -> None:
+        # TODO allow for optional func to call (check session status on failure)
         if database is None:
             database = self._database
 
         exception = None
         retrys = 0
-        while retrys < MAX_RETRYS:
+        while retrys < retry_config.max_retries:
             try:
                 if self._NEO4J_DRIVER_VERSION < ServerVersion(5, 0, 0):
                     warnings.filterwarnings(
@@ -338,13 +342,18 @@ class Neo4jQueryRunner(QueryRunner):
                 break
             except neo4j.exceptions.DriverError as e:
                 exception = e
-                if retrys % WARN_INTERVAL == 0:
+                if retrys % retry_config.warn_interval == 0:
                     self._logger.warning("Unable to connect to the Neo4j DBMS. Trying again...")
 
-                time.sleep(WAIT_TIME)
+                time.sleep(retry_config.wait_time)
                 retrys += 1
 
                 continue
 
-        if retrys == MAX_RETRYS:
+        if retrys == retry_config.max_retries:
             raise UnableToConnectError("Unable to connect to the Neo4j DBMS") from exception
+
+    class ConnectivityRetriesConfig(NamedTuple):
+        max_retries: int = 600
+        wait_time: int = 1
+        warn_interval: int = 10
