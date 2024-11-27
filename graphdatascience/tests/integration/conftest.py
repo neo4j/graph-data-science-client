@@ -39,7 +39,7 @@ def neo4j_driver() -> Generator[Driver, None, None]:
 
 @pytest.fixture(scope="package", autouse=False)
 def runner(neo4j_driver: Driver) -> Generator[Neo4jQueryRunner, None, None]:
-    _runner = Neo4jQueryRunner.create(neo4j_driver)
+    _runner = Neo4jQueryRunner.create_for_db(neo4j_driver)
     _runner.set_database(DB)
 
     yield _runner

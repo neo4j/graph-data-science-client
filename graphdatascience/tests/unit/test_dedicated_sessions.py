@@ -710,7 +710,7 @@ def _setup_db_instance(aura_api: AuraApi) -> InstanceCreateDetails:
 
 def patch_neo4j_query_runner(mocker: MockerFixture) -> None:
     mocker.patch(
-        "graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner.create",
+        "graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner.create_for_db",
         lambda *args, **kwargs: kwargs,
     )
     mocker.patch("graphdatascience.session.dedicated_sessions.DedicatedSessions._validate_db_connection")

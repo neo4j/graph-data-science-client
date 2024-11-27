@@ -41,11 +41,9 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
     ) -> AuraGraphDataScience:
         # we need to explicitly set this as the default value is None
         # database in the session is always neo4j
-        session_bolt_query_runner = Neo4jQueryRunner.create(
+        session_bolt_query_runner = Neo4jQueryRunner.create_for_session(
             endpoint=gds_session_connection_info.uri,
             auth=gds_session_connection_info.auth(),
-            aura_ds=True,
-            database="neo4j",
             show_progress=show_progress,
         )
 
@@ -71,7 +69,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         if isinstance(db_endpoint, Neo4jQueryRunner):
             db_bolt_query_runner = db_endpoint
         else:
-            db_bolt_query_runner = Neo4jQueryRunner.create(
+            db_bolt_query_runner = Neo4jQueryRunner.create_for_db(
                 db_endpoint.uri,
                 db_endpoint.auth(),
                 aura_ds=True,

@@ -28,7 +28,7 @@ class Neo4jQueryRunner(QueryRunner):
     _NEO4J_DRIVER_VERSION = ServerVersion.from_string(neo4j.__version__)
 
     @staticmethod
-    def create(
+    def create_for_db(
         endpoint: Union[str, neo4j.Driver],
         auth: Optional[tuple[str, str]] = None,
         aura_ds: bool = False,
@@ -50,6 +50,7 @@ class Neo4jQueryRunner(QueryRunner):
                 bookmarks=bookmarks,
                 config=config,
                 database=database,
+                show_progress=show_progress,
             )
 
         elif isinstance(endpoint, neo4j.Driver):
@@ -59,6 +60,39 @@ class Neo4jQueryRunner(QueryRunner):
 
         else:
             raise ValueError(f"Invalid endpoint type: {type(endpoint)}")
+
+        if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= ServerVersion(5, 21, 0):
+            notifications_logger = logging.getLogger("neo4j.notifications")
+            # the client does not expose YIELD fields so we just skip these warnings for now
+            notifications_logger.addFilter(
+                lambda record: (
+                    "The query used a deprecated field from a procedure" in record.msg and "by 'gds." in record.msg
+                )
+            )
+
+        return query_runner
+
+    @staticmethod
+    def create_for_session(
+        endpoint: str,
+        auth: Optional[tuple[str, str]] = None,
+        show_progress: bool = True,
+    ) -> Neo4jQueryRunner:
+        driver_config: dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
+
+        Neo4jQueryRunner._configure_aura(driver_config)
+
+        driver = neo4j.GraphDatabase.driver(endpoint, auth=auth, **driver_config)
+
+        query_runner = Neo4jQueryRunner(
+            driver,
+            auto_close=True,
+            show_progress=show_progress,
+            bookmarks=None,
+            config=driver_config,
+            database="neo4j",
+            instance_description="GDS Session",
+        )
 
         if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= ServerVersion(5, 21, 0):
             notifications_logger = logging.getLogger("neo4j.notifications")
@@ -85,6 +119,7 @@ class Neo4jQueryRunner(QueryRunner):
         auto_close: bool = False,
         bookmarks: Optional[Any] = None,
         show_progress: bool = True,
+        instance_description: str = "Neo4j DBMS",
     ):
         self._driver = driver
         self._config = config
@@ -98,6 +133,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._progress_logger = QueryProgressLogger(
             self.__run_cypher_simplified_for_query_progress_logger, self.server_version
         )
+        self._instance_description = instance_description
 
     def __run_cypher_simplified_for_query_progress_logger(self, query: str, database: Optional[str]) -> DataFrame:
         # progress logging should not retry a lot as it perodically fetches the latest progress anyway
@@ -213,7 +249,7 @@ class Neo4jQueryRunner(QueryRunner):
                 #    driver.close()
 
                 raise GdsNotFound(
-                    """The Graph Data Science library is not correctly installed on the Neo4j server.
+                    f"""The Graph Data Science library is not correctly installed on the {self._instance_description}.
                     Please refer to https://neo4j.com/docs/graph-data-science/current/installation/.
                     """
                 )
@@ -343,7 +379,7 @@ class Neo4jQueryRunner(QueryRunner):
             except neo4j.exceptions.DriverError as e:
                 exception = e
                 if retrys % retry_config.warn_interval == 0:
-                    self._logger.warning("Unable to connect to the Neo4j DBMS. Trying again...")
+                    self._logger.warning(f"Unable to connect to the {self._instance_description}. Trying again...")
 
                 time.sleep(retry_config.wait_time)
                 retrys += 1
@@ -351,7 +387,7 @@ class Neo4jQueryRunner(QueryRunner):
                 continue
 
         if retrys == retry_config.max_retries:
-            raise UnableToConnectError("Unable to connect to the Neo4j DBMS") from exception
+            raise UnableToConnectError(f"Unable to connect to the {self._instance_description}") from exception
 
     class ConnectivityRetriesConfig(NamedTuple):
         max_retries: int = 600
