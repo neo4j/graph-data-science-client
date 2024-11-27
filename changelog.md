@@ -17,6 +17,7 @@
 ## Improvements
 
 * Inform about Session failures such as `Out of Memory`. `GdsSession::get_or_create` will fail and `GdsSessions::list_sessions` will return the errors in a new field along `errors`.
+* Avoid a query getting stuck on fetching progress logging if the database is unavailable.
 
 
 ## Other changes
