@@ -1560,6 +1560,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.prizeSteinerTree.stream(G: Graph, **config: Any) -> DataFrame
+
+    An approximation algorithm for the prize collector steiner tree problem
+
 .. py:function:: gds.randomWalk.mutate(G: Graph, **config: Any) -> Series[Any]
 
     Random Walk is an algorithm that provides random paths in a graph. It’s similar to how a drunk person traverses a city. The mutate procedure produces the count a node occurs on a random walk.
