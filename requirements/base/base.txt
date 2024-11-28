@@ -1,6 +1,6 @@
 multimethod >= 1.0, < 2.0
 neo4j >= 4.4.12, < 6.0
-numpy < 2.0
+numpy < 3.0
 pandas >= 1.0, < 3.0
 pyarrow >= 15.0.2, < 19.0
 textdistance >= 4.0, < 5.0
