@@ -86,6 +86,14 @@ class DirectSystemEndpoints(CallerBase):
     def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
         return SystemBetaEndpoints(self._query_runner, self._namespace, self._server_version).listProgress(job_id)
 
+    @compatible_with("listMemory", min_inclusive=ServerVersion(2, 13, 0))
+    def listMemory(self) -> DataFrame:
+        return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
+
+    @compatible_with("listMemory.summary", min_inclusive=ServerVersion(2, 13, 0))
+    def listMemorySummary(self) -> DataFrame:
+        return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
+
     @compatible_with("systemMonitor", min_inclusive=ServerVersion(2, 5, 0))
     def systemMonitor(self) -> "Series[Any]":
         return SystemAlphaEndpoints(self._query_runner, self._namespace, self._server_version).systemMonitor()
