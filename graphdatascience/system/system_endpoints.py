@@ -22,6 +22,17 @@ class DebugProcRunner(UncallableNamespace, IllegalAttrChecker):
         return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
 
 
+class ListMemoryProcRunner(UncallableNamespace, IllegalAttrChecker):
+    @compatible_with("listMemory", min_inclusive=ServerVersion(2, 13, 0))
+    def listMemory(self) -> "Series[Any]":
+        return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
+
+    @compatible_with("listMemory.summary", min_inclusive=ServerVersion(2, 13, 0))
+    def summary(self) -> "Series[Any]":
+        self._namespace += ".summary"
+        return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
+
+
 class LicenseProcRunner(UncallableNamespace, IllegalAttrChecker):
     def state(self) -> "Series[Any]":
         self._namespace += ".state"
@@ -86,13 +97,9 @@ class DirectSystemEndpoints(CallerBase):
     def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
         return SystemBetaEndpoints(self._query_runner, self._namespace, self._server_version).listProgress(job_id)
 
-    @compatible_with("listMemory", min_inclusive=ServerVersion(2, 13, 0))
-    def listMemory(self) -> DataFrame:
-        return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
-
-    @compatible_with("listMemory.summary", min_inclusive=ServerVersion(2, 13, 0))
-    def listMemorySummary(self) -> DataFrame:
-        return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
+    @property
+    def listMemory(self) -> ListMemoryProcRunner:
+        return ListMemoryProcRunner(self._query_runner, f"{self._namespace}.debug", self._server_version)
 
     @compatible_with("systemMonitor", min_inclusive=ServerVersion(2, 5, 0))
     def systemMonitor(self) -> "Series[Any]":
