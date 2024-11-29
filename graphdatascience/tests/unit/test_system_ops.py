@@ -24,7 +24,6 @@ def test_systemMonitor(runner: CollectingQueryRunner, gds: GraphDataScience) -> 
     assert runner.last_query() == "CALL gds.systemMonitor()"
     assert runner.last_params() == {}
 
-
 def test_sysInfo(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     gds.debug.sysInfo()
 
