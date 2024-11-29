@@ -67,11 +67,11 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     List progress events for currently running tasks.
 
-.. py:function:: gds.listMemory() -> Series[Any]
+.. py:function:: gds.memory.list() -> Series[Any]
 
    Returns memory details about the running tasks and projected graphs
 
-.. py:function:: gds.listMemory.summary() -> Series[Any]
+.. py:function:: gds.memory.summary() -> Series[Any]
 
    Returns the memory summary of a user
 
