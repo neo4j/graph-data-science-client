@@ -485,9 +485,12 @@ def test_graph_nodeProperties_stream_listNodeLabels_with_seperate_cols(gds_witho
         G, ["x", "y"], concurrency=2, listNodeLabels=True, separate_property_columns=True
     )
 
-    assert list(result.keys()) == ["nodeId", "x", "y", "nodeLabels"]
+    expected_columns = ["nodeId", "x", "y", "nodeLabels"]
+    assert list(result.keys()) == expected_columns
 
-    assert [e for e in result["nodeLabels"]] == [["Node"] for _ in range(6)]
+    assert result.shape == (G.node_count(), len(expected_columns))
+
+    assert [e for e in result["nodeLabels"]] == [["Node"], ["Node"], ["Node"]]
 
 
 def test_graph_streamNodeProperties_with_arrow_separate_property_columns(gds: GraphDataScience) -> None:

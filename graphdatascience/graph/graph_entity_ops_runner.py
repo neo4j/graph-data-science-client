@@ -125,7 +125,11 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
             if "listNodeLabels" in config.keys():
                 # nodeLabels cannot be an index column of the pivot as its not hashable
                 # so we need to manually join it back in
-                labels_df = result[["nodeId", "nodeLabels"]].set_index("nodeId")
+                labels_df = result[["nodeId", "nodeLabels"]]
+                # drop duplicates as for each property we would have one row for each nodeId
+                labels_df = labels_df.drop_duplicates(ignore_index=False, subset=["nodeId"])
+                labels_df.set_index("nodeId", inplace=True)
+
                 wide_result = wide_result.join(labels_df, on="nodeId")
             result = wide_result.reset_index()
             result.columns.name = None
