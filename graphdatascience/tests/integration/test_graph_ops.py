@@ -428,9 +428,8 @@ def test_graph_nodeProperty_fail_on_duplicate_node_properties(gds: GraphDataScie
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
     with pytest.raises(ValueError, match="Duplicate values in db_node_properties."):
-        gds.graph.nodeProperty.stream(
-            G, "x", db_node_properties=["z", "z", "name"], concurrency=2
-        )
+        gds.graph.nodeProperty.stream(G, "x", db_node_properties=["z", "z", "name"], concurrency=2)
+
 
 # @pytest.mark.enterprise
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 2, 0))
@@ -441,7 +440,7 @@ def test_graph_nodeProperties_stream_with_arrow(gds: GraphDataScience) -> None:
     result = gds.graph.nodeProperties.stream(G, ["x", "x", "y"], db_node_properties=["z", "z", "name"], concurrency=2)
 
     assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
-    assert result.shape == (G.node_count() * 4, 3) # 4 properties
+    assert result.shape == (G.node_count() * 4, 3)  # 4 properties
 
     x_values = result[result.nodeProperty == "x"]
     assert {e for e in x_values["propertyValue"]} == {1, 2, 3}
@@ -562,7 +561,9 @@ def test_graph_nodeProperties_stream_without_arrow(gds_without_arrow: GraphDataS
         G, ["x", "x", "y"], db_node_properties=["z", "z", "name"], concurrency=2
     )
 
-    assert {"nodeId", "nodeProperty", "propertyValue", "nodeLabels"} == set(result.keys()) # empty nodeLabels column even if listNodeLabels = False
+    assert {"nodeId", "nodeProperty", "propertyValue", "nodeLabels"} == set(
+        result.keys()
+    )  # empty nodeLabels column even if listNodeLabels = False
     assert result.shape == (G.node_count() * 4, 3 + 1)  # 4 properties
 
     x_values = result[result.nodeProperty == "x"]
@@ -579,18 +580,16 @@ def test_graph_nodeProperties_stream_without_arrow(gds_without_arrow: GraphDataS
     name_values = result[result.nodeProperty == "name"]
     assert {e for e in name_values["propertyValue"]} == {"nodeA", "nodeB", "nodeC"}
 
+
 def test_graph_nodeProperties_fail_on_duplicate_node_properties(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
     with pytest.raises(ValueError, match="Duplicate values in node_properties"):
-        gds.graph.nodeProperties.stream(
-            G, ["x", "x", "y"], db_node_properties=["z", "name"], concurrency=2
-        )
+        gds.graph.nodeProperties.stream(G, ["x", "x", "y"], db_node_properties=["z", "name"], concurrency=2)
 
     with pytest.raises(ValueError, match="Duplicate values in db_node_properties."):
-        gds.graph.nodeProperties.stream(
-            G, ["x", "y"], db_node_properties=["z", "z", "name"], concurrency=2
-        )
+        gds.graph.nodeProperties.stream(G, ["x", "y"], db_node_properties=["z", "z", "name"], concurrency=2)
+
 
 def test_graph_streamNodeProperties_without_arrow_separate_property_columns(
     gds_without_arrow: GraphDataScience,
