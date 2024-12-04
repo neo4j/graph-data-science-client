@@ -70,8 +70,8 @@ For users who are https://neo4j.com/docs/graph-data-science/current/management-o
 In addition to those aforementioned there are five more methods that create graph objects:
 
 * `gds.graph.project.cypher` (This is the Legacy Cypher projection, see <<cypher-projection>> for the new Cypher projection)
-* `gds.beta.graph.subgraph`
-* `gds.beta.graph.generate`
+* `gds.graph.subgraph`
+* `gds.graph.generate`
 * `gds.graph.sample.rwr`
 * `gds.graph.sample.cnarw`
 

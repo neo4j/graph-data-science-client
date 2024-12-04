@@ -84,7 +84,7 @@ print(gds.server_version())
 ----
 from graphdatascience.server_version.server_version import ServerVersion
 
-assert gds.server_version() >= ServerVersion(2, 1, 0)
+assert gds.server_version() >= ServerVersion(2, 6, 0)
 ----
 
 [source, python, role=no-test]
@@ -337,7 +337,7 @@ component_ids = components["propertyValue"].unique()
 
 # Third, we project a subgraph for each component
 component_graphs = [
-    gds.beta.graph.project.subgraph(
+    gds.graph.project.subgraph(
         f"animals_component_{component_id}",
         G_animals,
         f"n.wcc_component = {component_id}",

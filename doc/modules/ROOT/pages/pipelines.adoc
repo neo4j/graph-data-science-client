@@ -87,7 +87,7 @@ gds.run_cypher(
     (d:Person {name: "Chad", fraudster: 1}),
     (e:Person {name: "Dan", fraudster: 0}),
     (f:UnknownPerson {name: "Judy"}),
-  
+
     (a)-[:KNOWS]->(b),
     (a)-[:KNOWS]->(c),
     (a)-[:KNOWS]->(d),
@@ -266,7 +266,7 @@ gds.run_cypher(
     (d:Person {name: "Chad"}),
     (e:Person {name: "Dan"}),
     (f:Person {name: "Judy"}),
-  
+
     (a)-[:KNOWS]->(b),
     (a)-[:KNOWS]->(c),
     (a)-[:KNOWS]->(d),
@@ -435,7 +435,7 @@ gds.run_cypher(
     (d:Person {name: "Chad", age: 44}),
     (e:Person {name: "Dan", age: 60}),
     (f:UnknownPerson {name: "Judy"}),
-  
+
     (a)-[:KNOWS]->(b),
     (a)-[:KNOWS]->(c),
     (a)-[:KNOWS]->(d),
@@ -538,10 +538,10 @@ For instance, supposing we have a pipeline object `pipe`, we could:
 
 [source,python,group=nr-pipe]
 ----
-exists_result = gds.beta.pipeline.exists(pipe.name())
+exists_result = gds.pipeline.exists(pipe.name())
 
 if exists_result["exists"]:
-	gds.beta.pipeline.drop(pipe)  # same as pipe.drop()
+	gds.pipeline.drop(pipe)  # same as pipe.drop()
 ----
 
 A pipeline object that has already been created and is present in the pipeline catalog can be retrieved calling the `get` method with its name.
@@ -549,7 +549,7 @@ For example, we can list from the catalog and use the first pipeline name we fin
 
 [source,python,group=nc-pipe]
 ----
-list_result = gds.beta.pipeline.list()
+list_result = gds.pipeline.list()
 first_pipeline_name = list_result["pipelineName"][0]
 pipe = gds.pipeline.get(first_pipeline_name)
 assert pipe.name() == "my-pipe"

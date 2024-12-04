@@ -76,7 +76,7 @@ https://github.com/neo4j/graph-data-science/releases/tag/2.2.0[GDS
 ----
 from graphdatascience.server_version.server_version import ServerVersion
 
-assert gds.server_version() >= ServerVersion(2, 2, 0)
+assert gds.server_version() >= ServerVersion(2, 6, 0)
 ----
 
 Finally, we import `+json+` to help in writing the Cypher queries used
@@ -221,10 +221,10 @@ We can check that the pipeline has actually been created with the
 [source, python, role=no-test]
 ----
 # List all pipelines
-gds.beta.pipeline.list()
+gds.pipeline.list()
 
 # Alternatively, get the details of a specific pipeline object
-gds.beta.pipeline.list(node_pipeline)
+gds.pipeline.list(node_pipeline)
 ----
 
 == Configuring the pipeline
@@ -455,7 +455,7 @@ print(len(predicted_fastrp))
 Instead of streaming the results, the prediction can be run in
 `+mutate+` mode to be more performant, especially when the predicted
 values are used multiple times. The predicted nodes can be retrieved
-using the `+streamNodeProperty+` method with the `+UnclassifiedPaper+`
+using the `+nodeProperty.stream+` method with the `+UnclassifiedPaper+`
 class.
 
 [source, python, role=no-test]

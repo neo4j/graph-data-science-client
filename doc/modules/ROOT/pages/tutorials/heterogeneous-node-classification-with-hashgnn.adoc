@@ -192,7 +192,7 @@ documentation] for more on this algorithm.
 ----
 # Add a HashGNN node property step to the pipeline
 _ = pipe.addNodeProperty(
-    "beta.hashgnn",
+    "hashgnn",
     mutateProperty="embedding",
     iterations=4,
     heterogeneous=True,

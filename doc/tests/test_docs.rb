@@ -38,7 +38,7 @@ finally:
     for model_info in res["modelInfo"]:
         model = gds.model.get(model_info["modelName"])
         if (model.stored()):
-            gds.alpha.model.delete(model)
+            gds.model.delete(model)
         if (model.exists()):
             model.drop(failIfMissing=True)
     gds.run_cypher("MATCH (n) DETACH DELETE (n)")
