@@ -83,6 +83,9 @@ class GraphNodePropertyRunner(GraphEntityOpsBaseRunner):
     ) -> DataFrame:
         self._namespace += ".stream"
 
+        if len(set(db_node_properties)) != len(db_node_properties):
+            raise ValueError(f"Duplicate values in db_node_properties `{db_node_properties}`.")
+
         result = self._handle_properties(G, node_property, node_labels, config)
 
         return GraphNodePropertiesRunner._process_result(
@@ -103,6 +106,12 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         **config: Any,
     ) -> DataFrame:
         self._namespace += ".stream"
+
+        # find if list contain duplicates
+        if len(set(node_properties)) != len(node_properties):
+            raise ValueError(f"Duplicate values in node_properties `{node_properties}`.")
+        if len(set(db_node_properties)) != len(db_node_properties):
+            raise ValueError(f"Duplicate values in db_node_properties `{db_node_properties}`.")
 
         result = self._handle_properties(G, node_properties, node_labels, config)
 

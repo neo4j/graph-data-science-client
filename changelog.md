@@ -5,6 +5,7 @@
 
 * Drop support for Python `3.8` as its EOL
 * Drop support for PyArrow 14
+* Throw on duplicate node properties passed to `gds.graph.nodeProperties.stream` as this is seen as a bad input. If duplication was intended, this can be done on the Dataframe result.
 
 
 ## New features
