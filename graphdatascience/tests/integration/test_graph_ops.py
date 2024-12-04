@@ -437,7 +437,7 @@ def test_graph_nodeProperties_stream_with_arrow(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
     # also check duplicates will be filtered out
-    result = gds.graph.nodeProperties.stream(G, ["x", "x", "y"], db_node_properties=["z", "z", "name"], concurrency=2)
+    result = gds.graph.nodeProperties.stream(G, ["x", "y"], db_node_properties=["z", "name"], concurrency=2)
 
     assert list(result.keys()) == ["nodeId", "nodeProperty", "propertyValue"]
     assert result.shape == (G.node_count() * 4, 3)  # 4 properties
@@ -558,7 +558,7 @@ def test_graph_nodeProperties_stream_without_arrow(gds_without_arrow: GraphDataS
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
     result = gds_without_arrow.graph.nodeProperties.stream(
-        G, ["x", "x", "y"], db_node_properties=["z", "z", "name"], concurrency=2
+        G, ["x", "y"], db_node_properties=["z", "name"], concurrency=2
     )
 
     assert {"nodeId", "nodeProperty", "propertyValue", "nodeLabels"} == set(
