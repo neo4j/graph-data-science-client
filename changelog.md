@@ -14,6 +14,8 @@
 
 ## Bug fixes
 
+* Fixed a bug for `gds.nodeProperties.stream()` where the result contained duplicate rows if `listNodeLabels=True` and `separate_property_columns=True` is given.
+
 
 ## Improvements
 
