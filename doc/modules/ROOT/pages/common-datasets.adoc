@@ -171,7 +171,7 @@ If the dataset is already found in the `dataset_root_path` however, an internet 
 All OGB datasets are loaded into GDS with orientation `DIRECTED`.
 However, some of the datasets are _effectively undirected_ in the sense that for each relationship, one in the opposite direction between the same nodes also exists.
 The https://ogb.stanford.edu/[Open Graph Benchmark] website informs us on for which of the datasets this is the case.
-If you want the a projected graph to be `UNDIRECTED` in the Neo4j GDS sense of the word, you can modify it with https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/#catalog-graph-relationship-to-undirected-example[`gds.graph.relationships.toUndirected`].
+If you want a projected graph to be `UNDIRECTED` in the Neo4j GDS sense of the word, you can modify it with https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/#catalog-graph-relationship-to-undirected-example[`gds.graph.relationships.toUndirected`].
 ====
 
 [WARNING]

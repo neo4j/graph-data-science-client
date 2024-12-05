@@ -23,16 +23,13 @@ predicting the genre of `+Movie+` nodes
 == Prerequisites
 
 Running this notebook requires a Neo4j database server with a recent
-version (2.3 or newer) of the Neo4j Graph Data Science library (GDS)
+version (2.5 or newer) of the Neo4j Graph Data Science library (GDS)
 plugin installed. We recommend using Neo4j Desktop with GDS, or AuraDS.
-
-Additionally, the version of the `+graphdatascience+` library used must
-be 1.6 or newer.
 
 [source, python, role=no-test]
 ----
 # Install necessary Python dependencies
-%pip install graphdatascience
+%pip install "graphdatascience>=1.6"
 ----
 
 == Setup
@@ -64,9 +61,9 @@ gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 
 [source, python, role=no-test]
 ----
-from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience import ServerVersion
 
-assert gds.server_version() >= ServerVersion(2, 3, 0)
+assert gds.server_version() >= ServerVersion(2, 5, 0)
 ----
 
 == Loading the IMDB dataset

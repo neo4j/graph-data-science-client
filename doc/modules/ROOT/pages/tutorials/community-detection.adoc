@@ -56,9 +56,9 @@ gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH)
 
 [source, python, role=no-test]
 ----
-from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience import ServerVersion
 
-assert gds.server_version() >= ServerVersion(2, 6, 0)
+assert gds.server_version() >= ServerVersion(2, 5, 0)
 ----
 
 == Importing the dataset
@@ -202,7 +202,7 @@ For our further analysis we will work only with that subgraph.
 
 [source, python, role=no-test]
 ----
-largest_component_graph, _ = gds.graph.project.subgraph(
+largest_component_graph, _ = gds.graph.filter(
     "largest_connected_components", G, f"n.componentId={largest_component}", "*"
 )
 largest_component_graph

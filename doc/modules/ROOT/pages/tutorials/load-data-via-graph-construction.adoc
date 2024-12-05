@@ -67,7 +67,7 @@ the `+neo4j+s+` protocol. The client should also include the
 
 [source, python, role=no-test]
 ----
-from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience import ServerVersion
 
 assert gds.server_version() >= ServerVersion(2, 1, 0)
 ----

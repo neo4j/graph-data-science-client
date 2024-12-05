@@ -20,7 +20,7 @@ The notebook exemplifies using a Node Regression pipeline. It also
 contains many examples of using
 
 * Convenience objects
-* Subgraph projection
+* Filtering graphs
 * Graph sample projection
 
 It is written in pure Python, to showcase the GDS Python Client’s
@@ -82,9 +82,9 @@ print(gds.server_version())
 
 [source, python, role=no-test]
 ----
-from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience import ServerVersion
 
-assert gds.server_version() >= ServerVersion(2, 6, 0)
+assert gds.server_version() >= ServerVersion(2, 5, 0)
 ----
 
 [source, python, role=no-test]
@@ -337,7 +337,7 @@ component_ids = components["propertyValue"].unique()
 
 # Third, we project a subgraph for each component
 component_graphs = [
-    gds.graph.project.subgraph(
+    gds.graph.filter(
         f"animals_component_{component_id}",
         G_animals,
         f"n.wcc_component = {component_id}",
