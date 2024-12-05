@@ -32,7 +32,7 @@ CORA sample
 == Prerequisites
 
 Running this notebook requires a Neo4j server with a recent GDS version
-(2.2+) installed. We recommend using Neo4j Desktop with GDS, or AuraDS.
+(2.5+) installed. We recommend using Neo4j Desktop with GDS, or AuraDS.
 
 Also required are of course the Python libraries:
 
@@ -94,9 +94,9 @@ gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 
 [source, python, role=no-test]
 ----
-from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience import ServerVersion
 
-assert gds.server_version() >= ServerVersion(2, 2, 0)
+assert gds.server_version() >= ServerVersion(2, 5, 0)
 ----
 
 == Sampling CORA
@@ -123,7 +123,7 @@ It’s looks correct! Now let’s go ahead and sample the graph.
 [source, python, role=no-test]
 ----
 # We use the random walk with restarts sampling algorithm with default values
-G_sample, _ = gds.alpha.graph.sample.rwr("cora_sample", G, randomSeed=42, concurrency=1)
+G_sample, _ = gds.graph.sample.rwr("cora_sample", G, randomSeed=42, concurrency=1)
 ----
 
 [source, python, role=no-test]
@@ -143,7 +143,7 @@ that we need to train our model.
 [source, python, role=no-test]
 ----
 # Get the relationship data from our sample
-sample_topology_df = gds.beta.graph.relationships.stream(G_sample)
+sample_topology_df = gds.graph.relationships.stream(G_sample)
 ----
 
 [source, python, role=no-test]

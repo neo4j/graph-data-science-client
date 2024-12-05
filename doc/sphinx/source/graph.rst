@@ -159,10 +159,6 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.graph.project.subgraph(graph_name: str, from_G: Graph, node_filter: str, relationship_filter: str, **config: Any,) -> GraphCreateResult
-
-    Filters down a graph projection to a named subgraph projection in the catalog for use by algorithms.
-
 .. deprecated:: 2.5.0
    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.graph.filter` instead.
 
