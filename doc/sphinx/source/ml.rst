@@ -13,6 +13,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Splits a graph into holdout and remaining relationship types and adds them to the graph.
 
+.. py:function:: gds.alpha.ml.splitRelationships.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Splits a graph into holdout and remaining relationship types and adds them to the graph.
+
 .. py:function:: gds.alpha.pipeline.nodeRegression.create(name: str) -> Tuple[NRTrainingPipeline, Series[Any]]
 
     Creates a node regression training pipeline in the pipeline catalog.
