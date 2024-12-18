@@ -102,18 +102,12 @@ class GdsArrowClient:
         self._flight_client = self._instantiate_flight_client()
 
     def _instantiate_flight_client(self) -> flight.FlightClient:
-        print("inside instantiate_flight_client")
         location = flight.Location.for_grpc_tls(self._host, self._port) if self._encrypted else flight.Location.for_grpc_tcp(self._host, self._port)
-        print("after flight location")
         client_options: dict[str, Any] = {"disable_server_verification": self._disable_server_verification}
-        print("after client options init")
         if self._auth:
             client_options["middleware"] = [AuthFactory(self._auth_middleware), UserAgentFactory(useragent=self._user_agent)]
-            print("self. auth middleware")
         if self._tls_root_certs:
             client_options["tls_root_certs"] = self._tls_root_certs
-            print("self.tls roots")
-        print("returning flight client")
         return flight.FlightClient(location, **client_options)
 
     def connection_info(self) -> tuple[str, int]:
@@ -556,30 +550,13 @@ class GdsArrowClient:
         if "_flight_client" in state:
             del state["_flight_client"]
         return state
-    
-    # def copy(self) -> "GDSArrowClient":
-    #     client = GdsArrowClient(
-    #         self._host,
-    #         self._port,
-    #         self._auth,
-    #         self._encrypted,
-    #         self._disable_server_verification,
-    #         self._tls_root_certs,
-    #         self._arrow_endpoint_version,
-    #         self._user_agent
-    #     )
-    #     client.state = self.state
-    #     return client
 
-    
     def _client(self) -> flight.FlightClient:
         """
         Lazy client construction to help pickle this class because a PyArrow
         FlightClient is not serializable.
         """
-        print("checking flight client")
         if not hasattr(self, "_flight_client") or not self._flight_client:
-            print("instantiating flight client")
             self._flight_client = self._instantiate_flight_client()
         return self._flight_client
 
@@ -617,12 +594,8 @@ class GdsArrowClient:
         flight_descriptor = self._versioned_flight_descriptor({"name": graph_name, "entity_type": entity_type})
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
 
-        print(f"before do_put data: {data}")
         client = self._client()
-        print("After flight client instantiation")
         put_stream, ack_stream = client.do_put(upload_descriptor, batches[0].schema)
-
-        print(f"after do_put data: {data}")
 
         @retry(
             stop=(stop_after_delay(10) | stop_after_attempt(5)),
@@ -638,12 +611,10 @@ class GdsArrowClient:
 
         try:
             with put_stream:
-                for idx, partition in enumerate(batches):
-                    print(f"batch {idx}")
+                for partition in batches:
                     upload_batch(partition)
                     ack_stream.read()
                     progress_callback(partition.num_rows)
-            print(f"upload completed for {data}")
         except Exception as e:
             GdsArrowClient.handle_flight_error(e)
 
