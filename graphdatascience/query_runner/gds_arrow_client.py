@@ -102,10 +102,17 @@ class GdsArrowClient:
         self._flight_client = self._instantiate_flight_client()
 
     def _instantiate_flight_client(self) -> flight.FlightClient:
-        location = flight.Location.for_grpc_tls(self._host, self._port) if self._encrypted else flight.Location.for_grpc_tcp(self._host, self._port)
+        location = (
+            flight.Location.for_grpc_tls(self._host, self._port)
+            if self._encrypted
+            else flight.Location.for_grpc_tcp(self._host, self._port)
+        )
         client_options: dict[str, Any] = {"disable_server_verification": self._disable_server_verification}
         if self._auth:
-            client_options["middleware"] = [AuthFactory(self._auth_middleware), UserAgentFactory(useragent=self._user_agent)]
+            client_options["middleware"] = [
+                AuthFactory(self._auth_middleware),
+                UserAgentFactory(useragent=self._user_agent),
+            ]
         if self._tls_root_certs:
             client_options["tls_root_certs"] = self._tls_root_certs
         return flight.FlightClient(location, **client_options)
@@ -543,7 +550,7 @@ class GdsArrowClient:
             A callback function that is called with the number of rows uploaded after each batch
         """
         self._upload_data(graph_name, "triplet", triplet_data, batch_size, progress_callback)
-        
+
     def __getstate__(self) -> Dict[str, Any]:
         state = self.__dict__.copy()
         # Remove the FlightClient as it isn't serializable
