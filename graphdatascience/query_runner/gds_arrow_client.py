@@ -7,7 +7,7 @@ import time
 import warnings
 from dataclasses import dataclass
 from types import TracebackType
-from typing import Any, Callable, Iterable, Optional, Type, Union, Dict
+from typing import Any, Callable, Dict, Iterable, Optional, Type, Union
 
 import pyarrow
 from neo4j.exceptions import ClientError
