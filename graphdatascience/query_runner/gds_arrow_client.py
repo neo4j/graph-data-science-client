@@ -96,8 +96,6 @@ class GdsArrowClient:
 
         if auth:
             self._auth_middleware = AuthMiddleware(auth)
-            if not self._user_agent:
-                self._user_agent = f"neo4j-graphdatascience-v{__version__} pyarrow-v{arrow_version}"
 
         self._flight_client = self._instantiate_flight_client()
 
@@ -109,9 +107,13 @@ class GdsArrowClient:
         )
         client_options: dict[str, Any] = {"disable_server_verification": self._disable_server_verification}
         if self._auth:
+            user_agent = f"neo4j-graphdatascience-v{__version__} pyarrow-v{arrow_version}"
+            if self._user_agent:
+                user_agent = self._user_agent
+
             client_options["middleware"] = [
                 AuthFactory(self._auth_middleware),
-                UserAgentFactory(useragent=self._user_agent),
+                UserAgentFactory(useragent=user_agent),
             ]
         if self._tls_root_certs:
             client_options["tls_root_certs"] = self._tls_root_certs
