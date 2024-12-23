@@ -216,6 +216,14 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.hashgnn.write(G: Graph, **config: Any) -> DataFrame
+
+    HashGNN creates node embeddings by hashing and message passing.
+
+.. py:function:: gds.hashgnn.write.estimate(G: Graph, **config: Any) -> DataFrame
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.node2vec.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The Node2Vec algorithm computes embeddings for nodes based on random walks.
