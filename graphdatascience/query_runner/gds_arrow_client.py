@@ -654,8 +654,9 @@ class GdsArrowClient:
 
         ticket = flight.Ticket(json.dumps(payload).encode("utf-8"))
 
+        client = self._client()
         try:
-            get = self._flight_client.do_get(ticket)
+            get = client.do_get(ticket)
             arrow_table = get.read_all()
         except Exception as e:
             self.handle_flight_error(e)
