@@ -140,7 +140,8 @@ class GdsArrowClient:
             a token from the server and returns it.
         """
         if self._auth:
-            self._flight_client.authenticate_basic_token(self._auth[0], self._auth[1])
+            client = self._client()
+            client.authenticate_basic_token(self._auth[0], self._auth[1])
             return self._auth_middleware.token()
         else:
             return "IGNORED"
@@ -684,10 +685,11 @@ class GdsArrowClient:
         exception_value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:
-        self._flight_client.close()
+        self.close()
 
     def close(self) -> None:
-        self._flight_client.close()
+        if self._flight_client:
+            self._flight_client.close()
 
     def _versioned_action_type(self, action_type: str) -> str:
         return self._arrow_endpoint_version.prefix() + action_type
