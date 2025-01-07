@@ -8,7 +8,7 @@ content:
   - url: ../
     edit_url: '{web_url}/tree/{refname}/{path}'
     start_path: doc
-    branches: ['1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9', '1.10', '1.11', '1.12', 'main']
+    branches: ['1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9', '1.10', '1.11', '1.12', '1.13', 'main']
     include: doc/
     exclude:
     - '!**/_includes/*'
@@ -57,8 +57,8 @@ asciidoc:
     # sectnums: true, removed so they are off by default
     # sectnumlevel: 3,
     experimental: ''
-    copyright: 2023
+    copyright: 2025
     common-license-page-uri: https://neo4j.com/docs/license/
     operations-manual-base-uri: https://neo4j.com/docs/operations-manual/
     neo4j-docs-base-uri: https://neo4j.com/docs
-    api-version: 1.13-preview
+    api-version: 1.14-preview
