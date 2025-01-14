@@ -24,7 +24,7 @@ class SessionInfo:
         created_at (datetime): The date the session was created.
         user_id (str): The Aura console user-id of the user who created the session.
         cloud_location (Optional[CloudLocation]): The provider and region in which the session is located at.
-        ttl (Optional[timedelta]): The time until the session is deleted if unused. The TTL gets renewed on every activity.
+        ttl (Optional[timedelta]): The time until the session is deleted if unused. The TTL gets renewed on every activity. Rounded down to the nearest minute.
         errors (list[SessionError]): The list of errors related to the session.
     """
 
