@@ -11,7 +11,7 @@ This Jupyter notebook is hosted
 https://github.com/neo4j/graph-data-science-client/blob/main/examples/fastrp-and-knn.ipynb[here]
 in the Neo4j Graph Data Science Client Github repository.
 
-The notebook exemplifies how to use the `+graphdatascience+` Python
+The notebook exemplifies how to use the `graphdatascience` Python
 library to operate Neo4j GDS. It shows an adapted version of the FastRP
 and kNN end-to-end example from the GDS Manual, found
 https://neo4j.com/docs/graph-data-science/current/end-to-end-examples/fastrp-knn-example[here].
@@ -33,11 +33,11 @@ one of the customers will be recommended to the other.
 == Prerequisites
 
 Running this notebook requires a Neo4j server with a recent version
-(2.0+) of GDS installed. We recommend using Neo4j Desktop with GDS, or
-AuraDS.
+(2.0{plus}) of GDS installed. We recommend using Neo4j Desktop with GDS,
+or AuraDS.
 
-The `+graphdatascience+` Python library needs to be installed as well.
-See the examples in the Setup section below and in the
+The `graphdatascience` Python library needs to be installed as well. See
+the examples in the Setup section below and in the
 https://neo4j.com/docs/graph-data-science-client/current/installation/[client
 installation instructions].
 
@@ -80,7 +80,7 @@ assert gds.server_version() >= ServerVersion(1, 8, 0)
 == Example graph creation
 
 We now create a graph of products and customers in the database. The
-`+amount+` relationship property represents the average weekly amount of
+`amount` relationship property represents the average weekly amount of
 money spent by a customer on a given product.
 
 [source, python, role=no-test]
@@ -165,10 +165,10 @@ print(f"Graph '{G.name()}' node labels: {G.node_labels()}")
 Next we use the
 https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/fastrp/[FastRP
 algorithm] to generate node embeddings that capture topological
-information from the graph. We choose to work with
-`+embeddingDimension+` set to 4 which is sufficient since our example
-graph is very small. The `+iterationWeights+` are chosen empirically to
-yield sensible results. Please see
+information from the graph. We choose to work with `embeddingDimension`
+set to 4 which is sufficient since our example graph is very small. The
+`iterationWeights` are chosen empirically to yield sensible results.
+Please see
 https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/fastrp/#algorithms-embeddings-fastrp-syntax[the
 syntax section of the FastRP documentation] for more information on
 these parameters.
@@ -212,11 +212,11 @@ print(f"Number of embedding vectors produced: {result['nodePropertiesWritten']}"
 Now we can run
 https://neo4j.com/docs/graph-data-science/current/algorithms/knn/[kNN]
 to identify similar nodes by using the node embeddings that we generated
-with FastRP as `+nodeProperties+`. Since we are working with a small
-graph, we can set `+sampleRate+` to 1 and `+deltaThreshold+` to 0
-without having to worry about long computation times. The
-`+concurrency+` parameter is set to 1 (along with the fixed
-`+randomSeed+`) in order to get a deterministic result. Please see
+with FastRP as `nodeProperties`. Since we are working with a small
+graph, we can set `sampleRate` to 1 and `deltaThreshold` to 0 without
+having to worry about long computation times. The `concurrency`
+parameter is set to 1 (along with the fixed `randomSeed`) in order to
+get a deterministic result. Please see
 https://neo4j.com/docs/graph-data-science/current/algorithms/knn/#algorithms-knn-syntax[the
 syntax section of the kNN documentation] for more information on these
 parameters.
@@ -252,10 +252,10 @@ paths between nodes leading to many similar FastRP node embeddings.
 == Exploring the results
 
 Let us now inspect the results of our kNN call by using Cypher. We can
-use the `+SIMILARITY+` relationship type to filter out the relationships
+use the `SIMILARITY` relationship type to filter out the relationships
 we are interested in. And since we just care about similarities between
 people for our product recommendation engine, we make sure to only match
-nodes with the `+Person+` label.
+nodes with the `Person` label.
 
 Please see https://neo4j.com/docs/cypher-manual/current/[the Cypher
 manual] for documentation on how to use Cypher.
@@ -271,23 +271,23 @@ gds.run_cypher(
 )
 ----
 
-Our kNN results indicate among other things that the `+Person+` nodes
-named "`Annie`" and "`Matt`" are very similar. Looking at the `+BUYS+`
+Our kNN results indicate among other things that the `Person` nodes
+named "`Annie`" and "`Matt`" are very similar. Looking at the `BUYS`
 relationships for these two nodes we can see that such a conclusion
 makes sense. They both buy three products, two of which are the same
-(`+Product+` nodes named "`Cucumber`" and "`Tomatoes`") for both people
+(`Product` nodes named "`Cucumber`" and "`Tomatoes`") for both people
 and with similar amounts. We can therefore have high confidence in our
 approach.
 
 == Making recommendations
 
-Using the information we derived that the `+Person+` nodes named
-"`Annie`" and "`Matt`" are similar, we can make product recommendations
-for each of them. Since they are similar, we can assume that products
-purchased by only one of the people may be of interest to buy also for
-the other person not already buying the product. By this principle we
-can derive product recommendations for the `+Person+` named "`Matt`"
-using a simple Cypher query.
+Using the information we derived that the `Person` nodes named "`Annie`"
+and "`Matt`" are similar, we can make product recommendations for each
+of them. Since they are similar, we can assume that products purchased
+by only one of the people may be of interest to buy also for the other
+person not already buying the product. By this principle we can derive
+product recommendations for the `Person` named "`Matt`" using a simple
+Cypher query.
 
 [source, python, role=no-test]
 ----
@@ -326,5 +326,5 @@ derive some sensible product recommendations for a customer in our small
 example.
 
 To make sure to get similarities to other customers for every customer
-in our graph with kNN, we could play around with increasing the `+topK+`
+in our graph with kNN, we could play around with increasing the `topK`
 parameter.
