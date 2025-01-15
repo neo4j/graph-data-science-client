@@ -7,6 +7,7 @@ from typing import Optional
 class TaskWithProgress:
     task_name: str
     progress_percent: str
+    status: str
 
 
 class ProgressProvider(ABC):
