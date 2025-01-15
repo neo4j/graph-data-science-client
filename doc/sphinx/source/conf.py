@@ -5,13 +5,15 @@
 import os
 import sys
 
+from graphdatascience import __version__
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "Neo4j Graph Data Science Python Client"
 copyright = "2024, Neo4j"
 author = "Neo4j"
-version = "1.11"
+version = __version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
