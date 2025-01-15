@@ -134,7 +134,7 @@ The script `../scripts/nb2doc/convert.sh` can be used:
 * to generate documents from new notebooks;
 * to ensure that any changes to the existing notebooks are reflected in the existing documents (for instance in a CI setting).
 
-The script must be run from the project root directory and requires [Pandoc](https://pandoc.org/) to be already installed. The latest supported version of Pandoc is 3.5
+The script must be run from the project root directory and requires [Pandoc](https://pandoc.org/) to be already installed. The latest supported version of Pandoc is 3.6.2
 
 ```bash
 ./scripts/nb2doc/convert.sh

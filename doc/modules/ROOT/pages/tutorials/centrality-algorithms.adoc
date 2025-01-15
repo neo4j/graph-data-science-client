@@ -13,7 +13,7 @@ in the Neo4j Graph Data Science Client Github repository.
 
 Centrality algorithms are used to understand the role or influence of
 particular nodes in a graph. The notebook shows the application of
-centrality algorithms using the `+graphdatascience+` library on the
+centrality algorithms using the `graphdatascience` library on the
 Airline travel reachability network dataset that can be downloaded
 https://snap.stanford.edu/data/reachability.html[here].
 
@@ -64,10 +64,10 @@ assert gds.server_version() >= ServerVersion(1, 8, 0)
 == Importing the dataset
 
 We import the dataset as a pandas dataframe first. We deal with two
-files here. The file `+reachability-meta.csv.gz+` stores the names of
-the cities and their information while the file `+reachability.txt.gz+`
-stores the edges of the graph. An edge exists from city `+i+` to city
-`+j+` if the estimated airline travel time is less than a threshold.
+files here. The file `reachability-meta.csv.gz` stores the names of the
+cities and their information while the file `reachability.txt.gz` stores
+the edges of the graph. An edge exists from city `i` to city `j` if the
+estimated airline travel time is less than a threshold.
 
 [source, python, role=no-test]
 ----
@@ -88,11 +88,11 @@ routes_df = pd.read_csv(
 routes_df.head()
 ----
 
-Since this graph is very small, a straight-forward Cypher `+UNWIND+`
-query is the simplest way to create our graph in the database.
+Since this graph is very small, a straight-forward Cypher `UNWIND` query
+is the simplest way to create our graph in the database.
 
 Larger graphs may need a more sophisticated importing technique like
-batching, `+neo4j-admin import+` or Arrow `+CREATE DATABASE+`.
+batching, `neo4j-admin import` or Arrow `CREATE DATABASE`.
 
 [source, python, role=no-test]
 ----
