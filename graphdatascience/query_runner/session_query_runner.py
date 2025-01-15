@@ -141,6 +141,7 @@ class SessionQueryRunner(QueryRunner):
         project_params = project_protocol.project_params(graph_name, query, job_id, params, arrow_config)
 
         try:
+
             def run_projection() -> DataFrame:
                 return project_protocol.run_projection(
                     self._db_query_runner, endpoint, project_params, yields, database, logging
