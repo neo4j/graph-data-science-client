@@ -22,6 +22,7 @@ class GraphProjectRemoteRunner(IllegalAttrChecker):
         undirected_relationship_types: Optional[list[str]] = None,
         inverse_indexed_relationship_types: Optional[list[str]] = None,
         batch_size: Optional[int] = None,
+        logging: bool = True,
     ) -> GraphCreateResult:
         if inverse_indexed_relationship_types is None:
             inverse_indexed_relationship_types = []
@@ -45,5 +46,6 @@ class GraphProjectRemoteRunner(IllegalAttrChecker):
         result = self._query_runner.call_procedure(
             endpoint=SessionQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME,
             params=params,
+            logging=True,
         ).squeeze()
         return GraphCreateResult(Graph(graph_name, self._query_runner), result)

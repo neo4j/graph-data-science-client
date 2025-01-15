@@ -13,7 +13,6 @@ from graphdatascience.server_version.server_version import ServerVersion
 from ..call_parameters import CallParameters
 from ..session.dbms.protocol_resolver import ProtocolVersionResolver
 from .gds_arrow_client import GdsArrowClient
-from .progress.static_progress_provider import StaticProgressStore
 from .protocol.project_protocols import ProjectProtocol
 from .protocol.write_protocols import WriteProtocol
 from .query_runner import QueryRunner
@@ -142,11 +141,15 @@ class SessionQueryRunner(QueryRunner):
         project_params = project_protocol.project_params(graph_name, query, job_id, params, arrow_config)
 
         try:
-            StaticProgressStore.register_task_with_unknown_volume(job_id, "Project from remote database")
+            def run_projection() -> DataFrame:
+                return project_protocol.run_projection(
+                    self._db_query_runner, endpoint, project_params, yields, database, logging
+                )
 
-            return project_protocol.run_projection(
-                self._db_query_runner, endpoint, project_params, yields, database, logging
-            )
+            if self._resolve_show_progress(logging):
+                return self._progress_logger.run_with_progress_logging(run_projection, job_id, database)
+            else:
+                return run_projection()
         except Exception as e:
             GdsArrowClient.handle_flight_error(e)
             raise e  # above should already raise

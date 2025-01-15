@@ -14,5 +14,7 @@
 
 ## Improvements
 
+* Display progress bar for remote projection and open-ended tasks.
+
 
 ## Other changes
