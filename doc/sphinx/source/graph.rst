@@ -91,7 +91,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Delete the relationship type for a given graph stored in the graph-catalog.
 
-.. py:function:: gds.graph.drop(G: Graph,failIfMissing: bool = False,dbName: str = "",username: Optional[str] = None,) -> Optional[Series[Any]]
+.. py:function:: gds.graph.drop(G: Union[Graph | str], failIfMissing: bool = False,dbName: str = "",username: Optional[str] = None,) -> Optional[Series[Any]]
 
     Drops a named graph from the catalog and frees up the resources it occupies.
 
