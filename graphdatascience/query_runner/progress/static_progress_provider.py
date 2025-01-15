@@ -8,7 +8,7 @@ class StaticProgressStore:
 
     @staticmethod
     def register_task_with_unknown_volume(job_id: str, task_name: str) -> None:
-        StaticProgressStore._progress_store[job_id] = TaskWithProgress(task_name, "n/a")
+        StaticProgressStore._progress_store[job_id] = TaskWithProgress(task_name, "n/a", "RUNNING")
 
     @staticmethod
     def get_task_with_volume(job_id: str) -> TaskWithProgress:

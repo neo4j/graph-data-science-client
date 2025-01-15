@@ -28,9 +28,9 @@ class QueryProgressProvider(ProgressProvider):
             + " RETURN taskName, progress"
             + " LIMIT 1",
             database,
-        )
+        )[0]
 
-        progress_percent = progress["progress"][0]
-        root_task_name = progress["taskName"][0].split("|--")[-1][1:]
+        progress_percent = progress["progress"]
+        root_task_name = progress["taskName"].split("|--")[-1][1:]
 
-        return TaskWithProgress(root_task_name, progress_percent)
+        return TaskWithProgress(root_task_name, progress_percent, progress["status"])

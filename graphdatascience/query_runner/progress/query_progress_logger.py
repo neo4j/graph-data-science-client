@@ -68,15 +68,22 @@ class QueryProgressLogger:
                 has_relative_progress = progress_percent != "n/a"
                 if pbar is None:
                     if has_relative_progress:
-                        total = 100
+                        pbar = tqdm(total=100, unit="%", desc=root_task_name, maxinterval=self._LOG_POLLING_INTERVAL)
                     else:
-                        total = None
-                    pbar = tqdm(total=total, unit="%", desc=root_task_name, maxinterval=self._LOG_POLLING_INTERVAL)
+                        # TODO add {n_fmt} once task_with_progress provides the absolute progress
+                        pbar = tqdm(
+                            total=None,
+                            unit="",
+                            desc=root_task_name,
+                            maxinterval=self._LOG_POLLING_INTERVAL,
+                            bar_format="{desc} [elapsed: {elapsed} {postfix}]",
+                        )
 
                 if has_relative_progress:
                     parsed_progress = float(progress_percent[:-1])
                     new_progress = parsed_progress - pbar.n
                     pbar.update(new_progress)
+                    pbar.set_postfix_str(f"status: {task_with_progress.status}")
             except Exception as e:
                 # Do nothing if the procedure either:
                 # * has not started yet,
@@ -92,8 +99,5 @@ class QueryProgressLogger:
         if pbar is not None:
             if pbar.total is not None:
                 pbar.update(pbar.total - pbar.n)
-            elif pbar.n == 0:
-                # have at least one update to the progress bar
-                pbar.update(1)
-            pbar.set_postfix_str("Finished")
+            pbar.set_postfix_str("status: finished")
             pbar.refresh()
