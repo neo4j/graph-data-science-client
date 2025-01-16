@@ -204,3 +204,19 @@ def test_remote_write_back_relationship_property_from_pathfinding_algo(
     )
 
     assert result["relationshipsWritten"] == 1
+
+
+@pytest.mark.cloud_architecture
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
+def test_empty_graph_write_back(
+    gds_with_cloud_setup: AuraGraphDataScience,
+) -> None:
+    G, result = gds_with_cloud_setup.graph.project(
+        GRAPH_NAME, "MATCH (n:MISSING) RETURN gds.graph.project.remote(n, null)"
+    )
+
+    assert G.node_count() == 0
+
+    result = gds_with_cloud_setup.wcc.write(G, writeProperty="wcc")
+
+    assert result["relationshipsWritten"] == 0

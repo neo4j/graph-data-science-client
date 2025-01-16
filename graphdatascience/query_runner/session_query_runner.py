@@ -195,10 +195,19 @@ class SessionQueryRunner(QueryRunner):
         def run_write_back() -> DataFrame:
             return write_protocol.run_write_back(self._db_query_runner, write_back_params, yields)
 
-        if self._resolve_show_progress(logging):
-            database_write_result = self._progress_logger.run_with_progress_logging(run_write_back, job_id, database)
-        else:
-            database_write_result = run_write_back()
+        try:
+            if self._resolve_show_progress(logging):
+                database_write_result = self._progress_logger.run_with_progress_logging(
+                    run_write_back, job_id, database
+                )
+            else:
+                database_write_result = run_write_back()
+        except Exception as e:
+            # catch the case nothing was needed to write-back (empty graph)
+            # once we have the Arrow Endpoints V2, we could catch by first checking the jobs summary
+            if "No entry with job id" in str(e) and gds_write_result.get("writeMillis", -1) == 0:
+                return gds_write_result
+            raise e
 
         write_millis = (time.time() - write_back_start) * 1000
         gds_write_result["writeMillis"] = write_millis
