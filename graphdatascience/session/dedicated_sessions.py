@@ -24,7 +24,10 @@ class DedicatedSessions:
         self._aura_api = aura_api
 
     def estimate(
-        self, node_count: int, relationship_count: int, algorithm_categories: Optional[list[AlgorithmCategory]] = None
+        self,
+        node_count: int,
+        relationship_count: int,
+        algorithm_categories: Optional[list[AlgorithmCategory]] = None,
     ) -> SessionMemory:
         if algorithm_categories is None:
             algorithm_categories = []
@@ -56,6 +59,7 @@ class DedicatedSessions:
         db_connection: DbmsConnectionInfo,
         ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
+        timeout: Optional[int] = 300,
     ) -> AuraGraphDataScience:
         db_runner = Neo4jQueryRunner.create_for_db(
             endpoint=db_connection.uri,
@@ -83,7 +87,9 @@ class DedicatedSessions:
 
         connection_url = session_details.bolt_connection_url()
         if session_details.status != "Ready":
-            wait_result = self._aura_api.wait_for_session_running(session_id)
+            if timeout == 0:
+                raise RuntimeError(f"Failed to get or create session `{session_name}`.")
+            wait_result = self._aura_api.wait_for_session_running(session_id, max_wait_time=timeout)
             if err := wait_result.error:
                 raise RuntimeError(f"Failed to get or create session `{session_name}`: {err}")
 
@@ -93,7 +99,11 @@ class DedicatedSessions:
             password=password,
         )
 
-        return self._construct_client(session_id=session_id, session_connection=session_connection, db_runner=db_runner)
+        return self._construct_client(
+            session_id=session_id,
+            session_connection=session_connection,
+            db_runner=db_runner,
+        )
 
     def delete(self, *, session_name: Optional[str] = None, session_id: Optional[str] = None) -> bool:
         if not session_name and not session_id:
@@ -160,13 +170,20 @@ class DedicatedSessions:
         # If cloud location is provided we go for self managed DBs path
         if cloud_location:
             return self._aura_api.get_or_create_session(
-                name=session_name, pwd=pwd, memory=memory, ttl=ttl, cloud_location=cloud_location
+                name=session_name,
+                pwd=pwd,
+                memory=memory,
+                ttl=ttl,
+                cloud_location=cloud_location,
             )
         else:
             return self._aura_api.get_or_create_session(name=session_name, dbid=dbid, pwd=pwd, memory=memory, ttl=ttl)
 
     def _construct_client(
-        self, session_id: str, session_connection: DbmsConnectionInfo, db_runner: Neo4jQueryRunner
+        self,
+        session_id: str,
+        session_connection: DbmsConnectionInfo,
+        db_runner: Neo4jQueryRunner,
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience.create(
             gds_session_connection_info=session_connection,

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import math
 import time
 import warnings
 from collections import defaultdict
@@ -168,6 +169,8 @@ class AuraApi:
         max_wait_time: float = 300,
     ) -> WaitResult:
         waited_time = 0.0
+        if max_wait_time == -1:
+            max_wait_time = math.inf
         while waited_time < max_wait_time:
             session = self.get_session(session_id)
             if session is None:
@@ -186,7 +189,12 @@ class AuraApi:
             time.sleep(sleep_time)
             sleep_time = min(sleep_time * 2, max_sleep_time, max_wait_time - waited_time)
 
-        return WaitResult.from_error(f"Session `{session_id}` is not running after {waited_time} seconds")
+        return WaitResult.from_error(
+            f"Session `{session_id}` is not running after {waited_time} seconds.\n"
+            "\tThe session may become available at a later time.\n"
+            f'\tConsider running `sessions.delete(session_id="{session_id}")` '
+            "to avoid resource leakage."
+        )
 
     def delete_session(self, session_id: str) -> bool:
         response = self._request_session.delete(

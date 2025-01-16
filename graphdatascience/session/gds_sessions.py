@@ -53,7 +53,10 @@ class GdsSessions:
         self._impl: DedicatedSessions = DedicatedSessions(aura_api)
 
     def estimate(
-        self, node_count: int, relationship_count: int, algorithm_categories: Optional[list[AlgorithmCategory]] = None
+        self,
+        node_count: int,
+        relationship_count: int,
+        algorithm_categories: Optional[list[AlgorithmCategory]] = None,
     ) -> SessionMemory:
         """
         Estimates the memory required for a session with the given node and relationship counts.
@@ -86,6 +89,7 @@ class GdsSessions:
         db_connection: DbmsConnectionInfo,
         ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
+        timeout: Optional[int] = 300,
     ) -> AuraGraphDataScience:
         """
         Retrieves an existing session with the given session name and database connection,
@@ -98,13 +102,16 @@ class GdsSessions:
             session_name (str): The name of the session.
             memory (SessionMemory): The size of the session specified by memory.
             db_connection (DbmsConnectionInfo): The database connection information.
-            ttl: Optional[timedelta]: The sessions time to live after inactivity in seconds.
+            ttl: (Optional[timedelta]): The sessions time to live after inactivity in seconds.
             cloud_location (Optional[CloudLocation]): The cloud location. Required if the GDS session is for a self-managed database.
+            timeout (Optional[int]): The timeout when waiting for session to be ready. If session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation. If value is set to `0` method will return immediately. If it is set to `-1` it will wait forever.
 
         Returns:
             AuraGraphDataScience: The session.
         """
-        return self._impl.get_or_create(session_name, memory, db_connection, ttl=ttl, cloud_location=cloud_location)
+        return self._impl.get_or_create(
+            session_name, memory, db_connection, ttl=ttl, cloud_location=cloud_location, timeout=timeout
+        )
 
     def delete(self, *, session_name: Optional[str] = None, session_id: Optional[str] = None) -> bool:
         """
