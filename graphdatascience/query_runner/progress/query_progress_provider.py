@@ -28,7 +28,7 @@ class QueryProgressProvider(ProgressProvider):
             + " RETURN taskName, progress, status"
             + " LIMIT 1",
             database,
-        ).squeeze() # expect at exactly one row (query will fail if not existing)
+        ).squeeze()  # expect at exactly one row (query will fail if not existing)
 
         progress_percent = progress["progress"]
         root_task_name = progress["taskName"].split("|--")[-1][1:]
