@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import math
 import warnings
 from datetime import datetime, timedelta, timezone
 from typing import Optional
@@ -59,7 +60,7 @@ class DedicatedSessions:
         db_connection: DbmsConnectionInfo,
         ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
-        timeout: Optional[int] = 300,
+        timeout: Optional[int] = None,
     ) -> AuraGraphDataScience:
         db_runner = Neo4jQueryRunner.create_for_db(
             endpoint=db_connection.uri,
@@ -87,9 +88,8 @@ class DedicatedSessions:
 
         connection_url = session_details.bolt_connection_url()
         if session_details.status != "Ready":
-            if timeout == 0:
-                raise RuntimeError(f"Failed to get or create session `{session_name}`.")
-            wait_result = self._aura_api.wait_for_session_running(session_id, max_wait_time=timeout)
+            max_wait_time = float(timeout) if timeout is not None else math.inf
+            wait_result = self._aura_api.wait_for_session_running(session_id, max_wait_time=max_wait_time)
             if err := wait_result.error:
                 raise RuntimeError(f"Failed to get or create session `{session_name}`: {err}")
 

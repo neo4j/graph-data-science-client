@@ -166,11 +166,9 @@ class AuraApi:
         session_id: str,
         sleep_time: float = 0.2,
         max_sleep_time: float = 10,
-        max_wait_time: float = 300,
+        max_wait_time: float = math.inf,
     ) -> WaitResult:
         waited_time = 0.0
-        if max_wait_time == -1:
-            max_wait_time = math.inf
         while waited_time < max_wait_time:
             session = self.get_session(session_id)
             if session is None:
