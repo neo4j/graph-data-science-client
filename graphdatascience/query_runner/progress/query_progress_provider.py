@@ -24,11 +24,11 @@ class QueryProgressProvider(ProgressProvider):
         # we only retrieve the progress of the root task
         progress = self._run_cypher_func(
             f"CALL gds.{tier}listProgress('{job_id}')"
-            + " YIELD taskName, progress"
-            + " RETURN taskName, progress"
+            + " YIELD taskName, progress, status"
+            + " RETURN taskName, progress, status"
             + " LIMIT 1",
             database,
-        )[0]
+        ).squeeze() # expect at exactly one row (query will fail if not existing)
 
         progress_percent = progress["progress"]
         root_task_name = progress["taskName"].split("|--")[-1][1:]

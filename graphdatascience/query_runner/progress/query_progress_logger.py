@@ -79,11 +79,13 @@ class QueryProgressLogger:
                             bar_format="{desc} [elapsed: {elapsed} {postfix}]",
                         )
 
+                pbar.set_postfix_str(f"status: {task_with_progress.status}")
                 if has_relative_progress:
                     parsed_progress = float(progress_percent[:-1])
                     new_progress = parsed_progress - pbar.n
                     pbar.update(new_progress)
-                    pbar.set_postfix_str(f"status: {task_with_progress.status}")
+                else:
+                    pbar.refresh() # show latest elapsed time + postfix
             except Exception as e:
                 # Do nothing if the procedure either:
                 # * has not started yet,
