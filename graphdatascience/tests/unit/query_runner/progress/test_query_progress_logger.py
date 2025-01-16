@@ -12,7 +12,10 @@ from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 
 def test_call_through_functions() -> None:
     def fake_run_cypher(query: str, database: Optional[str] = None) -> DataFrame:
-        assert query == "CALL gds.listProgress('foo') YIELD taskName, progress, status RETURN taskName, progress, status LIMIT 1"
+        assert (
+            query
+            == "CALL gds.listProgress('foo') YIELD taskName, progress, status RETURN taskName, progress, status LIMIT 1"
+        )
         assert database == "database"
 
         return DataFrame([{"progress": "n/a", "taskName": "Test task", "status": "RUNNING"}])
@@ -43,7 +46,10 @@ def test_skips_progress_logging_for_old_server_version() -> None:
 
 def test_uses_beta_endpoint() -> None:
     def fake_run_cypher(query: str, database: Optional[str] = None) -> DataFrame:
-        assert query == "CALL gds.beta.listProgress('foo') YIELD taskName, progress, status RETURN taskName, progress, status LIMIT 1"
+        assert (
+            query
+            == "CALL gds.beta.listProgress('foo') YIELD taskName, progress, status RETURN taskName, progress, status LIMIT 1"
+        )
         assert database == "database"
 
         return DataFrame([{"progress": "n/a", "taskName": "Test task", "status": "RUNNING"}])
