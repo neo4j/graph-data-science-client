@@ -85,7 +85,7 @@ class QueryProgressLogger:
                     new_progress = parsed_progress - pbar.n
                     pbar.update(new_progress)
                 else:
-                    pbar.refresh() # show latest elapsed time + postfix
+                    pbar.refresh()  # show latest elapsed time + postfix
             except Exception as e:
                 # Do nothing if the procedure either:
                 # * has not started yet,
