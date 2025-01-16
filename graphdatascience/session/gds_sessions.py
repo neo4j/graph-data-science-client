@@ -104,7 +104,7 @@ class GdsSessions:
             db_connection (DbmsConnectionInfo): The database connection information.
             ttl: (Optional[timedelta]): The sessions time to live after inactivity in seconds.
             cloud_location (Optional[CloudLocation]): The cloud location. Required if the GDS session is for a self-managed database.
-            timeout (Optional[int]): Optional timeout when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
+            timeout (Optional[int]): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
 
         Returns:
             AuraGraphDataScience: The session.
