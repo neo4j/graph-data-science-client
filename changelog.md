@@ -17,6 +17,7 @@
 ## Improvements
 
 * Display progress bar for remote projection and open-ended tasks.
+* Improve progress bar by showing currently running task.
 * Allow passing the optional graph filter also as type `str` to `gds.graph.list()` instead of only `Graph`.
 
 

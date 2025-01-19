@@ -8,6 +8,7 @@ class TaskWithProgress:
     task_name: str
     progress_percent: str
     status: str
+    sub_tasks_description: Optional[str] = None
 
 
 class ProgressProvider(ABC):
