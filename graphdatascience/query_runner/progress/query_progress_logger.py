@@ -70,7 +70,6 @@ class QueryProgressLogger:
                     if has_relative_progress:
                         pbar = tqdm(total=100, unit="%", desc=root_task_name, maxinterval=self._LOG_POLLING_INTERVAL)
                     else:
-                        # TODO add {n_fmt} once task_with_progress provides the absolute progress
                         pbar = tqdm(
                             total=None,
                             unit="",
@@ -79,7 +78,9 @@ class QueryProgressLogger:
                             bar_format="{desc} [elapsed: {elapsed} {postfix}]",
                         )
 
-                pbar.set_postfix_str(f"status: {task_with_progress.status}")
+                pbar.set_postfix_str(
+                    f"status: {task_with_progress.status}, task: {task_with_progress.sub_tasks_description}"
+                )
                 if has_relative_progress:
                     parsed_progress = float(progress_percent[:-1])
                     new_progress = parsed_progress - pbar.n
