@@ -14,6 +14,7 @@ class AlgoProcRunner(IllegalAttrChecker, ABC):
     @graph_type_check
     def _run_procedure(self, G: Graph, config: dict[str, Any], with_logging: bool = True) -> DataFrame:
         params = CallParameters(graph_name=G.name(), config=config)
+        params.ensure_job_id_in_config()
 
         return self._query_runner.call_procedure(endpoint=self._namespace, params=params, logging=with_logging)
 
@@ -25,6 +26,7 @@ class AlgoProcRunner(IllegalAttrChecker, ABC):
 
 class StreamModeRunner(AlgoProcRunner):
     def __call__(self, G: Graph, **config: Any) -> DataFrame:
+        # insert job id if not existing
         return self._run_procedure(G, config)
 
 
