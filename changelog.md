@@ -11,6 +11,7 @@
 
 * Fixed a bug, where sessions could not be created for AuraDB instances of tier `business-critical`.
 * Fixed a bug, where sessions would fail on write-back if the Graph was empty.
+* Fixed a bug, where the progress bar would not be shown unless the `jobId` parameter was set. The progress bar can be toggled on and off via `GraphDataScience::set_show_progress`.
 
 
 ## Improvements
