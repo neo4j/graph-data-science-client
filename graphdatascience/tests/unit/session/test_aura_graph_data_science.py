@@ -78,9 +78,10 @@ def test_remote_algo_write() -> None:
     gds.pageRank.write(G, writeProperty="pr")
 
     assert query_runner.last_query() == "CALL gds.pageRank.write($graph_name, $config)"
+    jobId = query_runner.last_params().get("config", {}).get("jobId", "")
     assert query_runner.last_params() == {
         "graph_name": "foo",
-        "config": {"writeProperty": "pr"},
+        "config": {"writeProperty": "pr", "jobId": jobId},
     }
 
 
@@ -97,11 +98,13 @@ def test_remote_algo_write_configuration() -> None:
     gds.pageRank.write(G, writeProperty="pr", concurrency=12, arrowConfiguration={"batch_size": 98})
 
     assert query_runner.last_query() == "CALL gds.pageRank.write($graph_name, $config)"
+    jobId = query_runner.last_params().get("config", {}).get("jobId", "")
     assert query_runner.last_params() == {
         "graph_name": "foo",
         "config": {
             "writeProperty": "pr",
             "concurrency": 12,
+            "jobId": jobId,
             "arrowConfiguration": {"batch_size": 98},
         },
     }

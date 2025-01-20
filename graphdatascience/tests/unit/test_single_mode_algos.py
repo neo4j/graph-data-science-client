@@ -18,7 +18,8 @@ def G(gds: GraphDataScience) -> Graph:
 def test_simple_mutate(runner: CollectingQueryRunner, gds: GraphDataScience, G: Graph) -> None:
     gds.triangles(G, maxDegree=2)
     assert runner.last_query() == "CALL gds.triangles($graph_name, $config)"
+    jobId = runner.last_params().get("config", {}).get("jobId", "")
     assert runner.last_params() == {
         "graph_name": GRAPH_NAME,
-        "config": {"maxDegree": 2},
+        "config": {"maxDegree": 2, "jobId": jobId},
     }

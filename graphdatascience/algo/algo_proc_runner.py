@@ -26,7 +26,6 @@ class AlgoProcRunner(IllegalAttrChecker, ABC):
 
 class StreamModeRunner(AlgoProcRunner):
     def __call__(self, G: Graph, **config: Any) -> DataFrame:
-        # insert job id if not existing
         return self._run_procedure(G, config)
 
 
