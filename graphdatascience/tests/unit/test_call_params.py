@@ -43,7 +43,7 @@ def test_get_job_id() -> None:
 def test_ensure_job_id() -> None:
     # empty params
     params = CallParameters({})
-    with pytest.raises(ValueError, match="config is not set"):
+    with pytest.raises(AssertionError, match="config is not set"):
         params.ensure_job_id_in_config()
 
     # empty job id
