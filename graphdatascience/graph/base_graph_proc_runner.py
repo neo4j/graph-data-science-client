@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import pathlib
 import warnings
@@ -31,7 +33,6 @@ from .graph_sample_runner import GraphSampleRunner
 from .graph_type_check import (
     from_graph_type_check,
     graph_type_check,
-    graph_type_check_optional,
 )
 from .ogb_loader import OGBLLoader, OGBNLoader
 
