@@ -123,7 +123,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Streams the given graph property.
 
-.. py:function:: gds.graph.list(G: Optional[Graph] = None) -> DataFrame
+.. py:function:: gds.graph.list(G: Optional[Union[Graph, str]] = None) -> DataFrame
 
     Lists information about named graphs stored in the catalog.
 

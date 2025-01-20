@@ -125,6 +125,10 @@ def test_graph_list(runner: CollectingQueryRunner, gds: GraphDataScience) -> Non
     assert runner.last_query() == "CALL gds.graph.list($graph_name)"
     assert runner.last_params() == {"graph_name": G.name()}
 
+    gds.graph.list("g")
+    assert runner.last_query() == "CALL gds.graph.list($graph_name)"
+    assert runner.last_params() == {"graph_name": "g"}
+
 
 def test_graph_exists(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     gds.graph.exists("g")
