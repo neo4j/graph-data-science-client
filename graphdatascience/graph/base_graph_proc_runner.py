@@ -324,13 +324,17 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return result.squeeze()  # type: ignore
 
-    @graph_type_check_optional
-    def list(self, G: Optional[Graph] = None) -> DataFrame:
+    def list(self, G: Optional[Union[Graph, str]] = None) -> DataFrame:
         self._namespace += ".list"
+
+        if isinstance(G, Graph):
+            graph_name = G.name()
+        elif isinstance(G, str):
+            graph_name = G
 
         params = CallParameters()
         if G:
-            params["graph_name"] = G.name()
+            params["graph_name"] = graph_name
 
         return self._query_runner.call_procedure(
             endpoint=self._namespace,
