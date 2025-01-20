@@ -82,12 +82,16 @@ def test_project_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) 
         runner.last_query()
         == "CALL " + "gds.graph.filter($graph_name, $from_graph_name, $node_filter, $relationship_filter, $config)"
     )
-    assert runner.last_params() == {
+
+    actualParams = runner.last_params()
+    jobId = actualParams.get("config", {}).get("jobId", "")
+
+    assert actualParams == {
         "graph_name": "s",
         "from_graph_name": "g",
         "node_filter": "n.x > 1",
         "relationship_filter": "*",
-        "config": {"concurrency": 2},
+        "config": {"concurrency": 2, "jobId": jobId},
     }
 
 
@@ -611,11 +615,13 @@ def test_graph_generate(runner: CollectingQueryRunner, gds: GraphDataScience) ->
     gds.graph.generate("g", 1337, 42, orientation="NATURAL")
 
     assert runner.last_query() == "CALL gds.graph.generate($graph_name, $node_count, $average_degree, $config)"
+
+    jobId = runner.last_params().get("config", {}).get("jobId", "")
     assert runner.last_params() == {
         "graph_name": "g",
         "node_count": 1337,
         "average_degree": 42,
-        "config": {"orientation": "NATURAL"},
+        "config": {"orientation": "NATURAL", "jobId": jobId},
     }
 
 
