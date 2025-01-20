@@ -292,7 +292,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         failIfMissing: bool = False,
         dbName: str = "",
         username: Optional[str] = None,
-    ) -> Optional["Series[Any]"]:
+    ) -> Optional[Series[Any]]:
         self._namespace += ".drop"
 
         if isinstance(graph, Graph):
@@ -315,7 +315,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return None
 
-    def exists(self, graph_name: str) -> "Series[Any]":
+    def exists(self, graph_name: str) -> Series[Any]:
         self._namespace += ".exists"
         result = self._query_runner.call_procedure(
             endpoint=self._namespace,
