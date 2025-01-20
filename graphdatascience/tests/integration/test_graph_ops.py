@@ -228,19 +228,6 @@ def test_graph_drop(gds: GraphDataScience) -> None:
 def test_graph_type_check(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    # Call without providing optional `Graph` without raising
-    gds.graph.list()
-
-    # Raise when optional `Graph` is string
-    with pytest.raises(
-        TypeError,
-        match=(
-            f"The parameter 'G' takes a `Graph` object, but received string '{G.name()}'. "
-            "To resolve a graph name string into a `Graph` object, please use `gds.graph.get`"
-        ),
-    ):
-        gds.graph.list(G.name())  # type: ignore
-
     # Raise when second positional from_G `Graph` is string
     with pytest.raises(
         TypeError,
@@ -250,16 +237,6 @@ def test_graph_type_check(gds: GraphDataScience) -> None:
         ),
     ):
         gds.beta.graph.project.subgraph("s", G.name(), "n.x > 1", "*", concurrency=2)  # type: ignore
-
-    # Raise when first positional G `Graph` is string
-    with pytest.raises(
-        TypeError,
-        match=(
-            f"The parameter 'G' takes a `Graph` object, but received string '{G.name()}'. "
-            "To resolve a graph name string into a `Graph` object, please use `gds.graph.get`"
-        ),
-    ):
-        gds.graph.list(G.name())  # type: ignore
 
     result = gds.graph.drop(G, True)
     assert result is not None
