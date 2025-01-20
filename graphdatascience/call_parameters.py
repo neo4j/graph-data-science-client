@@ -30,8 +30,8 @@ class CallParameters(OrderedDict[str, Any]):
         This enables the client to check on the progress later on.
         """
         config = self.get("config")
-        if not config:
-            raise ValueError("config is not set in the parameters")
+
+        assert config is not None, "config is not set in the parameters. This method should not be called."
 
         job_id = self.get_job_id()
         if job_id is None:
