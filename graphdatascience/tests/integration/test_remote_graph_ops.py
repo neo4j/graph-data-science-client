@@ -219,4 +219,4 @@ def test_empty_graph_write_back(
 
     result = gds_with_cloud_setup.wcc.write(G, writeProperty="wcc")
 
-    assert result["relationshipsWritten"] == 0
+    assert result["nodePropertiesWritten"] == 0
