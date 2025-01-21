@@ -1,9 +1,12 @@
+import re
 import time
+from io import StringIO
 from typing import Optional
 
 from pandas import DataFrame
 
 from graphdatascience import ServerVersion
+from graphdatascience.query_runner.progress.progress_provider import TaskWithProgress
 from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
 from graphdatascience.query_runner.progress.query_progress_provider import QueryProgressProvider
 from graphdatascience.query_runner.progress.static_progress_provider import StaticProgressProvider, StaticProgressStore
@@ -95,6 +98,66 @@ def test_uses_query_provider_with_task_description() -> None:
 
     assert progress.sub_tasks_description == "root 1/1::leaf"
     assert progress.task_name == "Test task"
+
+
+def test_progress_bar_quantitive_output() -> None:
+    def simple_run_cypher(query: str, database: Optional[str] = None) -> DataFrame:
+        raise NotImplementedError("Should not be called!")
+
+    with StringIO() as pbarOutputStream:
+        qpl = QueryProgressLogger(
+            simple_run_cypher,
+            lambda: ServerVersion(3, 0, 0),
+            progress_bar_options={"file": pbarOutputStream, "mininterval": 0},
+        )
+
+        pbar = qpl._init_pbar(TaskWithProgress("test task", "0%", "PENDING", ""))
+        assert pbarOutputStream.getvalue().split("\r")[-1] == "test task:   0%|          | 0/100 [00:00<?, ?%/s]"
+
+        qpl._update_pbar(pbar, TaskWithProgress("test task", "0%", "PENDING", ""))
+        assert (
+            pbarOutputStream.getvalue().split("\r")[-1]
+            == "test task:   0%|          | 0.0/100 [00:00<?, ?%/s, status: PENDING]"
+        )
+        qpl._update_pbar(pbar, TaskWithProgress("test task", "42%", "RUNNING", "root::1/1::leaf"))
+
+        running_output = pbarOutputStream.getvalue().split("\r")[-1]
+        assert re.match(
+            r"test task:  42%\|####2     \| 42.0/100 \[00:00<00:00, \d+.\d*%/s, status: RUNNING, task: root::1/1::leaf\]",
+            running_output,
+        ), running_output
+
+        qpl._finish_pbar(pbar)
+        finished_output = pbarOutputStream.getvalue().split("\r")[-1]
+        assert re.match(
+            r"test task: 100%\|##########\| 100.0/100 \[00:00<00:00, \d+.\d+%/s, status: FINISHED\]", finished_output
+        ), finished_output
+
+
+def test_progress_bar_qualitative_output() -> None:
+    def simple_run_cypher(query: str, database: Optional[str] = None) -> DataFrame:
+        raise NotImplementedError("Should not be called!")
+
+    with StringIO() as pbarOutputStream:
+        qpl = QueryProgressLogger(
+            simple_run_cypher,
+            lambda: ServerVersion(3, 0, 0),
+            progress_bar_options={"file": pbarOutputStream, "mininterval": 100},
+        )
+
+        pbar = qpl._init_pbar(TaskWithProgress("test task", "n/a", "PENDING", ""))
+
+        qpl._update_pbar(pbar, TaskWithProgress("test task", "n/a", "PENDING", ""))
+        qpl._update_pbar(pbar, TaskWithProgress("test task", "", "RUNNING", "root 1/1::leaf"))
+        qpl._finish_pbar(pbar)
+
+        assert pbarOutputStream.getvalue().rstrip() == "".join(
+            [
+                "\rtest task [elapsed: 00:00 ]\rtest task [elapsed: 00:00 , status: PENDING]",
+                "\rtest task [elapsed: 00:00 , status: RUNNING, task: root 1/1::leaf]",
+                "\rtest task [elapsed: 00:00 , status: FINISHED]",
+            ]
+        )
 
 
 def test_uses_static_store() -> None:
