@@ -386,7 +386,8 @@ class CypherGraphConstructor(GraphConstructor):
             )
 
         def _node_query(self, node_df: DataFrame) -> tuple[str, list[list[Any]]]:
-            node_list = node_df.values.tolist()
+            # ignore type as tolist return depends on number of dimensions)
+            node_list: list[list[Any]] = node_df.values.tolist()  # type: ignore
             node_columns = list(node_df.columns)
             node_id_index = node_columns.index("nodeId")
 
@@ -411,7 +412,7 @@ class CypherGraphConstructor(GraphConstructor):
             return f"UNWIND $nodes as node RETURN node[{node_id_index}] as id{label_query}{property_query}", node_list
 
         def _relationship_query(self, rel_df: DataFrame) -> tuple[str, list[list[Any]]]:
-            rel_list = rel_df.values.tolist()
+            rel_list: list[list[Any]] = rel_df.values.tolist()  # type: ignore
             rel_columns = list(rel_df.columns)
             source_id_index = rel_columns.index("sourceNodeId")
             target_id_index = rel_columns.index("targetNodeId")
