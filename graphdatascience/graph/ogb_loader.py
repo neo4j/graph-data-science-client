@@ -108,12 +108,12 @@ class OGBNLoader(OGBLoader):
             "nodeId": list(range(node_count)),
         }
         if "node_feat" in graph and graph["node_feat"] is not None:
-            node_dict["features"] = graph["node_feat"].tolist()
+            node_dict["features"] = graph["node_feat"].tolist()  # type: ignore
 
         if len(dataset.labels[0]) == 1:
             node_dict["classLabel"] = [cl[0] for cl in dataset.labels]
         else:
-            node_dict["classLabel"] = dataset.labels.tolist()
+            node_dict["classLabel"] = dataset.labels.tolist()  # type: ignore
 
         split = dataset.get_idx_split()
         node_labels = ["Train" for _ in range(node_count)]
@@ -170,13 +170,13 @@ class OGBNLoader(OGBLoader):
             }
 
             if node_label in node_features:
-                node_dict["features"] = node_features[node_label].tolist()
+                node_dict["features"] = node_features[node_label].tolist()  # type: ignore
 
             if node_label in class_labels:
                 if len(class_labels[node_label]) == 1:
                     node_dict["classLabel"] = [cl[0] for cl in class_labels[node_label]]
                 else:
-                    node_dict["classLabel"] = class_labels[node_label].tolist()
+                    node_dict["classLabel"] = class_labels[node_label].tolist()  # type: ignore
 
             node_id_offsets[node_label] = current_offset
             current_offset += node_count
@@ -243,7 +243,7 @@ class OGBLLoader(OGBLoader):
             "labels": "N",
         }
         if "node_feat" in graph and graph["node_feat"] is not None:
-            node_dict["features"] = graph["node_feat"].tolist()
+            node_dict["features"] = graph["node_feat"].tolist()  # type: ignore
         nodes = pd.DataFrame(node_dict)
 
         self._logger.info("Preparing relationship data for transfer to server...")
@@ -283,7 +283,7 @@ class OGBLLoader(OGBLoader):
             }
 
             if node_label in node_features:
-                node_dict["features"] = node_features[node_label].tolist()
+                node_dict["features"] = node_features[node_label].tolist()  # type: ignore
 
             node_id_offsets[node_label] = current_offset
             current_offset += node_count
