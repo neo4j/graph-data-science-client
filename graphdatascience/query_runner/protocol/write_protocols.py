@@ -1,11 +1,14 @@
+import logging
+import signal
 from abc import ABC, abstractmethod
 from typing import Any, Optional
 
 from pandas import DataFrame
-from tenacity import retry, retry_if_result, wait_incrementing
+from tenacity import after_log, retry, retry_if_result, wait_incrementing
 
 from graphdatascience import QueryRunner
 from graphdatascience.call_parameters import CallParameters
+from graphdatascience.query_runner.protocol.retry_utils import retry_unless_signal
 from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 
@@ -120,7 +123,13 @@ class RemoteWriteBackV3(WriteProtocol):
             status: str = result.squeeze()["status"]
             return status != Status.COMPLETED.name
 
-        @retry(retry=retry_if_result(is_not_completed), wait=wait_incrementing(start=0.2, increment=0.2, max=2))
+        logger = logging.getLogger()
+
+        @retry(
+            retry=retry_if_result(is_not_completed) and retry_unless_signal([signal.SIGTERM, signal.SIGINT]),
+            wait=wait_incrementing(start=0.2, increment=0.2, max=2),
+            after=after_log(logger, logging.WARN),
+        )
         def write_fn() -> DataFrame:
             return query_runner.call_procedure(
                 ProtocolVersion.V3.versioned_procedure_name("gds.arrow.write"),
