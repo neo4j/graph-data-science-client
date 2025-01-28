@@ -1,5 +1,6 @@
+import asyncio
+import time
 import warnings
-from concurrent.futures import Future, ThreadPoolExecutor, wait
 from typing import Any, Callable, NoReturn, Optional
 
 from pandas import DataFrame
@@ -38,15 +39,39 @@ class QueryProgressLogger:
         # Entries in the static progress store are already visible at this point.
         progress_provider = self._select_progress_provider(job_id)
 
-        with ThreadPoolExecutor() as executor:
-            future = executor.submit(runnable)
+        # using asyncio to be able to cancel ongoing tasks on SIGTERM/SIGINT
+        close_loop = False
+        try:
+            # f.i. Jupyter notebook has a running event loop alreadys which we want to reuse
+            loop = asyncio.get_running_loop()
+        except RuntimeError as e:
+            if "no running event loop" not in str(e):
+                raise e
+            loop = asyncio.new_event_loop()
+            close_loop = True
 
-            self._log(future, job_id, progress_provider, database)
+        try:
 
-            if future.exception():
-                raise future.exception()  # type: ignore
+            async def lazy_runnable() -> DataFrame:
+                return runnable()
+
+            task: asyncio.Task[DataFrame] = loop.create_task(lazy_runnable())
+            # TODO check if we need to cancel the task on SIGTERM/SIGINT
+
+            if loop.is_running():
+                # TODO unit test this case
+                future = asyncio.run_coroutine_threadsafe(self._log(task, job_id, progress_provider, database), loop)
+                future.result()  # wait for the progress logging to finish
             else:
-                return future.result()
+                loop.run_until_complete(self._log(task, job_id, progress_provider, database))
+
+            if task.exception():
+                raise task.exception()  # type: ignore
+            else:
+                return task.result()
+        finally:
+            if close_loop:
+                loop.close()
 
     def _select_progress_provider(self, job_id: str) -> ProgressProvider:
         return (
@@ -55,13 +80,12 @@ class QueryProgressLogger:
             else self._query_progress_provider
         )
 
-    def _log(
-        self, future: Future[Any], job_id: str, progress_provider: ProgressProvider, database: Optional[str] = None
+    async def _log(
+        self, task: asyncio.Task[Any], job_id: str, progress_provider: ProgressProvider, database: Optional[str] = None
     ) -> None:
         pbar: Optional[tqdm[NoReturn]] = None
         warn_if_failure = True
-
-        while wait([future], timeout=self._polling_interval).not_done:
+        while not task.done():
             try:
                 task_with_progress = progress_provider.root_task_with_progress(job_id, database)
                 if pbar is None:
@@ -79,6 +103,8 @@ class QueryProgressLogger:
                         warnings.warn(f"Unable to get progress: {str(e)}", RuntimeWarning)
                         warn_if_failure = False
                     continue
+            finally:
+                time.sleep(self._polling_interval)
 
         if pbar is not None:
             self._finish_pbar(pbar)

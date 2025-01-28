@@ -1,4 +1,4 @@
-import concurrent.futures as f
+import asyncio
 import re
 import time
 
@@ -183,10 +183,20 @@ def test_no_db_explicitly_set() -> None:
 
 
 def test_warning_when_logging_fails(runner: Neo4jQueryRunner) -> None:
-    with f.ThreadPoolExecutor(1) as pool:
-        future = pool.submit(lambda: time.sleep(2))
+    loop = asyncio.new_event_loop()
+    try:
+
+        async def sleep_one() -> None:
+            return time.sleep(2)
+
+        task = loop.create_task(sleep_one())
+
         with pytest.warns(RuntimeWarning, match=r"^Unable to get progress:"):
-            runner._progress_logger._log(future, "DUMMY", StaticProgressProvider(), "bad_database")
+            loop.run_until_complete(
+                runner._progress_logger._log(task, "DUMMY", StaticProgressProvider(), "bad_database")
+            )
+    finally:
+        loop.close()
 
 
 def test_bookmarks(runner: Neo4jQueryRunner) -> None:

@@ -90,6 +90,7 @@ class ArrowGraphConstructor(GraphConstructor):
         partitioned_dfs = self._partition_dfs(dfs)
 
         with ThreadPoolExecutor(self._concurrency) as executor:
+            # shutdown_on_signals(executor, [signal.SIGTERM, signal.SIGINT])
 
             def run_upload(df: DataFrame) -> None:
                 def progress_callback(rows: int) -> None:
