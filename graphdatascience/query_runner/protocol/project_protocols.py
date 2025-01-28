@@ -1,5 +1,6 @@
 import signal
 from abc import ABC, abstractmethod
+from logging import DEBUG, getLogger
 from typing import Any, Optional
 
 from pandas import DataFrame
@@ -7,7 +8,7 @@ from tenacity import retry, retry_if_result, wait_incrementing
 
 from graphdatascience import QueryRunner
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.query_runner.protocol.retry_utils import retry_unless_signal
+from graphdatascience.query_runner.protocol.retry_utils import before_log, retry_unless_signal
 from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 
@@ -125,7 +126,10 @@ class ProjectProtocolV3(ProjectProtocol):
             status: str = result.squeeze()["status"]
             return status != Status.DONE.name
 
+        logger = getLogger()
+
         @retry(
+            before=before_log(f"Projection (graph: `{params['graph_name']}`)", logger, DEBUG),
             retry=retry_if_result(is_not_done) and retry_unless_signal([signal.SIGTERM, signal.SIGINT]),
             wait=wait_incrementing(start=0.2, increment=0.2, max=2),
         )
