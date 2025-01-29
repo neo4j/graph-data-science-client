@@ -83,7 +83,7 @@ delete the session ourselves.
 
 [source, python, role=no-test]
 ----
-from graphdatascience.session import AlgorithmCategory, DbmsConnectionInfo
+from graphdatascience.session import AlgorithmCategory
 
 # Estimate the memory needed for the GDS session
 memory = sessions.estimate(
@@ -96,6 +96,8 @@ memory = sessions.estimate(
 [source, python, role=no-test]
 ----
 from datetime import timedelta
+
+from graphdatascience.session import DbmsConnectionInfo
 
 # Identify the AuraDB instance
 db_connection = DbmsConnectionInfo(
