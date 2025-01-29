@@ -82,6 +82,7 @@ class QueryProgressLogger:
 
         if pbar is not None:
             self._finish_pbar(pbar)
+        # TODO show as cancelled if future was interrupted
 
     def _init_pbar(self, task_with_progress: TaskWithProgress) -> tqdm:  # type: ignore
         root_task_name = task_with_progress.task_name
