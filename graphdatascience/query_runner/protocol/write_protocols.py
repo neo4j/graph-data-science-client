@@ -1,5 +1,4 @@
 import logging
-import signal
 from abc import ABC, abstractmethod
 from typing import Any, Optional
 
@@ -8,8 +7,9 @@ from tenacity import retry, retry_if_result, wait_incrementing
 
 from graphdatascience import QueryRunner
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.query_runner.protocol.retry_utils import before_log, retry_unless_signal
+from graphdatascience.query_runner.protocol.retry_utils import before_log
 from graphdatascience.query_runner.protocol.status import Status
+from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 
 
@@ -28,7 +28,11 @@ class WriteProtocol(ABC):
 
     @abstractmethod
     def run_write_back(
-        self, query_runner: QueryRunner, parameters: CallParameters, yields: Optional[list[str]]
+        self,
+        query_runner: QueryRunner,
+        parameters: CallParameters,
+        yields: Optional[list[str]],
+        terminationFlag: TerminationFlag,
     ) -> DataFrame:
         """Executes the write-back procedure"""
         pass
@@ -59,7 +63,11 @@ class RemoteWriteBackV1(WriteProtocol):
         )
 
     def run_write_back(
-        self, query_runner: QueryRunner, parameters: CallParameters, yields: Optional[list[str]]
+        self,
+        query_runner: QueryRunner,
+        parameters: CallParameters,
+        yields: Optional[list[str]],
+        terminationFlag: TerminationFlag,
     ) -> DataFrame:
         return query_runner.call_procedure(
             ProtocolVersion.V1.versioned_procedure_name("gds.arrow.write"),
@@ -93,7 +101,11 @@ class RemoteWriteBackV2(WriteProtocol):
         )
 
     def run_write_back(
-        self, query_runner: QueryRunner, parameters: CallParameters, yields: Optional[list[str]]
+        self,
+        query_runner: QueryRunner,
+        parameters: CallParameters,
+        yields: Optional[list[str]],
+        terminationFlag: TerminationFlag,
     ) -> DataFrame:
         return query_runner.call_procedure(
             ProtocolVersion.V2.versioned_procedure_name("gds.arrow.write"),
@@ -117,7 +129,11 @@ class RemoteWriteBackV3(WriteProtocol):
         return RemoteWriteBackV2().write_back_params(graph_name, job_id, config, arrow_config, database)
 
     def run_write_back(
-        self, query_runner: QueryRunner, parameters: CallParameters, yields: Optional[list[str]]
+        self,
+        query_runner: QueryRunner,
+        parameters: CallParameters,
+        yields: Optional[list[str]],
+        terminationFlag: TerminationFlag,
     ) -> DataFrame:
         def is_not_completed(result: DataFrame) -> bool:
             status: str = result.squeeze()["status"]
@@ -126,7 +142,7 @@ class RemoteWriteBackV3(WriteProtocol):
         logger = logging.getLogger()
 
         @retry(
-            retry=retry_if_result(is_not_completed) and retry_unless_signal([signal.SIGTERM, signal.SIGINT]),
+            retry=retry_if_result(is_not_completed),
             wait=wait_incrementing(start=0.2, increment=0.2, max=2),
             before=before_log(
                 f"Write-Back (graph: `{parameters['graphName']}`, jobId: `{parameters['jobId']}`)",
@@ -135,6 +151,7 @@ class RemoteWriteBackV3(WriteProtocol):
             ),
         )
         def write_fn() -> DataFrame:
+            terminationFlag.assert_running()
             return query_runner.call_procedure(
                 ProtocolVersion.V3.versioned_procedure_name("gds.arrow.write"),
                 parameters,

@@ -8,6 +8,7 @@ from pandas import DataFrame
 
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
+from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.server_version.server_version import ServerVersion
 
 from ..call_parameters import CallParameters
@@ -69,10 +70,12 @@ class SessionQueryRunner(QueryRunner):
             params = CallParameters()
 
         if SessionQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME in endpoint:
-            return self._remote_projection(endpoint, params, yields, database, logging)
+            terminationFlag = TerminationFlag.create()
+            return self._remote_projection(endpoint, params, terminationFlag, yields, database, logging)
 
         elif ".write" in endpoint and self.is_remote_projected_graph(params["graph_name"]):
-            return self._remote_write_back(endpoint, params, yields, database, logging, custom_error)
+            terminationFlag = TerminationFlag.create()
+            return self._remote_write_back(endpoint, params, terminationFlag, yields, database, logging, custom_error)
 
         return self._gds_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
 
@@ -126,6 +129,7 @@ class SessionQueryRunner(QueryRunner):
         self,
         endpoint: str,
         params: CallParameters,
+        terminationFlag: TerminationFlag,
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
@@ -144,7 +148,7 @@ class SessionQueryRunner(QueryRunner):
 
             def run_projection() -> DataFrame:
                 return project_protocol.run_projection(
-                    self._db_query_runner, endpoint, project_params, yields, database, logging
+                    self._db_query_runner, endpoint, project_params, terminationFlag, yields, database, logging
                 )
 
             if self._resolve_show_progress(logging):
@@ -159,6 +163,7 @@ class SessionQueryRunner(QueryRunner):
         self,
         endpoint: str,
         params: CallParameters,
+        terminationFlag: TerminationFlag,
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
@@ -180,6 +185,7 @@ class SessionQueryRunner(QueryRunner):
         gds_write_result = self._gds_query_runner.call_procedure(
             endpoint, params, yields, database, logging, custom_error
         )
+        terminationFlag.assert_running()
 
         self._inject_arrow_config(db_arrow_config)
 
@@ -193,7 +199,7 @@ class SessionQueryRunner(QueryRunner):
         write_back_start = time.time()
 
         def run_write_back() -> DataFrame:
-            return write_protocol.run_write_back(self._db_query_runner, write_back_params, yields)
+            return write_protocol.run_write_back(self._db_query_runner, write_back_params, yields, terminationFlag)
 
         try:
             if self._resolve_show_progress(logging):

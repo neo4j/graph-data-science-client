@@ -1,4 +1,3 @@
-import signal
 from abc import ABC, abstractmethod
 from logging import DEBUG, getLogger
 from typing import Any, Optional
@@ -8,8 +7,9 @@ from tenacity import retry, retry_if_result, wait_incrementing
 
 from graphdatascience import QueryRunner
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.query_runner.protocol.retry_utils import before_log, retry_unless_signal
+from graphdatascience.query_runner.protocol.retry_utils import before_log
 from graphdatascience.query_runner.protocol.status import Status
+from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 
 
@@ -27,6 +27,7 @@ class ProjectProtocol(ABC):
         query_runner: QueryRunner,
         endpoint: str,
         params: CallParameters,
+        terminationFlag: TerminationFlag,
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
@@ -61,6 +62,7 @@ class ProjectProtocolV1(ProjectProtocol):
         query_runner: QueryRunner,
         endpoint: str,
         params: CallParameters,
+        terminationFlag: TerminationFlag,
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
@@ -89,6 +91,7 @@ class ProjectProtocolV2(ProjectProtocol):
         query_runner: QueryRunner,
         endpoint: str,
         params: CallParameters,
+        terminationFlag: TerminationFlag,
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
@@ -118,6 +121,7 @@ class ProjectProtocolV3(ProjectProtocol):
         query_runner: QueryRunner,
         endpoint: str,
         params: CallParameters,
+        terminationFlag: TerminationFlag,
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
@@ -130,10 +134,11 @@ class ProjectProtocolV3(ProjectProtocol):
 
         @retry(
             before=before_log(f"Projection (graph: `{params['graph_name']}`)", logger, DEBUG),
-            retry=retry_if_result(is_not_done) and retry_unless_signal([signal.SIGTERM, signal.SIGINT]),
+            retry=retry_if_result(is_not_done),
             wait=wait_incrementing(start=0.2, increment=0.2, max=2),
         )
         def project_fn() -> DataFrame:
+            terminationFlag.assert_running()
             return query_runner.call_procedure(
                 ProtocolVersion.V3.versioned_procedure_name(endpoint), params, yields, database, logging, False
             )
