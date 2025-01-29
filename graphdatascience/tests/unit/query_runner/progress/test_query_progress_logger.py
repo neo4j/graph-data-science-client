@@ -1,5 +1,6 @@
 import re
 import time
+from concurrent.futures import ThreadPoolExecutor
 from io import StringIO
 from typing import Optional
 
@@ -127,7 +128,10 @@ def test_progress_bar_quantitive_output() -> None:
             running_output,
         ), running_output
 
-        qpl._finish_pbar(pbar)
+        with ThreadPoolExecutor() as executor:
+            future = executor.submit(lambda: None)
+            qpl._finish_pbar(future, pbar)
+
         finished_output = pbarOutputStream.getvalue().split("\r")[-1]
         assert re.match(
             r"test task: 100%\|##########\| 100.0/100 \[00:00<00:00, \d+.\d+%/s, status: FINISHED\]", finished_output
@@ -149,7 +153,10 @@ def test_progress_bar_qualitative_output() -> None:
 
         qpl._update_pbar(pbar, TaskWithProgress("test task", "n/a", "PENDING", ""))
         qpl._update_pbar(pbar, TaskWithProgress("test task", "", "RUNNING", "root 1/1::leaf"))
-        qpl._finish_pbar(pbar)
+
+        with ThreadPoolExecutor() as executor:
+            future = executor.submit(lambda: None)
+            qpl._finish_pbar(future, pbar)
 
         assert pbarOutputStream.getvalue().rstrip() == "".join(
             [
@@ -158,6 +165,34 @@ def test_progress_bar_qualitative_output() -> None:
                 "\rtest task [elapsed: 00:00 , status: FINISHED]",
             ]
         )
+
+
+def test_progress_bar_with_failing_query() -> None:
+    def simple_run_cypher(query: str, database: Optional[str] = None) -> DataFrame:
+        raise NotImplementedError("Should not be called!")
+
+    def failing_runnable() -> DataFrame:
+        raise NotImplementedError("Should not be called!")
+
+    with StringIO() as pbarOutputStream:
+        qpl = QueryProgressLogger(
+            simple_run_cypher,
+            lambda: ServerVersion(3, 0, 0),
+            progress_bar_options={"file": pbarOutputStream, "mininterval": 100},
+        )
+
+        with ThreadPoolExecutor() as executor:
+            future = executor.submit(failing_runnable)
+
+            pbar = qpl._init_pbar(TaskWithProgress("test task", "n/a", "PENDING", ""))
+            qpl._finish_pbar(future, pbar)
+
+            assert pbarOutputStream.getvalue().rstrip() == "".join(
+                [
+                    "\rtest task [elapsed: 00:00 ]",
+                    "\rtest task [elapsed: 00:00 , status: FAILED]",
+                ]
+            )
 
 
 def test_uses_static_store() -> None:
