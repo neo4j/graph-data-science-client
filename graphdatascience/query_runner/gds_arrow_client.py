@@ -676,11 +676,10 @@ class GdsArrowClient:
             message=r"Passing a BlockManager to DataFrame is deprecated",
         )
 
-        arrow_table = self._sanitize_arrow_table(arrow_table)
-
         if ServerVersion.from_string(pandas.__version__) >= ServerVersion(2, 0, 0):
             return arrow_table.to_pandas(types_mapper=pandas.ArrowDtype)  # type: ignore
         else:
+            arrow_table = self._sanitize_arrow_table(arrow_table)
             return arrow_table.to_pandas()  # type: ignore
 
     def __enter__(self) -> GdsArrowClient:

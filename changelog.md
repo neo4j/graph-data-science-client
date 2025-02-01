@@ -21,6 +21,6 @@
 * Improve progress bar by showing the description of the currently running task.
 * Allow passing the optional graph filter also as type `str` to `gds.graph.list()` instead of only `Graph`.
 * Listen and to SIGINT and SIGTERM and interrupt projection and write-backs based on GDS Session. Note this only works if the query runs in the main thread.
-
+* Use arrow-based DataFrame backend for arrow-based operations and pandas>2.0
 
 ## Other changes
