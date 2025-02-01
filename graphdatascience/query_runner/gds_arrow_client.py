@@ -9,14 +9,16 @@ from dataclasses import dataclass
 from types import TracebackType
 from typing import Any, Callable, Dict, Iterable, Optional, Type, Union
 
+import pandas
 import pyarrow
 from neo4j.exceptions import ClientError
-from pandas import DataFrame
 from pyarrow import Array, ChunkedArray, DictionaryArray, RecordBatch, Table, chunked_array, flight
 from pyarrow import __version__ as arrow_version
 from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, stop_after_delay, wait_exponential
+
+from graphdatascience.server_version.server_version import ServerVersion
 
 from ..version import __version__
 from .arrow_endpoint_version import ArrowEndpointVersion
@@ -154,7 +156,7 @@ class GdsArrowClient:
         node_labels: Optional[list[str]] = None,
         list_node_labels: bool = False,
         concurrency: Optional[int] = None,
-    ) -> DataFrame:
+    ) -> pandas.DataFrame:
         """
         Get node properties from the graph.
 
@@ -194,7 +196,7 @@ class GdsArrowClient:
 
         return self._do_get(database, graph_name, proc, concurrency, config)
 
-    def get_node_labels(self, graph_name: str, database: str, concurrency: Optional[int] = None) -> DataFrame:
+    def get_node_labels(self, graph_name: str, database: str, concurrency: Optional[int] = None) -> pandas.DataFrame:
         """
         Get all nodes and their labels from the graph.
 
@@ -216,7 +218,7 @@ class GdsArrowClient:
 
     def get_relationships(
         self, graph_name: str, database: str, relationship_types: list[str], concurrency: Optional[int] = None
-    ) -> DataFrame:
+    ) -> pandas.DataFrame:
         """
         Get relationships from the graph.
 
@@ -251,7 +253,7 @@ class GdsArrowClient:
         relationship_properties: Union[str, list[str]],
         relationship_types: list[str],
         concurrency: Optional[int] = None,
-    ) -> DataFrame:
+    ) -> pandas.DataFrame:
         """
         Get relationships and their properties from the graph.
 
@@ -488,7 +490,7 @@ class GdsArrowClient:
     def upload_nodes(
         self,
         graph_name: str,
-        node_data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame],
+        node_data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], pandas.DataFrame],
         batch_size: int = 10_000,
         progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
@@ -511,7 +513,7 @@ class GdsArrowClient:
     def upload_relationships(
         self,
         graph_name: str,
-        relationship_data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame],
+        relationship_data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], pandas.DataFrame],
         batch_size: int = 10_000,
         progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
@@ -534,7 +536,7 @@ class GdsArrowClient:
     def upload_triplets(
         self,
         graph_name: str,
-        triplet_data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame],
+        triplet_data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], pandas.DataFrame],
         batch_size: int = 10_000,
         progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
@@ -590,13 +592,13 @@ class GdsArrowClient:
         self,
         graph_name: str,
         entity_type: str,
-        data: Union[pyarrow.Table, list[pyarrow.RecordBatch], DataFrame],
+        data: Union[pyarrow.Table, list[pyarrow.RecordBatch], pandas.DataFrame],
         batch_size: int,
         progress_callback: Callable[[int], None],
     ) -> None:
         if isinstance(data, pyarrow.Table):
             batches = data.to_batches(batch_size)
-        elif isinstance(data, DataFrame):
+        elif isinstance(data, pandas.DataFrame):
             batches = pyarrow.Table.from_pandas(data).to_batches(batch_size)
         else:
             batches = data
@@ -635,7 +637,7 @@ class GdsArrowClient:
         procedure_name: str,
         concurrency: Optional[int],
         configuration: dict[str, Any],
-    ) -> DataFrame:
+    ) -> pandas.DataFrame:
         payload: dict[str, Any] = {
             "database_name": database,
             "graph_name": graph_name,
@@ -674,7 +676,12 @@ class GdsArrowClient:
             message=r"Passing a BlockManager to DataFrame is deprecated",
         )
 
-        return self._sanitize_arrow_table(arrow_table).to_pandas()  # type: ignore
+        arrow_table = self._sanitize_arrow_table(arrow_table)
+
+        if ServerVersion.from_string(pandas.__version__) >= ServerVersion(2, 0, 0):
+            return arrow_table.to_pandas(types_mapper=pandas.ArrowDtype)  # type: ignore
+        else:
+            return arrow_table.to_pandas()  # type: ignore
 
     def __enter__(self) -> GdsArrowClient:
         return self
