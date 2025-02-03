@@ -13,6 +13,7 @@ from ..call_parameters import CallParameters
 from ..error.endpoint_suggester import generate_suggestive_error_message
 from ..error.gds_not_installed import GdsNotFound
 from ..error.unable_to_connect import UnableToConnectError
+from ..semantic_version.semantic_version import SemanticVersion
 from ..server_version.server_version import ServerVersion
 from ..version import __version__
 from .cypher_graph_constructor import CypherGraphConstructor
@@ -24,7 +25,7 @@ from .query_runner import QueryRunner
 class Neo4jQueryRunner(QueryRunner):
     _AURA_DS_PROTOCOL = "neo4j+s"
     _LOG_POLLING_INTERVAL = 0.5
-    _NEO4J_DRIVER_VERSION = ServerVersion.from_string(neo4j.__version__)
+    _NEO4J_DRIVER_VERSION = SemanticVersion.from_string(neo4j.__version__)
 
     @staticmethod
     def create_for_db(
@@ -60,7 +61,7 @@ class Neo4jQueryRunner(QueryRunner):
         else:
             raise ValueError(f"Invalid endpoint type: {type(endpoint)}")
 
-        if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= ServerVersion(5, 21, 0):
+        if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= SemanticVersion(5, 21, 0):
             notifications_logger = logging.getLogger("neo4j.notifications")
             # the client does not expose YIELD fields so we just skip these warnings for now
             notifications_logger.addFilter(
@@ -93,7 +94,7 @@ class Neo4jQueryRunner(QueryRunner):
             instance_description="GDS Session",
         )
 
-        if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= ServerVersion(5, 21, 0):
+        if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= SemanticVersion(5, 21, 0):
             notifications_logger = logging.getLogger("neo4j.notifications")
             # the client does not expose YIELD fields so we just skip these warnings for now
             notifications_logger.addFilter(
@@ -175,13 +176,13 @@ class Neo4jQueryRunner(QueryRunner):
 
             df = result.to_df()
 
-            if self._NEO4J_DRIVER_VERSION < ServerVersion(5, 0, 0):
+            if self._NEO4J_DRIVER_VERSION < SemanticVersion(5, 0, 0):
                 self._last_bookmarks = [session.last_bookmark()]
             else:
                 self._last_bookmarks = session.last_bookmarks()
 
             if (
-                Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= ServerVersion(5, 21, 0)
+                Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= SemanticVersion(5, 21, 0)
                 and result._warn_notification_severity == "WARNING"
             ):
                 # the client does not expose YIELD fields so we just skip these warnings for now
@@ -342,7 +343,7 @@ class Neo4jQueryRunner(QueryRunner):
         retrys = 0
         while retrys < retry_config.max_retries:
             try:
-                if self._NEO4J_DRIVER_VERSION < ServerVersion(5, 0, 0):
+                if self._NEO4J_DRIVER_VERSION < SemanticVersion(5, 0, 0):
                     warnings.filterwarnings(
                         "ignore",
                         category=neo4j.ExperimentalWarning,
