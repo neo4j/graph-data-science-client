@@ -18,8 +18,7 @@ from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 from pyarrow.types import is_dictionary
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, stop_after_delay, wait_exponential
 
-from graphdatascience.server_version.server_version import ServerVersion
-
+from ..semantic_version.semantic_version import SemanticVersion
 from ..version import __version__
 from .arrow_endpoint_version import ArrowEndpointVersion
 from .arrow_info import ArrowInfo
@@ -676,7 +675,7 @@ class GdsArrowClient:
             message=r"Passing a BlockManager to DataFrame is deprecated",
         )
 
-        if ServerVersion.from_string(pandas.__version__) >= ServerVersion(2, 0, 0):
+        if SemanticVersion.from_string(pandas.__version__) >= SemanticVersion(2, 0, 0):
             return arrow_table.to_pandas(types_mapper=pandas.ArrowDtype)  # type: ignore
         else:
             arrow_table = self._sanitize_arrow_table(arrow_table)
