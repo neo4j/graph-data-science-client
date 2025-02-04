@@ -3,6 +3,7 @@
 
 ## Breaking changes
 
+* Drop support for PyArrow 15
 
 ## New features
 
@@ -17,6 +18,7 @@
 ## Improvements
 
 * Support Python 3.13
+* Support PyArrow 19.0
 * Display progress bar for remote projection and open-ended tasks.
 * Improve progress bar by showing the description of the currently running task.
 * Allow passing the optional graph filter also as type `str` to `gds.graph.list()` instead of only `Graph`.
