@@ -263,6 +263,15 @@ def test_graph_nodeProperties_stream(runner: CollectingQueryRunner, gds: GraphDa
         "config": {"concurrency": 2},
     }
 
+    gds.graph.nodeProperties.stream(G, "dummyProp", "dummyLabel", concurrency=2)
+    assert runner.last_query() == "CALL gds.graph.nodeProperties.stream($graph_name, $properties, $entities, $config)"
+    assert runner.last_params() == {
+        "graph_name": "g",
+        "properties": ["dummyProp"],
+        "entities": "dummyLabel",
+        "config": {"concurrency": 2},
+    }
+
 
 def test_graph_streamRelationshipProperty(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project("g", "*", "*")

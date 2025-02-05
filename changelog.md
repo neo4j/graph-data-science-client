@@ -24,5 +24,6 @@
 * Allow passing the optional graph filter also as type `str` to `gds.graph.list()` instead of only `Graph`.
 * Listen and to SIGINT and SIGTERM and interrupt projection and write-backs based on GDS Session. Note this only works if the query runs in the main thread.
 * Avoid data copy by using the arrow-based DataFrame backend for arrow-based endpoints and if pandas>2.0
+* Support `node_properties` parameter also as type `str` instead of only list for endpoint `gds.graph.nodeProperties.stream`.
 
 ## Other changes
