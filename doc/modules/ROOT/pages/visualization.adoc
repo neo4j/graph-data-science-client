@@ -1,0 +1,9 @@
+= Visualization
+
+To visualize your projection within a Python environment such as notebook or streamlit, we recommend using the
+graph visualization library `neo4j-viz`.
+
+Please see the https://neo4j.com/docs/nvl-python/preview[`neo4j-viz` documentation] for how to get started.
+In particular, the section related to
+http://neo4j.com/docs/nvl-python/preview/integration.html#neo4j-graph-data-science-gds-library[integration with `graphdatascience`]
+and its https://neo4j.com/docs/nvl-python/preview/tutorials/gds-nvl-example.html[example tutorial] may be of interest.
