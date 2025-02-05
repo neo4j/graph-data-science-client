@@ -101,13 +101,16 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
     def stream(
         self,
         G: Graph,
-        node_properties: list[str],
+        node_properties: Union[str, list[str]],
         node_labels: Strings = ["*"],
         separate_property_columns: bool = False,
         db_node_properties: list[str] = [],
         **config: Any,
     ) -> DataFrame:
         self._namespace += ".stream"
+
+        if isinstance(node_properties, str):
+            node_properties = [node_properties]
 
         # find if list contain duplicates
         if len(set(node_properties)) != len(node_properties):
