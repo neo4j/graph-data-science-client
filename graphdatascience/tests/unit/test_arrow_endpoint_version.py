@@ -9,13 +9,9 @@ from graphdatascience.query_runner.arrow_endpoint_version import (
 @pytest.mark.parametrize(
     "arrow_versions",
     [
-        (ArrowEndpointVersion.ALPHA, []),
-        (ArrowEndpointVersion.ALPHA, ["alpha"]),
         (ArrowEndpointVersion.V1, ["v1"]),
         (ArrowEndpointVersion.V1, ["alpha", "v1"]),
         (ArrowEndpointVersion.V1, ["v1", "v2"]),
-        (ArrowEndpointVersion.ALPHA, ["alpha"]),
-        (ArrowEndpointVersion.ALPHA, ["alpha", "v2"]),
     ],
 )
 def test_from_arrow_info_multiple_versions(arrow_versions: tuple[ArrowEndpointVersion, list[str]]) -> None:
@@ -32,5 +28,4 @@ def test_from_arrow_info_fails(arrow_version: str) -> None:
 
 
 def test_prefix() -> None:
-    assert ArrowEndpointVersion.ALPHA.prefix() == ""
     assert ArrowEndpointVersion.V1.prefix() == "v1/"

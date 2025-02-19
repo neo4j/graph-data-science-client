@@ -1,3 +1,4 @@
+from .arrow_client.job_id import JobId
 from .graph.graph_create_result import GraphCreateResult
 from .graph.graph_object import Graph
 from .graph_data_science import GraphDataScience
@@ -33,4 +34,5 @@ __all__ = [
     "NRModel",
     "GraphSageModel",
     "SimpleRelEmbeddingModel",
+    "JobId"
 ]
