@@ -701,13 +701,11 @@ class GdsArrowClient:
 
     def _versioned_flight_descriptor(self, flight_descriptor: dict[str, Any]) -> dict[str, Any]:
         return (
-            flight_descriptor
-            if self._arrow_endpoint_version == ArrowEndpointVersion.ALPHA
-            else {
-                "name": "PUT_MESSAGE",
+           {
+                "name": "PUT_COMMAND",
                 "version": ArrowEndpointVersion.V1.version(),
                 "body": flight_descriptor,
-            }
+           }
         )
 
     @staticmethod
