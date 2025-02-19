@@ -700,13 +700,11 @@ class GdsArrowClient:
         return self._arrow_endpoint_version.prefix() + action_type
 
     def _versioned_flight_descriptor(self, flight_descriptor: dict[str, Any]) -> dict[str, Any]:
-        return (
-           {
-                "name": "PUT_COMMAND",
-                "version": ArrowEndpointVersion.V1.version(),
-                "body": flight_descriptor,
-           }
-        )
+        return {
+            "name": "PUT_COMMAND",
+            "version": ArrowEndpointVersion.V1.version(),
+            "body": flight_descriptor,
+        }
 
     @staticmethod
     def _sanitize_arrow_table(arrow_table: Table) -> Table:
