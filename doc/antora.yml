@@ -1,6 +1,6 @@
 name: graph-data-science-client
 title: Neo4j Graph Data Science Client
-version: '1.14-preview'
+version: '1.15.-preview'
 start_page: ROOT:index.adoc
 nav:
 - modules/ROOT/content-nav.adoc
