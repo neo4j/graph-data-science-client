@@ -4,8 +4,9 @@ services:
     volumes:
       - ${HOME}/.gds_license:/licenses/.gds_license
     environment:
+      - NEO4J_AUTH=none # for testing
+
       - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
-      - NEO4J_AUTH=none
       - NEO4J_PLUGINS=["graph-data-science"]
       - NEO4J_dbms_security_procedures_allowlist=gds.*
       - NEO4J_dbms_security_procedures_unrestricted=gds.*
@@ -14,7 +15,6 @@ services:
       - NEO4J_gds_export_location=/tmp/gds_graphs
       - NEO4J_gds_model_store__location=/tmp/gds_models
 
-      # should only be used for testing
       - NEO4J_gds_arrow_advertised__listen__address=0.0.0.0:8491
       - NEO4J_gds_arrow_listen__address=0.0.0.0:8491
 
