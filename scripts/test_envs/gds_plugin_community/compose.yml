@@ -1,0 +1,12 @@
+services:
+  neo4j:
+    image: neo4j:latest
+    environment:
+      - NEO4J_AUTH=none
+      - NEO4J_PLUGINS=["graph-data-science"]
+      - NEO4J_dbms_security_procedures_allowlist=gds.*
+      - NEO4J_dbms_security_procedures_unrestricted=gds.*
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    restart: always
