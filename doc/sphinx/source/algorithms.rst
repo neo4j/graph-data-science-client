@@ -1004,6 +1004,14 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Constructs a random subgraph based on random walks with restarts.
 
+.. py:function:: gds.hdbscan.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    Hierarchical Density-Based Spatial Clustering of Applications with Noise
+
+.. py:function:: gds.hdbscan.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.hdbscan.stats(G: Graph, **config: Any) -> Series[Any]
 
     Hierarchical Density-Based Spatial Clustering of Applications with Noise
@@ -1017,6 +1025,14 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Hierarchical Density-Based Spatial Clustering of Applications with Noise
 
 .. py:function:: gds.hdbscan.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.hdbscan.write(G: Graph, **config: Any) -> Series[Any]
+
+    Hierarchical Density-Based Spatial Clustering of Applications with Noise
+
+.. py:function:: gds.hdbscan.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
 

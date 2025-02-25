@@ -1776,6 +1776,22 @@
   },
   {
     "function": {
+      "name": "gds.hdbscan.mutate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Hierarchical Density-Based Spatial Clustering of Applications with Noise"
+  },
+  {
+    "function": {
+      "name": "gds.hdbscan.mutate.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
       "name": "gds.hdbscan.stats",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
@@ -1801,6 +1817,22 @@
   {
     "function": {
       "name": "gds.hdbscan.stream.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
+      "name": "gds.hdbscan.write",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Hierarchical Density-Based Spatial Clustering of Applications with Noise"
+  },
+  {
+    "function": {
+      "name": "gds.hdbscan.write.estimate",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
