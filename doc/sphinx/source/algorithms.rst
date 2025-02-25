@@ -1004,6 +1004,22 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Constructs a random subgraph based on random walks with restarts.
 
+.. py:function:: gds.hdbscan.stats(G: Graph, **config: Any) -> Series[Any]
+
+    Hierarchical Density-Based Spatial Clustering of Applications with Noise
+
+.. py:function:: gds.hdbscan.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.hdbscan.stream(G: Graph, **config: Any) -> Series[Any]
+
+    Hierarchical Density-Based Spatial Clustering of Applications with Noise
+
+.. py:function:: gds.hdbscan.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.hits.mutate(G: Graph, **config: Any) -> Series[Any]
 
     Hyperlink-Induced Topic Search (HITS) is a link analysis algorithm that rates nodes.
