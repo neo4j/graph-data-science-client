@@ -77,7 +77,7 @@ Finally, we need to give our session a name. We will call ours
 with the same session name and configuration.
 
 We will also set a time-to-live (TTL) for the session. This ensures that
-our session is automatically deleted after being unused for 5 hours.
+our session is automatically deleted after being unused for 30 minutes.
 This is a good practice to avoid incurring costs should we forget to
 delete the session ourselves.
 
@@ -113,7 +113,7 @@ gds = sessions.get_or_create(
     session_name="people-and-fruits",
     memory=memory,
     db_connection=db_connection,
-    ttl=timedelta(hours=5),
+    ttl=timedelta(minutes=5),
 )
 ----
 
