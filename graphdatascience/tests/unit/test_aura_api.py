@@ -614,11 +614,11 @@ def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCapture
 
     with caplog.at_level(logging.DEBUG):
         assert (
-            "Session `id0` is not running after 0.7 seconds"
-            in api.wait_for_session_running("id0", max_wait_time=0.7).error
+            "Session `id0` is not running after 0.2 seconds"
+            in api.wait_for_session_running("id0", sleep_time=0.05, max_wait_time=0.2).error
         )
 
-    assert "Session `id0` is not yet running. Current status: Creating Host: foo.bar. Retrying in 0.2" in caplog.text
+    assert "Session `id0` is not yet running. Current status: Creating Host: foo.bar. Retrying in 0.1" in caplog.text
 
 
 def test_wait_for_session_running(requests_mock: Mocker) -> None:
