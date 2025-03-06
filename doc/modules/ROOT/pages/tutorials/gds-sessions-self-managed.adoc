@@ -82,7 +82,10 @@ delete the session ourselves.
 
 [source, python, role=no-test]
 ----
-from graphdatascience.session import AlgorithmCategory
+from graphdatascience.session import AlgorithmCategory, SessionMemory
+
+# Explicitly define the size of the session
+memory = SessionMemory.m_8GB
 
 # Estimate the memory needed for the GDS session
 memory = sessions.estimate(
@@ -90,6 +93,8 @@ memory = sessions.estimate(
     relationship_count=50,
     algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
 )
+
+print(f"Estimated memory: {memory}")
 
 # Find out and specify where to create the GDS session
 cloud_locations = sessions.available_cloud_locations()

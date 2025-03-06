@@ -83,7 +83,10 @@ delete the session ourselves.
 
 [source, python, role=no-test]
 ----
-from graphdatascience.session import AlgorithmCategory
+from graphdatascience.session import AlgorithmCategory, SessionMemory
+
+# Explicitly define the size of the session
+memory = SessionMemory.m_8GB
 
 # Estimate the memory needed for the GDS session
 memory = sessions.estimate(
