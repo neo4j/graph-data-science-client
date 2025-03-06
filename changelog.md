@@ -12,5 +12,7 @@
 
 ## Improvements
 
+* Reduce calls to the Aura API during GdsSessions::get_or_create
+
 
 ## Other changes
