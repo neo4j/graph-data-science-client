@@ -113,7 +113,7 @@ gds = sessions.get_or_create(
     session_name="people-and-fruits",
     memory=memory,
     db_connection=db_connection,
-    ttl=timedelta(minutes=5),
+    ttl=timedelta(minutes=30),
 )
 ----
 
