@@ -71,6 +71,7 @@ This is a `DbmsConnectionInfo` object that contains the URI of an Neo4j instance
 This optional parameter specifies the time-to-live of the session.
 The session will be automatically deleted if the session was unused for the provided duration.
 Usage is defined as the computation of an algorithm or the projection of a graph.
+By default, the session will be deleted after 1 hour of inactivity.
 
 - **Cloud location**.
 This is a `CloudLocation` object that specifies the cloud provider and region where the GDS Session will run. Required if the DBMS connection is for a self-managed database.
