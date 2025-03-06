@@ -194,7 +194,7 @@ class FakeAuraApi(AuraApi):
     def wait_for_session_running(
         self,
         session_id: str,
-        sleep_time: float = 0.2,
+        sleep_time: float = 1.0,
         max_sleep_time: float = 5,
         max_wait_time: float = 5,
     ) -> WaitResult:
