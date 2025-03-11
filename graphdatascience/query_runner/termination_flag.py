@@ -18,8 +18,7 @@ class TerminationFlag(ABC):
         pass
 
     def assert_running(self) -> None:
-        if self.is_set():
-            raise RuntimeError("Query has been terminated")
+        pass
 
     @staticmethod
     def create(signals: Optional[list[signal.Signals]] = None) -> TerminationFlag:
@@ -38,7 +37,7 @@ class TerminationFlagImpl(TerminationFlag):
         self._event = threading.Event()
 
         def receive_signal(sig: int, frame: Optional[FrameType]) -> None:
-            logging.debug(f"Received signal {sig}. Interrupting query.")
+            logging.info(f"Received signal {sig}.")
             self._event.set()
 
         for sig in signals:
@@ -52,7 +51,9 @@ class TerminationFlagImpl(TerminationFlag):
 
     def assert_running(self) -> None:
         if self.is_set():
-            raise RuntimeError("Query has been terminated")
+            raise RuntimeError(
+                "Closing client connection. Note, the query will be continued on the server-side"
+            )
 
 
 class TerminationFlagNoop(TerminationFlag):
