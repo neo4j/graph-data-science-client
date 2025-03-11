@@ -676,7 +676,35 @@ def test_wait_for_session_running_until_failure(requests_mock: Mocker) -> None:
     api = AuraApi("", "", tenant_id="some-tenant")
 
     assert api.wait_for_session_running("id0") == WaitResult.from_error(
-        "Session `id0` failed due to: [SessionError(message='Session reached its memory limit. Create a larger instance.', reason='OutOfMemory')]"
+        "Session `id0` with name `name-0` failed due to: [SessionError(message='Session reached its memory limit. Create a larger instance.', reason='OutOfMemory')]"
+    )
+
+
+def test_wait_for_session_running_until_expired(requests_mock: Mocker) -> None:
+    mock_auth_token(requests_mock)
+    requests_mock.get(
+        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        json={
+            "data": {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Expired",
+                "instance_id": "dbid-1",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "foo.bar",
+                "memory": "4Gi",
+                "expiry_date": "1977-01-01T00:00:00Z",
+                "tenant_id": "tenant-1",
+                "user_id": "user-1",
+            },
+            "errors": [{"id": "id0", "message": "Session is expired", "reason": "Due to Inactivity"}],
+        },
+    )
+
+    api = AuraApi("", "", tenant_id="some-tenant")
+
+    assert api.wait_for_session_running("id0") == WaitResult.from_error(
+        "Session `id0` with name `name-0` is expired. Expired due to: [SessionError(message='Session is expired', reason='Due to Inactivity')]"
     )
 
 
