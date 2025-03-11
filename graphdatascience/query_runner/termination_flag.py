@@ -51,9 +51,7 @@ class TerminationFlagImpl(TerminationFlag):
 
     def assert_running(self) -> None:
         if self.is_set():
-            raise RuntimeError(
-                "Closing client connection. Note, the query will be continued on the server-side"
-            )
+            raise RuntimeError("Closing client connection. Note, the query will be continued on the server-side")
 
 
 class TerminationFlagNoop(TerminationFlag):
