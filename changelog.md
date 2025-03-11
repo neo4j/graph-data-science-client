@@ -12,7 +12,8 @@
 
 ## Improvements
 
-* Reduce calls to the Aura API during GdsSessions::get_or_create
+* Reduce calls to the Aura API during GdsSessions::get_or_create.
+* Improve error message when a query is interrupted by a signal (SIGINT or SIGTERM).
 
 
 ## Other changes
