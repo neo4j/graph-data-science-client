@@ -14,6 +14,7 @@
 
 * Reduce calls to the Aura API during GdsSessions::get_or_create.
 * Improve error message when a query is interrupted by a signal (SIGINT or SIGTERM).
+* Improve error message if session is expired.
 
 
 ## Other changes
