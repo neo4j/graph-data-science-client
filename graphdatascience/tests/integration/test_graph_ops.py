@@ -9,7 +9,7 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.tests.integration.conftest import AUTH, DB, URI
+from graphdatascience.tests.integration.conftest import AUTH, DB, URI, is_neo4j_44
 
 GRAPH_NAME = "g"
 
@@ -56,7 +56,7 @@ def test_project_graph_cypher(gds: GraphDataScience) -> None:
     node_query = "MATCH (n:Node) RETURN id(n) as id"
     relationship_query = "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
 
-    if gds.server_version() >= ServerVersion(2, 4, 0):
+    if gds.server_version() >= ServerVersion(2, 4, 0) and not is_neo4j_44(gds):
         with pytest.warns(DeprecationWarning):
             G, result = gds.graph.project.cypher(GRAPH_NAME, node_query, relationship_query)
     else:
@@ -73,7 +73,7 @@ def test_project_graph_cypher_estimate(gds: GraphDataScience) -> None:
     node_query = "MATCH (n:Node) RETURN id(n) as id"
     relationship_query = "MATCH (n:Node)-->(m:Node) RETURN id(n) as source, id(m) as target, 'T' as type"
 
-    if gds.server_version() >= ServerVersion(2, 5, 0):
+    if gds.server_version() >= ServerVersion(2, 5, 0) and not is_neo4j_44(gds):
         with pytest.warns(DeprecationWarning):
             result = gds.graph.project.cypher.estimate(node_query, relationship_query)
     else:
@@ -103,7 +103,7 @@ def test_cypher_projection_empty_graph(gds: GraphDataScience) -> None:
 def test_beta_project_subgraph(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    if gds.server_version() >= ServerVersion(2, 5, 0):
+    if gds.server_version() >= ServerVersion(2, 5, 0) and not is_neo4j_44(gds):
         with pytest.warns(DeprecationWarning):
             sub_G, result = gds.beta.graph.project.subgraph("s", from_G, "n.x > 1", "*", concurrency=2)
     else:
@@ -153,7 +153,7 @@ def test_sample_rwr(runner: QueryRunner, gds: GraphDataScience) -> None:
 def test_sample_rwr_alpha(runner: QueryRunner, gds: GraphDataScience) -> None:
     from_G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    if gds.server_version() >= ServerVersion(2, 4, 0):
+    if gds.server_version() >= ServerVersion(2, 4, 0) and not is_neo4j_44(gds):
         with pytest.warns(DeprecationWarning):
             rwr_G, result = gds.alpha.graph.sample.rwr("s", from_G, samplingRatio=0.6, concurrency=1, randomSeed=42)
     else:
@@ -267,7 +267,7 @@ def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
 def test_beta_graph_export_csv_estimate(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    if gds.server_version() >= ServerVersion(2, 5, 0):
+    if gds.server_version() >= ServerVersion(2, 5, 0) and not is_neo4j_44(gds):
         with pytest.warns(DeprecationWarning):
             result = gds.beta.graph.export.csv.estimate(G, exportName="dummy")
     else:
@@ -337,6 +337,9 @@ def test_graph_nodeProperty_stream_with_arrow_no_db() -> None:
 
 def test_graph_streamNodeProperty_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
+
+    if is_neo4j_44(gds_without_arrow):
+        return
 
     with pytest.warns(DeprecationWarning):
         result = gds_without_arrow.graph.streamNodeProperty(G, "x", concurrency=2)
@@ -518,6 +521,9 @@ def test_graph_nodeProperties_stream_raise_error_with_duplicate_keys(gds: GraphD
 def test_graph_streamNodeProperties_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
+    if is_neo4j_44(gds_without_arrow):
+        return
+
     with pytest.warns(DeprecationWarning):
         result = gds_without_arrow.graph.streamNodeProperties(G, ["x", "y"], concurrency=2)
 
@@ -561,6 +567,9 @@ def test_graph_nodeProperties_stream_without_arrow(gds_without_arrow: GraphDataS
 def test_graph_nodeProperties_fail_on_duplicate_node_properties(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "y"]}}, "*")
 
+    if is_neo4j_44(gds):
+        return
+
     with pytest.raises(ValueError, match="The provided node_properties contain duplicate property names"):
         gds.graph.nodeProperties.stream(G, ["x", "x", "y"], db_node_properties=["z", "name"], concurrency=2)
 
@@ -572,6 +581,9 @@ def test_graph_streamNodeProperties_without_arrow_separate_property_columns(
     gds_without_arrow: GraphDataScience,
 ) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, {"Node": {"properties": ["x", "z"]}}, "*")
+
+    if is_neo4j_44(gds_without_arrow):
+        return
 
     with pytest.warns(DeprecationWarning):
         result = gds_without_arrow.graph.streamNodeProperties(
@@ -625,6 +637,9 @@ def test_graph_relationshipProperty_stream_with_arrow(gds: GraphDataScience) -> 
 
 def test_graph_streamRelationshipProperty_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": "relX"}})
+
+    if is_neo4j_44(gds_without_arrow):
+        return
 
     with pytest.warns(DeprecationWarning):
         result = gds_without_arrow.graph.streamRelationshipProperty(G, "relX", concurrency=2)
@@ -746,6 +761,9 @@ def test_graph_relationshipProperties_stream_with_arrow_rel_as_str_sep(gds: Grap
 def test_graph_streamRelationshipProperties_without_arrow(gds_without_arrow: GraphDataScience) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
 
+    if is_neo4j_44(gds_without_arrow):
+        return
+
     with pytest.warns(DeprecationWarning):
         result = gds_without_arrow.graph.streamRelationshipProperties(G, ["relX", "relY"], concurrency=2)
 
@@ -787,6 +805,8 @@ def test_graph_streamRelationshipProperties_without_arrow_separate_property_colu
     gds_without_arrow: GraphDataScience,
 ) -> None:
     G, _ = gds_without_arrow.graph.project(GRAPH_NAME, "*", {"REL": {"properties": ["relX", "relY"]}})
+    if is_neo4j_44(gds_without_arrow):
+        return
 
     with pytest.warns(DeprecationWarning):
         result = gds_without_arrow.graph.streamRelationshipProperties(
@@ -863,7 +883,7 @@ def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
     else:
         result = gds.beta.graph.relationships.stream(G, ["REL", "REL2"])
 
-    with pytest.warns(DeprecationWarning):
+    def workload() -> None:
         expected = gds.run_cypher("MATCH (n)-[r]->(m) RETURN id(n) AS src_id, id(m) AS trg_id, type(r) AS rel_type")
 
         assert list(result.keys()) == ["sourceNodeId", "targetNodeId", "relationshipType"]
@@ -871,6 +891,12 @@ def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
         assert result.shape[0] == expected.shape[0]
         for _, row in expected.iterrows():
             assert (result == np.array(row)).all(1).any()
+
+    if is_neo4j_44(gds):
+        workload()
+    else:
+        with pytest.warns(DeprecationWarning):
+            workload()
 
     by_rel_type = result.by_rel_type()
 
@@ -888,7 +914,7 @@ def test_graph_relationships_stream_with_arrow(gds: GraphDataScience) -> None:
 def test_beta_graph_relationships_to_undirected(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "Node", ["REL", "REL2"])
 
-    if gds.server_version() >= ServerVersion(2, 5, 0):
+    if gds.server_version() >= ServerVersion(2, 5, 0) and not is_neo4j_44(gds):
         with pytest.warns(DeprecationWarning):
             result = gds.beta.graph.relationships.toUndirected(G, "REL", "REL_UNDIRECTED")
     else:
@@ -912,8 +938,12 @@ def test_graph_writeNodeProperties(gds: GraphDataScience) -> None:
 
     gds.pageRank.mutate(G, mutateProperty="rank", dampingFactor=0.2, tolerance=0.3)
 
-    with pytest.warns(DeprecationWarning):
+    if is_neo4j_44(gds):
         result = gds.graph.writeNodeProperties(G, ["rank"], concurrency=2)
+    else:
+        with pytest.warns(DeprecationWarning):
+            result = gds.graph.writeNodeProperties(G, ["rank"], concurrency=2)
+
     assert result["propertiesWritten"] == 3
 
 
@@ -922,8 +952,12 @@ def test_graph_writeRelationship(gds: GraphDataScience) -> None:
 
     gds.nodeSimilarity.mutate(G, mutateRelationshipType="SIMILAR", mutateProperty="score", similarityCutoff=0)
 
-    with pytest.warns(DeprecationWarning):
+    if is_neo4j_44(gds):
         result = gds.graph.writeRelationship(G, "SIMILAR", "score", concurrency=2)
+    else:
+        with pytest.warns(DeprecationWarning):
+            result = gds.graph.writeRelationship(G, "SIMILAR", "score", concurrency=2)
+
     assert result["relationshipsWritten"] == 2
     assert result["propertiesWritten"] == 2
 
@@ -978,8 +1012,12 @@ def test_graph_nodeLabel_mutate(gds: GraphDataScience) -> None:
 def test_graph_removeNodeProperties_21(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, {"Node": {"properties": "x"}}, "*")
 
-    with pytest.warns(DeprecationWarning):
+    if is_neo4j_44(gds):
         result = gds.graph.removeNodeProperties(G, ["x"], concurrency=2)
+    else:
+        with pytest.warns(DeprecationWarning):
+            result = gds.graph.removeNodeProperties(G, ["x"], concurrency=2)
+
     assert result["propertiesRemoved"] == 3
 
 
@@ -1003,8 +1041,11 @@ def test_graph_removeNodeProperties_20(gds: GraphDataScience) -> None:
 def test_graph_deleteRelationships(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", ["REL", "REL2"])
 
-    with pytest.warns(DeprecationWarning):
+    if is_neo4j_44(gds):
         result = gds.graph.deleteRelationships(G, "REL")
+    else:
+        with pytest.warns(DeprecationWarning):
+            result = gds.graph.deleteRelationships(G, "REL")
     assert result["deletedRelationships"] == 3
 
 
@@ -1017,7 +1058,7 @@ def test_graph_relationships_drop(gds: GraphDataScience) -> None:
 
 
 def test_beta_graph_generate(gds: GraphDataScience) -> None:
-    if gds.server_version() >= ServerVersion(2, 5, 0):
+    if gds.server_version() >= ServerVersion(2, 5, 0) and not is_neo4j_44(gds):
         with pytest.warns(DeprecationWarning):
             G, result = gds.beta.graph.generate(GRAPH_NAME, 12, 2)
     else:

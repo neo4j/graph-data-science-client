@@ -103,6 +103,18 @@ def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Generator[AuraGraphD
     _gds.close()
 
 
+def is_neo4j_44(gds: GraphDataScience) -> bool:
+    try:
+        result = gds.run_cypher(
+            "CALL dbms.components() YIELD name, versions, edition unwind versions as version RETURN name, version, edition"
+        )
+        version = result["version"][0]
+        return version.startswith("4.4")  # type: ignore
+    except Exception as e:
+        print(e)
+        return False
+
+
 @pytest.fixture(autouse=True)
 def clean_up(gds: GraphDataScience) -> Generator[None, None, None]:
     yield

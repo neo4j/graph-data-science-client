@@ -5,7 +5,7 @@ from neo4j import Driver, GraphDatabase
 
 from graphdatascience import GraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.tests.integration.conftest import AUTH, URI
+from graphdatascience.tests.integration.conftest import AUTH, URI, is_neo4j_44
 
 GRAPH_NAME = "g"
 
@@ -204,6 +204,9 @@ def test_auto_completion_false_positives(gds: GraphDataScience) -> None:
 
 
 def test_forward_server_side_warning(gds: GraphDataScience) -> None:
+    if is_neo4j_44(gds):
+        return
+
     with pytest.raises(Warning, match="The query used a deprecated function: `id`."):
         gds.run_cypher("MATCH (n) RETURN id(n)")
 
@@ -212,6 +215,9 @@ def test_forward_server_side_warning(gds: GraphDataScience) -> None:
 @pytest.mark.compatible_with_db_driver(min_inclusive=ServerVersion(5, 21, 0))
 def test_forward_driver_configured_warning(warning_driver: Driver) -> None:
     gds = GraphDataScience(warning_driver)
+
+    if is_neo4j_44(gds):
+        return
 
     with pytest.raises(Warning, match="The query used a deprecated function: `id`."):
         gds.run_cypher("MATCH (n) RETURN id(n)")
