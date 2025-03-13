@@ -11,6 +11,7 @@ from graphdatascience.model.node_classification_model import NCModel
 from graphdatascience.model.node_regression_model import NRModel
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.tests.integration.conftest import is_neo4j_44
 
 PIPE_NAME = "pipe"
 
@@ -166,13 +167,14 @@ def gs_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
 @pytest.mark.model_store_location
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 def test_beta_alpha_endpoints_25(gds: GraphDataScience, lp_model: LPModel) -> None:
-    with pytest.warns(DeprecationWarning):
-        gds.beta.model.list(lp_model)
-        gds.beta.model.exists(lp_model.name())
-        gds.alpha.model.store(lp_model)
-        gds.beta.model.drop(lp_model)
-        gds.alpha.model.load(lp_model.name())
-        gds.alpha.model.publish(lp_model)
+    if not is_neo4j_44(gds):
+        with pytest.warns(DeprecationWarning):
+            gds.beta.model.list(lp_model)
+            gds.beta.model.exists(lp_model.name())
+            gds.alpha.model.store(lp_model)
+            gds.beta.model.drop(lp_model)
+            gds.alpha.model.load(lp_model.name())
+            gds.alpha.model.publish(lp_model)
 
 
 @pytest.mark.model_store_location
