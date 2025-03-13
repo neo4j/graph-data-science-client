@@ -561,7 +561,7 @@ def test_get_or_create_failed_session(mocker: MockerFixture, aura_api: AuraApi) 
     with pytest.raises(
         RuntimeError,
         match=re.escape(
-            "Failed to get or create session `one`: Session `ffff0-ffff1` failed due to: [SessionError(message='error', reason='reason')]"
+            "Failed to get or create session `one`: Session `ffff0-ffff1` with name `one` failed due to: [SessionError(message='error', reason='reason')]"
         ),
     ):
         sessions.get_or_create("one", SessionMemory.m_8GB, db_connection)
