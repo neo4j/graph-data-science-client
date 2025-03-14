@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import math
 import warnings
 from datetime import datetime, timedelta, timezone
@@ -74,10 +73,7 @@ class DedicatedSessions:
 
         dbid = AuraApi.extract_id(db_connection.uri)
 
-        # hashing the password to avoid storing the actual db password in Aura
-        password = hashlib.sha256(db_connection.password.encode()).hexdigest()
-
-        session_details = self._get_or_create_session(session_name, dbid, password, memory.value, ttl, cloud_location)
+        session_details = self._get_or_create_session(session_name, dbid, memory.value, ttl, cloud_location)
 
         if session_details.expiry_date:
             until_expiry: timedelta = session_details.expiry_date - datetime.now(timezone.utc)
@@ -95,8 +91,8 @@ class DedicatedSessions:
 
         session_connection = DbmsConnectionInfo(
             uri=connection_url,
-            username=DedicatedSessions.GDS_SESSION_USER,
-            password=password,
+            username=self._aura_api._credentials[0],
+            password=self._aura_api._credentials[1],
         )
 
         return self._construct_client(
@@ -154,7 +150,6 @@ class DedicatedSessions:
         self,
         session_name: str,
         dbid: str,
-        pwd: str,
         memory: SessionMemoryValue,
         ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
@@ -171,13 +166,12 @@ class DedicatedSessions:
         if cloud_location:
             return self._aura_api.get_or_create_session(
                 name=session_name,
-                pwd=pwd,
                 memory=memory,
                 ttl=ttl,
                 cloud_location=cloud_location,
             )
         else:
-            return self._aura_api.get_or_create_session(name=session_name, dbid=dbid, pwd=pwd, memory=memory, ttl=ttl)
+            return self._aura_api.get_or_create_session(name=session_name, dbid=dbid, memory=memory, ttl=ttl)
 
     def _construct_client(
         self,

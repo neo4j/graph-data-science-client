@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import math
 import time
+import uuid
 import warnings
 from collections import defaultdict
 from datetime import timedelta
@@ -44,8 +45,9 @@ class AuraApi:
         self, client_id: str, client_secret: str, tenant_id: Optional[str] = None, aura_env: Optional[str] = None
     ) -> None:
         self._base_uri = AuraApi.base_uri(aura_env)
+        self._credentials = (client_id, client_secret)
 
-        self._request_session = self._init_request_session((client_id, client_secret))
+        self._request_session = self._init_request_session(self._credentials)
         self._logger = logging.getLogger()
 
         self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
@@ -99,12 +101,12 @@ class AuraApi:
     def get_or_create_session(
         self,
         name: str,
-        pwd: str,
         memory: SessionMemoryValue,
         dbid: Optional[str] = None,
         ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
     ) -> SessionDetails:
+        pwd = str(uuid.uuid4())  # password wont be used and will go away in v1 endpoints
         json = {"name": name, "password": pwd, "memory": memory.value, "tenant_id": self._tenant_id}
 
         if dbid:
