@@ -54,7 +54,6 @@ class FakeAuraApi(AuraApi):
     def get_or_create_session(
         self,
         name: str,
-        pwd: str,
         memory: SessionMemoryValue,
         dbid: Optional[str] = None,
         ttl: Optional[timedelta] = None,
@@ -232,7 +231,6 @@ def test_list_session(aura_api: AuraApi) -> None:
     session = aura_api.get_or_create_session(
         name="gds-session-my-session-name",
         dbid=aura_api.list_instances()[0].id,
-        pwd="some_pwd",
         memory=SessionMemory.m_8GB.value,
     )
     sessions = DedicatedSessions(aura_api)
@@ -261,7 +259,6 @@ def test_list_session_paused_instance(aura_api: AuraApi) -> None:
     session = aura_api.get_or_create_session(
         name="gds-session-my-session-name",
         dbid=db.id,
-        pwd="some_pwd",
         memory=SessionMemory.m_8GB.value,
     )
     sessions = DedicatedSessions(aura_api)
@@ -318,7 +315,6 @@ def test_list_session_gds_instance(aura_api: AuraApi) -> None:
     session = aura_api.get_or_create_session(
         name="gds-session-my-session-name",
         dbid=db.id,
-        pwd="some_pwd",
         memory=SessionMemory.m_8GB.value,
     )
     sessions = DedicatedSessions(aura_api)
@@ -565,8 +561,8 @@ def test_get_or_create_failed_session(mocker: MockerFixture, aura_api: AuraApi) 
 
 
 def test_delete_session_by_name(aura_api: AuraApi) -> None:
-    aura_api.get_or_create_session("one", "pwd", memory=SessionMemory.m_8GB.value, dbid="12345")
-    aura_api.get_or_create_session("other", "pwd", memory=SessionMemory.m_8GB.value, dbid="123123")
+    aura_api.get_or_create_session("one", memory=SessionMemory.m_8GB.value, dbid="12345")
+    aura_api.get_or_create_session("other", memory=SessionMemory.m_8GB.value, dbid="123123")
 
     sessions = DedicatedSessions(aura_api)
 
@@ -621,8 +617,8 @@ def test_delete_session_by_name_admin() -> None:
 
 
 def test_delete_session_by_id(aura_api: AuraApi) -> None:
-    s1 = aura_api.get_or_create_session("one", "pwd", memory=SessionMemory.m_8GB.value, dbid="12345")
-    s2 = aura_api.get_or_create_session("other", "pwd", memory=SessionMemory.m_8GB.value, dbid="123123")
+    s1 = aura_api.get_or_create_session("one", memory=SessionMemory.m_8GB.value, dbid="12345")
+    s2 = aura_api.get_or_create_session("other", memory=SessionMemory.m_8GB.value, dbid="123123")
 
     sessions = DedicatedSessions(aura_api)
     assert sessions.delete(session_id=s1.id)
@@ -631,7 +627,7 @@ def test_delete_session_by_id(aura_api: AuraApi) -> None:
 
 def test_delete_nonexisting_session(aura_api: AuraApi) -> None:
     db1 = aura_api.create_instance("db1", SessionMemory.m_4GB.value, "aura", "leipzig").id
-    aura_api.get_or_create_session("one", db1, memory=SessionMemory.m_8GB.value, dbid="12345")
+    aura_api.get_or_create_session("one", memory=SessionMemory.m_8GB.value, dbid=db1)
     sessions = DedicatedSessions(aura_api)
 
     assert sessions.delete(session_name="other") is False
@@ -658,7 +654,6 @@ def test_delete_session_paused_instance(aura_api: AuraApi) -> None:
     session = aura_api.get_or_create_session(
         name="gds-session-my-session-name",
         dbid=paused_db.id,
-        pwd="some_pwd",
         memory=SessionMemory.m_8GB.value,
     )
     sessions = DedicatedSessions(aura_api)

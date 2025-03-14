@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import math
-import uuid
 import warnings
 from datetime import datetime, timedelta, timezone
 from typing import Optional
@@ -163,19 +162,16 @@ class DedicatedSessions:
         if cloud_location and db_instance:
             raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
 
-        pwd = str(uuid.uuid4())  # password wont be used and will go away in v1 endpoints
-
         # If cloud location is provided we go for self managed DBs path
         if cloud_location:
             return self._aura_api.get_or_create_session(
                 name=session_name,
-                pwd=pwd,
                 memory=memory,
                 ttl=ttl,
                 cloud_location=cloud_location,
             )
         else:
-            return self._aura_api.get_or_create_session(name=session_name, dbid=dbid, pwd=pwd, memory=memory, ttl=ttl)
+            return self._aura_api.get_or_create_session(name=session_name, dbid=dbid, memory=memory, ttl=ttl)
 
     def _construct_client(
         self,
