@@ -227,9 +227,6 @@ def aura_api() -> AuraApi:
     return FakeAuraApi(client_id="client-id")
 
 
-HASHED_DB_PASSWORD = "722cbc618c015c7c062f071868d9bb5f207f35a317e71054740716642cfd0f61"
-
-
 def test_list_session(aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
     session = aura_api.get_or_create_session(
@@ -354,7 +351,7 @@ def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> No
             "show_progress": False,
         },
         "session_connection": DbmsConnectionInfo(
-            uri="neo4j+s://foo.bar", username="neo4j", password=HASHED_DB_PASSWORD
+            uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
         ),
         "session_id": "ffff0-ffff1",
     }
@@ -392,7 +389,7 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
             "show_progress": False,
         },
         "session_connection": DbmsConnectionInfo(
-            uri="neo4j+s://foo.bar", username="neo4j", password=HASHED_DB_PASSWORD
+            uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
         ),
         "session_id": "None-ffff0",
     }
@@ -433,7 +430,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
             "show_progress": False,
         },
         "session_connection": DbmsConnectionInfo(
-            uri="neo4j+s://foo.bar", username="neo4j", password=HASHED_DB_PASSWORD
+            uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
         ),
         "session_id": "ffff0-ffff1",
     }
