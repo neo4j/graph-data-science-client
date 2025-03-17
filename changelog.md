@@ -18,3 +18,5 @@
 
 
 ## Other changes
+
+* Aura API credentials will now be used to authenticate with the Session
