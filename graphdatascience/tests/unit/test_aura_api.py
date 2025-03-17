@@ -42,9 +42,13 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
 
     def assert_body(request: _RequestObjectProxy) -> bool:
-        assert request.json() == {
+        actual = request.json()
+
+        assert len(actual["password"]) == 36
+        del actual["password"]
+
+        assert actual == {
             "name": "name-0",
-            "password": "pwd-2",
             "memory": "4GB",
             "instance_id": "dbid-1",
             "ttl": "42.0s",
@@ -96,10 +100,14 @@ def test_create_dedicated_session(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
 
     def assert_body(request: _RequestObjectProxy) -> bool:
-        assert request.json() == {
+        actual = request.json()
+
+        assert len(actual["password"]) == 36
+        del actual["password"]
+
+        assert actual == {
             "name": "name-0",
             "tenant_id": "some-tenant",
-            "password": "pwd-2",
             "memory": "4GB",
             "cloud_provider": "aws",
             "region": "leipzig-1",
