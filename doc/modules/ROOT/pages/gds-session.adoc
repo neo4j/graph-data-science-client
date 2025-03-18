@@ -140,12 +140,21 @@ sessions.list()
 
 === Deleting a GDS Session
 
-Use the `delete()` method to delete a GDS Session.
-This will terminate the session and stop any running costs from accumulating further.
+Deleting a GDS Session will terminate the session and stop any running costs from accumulating further.
 Deleting a session will not affect the configured Neo4j data source.
 However, any data not written back to the Neo4j instance will be lost.
 
-.Deleting a GDS Session:
+If you have an open connection to the session:
+
+.Deleting a GDS Session via an open client connection:
+[source, python, role=no-test]
+----
+gds.delete()
+----
+
+Use the `delete()` method to delete a GDS Session.
+
+.Deleting a GDS Session via the GdsSessions object:
 [source, python, role=no-test]
 ----
 sessions.delete(session_name="my-new-session")
