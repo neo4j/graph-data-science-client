@@ -14,6 +14,7 @@ from pyarrow.flight import (
     Ticket,
 )
 
+from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.gds_arrow_client import AuthMiddleware, GdsArrowClient
 
 ActionParam = Union[str, tuple[str, Any], Action]
@@ -120,13 +121,13 @@ def flaky_flight_server() -> Generator[None, FlakyFlightServer, None]:
 
 @pytest.fixture()
 def flight_client(flight_server: FlightServer) -> Generator[GdsArrowClient, None, None]:
-    with GdsArrowClient("localhost", flight_server.port) as client:
+    with GdsArrowClient.create(ArrowInfo(f"localhost:{flight_server.port}", True, True, ["v1"])) as client:
         yield client
 
 
 @pytest.fixture()
 def flaky_flight_client(flaky_flight_server: FlakyFlightServer) -> Generator[GdsArrowClient, None, None]:
-    with GdsArrowClient("localhost", flaky_flight_server.port) as client:
+    with GdsArrowClient.create(ArrowInfo(f"localhost:{flaky_flight_server.port}", True, True, ["v1"])) as client:
         yield client
 
 

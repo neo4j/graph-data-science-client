@@ -5,6 +5,8 @@ from typing import Any, Optional
 
 from pandas import DataFrame
 
+from graphdatascience.retry_utils.retry_config import RetryConfig
+
 from ..call_parameters import CallParameters
 from ..query_runner.arrow_info import ArrowInfo
 from ..server_version.server_version import ServerVersion
@@ -24,6 +26,7 @@ class ArrowQueryRunner(QueryRunner):
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
         connection_string_override: Optional[str] = None,
+        retry_config: Optional[RetryConfig] = None,
     ) -> ArrowQueryRunner:
         if not arrow_info.enabled:
             raise ValueError("Arrow is not enabled on the server")
@@ -35,6 +38,7 @@ class ArrowQueryRunner(QueryRunner):
             disable_server_verification,
             tls_root_certs,
             connection_string_override,
+            retry_config=retry_config,
         )
 
         return ArrowQueryRunner(gds_arrow_client, fallback_query_runner, fallback_query_runner.server_version())
