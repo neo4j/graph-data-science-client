@@ -142,6 +142,7 @@ class RemoteWriteBackV3(WriteProtocol):
         logger = logging.getLogger()
 
         @retry(
+            reraise=True,
             retry=retry_if_result(is_not_completed),
             wait=wait_incrementing(start=0.2, increment=0.2, max=2),
             before=before_log(
