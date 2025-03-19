@@ -1,8 +1,10 @@
 import pytest
 from pyarrow.flight import FlightUnavailableError
+from tenacity import retry_any, stop_after_attempt, wait_fixed
 
 from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
+from graphdatascience.retry_utils.retry_config import RetryConfig
 from graphdatascience.server_version.server_version import ServerVersion
 
 from ...query_runner.arrow_endpoint_version import ArrowEndpointVersion
@@ -14,7 +16,13 @@ def test_create(runner: CollectingQueryRunner) -> None:
     arrow_info = ArrowInfo(
         listenAddress="localhost:1234", enabled=True, running=True, versions=[ArrowEndpointVersion.V1.version()]
     )
-    arrow_runner = ArrowQueryRunner.create(runner, arrow_info)
+    retry_config = RetryConfig(
+        retry=retry_any(),
+        stop=(stop_after_attempt(1)),
+        wait=wait_fixed(0),
+    )
+
+    arrow_runner = ArrowQueryRunner.create(runner, arrow_info, retry_config=retry_config)
 
     assert isinstance(arrow_runner, ArrowQueryRunner)
 
