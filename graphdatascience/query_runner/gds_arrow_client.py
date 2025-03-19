@@ -12,11 +12,27 @@ from typing import Any, Callable, Dict, Iterable, Optional, Type, Union
 import pandas
 import pyarrow
 from neo4j.exceptions import ClientError
-from pyarrow import Array, ChunkedArray, DictionaryArray, RecordBatch, Table, chunked_array, flight
+from pyarrow import Array, ChunkedArray, DictionaryArray, RecordBatch, Schema, Table, chunked_array, flight
 from pyarrow import __version__ as arrow_version
-from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
+from pyarrow.flight import (
+    ClientMiddleware,
+    ClientMiddlewareFactory,
+    FlightDescriptor,
+    FlightMetadataReader,
+    FlightStreamWriter,
+    FlightTimedOutError,
+    FlightUnavailableError,
+)
 from pyarrow.types import is_dictionary
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, stop_after_delay, wait_exponential
+from tenacity import (
+    retry,
+    retry_any,
+    retry_if_exception_type,
+    stop_after_attempt,
+    stop_after_delay,
+    wait_exponential,
+    wait_fixed,
+)
 
 from ..semantic_version.semantic_version import SemanticVersion
 from ..version import __version__
@@ -131,6 +147,11 @@ class GdsArrowClient:
         """
         return self._host, self._port
 
+    @retry(
+        retry=retry_any(retry_if_exception_type(FlightTimedOutError), retry_if_exception_type(FlightUnavailableError)),
+        stop=stop_after_attempt(3),
+        wait=wait_fixed(1),
+    )
     def request_token(self) -> Optional[str]:
         """
         Requests a token from the server and returns it.
@@ -571,6 +592,11 @@ class GdsArrowClient:
             self._flight_client = self._instantiate_flight_client()
         return self._flight_client
 
+    @retry(
+        retry=retry_any(retry_if_exception_type(FlightTimedOutError), retry_if_exception_type(FlightUnavailableError)),
+        stop=(stop_after_delay(10) | stop_after_attempt(5)),
+        wait=wait_exponential(multiplier=1, min=1, max=10),
+    )
     def _send_action(self, action_type: str, meta_data: dict[str, Any]) -> dict[str, Any]:
         action_type = self._versioned_action_type(action_type)
 
@@ -586,6 +612,16 @@ class GdsArrowClient:
         except Exception as e:
             self.handle_flight_error(e)
             raise e  # unreachable
+
+    @retry(
+        retry=retry_any(retry_if_exception_type(FlightTimedOutError), retry_if_exception_type(FlightUnavailableError)),
+        stop=(stop_after_delay(10) | stop_after_attempt(5)),
+        wait=wait_exponential(multiplier=1, min=1, max=10),
+    )
+    def _safe_do_put(
+        self, upload_descriptor: FlightDescriptor, schema: Schema
+    ) -> tuple[FlightStreamWriter, FlightMetadataReader]:
+        return self._client().do_put(upload_descriptor, schema)  # type: ignore
 
     def _upload_data(
         self,
@@ -605,8 +641,7 @@ class GdsArrowClient:
         flight_descriptor = self._versioned_flight_descriptor({"name": graph_name, "entity_type": entity_type})
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
 
-        client = self._client()
-        put_stream, ack_stream = client.do_put(upload_descriptor, batches[0].schema)
+        put_stream, ack_stream = self._safe_do_put(upload_descriptor, batches[0].schema)
 
         @retry(
             stop=(stop_after_delay(10) | stop_after_attempt(5)),
@@ -629,6 +664,11 @@ class GdsArrowClient:
         except Exception as e:
             GdsArrowClient.handle_flight_error(e)
 
+    @retry(
+        retry=retry_any(retry_if_exception_type(FlightTimedOutError), retry_if_exception_type(FlightUnavailableError)),
+        stop=(stop_after_delay(10) | stop_after_attempt(5)),
+        wait=wait_exponential(multiplier=1, min=1, max=10),
+    )
     def _do_get(
         self,
         database: str,
