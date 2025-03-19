@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import json
+import logging
 import re
 import time
 import warnings
@@ -34,10 +35,14 @@ from tenacity import (
     wait_fixed,
 )
 
+from graphdatascience.retry_utils.retry_utils import before_log
+
 from ..semantic_version.semantic_version import SemanticVersion
 from ..version import __version__
 from .arrow_endpoint_version import ArrowEndpointVersion
 from .arrow_info import ArrowInfo
+
+_arrow_client_logger = logging.getLogger("gds_arrow_client")
 
 
 class GdsArrowClient:
@@ -148,6 +153,7 @@ class GdsArrowClient:
         return self._host, self._port
 
     @retry(
+        before=before_log("Request token", _arrow_client_logger, logging.DEBUG),
         retry=retry_any(retry_if_exception_type(FlightTimedOutError), retry_if_exception_type(FlightUnavailableError)),
         stop=stop_after_attempt(3),
         wait=wait_fixed(1),
@@ -593,6 +599,7 @@ class GdsArrowClient:
         return self._flight_client
 
     @retry(
+        before=before_log("Send action", _arrow_client_logger, logging.DEBUG),
         retry=retry_any(retry_if_exception_type(FlightTimedOutError), retry_if_exception_type(FlightUnavailableError)),
         stop=(stop_after_delay(10) | stop_after_attempt(5)),
         wait=wait_exponential(multiplier=1, min=1, max=10),
@@ -614,6 +621,7 @@ class GdsArrowClient:
             raise e  # unreachable
 
     @retry(
+        before=before_log("Do put", _arrow_client_logger, logging.DEBUG),
         retry=retry_any(retry_if_exception_type(FlightTimedOutError), retry_if_exception_type(FlightUnavailableError)),
         stop=(stop_after_delay(10) | stop_after_attempt(5)),
         wait=wait_exponential(multiplier=1, min=1, max=10),
@@ -644,6 +652,7 @@ class GdsArrowClient:
         put_stream, ack_stream = self._safe_do_put(upload_descriptor, batches[0].schema)
 
         @retry(
+            before=before_log("Upload batch", _arrow_client_logger, logging.DEBUG),
             stop=(stop_after_delay(10) | stop_after_attempt(5)),
             wait=wait_exponential(multiplier=1, min=1, max=10),
             retry=(
@@ -665,6 +674,7 @@ class GdsArrowClient:
             GdsArrowClient.handle_flight_error(e)
 
     @retry(
+        before=before_log("Do get", _arrow_client_logger, logging.DEBUG),
         retry=retry_any(retry_if_exception_type(FlightTimedOutError), retry_if_exception_type(FlightUnavailableError)),
         stop=(stop_after_delay(10) | stop_after_attempt(5)),
         wait=wait_exponential(multiplier=1, min=1, max=10),
