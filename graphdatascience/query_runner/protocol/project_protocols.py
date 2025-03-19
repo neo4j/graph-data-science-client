@@ -133,6 +133,7 @@ class ProjectProtocolV3(ProjectProtocol):
         logger = getLogger()
 
         @retry(
+            reraise=True,
             before=before_log(f"Projection (graph: `{params['graph_name']}`)", logger, DEBUG),
             retry=retry_if_result(is_not_done),
             wait=wait_incrementing(start=0.2, increment=0.2, max=2),

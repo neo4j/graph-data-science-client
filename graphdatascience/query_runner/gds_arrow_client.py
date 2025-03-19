@@ -32,7 +32,6 @@ from tenacity import (
     stop_after_attempt,
     stop_after_delay,
     wait_exponential,
-    wait_fixed,
 )
 
 from graphdatascience.retry_utils.retry_utils import before_log
@@ -153,10 +152,11 @@ class GdsArrowClient:
         return self._host, self._port
 
     @retry(
+        reraise=True,
         before=before_log("Request token", _arrow_client_logger, logging.DEBUG),
         retry=retry_any(retry_if_exception_type(FlightTimedOutError), retry_if_exception_type(FlightUnavailableError)),
-        stop=stop_after_attempt(3),
-        wait=wait_fixed(1),
+        stop=(stop_after_delay(10) | stop_after_attempt(5)),
+        wait=wait_exponential(multiplier=1, min=1, max=10),
     )
     def request_token(self) -> Optional[str]:
         """
@@ -599,6 +599,7 @@ class GdsArrowClient:
         return self._flight_client
 
     @retry(
+        reraise=True,
         before=before_log("Send action", _arrow_client_logger, logging.DEBUG),
         retry=retry_any(retry_if_exception_type(FlightTimedOutError), retry_if_exception_type(FlightUnavailableError)),
         stop=(stop_after_delay(10) | stop_after_attempt(5)),
@@ -621,6 +622,7 @@ class GdsArrowClient:
             raise e  # unreachable
 
     @retry(
+        reraise=True,
         before=before_log("Do put", _arrow_client_logger, logging.DEBUG),
         retry=retry_any(retry_if_exception_type(FlightTimedOutError), retry_if_exception_type(FlightUnavailableError)),
         stop=(stop_after_delay(10) | stop_after_attempt(5)),
@@ -652,6 +654,7 @@ class GdsArrowClient:
         put_stream, ack_stream = self._safe_do_put(upload_descriptor, batches[0].schema)
 
         @retry(
+            reraise=True,
             before=before_log("Upload batch", _arrow_client_logger, logging.DEBUG),
             stop=(stop_after_delay(10) | stop_after_attempt(5)),
             wait=wait_exponential(multiplier=1, min=1, max=10),
@@ -674,6 +677,7 @@ class GdsArrowClient:
             GdsArrowClient.handle_flight_error(e)
 
     @retry(
+        reraise=True,
         before=before_log("Do get", _arrow_client_logger, logging.DEBUG),
         retry=retry_any(retry_if_exception_type(FlightTimedOutError), retry_if_exception_type(FlightUnavailableError)),
         stop=(stop_after_delay(10) | stop_after_attempt(5)),
