@@ -86,7 +86,7 @@ class GdsSessions:
         self,
         session_name: str,
         memory: SessionMemory,
-        db_connection: DbmsConnectionInfo,
+        db_connection: Optional[DbmsConnectionInfo] = None,
         ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
         timeout: Optional[int] = None,
@@ -101,7 +101,7 @@ class GdsSessions:
         Args:
             session_name (str): The name of the session.
             memory (SessionMemory): The size of the session specified by memory.
-            db_connection (DbmsConnectionInfo): The database connection information.
+            db_connection (Optional[DbmsConnectionInfo]): The database connection information.
             ttl: (Optional[timedelta]): The sessions time to live after inactivity in seconds.
             cloud_location (Optional[CloudLocation]): The cloud location. Required if the GDS session is for a self-managed database.
             timeout (Optional[int]): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
@@ -110,7 +110,7 @@ class GdsSessions:
             AuraGraphDataScience: The session.
         """
         return self._impl.get_or_create(
-            session_name, memory, db_connection, ttl=ttl, cloud_location=cloud_location, timeout=timeout
+            session_name, memory, db_connection=db_connection, ttl=ttl, cloud_location=cloud_location, timeout=timeout
         )
 
     def delete(self, *, session_name: Optional[str] = None, session_id: Optional[str] = None) -> bool:
