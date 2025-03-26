@@ -23,6 +23,8 @@ from graphdatascience.session.aura_api_responses import (
     InstanceDetails,
     InstanceSpecificDetails,
     SessionDetails,
+    SessionDetailsWithErrors,
+    SessionErrorData,
     TenantDetails,
     WaitResult,
 )
@@ -32,10 +34,25 @@ from graphdatascience.version import __version__
 
 
 class AuraApiError(Exception):
+    """
+    Raised when an API call to the AuraAPI fails (after retries).
+    """
+
     def __init__(self, message: str, status_code: int):
         super().__init__(self, message)
         self.status_code = status_code
         self.message = message
+
+
+class SessionStatusError(Exception):
+    """
+    Raised when a session is in a non-healthy state. Such as after a session failed or got expired.
+    """
+
+    def __init__(self, errors: list[SessionErrorData]):
+        message = f"Session is in an unhealthy state. Details: {[str(e) for e in errors]}"
+
+        super().__init__(self, message)
 
 
 class AuraApi:
@@ -126,7 +143,9 @@ class AuraApi:
         self._check_resp(response)
 
         raw_json: dict[str, Any] = response.json()
-        return SessionDetails.from_json(raw_json["data"], raw_json.get("errors", []))
+        self._check_errors(raw_json)
+
+        return SessionDetails.from_json(raw_json["data"])
 
     def get_session(self, session_id: str) -> Optional[SessionDetails]:
         response = self._request_session.get(
@@ -139,9 +158,11 @@ class AuraApi:
         self._check_resp(response)
 
         raw_json: dict[str, Any] = response.json()
-        return SessionDetails.from_json(raw_json["data"], raw_json.get("errors", []))
+        self._check_errors(raw_json)
 
-    def list_sessions(self, dbid: Optional[str] = None) -> list[SessionDetails]:
+        return SessionDetails.from_json(raw_json["data"])
+
+    def list_sessions(self, dbid: Optional[str] = None) -> list[SessionDetailsWithErrors]:
         # these are query parameters (not passed in the body)
         params = {
             "tenantId": self._tenant_id,
@@ -161,7 +182,7 @@ class AuraApi:
         for error in raw_json.get("errors", []):
             errors_per_session[error["id"]].append(error)
 
-        return [SessionDetails.from_json(s, errors_per_session[s["id"]]) for s in data]
+        return [SessionDetailsWithErrors.from_json_with_error(s, errors_per_session[s["id"]]) for s in data]  # noqa: F821
 
     def wait_for_session_running(
         self,
@@ -177,14 +198,6 @@ class AuraApi:
                 return WaitResult.from_error(f"Session `{session_id}` not found -- please retry")
             elif session.status == "Ready":
                 return WaitResult.from_connection_url(session.bolt_connection_url())
-            elif session.status == "Failed":
-                return WaitResult.from_error(
-                    f"Session `{session_id}` with name `{session.name}` failed due to: {session.errors}"
-                )
-            elif session.is_expired():
-                return WaitResult.from_error(
-                    f"Session `{session_id}` with name `{session.name}` is expired. Expired due to: {session.errors}"
-                )
             else:
                 self._logger.debug(
                     f"Session `{session_id}` is not yet running. "
@@ -323,6 +336,13 @@ class AuraApi:
             self._check_resp(response)
             self._tenant_details = TenantDetails.from_json(response.json()["data"])
         return self._tenant_details
+
+    def _check_errors(self, raw_json: dict[str, Any]) -> None:
+        errors = raw_json.get("errors", [])
+        typed_errors = [SessionErrorData.from_json(error) for error in errors] if errors else None
+
+        if typed_errors:
+            raise SessionStatusError(typed_errors)
 
     def _check_resp(self, resp: requests.Response) -> None:
         self._check_status_code(resp)

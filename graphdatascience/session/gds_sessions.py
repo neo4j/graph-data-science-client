@@ -127,7 +127,7 @@ class GdsSessions:
 
     def list(self) -> list[SessionInfo]:
         """
-        Retrieves the list of GDS sessions visible by the user asscociated by the given api-credentials.
+        Retrieves the list of GDS sessions visible by the user associated by the given api-credentials.
 
         Returns:
             A list of SessionInfo objects representing the GDS sessions.

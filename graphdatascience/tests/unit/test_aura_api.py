@@ -1,4 +1,5 @@
 import logging
+import re
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -8,13 +9,14 @@ from requests_mock.request import _RequestObjectProxy
 
 from graphdatascience.session import SessionMemory
 from graphdatascience.session.algorithm_category import AlgorithmCategory
-from graphdatascience.session.aura_api import AuraApi, AuraApiError
+from graphdatascience.session.aura_api import AuraApi, AuraApiError, SessionStatusError
 from graphdatascience.session.aura_api_responses import (
     EstimationDetails,
     InstanceCreateDetails,
     InstanceSpecificDetails,
     SessionDetails,
-    SessionError,
+    SessionDetailsWithErrors,
+    SessionErrorData,
     TenantDetails,
     TimeParser,
     WaitResult,
@@ -206,36 +208,23 @@ def test_create_standalone_session_state_error_forwards(requests_mock: Mocker) -
             "errors": [
                 {
                     "id": "id0",
-                    "message": "Session reached its memory limit. Create a larger instance.",
+                    "message": "details here",
                     "reason": "OutOfMemory",
                 }
             ],
         },
     )
 
-    session = api.get_or_create_session(
-        "name-0",
-        SessionMemory.m_4GB.value,
-        ttl=timedelta(seconds=42),
-        cloud_location=CloudLocation("gcp", "leipzig-1"),
-    )
-
-    session == SessionDetails(
-        id="id0",
-        name="name-0",
-        status="Failed",
-        instance_id="",
-        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
-        host="1.2.3.4",
-        memory=SessionMemory.m_4GB.value,
-        expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
-        tenant_id="tenant-0",
-        user_id="user-0",
-        ttl=timedelta(seconds=42),
-        errors=[
-            SessionError(reason="OutOfMemory", message="Session reached its memory limit. Create a larger instance.")
-        ],
-    )
+    with pytest.raises(
+        SessionStatusError,
+        match=re.escape("Session is in an unhealthy state. Details: ['Reason: OutOfMemory, Message: details here']"),
+    ):
+        api.get_or_create_session(
+            "name-0",
+            SessionMemory.m_4GB.value,
+            ttl=timedelta(seconds=42),
+            cloud_location=CloudLocation("gcp", "leipzig-1"),
+        )
 
 
 def test_get_session(requests_mock: Mocker) -> None:
@@ -302,31 +291,18 @@ def test_get_session_state_error_forwards(requests_mock: Mocker) -> None:
             "errors": [
                 {
                     "id": "id0",
-                    "message": "Session reached its memory limit. Create a larger instance.",
+                    "message": "details here",
                     "reason": "OutOfMemory",
                 }
             ],
         },
     )
 
-    session = api.get_session("id0")
-
-    assert session == SessionDetails(
-        id="id0",
-        name="name-0",
-        status="Failed",
-        instance_id="dbid-1",
-        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
-        host="1.2.3.4",
-        memory=SessionMemory.m_4GB.value,
-        expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
-        tenant_id="tenant-0",
-        user_id="user-0",
-        ttl=timedelta(seconds=42),
-        errors=[
-            SessionError(reason="OutOfMemory", message="Session reached its memory limit. Create a larger instance.")
-        ],
-    )
+    with pytest.raises(
+        SessionStatusError,
+        match=re.escape("Session is in an unhealthy state. Details: ['Reason: OutOfMemory, Message: details here']"),
+    ):
+        api.get_session("id0")
 
 
 def test_list_sessions(requests_mock: Mocker) -> None:
@@ -368,7 +344,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
 
     result = api.list_sessions()
 
-    expected1 = SessionDetails(
+    expected1 = SessionDetailsWithErrors(
         id="id0",
         name="name-0",
         status="Ready",
@@ -383,7 +359,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         cloud_location=CloudLocation("gcp", "leipzig"),
     )
 
-    expected2 = SessionDetails(
+    expected2 = SessionDetailsWithErrors(
         id="id1",
         name="name-2",
         status="Creating",
@@ -438,7 +414,7 @@ def test_list_sessions_with_db_id(requests_mock: Mocker) -> None:
 
     result = api.list_sessions("dbid")
 
-    expected1 = SessionDetails(
+    expected1 = SessionDetailsWithErrors(
         id="id0",
         name="name-0",
         status="Ready",
@@ -452,7 +428,7 @@ def test_list_sessions_with_db_id(requests_mock: Mocker) -> None:
         user_id="user-1",
     )
 
-    expected2 = SessionDetails(
+    expected2 = SessionDetailsWithErrors(
         id="id1",
         name="name-2",
         status="Creating",
@@ -537,15 +513,15 @@ def test_list_session_state_error_forwards(requests_mock: Mocker) -> None:
     errors = {s.id: s.errors for s in sessions}
 
     assert errors["id0"] == [
-        SessionError(
+        SessionErrorData(
             message="Session reached its memory limit. Create a larger instance.",
             reason="OutOfMemory",
         )
     ]
 
     assert errors["id1"] == [
-        SessionError(message="Error 1.", reason="Reason1"),
-        SessionError(message="Error 2.", reason="Reason2"),
+        SessionErrorData(message="Error 1.", reason="Reason1"),
+        SessionErrorData(message="Error 2.", reason="Reason2"),
     ]
 
     assert errors["id3"] is None
@@ -671,8 +647,8 @@ def test_wait_for_session_running_until_failure(requests_mock: Mocker) -> None:
             "errors": [
                 {
                     "id": "id0",
-                    "message": "Session reached its memory limit. Create a larger instance.",
-                    "reason": "OutOfMemory",
+                    "message": "Session oomed...",
+                    "reason": "OOM",
                 },
             ],
         },
@@ -680,9 +656,8 @@ def test_wait_for_session_running_until_failure(requests_mock: Mocker) -> None:
 
     api = AuraApi("", "", tenant_id="some-tenant")
 
-    assert api.wait_for_session_running("id0") == WaitResult.from_error(
-        "Session `id0` with name `name-0` failed due to: [SessionError(message='Session reached its memory limit. Create a larger instance.', reason='OutOfMemory')]"
-    )
+    with pytest.raises(SessionStatusError, match="Session is in an unhealthy state"):
+        api.wait_for_session_running("id0")
 
 
 def test_wait_for_session_running_until_expired(requests_mock: Mocker) -> None:
@@ -702,15 +677,14 @@ def test_wait_for_session_running_until_expired(requests_mock: Mocker) -> None:
                 "tenant_id": "tenant-1",
                 "user_id": "user-1",
             },
-            "errors": [{"id": "id0", "message": "Session is expired", "reason": "Due to Inactivity"}],
+            "errors": [{"id": "id0", "message": "Session is expired", "reason": "Inactivity"}],
         },
     )
 
     api = AuraApi("", "", tenant_id="some-tenant")
 
-    assert api.wait_for_session_running("id0") == WaitResult.from_error(
-        "Session `id0` with name `name-0` is expired. Expired due to: [SessionError(message='Session is expired', reason='Due to Inactivity')]"
-    )
+    with pytest.raises(SessionStatusError, match="Session is in an unhealthy state"):
+        api.wait_for_session_running("id0")
 
 
 def test_delete_instance(requests_mock: Mocker) -> None:
@@ -1154,7 +1128,7 @@ def test_parse_session_info() -> None:
         "tenant_id": "tenant-1",
         "user_id": "user-1",
     }
-    session_info = SessionDetails.from_json(session_details, errors=[])
+    session_info = SessionDetails.from_json(session_details)
 
     assert session_info == SessionDetails(
         id="test_id",
@@ -1183,7 +1157,7 @@ def test_parse_session_info_without_optionals() -> None:
         "tenant_id": "tenant-1",
         "user_id": "user-1",
     }
-    session_info = SessionDetails.from_json(session_details, errors=[])
+    session_info = SessionDetails.from_json(session_details)
 
     assert session_info == SessionDetails(
         id="test_id",

@@ -27,17 +27,47 @@ class SessionDetails:
     user_id: str
     tenant_id: str
     cloud_location: Optional[CloudLocation] = None
-    errors: Optional[list[SessionError]] = None
 
     @classmethod
-    def from_json(cls, data: dict[str, Any], errors: list[dict[str, Any]]) -> SessionDetails:
+    def from_json(cls, data: dict[str, Any]) -> SessionDetails:
         id = data["id"]
         expiry_date = data.get("expiry_date")
         ttl: Any | None = data.get("ttl")
         instance_id = data.get("instance_id")
         cloud_location = CloudLocation(data["cloud_provider"], data["region"]) if data.get("cloud_provider") else None
 
-        session_errors = [SessionError.from_json(error) for error in errors] if errors else None
+        return cls(
+            id=id,
+            name=data["name"],
+            instance_id=instance_id if instance_id else None,
+            memory=SessionMemoryValue.fromApiResponse(data["memory"]),
+            status=data["status"],
+            host=data["host"],
+            expiry_date=TimeParser.fromisoformat(expiry_date) if expiry_date else None,
+            created_at=TimeParser.fromisoformat(data["created_at"]),
+            ttl=Timedelta(ttl).to_pytimedelta() if ttl else None,  # datetime has no support for parsing timedelta
+            tenant_id=data["tenant_id"],
+            user_id=data["user_id"],
+            cloud_location=cloud_location,
+        )
+
+    def bolt_connection_url(self) -> str:
+        return f"neo4j+s://{self.host}"
+
+
+@dataclass(repr=True, frozen=True)
+class SessionDetailsWithErrors(SessionDetails):
+    errors: Optional[list[SessionErrorData]] = None
+
+    @classmethod
+    def from_json_with_error(cls, data: dict[str, Any], errors: list[dict[str, Any]]) -> SessionDetailsWithErrors:
+        session_errors = [SessionErrorData.from_json(error) for error in errors] if errors else None
+
+        id = data["id"]
+        expiry_date = data.get("expiry_date")
+        ttl: Any | None = data.get("ttl")
+        instance_id = data.get("instance_id")
+        cloud_location = CloudLocation(data["cloud_provider"], data["region"]) if data.get("cloud_provider") else None
 
         return cls(
             id=id,
@@ -55,15 +85,9 @@ class SessionDetails:
             errors=session_errors,
         )
 
-    def bolt_connection_url(self) -> str:
-        return f"neo4j+s://{self.host}"
-
-    def is_expired(self) -> bool:
-        return self.status == "Expired"
-
 
 @dataclass(repr=True, frozen=True)
-class SessionError:
+class SessionErrorData:
     """
     Represents information about a session errors.
     Indicates that session is in `Failed` state.
@@ -77,11 +101,14 @@ class SessionError:
     reason: str
 
     @classmethod
-    def from_json(cls, json: dict[str, Any]) -> SessionError:
+    def from_json(cls, json: dict[str, Any]) -> SessionErrorData:
         return cls(
             reason=json["reason"],
             message=json["message"],
         )
+
+    def __str__(self) -> str:
+        return f"Reason: {self.reason}, Message: {self.message}"
 
 
 @dataclass(repr=True, frozen=True)
