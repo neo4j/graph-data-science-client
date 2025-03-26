@@ -7,14 +7,15 @@ import pytest
 from pytest_mock import MockerFixture
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
-from graphdatascience.session.aura_api import AuraApi, AuraApiError
+from graphdatascience.session.aura_api import AuraApi, AuraApiError, SessionStatusError
 from graphdatascience.session.aura_api_responses import (
     EstimationDetails,
     InstanceCreateDetails,
     InstanceDetails,
     InstanceSpecificDetails,
     SessionDetails,
-    SessionError,
+    SessionDetailsWithErrors,
+    SessionErrorData,
     TenantDetails,
     TimeParser,
     WaitResult,
@@ -30,7 +31,7 @@ class FakeAuraApi(AuraApi):
     def __init__(
         self,
         existing_instances: Optional[list[InstanceSpecificDetails]] = None,
-        existing_sessions: Optional[list[SessionDetails]] = None,
+        existing_sessions: Optional[list[SessionDetailsWithErrors]] = None,
         status_after_creating: str = "Ready",
         size_estimation: Optional[EstimationDetails] = None,
         client_id: str = "client_id",
@@ -72,13 +73,13 @@ class FakeAuraApi(AuraApi):
                     and (not dbid or s.instance_id == dbid)
                     and (not cloud_location or s.cloud_location == cloud_location)
                 ):
-                    if s.is_expired():
-                        raise RuntimeError(f"Session `{s.name}` is expired. Please delete it and create a new one.")
+                    if errors := s.errors:
+                        raise SessionStatusError(errors)
                     return s
                 else:
                     raise RuntimeError("Session exists with different config")
 
-        details = SessionDetails(
+        details = SessionDetailsWithErrors(
             id=f"{dbid}-ffff{self.id_counter}",
             name=name,
             instance_id=dbid,
@@ -102,7 +103,7 @@ class FakeAuraApi(AuraApi):
     def console_user_id(self) -> str:
         return self._console_user
 
-    def add_session(self, session: SessionDetails) -> None:
+    def add_session(self, session: SessionDetailsWithErrors) -> None:
         if session.id in self._sessions:
             raise ValueError(f"Session with id {session.id} already exists.")
 
@@ -154,7 +155,7 @@ class FakeAuraApi(AuraApi):
     def delete_instance(self, instance_id: str) -> InstanceSpecificDetails:
         return self._instances.pop(instance_id)
 
-    def list_sessions(self, dbid: Optional[str] = None) -> list[SessionDetails]:
+    def list_sessions(self, dbid: Optional[str] = None) -> list[SessionDetailsWithErrors]:
         if dbid:
             self._mimic_paused_db_behaviour(dbid)
 
@@ -176,6 +177,10 @@ class FakeAuraApi(AuraApi):
         if matched_session:
             old_session = matched_session
             self._sessions[session_id] = dataclasses.replace(old_session, status=self._status_after_creating)
+
+            if errors := old_session.errors:
+                raise SessionStatusError(errors)
+
             return old_session
         else:
             return None
@@ -269,7 +274,7 @@ def test_list_session_paused_instance(aura_api: AuraApi) -> None:
 def test_list_session_failed_session(aura_api: AuraApi) -> None:
     fake_aura_api = cast(FakeAuraApi, aura_api)
 
-    session_details = SessionDetails(
+    session_details = SessionDetailsWithErrors(
         id="id0",
         name="name-0",
         status="Failed",
@@ -282,7 +287,9 @@ def test_list_session_failed_session(aura_api: AuraApi) -> None:
         user_id=fake_aura_api._console_user,
         ttl=timedelta(seconds=42),
         errors=[
-            SessionError(reason="OutOfMemory", message="Session reached its memory limit. Create a larger instance.")
+            SessionErrorData(
+                reason="OutOfMemory", message="Session reached its memory limit. Create a larger instance."
+            )
         ],
     )
     fake_aura_api.add_session(session_details)
@@ -442,7 +449,7 @@ def test_get_or_create_expired_session(mocker: MockerFixture, aura_api: AuraApi)
 
     fake_aura_api = cast(FakeAuraApi, aura_api)
     fake_aura_api.add_session(
-        SessionDetails(
+        SessionDetailsWithErrors(
             id="ffff0-ffff1",
             name="one",
             instance_id=db.id,
@@ -455,12 +462,11 @@ def test_get_or_create_expired_session(mocker: MockerFixture, aura_api: AuraApi)
             tenant_id=aura_api._tenant_id,
             user_id="user-1",
             cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
+            errors=[SessionErrorData("foo", "inactivity")],
         )
     )
 
-    with pytest.raises(
-        RuntimeError, match=re.escape("Session `one` is expired. Please delete it and create a new one.")
-    ):
+    with pytest.raises(SessionStatusError, match=re.escape("Session is in an unhealthy state")):
         sessions = DedicatedSessions(aura_api)
         sessions.get_or_create("one", SessionMemory.m_8GB, DbmsConnectionInfo(db.connection_url, "", ""))
 
@@ -471,7 +477,7 @@ def test_get_or_create_soon_expired_session(mocker: MockerFixture, aura_api: Aur
 
     fake_aura_api = cast(FakeAuraApi, aura_api)
     fake_aura_api.add_session(
-        SessionDetails(
+        SessionDetailsWithErrors(
             id="ffff0-ffff1",
             name="one",
             instance_id=db.id,
@@ -531,7 +537,7 @@ def test_get_or_create_failed_session(mocker: MockerFixture, aura_api: AuraApi) 
 
     fake_aura_api = cast(FakeAuraApi, aura_api)
     fake_aura_api.add_session(
-        SessionDetails(
+        SessionDetailsWithErrors(
             id="ffff0-ffff1",
             name="one",
             instance_id=db.id,
@@ -544,7 +550,7 @@ def test_get_or_create_failed_session(mocker: MockerFixture, aura_api: AuraApi) 
             tenant_id=aura_api._tenant_id,
             user_id="user-1",
             cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
-            errors=[SessionError(message="error", reason="reason")],
+            errors=[SessionErrorData(message="error", reason="reason")],
         )
     )
 
@@ -552,10 +558,8 @@ def test_get_or_create_failed_session(mocker: MockerFixture, aura_api: AuraApi) 
     sessions = DedicatedSessions(aura_api)
 
     with pytest.raises(
-        RuntimeError,
-        match=re.escape(
-            "Failed to get or create session `one`: Session `ffff0-ffff1` with name `one` failed due to: [SessionError(message='error', reason='reason')]"
-        ),
+        SessionStatusError,
+        match=re.escape("Session is in an unhealthy state. Details: ['Reason: reason, Message: error']"),
     ):
         sessions.get_or_create("one", SessionMemory.m_8GB, db_connection)
 
@@ -573,7 +577,7 @@ def test_delete_session_by_name(aura_api: AuraApi) -> None:
 def test_delete_session_by_name_admin() -> None:
     aura_api = FakeAuraApi(console_user="user-1", admin_user="user-1")
     aura_api.add_session(
-        SessionDetails(
+        SessionDetailsWithErrors(
             id="ffff0-ffff1",
             name="one",
             instance_id="1234",
@@ -590,7 +594,7 @@ def test_delete_session_by_name_admin() -> None:
     )
 
     aura_api.add_session(
-        SessionDetails(
+        SessionDetailsWithErrors(
             id="ffff0-ffff2",
             name="one",
             instance_id="1234",

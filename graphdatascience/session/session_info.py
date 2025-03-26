@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Optional
 
-from graphdatascience.session.aura_api_responses import SessionDetails, SessionError
+from graphdatascience.session.aura_api_responses import SessionDetails, SessionDetailsWithErrors, SessionErrorData
 from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.session_sizes import SessionMemoryValue
 
@@ -38,10 +38,14 @@ class SessionInfo:
     user_id: str
     cloud_location: Optional[CloudLocation]
     ttl: Optional[timedelta] = None
-    errors: Optional[list[SessionError]] = None
+    errors: Optional[list[SessionErrorData]] = None
 
     @classmethod
-    def from_session_details(cls, details: SessionDetails) -> SessionInfo:
+    def from_session_details(cls, details: SessionDetailsWithErrors | SessionDetails) -> SessionInfo:
+        errors: Optional[list[SessionErrorData]] = None
+        if isinstance(details, SessionDetailsWithErrors):
+            errors = details.errors
+
         return SessionInfo(
             id=details.id,
             name=details.name,
@@ -53,5 +57,5 @@ class SessionInfo:
             user_id=details.user_id,
             cloud_location=details.cloud_location,
             ttl=details.ttl,
-            errors=details.errors,
+            errors=errors,
         )

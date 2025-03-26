@@ -116,8 +116,7 @@ class DedicatedSessions:
         return False
 
     def list(self, dbid: Optional[str] = None) -> list[SessionInfo]:
-        sessions: list[SessionDetails] = self._aura_api.list_sessions(dbid)
-
+        sessions = self._aura_api.list_sessions(dbid)
         return [SessionInfo.from_session_details(i) for i in sessions]
 
     def _find_existing_session(self, session_name: str) -> Optional[SessionDetails]:

@@ -1,4 +1,5 @@
 from .algorithm_category import AlgorithmCategory
+from .aura_api import AuraApiError, SessionStatusError
 from .cloud_location import CloudLocation
 from .dbms_connection_info import DbmsConnectionInfo
 from .gds_sessions import AuraAPICredentials, GdsSessions
@@ -14,4 +15,6 @@ __all__ = [
     "SessionMemory",
     "SessionMemoryValue",
     "AlgorithmCategory",
+    "SessionStatusError",
+    "AuraApiError",
 ]
