@@ -7,6 +7,9 @@ from typing import Any, Optional, Type, Union
 from neo4j import Driver
 from pandas import DataFrame
 
+from graphdatascience.procedure_surface.api.wcc_endpoints import WccEndpoints
+from graphdatascience.procedure_surface.cypher.wcc_proc_runner import WccCypherEndpoints
+
 from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
@@ -106,9 +109,15 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         self._query_runner.set_show_progress(show_progress)
         super().__init__(self._query_runner, namespace="gds", server_version=self._server_version)
 
+        self._wcc_endpoints = WccCypherEndpoints(self._query_runner)
+
     @property
     def graph(self) -> GraphProcRunner:
         return GraphProcRunner(self._query_runner, f"{self._namespace}.graph", self._server_version)
+
+    @property
+    def wcc(self) -> WccEndpoints:
+        return self._wcc_endpoints
 
     @property
     def util(self) -> UtilProcRunner:
