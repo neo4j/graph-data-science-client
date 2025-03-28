@@ -18,6 +18,7 @@ from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.session_query_runner import SessionQueryRunner
+from graphdatascience.query_runner.standalone_session_query_runner import StandaloneSessionQueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.utils.util_remote_proc_runner import UtilRemoteProcRunner
 
@@ -39,8 +40,6 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         bookmarks: Optional[Any] = None,
         show_progress: bool = True,
     ) -> AuraGraphDataScience:
-        # we need to explicitly set this as the default value is None
-        # database in the session is always neo4j
         session_bolt_query_runner = Neo4jQueryRunner.create_for_session(
             endpoint=gds_session_connection_info.uri,
             auth=gds_session_connection_info.auth(),
@@ -90,8 +89,9 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
                 gds_version=gds_version,
             )
         else:
+            standalone_query_runner = StandaloneSessionQueryRunner(session_arrow_query_runner)
             return cls(
-                query_runner=session_bolt_query_runner,
+                query_runner=standalone_query_runner,
                 delete_fn=delete_fn,
                 gds_version=gds_version,
             )
