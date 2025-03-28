@@ -51,6 +51,10 @@ class FlightServer(FlightServerBase):  # type: ignore
             response = {"name": "g", "relationship_count": 42}
         elif "TRIPLET_LOAD_DONE" in actionType:
             response = {"name": "g", "node_count": 42, "relationship_count": 1337}
+        elif "PUT_NODE_PROPERTIES_DONE" in actionType:
+            response = {"name": "g", "node_count": 42}
+        elif "PUT_NODE_PROPERTIES" in actionType:
+            response = {"name": "g"}
         else:
             response = {}
         return [json.dumps(response).encode("utf-8")]
@@ -102,6 +106,10 @@ class FlakyFlightServer(FlightServerBase):  # type: ignore
             response = {"name": "g", "relationship_count": 42}
         elif "TRIPLET_LOAD_DONE" in actionType:
             response = {"name": "g", "node_count": 42, "relationship_count": 1337}
+        elif "PUT_NODE_PROPERTIES" == actionType:
+            response = {"name": "g"}
+        elif "PUT_NODE_PROPERTIES_DONE" == actionType:
+            response = {"name": "g", "node_count": 42}
         else:
             response = {}
         return [json.dumps(response).encode("utf-8")]
@@ -256,6 +264,64 @@ def test_triplet_load_done_action(flight_server: FlightServer, flight_client: Gd
     actions = flight_server._actions
     assert len(actions) == 1
     assert_action(actions[0], "v1/TRIPLET_LOAD_DONE", {"name": "g"})
+
+
+def test_put_node_properties_with_defaults(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
+    flight_client.put_node_properties("g", "DB")
+    actions = flight_server._actions
+    assert len(actions) == 1
+    assert_action(actions[0], "v1/PUT_NODE_PROPERTIES", {"name": "g", "database_name": "DB", "consecutive_ids": False})
+
+
+def test_put_node_properties_with_single_label(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
+    flight_client.put_node_properties("g", "DB", "Label1")
+    actions = flight_server._actions
+    assert len(actions) == 1
+    assert_action(
+        actions[0],
+        "v1/PUT_NODE_PROPERTIES",
+        {"name": "g", "database_name": "DB", "consecutive_ids": False, "node_labels": ["Label1"]},
+    )
+
+
+def test_put_node_properties_with_options(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
+    flight_client.put_node_properties("g", "DB", ["Label1", "Label2"], consecutive_ids=True, concurrency=42)
+    actions = flight_server._actions
+    assert len(actions) == 1
+    assert_action(
+        actions[0],
+        "v1/PUT_NODE_PROPERTIES",
+        {
+            "name": "g",
+            "database_name": "DB",
+            "consecutive_ids": True,
+            "concurrency": 42,
+            "node_labels": ["Label1", "Label2"],
+        },
+    )
+
+
+def test_put_node_properties_with_flaky_server(
+    flaky_flight_server: FlakyFlightServer, flaky_flight_client: GdsArrowClient
+) -> None:
+    flaky_flight_client.put_node_properties("g", "DB", "Label1")
+    actions = flaky_flight_server._actions
+    assert len(actions) == flaky_flight_server.expected_retries()
+    assert_action(
+        actions[0],
+        "v1/PUT_NODE_PROPERTIES",
+        {"name": "g", "database_name": "DB", "consecutive_ids": False, "node_labels": ["Label1"]},
+    )
+
+
+def test_put_node_properties_done(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
+    response = flight_client.put_node_properties_done("g")
+    assert response.name == "g"
+    assert response.node_count == 42
+
+    actions = flight_server._actions
+    assert len(actions) == 1
+    assert_action(actions[0], "v1/PUT_NODE_PROPERTIES_DONE", {"name": "g"})
 
 
 def test_abort_action(flight_server: FlightServer, flight_client: GdsArrowClient) -> None:
