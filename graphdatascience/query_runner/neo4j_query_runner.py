@@ -90,6 +90,8 @@ class Neo4jQueryRunner(QueryRunner):
             show_progress=show_progress,
             bookmarks=None,
             config=driver_config,
+            # we need to explicitly set this as the default value is None
+            # database in the session is always neo4j
             database="neo4j",
             instance_description="GDS Session",
         )

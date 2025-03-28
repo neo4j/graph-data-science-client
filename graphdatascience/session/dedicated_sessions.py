@@ -56,11 +56,51 @@ class DedicatedSessions:
         self,
         session_name: str,
         memory: SessionMemory,
-        db_connection: DbmsConnectionInfo,
+        db_connection: Optional[DbmsConnectionInfo] = None,
         ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
         timeout: Optional[int] = None,
     ) -> AuraGraphDataScience:
+        if db_connection is None:
+            if not cloud_location:
+                raise ValueError("cloud_location must be provided for creating standalone sessions.")
+
+            session_details = self._get_or_create_standalone_session(session_name, memory.value, cloud_location, ttl)
+            db_runner = None
+        else:
+            db_runner = self._create_db_runner(db_connection)
+
+            dbid = AuraApi.extract_id(db_connection.uri)
+            aura_db_instance = self._aura_api.list_instance(dbid)
+
+            if aura_db_instance is None:
+                if not cloud_location:
+                    raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")
+
+                session_details = self._get_or_create_self_managed_session(
+                    session_name, memory.value, cloud_location, ttl
+                )
+            else:
+                if cloud_location is not None:
+                    raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
+
+                session_details = self._get_or_create_attached_session(session_name, memory.value, dbid, ttl)
+
+        self._await_session_running(session_details, timeout)
+
+        session_connection = DbmsConnectionInfo(
+            uri=session_details.bolt_connection_url(),
+            username=self._aura_api._credentials[0],
+            password=self._aura_api._credentials[1],
+        )
+
+        return self._construct_client(
+            session_id=session_details.id,
+            session_connection=session_connection,
+            db_runner=db_runner,
+        )
+
+    def _create_db_runner(self, db_connection: DbmsConnectionInfo) -> Neo4jQueryRunner:
         db_runner = Neo4jQueryRunner.create_for_db(
             endpoint=db_connection.uri,
             auth=db_connection.auth(),
@@ -68,38 +108,19 @@ class DedicatedSessions:
             show_progress=False,
             database=db_connection.database,
         )
-
         self._validate_db_connection(db_runner)
+        return db_runner
 
-        dbid = AuraApi.extract_id(db_connection.uri)
-
-        session_details = self._get_or_create_session(session_name, dbid, memory.value, ttl, cloud_location)
-
+    def _await_session_running(self, session_details: SessionDetails, timeout: Optional[int] = None) -> None:
         if session_details.expiry_date:
             until_expiry: timedelta = session_details.expiry_date - datetime.now(timezone.utc)
             if until_expiry < timedelta(days=1):
                 raise Warning(f"Session `{session_details.name}` is expiring in less than a day.")
-
-        session_id = session_details.id
-
-        connection_url = session_details.bolt_connection_url()
         if session_details.status != "Ready":
             max_wait_time = float(timeout) if timeout is not None else math.inf
-            wait_result = self._aura_api.wait_for_session_running(session_id, max_wait_time=max_wait_time)
+            wait_result = self._aura_api.wait_for_session_running(session_details.id, max_wait_time=max_wait_time)
             if err := wait_result.error:
-                raise RuntimeError(f"Failed to get or create session `{session_name}`: {err}")
-
-        session_connection = DbmsConnectionInfo(
-            uri=connection_url,
-            username=self._aura_api._credentials[0],
-            password=self._aura_api._credentials[1],
-        )
-
-        return self._construct_client(
-            session_id=session_id,
-            session_connection=session_connection,
-            db_runner=db_runner,
-        )
+                raise RuntimeError(f"Failed to get or create session `{session_details.name}`: {err}")
 
     def delete(self, *, session_name: Optional[str] = None, session_id: Optional[str] = None) -> bool:
         if not session_name and not session_id:
@@ -145,38 +166,39 @@ class DedicatedSessions:
         except Exception as e:
             raise RuntimeError(f"Failed to authenticate to the Neo4j database: {e}")
 
-    def _get_or_create_session(
+    def _get_or_create_standalone_session(
         self,
         session_name: str,
-        dbid: str,
         memory: SessionMemoryValue,
+        cloud_location: CloudLocation,
         ttl: Optional[timedelta] = None,
-        cloud_location: Optional[CloudLocation] = None,
     ) -> SessionDetails:
-        db_instance = self._aura_api.list_instance(dbid)
+        return self._aura_api.get_or_create_session(session_name, memory, ttl=ttl, cloud_location=cloud_location)
 
-        if not (db_instance or cloud_location):
-            raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")
+    def _get_or_create_attached_session(
+        self, session_name: str, memory: SessionMemoryValue, dbid: str, ttl: Optional[timedelta] = None
+    ) -> SessionDetails:
+        return self._aura_api.get_or_create_session(name=session_name, dbid=dbid, memory=memory, ttl=ttl)
 
-        if cloud_location and db_instance:
-            raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
-
-        # If cloud location is provided we go for self managed DBs path
-        if cloud_location:
-            return self._aura_api.get_or_create_session(
-                name=session_name,
-                memory=memory,
-                ttl=ttl,
-                cloud_location=cloud_location,
-            )
-        else:
-            return self._aura_api.get_or_create_session(name=session_name, dbid=dbid, memory=memory, ttl=ttl)
+    def _get_or_create_self_managed_session(
+        self,
+        session_name: str,
+        memory: SessionMemoryValue,
+        cloud_location: CloudLocation,
+        ttl: Optional[timedelta] = None,
+    ) -> SessionDetails:
+        return self._aura_api.get_or_create_session(
+            name=session_name,
+            memory=memory,
+            ttl=ttl,
+            cloud_location=cloud_location,
+        )
 
     def _construct_client(
         self,
         session_id: str,
         session_connection: DbmsConnectionInfo,
-        db_runner: Neo4jQueryRunner,
+        db_runner: Optional[Neo4jQueryRunner],
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience.create(
             gds_session_connection_info=session_connection,
