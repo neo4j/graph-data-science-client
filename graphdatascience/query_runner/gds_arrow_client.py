@@ -605,6 +605,87 @@ class GdsArrowClient:
         """
         self._upload_data(graph_name, "triplet", triplet_data, batch_size, progress_callback)
 
+    def put_node_properties(
+        self,
+        graph_name: str,
+        database: str,
+        node_labels: Optional[Union[str, list[str]]] = None,
+        consecutive_ids: bool = False,
+        concurrency: Optional[int] = None,
+    ) -> None:
+        """
+        Starts a new node properties upload process on the GDS server.
+
+        Parameters
+        ----------
+        graph_name : str
+            The name of the graph
+        database : str
+            The name of the database to which the graph belongs
+        node_labels : Optional[Union[str, List[str]]]
+            The name of the node labels to upload (default is None)
+        consecutive_ids : bool
+            Whether the node IDs in the input data are consecutive (default is False)
+        concurrency : Optional[int]
+            The number of threads used on the server side when uploading the properties
+        """
+        config: dict[str, Any] = {
+            "name": graph_name,
+            "database_name": database,
+            "consecutive_ids": consecutive_ids,
+        }
+
+        if concurrency:
+            config["concurrency"] = concurrency
+        if node_labels is not None:
+            if isinstance(node_labels, str):
+                config["node_labels"] = [node_labels]
+            else:
+                config["node_labels"] = node_labels
+
+        self._send_action("PUT_NODE_PROPERTIES", config)
+
+    def upload_node_properties(
+        self,
+        graph_name: str,
+        node_data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], pandas.DataFrame],
+        batch_size: int = 10_000,
+        progress_callback: Callable[[int], None] = lambda x: None,
+    ) -> None:
+        """
+        Uploads node property data to the server.
+
+        Parameters
+        ----------
+        graph_name : str
+            The name of the graph
+        node_data : Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame]
+            The node property data to upload
+        batch_size : int
+            The number of rows per batch
+        progress_callback : Callable[[int], None]
+            A callback function that is called with the number of rows uploaded after each batch
+        """
+        self._upload_data(graph_name, "node_properties", node_data, batch_size, progress_callback)
+
+    def put_node_properties_done(self, graph_name: str) -> NodePropertiesLoadDoneResult:
+        """
+        Notifies the server that all node property data has been sent.
+
+        Parameters
+        ----------
+        graph_name : str
+            The name of the graph
+
+        Returns
+        -------
+        NodePropertiesLoadDoneResult
+            A result object containing the name of the graph and the number of properties loaded
+        """
+        return NodePropertiesLoadDoneResult.from_json(
+            self._send_action("PUT_NODE_PROPERTIES_DONE", {"name": graph_name})
+        )
+
     def __getstate__(self) -> Dict[str, Any]:
         state = self.__dict__.copy()
         # Remove the FlightClient as it isn't serializable
@@ -963,3 +1044,16 @@ class TripletLoadDoneResult:
     @classmethod
     def from_json(cls, json: dict[str, Any]) -> TripletLoadDoneResult:
         return cls(name=json["name"], node_count=json["node_count"], relationship_count=json["relationship_count"])
+
+
+@dataclass(repr=True, frozen=True)
+class NodePropertiesLoadDoneResult:
+    name: str
+    node_count: int
+
+    @classmethod
+    def from_json(cls, json: dict[str, Any]) -> NodePropertiesLoadDoneResult:
+        return cls(
+            name=json["name"],
+            node_count=json["node_count"],
+        )
