@@ -207,7 +207,7 @@ def test_forward_server_side_warning(gds: GraphDataScience) -> None:
     if is_neo4j_44(gds):
         return
 
-    with pytest.raises(Warning, match="The query used a deprecated function: `id`."):
+    with pytest.raises(Warning, match="The query used a deprecated function.*[`']id[`'].*"):
         gds.run_cypher("MATCH (n) RETURN id(n)")
 
 
@@ -219,7 +219,7 @@ def test_forward_driver_configured_warning(warning_driver: Driver) -> None:
     if is_neo4j_44(gds):
         return
 
-    with pytest.raises(Warning, match="The query used a deprecated function: `id`."):
+    with pytest.raises(Warning, match="The query used a deprecated function.*[`']id[`'].*"):
         gds.run_cypher("MATCH (n) RETURN id(n)")
 
 
