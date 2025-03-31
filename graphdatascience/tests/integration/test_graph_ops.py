@@ -842,9 +842,7 @@ def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataSc
     else:
         result = gds_without_arrow.beta.graph.relationships.stream(G, ["REL", "REL2"])
 
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="The query used a deprecated function: `id`."
-    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="The query used a deprecated function")
     expected = gds_without_arrow.run_cypher(
         "MATCH (n)-[r]->(m) RETURN id(n) AS src_id, id(m) AS trg_id, type(r) AS rel_type"
     )
