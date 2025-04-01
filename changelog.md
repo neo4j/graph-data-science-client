@@ -6,6 +6,7 @@
 
 ## New features
 
+* Allow the creation of fully standalone GDS Sessions by omitting the database connection information
 
 ## Bug fixes
 
