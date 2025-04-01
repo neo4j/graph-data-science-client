@@ -103,6 +103,19 @@ def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Generator[AuraGraphD
     _gds.close()
 
 
+@pytest.fixture(scope="package", autouse=False)
+def standalone_aura_gds() -> Generator[AuraGraphDataScience, None, None]:
+    _gds = AuraGraphDataScience.create(
+        gds_session_connection_info=DbmsConnectionInfo(URI, AUTH[0], AUTH[1]),
+        db_endpoint=None,
+        delete_fn=lambda: True,
+    )
+
+    yield _gds
+
+    _gds.close()
+
+
 def is_neo4j_44(gds: GraphDataScience) -> bool:
     try:
         result = gds.run_cypher(
