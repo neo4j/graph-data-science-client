@@ -23,12 +23,12 @@ class AuraAPICredentials:
     Attributes:
         client_id (str): The client ID for authentication.
         client_secret (str): The client secret for authentication.
-        tenant_id (Optional[str]): The tenant ID for authentication. Needed if a client belongs to multiple tenants.
+        project_id (Optional[str]): The project ID for authentication. Needed if a client belongs to multiple projects.
     """
 
     client_id: str
     client_secret: str
-    tenant_id: Optional[str] = None
+    project_id: Optional[str] = None
 
 
 class GdsSessions:
@@ -48,7 +48,7 @@ class GdsSessions:
             aura_env=aura_env,
             client_id=api_credentials.client_id,
             client_secret=api_credentials.client_secret,
-            tenant_id=api_credentials.tenant_id,
+            project_id=api_credentials.project_id,
         )
         self._impl: DedicatedSessions = DedicatedSessions(aura_api)
 

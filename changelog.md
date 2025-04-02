@@ -3,6 +3,8 @@
 
 ## Breaking changes
 
+* Rename `tenant_id` to `project_id` in class `graphdatascience.session.AuraAPICredentials`.
+
 
 ## New features
 

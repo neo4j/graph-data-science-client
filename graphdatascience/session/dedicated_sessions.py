@@ -36,7 +36,7 @@ class DedicatedSessions:
         if estimation.did_exceed_maximum:
             warnings.warn(
                 f"The estimated memory `{estimation.min_required_memory}` exceeds the maximum size"
-                f" supported by your Aura tenant (`{estimation.recommended_size}`).",
+                f" supported by your Aura project (`{estimation.recommended_size}`).",
                 ResourceWarning,
             )
 
@@ -50,7 +50,7 @@ class DedicatedSessions:
             list[CloudLocation]: The list of available cloud locations.
         """
         # return a list to allow index based access
-        return list(self._aura_api.tenant_details().cloud_locations)
+        return list(self._aura_api.project_details().cloud_locations)
 
     def get_or_create(
         self,

@@ -29,11 +29,11 @@ from graphdatascience.session import GdsSessions, AuraAPICredentials
 
 CLIENT_ID = "my-aura-api-client-id"
 CLIENT_SECRET = "my-aura-api-client-secret"
-# Needs to be specified if your Aura account has multiple tenants
-TENANT_ID = None
+# Needs to be specified if your Aura account has multiple projects
+PROJECT_ID = None
 
 # Create a new GdsSessions object
-sessions = GdsSessions(api_credentials=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET, TENANT_ID))
+sessions = GdsSessions(api_credentials=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET, PROJECT_ID))
 ----
 
 All available methods and parameters are listed in our API https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[reference].
