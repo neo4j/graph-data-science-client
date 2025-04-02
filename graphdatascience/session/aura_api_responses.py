@@ -25,7 +25,7 @@ class SessionDetails:
     expiry_date: Optional[datetime]
     ttl: Optional[timedelta]
     user_id: str
-    tenant_id: str
+    project_id: str
     cloud_location: Optional[CloudLocation] = None
 
     @classmethod
@@ -46,7 +46,7 @@ class SessionDetails:
             expiry_date=TimeParser.fromisoformat(expiry_date) if expiry_date else None,
             created_at=TimeParser.fromisoformat(data["created_at"]),
             ttl=Timedelta(ttl).to_pytimedelta() if ttl else None,  # datetime has no support for parsing timedelta
-            tenant_id=data["tenant_id"],
+            project_id=data["project_id"],
             user_id=data["user_id"],
             cloud_location=cloud_location,
         )
@@ -79,7 +79,7 @@ class SessionDetailsWithErrors(SessionDetails):
             expiry_date=TimeParser.fromisoformat(expiry_date) if expiry_date else None,
             created_at=TimeParser.fromisoformat(data["created_at"]),
             ttl=Timedelta(ttl).to_pytimedelta() if ttl else None,  # datetime has no support for parsing timedelta
-            tenant_id=data["tenant_id"],
+            project_id=data["project_id"],
             user_id=data["user_id"],
             cloud_location=cloud_location,
             errors=session_errors,
@@ -115,7 +115,7 @@ class SessionErrorData:
 class InstanceDetails:
     id: str
     name: str
-    tenant_id: str
+    project_id: str
     cloud_provider: str
 
     @classmethod
@@ -123,7 +123,7 @@ class InstanceDetails:
         return cls(
             id=json["id"],
             name=json["name"],
-            tenant_id=json["tenant_id"],
+            project_id=json["tenant_id"],
             cloud_provider=json["cloud_provider"],
         )
 
@@ -141,7 +141,7 @@ class InstanceSpecificDetails(InstanceDetails):
         return cls(
             id=json["id"],
             name=json["name"],
-            tenant_id=json["tenant_id"],
+            project_id=json["tenant_id"],
             cloud_provider=json["cloud_provider"],
             status=json["status"],
             connection_url=json.get("connection_url", ""),
@@ -196,12 +196,12 @@ class WaitResult(NamedTuple):
 
 
 @dataclass(repr=True, frozen=True)
-class TenantDetails:
+class ProjectDetails:
     id: str
     cloud_locations: set[CloudLocation]
 
     @classmethod
-    def from_json(cls, json: dict[str, Any]) -> TenantDetails:
+    def from_json(cls, json: dict[str, Any]) -> ProjectDetails:
         cloud_locations: set[CloudLocation] = set()
 
         for configs in json["instance_configurations"]:

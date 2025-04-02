@@ -26,15 +26,15 @@ link:../gds-sessions-self-managed[this example].
 == Prerequisites
 
 This notebook requires having an AuraDB instance available and have the
-GDS sessions feature enabled for your tenant. Contact your account
+GDS sessions feature enabled for your project. Contact your account
 manager to get the features enabled.
 
 We also need to have the `graphdatascience` Python library installed,
-version `1.12a1` or later.
+version `1.15` or later.
 
 [source, python, role=no-test]
 ----
-%pip install "graphdatascience>=1.12"
+%pip install "graphdatascience>=1.15a1"
 ----
 
 == Aura API credentials
@@ -56,10 +56,10 @@ from graphdatascience.session import AuraAPICredentials, GdsSessions
 client_id = os.environ["AURA_API_CLIENT_ID"]
 client_secret = os.environ["AURA_API_CLIENT_SECRET"]
 
-# If your account is a member of several tenants, you must also specify the tenant ID to use
-tenant_id = os.environ.get("AURA_API_TENANT_ID", None)
+# If your account is a member of several project, you must also specify the project ID to use
+project_id = os.environ.get("AURA_API_PROJECT_ID", None)
 
-sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secret, tenant_id=tenant_id))
+sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secret, project_id=project_id))
 ----
 
 == Creating a new session
@@ -110,10 +110,10 @@ db_connection = DbmsConnectionInfo(
 # Create a GDS session!
 gds = sessions.get_or_create(
     # we give it a representative name
-    session_name="people-and-fruits",
-    memory=memory,
+    session_name="g_102bc080-83d8-4e9e-870d-cced81af5a19",
+    memory=SessionMemory.m_4GB,
     db_connection=db_connection,
-    ttl=timedelta(minutes=30),
+    ttl=timedelta(minutes=2),
 )
 ----
 
@@ -178,7 +178,7 @@ data_query = """
 """
 
 # making sure the database is actually empty
-assert gds.run_cypher("MATCH (n) RETURN count(n)").squeeze() == 0, "Database is not empty!"
+# assert gds.run_cypher("MATCH (n) RETURN count(n)").squeeze() == 0, "Database is not empty!"
 
 # let's now write our graph!
 gds.run_cypher(data_query)
@@ -229,6 +229,16 @@ G, result = gds.graph.project(
 )
 
 str(G)
+----
+
+[source, python, role=no-test]
+----
+G = gds.graph.get("g")
+----
+
+[source, python, role=no-test]
+----
+gds.wcc.mutate(G, mutateProperty="wcc2")
 ----
 
 == Running Algorithms

@@ -13,10 +13,10 @@ from graphdatascience.session.aura_api_responses import (
     InstanceCreateDetails,
     InstanceDetails,
     InstanceSpecificDetails,
+    ProjectDetails,
     SessionDetails,
     SessionDetailsWithErrors,
     SessionErrorData,
-    TenantDetails,
     TimeParser,
     WaitResult,
 )
@@ -38,7 +38,7 @@ class FakeAuraApi(AuraApi):
         console_user: str = "user-1",
         admin_user: str = "",
     ) -> None:
-        super().__init__(client_id=client_id, client_secret="client_secret", tenant_id="tenant_id", aura_env="test")
+        super().__init__(client_id=client_id, client_secret="client_secret", project_id="project_id", aura_env="test")
         if existing_instances is None:
             existing_instances = []
         if existing_sessions is None:
@@ -90,7 +90,7 @@ class FakeAuraApi(AuraApi):
             expiry_date=None,
             ttl=ttl,
             user_id=self.console_user_id(),
-            tenant_id=self._tenant_id,
+            project_id=self._project_id,
             # we derive the location from the db
             cloud_location=cloud_location if cloud_location else CloudLocation("default", "default"),
         )
@@ -140,7 +140,7 @@ class FakeAuraApi(AuraApi):
             type="",
             region=region,
             name=name,
-            tenant_id=self._tenant_id,
+            project_id=self._project_id,
             cloud_provider=cloud_provider,
         )
 
@@ -217,8 +217,8 @@ class FakeAuraApi(AuraApi):
             instance_id, sleep_time=0.0001, max_wait_time=0.001, max_sleep_time=0.001
         )
 
-    def tenant_details(self) -> TenantDetails:
-        return TenantDetails(id=self._tenant_id, cloud_locations={CloudLocation("aws", "leipzig-1")})
+    def project_details(self) -> ProjectDetails:
+        return ProjectDetails(id=self._project_id, cloud_locations={CloudLocation("aws", "leipzig-1")})
 
     def estimate_size(
         self, node_count: int, relationship_count: int, algorithm_categories: list[AlgorithmCategory]
@@ -256,7 +256,7 @@ def test_list_session_paused_instance(aura_api: AuraApi) -> None:
         type="",
         region="dresden",
         name="paused-db",
-        tenant_id=fake_aura_api._tenant_id,
+        project_id=fake_aura_api._project_id,
         cloud_provider="aws",
     )
     fake_aura_api._instances[paused_db.id] = paused_db
@@ -283,7 +283,7 @@ def test_list_session_failed_session(aura_api: AuraApi) -> None:
         host="1.2.3.4",
         memory=SessionMemory.m_4GB.value,
         expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
-        tenant_id=fake_aura_api._tenant_id,
+        project_id=fake_aura_api._project_id,
         user_id=fake_aura_api._console_user,
         ttl=timedelta(seconds=42),
         errors=[
@@ -314,7 +314,7 @@ def test_list_session_gds_instance(aura_api: AuraApi) -> None:
         type="gds",
         region="dresden",
         name="ds instance",
-        tenant_id=fake_aura_api._tenant_id,
+        project_id=fake_aura_api._project_id,
         cloud_provider="aws",
     )
     fake_aura_api._instances[gds_instance.id] = gds_instance
@@ -459,7 +459,7 @@ def test_get_or_create_expired_session(mocker: MockerFixture, aura_api: AuraApi)
             host="foo.bar",
             expiry_date=None,
             ttl=None,
-            tenant_id=aura_api._tenant_id,
+            project_id=aura_api._project_id,
             user_id="user-1",
             cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
             errors=[SessionErrorData("foo", "inactivity")],
@@ -487,7 +487,7 @@ def test_get_or_create_soon_expired_session(mocker: MockerFixture, aura_api: Aur
             host="foo.bar",
             expiry_date=datetime.now(tz=timezone.utc) - timedelta(hours=23),
             ttl=None,
-            tenant_id=aura_api._tenant_id,
+            project_id=aura_api._project_id,
             cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
             user_id="user-1",
         )
@@ -547,7 +547,7 @@ def test_get_or_create_failed_session(mocker: MockerFixture, aura_api: AuraApi) 
             host="foo.bar",
             expiry_date=None,
             ttl=None,
-            tenant_id=aura_api._tenant_id,
+            project_id=aura_api._project_id,
             user_id="user-1",
             cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
             errors=[SessionErrorData(message="error", reason="reason")],
@@ -587,7 +587,7 @@ def test_delete_session_by_name_admin() -> None:
             host="foo.bar",
             expiry_date=datetime.now(tz=timezone.utc) - timedelta(hours=23),
             ttl=None,
-            tenant_id=aura_api._tenant_id,
+            project_id=aura_api._project_id,
             cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
             user_id="user-0",
         )
@@ -604,7 +604,7 @@ def test_delete_session_by_name_admin() -> None:
             host="foo.bar",
             expiry_date=datetime.now(tz=timezone.utc) - timedelta(hours=23),
             ttl=None,
-            tenant_id=aura_api._tenant_id,
+            project_id=aura_api._project_id,
             cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
             user_id="user-1",
         )
@@ -650,7 +650,7 @@ def test_delete_session_paused_instance(aura_api: AuraApi) -> None:
         type="",
         region="dresden",
         name="paused-db",
-        tenant_id=fake_aura_api._tenant_id,
+        project_id=fake_aura_api._project_id,
         cloud_provider="aws",
     )
     fake_aura_api._instances[paused_db.id] = paused_db
@@ -695,7 +695,7 @@ def test_estimate_size_exceeds() -> None:
 
     with pytest.warns(
         ResourceWarning,
-        match=re.escape("The estimated memory `16GB` exceeds the maximum size supported by your Aura tenant (`8GB`)"),
+        match=re.escape("The estimated memory `16GB` exceeds the maximum size supported by your Aura project (`8GB`)"),
     ):
         assert sessions.estimate(1, 1, [AlgorithmCategory.CENTRALITY]) == SessionMemory.m_8GB
 

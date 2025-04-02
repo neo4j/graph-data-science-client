@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 import math
 import time
-import uuid
 import warnings
 from collections import defaultdict
 from datetime import timedelta
@@ -22,10 +21,10 @@ from graphdatascience.session.aura_api_responses import (
     InstanceCreateDetails,
     InstanceDetails,
     InstanceSpecificDetails,
+    ProjectDetails,
     SessionDetails,
     SessionDetailsWithErrors,
     SessionErrorData,
-    TenantDetails,
     WaitResult,
 )
 from graphdatascience.session.cloud_location import CloudLocation
@@ -56,10 +55,10 @@ class SessionStatusError(Exception):
 
 
 class AuraApi:
-    API_VERSION = "v1beta5"
+    API_VERSION = "v1"
 
     def __init__(
-        self, client_id: str, client_secret: str, tenant_id: Optional[str] = None, aura_env: Optional[str] = None
+        self, client_id: str, client_secret: str, project_id: Optional[str] = None, aura_env: Optional[str] = None
     ) -> None:
         self._base_uri = AuraApi.base_uri(aura_env)
         self._credentials = (client_id, client_secret)
@@ -67,8 +66,8 @@ class AuraApi:
         self._request_session = self._init_request_session(self._credentials)
         self._logger = logging.getLogger()
 
-        self._tenant_id = tenant_id if tenant_id else self._get_tenant_id()
-        self._tenant_details: Optional[TenantDetails] = None
+        self._project_id = project_id if project_id else self._get_project_id()
+        self._project_details: Optional[ProjectDetails] = None
 
     def _init_request_session(self, credentials: tuple[str, str]) -> requests.Session:
         request_session = requests.Session()
@@ -123,8 +122,7 @@ class AuraApi:
         ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
     ) -> SessionDetails:
-        pwd = str(uuid.uuid4())  # password wont be used and will go away in v1 endpoints
-        json = {"name": name, "password": pwd, "memory": memory.value, "tenant_id": self._tenant_id}
+        json = {"name": name, "memory": memory.value, "project_id": self._project_id}
 
         if dbid:
             json["instance_id"] = dbid
@@ -137,7 +135,7 @@ class AuraApi:
             json["region"] = cloud_location.region
 
         response = self._request_session.post(
-            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions", json=json
+            f"{self._base_uri}/{AuraApi.API_VERSION}/graph-analytics/sessions", json=json
         )
 
         self._check_resp(response)
@@ -149,7 +147,7 @@ class AuraApi:
 
     def get_session(self, session_id: str) -> Optional[SessionDetails]:
         response = self._request_session.get(
-            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions/{session_id}"
+            f"{self._base_uri}/{AuraApi.API_VERSION}/graph-analytics/sessions/{session_id}"
         )
 
         if response.status_code == HTTPStatus.NOT_FOUND.value:
@@ -165,12 +163,12 @@ class AuraApi:
     def list_sessions(self, dbid: Optional[str] = None) -> list[SessionDetailsWithErrors]:
         # these are query parameters (not passed in the body)
         params = {
-            "tenantId": self._tenant_id,
+            "projectId": self._project_id,
             "instanceId": dbid,
         }
 
         response = self._request_session.get(
-            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions", params=params
+            f"{self._base_uri}/{AuraApi.API_VERSION}/graph-analytics/sessions", params=params
         )
 
         self._check_resp(response)
@@ -217,7 +215,7 @@ class AuraApi:
 
     def delete_session(self, session_id: str) -> bool:
         response = self._request_session.delete(
-            f"{self._base_uri}/{AuraApi.API_VERSION}/data-science/sessions/{session_id}",
+            f"{self._base_uri}/{AuraApi.API_VERSION}/graph-analytics/sessions/{session_id}",
         )
         self._check_endpoint_deprecation(response)
 
@@ -236,7 +234,7 @@ class AuraApi:
             "version": "5",
             "region": region,
             "type": type,
-            "tenant_id": self._tenant_id,
+            "project_id": self._project_id,
             "cloud_provider": cloud_provider,
         }
 
@@ -257,7 +255,7 @@ class AuraApi:
         return InstanceSpecificDetails.fromJson(response.json()["data"])
 
     def list_instances(self) -> list[InstanceDetails]:
-        response = self._request_session.get(f"{self._base_uri}/v1/instances", params={"tenantId": self._tenant_id})
+        response = self._request_session.get(f"{self._base_uri}/v1/instances", params={"tenantId": self._project_id})
 
         self._check_resp(response)
 
@@ -316,26 +314,26 @@ class AuraApi:
 
         return EstimationDetails.from_json(response.json()["data"])
 
-    def _get_tenant_id(self) -> str:
+    def _get_project_id(self) -> str:
         response = self._request_session.get(f"{self._base_uri}/v1/tenants")
         self._check_resp(response)
 
         raw_data = response.json()["data"]
 
         if len(raw_data) != 1:
-            tenants_dict = {d["id"]: d["name"] for d in raw_data}
+            projects_dict = {d["id"]: d["name"] for d in raw_data}
             raise RuntimeError(
-                f"This account has access to multiple tenants: `{tenants_dict}`. Please specify which one to use."
+                f"This account has access to multiple projects: `{projects_dict}`. Please specify which one to use."
             )
 
         return raw_data[0]["id"]  # type: ignore
 
-    def tenant_details(self) -> TenantDetails:
-        if not self._tenant_details:
-            response = self._request_session.get(f"{self._base_uri}/v1/tenants/{self._tenant_id}")
+    def project_details(self) -> ProjectDetails:
+        if not self._project_details:
+            response = self._request_session.get(f"{self._base_uri}/v1/tenants/{self._project_id}")
             self._check_resp(response)
-            self._tenant_details = TenantDetails.from_json(response.json()["data"])
-        return self._tenant_details
+            self._project_details = ProjectDetails.from_json(response.json()["data"])
+        return self._project_details
 
     def _check_errors(self, raw_json: dict[str, Any]) -> None:
         errors = raw_json.get("errors", [])

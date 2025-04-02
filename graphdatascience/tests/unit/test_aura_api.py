@@ -14,10 +14,10 @@ from graphdatascience.session.aura_api_responses import (
     EstimationDetails,
     InstanceCreateDetails,
     InstanceSpecificDetails,
+    ProjectDetails,
     SessionDetails,
     SessionDetailsWithErrors,
     SessionErrorData,
-    TenantDetails,
     TimeParser,
     WaitResult,
 )
@@ -39,27 +39,22 @@ def test_base_uri_from_env() -> None:
 
 
 def test_create_attached_session(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
     def assert_body(request: _RequestObjectProxy) -> bool:
-        actual = request.json()
-
-        assert len(actual["password"]) == 36
-        del actual["password"]
-
-        assert actual == {
+        assert request.json() == {
             "name": "name-0",
             "memory": "4GB",
             "instance_id": "dbid-1",
             "ttl": "42.0s",
-            "tenant_id": "some-tenant",
+            "project_id": "some-tenant",
         }
         return True
 
     requests_mock.post(
-        "https://api.neo4j.io/v1beta5/data-science/sessions",
+        "https://api.neo4j.io/v1/graph-analytics/sessions",
         json={
             "data": {
                 "id": "id0",
@@ -69,7 +64,7 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
                 "created_at": "1970-01-01T00:00:00Z",
                 "host": "1.2.3.4",
                 "memory": "4Gi",
-                "tenant_id": "some-tenant",
+                "project_id": "some-tenant",
                 "user_id": "user-0",
                 "ttl": "42s",
             }
@@ -91,25 +86,20 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
         memory=SessionMemory.m_4GB.value,
         expiry_date=None,
         ttl=timedelta(seconds=42),
-        tenant_id="some-tenant",
+        project_id="some-tenant",
         user_id="user-0",
     )
 
 
 def test_create_dedicated_session(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
     def assert_body(request: _RequestObjectProxy) -> bool:
-        actual = request.json()
-
-        assert len(actual["password"]) == 36
-        del actual["password"]
-
-        assert actual == {
+        assert request.json() == {
             "name": "name-0",
-            "tenant_id": "some-tenant",
+            "project_id": "some-tenant",
             "memory": "4GB",
             "cloud_provider": "aws",
             "region": "leipzig-1",
@@ -118,7 +108,7 @@ def test_create_dedicated_session(requests_mock: Mocker) -> None:
         return True
 
     requests_mock.post(
-        "https://api.neo4j.io/v1beta5/data-science/sessions",
+        "https://api.neo4j.io/v1/graph-analytics/sessions",
         json={
             "data": {
                 "id": "id0",
@@ -128,7 +118,7 @@ def test_create_dedicated_session(requests_mock: Mocker) -> None:
                 "created_at": "1970-01-01T00:00:00Z",
                 "host": "1.2.3.4",
                 "memory": "4Gi",
-                "tenant_id": "tenant-0",
+                "project_id": "tenant-0",
                 "user_id": "user-0",
                 "ttl": "42.0s",
             }
@@ -155,18 +145,18 @@ def test_create_dedicated_session(requests_mock: Mocker) -> None:
         memory=SessionMemory.m_4GB.value,
         expiry_date=None,
         ttl=timedelta(seconds=42),
-        tenant_id="tenant-0",
+        project_id="tenant-0",
         user_id="user-0",
     )
 
 
 def test_create_standalone_session_http_error_forwards(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
     requests_mock.post(
-        "https://api.neo4j.io/v1beta5/data-science/sessions",
+        "https://api.neo4j.io/v1/graph-analytics/sessions",
         status_code=400,
         json={
             "errors": {
@@ -185,12 +175,12 @@ def test_create_standalone_session_http_error_forwards(requests_mock: Mocker) ->
 
 
 def test_create_standalone_session_state_error_forwards(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
     requests_mock.post(
-        "https://api.neo4j.io/v1beta5/data-science/sessions",
+        "https://api.neo4j.io/v1/graph-analytics/sessions",
         status_code=200,
         json={
             "data": {
@@ -201,7 +191,7 @@ def test_create_standalone_session_state_error_forwards(requests_mock: Mocker) -
                 "created_at": "1970-01-01T00:00:00Z",
                 "host": "1.2.3.4",
                 "memory": "4Gi",
-                "tenant_id": "tenant-0",
+                "project_id": "tenant-0",
                 "user_id": "user-0",
                 "ttl": "42.0s",
             },
@@ -228,12 +218,12 @@ def test_create_standalone_session_state_error_forwards(requests_mock: Mocker) -
 
 
 def test_get_session(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
     requests_mock.get(
-        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        "https://api.neo4j.io/v1/graph-analytics/sessions/id0",
         json={
             "data": {
                 "id": "id0",
@@ -244,7 +234,7 @@ def test_get_session(requests_mock: Mocker) -> None:
                 "host": "1.2.3.4",
                 "memory": "4Gi",
                 "expiry_date": "1977-01-01T00:00:00Z",
-                "tenant_id": "tenant-0",
+                "project_id": "tenant-0",
                 "user_id": "user-0",
             }
         },
@@ -262,18 +252,18 @@ def test_get_session(requests_mock: Mocker) -> None:
         memory=SessionMemory.m_4GB.value,
         expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
         ttl=None,
-        tenant_id="tenant-0",
+        project_id="tenant-0",
         user_id="user-0",
     )
 
 
 def test_get_session_state_error_forwards(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
     requests_mock.get(
-        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        "https://api.neo4j.io/v1/graph-analytics/sessions/id0",
         json={
             "data": {
                 "id": "id0",
@@ -284,7 +274,7 @@ def test_get_session_state_error_forwards(requests_mock: Mocker) -> None:
                 "host": "1.2.3.4",
                 "memory": "4Gi",
                 "expiry_date": "1977-01-01T00:00:00Z",
-                "tenant_id": "tenant-0",
+                "project_id": "tenant-0",
                 "user_id": "user-0",
                 "ttl": "42s",
             },
@@ -306,11 +296,11 @@ def test_get_session_state_error_forwards(requests_mock: Mocker) -> None:
 
 
 def test_list_sessions(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
     mock_auth_token(requests_mock)
 
     requests_mock.get(
-        "https://api.neo4j.io/v1beta5/data-science/sessions?tenantId=some-tenant",
+        "https://api.neo4j.io/v1/graph-analytics/sessions?tenantId=some-tenant",
         json={
             "data": [
                 {
@@ -322,7 +312,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
                     "host": "1.2.3.4",
                     "memory": "4Gi",
                     "expiry_date": "1977-01-01T00:00:00Z",
-                    "tenant_id": "tenant-1",
+                    "project_id": "tenant-1",
                     "user_id": "user-1",
                     "cloud_provider": "gcp",
                     "region": "leipzig",
@@ -335,7 +325,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
                     "created_at": "2012-01-01T00:00:00Z",
                     "memory": "8Gi",
                     "host": "foo.bar",
-                    "tenant_id": "tenant-2",
+                    "project_id": "tenant-2",
                     "user_id": "user-2",
                 },
             ]
@@ -354,7 +344,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         memory=SessionMemory.m_4GB.value,
         expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
         ttl=None,
-        tenant_id="tenant-1",
+        project_id="tenant-1",
         user_id="user-1",
         cloud_location=CloudLocation("gcp", "leipzig"),
     )
@@ -369,7 +359,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
         host="foo.bar",
         expiry_date=None,
         ttl=None,
-        tenant_id="tenant-2",
+        project_id="tenant-2",
         user_id="user-2",
         cloud_location=None,
     )
@@ -378,11 +368,11 @@ def test_list_sessions(requests_mock: Mocker) -> None:
 
 
 def test_list_sessions_with_db_id(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
     mock_auth_token(requests_mock)
 
     requests_mock.get(
-        "https://api.neo4j.io/v1beta5/data-science/sessions?tenantId=some-tenant&instanceId=dbid",
+        "https://api.neo4j.io/v1/graph-analytics/sessions?tenantId=some-tenant&instanceId=dbid",
         json={
             "data": [
                 {
@@ -394,7 +384,7 @@ def test_list_sessions_with_db_id(requests_mock: Mocker) -> None:
                     "host": "1.2.3.4",
                     "memory": "4Gi",
                     "expiry_date": "1977-01-01T00:00:00Z",
-                    "tenant_id": "tenant-1",
+                    "project_id": "tenant-1",
                     "user_id": "user-1",
                 },
                 {
@@ -405,7 +395,7 @@ def test_list_sessions_with_db_id(requests_mock: Mocker) -> None:
                     "created_at": "2012-01-01T00:00:00Z",
                     "memory": "8Gi",
                     "host": "foo.bar",
-                    "tenant_id": "tenant-2",
+                    "project_id": "tenant-2",
                     "user_id": "user-2",
                 },
             ]
@@ -424,7 +414,7 @@ def test_list_sessions_with_db_id(requests_mock: Mocker) -> None:
         memory=SessionMemory.m_4GB.value,
         expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
         ttl=None,
-        tenant_id="tenant-1",
+        project_id="tenant-1",
         user_id="user-1",
     )
 
@@ -438,7 +428,7 @@ def test_list_sessions_with_db_id(requests_mock: Mocker) -> None:
         host="foo.bar",
         expiry_date=None,
         ttl=None,
-        tenant_id="tenant-2",
+        project_id="tenant-2",
         user_id="user-2",
     )
 
@@ -446,12 +436,12 @@ def test_list_sessions_with_db_id(requests_mock: Mocker) -> None:
 
 
 def test_list_session_state_error_forwards(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
     requests_mock.get(
-        "https://api.neo4j.io/v1beta5/data-science/sessions",
+        "https://api.neo4j.io/v1/graph-analytics/sessions",
         json={
             "data": [
                 {
@@ -463,7 +453,7 @@ def test_list_session_state_error_forwards(requests_mock: Mocker) -> None:
                     "host": "1.2.3.4",
                     "memory": "4Gi",
                     "expiry_date": "1977-01-01T00:00:00Z",
-                    "tenant_id": "tenant-1",
+                    "project_id": "tenant-1",
                     "user_id": "user-1",
                 },
                 {
@@ -474,7 +464,7 @@ def test_list_session_state_error_forwards(requests_mock: Mocker) -> None:
                     "created_at": "2012-01-01T00:00:00Z",
                     "memory": "8Gi",
                     "host": "foo.bar",
-                    "tenant_id": "tenant-2",
+                    "project_id": "tenant-2",
                     "user_id": "user-2",
                 },
                 {
@@ -485,7 +475,7 @@ def test_list_session_state_error_forwards(requests_mock: Mocker) -> None:
                     "created_at": "2012-01-01T00:00:00Z",
                     "memory": "8Gi",
                     "host": "foo.bar",
-                    "tenant_id": "tenant-2",
+                    "project_id": "tenant-2",
                     "user_id": "user-2",
                 },
             ],
@@ -528,11 +518,11 @@ def test_list_session_state_error_forwards(requests_mock: Mocker) -> None:
 
 
 def test_delete_session(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
     requests_mock.delete(
-        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        "https://api.neo4j.io/v1/graph-analytics/sessions/id0",
         status_code=202,
     )
 
@@ -540,11 +530,11 @@ def test_delete_session(requests_mock: Mocker) -> None:
 
 
 def test_delete_missing_session(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
     requests_mock.delete(
-        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        "https://api.neo4j.io/v1/graph-analytics/sessions/id0",
         status_code=404,
     )
 
@@ -574,7 +564,7 @@ def test_multiple_tenants(requests_mock: Mocker) -> None:
 def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCaptureFixture) -> None:
     mock_auth_token(requests_mock)
     requests_mock.get(
-        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        "https://api.neo4j.io/v1/graph-analytics/sessions/id0",
         json={
             "data": {
                 "id": "id0",
@@ -585,13 +575,13 @@ def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCapture
                 "host": "foo.bar",
                 "memory": "4Gi",
                 "expiry_date": "1977-01-01T00:00:00Z",
-                "tenant_id": "tenant-1",
+                "project_id": "tenant-1",
                 "user_id": "user-1",
             }
         },
     )
 
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi("", "", project_id="some-tenant")
 
     with caplog.at_level(logging.DEBUG):
         assert (
@@ -605,7 +595,7 @@ def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCapture
 def test_wait_for_session_running(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
     requests_mock.get(
-        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        "https://api.neo4j.io/v1/graph-analytics/sessions/id0",
         json={
             "data": {
                 "id": "id0",
@@ -616,13 +606,13 @@ def test_wait_for_session_running(requests_mock: Mocker) -> None:
                 "host": "foo.bar",
                 "memory": "4Gi",
                 "expiry_date": "1977-01-01T00:00:00Z",
-                "tenant_id": "tenant-1",
+                "project_id": "tenant-1",
                 "user_id": "user-1",
             }
         },
     )
 
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi("", "", project_id="some-tenant")
 
     assert api.wait_for_session_running("id0") == WaitResult.from_connection_url("neo4j+s://foo.bar")
 
@@ -630,7 +620,7 @@ def test_wait_for_session_running(requests_mock: Mocker) -> None:
 def test_wait_for_session_running_until_failure(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
     requests_mock.get(
-        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        "https://api.neo4j.io/v1/graph-analytics/sessions/id0",
         json={
             "data": {
                 "id": "id0",
@@ -641,7 +631,7 @@ def test_wait_for_session_running_until_failure(requests_mock: Mocker) -> None:
                 "host": "foo.bar",
                 "memory": "4Gi",
                 "expiry_date": "1977-01-01T00:00:00Z",
-                "tenant_id": "tenant-1",
+                "project_id": "tenant-1",
                 "user_id": "user-1",
             },
             "errors": [
@@ -654,7 +644,7 @@ def test_wait_for_session_running_until_failure(requests_mock: Mocker) -> None:
         },
     )
 
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi("", "", project_id="some-tenant")
 
     with pytest.raises(SessionStatusError, match="Session is in an unhealthy state"):
         api.wait_for_session_running("id0")
@@ -663,7 +653,7 @@ def test_wait_for_session_running_until_failure(requests_mock: Mocker) -> None:
 def test_wait_for_session_running_until_expired(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
     requests_mock.get(
-        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        "https://api.neo4j.io/v1/graph-analytics/sessions/id0",
         json={
             "data": {
                 "id": "id0",
@@ -674,21 +664,21 @@ def test_wait_for_session_running_until_expired(requests_mock: Mocker) -> None:
                 "host": "foo.bar",
                 "memory": "4Gi",
                 "expiry_date": "1977-01-01T00:00:00Z",
-                "tenant_id": "tenant-1",
+                "project_id": "tenant-1",
                 "user_id": "user-1",
             },
             "errors": [{"id": "id0", "message": "Session is expired", "reason": "Inactivity"}],
         },
     )
 
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi("", "", project_id="some-tenant")
 
     with pytest.raises(SessionStatusError, match="Session is in an unhealthy state"):
         api.wait_for_session_running("id0")
 
 
 def test_delete_instance(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
@@ -701,7 +691,7 @@ def test_delete_instance(requests_mock: Mocker) -> None:
                 "name": "",
                 "status": "deleting",
                 "connection_url": "",
-                "tenant_id": "",
+                "project_id": "",
                 "cloud_provider": "",
                 "memory": "4Gi",
                 "region": "",
@@ -715,7 +705,7 @@ def test_delete_instance(requests_mock: Mocker) -> None:
     assert result == InstanceSpecificDetails(
         id="id0",
         name="",
-        tenant_id="",
+        project_id="",
         cloud_provider="",
         status="deleting",
         connection_url="",
@@ -726,7 +716,7 @@ def test_delete_instance(requests_mock: Mocker) -> None:
 
 
 def test_delete_already_deleting_instance(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
     requests_mock.delete(
@@ -741,7 +731,7 @@ def test_delete_already_deleting_instance(requests_mock: Mocker) -> None:
 
 
 def test_delete_that_fails(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
     requests_mock.delete(
@@ -756,7 +746,7 @@ def test_delete_that_fails(requests_mock: Mocker) -> None:
 
 
 def test_create_instance(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
@@ -775,10 +765,9 @@ def test_create_instance(requests_mock: Mocker) -> None:
         json={
             "data": {
                 "id": "id0",
-                "tenant_id": "some-tenant",
+                "project_id": "some-tenant",
                 "cloud_provider": "aws",
                 "username": "neo4j",
-                "password": "fake-pw",
                 "connection_url": "fake-url",
                 "type": "",
                 "region": "leipzig-1",
@@ -796,11 +785,11 @@ def test_create_instance(requests_mock: Mocker) -> None:
 
 
 def test_warn_about_expirying_endpoint(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
     requests_mock.delete(
-        "https://api.neo4j.io/v1beta5/data-science/sessions/id0",
+        "https://api.neo4j.io/v1/graph-analytics/sessions/id0",
         status_code=202,
         headers={"X-Tyk-Api-Expires": "Mon, 03 Mar 2025 00:00:00 UTC"},
     )
@@ -810,7 +799,7 @@ def test_warn_about_expirying_endpoint(requests_mock: Mocker) -> None:
 
 
 def test_auth_token(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
@@ -828,7 +817,7 @@ def test_auth_token(requests_mock: Mocker) -> None:
 
 
 def test_auth_token_reused(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
@@ -847,7 +836,7 @@ def test_auth_token_reused(requests_mock: Mocker) -> None:
 
 
 def test_auth_token_use_short_token(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
@@ -877,7 +866,7 @@ def test_raise_on_missing_tenant(requests_mock: Mocker) -> None:
         json={
             "data": [
                 {"id": "6981ace7-efe8-4f5c-b7c5-267b5162ce91", "name": "Production"},
-                {"id": "YOUR_TENANT_ID", "name": "Staging"},
+                {"id": "YOUR_project_id", "name": "Staging"},
                 {"id": "da045ab3-3b89-4f45-8b96-528f2e47cd13", "name": "Development"},
             ]
         },
@@ -888,7 +877,7 @@ def test_raise_on_missing_tenant(requests_mock: Mocker) -> None:
 
 
 def test_list_instance(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="YOUR_TENANT_ID")
+    api = AuraApi(client_id="", client_secret="", project_id="YOUR_project_id")
 
     mock_auth_token(requests_mock)
     requests_mock.get(
@@ -898,7 +887,7 @@ def test_list_instance(requests_mock: Mocker) -> None:
                 "id": "2f49c2b3",
                 "name": "Production",
                 "status": "running",
-                "tenant_id": "YOUR_TENANT_ID",
+                "project_id": "YOUR_project_id",
                 "cloud_provider": "gcp",
                 "connection_url": "YOUR_CONNECTION_URL",
                 "region": "europe-west1",
@@ -917,7 +906,7 @@ def test_list_instance(requests_mock: Mocker) -> None:
 
 
 def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
-    api = AuraApi(client_id="", client_secret="", tenant_id="some-tenant")
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
     requests_mock.get(
@@ -930,7 +919,7 @@ def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
                 "name": "gds-session-foo-bar",
                 "region": "europe-west1",
                 "status": "creating",
-                "tenant_id": "046046d1-6996-53e4-8880-5b822766e1f9",
+                "project_id": "046046d1-6996-53e4-8880-5b822766e1f9",
                 "type": "enterprise-ds",
                 "memory": "",
             }
@@ -944,7 +933,7 @@ def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
 
 
 def test_list_missing_instance(requests_mock: Mocker) -> None:
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi("", "", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
 
@@ -970,14 +959,14 @@ def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> 
                 "id": None,
                 "name": None,
                 "region": None,
-                "tenant_id": None,
+                "project_id": None,
                 "type": None,
                 "memory": "4Gi",
             }
         },
     )
 
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi("", "", project_id="some-tenant")
 
     with caplog.at_level(logging.DEBUG):
         assert (
@@ -1000,14 +989,14 @@ def test_wait_for_instance_running(requests_mock: Mocker) -> None:
                 "id": None,
                 "name": None,
                 "region": None,
-                "tenant_id": None,
+                "project_id": None,
                 "type": None,
                 "memory": "4Gi",
             }
         },
     )
 
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi("", "", project_id="some-tenant")
 
     assert api.wait_for_instance_running("id0") == WaitResult.from_connection_url("foo.bar")
 
@@ -1024,7 +1013,7 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
                 "id": None,
                 "name": None,
                 "region": None,
-                "tenant_id": None,
+                "project_id": None,
                 "type": None,
                 "memory": "4Gi",
             }
@@ -1040,14 +1029,14 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
                 "id": None,
                 "name": None,
                 "region": None,
-                "tenant_id": None,
+                "project_id": None,
                 "type": None,
                 "memory": "4Gi",
             }
         },
     )
 
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi("", "", project_id="some-tenant")
 
     assert api.wait_for_instance_running("id0") == WaitResult.from_error("Instance is being deleted")
     assert api.wait_for_instance_running("id1") == WaitResult.from_error("Instance is being deleted")
@@ -1060,7 +1049,7 @@ def test_estimate_size(requests_mock: Mocker) -> None:
         json={"data": {"did_exceed_maximum": True, "min_required_memory": "307GB", "recommended_size": "96GB"}},
     )
 
-    api = AuraApi("", "", tenant_id="some-tenant")
+    api = AuraApi("", "", project_id="some-tenant")
     assert api.estimate_size(100, 10, [AlgorithmCategory.NODE_EMBEDDING]) == EstimationDetails("307GB", "96GB", True)
 
 
@@ -1090,7 +1079,7 @@ def test_parse_create_details() -> None:
 
 
 def test_parse_tenant_details() -> None:
-    details = TenantDetails.from_json(
+    details = ProjectDetails.from_json(
         {
             "id": "42",
             "instance_configurations": [
@@ -1102,7 +1091,7 @@ def test_parse_tenant_details() -> None:
         }
     )
 
-    expected_details = TenantDetails(
+    expected_details = ProjectDetails(
         "42",
         cloud_locations={
             CloudLocation("gcp", "eu-west3"),
@@ -1125,7 +1114,7 @@ def test_parse_session_info() -> None:
         "created_at": "2021-01-01T00:00:00Z",
         "host": "a.b",
         "ttl": "1d8h1m2s",
-        "tenant_id": "tenant-1",
+        "project_id": "tenant-1",
         "user_id": "user-1",
     }
     session_info = SessionDetails.from_json(session_details)
@@ -1140,7 +1129,7 @@ def test_parse_session_info() -> None:
         expiry_date=datetime(2022, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
         created_at=datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
         ttl=timedelta(days=1, hours=8, minutes=1, seconds=2),
-        tenant_id="tenant-1",
+        project_id="tenant-1",
         user_id="user-1",
     )
 
@@ -1154,7 +1143,7 @@ def test_parse_session_info_without_optionals() -> None:
         "status": "running",
         "host": "a.b",
         "created_at": "2021-01-01T00:00:00Z",
-        "tenant_id": "tenant-1",
+        "project_id": "tenant-1",
         "user_id": "user-1",
     }
     session_info = SessionDetails.from_json(session_details)
@@ -1169,6 +1158,6 @@ def test_parse_session_info_without_optionals() -> None:
         expiry_date=None,
         ttl=None,
         created_at=datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
-        tenant_id="tenant-1",
+        project_id="tenant-1",
         user_id="user-1",
     )
