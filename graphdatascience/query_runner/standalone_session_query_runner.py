@@ -45,6 +45,9 @@ class StandaloneSessionQueryRunner(QueryRunner):
     def close(self) -> None:
         self._query_runner.close()
 
+    def database(self) -> Optional[str]:
+        return "neo4j"
+
     def run_cypher(
         self,
         query: str,
@@ -61,9 +64,6 @@ class StandaloneSessionQueryRunner(QueryRunner):
         raise NotImplementedError
 
     def set_bookmarks(self, bookmarks: Optional[Any]) -> None:
-        raise NotImplementedError
-
-    def database(self) -> Optional[str]:
         raise NotImplementedError
 
     def bookmarks(self) -> Optional[Any]:

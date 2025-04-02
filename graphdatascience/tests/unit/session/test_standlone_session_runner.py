@@ -14,9 +14,6 @@ def test_disallow_database_operations(runner: CollectingQueryRunner) -> None:
         query_runner.set_database("neo4j")
 
     with pytest.raises(NotImplementedError):
-        query_runner.database()
-
-    with pytest.raises(NotImplementedError):
         query_runner.bookmarks()
 
     with pytest.raises(NotImplementedError):
