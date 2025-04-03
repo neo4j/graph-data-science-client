@@ -17,7 +17,7 @@ def test_graph_construct_and_calling_procedure(standalone_aura_gds: AuraGraphDat
     assert G.node_count() == 4
     assert G.relationship_count() == 4
 
-    result = standalone_aura_gds.pageRank.stream(G, mutateProperty="score")
+    result = standalone_aura_gds.pageRank.stream(G)
 
     assert len(result) == 4
 
