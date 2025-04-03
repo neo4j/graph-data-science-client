@@ -234,7 +234,7 @@ class AuraApi:
             "version": "5",
             "region": region,
             "type": type,
-            "project_id": self._project_id,
+            "tenant_id": self._project_id,
             "cloud_provider": cloud_provider,
         }
 

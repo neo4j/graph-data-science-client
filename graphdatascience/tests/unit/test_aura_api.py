@@ -300,7 +300,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
 
     requests_mock.get(
-        "https://api.neo4j.io/v1/graph-analytics/sessions?tenantId=some-tenant",
+        "https://api.neo4j.io/v1/graph-analytics/sessions?projectId=some-tenant",
         json={
             "data": [
                 {
@@ -372,7 +372,7 @@ def test_list_sessions_with_db_id(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
 
     requests_mock.get(
-        "https://api.neo4j.io/v1/graph-analytics/sessions?tenantId=some-tenant&instanceId=dbid",
+        "https://api.neo4j.io/v1/graph-analytics/sessions?projectId=some-tenant&instanceId=dbid",
         json={
             "data": [
                 {
@@ -556,7 +556,7 @@ def test_multiple_tenants(requests_mock: Mocker) -> None:
 
     with pytest.raises(
         RuntimeError,
-        match="This account has access to multiple tenants: `{'tenant1': 'Production', 'tenant2': 'Development'}`",
+        match="This account has access to multiple projects: `{'tenant1': 'Production', 'tenant2': 'Development'}`",
     ):
         AuraApi(client_id="", client_secret="")
 
@@ -691,7 +691,7 @@ def test_delete_instance(requests_mock: Mocker) -> None:
                 "name": "",
                 "status": "deleting",
                 "connection_url": "",
-                "project_id": "",
+                "tenant_id": "",
                 "cloud_provider": "",
                 "memory": "4Gi",
                 "region": "",
@@ -765,8 +765,9 @@ def test_create_instance(requests_mock: Mocker) -> None:
         json={
             "data": {
                 "id": "id0",
-                "project_id": "some-tenant",
+                "tenant_id": "some-tenant",
                 "cloud_provider": "aws",
+                "password": "foo",
                 "username": "neo4j",
                 "connection_url": "fake-url",
                 "type": "",
@@ -872,7 +873,7 @@ def test_raise_on_missing_tenant(requests_mock: Mocker) -> None:
         },
     )
 
-    with pytest.raises(RuntimeError, match="This account has access to multiple tenants"):
+    with pytest.raises(RuntimeError, match="This account has access to multiple projects"):
         AuraApi(client_id="", client_secret="")
 
 
@@ -887,7 +888,7 @@ def test_list_instance(requests_mock: Mocker) -> None:
                 "id": "2f49c2b3",
                 "name": "Production",
                 "status": "running",
-                "project_id": "YOUR_project_id",
+                "tenant_id": "YOUR_project_id",
                 "cloud_provider": "gcp",
                 "connection_url": "YOUR_CONNECTION_URL",
                 "region": "europe-west1",
@@ -919,7 +920,7 @@ def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
                 "name": "gds-session-foo-bar",
                 "region": "europe-west1",
                 "status": "creating",
-                "project_id": "046046d1-6996-53e4-8880-5b822766e1f9",
+                "tenant_id": "046046d1-6996-53e4-8880-5b822766e1f9",
                 "type": "enterprise-ds",
                 "memory": "",
             }
@@ -959,7 +960,7 @@ def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> 
                 "id": None,
                 "name": None,
                 "region": None,
-                "project_id": None,
+                "tenant_id": None,
                 "type": None,
                 "memory": "4Gi",
             }
@@ -989,7 +990,7 @@ def test_wait_for_instance_running(requests_mock: Mocker) -> None:
                 "id": None,
                 "name": None,
                 "region": None,
-                "project_id": None,
+                "tenant_id": None,
                 "type": None,
                 "memory": "4Gi",
             }
@@ -1013,7 +1014,7 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
                 "id": None,
                 "name": None,
                 "region": None,
-                "project_id": None,
+                "tenant_id": None,
                 "type": None,
                 "memory": "4Gi",
             }
@@ -1029,7 +1030,7 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
                 "id": None,
                 "name": None,
                 "region": None,
-                "project_id": None,
+                "tenant_id": None,
                 "type": None,
                 "memory": "4Gi",
             }
