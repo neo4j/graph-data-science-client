@@ -320,7 +320,7 @@ stop incurring costs.
 [source, python, role=no-test]
 ----
 # or gds.delete()
-sessions.delete(session_name="people-and-fruits")
+sessions.delete(session_name="people-and-fruits-sm")
 ----
 
 [source, python, role=no-test]
