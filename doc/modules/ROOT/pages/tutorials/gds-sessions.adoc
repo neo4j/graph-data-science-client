@@ -110,7 +110,7 @@ db_connection = DbmsConnectionInfo(
 # Create a GDS session!
 gds = sessions.get_or_create(
     # we give it a representative name
-    session_name="g_102bc080-83d8-4e9e-870d-cced81af5a19",
+    session_name="people_and_fruits",
     memory=SessionMemory.m_4GB,
     db_connection=db_connection,
     ttl=timedelta(minutes=2),
@@ -321,9 +321,9 @@ stop incurring costs.
 
 [source, python, role=no-test]
 ----
-gds.delete()
+sessions.delete("people-and-fruits")
 
-# or sessions.delete("people-and-fruits")
+# or gds.delete()
 ----
 
 [source, python, role=no-test]
