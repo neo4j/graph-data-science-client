@@ -90,8 +90,8 @@ class DedicatedSessions:
 
         session_connection = DbmsConnectionInfo(
             uri=session_details.bolt_connection_url(),
-            username=self._aura_api._credentials[0],
-            password=self._aura_api._credentials[1],
+            username="",
+            password=self._aura_api._auth._auth_token(),
         )
 
         return self._construct_client(

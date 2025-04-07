@@ -63,18 +63,21 @@ class AuraApi:
         self._base_uri = AuraApi.base_uri(aura_env)
         self._credentials = (client_id, client_secret)
 
-        self._request_session = self._init_request_session(self._credentials)
+        self._auth = AuraApi.Auth(
+            oauth_url=f"{self._base_uri}/oauth/token",
+            credentials=self._credentials,
+            headers={"User-agent": f"neo4j-graphdatascience-v{__version__}"},
+        )
+        self._request_session = self._init_request_session()
         self._logger = logging.getLogger()
 
         self._project_id = project_id if project_id else self._get_project_id()
         self._project_details: Optional[ProjectDetails] = None
 
-    def _init_request_session(self, credentials: tuple[str, str]) -> requests.Session:
+    def _init_request_session(self) -> requests.Session:
         request_session = requests.Session()
         request_session.headers = {"User-agent": f"neo4j-graphdatascience-v{__version__}"}
-        request_session.auth = AuraApi.Auth(
-            oauth_url=f"{self._base_uri}/oauth/token", credentials=credentials, headers=request_session.headers
-        )
+        request_session.auth = self._auth
         # dont retry on POST as its not idempotent
         request_session.mount(
             "https://",
