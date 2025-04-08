@@ -38,75 +38,81 @@ def directed_nx_G() -> nx.Graph:
     return nx_G
 
 
+@pytest.fixture
+def graph_name(request: pytest.FixtureRequest) -> str:
+    GRAPH_NAME = request.function.__name__
+    return GRAPH_NAME
+
+
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
-def test_undirected_nx(gds: GraphDataScience, undirected_nx_G: nx.Graph) -> None:
-    G = gds.graph.networkx.load(undirected_nx_G, GRAPH_NAME)
+def test_undirected_nx(gds: GraphDataScience, undirected_nx_G: nx.Graph, graph_name: str) -> None:
+    with gds.graph.networkx.load(undirected_nx_G, graph_name) as G:
+        assert G.name() == graph_name
 
-    assert G.name() == GRAPH_NAME
+        assert G.node_count() == 3
+        assert set(G.node_labels()) == {"N", "M"}
+        assert G.node_properties("N") == ["foo"]
+        assert G.node_properties("M") == ["foo"]
 
-    assert G.node_count() == 3
-    assert set(G.node_labels()) == {"N", "M"}
-    assert G.node_properties("N") == ["foo"]
-    assert G.node_properties("M") == ["foo"]
+        assert G.relationship_count() == 6
+        assert G.relationship_types() == ["R"]
+        assert G.relationship_properties("R") == ["weight"]
 
-    assert G.relationship_count() == 6
-    assert G.relationship_types() == ["R"]
-    assert G.relationship_properties("R") == ["weight"]
-
-    G.drop()
+        G.drop()
 
 
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
-def test_undirected_nx_without_Arrow(gds_without_arrow: GraphDataScience, undirected_nx_G: nx.Graph) -> None:
-    G = gds_without_arrow.graph.networkx.load(undirected_nx_G, GRAPH_NAME)
+def test_undirected_nx_without_Arrow(
+    gds_without_arrow: GraphDataScience, undirected_nx_G: nx.Graph, graph_name: str
+) -> None:
+    with gds_without_arrow.graph.networkx.load(undirected_nx_G, graph_name) as G:
+        assert G.name() == graph_name
 
-    assert G.name() == GRAPH_NAME
+        assert G.node_count() == 3
+        assert set(G.node_labels()) == {"N", "M"}
+        assert G.node_properties("N") == ["foo"]
+        assert G.node_properties("M") == ["foo"]
 
-    assert G.node_count() == 3
-    assert set(G.node_labels()) == {"N", "M"}
-    assert G.node_properties("N") == ["foo"]
-    assert G.node_properties("M") == ["foo"]
+        assert G.relationship_count() == 6
+        assert set(G.relationship_types()) == {"R"}
+        assert G.relationship_properties("R") == ["weight"]
 
-    assert G.relationship_count() == 6
-    assert set(G.relationship_types()) == {"R"}
-    assert G.relationship_properties("R") == ["weight"]
-
-    G.drop()
+        G.drop()
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
-def test_directed_nx(gds: GraphDataScience, directed_nx_G: nx.Graph) -> None:
-    G = gds.graph.networkx.load(directed_nx_G, GRAPH_NAME)
+def test_directed_nx(gds: GraphDataScience, directed_nx_G: nx.Graph, graph_name: str) -> None:
+    with gds.graph.networkx.load(directed_nx_G, graph_name) as G:
+        assert G.name() == graph_name
 
-    assert G.name() == GRAPH_NAME
+        assert G.node_count() == 3
+        assert set(G.node_labels()) == {"N", "M"}
+        assert G.node_properties("N") == ["foo"]
+        assert G.node_properties("M") == ["foo"]
 
-    assert G.node_count() == 3
-    assert set(G.node_labels()) == {"N", "M"}
-    assert G.node_properties("N") == ["foo"]
-    assert G.node_properties("M") == ["foo"]
+        assert G.relationship_count() == 3
+        assert set(G.relationship_types()) == {"R"}
+        assert G.relationship_properties("R") == ["weight"]
 
-    assert G.relationship_count() == 3
-    assert set(G.relationship_types()) == {"R"}
-    assert G.relationship_properties("R") == ["weight"]
-
-    G.drop()
+        G.drop()
 
 
 @pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
-def test_directed_nx_without_Arrow(gds_without_arrow: GraphDataScience, directed_nx_G: nx.Graph) -> None:
-    G = gds_without_arrow.graph.networkx.load(directed_nx_G, GRAPH_NAME)
+def test_directed_nx_without_Arrow(
+    gds_without_arrow: GraphDataScience, directed_nx_G: nx.Graph, graph_name: str
+) -> None:
+    with gds_without_arrow.graph.networkx.load(directed_nx_G, graph_name) as G:
+        assert G.name() == graph_name
 
-    assert G.name() == GRAPH_NAME
+        assert G.node_count() == 3
+        assert set(G.node_labels()) == {"N", "M"}
+        assert G.node_properties("N") == ["foo"]
+        assert G.node_properties("M") == ["foo"]
 
-    assert G.node_count() == 3
-    assert set(G.node_labels()) == {"N", "M"}
-    assert G.node_properties("N") == ["foo"]
-    assert G.node_properties("M") == ["foo"]
+        assert G.relationship_count() == 3
+        assert set(G.relationship_types()) == {"R"}
+        assert G.relationship_properties("R") == ["weight"]
 
-    assert G.relationship_count() == 3
-    assert set(G.relationship_types()) == {"R"}
-    assert G.relationship_properties("R") == ["weight"]
-
-    G.drop()
+        G.drop()
