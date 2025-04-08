@@ -41,7 +41,7 @@ def directed_nx_G() -> nx.Graph:
 @pytest.fixture
 def graph_name(request: pytest.FixtureRequest) -> str:
     GRAPH_NAME = request.function.__name__
-    return GRAPH_NAME
+    return str(GRAPH_NAME)
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
