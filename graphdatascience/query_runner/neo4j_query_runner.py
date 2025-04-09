@@ -361,7 +361,7 @@ class Neo4jQueryRunner(QueryRunner):
         # neo4j 2025.04
         warnings.filterwarnings("ignore", message=r".*The procedure has a deprecated field.*by 'gds.*")
         # neo4j driver 4.4
-        warnings.filterwarnings("ignore", message=r".*The query used a deprecated procedure.*by 'gds.*")
+        warnings.filterwarnings("ignore", message=r".*The query used a deprecated field from a procedure.*by 'gds.*")
 
     class ConnectivityRetriesConfig(NamedTuple):
         max_retries: int = 600
