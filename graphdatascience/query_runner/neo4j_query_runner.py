@@ -118,30 +118,6 @@ class Neo4jQueryRunner(QueryRunner):
         )
         self._instance_description = instance_description
 
-        self.__configure_warnings_filter()
-
-    def __configure_warnings_filter(self) -> None:
-        if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= SemanticVersion(5, 21, 0):
-            notifications_logger = logging.getLogger("neo4j.notifications")
-            # the client does not expose YIELD fields so we just skip these warnings for now
-            notifications_logger.addFilter(
-                lambda record: (
-                    "The query used a deprecated field from a procedure" in record.msg and "by 'gds." in record.msg
-                )
-            )
-            notifications_logger.addFilter(
-                lambda record: "The procedure has a deprecated field" in record.msg and "gds." in record.msg
-            )
-
-        # Though pandas support may be experimental in the `neo4j` package, it should always
-        # be supported in the `graphdatascience` package.
-        warnings.filterwarnings(
-            "ignore",
-            message=r".*pandas support is experimental and might be changed or removed in future versions.*",
-        )
-
-        warnings.filterwarnings("ignore", message=r".*The procedure has a deprecated field.*by 'gds.*")
-
     def __run_cypher_simplified_for_query_progress_logger(self, query: str, database: Optional[str]) -> DataFrame:
         # progress logging should not retry a lot as it perodically fetches the latest progress anyway
         connectivity_retry_config = Neo4jQueryRunner.ConnectivityRetriesConfig(max_retries=2)
@@ -173,6 +149,8 @@ class Neo4jQueryRunner(QueryRunner):
                     self.handle_driver_exception(session, e)
                 else:
                     raise e
+
+            self.__configure_warnings_filter()
 
             df = result.to_df()
 
@@ -363,6 +341,25 @@ class Neo4jQueryRunner(QueryRunner):
 
         if retrys == retry_config.max_retries:
             raise UnableToConnectError(f"Unable to connect to the {self._instance_description}") from exception
+
+    def __configure_warnings_filter(self) -> None:
+        if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= SemanticVersion(5, 21, 0):
+            notifications_logger = logging.getLogger("neo4j.notifications")
+            # the client does not expose YIELD fields so we just skip these warnings for now
+            notifications_logger.addFilter(
+                lambda record: (
+                    "The query used a deprecated field from a procedure" in record.msg and "by 'gds." in record.msg
+                )
+            )
+            notifications_logger.addFilter(
+                lambda record: "The procedure has a deprecated field" in record.msg and "gds." in record.msg
+            )
+        warnings.filterwarnings(
+            "ignore",
+            message=r"^pandas support is experimental and might be changed or removed in future versions$",
+        )
+        warnings.filterwarnings("ignore", message=r".*The procedure has a deprecated field.*by'gds.*")
+        warnings.filterwarnings("ignore", message=r".*The query used a deprecated procedure.*by'gds.*")
 
     class ConnectivityRetriesConfig(NamedTuple):
         max_retries: int = 600
