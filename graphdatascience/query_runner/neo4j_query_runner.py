@@ -358,8 +358,10 @@ class Neo4jQueryRunner(QueryRunner):
             "ignore",
             message=r"^pandas support is experimental and might be changed or removed in future versions$",
         )
-        warnings.filterwarnings("ignore", message=r".*The procedure has a deprecated field.*by'gds.*")
-        warnings.filterwarnings("ignore", message=r".*The query used a deprecated procedure.*by'gds.*")
+        # neo4j 2025.04
+        warnings.filterwarnings("ignore", message=r".*The procedure has a deprecated field.*by 'gds.*")
+        # neo4j driver 4.4
+        warnings.filterwarnings("ignore", message=r".*The query used a deprecated procedure.*by 'gds.*")
 
     class ConnectivityRetriesConfig(NamedTuple):
         max_retries: int = 600
