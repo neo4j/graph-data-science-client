@@ -39,6 +39,7 @@ from graphdatascience.retry_utils.retry_config import RetryConfig
 from graphdatascience.retry_utils.retry_utils import before_log
 
 from ..semantic_version.semantic_version import SemanticVersion
+from ..session.arrow_authentication import ArrowAuthentication
 from ..version import __version__
 from .arrow_endpoint_version import ArrowEndpointVersion
 from .arrow_info import ArrowInfo
@@ -48,7 +49,7 @@ class GdsArrowClient:
     @staticmethod
     def create(
         arrow_info: ArrowInfo,
-        auth: Optional[tuple[str, str]] = None,
+        arrow_authentication: Optional[ArrowAuthentication] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
@@ -80,7 +81,7 @@ class GdsArrowClient:
             host,
             retry_config,
             int(port),
-            auth,
+            arrow_authentication,
             encrypted,
             disable_server_verification,
             tls_root_certs,
@@ -92,7 +93,7 @@ class GdsArrowClient:
         host: str,
         retry_config: RetryConfig,
         port: int = 8491,
-        auth: Optional[tuple[str, str]] = None,
+        auth: Optional[ArrowAuthentication] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
@@ -107,8 +108,8 @@ class GdsArrowClient:
             The host address of the GDS Arrow server
         port: int
             The host port of the GDS Arrow server (default is 8491)
-        auth: Optional[tuple[str, str]]
-            A tuple containing the username and password for authentication
+        auth: Optional[ArrowAuthentication]
+            An implementation of ArrowAuthentication providing a pair to be used for basic authentication
         encrypted: bool
             A flag that indicates whether the connection should be encrypted (default is False)
         disable_server_verification: bool
@@ -189,7 +190,8 @@ class GdsArrowClient:
         def auth_with_retry() -> None:
             client = self._client()
             if self._auth:
-                client.authenticate_basic_token(self._auth[0], self._auth[1])
+                auth_pair = self._auth.auth_pair()
+                client.authenticate_basic_token(auth_pair[0], auth_pair[1])
 
         if self._auth:
             auth_with_retry()
@@ -884,7 +886,7 @@ class AuthFactory(ClientMiddlewareFactory):  # type: ignore
 
 
 class AuthMiddleware(ClientMiddleware):  # type: ignore
-    def __init__(self, auth: tuple[str, str], *args: Any, **kwargs: Any) -> None:
+    def __init__(self, auth: ArrowAuthentication, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._auth = auth
         self._token: Optional[str] = None
@@ -918,14 +920,14 @@ class AuthMiddleware(ClientMiddleware):  # type: ignore
 
     def sending_headers(self) -> dict[str, str]:
         token = self.token()
-        if not token:
-            username, password = self._auth
-            auth_token = f"{username}:{password}"
-            auth_token = "Basic " + base64.b64encode(auth_token.encode("utf-8")).decode("ASCII")
-            # There seems to be a bug, `authorization` must be lower key
-            return {"authorization": auth_token}
-        else:
+        if token is not None:
             return {"authorization": "Bearer " + token}
+
+        auth_pair = self._auth.auth_pair()
+        auth_token = f"{auth_pair[0]}:{auth_pair[1]}"
+        auth_token = "Basic " + base64.b64encode(auth_token.encode("utf-8")).decode("ASCII")
+        # There seems to be a bug, `authorization` must be lower key
+        return {"authorization": auth_token}
 
 
 @dataclass(repr=True, frozen=True)

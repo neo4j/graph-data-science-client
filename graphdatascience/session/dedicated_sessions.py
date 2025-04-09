@@ -7,6 +7,7 @@ from typing import Optional
 
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.algorithm_category import AlgorithmCategory
+from graphdatascience.session.arrow_authentication import AuraApiTokenAuthentication, ArrowAuthentication
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_api_responses import SessionDetails
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
@@ -88,15 +89,18 @@ class DedicatedSessions:
 
         self._await_session_running(session_details, timeout)
 
-        session_connection = DbmsConnectionInfo(
+        session_bolt_connection_info = DbmsConnectionInfo(
             uri=session_details.bolt_connection_url(),
-            username="",
-            password=self._aura_api._auth._auth_token(),
+            username=self._aura_api._credentials[0],
+            password=self._aura_api._credentials[1],
         )
+
+        arrow_authentication = AuraApiTokenAuthentication(self._aura_api)
 
         return self._construct_client(
             session_id=session_details.id,
-            session_connection=session_connection,
+            session_bolt_connection_info=session_bolt_connection_info,
+            arrow_authentication=arrow_authentication,
             db_runner=db_runner,
         )
 
@@ -197,11 +201,13 @@ class DedicatedSessions:
     def _construct_client(
         self,
         session_id: str,
-        session_connection: DbmsConnectionInfo,
+        session_bolt_connection_info: DbmsConnectionInfo,
+        arrow_authentication: ArrowAuthentication,
         db_runner: Optional[Neo4jQueryRunner],
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience.create(
-            gds_session_connection_info=session_connection,
+            session_bolt_connection_info=session_bolt_connection_info,
+            arrow_authentication=arrow_authentication,
             db_endpoint=db_runner,
             delete_fn=lambda: self._aura_api.delete_session(session_id=session_id),
         )

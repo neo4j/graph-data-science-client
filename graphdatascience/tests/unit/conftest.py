@@ -16,6 +16,7 @@ from graphdatascience.query_runner.cypher_graph_constructor import (
 )
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.session.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 
@@ -179,7 +180,8 @@ def aura_gds(runner: CollectingQueryRunner, mocker: MockerFixture) -> Generator[
     mocker.patch("graphdatascience.query_runner.gds_arrow_client.GdsArrowClient.create", return_value=None)
 
     aura_gds = AuraGraphDataScience.create(
-        gds_session_connection_info=DbmsConnectionInfo("address", "some", "auth"),
+        session_bolt_connection_info=DbmsConnectionInfo("address", "some", "auth"),
+        arrow_authentication=UsernamePasswordAuthentication("some", "auth"),
         db_endpoint=DbmsConnectionInfo("address", "some", "auth"),
         delete_fn=lambda: True,
     )

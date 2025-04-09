@@ -19,6 +19,7 @@ from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.session_query_runner import SessionQueryRunner
 from graphdatascience.query_runner.standalone_session_query_runner import StandaloneSessionQueryRunner
+from graphdatascience.session.arrow_authentication import ArrowAuthentication
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.utils.util_remote_proc_runner import UtilRemoteProcRunner
 
@@ -32,7 +33,8 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
     @classmethod
     def create(
         cls,
-        gds_session_connection_info: DbmsConnectionInfo,
+        session_bolt_connection_info: DbmsConnectionInfo,
+        arrow_authentication: Optional[ArrowAuthentication],
         db_endpoint: Optional[Union[Neo4jQueryRunner, DbmsConnectionInfo]],
         delete_fn: Callable[[], bool],
         arrow_disable_server_verification: bool = False,
@@ -41,8 +43,8 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         show_progress: bool = True,
     ) -> AuraGraphDataScience:
         session_bolt_query_runner = Neo4jQueryRunner.create_for_session(
-            endpoint=gds_session_connection_info.uri,
-            auth=gds_session_connection_info.auth(),
+            endpoint=session_bolt_connection_info.uri,
+            auth=session_bolt_connection_info.auth(),
             show_progress=show_progress,
         )
 
@@ -50,7 +52,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         session_arrow_query_runner = ArrowQueryRunner.create(
             fallback_query_runner=session_bolt_query_runner,
             arrow_info=arrow_info,
-            auth=gds_session_connection_info.auth(),
+            arrow_authentication=arrow_authentication,
             encrypted=session_bolt_query_runner.encrypted(),
             disable_server_verification=arrow_disable_server_verification,
             tls_root_certs=arrow_tls_root_certs,
@@ -59,7 +61,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         # TODO: merge with the gds_arrow_client created inside ArrowQueryRunner
         session_arrow_client = GdsArrowClient.create(
             arrow_info,
-            gds_session_connection_info.auth(),
+            arrow_authentication,
             session_bolt_query_runner.encrypted(),
             arrow_disable_server_verification,
             arrow_tls_root_certs,
