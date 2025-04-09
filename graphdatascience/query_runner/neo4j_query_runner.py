@@ -176,6 +176,12 @@ class Neo4jQueryRunner(QueryRunner):
                 message=r"^pandas support is experimental and might be changed or removed in future versions$",
             )
 
+            # since 2025.04
+            warnings.filterwarnings(
+                "ignore",
+                message=r"The procedure has a deprecated field",
+            )
+
             df = result.to_df()
 
             if self._NEO4J_DRIVER_VERSION < SemanticVersion(5, 0, 0):
