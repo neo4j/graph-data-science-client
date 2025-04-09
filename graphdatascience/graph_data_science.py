@@ -16,6 +16,7 @@ from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
+from .session.arrow_authentication import UsernamePasswordAuthentication
 from .utils.util_proc_runner import UtilProcRunner
 from .version import __min_server_version__
 
@@ -93,10 +94,15 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
         arrow_info = ArrowInfo.create(self._query_runner)
         if arrow and arrow_info.enabled and self._server_version >= ServerVersion(2, 1, 0):
+            arrow_auth = None
+            if auth is not None:
+                username, password = auth
+                arrow_auth = UsernamePasswordAuthentication(username, password)
+
             self._query_runner = ArrowQueryRunner.create(
                 self._query_runner,
                 arrow_info,
-                auth,
+                arrow_auth,
                 self._query_runner.encrypted(),
                 arrow_disable_server_verification,
                 arrow_tls_root_certs,

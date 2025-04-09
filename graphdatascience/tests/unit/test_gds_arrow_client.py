@@ -16,6 +16,7 @@ from pyarrow.flight import (
 
 from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.gds_arrow_client import AuthMiddleware, GdsArrowClient
+from graphdatascience.session.session_connection_info import UsernamePasswordAuthentication
 
 ActionParam = Union[str, tuple[str, Any], Action]
 
@@ -382,7 +383,7 @@ def test_get_relationship_topologys(flight_server: FlightServer, flight_client: 
 
 
 def test_auth_middleware() -> None:
-    middleware = AuthMiddleware(("user", "password"))
+    middleware = AuthMiddleware(UsernamePasswordAuthentication("user", "password"))
 
     first_header = middleware.sending_headers()
     assert first_header == {"authorization": "Basic dXNlcjpwYXNzd29yZA=="}
@@ -401,7 +402,7 @@ def test_auth_middleware() -> None:
 
 
 def test_auth_middleware_bad_headers() -> None:
-    middleware = AuthMiddleware(("user", "password"))
+    middleware = AuthMiddleware(UsernamePasswordAuthentication("user", "password"))
 
     with pytest.raises(ValueError, match="Incompatible header value received from server: `12342`"):
         middleware.received_headers({"authorization": [12342]})

@@ -14,6 +14,7 @@ from .arrow_graph_constructor import ArrowGraphConstructor
 from .gds_arrow_client import GdsArrowClient
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
+from ..session.arrow_authentication import ArrowAuthentication
 
 
 class ArrowQueryRunner(QueryRunner):
@@ -21,7 +22,7 @@ class ArrowQueryRunner(QueryRunner):
     def create(
         fallback_query_runner: QueryRunner,
         arrow_info: ArrowInfo,
-        auth: Optional[tuple[str, str]] = None,
+        arrow_authentication: Optional[ArrowAuthentication] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
@@ -33,7 +34,7 @@ class ArrowQueryRunner(QueryRunner):
 
         gds_arrow_client = GdsArrowClient.create(
             arrow_info,
-            auth,
+            arrow_authentication,
             encrypted,
             disable_server_verification,
             tls_root_certs,
