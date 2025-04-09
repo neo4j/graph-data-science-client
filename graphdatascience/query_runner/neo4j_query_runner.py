@@ -57,18 +57,8 @@ class Neo4jQueryRunner(QueryRunner):
             query_runner = Neo4jQueryRunner(
                 endpoint, auto_close=False, bookmarks=bookmarks, database=database, show_progress=show_progress
             )
-
         else:
             raise ValueError(f"Invalid endpoint type: {type(endpoint)}")
-
-        if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= SemanticVersion(5, 21, 0):
-            notifications_logger = logging.getLogger("neo4j.notifications")
-            # the client does not expose YIELD fields so we just skip these warnings for now
-            notifications_logger.addFilter(
-                lambda record: (
-                    "The query used a deprecated field from a procedure" in record.msg and "by 'gds." in record.msg
-                )
-            )
 
         return query_runner
 
@@ -95,15 +85,6 @@ class Neo4jQueryRunner(QueryRunner):
             database="neo4j",
             instance_description="GDS Session",
         )
-
-        if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= SemanticVersion(5, 21, 0):
-            notifications_logger = logging.getLogger("neo4j.notifications")
-            # the client does not expose YIELD fields so we just skip these warnings for now
-            notifications_logger.addFilter(
-                lambda record: (
-                    "The query used a deprecated field from a procedure" in record.msg and "by 'gds." in record.msg
-                )
-            )
 
         return query_runner
 
@@ -137,6 +118,30 @@ class Neo4jQueryRunner(QueryRunner):
         )
         self._instance_description = instance_description
 
+        self.__configure_warnings_filter()
+
+    def __configure_warnings_filter(self) -> None:
+        if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= SemanticVersion(5, 21, 0):
+            notifications_logger = logging.getLogger("neo4j.notifications")
+            # the client does not expose YIELD fields so we just skip these warnings for now
+            notifications_logger.addFilter(
+                lambda record: (
+                    "The query used a deprecated field from a procedure" in record.msg and "by 'gds." in record.msg
+                )
+            )
+            notifications_logger.addFilter(
+                lambda record: "The procedure has a deprecated field" in record.msg and "gds." in record.msg
+            )
+
+        # Though pandas support may be experimental in the `neo4j` package, it should always
+        # be supported in the `graphdatascience` package.
+        warnings.filterwarnings(
+            "ignore",
+            message=r"^pandas support is experimental and might be changed or removed in future versions$",
+        )
+
+        warnings.filterwarnings("ignore", message=r".*The procedure has a deprecated field.*by 'gds.*")
+
     def __run_cypher_simplified_for_query_progress_logger(self, query: str, database: Optional[str]) -> DataFrame:
         # progress logging should not retry a lot as it perodically fetches the latest progress anyway
         connectivity_retry_config = Neo4jQueryRunner.ConnectivityRetriesConfig(max_retries=2)
@@ -169,19 +174,6 @@ class Neo4jQueryRunner(QueryRunner):
                 else:
                     raise e
 
-            # Though pandas support may be experimental in the `neo4j` package, it should always
-            # be supported in the `graphdatascience` package.
-            warnings.filterwarnings(
-                "ignore",
-                message=r"^pandas support is experimental and might be changed or removed in future versions$",
-            )
-
-            # since 2025.04
-            warnings.filterwarnings(
-                "ignore",
-                message=r"The procedure has a deprecated field",
-            )
-
             df = result.to_df()
 
             if self._NEO4J_DRIVER_VERSION < SemanticVersion(5, 0, 0):
@@ -189,19 +181,10 @@ class Neo4jQueryRunner(QueryRunner):
             else:
                 self._last_bookmarks = session.last_bookmarks()
 
-            if (
-                Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= SemanticVersion(5, 21, 0)
-                and result._warn_notification_severity == "WARNING"
-            ):
-                # the client does not expose YIELD fields so we just skip these warnings for now
-                warnings.filterwarnings(
-                    "ignore", message=r".*The query used a deprecated field from a procedure\. .* by 'gds.* "
-                )
-            else:
-                notifications = result.consume().notifications
-                if notifications:
-                    for notification in notifications:
-                        self._forward_cypher_warnings(notification)
+            notifications = result.consume().notifications
+            if notifications:
+                for notification in notifications:
+                    self._forward_cypher_warnings(notification)
 
             return df
 
