@@ -137,7 +137,7 @@ class Neo4jQueryRunner(QueryRunner):
         # be supported in the `graphdatascience` package.
         warnings.filterwarnings(
             "ignore",
-            message=r"^pandas support is experimental and might be changed or removed in future versions$",
+            message=r".*pandas support is experimental and might be changed or removed in future versions.*",
         )
 
         warnings.filterwarnings("ignore", message=r".*The procedure has a deprecated field.*by 'gds.*")
