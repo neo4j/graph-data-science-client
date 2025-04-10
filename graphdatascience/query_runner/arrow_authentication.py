@@ -1,10 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Callable
 
 
 class ArrowAuthentication(ABC):
-    type AuthTokenFn = Callable[[], str]
-
     @abstractmethod
     def auth_pair(self) -> tuple[str, str]:
         """Returns the auth pair used for authentication."""
