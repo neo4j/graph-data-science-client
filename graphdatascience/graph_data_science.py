@@ -7,6 +7,8 @@ from typing import Any, Optional, Type, Union
 from neo4j import Driver
 from pandas import DataFrame
 
+from graphdatascience.query_runner.arrow_authentication import UsernamePasswordAuthentication
+
 from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
@@ -16,7 +18,6 @@ from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
-from .session.arrow_authentication import UsernamePasswordAuthentication
 from .utils.util_proc_runner import UtilProcRunner
 from .version import __min_server_version__
 

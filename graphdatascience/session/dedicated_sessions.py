@@ -5,11 +5,12 @@ import warnings
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
+from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.algorithm_category import AlgorithmCategory
-from graphdatascience.session.arrow_authentication import AuraApiTokenAuthentication, ArrowAuthentication
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_api_responses import SessionDetails
+from graphdatascience.session.aura_api_token_authentication import AuraApiTokenAuthentication
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo

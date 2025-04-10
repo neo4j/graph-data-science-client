@@ -10,13 +10,13 @@ from pytest_mock import MockerFixture
 from graphdatascience import QueryRunner
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.query_runner.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.cypher_graph_constructor import (
     CypherGraphConstructor,
 )
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.session.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 

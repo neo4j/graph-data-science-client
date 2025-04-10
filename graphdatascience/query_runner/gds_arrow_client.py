@@ -35,11 +35,11 @@ from tenacity import (
     wait_exponential,
 )
 
+from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
 from graphdatascience.retry_utils.retry_config import RetryConfig
 from graphdatascience.retry_utils.retry_utils import before_log
 
 from ..semantic_version.semantic_version import SemanticVersion
-from ..session.arrow_authentication import ArrowAuthentication
 from ..version import __version__
 from .arrow_endpoint_version import ArrowEndpointVersion
 from .arrow_info import ArrowInfo
