@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 
 class ArrowAuthentication(ABC):
@@ -8,10 +9,10 @@ class ArrowAuthentication(ABC):
         pass
 
 
+@dataclass
 class UsernamePasswordAuthentication(ArrowAuthentication):
-    def __init__(self, username: str, password: str):
-        self._username = username
-        self._password = password
+    username: str
+    password: str
 
     def auth_pair(self) -> tuple[str, str]:
-        return self._username, self._password
+        return self.username, self.password
