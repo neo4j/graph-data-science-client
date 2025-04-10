@@ -5,6 +5,7 @@ from typing import Any, Optional
 
 from pandas import DataFrame
 
+from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
 from graphdatascience.retry_utils.retry_config import RetryConfig
 
 from ..call_parameters import CallParameters
@@ -14,7 +15,6 @@ from .arrow_graph_constructor import ArrowGraphConstructor
 from .gds_arrow_client import GdsArrowClient
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
-from ..session.arrow_authentication import ArrowAuthentication
 
 
 class ArrowQueryRunner(QueryRunner):

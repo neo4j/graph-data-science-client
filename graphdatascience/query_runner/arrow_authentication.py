@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Callable
 
-from graphdatascience.session.aura_api import AuraApi
-
 
 class ArrowAuthentication(ABC):
     type AuthTokenFn = Callable[[], str]
@@ -20,11 +18,3 @@ class UsernamePasswordAuthentication(ArrowAuthentication):
 
     def auth_pair(self) -> tuple[str, str]:
         return self._username, self._password
-
-
-class AuraApiTokenAuthentication(ArrowAuthentication):
-    def __init__(self, aura_api: AuraApi):
-        self._aura_api = aura_api
-
-    def auth_pair(self) -> tuple[str, str]:
-        return "", self._aura_api._auth._auth_token()
