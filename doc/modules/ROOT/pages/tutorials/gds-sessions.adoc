@@ -178,7 +178,7 @@ data_query = """
 """
 
 # making sure the database is actually empty
-# assert gds.run_cypher("MATCH (n) RETURN count(n)").squeeze() == 0, "Database is not empty!"
+assert gds.run_cypher("MATCH (n) RETURN count(n)").squeeze() == 0, "Database is not empty!"
 
 # let's now write our graph!
 gds.run_cypher(data_query)
@@ -229,21 +229,6 @@ G, result = gds.graph.project(
 )
 
 str(G)
-----
-
-[source, python, role=no-test]
-----
-G = gds.graph.get("people-and-fruits")
-----
-
-[source, python, role=no-test]
-----
-gds.graph.list()
-----
-
-[source, python, role=no-test]
-----
-gds.wcc.mutate(G, mutateProperty="wcc2")
 ----
 
 == Running Algorithms
