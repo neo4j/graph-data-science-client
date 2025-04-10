@@ -35,7 +35,7 @@ from tenacity import (
     wait_exponential,
 )
 
-from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
+from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication, UsernamePasswordAuthentication
 from graphdatascience.retry_utils.retry_config import RetryConfig
 from graphdatascience.retry_utils.retry_utils import before_log
 
@@ -49,7 +49,7 @@ class GdsArrowClient:
     @staticmethod
     def create(
         arrow_info: ArrowInfo,
-        arrow_authentication: Optional[ArrowAuthentication] = None,
+        auth: Optional[Union[ArrowAuthentication, tuple[str, str]]] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
@@ -81,7 +81,7 @@ class GdsArrowClient:
             host,
             retry_config,
             int(port),
-            arrow_authentication,
+            auth,
             encrypted,
             disable_server_verification,
             tls_root_certs,
@@ -93,7 +93,7 @@ class GdsArrowClient:
         host: str,
         retry_config: RetryConfig,
         port: int = 8491,
-        auth: Optional[ArrowAuthentication] = None,
+        auth: Optional[Union[ArrowAuthentication, tuple[str, str]]] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
@@ -108,8 +108,8 @@ class GdsArrowClient:
             The host address of the GDS Arrow server
         port: int
             The host port of the GDS Arrow server (default is 8491)
-        auth: Optional[ArrowAuthentication]
-            An implementation of ArrowAuthentication providing a pair to be used for basic authentication
+        auth: Optional[Union[ArrowAuthentication, tuple[str, str]]]
+            Either an implementation of ArrowAuthentication providing a pair to be used for basic authentication, or a username, password tuple
         encrypted: bool
             A flag that indicates whether the connection should be encrypted (default is False)
         disable_server_verification: bool
@@ -126,7 +126,7 @@ class GdsArrowClient:
         self._arrow_endpoint_version = arrow_endpoint_version
         self._host = host
         self._port = port
-        self._auth = auth
+        self._auth = None
         self._encrypted = encrypted
         self._disable_server_verification = disable_server_verification
         self._tls_root_certs = tls_root_certs
@@ -135,6 +135,10 @@ class GdsArrowClient:
         self._logger = logging.getLogger("gds_arrow_client")
 
         if auth:
+            if not isinstance(auth, ArrowAuthentication):
+                username, password = auth
+                auth = UsernamePasswordAuthentication(username, password)
+            self._auth = auth
             self._auth_middleware = AuthMiddleware(auth)
 
         self._flight_client = self._instantiate_flight_client()
