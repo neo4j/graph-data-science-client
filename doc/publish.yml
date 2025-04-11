@@ -54,3 +54,11 @@ asciidoc:
     operations-manual-base-uri: https://neo4j.com/docs/operations-manual/
     neo4j-docs-base-uri: https://neo4j.com/docs
     api-version: 1.15-preview
+    # User research promo
+    page-ad-overline-link: https://neo4j.com/docs/user-research
+    page-ad-title: Join the User Research panel
+    page-ad-icon: chat-bubble-left-right
+    page-ad-description:  Influence the future of Neo4j products by sharing your experiences with a reseacher.
+    page-ad-link: https://neo4j.com/docs/user-research
+    page-ad-underline-role: button
+    page-ad-underline: Learn more
