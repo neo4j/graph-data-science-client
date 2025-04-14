@@ -12,6 +12,7 @@
 
 ## Bug fixes
 
+* Fixed a bug, where write procedures would not properly log for GDS Sessions.
 
 ## Improvements
 
