@@ -49,6 +49,7 @@ class CollectingQueryRunner(QueryRunner):
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
+        retryable: bool = False,
         custom_error: bool = True,
     ) -> DataFrame:
         if params is None:
@@ -81,6 +82,15 @@ class CollectingQueryRunner(QueryRunner):
             raise result
         else:
             return result
+
+    def run_retryable_cypher(
+        self,
+        query: str,
+        params: Optional[dict[str, Any]] = None,
+        database: Optional[str] = None,
+        custom_error: bool = True,
+    ) -> DataFrame:
+        return self.run_cypher(query, params, database, custom_error)
 
     def server_version(self) -> ServerVersion:
         return self._server_version

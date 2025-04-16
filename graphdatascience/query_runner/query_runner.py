@@ -17,6 +17,7 @@ class QueryRunner(ABC):
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
+        retryable: bool = False,
         custom_error: bool = True,
     ) -> DataFrame:
         pass
@@ -27,6 +28,16 @@ class QueryRunner(ABC):
 
     @abstractmethod
     def run_cypher(
+        self,
+        query: str,
+        params: Optional[dict[str, Any]] = None,
+        database: Optional[str] = None,
+        custom_error: bool = True,
+    ) -> DataFrame:
+        pass
+
+    @abstractmethod
+    def run_retryable_cypher(
         self,
         query: str,
         params: Optional[dict[str, Any]] = None,

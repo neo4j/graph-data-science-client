@@ -48,6 +48,7 @@ class DirectUtilEndpoints(CallerBase):
         else:
             query = "MATCH (n) RETURN id(n) AS id"
 
+        # TODO use execute query
         node_match = self._query_runner.run_cypher(query, custom_error=False)
 
         if len(node_match) != 1:

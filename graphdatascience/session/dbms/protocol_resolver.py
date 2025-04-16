@@ -36,8 +36,8 @@ class ProtocolVersionResolver:
     def _fetch_from_server(self) -> list[ProtocolVersion]:
         try:
             version_list = []
-            for version_string in self._query_runner.call_procedure(
-                "gds.session.dbms.protocol.version", yields=["version"]
+            for version_string in self._query_runner.run_retryable_cypher(
+                "CALL gds.session.dbms.protocol.version() YIELD version"
             )["version"].to_list():
                 parsed_version = self._from_str(version_string)
                 if parsed_version:

@@ -68,7 +68,9 @@ class ProjectProtocolV1(ProjectProtocol):
         logging: bool = False,
     ) -> DataFrame:
         versioned_endpoint = ProtocolVersion.V1.versioned_procedure_name(endpoint)
-        return query_runner.call_procedure(versioned_endpoint, params, yields, database, logging, False)
+        return query_runner.call_procedure(
+            versioned_endpoint, params, yields, database=database, logging=logging, retryable=True, custom_error=False
+        )
 
 
 class ProjectProtocolV2(ProjectProtocol):
@@ -97,7 +99,9 @@ class ProjectProtocolV2(ProjectProtocol):
         logging: bool = False,
     ) -> DataFrame:
         versioned_endpoint = ProtocolVersion.V2.versioned_procedure_name(endpoint)
-        return query_runner.call_procedure(versioned_endpoint, params, yields, database, logging, False)
+        return query_runner.call_procedure(
+            versioned_endpoint, params, yields, database=database, logging=logging, retryable=True, custom_error=False
+        )
 
 
 class ProjectProtocolV3(ProjectProtocol):
@@ -149,7 +153,14 @@ class ProjectProtocolV3(ProjectProtocol):
         def project_fn() -> DataFrame:
             termination_flag.assert_running()
             return projection_query_runner.call_procedure(
-                ProtocolVersion.V3.versioned_procedure_name(endpoint), params, yields, database, logging, False
+                ProtocolVersion.V3.versioned_procedure_name(endpoint),
+                params,
+                yields,
+                database,
+                database=database,
+                logging=logging,
+                retryable=True,
+                custom_error=False,
             )
 
         projection_result = project_fn()

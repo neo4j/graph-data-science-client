@@ -24,7 +24,10 @@ class SessionQueryRunner(QueryRunner):
 
     @staticmethod
     def create(
-        gds_query_runner: QueryRunner, db_query_runner: QueryRunner, arrow_client: GdsArrowClient, show_progress: bool
+        gds_query_runner: QueryRunner,
+        db_query_runner: QueryRunner,
+        arrow_client: GdsArrowClient,
+        show_progress: bool,
     ) -> SessionQueryRunner:
         return SessionQueryRunner(gds_query_runner, db_query_runner, arrow_client, show_progress)
 
@@ -54,6 +57,15 @@ class SessionQueryRunner(QueryRunner):
     ) -> DataFrame:
         return self._db_query_runner.run_cypher(query, params, database, custom_error)
 
+    def run_retryable_cypher(
+        self,
+        query: str,
+        params: Optional[dict[str, Any]] = None,
+        database: Optional[str] = None,
+        custom_error: bool = True,
+    ) -> DataFrame:
+        return self._db_query_runner.run_retryable_cypher(query, params, database, custom_error=custom_error)
+
     def call_function(self, endpoint: str, params: Optional[CallParameters] = None) -> Any:
         return self._gds_query_runner.call_function(endpoint, params)
 
@@ -64,6 +76,7 @@ class SessionQueryRunner(QueryRunner):
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
+        retryable: bool = False,
         custom_error: bool = True,
     ) -> DataFrame:
         if params is None:
@@ -77,7 +90,9 @@ class SessionQueryRunner(QueryRunner):
             terminationFlag = TerminationFlag.create()
             return self._remote_write_back(endpoint, params, terminationFlag, yields, database, logging, custom_error)
 
-        return self._gds_query_runner.call_procedure(endpoint, params, yields, database, logging, custom_error)
+        return self._gds_query_runner.call_procedure(
+            endpoint, params, yields, database, logging=logging, retryable=retryable, custom_error=custom_error
+        )
 
     def is_remote_projected_graph(self, graph_name: str) -> bool:
         database_location: str = self._gds_query_runner.call_procedure(
