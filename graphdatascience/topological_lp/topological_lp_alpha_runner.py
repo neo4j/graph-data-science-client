@@ -16,7 +16,7 @@ class TopologicalLPAlphaRunner(UncallableNamespace, IllegalAttrChecker):
         RETURN {self._namespace}(n1, n2, $config) AS score
         """
         params = {"config": config}
-
+        # TODO use execute query
         return self._query_runner.run_cypher(query, params)["score"].squeeze()  # type: ignore
 
     def adamicAdar(self, node1: int, node2: int, **config: Any) -> float:
@@ -45,7 +45,7 @@ class TopologicalLPAlphaRunner(UncallableNamespace, IllegalAttrChecker):
         MATCH (n2) WHERE id(n2) = {node2}
         RETURN {self._namespace}(n1, n2{community_property}) AS score
         """
-
+        # TODO use execute query
         return self._query_runner.run_cypher(query)["score"].squeeze()  # type: ignore
 
     def totalNeighbors(self, node1: int, node2: int, **config: Any) -> float:
