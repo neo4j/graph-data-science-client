@@ -218,6 +218,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         if isinstance(self._query_runner, ArrowQueryRunner):
             qr = self._query_runner.fallback_query_runner()
 
+        # not using qr.execute_query as we dont know if it can be retried
         return qr.run_cypher(query, params, database, False)
 
     def driver_config(self) -> dict[str, Any]:

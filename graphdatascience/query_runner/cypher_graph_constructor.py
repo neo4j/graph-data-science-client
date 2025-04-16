@@ -104,6 +104,7 @@ class CypherGraphConstructor(GraphConstructor):
 
     def _should_warn_about_arrow_missing(self) -> bool:
         try:
+            # TOOD use execute_query
             license: str = self._query_runner.run_cypher(
                 "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value", custom_error=False
             ).squeeze()
@@ -210,6 +211,7 @@ class CypherGraphConstructor(GraphConstructor):
                 "undirectedRelationshipTypes": self._undirected_relationship_types,
             }
 
+            # not using retryable here as gds.graph.project adds a graph to the gds graph catalog
             self._query_runner.run_cypher(
                 query,
                 {
