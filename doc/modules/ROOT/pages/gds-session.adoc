@@ -60,7 +60,6 @@ The name must be unique.
 This configuration determines the amount of memory and CPU available to the session.
 It also determines the cost of running the session.
 Available configurations are listed in our API https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[reference].
-
 You can use the `sessions.estimate()` method to estimate the size required.
 Available algorithm categories are listed in our API https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/algorithm_category[reference].
 
