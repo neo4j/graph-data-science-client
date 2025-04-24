@@ -60,12 +60,12 @@ The name must be unique.
 This configuration determines the amount of memory and CPU available to the session.
 It also determines the cost of running the session.
 Available configurations are listed in our API https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[reference].
-
 You can use the `sessions.estimate()` method to estimate the size required.
 Available algorithm categories are listed in our API https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/algorithm_category[reference].
 
 - **DBMS connection**.
-This is a `DbmsConnectionInfo` object that contains the URI of an Neo4j instance, a username, and a password.
+This optional parameter is a `DbmsConnectionInfo` object that contains the URI of an Neo4j instance, a username, and a password. It is required if either a graph projection from a database or a write-back to a database is needed.
+If not specified, graphs can be xref:graph-object.adoc#construct[constructed via arrow].
 
 - **TTL**.
 This optional parameter specifies the time-to-live of the session.
