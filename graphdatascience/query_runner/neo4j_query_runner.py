@@ -8,6 +8,7 @@ from typing import Any, NamedTuple, Optional, Union
 
 import neo4j
 from pandas import DataFrame
+from tenacity import wait_exponential
 
 from ..call_parameters import CallParameters
 from ..error.endpoint_suggester import generate_suggestive_error_message
@@ -114,7 +115,13 @@ class Neo4jQueryRunner(QueryRunner):
         self._server_version: Optional[ServerVersion] = None
         self._show_progress = show_progress
         self._progress_logger = QueryProgressLogger(
-            self.__run_cypher_simplified_for_query_progress_logger, self.server_version
+            run_cypher_func=self.__run_cypher_simplified_for_query_progress_logger,
+            server_version_func=self.server_version,
+            log_interval=wait_exponential(
+                max=10,
+                exp_base=1.5,
+                min=0.5,
+            ),
         )
         self._instance_description = instance_description
 

@@ -5,6 +5,7 @@ from io import StringIO
 from typing import Optional
 
 from pandas import DataFrame
+from tenacity import wait
 
 from graphdatascience import ServerVersion
 from graphdatascience.query_runner.progress.progress_provider import TaskWithProgress
@@ -27,6 +28,35 @@ def test_call_through_functions() -> None:
 
     qpl = QueryProgressLogger(fake_run_cypher, lambda: ServerVersion(3, 0, 0))
     df = qpl.run_with_progress_logging(fake_query, "foo", "database")
+
+    assert df["result"][0] == 42
+
+
+def test_log_interval() -> None:
+    def fake_run_cypher(query: str, database: Optional[str] = None) -> DataFrame:
+        assert "CALL gds.listProgress('foo')" in query
+        assert database == "database"
+
+        return DataFrame([{"progress": "n/a", "taskName": "Test task", "status": "RUNNING"}])
+
+    def fake_query() -> DataFrame:
+        time.sleep(0.5)
+        return DataFrame([{"result": 42}])
+
+    with StringIO() as pbarOutputStream:
+        qpl = QueryProgressLogger(
+            fake_run_cypher,
+            lambda: ServerVersion(3, 0, 0),
+            log_interval=wait.wait_fixed(0.1),
+            initial_wait_time=0,
+            progress_bar_options={"file": pbarOutputStream, "mininterval": 0},
+        )
+        df = qpl.run_with_progress_logging(fake_query, "foo", "database")
+
+        running_output = pbarOutputStream.getvalue().split("\r")[:-1]
+
+        assert len(running_output) > 4
+        assert len(running_output) < 15
 
     assert df["result"][0] == 42
 
