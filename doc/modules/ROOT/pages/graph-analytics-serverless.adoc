@@ -1,6 +1,8 @@
-= Graph Analytics Serverless
+= Aura Graph Analytics Serverless
 
-Aura Graph Analytics Serverless is an on-demand ephemeral compute environment for running GDS workloads. Each compute unit is called a GDS Session. It is offered as part of Neo4j Aura, a fast, scalable, always-on, fully automated cloud graph platform.
+Aura Graph Analytics Serverless is an on-demand ephemeral compute environment for running GDS workloads.
+Each compute unit is called a GDS Session.
+It is offered as part of Neo4j Aura, a fast, scalable, always-on, fully automated cloud graph platform.
 
 A GDS Session reads data from a Neo4j DBMS through a _remote projection_, runs computations on the projected graph, and optionally writes the results back to the DBMS using _remote write-back_.
 
