@@ -8,7 +8,7 @@ In Colab]]
 
 
 This Jupyter notebook is hosted
-https://github.com/neo4j/graph-data-science-client/blob/main/examples/gds-sessions-self-managed.ipynb[here]
+https://github.com/neo4j/graph-data-science-client/blob/main/examples/graph-analytics-serveless-self-managed.ipynb[here]
 in the Neo4j Graph Data Science Client Github repository.
 
 The notebook shows how to use the `graphdatascience` Python library to
@@ -20,7 +20,8 @@ Session, run algorithms, and eventually write back your analytical
 results to your Neo4j database. We will cover all management operations:
 creation, listing, and deletion.
 
-If you are using AuraDB, follow link:../gds-sessions[this example].
+If you are using AuraDB, follow link:../graph-analytics-serveless[this
+example].
 
 == Prerequisites
 
