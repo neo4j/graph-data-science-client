@@ -29,7 +29,7 @@ gds.run_cypher(
     (d:City {name: "Baltimore"}),
     (e:City {name: "Atlantic City"}),
     (f:City {name: "Boston"}),
-  
+
     (a)-[:ROAD {cost: 50}]->(b),
     (a)-[:ROAD {cost: 50}]->(c),
     (a)-[:ROAD {cost: 100}]->(d),
@@ -71,15 +71,6 @@ assert fastrp_result["nodePropertiesWritten"] == G.node_count()
 
 Some algorithms deviate from the standard syntactic structure.
 We describe how to use them in the Python client in the sections below.
-
-// // Suppose to be uncommented when the algorithms are available.
-// [NOTE]
-// ====
-// There are some algorithm which are available for xref:gds-session.adoc[GDS Sessions] only.
-// See the list:
-//
-// include::ROOT:partial$gds-session-algorithms-algorithms.adoc[]
-// ====
 
 
 [[algorithms-execution-mode]]
