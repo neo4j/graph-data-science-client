@@ -132,8 +132,8 @@ def main(filter_func: Callable[[str], bool]) -> None:
 if __name__ == "__main__":
     notebook_filter = sys.argv[1] if len(sys.argv) >= 2 else ""
 
-    session_notebooks = ["gds-sessions.ipynb"]
-    session_self_managed_notebooks = ["gds-sessions-self-managed.ipynb"]
+    session_notebooks = ["graph-analytics-serverless.ipynb"]
+    session_self_managed_notebooks = ["graph-analytics-serverless-self-managed.ipynb"]
 
     notebooks: Optional[list[str]] = None
     if notebook_filter == "sessions-attached":
