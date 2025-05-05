@@ -65,7 +65,7 @@ class ArrowGraphConstructor(GraphConstructor):
             try:
                 self._client.abort(self._graph_name)
             except Exception as abort_exception:
-                if not "No arrow process" in str(abort_exception):
+                if "No arrow process" not in str(abort_exception):
                     self._logger.warning(f"error aborting graph creation: {abort_exception}")
             raise e
 

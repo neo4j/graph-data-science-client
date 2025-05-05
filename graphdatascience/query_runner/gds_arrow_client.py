@@ -642,7 +642,7 @@ class GdsArrowClient:
             try:
                 result = client.do_action(
                     action=flight.Action(action_type, json.dumps(meta_data).encode("utf-8")),
-                    options=flight.FlightCallOptions(timeout=10.0)
+                    options=flight.FlightCallOptions(timeout=10.0),
                 )
 
                 # Consume result fully to sanity check and avoid cancelled streams
