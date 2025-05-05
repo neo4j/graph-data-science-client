@@ -3,12 +3,12 @@
 = Graph Analytics Serverless for AuraDB
 
 
-https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/gds-sessions.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
+https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/graph-analytics-serverless.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
 In Colab]]
 
 
 This Jupyter notebook is hosted
-https://github.com/neo4j/graph-data-science-client/blob/main/examples/graph-analytics-serveless.ipynb[here]
+https://github.com/neo4j/graph-data-science-client/blob/main/examples/graph-analytics-serverless.ipynb[here]
 in the Neo4j Graph Data Science Client Github repository.
 
 The notebook shows how to use the `graphdatascience` Python library to
@@ -21,13 +21,14 @@ AuraDB database. We will cover all management operations: creation,
 listing, and deletion.
 
 If you are using self managed DB, follow
-link:../graph-analytics-serveless-self-managed[this example].
+link:../graph-analytics-serverless-self-managed[this example].
 
 == Prerequisites
 
 This notebook requires having an AuraDB instance available and have the
-GDS sessions feature enabled for your project. Contact your account
-manager to get the features enabled.
+Graph Analytics Serverless
+https://neo4j.com/docs/aura/graph-analytics/#aura-gds-serverless[feature]
+enabled for your project.
 
 We also need to have the `graphdatascience` Python library installed,
 version `1.15` or later.
