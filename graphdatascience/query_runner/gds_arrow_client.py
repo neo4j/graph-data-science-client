@@ -640,7 +640,10 @@ class GdsArrowClient:
         )
         def send_with_retry() -> dict[str, Any]:
             try:
-                result = client.do_action(flight.Action(action_type, json.dumps(meta_data).encode("utf-8")))
+                result = client.do_action(
+                    action=flight.Action(action_type, json.dumps(meta_data).encode("utf-8")),
+                    options=flight.FlightCallOptions(timeout=10.0)
+                )
 
                 # Consume result fully to sanity check and avoid cancelled streams
                 collected_result = list(result)
