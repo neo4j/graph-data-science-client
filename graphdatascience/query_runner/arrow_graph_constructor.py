@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import concurrent
+import logging
 import math
 import warnings
 from concurrent.futures import ThreadPoolExecutor
@@ -33,6 +34,7 @@ class ArrowGraphConstructor(GraphConstructor):
         )
         self._chunk_size = chunk_size
         self._min_batch_size = chunk_size * 10
+        self._logger = logging.getLogger()
 
     def run(self, node_dfs: list[DataFrame], relationship_dfs: list[DataFrame]) -> None:
         try:
@@ -60,8 +62,11 @@ class ArrowGraphConstructor(GraphConstructor):
 
             self._client.relationship_load_done(self._graph_name)
         except (Exception, KeyboardInterrupt) as e:
-            self._client.abort(self._graph_name)
-
+            try:
+                self._client.abort(self._graph_name)
+            except Exception as abort_exception:
+                if "No arrow process" not in str(abort_exception):
+                    self._logger.warning(f"error aborting graph creation: {abort_exception}")
             raise e
 
     def _partition_dfs(self, dfs: list[DataFrame]) -> list[DataFrame]:
