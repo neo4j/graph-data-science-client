@@ -1,7 +1,8 @@
 import logging
 import typing
+from concurrent.futures import Future
 
-from tenacity import RetryCallState
+from tenacity import RetryCallState, retry_base
 
 
 def before_log(
@@ -18,3 +19,14 @@ def before_log(
             )
 
     return log_it
+
+
+class retry_until_future(retry_base):
+    def __init__(
+        self,
+        future: Future[typing.Any],
+    ):
+        self._future = future
+
+    def __call__(self, retry_state: "RetryCallState") -> bool:
+        return not self._future.done()

@@ -21,6 +21,7 @@
 * Improve error message if session is expired.
 * Improve robustness of Arrow client against connection errors such as `FlightUnavailableError` and `FlightTimedOutError`.
 * Return dedicated error class `SessionStatusError` if a session failed or expired.
+* Reduce calls which check for progress updates. Previously every 0.5 seconds, now with exponential backoff capped at 10s.
 
 
 ## Other changes

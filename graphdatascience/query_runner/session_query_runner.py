@@ -5,6 +5,7 @@ from typing import Any, Optional
 from uuid import uuid4
 
 from pandas import DataFrame
+from tenacity import wait_exponential
 
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
@@ -41,8 +42,13 @@ class SessionQueryRunner(QueryRunner):
         self._resolved_protocol_version = ProtocolVersionResolver(db_query_runner).resolve()
         self._show_progress = show_progress
         self._progress_logger = QueryProgressLogger(
-            lambda query, database: self._gds_query_runner.run_cypher(query=query, database=database),
-            self._gds_query_runner.server_version,
+            run_cypher_func=lambda query, database: self._gds_query_runner.run_cypher(query=query, database=database),
+            server_version_func=self._gds_query_runner.server_version,
+            log_interval=wait_exponential(
+                max=10,
+                exp_base=1.5,
+                min=0.5,
+            ),
         )
 
     def run_cypher(

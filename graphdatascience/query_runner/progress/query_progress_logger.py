@@ -1,9 +1,12 @@
 import warnings
-from concurrent.futures import Future, ThreadPoolExecutor, wait
-from typing import Any, Callable, NoReturn, Optional
+from concurrent import futures
+from typing import Any, Callable, NoReturn, Optional, Union
 
 from pandas import DataFrame
+from tenacity import Retrying, wait
 from tqdm.auto import tqdm
+
+from graphdatascience.retry_utils.retry_utils import retry_until_future
 
 from ...server_version.server_version import ServerVersion
 from .progress_provider import ProgressProvider, TaskWithProgress
@@ -18,15 +21,23 @@ class QueryProgressLogger:
         self,
         run_cypher_func: CypherQueryFunction,
         server_version_func: ServerVersionFunction,
-        polling_interval: float = 0.5,
+        log_interval: Union[float, wait.wait_base] = 0.5,
+        initial_wait_time: float = 0.5,
         progress_bar_options: dict[str, Any] = {},
     ):
         self._run_cypher_func = run_cypher_func
         self._server_version_func = server_version_func
         self._static_progress_provider = StaticProgressProvider()
         self._query_progress_provider = QueryProgressProvider(run_cypher_func, server_version_func)
-        self._polling_interval = polling_interval
         self._progress_bar_options = progress_bar_options
+
+        self._initial_wait_time = initial_wait_time
+        if isinstance(log_interval, float):
+            self._wait_base: wait.wait_base = wait.wait_fixed(log_interval)
+        elif isinstance(log_interval, wait.wait_base):
+            self._wait_base = log_interval
+        else:
+            raise ValueError("polling interval must be a float or an instance of wait_base")
 
     def run_with_progress_logging(
         self, runnable: DataFrameProducer, job_id: str, database: Optional[str] = None
@@ -38,9 +49,10 @@ class QueryProgressLogger:
         # Entries in the static progress store are already visible at this point.
         progress_provider = self._select_progress_provider(job_id)
 
-        with ThreadPoolExecutor() as executor:
+        with futures.ThreadPoolExecutor() as executor:
             future = executor.submit(runnable)
 
+            futures.wait([future], timeout=self._initial_wait_time)  # wait for progress task to be available
             self._log(future, job_id, progress_provider, database)
 
             if future.exception():
@@ -56,29 +68,33 @@ class QueryProgressLogger:
         )
 
     def _log(
-        self, future: Future[Any], job_id: str, progress_provider: ProgressProvider, database: Optional[str] = None
+        self,
+        future: futures.Future[Any],
+        job_id: str,
+        progress_provider: ProgressProvider,
+        database: Optional[str] = None,
     ) -> None:
         pbar: Optional[tqdm[NoReturn]] = None
         warn_if_failure = True
 
-        while wait([future], timeout=self._polling_interval).not_done:
-            try:
-                task_with_progress = progress_provider.root_task_with_progress(job_id, database)
-                if pbar is None:
-                    pbar = self._init_pbar(task_with_progress)
+        for attempt in Retrying(wait=self._wait_base, retry=retry_until_future(future)):
+            with attempt:
+                try:
+                    task_with_progress = progress_provider.root_task_with_progress(job_id, database)
+                    if pbar is None:
+                        pbar = self._init_pbar(task_with_progress)
 
-                self._update_pbar(pbar, task_with_progress)
-            except Exception as e:
-                # Do nothing if the procedure either:
-                # * has not started yet,
-                # * has already completed.
-                if f"No task with job id `{job_id}` was found" in str(e):
-                    continue
-                else:
+                    self._update_pbar(pbar, task_with_progress)
+                except Exception as e:
+                    # Do nothing if the procedure either:
+                    # * has not started yet,
+                    # * has already completed.
+                    if f"No task with job id `{job_id}` was found" in str(e):
+                        continue
+
                     if warn_if_failure:
                         warnings.warn(f"Unable to get progress: {str(e)}", RuntimeWarning)
                         warn_if_failure = False
-                    continue
 
         if pbar is not None:
             self._finish_pbar(future, pbar)
@@ -91,7 +107,6 @@ class QueryProgressLogger:
                 total=None,
                 unit="",
                 desc=root_task_name,
-                maxinterval=self._polling_interval,
                 bar_format="{desc} [elapsed: {elapsed} {postfix}]",
                 **self._progress_bar_options,
             )
@@ -100,7 +115,6 @@ class QueryProgressLogger:
                 total=100,
                 unit="%",
                 desc=root_task_name,
-                maxinterval=self._polling_interval,
                 **self._progress_bar_options,
             )
 
@@ -118,7 +132,7 @@ class QueryProgressLogger:
         else:
             pbar.refresh()
 
-    def _finish_pbar(self, future: Future[Any], pbar: tqdm) -> None:  # type: ignore
+    def _finish_pbar(self, future: futures.Future[Any], pbar: tqdm) -> None:  # type: ignore
         if future.exception():
             pbar.set_postfix_str("status: FAILED", refresh=True)
             return

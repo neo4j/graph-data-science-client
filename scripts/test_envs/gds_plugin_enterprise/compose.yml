@@ -1,6 +1,6 @@
 services:
   neo4j:
-    image: neo4j:enterprise
+    image: neo4j:5-enterprise
     volumes:
       - ${HOME}/.gds_license:/licenses/.gds_license
     environment:
