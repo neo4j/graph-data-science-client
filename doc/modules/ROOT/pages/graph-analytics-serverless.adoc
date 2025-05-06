@@ -65,31 +65,56 @@ As a convention, always use the variable name `gds` for the return value of `get
 
 ==== Syntax
 
-To create a GDS Session, you need to provide the following information:
+[source, role=no-test]
+----
+sessions.get_or_create(
+    session_name: str,
+    memory: SessionMemory,
+    db_connection: Optional[DbmsConnectionInfo] = None,
+    ttl: Optional[timedelta] = None,
+    cloud_location: Optional[CloudLocation] = None,
+    timeout: Optional[int] = None,
+): AuraGraphDataScience
+----
 
-- **Session name**.
-The name must be unique.
+.Parameters:
+[opts="header",cols="3m,1,1m,6", role="no-break"]
+|===
+| Name                               | Optional | Default | Description
+| session_name                       | no       | -       | Name of the session. Must be unique within the project.
+| memory                             | no       | -       | Amount of memory available to the session. https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[Supported values].
+| db_connection                      | yes      | None    | Bolt server URL, username, and password to a Neo4j DBMS. Required for the Attached and Self-managed flavours.
+| ttl                                | yes      | 1h      | Time-to-live for the session.
+| cloud_location                     | yes      | None    | Aura-supported cloud provider and region where the GDS Session will run. Required for the Self-managed and Standalone flavours.
+| timeout                            | yes      | None    | Seconds to wait for the session to enter Ready state. If the time is exceeded, an error will be returned.
+|===
 
-- **Session memory**.
-This configuration determines the amount of memory and CPU available to the session.
-It also determines the cost of running the session.
-Available configurations are listed in our API https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[reference].
-You can use the `sessions.estimate()` method to estimate the size required.
-Available algorithm categories are listed in our API https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/algorithm_category[reference].
 
-- **DBMS connection**.
-This optional parameter is a `DbmsConnectionInfo` object that contains the URI of an Neo4j instance, a username, and a password. It is required if either a graph projection from a database or a write-back to a database is needed.
-If not specified, graphs can be xref:graph-object.adoc#construct[constructed via arrow].
-
-- **TTL**.
-This optional parameter specifies the time-to-live of the session.
-The session will be automatically deleted if the session was unused for the provided duration.
-Usage is defined as the computation of an algorithm or the projection of a graph.
-By default, the session will be deleted after 1 hour of inactivity.
-
-- **Cloud location**.
-This is a `CloudLocation` object that specifies the cloud provider and region where the GDS Session will run. Required if the DBMS connection is for a self-managed database.
-Use `sessions.available_cloud_locations()` to find out which locations are available.
+// To create a GDS Session, you need to provide the following information:
+//
+// - **Session name**.
+// The name must be unique.
+//
+// - **Session memory**.
+// This configuration determines the amount of memory and CPU available to the session.
+// It also determines the cost of running the session.
+// Available configurations are listed in our API https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[reference].
+// You can use the `sessions.estimate()` method to estimate the size required.
+// Available algorithm categories are listed in our API https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/algorithm_category[reference].
+//
+// - **DBMS connection**.
+// This optional parameter is a `DbmsConnectionInfo` object that contains the URI of an Neo4j instance, a username, and a password. It is required if either a graph projection from a database or a write-back to a database is needed.
+// If not specified, graphs can be xref:graph-object.adoc#construct[constructed via arrow].
+//
+// - **TTL**.
+// This optional parameter specifies the time-to-live of the session.
+// The session will be automatically deleted if the session was unused for the provided duration.
+// Usage is defined as the computation of an algorithm or the projection of a graph.
+// By default, the session will be deleted after 1 hour of inactivity.
+//
+// - **Cloud location**.
+// This is a `CloudLocation` object that specifies the cloud provider and region where the GDS Session will run. Required if the DBMS connection is for a self-managed database.
+// Use `sessions.available_cloud_locations()` to find out which locations are available.
 
 
 ==== Examples
