@@ -107,53 +107,40 @@ sessions.get_or_create(
 
 ==== Examples
 
-.Creating GDS Sessions
 [.tabbed-example, caption = ]
 =====
 
 [.include-with-attached]
 =======
 
-.Creating a GDS Session for an AuraDB instance:
+.Creating a GDS Session attached to an AuraDB instance:
 [source,python,role=no-test]
 ----
-from datetime import timedelta
-from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory
-
-memory = sessions.estimate(
-    node_count=20,
-    relationship_count=50,
-    algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
-)
+from graphdatascience.session import DbmsConnectionInfo, SessionMemory
 
 gds = sessions.get_or_create(
-    session_name="my-new-session",
-    memory=memory,
-    db_connection=DbmsConnectionInfo("neo4j+s://mydbid.databases.neo4j.io", "my-user", "my-password"),
-    ttl=timedelta(hours=5),
+    session_name="my-attached-session",
+    memory=SessionMemory.m_4GB,
+    db_connection=DbmsConnectionInfo(
+        "neo4j+s://mydbid.databases.neo4j.io",
+        "my-user",
+        "my-password"
+    ),
 )
 ----
 =======
 
-[.include-with-self-Manged]
+[.include-with-self-managed]
 =======
-.Creating a GDS Session for a self-managed Neo4j database:
+.Creating a GDS Session for a self-managed Neo4j DBMS:
 [source,python,role=no-test]
 ----
-from datetime import timedelta
-from graphdatascience.session import DbmsConnectionInfo, AlgorithmCategory, CloudLocation
-
-memory = sessions.estimate(
-    node_count=20,
-    relationship_count=50,
-    algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
-)
+from graphdatascience.session import DbmsConnectionInfo, CloudLocation, SessionMemory
 
 gds = sessions.get_or_create(
-    session_name="my-new-session-sm",
-    memory=memory,
+    session_name="my-self-managed-session",
+    memory=SessionMemory.m_4GB,
     db_connection=DbmsConnectionInfo("neo4j://localhost", "my-user", "my-password"),
-    ttl=timedelta(hours=2),
     cloud_location=CloudLocation(provider="gcp", region="europe-west1"),
 )
 ----
@@ -164,19 +151,11 @@ gds = sessions.get_or_create(
 .Creating a GDS Session without any Neo4j database:
 [source,python,role=no-test]
 ----
-from datetime import timedelta
-from graphdatascience.session import AlgorithmCategory, CloudLocation
-
-memory = sessions.estimate(
-    node_count=20,
-    relationship_count=50,
-    algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
-)
+from graphdatascience.session import CloudLocation, SessionMemory
 
 gds = sessions.get_or_create(
-    session_name="my-new-session-sm",
-    memory=memory,
-    ttl=timedelta(hours=2),
+    session_name="my-standalone-session",
+    memory=SessionMemory.m_4GB,
     cloud_location=CloudLocation(provider="gcp", region="europe-west1"),
 )
 ----
