@@ -56,7 +56,7 @@ asciidoc:
     common-license-page-uri: https://neo4j.com/docs/license/
     operations-manual-base-uri: https://neo4j.com/docs/operations-manual/
     neo4j-docs-base-uri: https://neo4j.com/docs
-    api-version: 1.15-preview
+    api-version: 1.16-preview
     # User research promo
     page-ad-overline-link: https://neo4j.com/docs/user-research/?ref=gds-docs
     page-ad-title: Join the User Research panel
