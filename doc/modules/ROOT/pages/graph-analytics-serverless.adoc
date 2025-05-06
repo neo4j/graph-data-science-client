@@ -32,9 +32,9 @@ The `GdsSessions` object is the API entry point to the following operations:
 - `delete`: Delete a GDS Session.
 
 
-
 You need Neo4j Aura API credentials (`CLIENT_ID` and `CLIENT_SECRET`) to create a `GdsSessions` object.
 See the link:{neo4j-docs-base-uri}/aura/platform/api/authentication/#_creating_credentials[Aura documentation] for instructions on how to create API credentials from your Neo4j Aura account.
+If your Aura user is part of multiple projects, the desired project ID must also be provided.
 
 .Creating a GdsSessions object:
 [source, python, role=no-test]
@@ -43,14 +43,14 @@ from graphdatascience.session import GdsSessions, AuraAPICredentials
 
 CLIENT_ID = "my-aura-api-client-id"
 CLIENT_SECRET = "my-aura-api-client-secret"
-# Needs to be specified if your Aura account has multiple projects
 PROJECT_ID = None
 
 # Create a new GdsSessions object
 sessions = GdsSessions(api_credentials=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET, PROJECT_ID))
 ----
 
-All available methods and parameters are listed in our API https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[reference].
+All available methods and parameters are listed in our API https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/gds_sessions/[reference].
+
 
 === Creating a GDS Session
 
