@@ -198,6 +198,24 @@ sessions.delete(session_name="my-new-session")
 ----
 
 
+=== Estimating session memory
+
+In order to help determine a good session size for a given workload, there is the `estimate()` function.
+By providing expected node and relationship counts as well as algorithm categories that should be used, it will return an estimated size of the session.
+
+.Estimating the size of a GDS Session via the GdsSessions object:
+[source, python, role=no-test]
+----
+from graphdatascience.session import AlgorithmCategory
+
+memory = sessions.estimate(
+    node_count=20,
+    relationship_count=50,
+    algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
+)
+----
+
+
 == Projecting graphs into a GDS Session
 
 Once you have a GDS Session, you can project a graph into it.
