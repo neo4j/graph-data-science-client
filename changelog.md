@@ -9,4 +9,6 @@
 
 ## Improvements
 
+* Allow creating sessions of size `512GB`.
+
 ## Other changes
