@@ -93,15 +93,15 @@ sessions.get_or_create(
 ----
 
 .Parameters:
-[opts="header",cols="3m,1,1m,6", role="no-break"]
+[opts="header",cols="3m,1m,1,1m,6", role="no-break"]
 |===
-| Name                               | Optional | Default | Description
-| session_name                       | no       | -       | Name of the session. Must be unique within the project.
-| memory                             | no       | -       | Amount of memory available to the session. https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[Supported values].
-| db_connection                      | yes      | None    | Bolt server URL, username, and password to a Neo4j DBMS. Required for the Attached and Self-managed flavours.
-| ttl                                | yes      | 1h      | Time-to-live for the session.
-| cloud_location                     | yes      | None    | Aura-supported cloud provider and region where the GDS Session will run. Required for the Self-managed and Standalone flavours.
-| timeout                            | yes      | None    | Seconds to wait for the session to enter Ready state. If the time is exceeded, an error will be returned.
+| Name          | Type               | Optional | Default | Description
+| session_name  | str                | no       | -       | Name of the session. Must be unique within the project.
+| memory        | SessionMemory      | no       | -       | Amount of memory available to the session. https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[Supported values].
+| db_connection | DbmsConnectionInfo | yes      | None    | Bolt server URL, username, and password to a Neo4j DBMS. Required for the Attached and Self-managed flavours.
+| ttl           | datetime.timedelta | yes      | 1h      | Time-to-live for the session.
+| cloud_location| CloudLocation      | yes      | None    | Aura-supported cloud provider and region where the GDS Session will run. Required for the Self-managed and Standalone flavours.
+| timeout       | int                | yes      | None    | Seconds to wait for the session to enter Ready state. If the time is exceeded, an error will be returned.
 |===
 
 
