@@ -223,6 +223,9 @@ This operation is called _remote projection_ because the data source is not a co
 
 You can create a remote projection using the `gds.graph.project()` endpoint with a graph name, a Cypher query, and additional optional parameters.
 The Cypher query must contain the `gds.graph.project.remote()` function to project the graph into the GDS Session.
+This is only possible to do with Attached and self-managed sessions.
+Standalone sessions must use xref:graph-object.adoc#construct[graph.construct].
+
 
 === Syntax
 
@@ -232,22 +235,25 @@ The Cypher query must contain the `gds.graph.project.remote()` function to proje
 gds.graph.project(
     graph_name: str,
     query: str,
+    job_id: Optional[str] = None,
     concurrency: int = 4,
-    undirected_relationship_types: Optional[List[str]] = None,
-    inverse_indexed_relationship_types: Optional[List[str]] = None,
+    undirected_relationship_types: Optional[list[str]] = None,
+    inverse_indexed_relationship_types: Optional[list[str]] = None,
+    batch_size: Optional[int] = None,
 ): (Graph, Series[Any])
 ----
 
 .Parameters:
-[opts="header",cols="3m,1,1m,6", role="no-break"]
+[opts="header",cols="3m,1m,1,1m,6", role="no-break"]
 |===
-| Name                               | Optional | Default | Description
-| graph_name                         | no       | -       | Name of the graph.
-| query                              | no       | -       | Projection query.
-| concurrency                        | yes      | 4       | Concurrency to use for building the graph within the session.
-| batch_size                         | yes      | 10000   | Size of batches transmitted from the DBMS to the session.
-| undirected_relationship_types      | yes      | []      | List of relationship type names that should be treated as undirected.
-| inverse_indexed_relationship_types | yes      | []      | List of relationship type names that should be indexed in reverse.
+| Name                               | Type      | Optional | Default | Description
+| graph_name                         | str       | no       | -       | Name of the graph.
+| query                              | str       | no       | -       | Projection query.
+| job_id                             | str       | yes      | None    | Correlation id for the process on the session. If not provided an automatically generated id will be used.
+| concurrency                        | int       | yes      | 4       | Concurrency to use for building the graph within the session.
+| undirected_relationship_types      | list[str] | yes      | []      | List of relationship type names that should be treated as undirected.
+| inverse_indexed_relationship_types | list[str] | yes      | []      | List of relationship type names that should be indexed in reverse.
+| batch_size                         | int       | yes      | 10000   | Size of batches transmitted from the DBMS to the session.
 |===
 
 .Results:
