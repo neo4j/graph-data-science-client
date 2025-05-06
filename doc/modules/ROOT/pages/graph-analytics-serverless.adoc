@@ -294,9 +294,17 @@ These have the same behavior as documented in the link:{neo4j-docs-base-uri}/gra
 This example shows how to project a graph into a GDS Session.
 The example graph is heterogeneous and models users and products.
 Users can know each other, and users can buy products.
-The database connection is to a new, empty AuraDB instance.
 
-.Create a GDS Session and add some data to the database:
+The Attached and Self-managed examples use a Cypher query to populate the database with the data.
+The Standalone example uses pandas DataFrames instead.
+
+[.tabbed-example, caption = ]
+=====
+
+[.include-with-attached]
+=======
+
+.Create some data in the Neo4j DBMS and project it to an Attached GDS Session:
 [source,python,role=no-test]
 ----
 import os # for reading environment variables
@@ -325,13 +333,7 @@ gds.run_cypher(
      (u1)-[:BOUGHT {price: 1337}]->(p2)
     """
 )
-----
 
-With the `gds` GDS Session active, project the graph and specify node and relationship property schemas as follows:
-
-.Project a graph into the GDS Session:
-[source,python,role=no-test]
-----
 G, result = gds.graph.project(
     graph_name="my-graph",
     query="""
@@ -355,6 +357,112 @@ G, result = gds.graph.project(
     """,
 )
 ----
+=======
+
+[.include-with-self-managed]
+=======
+.Create some data in the Neo4j DBMS and project it to a Self-managed GDS Session:
+[source,python,role=no-test]
+----
+import os # for reading environment variables
+from graphdatascience.session import SessionMemory, DbmsConnectionInfo, GdsSessions, AuraAPICredentials, CloudLocation
+
+sessions = GdsSessions(api_credentials=AuraAPICredentials(os.environ["CLIENT_ID"], os.environ["CLIENT_SECRET"]))
+
+db_connection = DbmsConnectionInfo(os.environ["DB_URI"], os.environ["DB_USER"], os.environ["DB_PASSWORD"])
+gds = sessions.get_or_create(
+    session_name="my-new-session",
+    memory=SessionMemory.m_8GB,
+    db_connection=db_connection,
+    cloud_location=CloudLocation(provider="gcp", region="europe-west1"),
+)
+
+gds.run_cypher(
+    """
+    CREATE
+     (u1:User {name: 'Mats'}),
+     (u2:User {name: 'Florentin'}),
+     (p1:Product {name: 'ice cream', cost: 4.2}),
+     (p2:Product {name: 'computer', cost: 13.37})
+
+    CREATE
+     (u1)-[:KNOWS {since: 2020}]->(u2),
+     (u2)-[:BOUGHT {price: 7474}]->(p1),
+     (u1)-[:BOUGHT {price: 1337}]->(p2)
+    """
+)
+
+G, result = gds.graph.project(
+    graph_name="my-graph",
+    query="""
+    CALL {
+        MATCH (u1:User)
+        OPTIONAL MATCH (u1)-[r:KNOWS]->(u2:User)
+        RETURN u1 AS source, r AS rel, u2 AS target, {} AS sourceNodeProperties, {} AS targetNodeProperties
+        UNION
+        MATCH (p:Product)
+        OPTIONAL MATCH (p)<-[r:BOUGHT]-(user:User)
+        RETURN user AS source, r AS rel, p AS target, {} AS sourceNodeProperties, {cost: p.cost} AS targetNodeProperties
+    }
+    RETURN gds.graph.project.remote(source, target, {
+      sourceNodeProperties: sourceNodeProperties,
+      targetNodeProperties: targetNodeProperties,
+      sourceNodeLabels: labels(source),
+      targetNodeLabels: labels(target),
+      relationshipType: type(rel),
+      relationshipProperties: properties(rel)
+    })
+    """,
+)
+----
+=======
+
+[.include-with-standalone]
+=======
+.Project some data to a Standalone GDS Session:
+[source,python,role=no-test]
+----
+from graphdatascience.session import CloudLocation, SessionMemory
+
+gds = sessions.get_or_create(
+    session_name="my-standalone-session",
+    memory=SessionMemory.m_4GB,
+    cloud_location=CloudLocation(provider="gcp", region="europe-west1"),
+)
+
+nodes = [pandas.DataFrame({
+        "nodeId": [0, 1],
+        "labels":  ["Person", "Person"],
+    }), pandas.DataFrame({
+        "nodeId": [2, 3],
+        "labels":  ["Product", "Product"],
+        "cost": [4.2, 13.37],
+    })
+]
+
+relationships = [pandas.DataFrame({
+        "sourceNodeId": [0],
+        "targetNodeId": [1],
+        "relationshipType": ["KNOWS"],
+        "since": [2020]
+    }), pandas.DataFrame({
+        "sourceNodeId": [0, 1],
+        "targetNodeId": [3, 2],
+        "relationshipType": ["BOUGHT", "BOUGHT"],
+        "price": [1337, 7474]
+    })
+]
+
+G = gds.graph.construct(
+    "my-graph",
+    nodes,
+    relationships
+)
+----
+=======
+
+=====
+
 
 
 == Running algorithms
