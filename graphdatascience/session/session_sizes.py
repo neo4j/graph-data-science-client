@@ -57,6 +57,7 @@ class SessionMemory(Enum):
     m_192GB = SessionMemoryValue("192GB")
     m_256GB = SessionMemoryValue("256GB")
     m_384GB = SessionMemoryValue("384GB")
+    m_512GB = SessionMemoryValue("512GB")
 
     @classmethod
     def all_values(cls) -> list[SessionMemoryValue]:
