@@ -14,13 +14,17 @@ in the Neo4j Graph Data Science Client Github repository.
 The notebook shows the usage of the `gds.graph.construct` method
 (available only in GDS 2.1{plus}) to build a graph directly in memory.
 
-NOTE: If you are using AuraDS, it is currently not possible to write the
-projected graph back to Neo4j.
+NOTE: If you are using AuraDS, it is currently not possible to export
+the projected graph back to Neo4j.
 
 == Setup
 
 We need an environment where Neo4j and GDS are available, for example
 AuraDS (which comes with GDS preinstalled) or Neo4j Desktop.
+
+TIP: Alternatively, you can use
+https://neo4j.com/docs/graph-data-science-client/current/graph-analytics-serverless/[Aura
+Graph Analytics Serverless] and skip the whole Setup section below.
 
 Once the credentials to this environment are available, we can install
 the `graphdatascience` package and import the client class.
