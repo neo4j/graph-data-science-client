@@ -477,7 +477,7 @@ gds.fastRP.mutate(G, featureProperties=["pr"], embeddingDimension=2, nodeSelfInf
 gds.graph.nodeProperties.stream(G, db_node_properties=["name"], node_properties=["pr", "embedding"])
 ----
 
-For a full list of the available algorithms, see the https://neo4j.com/docs/graph-data-science-client/{page-version}/api/[API reference].
+For a full list of the available algorithms, see the https://neo4j.com/docs/graph-data-science-client/{page-version}/api/algorithms[API reference].
 
 
 === Limitations
