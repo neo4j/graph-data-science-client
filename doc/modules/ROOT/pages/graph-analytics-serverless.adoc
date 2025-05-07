@@ -15,7 +15,7 @@ There are three types of GDS Sessions:
 
 The process of populating the session with data is called _remote projection_.
 Once populated, a GDS Session can run GDS workloads, such as algorithms and machine learning models.
-Results from these computations can be written back to the original source, using _remote write-back_ in the Attached and Self-managed flavours.
+Results from these computations can be written back to the original source, using _remote write-back_ in the Attached and Self-managed types.
 
 TIP: For ready-to-run notebooks, see our tutorials on GDS Sessions for xref:tutorials/graph-analytics-serverless.adoc[AuraDB] and xref:tutorials/graph-analytics-serverless-self-managed[self-managed databases].
 
@@ -95,9 +95,9 @@ sessions.get_or_create(
 | Name          | Type               | Optional | Default | Description
 | session_name  | str                | no       | -       | Name of the session. Must be unique within the project.
 | memory        | SessionMemory      | no       | -       | Amount of memory available to the session. https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[Supported values].
-| db_connection | DbmsConnectionInfo | yes      | None    | Bolt server URL, username, and password to a Neo4j DBMS. Required for the Attached and Self-managed flavours.
+| db_connection | DbmsConnectionInfo | yes      | None    | Bolt server URL, username, and password to a Neo4j DBMS. Required for the Attached and Self-managed types.
 | ttl           | datetime.timedelta | yes      | 1h      | Time-to-live for the session.
-| cloud_location| CloudLocation      | yes      | None    | Aura-supported cloud provider and region where the GDS Session will run. Required for the Self-managed and Standalone flavours.
+| cloud_location| CloudLocation      | yes      | None    | Aura-supported cloud provider and region where the GDS Session will run. Required for the Self-managed and Standalone types.
 | timeout       | int                | yes      | None    | Seconds to wait for the session to enter Ready state. If the time is exceeded, an error will be returned.
 |===
 
@@ -502,9 +502,10 @@ For a full list of the available algorithms, see the https://neo4j.com/docs/grap
 
 == Remote write-back
 
-The GDS Session's in-memory graph was projected from data in AuraDB, so write-back operations will persist the data back to the same AuraDB instance.
-When calling any write operations, the GDS Python client will automatically use the remote write-back functionality.
-This includes all `.write` algorithm modes as well as all `.write` graph operations.
+Persisting the results of a computation done in a GDS Session differs by the session's type.
+Attached and Self-managed sessions come with built-in support for writing back algorithms results to the same Neo4j DB where the graph was projected from.
+Users of Standalone sessions have to stream the results back to the client and the user has to persist it in their target system.
+This section will illustrate the built-in remote write-back capability.
 
 By default, write back will happen concurrently, in one transaction per batch.
 The behaviour is controlled by three aspects:
@@ -516,7 +517,9 @@ The behaviour is controlled by three aspects:
 
 === Syntax
 
-[.tabbed-example, caption = asd]
+The syntax for remote write-back is identical for Attached and Self-managed sessions.
+
+[.tabbed-example, caption = ]
 ====
 [.include-with-graph-operation]
 ======
@@ -533,7 +536,7 @@ gds.graph.<operation>.write(
 
 [.include-with-algorithm-write-mode]
 ======
-.Remote graph write-back:
+.Remote algorithm write-back:
 [source, role=no-test]
 ----
 gds.<algo>.write(
@@ -565,7 +568,7 @@ All write-back endpoints support the following additional configuration:
 
 === Examples
 
-Extending the previous example, we can write back the FastRP embeddings to the AuraDB instance as follows:
+Extending the previous example, we can write back the FastRP embeddings to the Neo4j DB as follows:
 
 .Write mutated FastRP embeddings back to the database:
 [source,python,role=no-test]
@@ -590,8 +593,8 @@ gds.wcc.write(
 
 == Querying the database
 
-You can run Cypher queries on the AuraDB instance using the `run_cypher()` method.
-There is no restriction on the type of query that can be run, but it is important to note that the query will be run on the AuraDB instance, and not on the GDS Session.
+You can run Cypher queries on the Neo4j DB using the `run_cypher()` method.
+There is no restriction on the type of query that can be run, but it is important to note that the query will be run on the Neo4j DB, and not on the GDS Session.
 Therefore, you will not be able to call any GDS procedures from the `run_cypher()` method.
 
 .Run a Cypher query to find our written-back embeddings:
