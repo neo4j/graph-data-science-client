@@ -18,6 +18,7 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         """
         self._namespace += ".asNode"
+        # TODO use call_function?
         result = self._query_runner.run_cypher(f"RETURN {self._namespace}({node_id}) AS node")
 
         return result.iat[0, 0]
@@ -34,6 +35,7 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         """
         self._namespace += ".asNodes"
+        # TODO use call_function?
         result = self._query_runner.run_cypher(f"RETURN {self._namespace}({node_ids}) AS nodes")
 
         return result.iat[0, 0]  # type: ignore
