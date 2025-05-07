@@ -44,8 +44,9 @@ If there is no such database, you will need to <<specifying-targeted-database, p
 
 === Aura Graph Analytics Serverless
 
-The GDS Python Client has dedicated support for the Aura Graph Analytics Serverless offering.
-Below we illustrate how to instantiate the `GraphDataScience` object using an Aura API key pair and AuraDB connection information.
+The GDS Python Client has dedicated support for the xref:graph-analytics-serverless.adoc[Aura Graph Analytics Serverless] offering.
+
+This example shows how to instantiate the `GraphDataScience` object using an Aura API key pair and AuraDB connection information.
 
 [source,python,role=no-test]
 ----
@@ -58,8 +59,6 @@ gds = sessions.get_or_create(
     db_connection=DbmsConnectionInfo("neo4j+s://mydbid.databases.neo4j.io", "neo4j", "<password>"),
 )
 ----
-
-Full details covering all that you can do with this service is found on xref:graph-analytics-serverless.adoc[the dedicated page].
 
 
 === AuraDS
