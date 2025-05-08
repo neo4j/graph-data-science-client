@@ -69,8 +69,10 @@ As the data source, we assume that a self-managed Neo4j DBMS instance
 has been set up and is accessible. We need to pass the database address,
 user name and password to the `DbmsConnectionInfo` class.
 
-We also need to specify the session size. Please refer to the API
-reference documentation or the manual for a full list.
+We also need to specify the session `memory` and `cloud++_++location`.
+Please refer to the API reference
+https://neo4j.com/docs/graph-data-science-client/current/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.get_or_create[documentation]
+or the manual for a full list options.
 
 Finally, we need to give our session a name. We will call ours
 `people-and-fruits-sm'. It is possible to reconnect to an existing session by calling`get++_++or++_++create++`++
@@ -83,7 +85,7 @@ delete the session ourselves.
 
 [source, python, role=no-test]
 ----
-from graphdatascience.session import AlgorithmCategory, SessionMemory
+from graphdatascience.session import AlgorithmCategory, CloudLocation, SessionMemory
 
 # Explicitly define the size of the session
 memory = SessionMemory.m_8GB
@@ -97,10 +99,12 @@ memory = sessions.estimate(
 
 print(f"Estimated memory: {memory}")
 
-# Find out and specify where to create the GDS session
+# Specify your cloud location
+cloud_location = CloudLocation("gcp", "europe-west1")
+
+# You can find available cloud locations by calling
 cloud_locations = sessions.available_cloud_locations()
 print(f"Available locations: {cloud_locations}")
-cloud_location = cloud_locations[0]
 ----
 
 [source, python, role=no-test]
