@@ -262,6 +262,7 @@ sessions.list()
 
 == Conclusion
 
-And we’re done! We have created a GDS Session, projected a graph, run
-some algorithms, inspect the results, and deleted the session. This is a
-simple example, but it shows the main steps of using GDS Sessions.
+And we’re done! We have created a GDS Session, constructed a graph, run
+some algorithms, inspect the algorithm results, and deleted the session.
+This is a simple example, but it shows the main steps of using GDS
+Sessions.
