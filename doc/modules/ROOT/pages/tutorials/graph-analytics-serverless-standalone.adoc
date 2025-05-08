@@ -15,7 +15,7 @@ The notebook shows how to use the `graphdatascience` Python library to
 create, manage, and use a GDS Session.
 
 We consider a graph of people and fruits, which we’re using as a simple
-example to show how to load data from Pandas DataFrames to a GDS
+example to show how to load data from Pandas `DataFrame` to a GDS
 Session, run algorithms, and inspect the results. We will cover all
 management operations: creation, listing, and deletion.
 
@@ -66,16 +66,16 @@ sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secr
 == Creating a new session
 
 A new session is created by calling `sessions.get++_++or++_++create()`.
-As the data source, we assume that a self-managed Neo4j DBMS instance
-has been set up and is accessible. We need to pass the database address,
-user name and password to the `DbmsConnectionInfo` class.
+We also need to specify the session `memory` and `cloud++_++location`.
 
-We also need to specify the session size. Please refer to the API
-reference documentation or the manual for a full list.
+Please refer to the API reference
+https://neo4j.com/docs/graph-data-science-client/current/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.get_or_create[documentation]
+or the manual for a full list options.
 
 Finally, we need to give our session a name. We will call ours
-`people-and-fruits-sm'. It is possible to reconnect to an existing session by calling`get++_++or++_++create++`++
-with the same session name and configuration.
+`people-and-fruits-standalone`. It is possible to reconnect to an
+existing session by calling `get++_++or++_++create` with the same
+session name and configuration.
 
 We will also set a time-to-live (TTL) for the session. This ensures that
 our session is automatically deleted after being unused for 30 minutes.
@@ -84,7 +84,7 @@ delete the session ourselves.
 
 [source, python, role=no-test]
 ----
-from graphdatascience.session import AlgorithmCategory, SessionMemory
+from graphdatascience.session import AlgorithmCategory, CloudLocation, SessionMemory
 
 # Explicitly define the size of the session
 memory = SessionMemory.m_4GB
@@ -98,19 +98,24 @@ memory = sessions.estimate(
 
 print(f"Estimated memory: {memory}")
 
-# Find out and specify where to create the GDS session
+# Specify your cloud location
+cloud_location = CloudLocation("gcp", "europe-west1")
+
+# You can find available cloud locations by calling
 cloud_locations = sessions.available_cloud_locations()
 print(f"Available locations: {cloud_locations}")
-cloud_location = cloud_locations[0]
 ----
 
 [source, python, role=no-test]
 ----
+from datetime import timedelta
+
 # Create a GDS session!
 gds = sessions.get_or_create(
     # we give it a representative name
     session_name="people-and-fruits-standalone",
     memory=memory,
+    ttl=timedelta(minutes=30),
     cloud_location=cloud_location,
 )
 ----
@@ -179,16 +184,15 @@ knows_df["relationshipType"] = "KNOWS"
 
 Now that we have imported a graph to our database, we create graphs
 directly from pandas `DataFrame` objects. We do that by using the
-`gds.graph.construct()` endpoint.
+`gds.graph.construct()` method.
 
 [source, python, role=no-test]
 ----
-nodes = [people_df.drop(columns="name"), fruits_df.drop(columns="name")]  # GDS does not support string properties
+# Dropping `name` column as GDS does not support string properties
+nodes = [people_df.drop(columns="name"), fruits_df.drop(columns="name")]
 relationships = [likes_df, knows_df]
 
 G = gds.graph.construct("people-fruits", nodes, relationships)
-
-
 str(G)
 ----
 
@@ -222,16 +226,15 @@ print(f"Compute millis: {frp_result['computeMillis']}")
 # stream back the results
 result = gds.graph.nodeProperties.stream(G, ["pagerank", "fastRP"], separate_property_columns=True)
 
-print(result)
+result
 ----
 
-To resolve the nodeIds to names, we can merge it back with the source
+To resolve each `nodeId` to name, we can merge it back with the source
 data frames.
 
 [source, python, role=no-test]
 ----
 names = pd.concat([people_df, fruits_df])[["nodeId", "name"]]
-
 result.merge(names, how="left")
 ----
 
