@@ -133,7 +133,10 @@ if __name__ == "__main__":
     notebook_filter = sys.argv[1] if len(sys.argv) >= 2 else ""
 
     session_notebooks = ["graph-analytics-serverless.ipynb"]
-    session_self_managed_notebooks = ["graph-analytics-serverless-self-managed.ipynb"]
+    session_self_managed_notebooks = [
+        "graph-analytics-serverless-self-managed.ipynb",
+        "graph-analytics-serverless-self-standalone.ipynb",
+    ]
 
     notebooks: Optional[list[str]] = None
     if notebook_filter == "sessions-attached":

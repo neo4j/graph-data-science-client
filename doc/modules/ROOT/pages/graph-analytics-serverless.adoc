@@ -17,7 +17,7 @@ The process of populating the session with data is called _remote projection_.
 Once populated, a GDS Session can run GDS workloads, such as algorithms and machine learning models.
 Results from these computations can be written back to the original source, using _remote write-back_ in the Attached and Self-managed types.
 
-TIP: For ready-to-run notebooks, see our tutorials on GDS Sessions for xref:tutorials/graph-analytics-serverless.adoc[AuraDB] and xref:tutorials/graph-analytics-serverless-self-managed[self-managed databases].
+TIP: For ready-to-run notebooks, see our tutorials on GDS Sessions for xref:tutorials/graph-analytics-serverless.adoc[AuraDB], xref:tutorials/graph-analytics-serverless-self-managed.adoc[self-managed databases], and xref:tutorials/graph-analytics-serverless-standalone.adoc[any other data source].
 
 
 == GDS Session management
