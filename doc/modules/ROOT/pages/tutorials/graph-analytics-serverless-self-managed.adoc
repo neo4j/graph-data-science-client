@@ -25,12 +25,12 @@ example].
 
 == Prerequisites
 
-This notebook requires having a Neo4j instance instance available and
-that the Graph Analytics Serverless
+This notebook requires having a Neo4j instance available and that the
+Graph Analytics Serverless
 https://neo4j.com/docs/aura/graph-analytics/#aura-gds-serverless[feature]
 is enabled for your Neo4j Aura project.
 
-We also need to have the `graphdatascience` Python library installed,
+You also need to have the `graphdatascience` Python library installed,
 version `1.15` or later.
 
 [source, python, role=no-test]
@@ -40,12 +40,9 @@ version `1.15` or later.
 
 == Aura API credentials
 
-A GDS Session is managed via the Aura API. In order to use the Aura API,
-we need to have https://neo4j.com/docs/aura/api/authentication[Aura API
-credentials].
-
-Using these credentials, we can create our `GdsSessions` object, which
-is the main entry point for managing GDS Sessions.
+The entry point for managing GDS Sessions is the `GdsSessions` object,
+which requires creating
+https://neo4j.com/docs/aura/api/authentication[Aura API credentials].
 
 [source, python, role=no-test]
 ----
@@ -64,24 +61,18 @@ sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secr
 
 == Creating a new session
 
-A new session is created by calling `sessions.get++_++or++_++create()`.
-As the data source, we assume that a self-managed Neo4j DBMS instance
-has been set up and is accessible. We need to pass the database address,
-user name and password to the `DbmsConnectionInfo` class.
+A new session is created by calling `sessions.get++_++or++_++create()`
+with the following parameters: ++*++ A session name, which lets you
+reconnect to an existing session by calling `get++_++or++_++create`
+again. ++*++ The `DbmsConnectionInfo` containing the address, user name
+and password for an accessible self-manged Neo4j DBMS instance ++*++ The
+session memory. ++*++ The cloud location. ++*++ A time-to-live (TTL),
+which ensures that the session is automatically deleted after being
+unused for the set time, to avoid incurring costs.
 
-We also need to specify the session `memory` and `cloud++_++location`.
-Please refer to the API reference
+See the API reference
 https://neo4j.com/docs/graph-data-science-client/current/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.get_or_create[documentation]
-or the manual for a full list options.
-
-Finally, we need to give our session a name. We will call ours
-`people-and-fruits-sm'. It is possible to reconnect to an existing session by calling`get++_++or++_++create++`++
-with the same session name and configuration.
-
-We will also set a time-to-live (TTL) for the session. This ensures that
-our session is automatically deleted after being unused for 30 minutes.
-This is a good practice to avoid incurring costs should we forget to
-delete the session ourselves.
+or the manual for more details on the parameters.
 
 [source, python, role=no-test]
 ----
@@ -121,7 +112,7 @@ db_connection = DbmsConnectionInfo(
 
 # Create a GDS session!
 gds = sessions.get_or_create(
-    # we give it a representative name
+    # give it a representative name
     session_name="people-and-fruits-sm",
     memory=memory,
     db_connection=db_connection,
@@ -132,8 +123,8 @@ gds = sessions.get_or_create(
 
 == Listing sessions
 
-Now that we have created a session, let’s list all our sessions to see
-what that looks like
+You can use `sessions.list()` to see the details for each created
+session.
 
 [source, python, role=no-test]
 ----
@@ -147,10 +138,10 @@ DataFrame(gds_sessions)
 
 == Adding a dataset
 
-We assume that the configured Neo4j database instance is empty. We will
-add our dataset using standard Cypher.
+We assume that the configured Neo4j database instance is empty. You will
+add the dataset using standard Cypher.
 
-In a more realistic scenario, this step is already done, and we would
+In a more realistic scenario, this step is already done, and you would
 just connect to the existing database.
 
 [source, python, role=no-test]
@@ -201,15 +192,15 @@ gds.run_cypher("MATCH (n) RETURN count(n) AS nodeCount")
 
 == Projecting Graphs
 
-Now that we have imported a graph to our database, we can project it
-into our GDS Session. We do that by using the `gds.graph.project()`
+Now that you have imported a graph to the database, you can project it
+into our GDS Session. You do that by using the `gds.graph.project()`
 endpoint.
 
-The remote projection query that we are using selects all `Person` nodes
-and their `LIKES` relationships, and all `Fruit` nodes and their `LIKES`
-relationships. Additionally, we project node properties for illustrative
-purposes. We can use these node properties as input to algorithms,
-although we do not do that in this notebook.
+The remote projection query that you are using selects all `Person`
+nodes and their `LIKES` relationships, and all `Fruit` nodes and their
+`LIKES` relationships. Additionally, node properties are projected for
+illustrative purposes. You can use these node properties as input to
+algorithms, although it is note done in this notebook.
 
 [source, python, role=no-test]
 ----
@@ -246,12 +237,8 @@ str(G)
 
 == Running Algorithms
 
-We can now run algorithms on the projected graph. This is done using the
-standard GDS Python Client API. There are many other tutorials covering
-some interesting things we can do at this step, so we will keep it
-rather brief here.
-
-We will simply run PageRank and FastRP on the graph.
+You can run algorithms on the constructed graph using the standard GDS
+Python Client API. See the other tutorials for more examples.
 
 [source, python, role=no-test]
 ----
@@ -289,7 +276,7 @@ the PageRank and FastRP algorithms to the Neo4j database.
 gds.graph.nodeProperties.write(G, ["pagerank", "fastRP"])
 ----
 
-Of course, we can just use `.write` modes as well. Let’s run Louvain in
+Of course, you can just use `.write` modes as well. Let’s run Louvain in
 write mode to show:
 
 [source, python, role=no-test]
@@ -297,7 +284,7 @@ write mode to show:
 gds.louvain.write(G, writeProperty="louvain")
 ----
 
-We can now use the `gds.run++_++cypher()` method to query the updated
+You can now use the `gds.run++_++cypher()` method to query the updated
 graph. Note that the `run++_++cypher()` method will run the query on the
 Neo4j database.
 
@@ -314,10 +301,10 @@ gds.run_cypher(
 
 == Deleting the session
 
-Now that we have finished our analysis, we can delete the session. The
-results that we produced were written back to our Neo4j database, and
-will not be lost. If we computed additional things that we did not write
-back, those will be lost.
+Now that you have finished the analysis, you can delete the session. The
+results that you produced were written back to our Neo4j database, and
+will not be lost. If you computed additional things that you did not
+write back, those will be lost.
 
 Deleting the session will release all resources associated with it, and
 stop incurring costs.
@@ -339,9 +326,3 @@ sessions.list()
 # Lastly, let's clean up the database
 gds.run_cypher("MATCH (n:Person|Fruit) DETACH DELETE n")
 ----
-
-== Conclusion
-
-And we’re done! We have created a GDS Session, projected a graph, run
-some algorithms, written back the results, and deleted the session. This
-is a simple example, but it shows the main steps of using GDS Sessions.
