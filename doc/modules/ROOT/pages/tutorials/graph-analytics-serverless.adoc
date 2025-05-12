@@ -30,7 +30,7 @@ Graph Analytics Serverless
 https://neo4j.com/docs/aura/graph-analytics/#aura-gds-serverless[feature]
 enabled for your project.
 
-We also need to have the `graphdatascience` Python library installed,
+You also need to have the `graphdatascience` Python library installed,
 version `1.15` or later.
 
 [source, python, role=no-test]
@@ -40,12 +40,9 @@ version `1.15` or later.
 
 == Aura API credentials
 
-A GDS Session is managed via the Aura API. In order to use the Aura API,
-we need to have https://neo4j.com/docs/aura/api/authentication[Aura API
-credentials].
-
-Using these credentials, we can create our `GdsSessions` object, which
-is the main entry point for managing GDS Sessions.
+The entry point for managing GDS Sessions is the `GdsSessions` object,
+which requires creating
+https://neo4j.com/docs/aura/api/authentication[Aura API credentials].
 
 [source, python, role=no-test]
 ----
@@ -64,22 +61,18 @@ sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secr
 
 == Creating a new session
 
-A new session is created by calling `sessions.get++_++or++_++create()`.
-As the data source, we assume here that an AuraDB instance has been
-created and is available for access. We need to pass the database
-address, username and password to the `DbmsConnectionInfo` class.
+A new session is created by calling `sessions.get++_++or++_++create()`
+with the following parameters: ++*++ A session name, which lets you
+reconnect to an existing session by calling `get++_++or++_++create`
+again. ++*++ The `DbmsConnectionInfo` containing the address, user name
+and password to an AuraDB instance ++*++ The session memory. ++*++ The
+cloud location. ++*++ A time-to-live (TTL), which ensures that the
+session is automatically deleted after being unused for the set time, to
+avoid incurring costs.
 
-We also need to specify the size of the session. Please refer to the API
-reference documentation or the manual for a full list.
-
-Finally, we need to give our session a name. We will call ours
-`people-and-fruits'. It is possible to reconnect to an existing session by calling`get++_++or++_++create++`++
-with the same session name and configuration.
-
-We will also set a time-to-live (TTL) for the session. This ensures that
-our session is automatically deleted after being unused for 30 minutes.
-This is a good practice to avoid incurring costs should we forget to
-delete the session ourselves.
+See the API reference
+https://neo4j.com/docs/graph-data-science-client/current/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.get_or_create[documentation]
+or the manual for more details on the parameters.
 
 [source, python, role=no-test]
 ----
@@ -119,8 +112,8 @@ gds = sessions.get_or_create(
 
 == Listing sessions
 
-Now that we have created a session, let’s list all our sessions to see
-what that looks like
+You can use `sessions.list()` to see the details for each created
+session.
 
 [source, python, role=no-test]
 ----
@@ -233,12 +226,8 @@ str(G)
 
 == Running Algorithms
 
-We can now run algorithms on the projected graph. This is done using the
-standard GDS Python Client API. There are many other tutorials covering
-some interesting things we can do at this step, so we will keep it
-rather brief here.
-
-We will simply run PageRank and FastRP on the graph.
+You can run algorithms on the constructed graph using the standard GDS
+Python Client API. See the other tutorials for more examples.
 
 [source, python, role=no-test]
 ----
@@ -327,9 +316,3 @@ sessions.list()
 # Lastly, let's clean up the database
 gds.run_cypher("MATCH (n:Person|Fruit) DETACH DELETE n")
 ----
-
-== Conclusion
-
-And we’re done! We have created a GDS Session, projected a graph, run
-some algorithms, written back the results, and deleted the session. This
-is a simple example, but it shows the main steps of using GDS Sessions.
