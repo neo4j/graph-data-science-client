@@ -42,7 +42,7 @@ version `1.15` or later.
 
 A GDS Session is managed via the Aura API. In order to use the Aura API,
 we need to have
-https://neo4j.com/docs/aura/platform/api/authentication/#_creating_credentials[Aura
+https://neo4j.com/docs/aura/api/authentication[Aura
 API credentials].
 
 Using these credentials, we can create our `GdsSessions` object, which
