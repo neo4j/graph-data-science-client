@@ -145,8 +145,6 @@ class Neo4jQueryRunner(QueryRunner):
             connectivity_retry_config = Neo4jQueryRunner.ConnectivityRetriesConfig()
         self._verify_connectivity(database=database, retry_config=connectivity_retry_config)
 
-        self._driver.session()
-
         with self._driver.session(database=database, bookmarks=self.bookmarks()) as session:
             try:
                 result = session.run(query, params)
