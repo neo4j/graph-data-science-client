@@ -295,9 +295,8 @@ class Neo4jQueryRunner(QueryRunner):
             self._auto_close,
             self._bookmarks,
             self._show_progress,
-            self._instance_description
+            self._instance_description,
         )
-
 
     @staticmethod
     def handle_driver_exception(session: neo4j.Session, e: Exception) -> None:

@@ -2,13 +2,11 @@ from abc import ABC, abstractmethod
 from logging import DEBUG, getLogger
 from typing import Any, Optional
 
-import neo4j
 from pandas import DataFrame
 from tenacity import retry, retry_if_result, wait_incrementing
 
 from graphdatascience import QueryRunner
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.retry_utils.retry_utils import before_log
