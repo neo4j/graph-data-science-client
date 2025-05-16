@@ -211,6 +211,13 @@ class ArrowQueryRunner(QueryRunner):
         self._fallback_query_runner.close()
         self._gds_arrow_client.close()
 
+    def clone(self, endpoint: str) -> "QueryRunner":
+        return ArrowQueryRunner(
+            self._gds_arrow_client,
+            self._fallback_query_runner.clone(endpoint),
+            self._server_version,
+        )
+
     def fallback_query_runner(self) -> QueryRunner:
         return self._fallback_query_runner
 

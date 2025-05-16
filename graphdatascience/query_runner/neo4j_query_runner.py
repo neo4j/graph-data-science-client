@@ -46,6 +46,7 @@ class Neo4jQueryRunner(QueryRunner):
 
             query_runner = Neo4jQueryRunner(
                 driver,
+                auth,
                 auto_close=True,
                 bookmarks=bookmarks,
                 config=config,
@@ -76,6 +77,7 @@ class Neo4jQueryRunner(QueryRunner):
 
         query_runner = Neo4jQueryRunner(
             driver,
+            auth,
             auto_close=True,
             show_progress=show_progress,
             bookmarks=None,
@@ -97,6 +99,7 @@ class Neo4jQueryRunner(QueryRunner):
     def __init__(
         self,
         driver: neo4j.Driver,
+        auth: Optional[tuple[str, str]] = None,
         config: dict[str, Any] = {},
         database: Optional[str] = neo4j.DEFAULT_DATABASE,
         auto_close: bool = False,
@@ -105,6 +108,7 @@ class Neo4jQueryRunner(QueryRunner):
         instance_description: str = "Neo4j DBMS",
     ):
         self._driver = driver
+        self._auth = auth
         self._config = config
         self._auto_close = auto_close
         self._database = database
@@ -140,6 +144,8 @@ class Neo4jQueryRunner(QueryRunner):
         if connectivity_retry_config is None:
             connectivity_retry_config = Neo4jQueryRunner.ConnectivityRetriesConfig()
         self._verify_connectivity(database=database, retry_config=connectivity_retry_config)
+
+        self._driver.session()
 
         with self._driver.session(database=database, bookmarks=self.bookmarks()) as session:
             try:
@@ -278,6 +284,20 @@ class Neo4jQueryRunner(QueryRunner):
 
     def set_show_progress(self, show_progress: bool) -> None:
         self._show_progress = show_progress
+
+    def clone(self, endpoint: str) -> QueryRunner:
+        driver = neo4j.GraphDatabase.driver(endpoint, auth=self._auth, **self.driver_config())
+        return Neo4jQueryRunner(
+            driver,
+            self._auth,
+            self._config,
+            self._database,
+            self._auto_close,
+            self._bookmarks,
+            self._show_progress,
+            self._instance_description
+        )
+
 
     @staticmethod
     def handle_driver_exception(session: neo4j.Session, e: Exception) -> None:

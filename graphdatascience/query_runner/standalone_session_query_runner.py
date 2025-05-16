@@ -74,3 +74,8 @@ class StandaloneSessionQueryRunner(QueryRunner):
 
     def set_server_version(self, _: ServerVersion) -> None:
         super().set_server_version(_)
+
+    def clone(self, endpoint: str) -> "QueryRunner":
+        return StandaloneSessionQueryRunner(
+            self._query_runner.clone(endpoint)
+        )
