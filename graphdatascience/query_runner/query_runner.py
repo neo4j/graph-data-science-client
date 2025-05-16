@@ -81,7 +81,7 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
-    def clone(self, endpoint: str) -> "QueryRunner":
+    def clone(self, host: str, port: int) -> "QueryRunner":
         pass
 
     def set_server_version(self, _: ServerVersion) -> None:
