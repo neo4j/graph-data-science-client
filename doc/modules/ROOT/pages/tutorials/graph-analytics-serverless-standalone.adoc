@@ -3,7 +3,7 @@
 = Graph Analytics Serverless for non-Neo4j data sources
 
 
-https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/graph-analytics-serverless-standalone.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
+https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/1.15/examples/graph-analytics-serverless-standalone.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
 In Colab]]
 
 
