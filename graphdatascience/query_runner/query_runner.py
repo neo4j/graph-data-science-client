@@ -80,5 +80,9 @@ class QueryRunner(ABC):
     def set_show_progress(self, show_progress: bool) -> None:
         pass
 
+    @abstractmethod
+    def clone(self, host: str, port: int) -> "QueryRunner":
+        pass
+
     def set_server_version(self, _: ServerVersion) -> None:
         pass

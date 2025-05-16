@@ -120,6 +120,14 @@ class SessionQueryRunner(QueryRunner):
         self._show_progress = show_progress
         self._gds_query_runner.set_show_progress(show_progress)
 
+    def clone(self, host: str, port: int) -> QueryRunner:
+        return SessionQueryRunner(
+            self._gds_query_runner,
+            self._db_query_runner.clone(host, port),
+            self._gds_arrow_client,
+            self._show_progress,
+        )
+
     def close(self) -> None:
         self._gds_arrow_client.close()
         self._gds_query_runner.close()
