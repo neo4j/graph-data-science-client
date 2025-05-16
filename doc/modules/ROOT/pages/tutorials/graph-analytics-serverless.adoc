@@ -35,7 +35,7 @@ version `1.15` or later.
 
 [source, python, role=no-test]
 ----
-%pip install "graphdatascience>=1.15a1"
+%pip install "graphdatascience>=1.15"
 ----
 
 == Aura API credentials
@@ -62,13 +62,16 @@ sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secr
 == Creating a new session
 
 A new session is created by calling `sessions.get++_++or++_++create()`
-with the following parameters: ++*++ A session name, which lets you
-reconnect to an existing session by calling `get++_++or++_++create`
-again. ++*++ The `DbmsConnectionInfo` containing the address, user name
-and password to an AuraDB instance ++*++ The session memory. ++*++ The
-cloud location. ++*++ A time-to-live (TTL), which ensures that the
-session is automatically deleted after being unused for the set time, to
-avoid incurring costs.
+with the following parameters:
+
+* A session name, which lets you reconnect to an existing session by
+calling `get++_++or++_++create` again.
+* The `DbmsConnectionInfo` containing the address, user name and
+password to an AuraDB instance
+* The session memory.
+* The cloud location.
+* A time-to-live (TTL), which ensures that the session is automatically
+deleted after being unused for the set time, to avoid incurring costs.
 
 See the API reference
 https://neo4j.com/docs/graph-data-science-client/current/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.get_or_create[documentation]
