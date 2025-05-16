@@ -61,10 +61,13 @@ sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secr
 == Creating a new session
 
 A new session is created by calling `sessions.get++_++or++_++create()`
-with the following parameters: ++*++ A session name, which lets you
-reconnect to an existing session by calling `get++_++or++_++create`
-again. ++*++ The session memory. ++*++ The cloud location. ++*++ A
-time-to-live (TTL), which ensures that the session is automatically
+with the following parameters:
+
+* A session name, which lets you reconnect to an existing session by
+calling `get++_++or++_++create` again.
+* The session memory.
+* The cloud location.
+* A time-to-live (TTL), which ensures that the session is automatically
 deleted after being unused for the set time, to avoid incurring costs.
 
 See the API reference
