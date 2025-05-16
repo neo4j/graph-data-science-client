@@ -2,11 +2,13 @@ from abc import ABC, abstractmethod
 from logging import DEBUG, getLogger
 from typing import Any, Optional
 
+import neo4j
 from pandas import DataFrame
 from tenacity import retry, retry_if_result, wait_incrementing
 
 from graphdatascience import QueryRunner
 from graphdatascience.call_parameters import CallParameters
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.retry_utils.retry_utils import before_log
@@ -121,7 +123,7 @@ class ProjectProtocolV3(ProjectProtocol):
         query_runner: QueryRunner,
         endpoint: str,
         params: CallParameters,
-        terminationFlag: TerminationFlag,
+        termination_flag: TerminationFlag,
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
@@ -132,6 +134,12 @@ class ProjectProtocolV3(ProjectProtocol):
 
         logger = getLogger()
 
+        member_address = query_runner.call_procedure(
+            ProtocolVersion.V3.versioned_procedure_name(endpoint), params, yields, database, logging, False
+        ).squeeze()["host"]
+
+        projection_query_runner = query_runner.clone(f"neo4j+s://{member_address}")
+
         @retry(
             reraise=True,
             before=before_log(f"Projection (graph: `{params['graph_name']}`)", logger, DEBUG),
@@ -139,8 +147,8 @@ class ProjectProtocolV3(ProjectProtocol):
             wait=wait_incrementing(start=0.2, increment=0.2, max=2),
         )
         def project_fn() -> DataFrame:
-            terminationFlag.assert_running()
-            return query_runner.call_procedure(
+            termination_flag.assert_running()
+            return projection_query_runner.call_procedure(
                 ProtocolVersion.V3.versioned_procedure_name(endpoint), params, yields, database, logging, False
             )
 
