@@ -132,12 +132,13 @@ class ProjectProtocolV3(ProjectProtocol):
 
         logger = getLogger()
 
-        member_address = query_runner.call_procedure(
+        # We need to pin the driver to a specific cluster member
+        response = query_runner.call_procedure(
             ProtocolVersion.V3.versioned_procedure_name(endpoint), params, yields, database, logging, False
-        ).squeeze()["host"]
-
-        # TODO: retrieve the port from the server
-        projection_query_runner = query_runner.clone(member_address, 7687)
+        ).squeeze()
+        member_host = response["host"]
+        member_port = response["port"] if ("port" in response.index) else 7687
+        projection_query_runner = query_runner.clone(member_host, member_port)
 
         @retry(
             reraise=True,
