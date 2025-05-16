@@ -136,7 +136,7 @@ class ProjectProtocolV3(ProjectProtocol):
             ProtocolVersion.V3.versioned_procedure_name(endpoint), params, yields, database, logging, False
         ).squeeze()["host"]
 
-        projection_query_runner = query_runner.clone(f"neo4j+s://{member_address}")
+        projection_query_runner = query_runner.clone(f"neo4j+s://{member_address}:7687")
 
         @retry(
             reraise=True,
