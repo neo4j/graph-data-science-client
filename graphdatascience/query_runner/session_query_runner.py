@@ -120,6 +120,14 @@ class SessionQueryRunner(QueryRunner):
         self._show_progress = show_progress
         self._gds_query_runner.set_show_progress(show_progress)
 
+    def clone(self, endpoint: str) -> QueryRunner:
+        return SessionQueryRunner(
+            self._gds_query_runner.clone(endpoint),
+            self._db_query_runner.clone(endpoint),
+            self._gds_arrow_client,
+            self._show_progress
+        )
+
     def close(self) -> None:
         self._gds_arrow_client.close()
         self._gds_query_runner.close()
@@ -145,7 +153,6 @@ class SessionQueryRunner(QueryRunner):
         project_params = project_protocol.project_params(graph_name, query, job_id, params, arrow_config)
 
         try:
-
             def run_projection() -> DataFrame:
                 return project_protocol.run_projection(
                     self._db_query_runner, endpoint, project_params, terminationFlag, yields, database, logging

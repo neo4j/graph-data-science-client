@@ -126,6 +126,9 @@ class CollectingQueryRunner(QueryRunner):
             self, graph_name, concurrency, undirected_relationship_types, self._server_version
         )
 
+    def clone(self, endpoint: str) -> "QueryRunner":
+        return self
+
     def set__mock_result(self, result: DataFrame) -> None:
         self._result_map.clear()
         self._result_map[""] = result
