@@ -150,4 +150,8 @@ class ProjectProtocolV3(ProjectProtocol):
                 ProtocolVersion.V3.versioned_procedure_name(endpoint), params, yields, database, logging, False
             )
 
-        return project_fn()
+        projection_result = project_fn()
+
+        projection_query_runner.close()
+
+        return projection_result
