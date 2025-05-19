@@ -135,7 +135,7 @@ if __name__ == "__main__":
     session_notebooks = ["graph-analytics-serverless.ipynb"]
     session_self_managed_notebooks = [
         "graph-analytics-serverless-self-managed.ipynb",
-        "graph-analytics-serverless-self-standalone.ipynb",
+        "graph-analytics-serverless-standalone.ipynb",
     ]
 
     notebooks: Optional[list[str]] = None
