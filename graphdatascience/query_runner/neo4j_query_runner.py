@@ -46,6 +46,8 @@ class Neo4jQueryRunner(QueryRunner):
 
             query_runner = Neo4jQueryRunner(
                 driver,
+                Neo4jQueryRunner.parse_protocol(endpoint),
+                auth,
                 auto_close=True,
                 bookmarks=bookmarks,
                 config=config,
@@ -54,8 +56,14 @@ class Neo4jQueryRunner(QueryRunner):
             )
 
         elif isinstance(endpoint, neo4j.Driver):
+            protocol = "neo4j+s" if endpoint.encrypted else "bolt"
             query_runner = Neo4jQueryRunner(
-                endpoint, auto_close=False, bookmarks=bookmarks, database=database, show_progress=show_progress
+                endpoint,
+                protocol,
+                auto_close=False,
+                bookmarks=bookmarks,
+                database=database,
+                show_progress=show_progress,
             )
         else:
             raise ValueError(f"Invalid endpoint type: {type(endpoint)}")
@@ -76,6 +84,8 @@ class Neo4jQueryRunner(QueryRunner):
 
         query_runner = Neo4jQueryRunner(
             driver,
+            Neo4jQueryRunner.parse_protocol(endpoint),
+            auth,
             auto_close=True,
             show_progress=show_progress,
             bookmarks=None,
@@ -94,9 +104,18 @@ class Neo4jQueryRunner(QueryRunner):
         config["keep_alive"] = True
         config["max_connection_pool_size"] = 50
 
+    @staticmethod
+    def parse_protocol(endpoint: str) -> str:
+        protocol_match = re.match(r"^([^:]+)://", endpoint)
+        if not protocol_match:
+            raise ValueError(f"Invalid endpoint URI format: {endpoint}")
+        return protocol_match.group(1)
+
     def __init__(
         self,
         driver: neo4j.Driver,
+        protocol: str,
+        auth: Optional[tuple[str, str]] = None,
         config: dict[str, Any] = {},
         database: Optional[str] = neo4j.DEFAULT_DATABASE,
         auto_close: bool = False,
@@ -105,6 +124,8 @@ class Neo4jQueryRunner(QueryRunner):
         instance_description: str = "Neo4j DBMS",
     ):
         self._driver = driver
+        self._protocol = protocol
+        self._auth = auth
         self._config = config
         self._auto_close = auto_close
         self._database = database
@@ -278,6 +299,22 @@ class Neo4jQueryRunner(QueryRunner):
 
     def set_show_progress(self, show_progress: bool) -> None:
         self._show_progress = show_progress
+
+    def clone(self, host: str, port: int) -> QueryRunner:
+        endpoint = "{}://{}:{}".format(self._protocol, host, port)
+        driver = neo4j.GraphDatabase.driver(endpoint, auth=self._auth, **self.driver_config())
+
+        return Neo4jQueryRunner(
+            driver,
+            self._protocol,
+            self._auth,
+            self._config,
+            self._database,
+            self._auto_close,
+            self._bookmarks,
+            self._show_progress,
+            self._instance_description,
+        )
 
     @staticmethod
     def handle_driver_exception(session: neo4j.Session, e: Exception) -> None:

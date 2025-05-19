@@ -121,7 +121,7 @@ class ProjectProtocolV3(ProjectProtocol):
         query_runner: QueryRunner,
         endpoint: str,
         params: CallParameters,
-        terminationFlag: TerminationFlag,
+        termination_flag: TerminationFlag,
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
         logging: bool = False,
@@ -132,6 +132,14 @@ class ProjectProtocolV3(ProjectProtocol):
 
         logger = getLogger()
 
+        # We need to pin the driver to a specific cluster member
+        response = query_runner.call_procedure(
+            ProtocolVersion.V3.versioned_procedure_name(endpoint), params, yields, database, logging, False
+        ).squeeze()
+        member_host = response["host"]
+        member_port = response["port"] if ("port" in response.index) else 7687
+        projection_query_runner = query_runner.clone(member_host, member_port)
+
         @retry(
             reraise=True,
             before=before_log(f"Projection (graph: `{params['graph_name']}`)", logger, DEBUG),
@@ -139,9 +147,13 @@ class ProjectProtocolV3(ProjectProtocol):
             wait=wait_incrementing(start=0.2, increment=0.2, max=2),
         )
         def project_fn() -> DataFrame:
-            terminationFlag.assert_running()
-            return query_runner.call_procedure(
+            termination_flag.assert_running()
+            return projection_query_runner.call_procedure(
                 ProtocolVersion.V3.versioned_procedure_name(endpoint), params, yields, database, logging, False
             )
 
-        return project_fn()
+        projection_result = project_fn()
+
+        projection_query_runner.close()
+
+        return projection_result
