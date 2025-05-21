@@ -108,7 +108,9 @@ class Neo4jQueryRunner(QueryRunner):
         config.setdefault("max_connection_lifetime", 60 * 50)  # 50 minutes
         config.setdefault("keep_alive", True)
         config.setdefault("max_connection_pool_size", 50)
-        config.setdefault("liveness_check_timeout", 60 * 5)  # 5 minutes
+
+        if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= SemanticVersion(5, 16, 0):
+            config.setdefault("liveness_check_timeout", 60 * 5)  # 5 minutes
 
     @staticmethod
     def parse_protocol(endpoint: str) -> str:
