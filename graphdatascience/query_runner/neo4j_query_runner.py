@@ -35,9 +35,13 @@ class Neo4jQueryRunner(QueryRunner):
         database: Optional[str] = None,
         bookmarks: Optional[Any] = None,
         show_progress: bool = True,
+        config: Optional[dict[str, Any]] = None,
     ) -> Neo4jQueryRunner:
         if isinstance(endpoint, str):
-            config: dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
+            if config is None:
+                config = {}
+
+            config["user_agent"] = f"neo4j-graphdatascience-v{__version__}"
 
             if aura_ds:
                 Neo4jQueryRunner._configure_aura(config)
@@ -100,9 +104,11 @@ class Neo4jQueryRunner(QueryRunner):
 
     @staticmethod
     def _configure_aura(config: dict[str, Any]) -> None:
-        config["max_connection_lifetime"] = 60 * 8  # 8 minutes
-        config["keep_alive"] = True
-        config["max_connection_pool_size"] = 50
+        # defaults as documented in https://support.neo4j.com/s/article/1500001173021-How-to-handle-Session-Expired-Errors-while-connecting-to-Neo4j-Aura
+        config.setdefault("max_connection_lifetime", 60 * 50)  # 50 minutes
+        config.setdefault("keep_alive", True)
+        config.setdefault("max_connection_pool_size", 50)
+        config.setdefault("liveness_check_timeout", 60 * 5)  # 5 minutes
 
     @staticmethod
     def parse_protocol(endpoint: str) -> str:
