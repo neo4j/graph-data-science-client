@@ -356,6 +356,7 @@ def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> No
             "aura_ds": True,
             "database": None,
             "show_progress": False,
+            "config": None
         },
         "session_bolt_connection_info": DbmsConnectionInfo(
             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
@@ -399,6 +400,7 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
             "aura_ds": True,
             "database": None,
             "show_progress": False,
+            "config": None
         },
         "session_bolt_connection_info": DbmsConnectionInfo(
             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
@@ -446,6 +448,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
             "aura_ds": True,
             "database": None,
             "show_progress": False,
+            "config": None
         },
         "session_bolt_connection_info": DbmsConnectionInfo(
             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
