@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Optional
+from typing import Any, Optional
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
@@ -90,6 +90,7 @@ class GdsSessions:
         ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
         timeout: Optional[int] = None,
+        neo4j_driver_config: Optional[dict[str, Any]] = None,
     ) -> AuraGraphDataScience:
         """
         Retrieves an existing session with the given session name and database connection,
@@ -105,12 +106,18 @@ class GdsSessions:
             ttl: (Optional[timedelta]): The sessions time to live after inactivity in seconds.
             cloud_location (Optional[CloudLocation]): The cloud location. Required if the GDS session is for a self-managed database.
             timeout (Optional[int]): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
-
+            neo4j_driver_config (Optional[dict[str, Any]]): Optional configuration for the Neo4j driver.
         Returns:
             AuraGraphDataScience: The session.
         """
         return self._impl.get_or_create(
-            session_name, memory, db_connection=db_connection, ttl=ttl, cloud_location=cloud_location, timeout=timeout
+            session_name,
+            memory,
+            db_connection=db_connection,
+            ttl=ttl,
+            cloud_location=cloud_location,
+            timeout=timeout,
+            neo4j_driver_options=neo4j_driver_config,
         )
 
     def delete(self, *, session_name: Optional[str] = None, session_id: Optional[str] = None) -> bool:

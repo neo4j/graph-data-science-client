@@ -12,5 +12,7 @@
 ## Improvements
 
 * Allow creating sessions of size `512GB`.
+* Allow passing additional parameters for the Neo4j driver connection to `GdsSessions.get_or_create(neo4j_driver_config={..})`
+
 
 ## Other changes

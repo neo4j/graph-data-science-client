@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 import warnings
 from datetime import datetime, timedelta, timezone
-from typing import Optional
+from typing import Any, Optional
 
 from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
@@ -62,6 +62,7 @@ class DedicatedSessions:
         ttl: Optional[timedelta] = None,
         cloud_location: Optional[CloudLocation] = None,
         timeout: Optional[int] = None,
+        neo4j_driver_options: Optional[dict[str, Any]] = None,
     ) -> AuraGraphDataScience:
         if db_connection is None:
             if not cloud_location:
@@ -70,7 +71,7 @@ class DedicatedSessions:
             session_details = self._get_or_create_standalone_session(session_name, memory.value, cloud_location, ttl)
             db_runner = None
         else:
-            db_runner = self._create_db_runner(db_connection)
+            db_runner = self._create_db_runner(db_connection, neo4j_driver_options)
 
             dbid = AuraApi.extract_id(db_connection.uri)
             aura_db_instance = self._aura_api.list_instance(dbid)
@@ -105,13 +106,16 @@ class DedicatedSessions:
             db_runner=db_runner,
         )
 
-    def _create_db_runner(self, db_connection: DbmsConnectionInfo) -> Neo4jQueryRunner:
+    def _create_db_runner(
+        self, db_connection: DbmsConnectionInfo, config: Optional[dict[str, Any]] = None
+    ) -> Neo4jQueryRunner:
         db_runner = Neo4jQueryRunner.create_for_db(
             endpoint=db_connection.uri,
             auth=db_connection.auth(),
             aura_ds=True,
             show_progress=False,
             database=db_connection.database,
+            config=config,
         )
         self._validate_db_connection(db_runner)
         return db_runner
