@@ -13,6 +13,9 @@
 
 * Allow creating sessions of size `512GB`.
 * Allow passing additional parameters for the Neo4j driver connection to `GdsSessions.get_or_create(neo4j_driver_config={..})`
+* Add helper functions to create config objects from environment variables
+    * `AuraApiCredentials::from_env`
+    * `DbmsConnectionInfo::from_env`
 
 
 ## Other changes
