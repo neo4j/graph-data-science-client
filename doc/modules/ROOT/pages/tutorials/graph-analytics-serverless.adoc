@@ -35,7 +35,17 @@ version `1.15` or later.
 
 [source, python, role=no-test]
 ----
-%pip install "graphdatascience>=1.15"
+%pip install "graphdatascience>=1.15" python-dotenv
+----
+
+[source, python, role=no-test]
+----
+from dotenv import load_dotenv
+
+# This allows to load required secrets from `.env` file in local directory
+# This can include Aura API Credentials and Database Credentials.
+# If file does not exist this is a noop.
+load_dotenv(".env")
 ----
 
 == Aura API credentials
@@ -50,13 +60,15 @@ import os
 
 from graphdatascience.session import AuraAPICredentials, GdsSessions
 
-client_id = os.environ["AURA_API_CLIENT_ID"]
-client_secret = os.environ["AURA_API_CLIENT_SECRET"]
-
 # If your account is a member of several project, you must also specify the project ID to use
-project_id = os.environ.get("AURA_API_PROJECT_ID", None)
 
-sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secret, project_id=project_id))
+api_credentials = AuraAPICredentials(
+    client_id=os.environ["CLIENT_ID"],
+    client_secret=os.environ["CLIENT_SECRET"],
+    project_id=os.environ.get("PROJECT_ID", None),
+)
+
+sessions = GdsSessions(api_credentials=api_credentials)
 ----
 
 == Creating a new session
@@ -100,7 +112,9 @@ from graphdatascience.session import DbmsConnectionInfo
 
 # Identify the AuraDB instance
 db_connection = DbmsConnectionInfo(
-    uri=os.environ["AURA_DB_ADDRESS"], username=os.environ["AURA_DB_USER"], password=os.environ["AURA_DB_PW"]
+    uri=os.environ["NEO4J_URI"],
+    username=os.environ["NEO4J_USERNAME"],
+    password=os.environ["NEO4J_PASSWORD"],
 )
 
 # Create a GDS session!
