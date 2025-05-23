@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from typing import Optional
 
@@ -23,3 +24,20 @@ class DbmsConnectionInfo:
             A tuple containing the username and password.
         """
         return self.username, self.password
+
+    @staticmethod
+    def from_env() -> DbmsConnectionInfo:
+        """
+        Create a DbmsConnectionInfo instance from environment variables.
+        The environment variables are:
+            - NEO4J_URI
+            - NEO4J_USERNAME
+            - NEO4J_PASSWORD
+            - NEO4J_DATABASE
+        """
+        uri = os.environ["NEO4J_URI"]
+        username = os.environ.get("NEO4J_USERNAME", "neo4j")
+        password = os.environ["NEO4J_PASSWORD"]
+        database = os.environ.get("NEO4J_DATABASE")
+
+        return DbmsConnectionInfo(uri, username, password, database)

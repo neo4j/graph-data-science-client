@@ -30,6 +30,21 @@ class AuraAPICredentials:
     client_secret: str
     project_id: Optional[str] = None
 
+    @staticmethod
+    def from_env() -> AuraAPICredentials:
+        """
+        Create an AuraApi instance from environment variables.
+        The environment variables are:
+            - CLIENT_ID
+            - CLIENT_SECRET
+            - PROJECT_ID
+        """
+        client_id = os.environ["CLIENT_ID"]
+        client_secret = os.environ["CLIENT_SECRET"]
+        project_id = os.environ.get("PROJECT_ID")
+
+        return AuraAPICredentials(client_id, client_secret, project_id)
+
 
 class GdsSessions:
     """
