@@ -34,7 +34,16 @@ version `1.15` or later.
 
 [source, python, role=no-test]
 ----
-%pip install "graphdatascience>=1.15"
+%pip install "graphdatascience>=1.15" python-dotenv
+----
+
+[source, python, role=no-test]
+----
+from dotenv import load_dotenv
+
+# This allows to load required secrets from `.env` file in local directory
+# This can include Aura API Credentials. If file does not exist this is a noop.
+load_dotenv(".env")
 ----
 
 == Aura API credentials
@@ -49,13 +58,15 @@ import os
 
 from graphdatascience.session import AuraAPICredentials, GdsSessions
 
-client_id = os.environ["AURA_API_CLIENT_ID"]
-client_secret = os.environ["AURA_API_CLIENT_SECRET"]
+# If your account is a member of several project, you must also specify the project ID to use
 
-# If your account is a member of several projects, you must also specify the project ID to use
-project_id = os.environ.get("AURA_API_PROJECT_ID", None)
+api_credentials = AuraAPICredentials(
+    client_id=os.environ["CLIENT_ID"],
+    client_secret=os.environ["CLIENT_SECRET"],
+    project_id=os.environ.get("PROJECT_ID", None),
+)
 
-sessions = GdsSessions(api_credentials=AuraAPICredentials(client_id, client_secret, project_id=project_id))
+sessions = GdsSessions(api_credentials=api_credentials)
 ----
 
 == Creating a new session
