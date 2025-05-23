@@ -150,8 +150,10 @@ class Neo4jQueryRunner(QueryRunner):
     def __run_cypher_simplified_for_query_progress_logger(self, query: str, database: Optional[str]) -> DataFrame:
         # progress logging should not retry a lot as it perodically fetches the latest progress anyway
         connectivity_retry_config = Neo4jQueryRunner.ConnectivityRetriesConfig(max_retries=2)
+        # not using execute_query as failing is okay
         return self.run_cypher(query=query, database=database, connectivity_retry_config=connectivity_retry_config)
 
+    # only use for user defined queries
     def run_cypher(
         self,
         query: str,
@@ -195,12 +197,33 @@ class Neo4jQueryRunner(QueryRunner):
 
             return df
 
-    def call_function(self, endpoint: str, params: Optional[CallParameters] = None) -> Any:
+    # better retry mechanism than run_cypher
+    def execute_query(self,
+                       query: str,
+        params: Optional[dict[str, Any]] = None,
+        database: Optional[str] = None,
+        custom_error: bool = True,
+        connectivity_retry_config: Optional[ConnectivityRetriesConfig] = None,) -> DataFrame:
+        if not database:
+            database = self._database
+
+        if self._NEO4J_DRIVER_VERSION < SemanticVersion(5, 5, 0):
+            return self.run_cypher(query, params, database, custom_error, connectivity_retry_config)
+
+        try:
+            return self._driver.execute_query(query_=query,parameters_=params, database=database, result_transformer_=neo4j.Result.to_df, routing_=neo4j.RoutingControl.READ)
+        except Exception as e:
+            if custom_error:
+                    Neo4jQueryRunner.handle_driver_exception(self._driver, e)
+            else:
+                raise e
+
+    def call_function(self, endpoint: str, params: Optional[CallParameters] = None, custom_error: bool = True) -> Any:
         if params is None:
             params = CallParameters()
         query = f"RETURN {endpoint}({params.placeholder_str()})"
 
-        return self.run_cypher(query, params).squeeze()
+        return self.execute_query(query, params, custom_error=custom_error).squeeze()
 
     def call_procedure(
         self,
@@ -218,7 +241,7 @@ class Neo4jQueryRunner(QueryRunner):
         query = f"CALL {endpoint}({params.placeholder_str()}){yields_clause}"
 
         def run_cypher_query() -> DataFrame:
-            return self.run_cypher(query, params, database, custom_error)
+            return self.execute_query(query, params, database, custom_error)
 
         job_id = None if not params else params.get_job_id()
         if self._resolve_show_progress(logging) and job_id:
@@ -234,7 +257,7 @@ class Neo4jQueryRunner(QueryRunner):
             return self._server_version
 
         try:
-            server_version_string = self.run_cypher("RETURN gds.version()", custom_error=False).squeeze()
+            server_version_string = self.call_function("gds.version", custom_error=False).squeeze()
             server_version = ServerVersion.from_string(server_version_string)
             self._server_version = server_version
             return server_version
@@ -325,7 +348,7 @@ class Neo4jQueryRunner(QueryRunner):
         )
 
     @staticmethod
-    def handle_driver_exception(session: neo4j.Session, e: Exception) -> None:
+    def handle_driver_exception(cypher_executor: Union[neo4j.Session, neo4j.Driver], e: Exception) -> None:
         reg_gds_hit = re.search(
             r"There is no procedure with the name `(gds(?:\.\w+)+)` registered for this database instance",
             str(e),
@@ -335,8 +358,12 @@ class Neo4jQueryRunner(QueryRunner):
 
         requested_endpoint = reg_gds_hit.group(1)
 
-        list_result = session.run("CALL gds.list() YIELD name")
-        all_endpoints = list_result.to_df()["name"].tolist()
+        if isinstance(cypher_executor, neo4j.Session):
+            list_result = cypher_executor.run("CALL gds.list() YIELD name")
+            all_endpoints = list_result.to_df()["name"].tolist()
+        else:
+            result = cypher_executor.execute_query("CALL gds.list() YIELD name").
+
 
         raise SyntaxError(generate_suggestive_error_message(requested_endpoint, all_endpoints)) from e
 
