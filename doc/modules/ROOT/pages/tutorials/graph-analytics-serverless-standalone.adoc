@@ -58,11 +58,11 @@ import os
 
 from graphdatascience.session import AuraAPICredentials, GdsSessions
 
-# If your account is a member of several project, you must also specify the project ID to use
-
+# you can also use AuraAPICredentials.from_env() to load credentials from environment variables
 api_credentials = AuraAPICredentials(
     client_id=os.environ["CLIENT_ID"],
     client_secret=os.environ["CLIENT_SECRET"],
+    # If your account is a member of several project, you must also specify the project ID to use
     project_id=os.environ.get("PROJECT_ID", None),
 )
 

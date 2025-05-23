@@ -60,11 +60,11 @@ import os
 
 from graphdatascience.session import AuraAPICredentials, GdsSessions
 
-# If your account is a member of several project, you must also specify the project ID to use
-
+# you can also use AuraAPICredentials.from_env() to load credentials from environment variables
 api_credentials = AuraAPICredentials(
     client_id=os.environ["CLIENT_ID"],
     client_secret=os.environ["CLIENT_SECRET"],
+    # If your account is a member of several project, you must also specify the project ID to use
     project_id=os.environ.get("PROJECT_ID", None),
 )
 
@@ -111,6 +111,7 @@ from datetime import timedelta
 from graphdatascience.session import DbmsConnectionInfo
 
 # Identify the AuraDB instance
+# you can also use DbmsConnectionInfo.from_env() to load credentials from environment variables
 db_connection = DbmsConnectionInfo(
     uri=os.environ["NEO4J_URI"],
     username=os.environ["NEO4J_USERNAME"],
