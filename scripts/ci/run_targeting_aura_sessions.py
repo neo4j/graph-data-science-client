@@ -16,8 +16,8 @@ logging.basicConfig(level=logging.DEBUG)
 def main() -> None:
     client_id = os.environ["AURA_API_CLIENT_ID"]
     client_secret = os.environ["AURA_API_CLIENT_SECRET"]
-    tenant_id = os.environ.get("AURA_API_TENANT_ID")
-    aura_api = AuraApiCI(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
+    project_id = os.environ.get("AURA_API_TENANT_ID")
+    aura_api = AuraApiCI(client_id=client_id, client_secret=client_secret, project_id=project_id)
 
     MAX_INT = 1000000
     instance_name = f"ci-build-{sys.argv[1]}" if len(sys.argv) > 1 else "ci-instance-" + str(rd.randint(0, MAX_INT))
@@ -43,7 +43,7 @@ def main() -> None:
         username = create_result["username"]
         password = create_result["password"]
 
-        cmd = f"AURA_DB_ADDRESS={uri} AURA_DB_USER={username} AURA_DB_PW={password} tox -e jupyter-notebook-session-ci"
+        cmd = f"CLIENT_ID={client_id} CLIENT_SECRET={client_secret} PROJECT_ID={project_id} NEO4J_URI={uri} NEO4J_USERNAME={username} NEO4J_PASSWORD={password} tox -e jupyter-notebook-session-ci"
 
         if os.system(cmd) != 0:
             raise Exception("Failed to run notebooks")
