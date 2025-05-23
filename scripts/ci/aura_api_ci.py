@@ -21,11 +21,11 @@ class AuraApiCI:
         def is_expired(self) -> bool:
             return self.expires_at >= int(time.time())
 
-    def __init__(self, client_id: str, client_secret: str, tenant_id: Optional[str] = None) -> None:
+    def __init__(self, client_id: str, client_secret: str, project_id: Optional[str] = None) -> None:
         self._token: Optional[AuraApiCI.AuraAuthToken] = None
         self._logger = logging.getLogger()
         self._auth = (client_id, client_secret)
-        self._tenant_id = tenant_id
+        self._project_id = project_id
 
     def _build_header(self) -> dict[str, str]:
         return {"Authorization": f"Bearer {self._auth_token()}", "User-agent": "neo4j-graphdatascience-ci"}
@@ -144,8 +144,8 @@ class AuraApiCI:
         return True
 
     def get_tenant_id(self) -> str:
-        if self._tenant_id:
-            return self._tenant_id
+        if self._project_id:
+            return self._project_id
 
         response = requests.get(
             "https://api-staging.neo4j.io/v1/tenants",

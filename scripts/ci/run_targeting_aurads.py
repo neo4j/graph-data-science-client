@@ -32,7 +32,7 @@ def main() -> None:
     client_id = os.environ["AURA_API_CLIENT_ID"]
     client_secret = os.environ["AURA_API_CLIENT_SECRET"]
     tenant_id = os.environ.get("AURA_API_TENANT_ID")
-    aura_api = AuraApiCI(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
+    aura_api = AuraApiCI(client_id=client_id, client_secret=client_secret, project_id=tenant_id)
 
     MAX_INT = 1000000
     instance_name = f"ci-build-{sys.argv[2]}" if len(sys.argv) > 1 else "ci-instance-" + str(rd.randint(0, MAX_INT))
