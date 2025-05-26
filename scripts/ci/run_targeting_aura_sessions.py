@@ -43,7 +43,13 @@ def main() -> None:
         username = create_result["username"]
         password = create_result["password"]
 
-        cmd = f"CLIENT_ID={client_id} CLIENT_SECRET={client_secret} PROJECT_ID={project_id} NEO4J_URI={uri} NEO4J_USERNAME={username} NEO4J_PASSWORD={password} tox -e jupyter-notebook-session-ci"
+        if project_id:
+            # Avoid the `None` literal as the value for the variable
+            project_id_part = f"PROJECT_ID={project_id}"
+        else:
+            project_id_part = ""
+
+        cmd = f"CLIENT_ID={client_id} CLIENT_SECRET={client_secret} {project_id_part} NEO4J_URI={uri} NEO4J_USERNAME={username} NEO4J_PASSWORD={password} tox -e jupyter-notebook-session-ci"
 
         if os.system(cmd) != 0:
             raise Exception("Failed to run notebooks")
