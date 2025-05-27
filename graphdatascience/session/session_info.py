@@ -20,7 +20,7 @@ class SessionInfo:
         memory (str): The size of the session.
         instance_id (Optional[str]): The ID of the AuraDB instance the session is attached to.
         status (str): The status of the session.
-        expiry_date (Optional[datetime]): The date the session expires.
+        expiry_date (Optional[datetime]): The date the session expires. This is a fixed limit regardless of the user-defined TTL.
         created_at (datetime): The date the session was created.
         user_id (str): The Aura console user-id of the user who created the session.
         cloud_location (Optional[CloudLocation]): The provider and region in which the session is located at.
