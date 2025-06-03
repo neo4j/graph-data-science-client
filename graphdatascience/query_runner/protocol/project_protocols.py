@@ -69,7 +69,7 @@ class ProjectProtocolV1(ProjectProtocol):
     ) -> DataFrame:
         versioned_endpoint = ProtocolVersion.V1.versioned_procedure_name(endpoint)
         return query_runner.call_procedure(
-            versioned_endpoint, params, yields, database=database, logging=logging, retryable=True, custom_error=False
+            versioned_endpoint, params, yields, database=database, logging=logging, retryable=False, custom_error=False
         )
 
 
@@ -100,7 +100,7 @@ class ProjectProtocolV2(ProjectProtocol):
     ) -> DataFrame:
         versioned_endpoint = ProtocolVersion.V2.versioned_procedure_name(endpoint)
         return query_runner.call_procedure(
-            versioned_endpoint, params, yields, database=database, logging=logging, retryable=True, custom_error=False
+            versioned_endpoint, params, yields, database=database, logging=logging, retryable=False, custom_error=False
         )
 
 
