@@ -156,7 +156,6 @@ class ProjectProtocolV3(ProjectProtocol):
                 ProtocolVersion.V3.versioned_procedure_name(endpoint),
                 params,
                 yields,
-                database,
                 database=database,
                 logging=logging,
                 retryable=True,
