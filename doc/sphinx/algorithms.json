@@ -1536,11 +1536,27 @@
   },
   {
     "function": {
+      "name": "gds.closeness.harmonic.mutate.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
       "name": "gds.closeness.harmonic.stats",
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
     "description": "Harmonic centrality is a way of detecting nodes that are able to spread information\nvery efficiently through a graph."
+  },
+  {
+    "function": {
+      "name": "gds.closeness.harmonic.stats.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1552,11 +1568,27 @@
   },
   {
     "function": {
+      "name": "gds.closeness.harmonic.stream.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
       "name": "gds.closeness.harmonic.write",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
     "description": "Harmonic centrality is a way of detecting nodes that are able to spread information\nvery efficiently through a graph."
+  },
+  {
+    "function": {
+      "name": "gds.closeness.harmonic.write.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
