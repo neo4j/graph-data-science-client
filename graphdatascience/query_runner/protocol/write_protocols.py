@@ -160,7 +160,6 @@ class RemoteWriteBackV3(WriteProtocol):
                 parameters,
                 yields,
                 retryable=True,
-                database=None,
                 logging=False,
                 custom_error=False,
             )

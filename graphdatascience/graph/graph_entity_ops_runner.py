@@ -164,7 +164,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
             unique_node_ids = result["nodeId"].drop_duplicates().tolist()
 
             db_properties_df = query_runner.run_retryable_cypher(
-                GraphNodePropertiesRunner._build_query(db_node_properties), {"ids": unique_node_ids}
+                GraphNodePropertiesRunner._build_query(db_node_properties), params={"ids": unique_node_ids}
             )
 
             if "propertyValue" not in result.keys():
