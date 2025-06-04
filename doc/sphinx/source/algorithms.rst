@@ -873,20 +873,36 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Harmonic centrality is a way of detecting nodes that are able to spread information
     very efficiently through a graph.
 
+.. py:function:: gds.closeness.harmonic.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.closeness.harmonic.stats(G: Graph, **config: Any) -> DataFrame
 
     Harmonic centrality is a way of detecting nodes that are able to spread information
     very efficiently through a graph.
+
+.. py:function:: gds.closeness.harmonic.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.closeness.harmonic.stream(G: Graph, **config: Any) -> DataFrame
 
     Harmonic centrality is a way of detecting nodes that are able to spread information
     very efficiently through a graph.
 
+.. py:function:: gds.closeness.harmonic.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.closeness.harmonic.write(G: Graph, **config: Any) -> Series[Any]
 
     Harmonic centrality is a way of detecting nodes that are able to spread information
     very efficiently through a graph.
+
+.. py:function:: gds.closeness.harmonic.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.collapsePath.mutate(G: Graph, **config: Any) -> Series[Any]
 
