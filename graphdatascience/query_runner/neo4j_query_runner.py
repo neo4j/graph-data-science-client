@@ -220,8 +220,9 @@ class Neo4jQueryRunner(QueryRunner):
             return self._driver.execute_query(
                 query_=query,
                 parameters_=params,
-                database=database,
+                database_=database,
                 result_transformer_=neo4j.Result.to_df,
+                bookmark_manager_=self.bookmarks(),
                 routing_=routing,
             )
         except Exception as e:
