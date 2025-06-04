@@ -104,8 +104,7 @@ class CypherGraphConstructor(GraphConstructor):
 
     def _should_warn_about_arrow_missing(self) -> bool:
         try:
-            # TOOD use execute_query
-            license: str = self._query_runner.run_cypher(
+            license: str = self._query_runner.run_retryable_cypher(
                 "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value", custom_error=False
             ).squeeze()
             should_warn = license == "Licensed"

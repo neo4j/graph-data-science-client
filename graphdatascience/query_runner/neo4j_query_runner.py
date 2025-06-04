@@ -150,7 +150,7 @@ class Neo4jQueryRunner(QueryRunner):
     def __run_cypher_simplified_for_query_progress_logger(self, query: str, database: Optional[str]) -> DataFrame:
         # progress logging should not retry a lot as it perodically fetches the latest progress anyway
         connectivity_retry_config = Neo4jQueryRunner.ConnectivityRetriesConfig(max_retries=2)
-        # not using execute_query as failing is okay
+        # not using retryable cypher as failing is okay
         return self.run_cypher(query=query, database=database, connectivity_retry_config=connectivity_retry_config)
 
     # only use for user defined queries
@@ -355,15 +355,15 @@ class Neo4jQueryRunner(QueryRunner):
         driver = neo4j.GraphDatabase.driver(endpoint, auth=self._auth, **self.driver_config())
 
         return Neo4jQueryRunner(
-            driver,
-            self._protocol,
-            self._auth,
-            self._config,
-            self._database,
-            self._auto_close,
-            self._bookmarks,
-            self._show_progress,
-            self._instance_description,
+            driver=driver,
+            protocol=self._protocol,
+            auth=self._auth,
+            config=self._config,
+            database=self._database,
+            auto_close=self._auto_close,
+            bookmarks=self._bookmarks,
+            show_progress=self._show_progress,
+            instance_description=self._instance_description,
         )
 
     @staticmethod
