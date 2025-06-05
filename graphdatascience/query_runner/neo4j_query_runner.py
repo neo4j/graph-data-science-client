@@ -9,6 +9,8 @@ from typing import Any, NamedTuple, Optional, Union
 import neo4j
 from pandas import DataFrame
 
+from graphdatascience.query_runner.query_mode import QueryMode
+
 from ..call_parameters import CallParameters
 from ..error.endpoint_suggester import generate_suggestive_error_message
 from ..error.gds_not_installed import GdsNotFound
@@ -238,7 +240,9 @@ class Neo4jQueryRunner(QueryRunner):
         query = f"RETURN {endpoint}({params.placeholder_str()})"
 
         # we can use retryable cypher as we expect all gds functions to be idempotent
-        return self.run_retryable_cypher(query, params, custom_error=custom_error).squeeze()
+        return self.run_retryable_cypher(
+            query, params, custom_error=custom_error, routing=neo4j.RoutingControl.READ
+        ).squeeze()
 
     def call_procedure(
         self,
@@ -246,6 +250,7 @@ class Neo4jQueryRunner(QueryRunner):
         params: Optional[CallParameters] = None,
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
+        mode: QueryMode = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
         custom_error: bool = True,
@@ -258,8 +263,7 @@ class Neo4jQueryRunner(QueryRunner):
 
         def run_cypher_query() -> DataFrame:
             if retryable:
-                routing = neo4j.RoutingControl.WRITE if "write" in endpoint else neo4j.RoutingControl.READ
-                return self.run_retryable_cypher(query, params, database, custom_error, routing=routing)
+                return self.run_retryable_cypher(query, params, database, custom_error, routing=mode.neo4j_mode())
             else:
                 return self.run_cypher(query, params, database, custom_error)
 

@@ -16,6 +16,7 @@ from graphdatascience.query_runner.cypher_graph_constructor import (
     CypherGraphConstructor,
 )
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
@@ -48,6 +49,7 @@ class CollectingQueryRunner(QueryRunner):
         params: Optional[CallParameters] = None,
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
+        mode: QueryMode = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
         custom_error: bool = True,
