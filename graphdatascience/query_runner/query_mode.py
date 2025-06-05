@@ -1,7 +1,6 @@
 from enum import Enum
 
 import neo4j
-import neo4j.routing
 
 
 class QueryMode(str, Enum):
