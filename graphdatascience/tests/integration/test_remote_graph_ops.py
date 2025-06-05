@@ -36,7 +36,7 @@ def run_around_tests(gds_with_cloud_setup: AuraGraphDataScience) -> Generator[No
         gds_with_cloud_setup.graph.get(graph_name).drop(failIfMissing=True)
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_projection(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
@@ -87,7 +87,7 @@ def test_remote_projection_and_writeback_custom_database_name(gds_with_cloud_set
         gds_with_cloud_setup.set_database("neo4j")
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_projection_with_small_batch_size(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(
@@ -98,7 +98,7 @@ def test_remote_projection_with_small_batch_size(gds_with_cloud_setup: AuraGraph
     assert result["nodeCount"] == 3
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_page_rank(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
@@ -108,7 +108,7 @@ def test_remote_write_back_page_rank(gds_with_cloud_setup: AuraGraphDataScience)
     assert result["nodePropertiesWritten"] == 3
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_node_similarity(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
@@ -120,7 +120,7 @@ def test_remote_write_back_node_similarity(gds_with_cloud_setup: AuraGraphDataSc
     assert result["relationshipsWritten"] == 2
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_node_properties(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
@@ -130,7 +130,7 @@ def test_remote_write_back_node_properties(gds_with_cloud_setup: AuraGraphDataSc
     assert result["propertiesWritten"] == 3
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_node_properties_with_multiple_labels(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(
@@ -143,7 +143,7 @@ def test_remote_write_back_node_properties_with_multiple_labels(gds_with_cloud_s
     assert result["nodePropertiesWritten"] == 3
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_node_properties_with_select_labels(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(
@@ -157,7 +157,7 @@ def test_remote_write_back_node_properties_with_select_labels(gds_with_cloud_set
     assert result["propertiesWritten"] == 1
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_node_label(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
@@ -166,7 +166,7 @@ def test_remote_write_back_node_label(gds_with_cloud_setup: AuraGraphDataScience
     assert result["nodeLabelsWritten"] == 3
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_relationship_topology(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(
@@ -177,7 +177,7 @@ def test_remote_write_back_relationship_topology(gds_with_cloud_setup: AuraGraph
     assert result["relationshipsWritten"] == 4
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_relationship_property(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(
@@ -190,7 +190,7 @@ def test_remote_write_back_relationship_property(gds_with_cloud_setup: AuraGraph
     assert result["relationshipsWritten"] == 4
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_relationship_properties(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     G, result = gds_with_cloud_setup.graph.project(
@@ -207,7 +207,7 @@ def test_remote_write_back_relationship_properties(gds_with_cloud_setup: AuraGra
     assert result["relationshipsWritten"] == 4
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_relationship_property_from_pathfinding_algo(
     gds_with_cloud_setup: AuraGraphDataScience,
@@ -223,7 +223,7 @@ def test_remote_write_back_relationship_property_from_pathfinding_algo(
     assert result["relationshipsWritten"] == 1
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_empty_graph_write_back(
     gds_with_cloud_setup: AuraGraphDataScience,

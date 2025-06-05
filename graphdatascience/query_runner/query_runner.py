@@ -3,6 +3,8 @@ from typing import Any, Optional
 
 from pandas import DataFrame
 
+from graphdatascience.query_runner.query_mode import QueryMode
+
 from ..call_parameters import CallParameters
 from ..server_version.server_version import ServerVersion
 from .graph_constructor import GraphConstructor
@@ -16,6 +18,7 @@ class QueryRunner(ABC):
         params: Optional[CallParameters] = None,
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
+        mode: QueryMode = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
         custom_error: bool = True,
