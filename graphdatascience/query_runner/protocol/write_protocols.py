@@ -7,6 +7,7 @@ from tenacity import retry, retry_if_result, wait_incrementing
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.query_runner.protocol.status import Status
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.retry_utils.retry_utils import before_log
@@ -76,6 +77,7 @@ class RemoteWriteBackV1(WriteProtocol):
             retryable=False,
             database=None,
             logging=False,
+            mode=QueryMode.WRITE,
             custom_error=False,
         )
 
@@ -115,6 +117,7 @@ class RemoteWriteBackV2(WriteProtocol):
             retryable=False,
             database=None,
             logging=False,
+            mode=QueryMode.WRITE,
             custom_error=False,
         )
 
@@ -161,6 +164,7 @@ class RemoteWriteBackV3(WriteProtocol):
                 yields,
                 retryable=True,
                 logging=False,
+                mode=QueryMode.WRITE,
                 custom_error=False,
             )
 

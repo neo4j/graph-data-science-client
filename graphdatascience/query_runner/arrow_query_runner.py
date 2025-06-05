@@ -6,6 +6,7 @@ from typing import Any, Optional
 from pandas import DataFrame
 
 from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.retry_utils.retry_config import RetryConfig
 
 from ..call_parameters import CallParameters
@@ -86,6 +87,7 @@ class ArrowQueryRunner(QueryRunner):
         params: Optional[CallParameters] = None,
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
+        mode: QueryMode = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
         custom_error: bool = True,

@@ -138,7 +138,12 @@ class ProjectProtocolV3(ProjectProtocol):
 
         # We need to pin the driver to a specific cluster member
         response = query_runner.call_procedure(
-            ProtocolVersion.V3.versioned_procedure_name(endpoint), params, yields, database, logging, False
+            ProtocolVersion.V3.versioned_procedure_name(endpoint),
+            params,
+            yields,
+            database,
+            logging=logging,
+            custom_error=False,
         ).squeeze()
         member_host = response["host"]
         member_port = response["port"] if ("port" in response.index) else 7687

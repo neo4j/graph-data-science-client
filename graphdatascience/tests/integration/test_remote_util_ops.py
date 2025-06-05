@@ -50,7 +50,7 @@ def G(gds_with_cloud_setup: AuraGraphDataScience) -> Generator[Graph, None, None
     gds_with_cloud_setup.run_cypher("MATCH (n) DETACH DELETE n")
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_util_as_node(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     id = gds_with_cloud_setup.find_node_id(["Location"], {"name": "A"})
@@ -58,7 +58,7 @@ def test_remote_util_as_node(gds_with_cloud_setup: AuraGraphDataScience) -> None
     assert result["name"] == "A"
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_util_as_nodes(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     ids = [
@@ -69,7 +69,7 @@ def test_remote_util_as_nodes(gds_with_cloud_setup: AuraGraphDataScience) -> Non
     assert len(result) == 2
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_util_nodeProperty(gds_with_cloud_setup: AuraGraphDataScience, G: Graph) -> None:
     id = gds_with_cloud_setup.find_node_id(["Location"], {"name": "A"})

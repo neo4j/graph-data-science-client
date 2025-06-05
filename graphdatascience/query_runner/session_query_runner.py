@@ -8,6 +8,7 @@ from pandas import DataFrame
 
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -75,6 +76,7 @@ class SessionQueryRunner(QueryRunner):
         params: Optional[CallParameters] = None,
         yields: Optional[list[str]] = None,
         database: Optional[str] = None,
+        mode: QueryMode = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
         custom_error: bool = True,
@@ -206,7 +208,7 @@ class SessionQueryRunner(QueryRunner):
         config["writeToResultStore"] = True
 
         gds_write_result = self._gds_query_runner.call_procedure(
-            endpoint, params, yields, database, logging, custom_error
+            endpoint, params, yields, database=database, logging=logging, custom_error=custom_error
         )
         terminationFlag.assert_running()
 
