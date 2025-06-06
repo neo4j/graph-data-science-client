@@ -159,7 +159,9 @@ def clean_up(gds: GraphDataScience) -> Generator[None, None, None]:
             model.drop(failIfMissing=True)
 
     try:
-        gds.run_cypher("MATCH (n) DETACH DELETE (n)")
+        # for the session setup there should be no data
+        if gds.run_cypher("MATCH (n) RETURN count(n)").squeeze() > 0:
+            gds.run_cypher("MATCH (n) DETACH DELETE (n)")
     except neo4j.exceptions.ClientError as e:
         print(e)
 
