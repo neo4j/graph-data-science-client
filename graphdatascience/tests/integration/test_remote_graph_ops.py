@@ -48,8 +48,9 @@ def test_remote_projection(gds_with_cloud_setup: AuraGraphDataScience) -> None:
 # @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_projection_and_writeback_custom_database_name(gds_with_cloud_setup: AuraGraphDataScience) -> None:
-    gds_with_cloud_setup.run_cypher("CREATE DATABASE test1234 IF NOT EXISTS")
-    gds_with_cloud_setup.set_database("test1234")
+    OTHER_DB = "test1234"
+    gds_with_cloud_setup.run_cypher("CREATE DATABASE $dbName IF NOT EXISTS WAIT", {"dbName": OTHER_DB})
+    gds_with_cloud_setup.set_database(OTHER_DB)
 
     try:
         gds_with_cloud_setup.run_cypher("CREATE ()-[:T]->()")
@@ -82,7 +83,7 @@ def test_remote_projection_and_writeback_custom_database_name(gds_with_cloud_set
                 nodes_with_wcc_default_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
         assert nodes_with_wcc_default_db == 0
     finally:
-        gds_with_cloud_setup.run_cypher("DROP DATABASE test1234 IF EXISTS")
+        gds_with_cloud_setup.run_cypher("DROP DATABASE $dbName IF EXISTS", {"dbName": OTHER_DB})
         gds_with_cloud_setup.set_database("neo4j")
 
 
