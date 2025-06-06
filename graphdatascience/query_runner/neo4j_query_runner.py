@@ -206,7 +206,7 @@ class Neo4jQueryRunner(QueryRunner):
         params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
         custom_error: bool = True,
-        routing: Optional[neo4j.RoutingControl] = None,
+        mode: Optional[QueryMode] = None,
         connectivity_retry_config: Optional[ConnectivityRetriesConfig] = None,
     ) -> DataFrame:
         if not database:
@@ -215,8 +215,10 @@ class Neo4jQueryRunner(QueryRunner):
         if self._NEO4J_DRIVER_VERSION < SemanticVersion(5, 5, 0):
             return self.run_cypher(query, params, database, custom_error, connectivity_retry_config)
 
-        if not routing:
+        if not mode:
             routing = neo4j.RoutingControl.READ
+        else:
+            routing = mode.neo4j_routing()
 
         try:
             return self._driver.execute_query(
@@ -240,9 +242,7 @@ class Neo4jQueryRunner(QueryRunner):
         query = f"RETURN {endpoint}({params.placeholder_str()})"
 
         # we can use retryable cypher as we expect all gds functions to be idempotent
-        return self.run_retryable_cypher(
-            query, params, custom_error=custom_error, routing=neo4j.RoutingControl.READ
-        ).squeeze()
+        return self.run_retryable_cypher(query, params, custom_error=custom_error, mode=QueryMode.READ).squeeze()
 
     def call_procedure(
         self,
@@ -263,7 +263,7 @@ class Neo4jQueryRunner(QueryRunner):
 
         def run_cypher_query() -> DataFrame:
             if retryable:
-                return self.run_retryable_cypher(query, params, database, custom_error, routing=mode.neo4j_mode())
+                return self.run_retryable_cypher(query, params, database, custom_error, mode=mode)
             else:
                 return self.run_cypher(query, params, database, custom_error)
 
