@@ -2,6 +2,8 @@
 
 ## Breaking changes
 
+* Drop support for PyArrow 16
+
 ## New features
 
 ## Bug fixes
@@ -16,5 +18,6 @@
   - `AuraApiCredentials::from_env`
   - `DbmsConnectionInfo::from_env`
 - Retry internal functions known to be idempotent. Reduces issues such as `SessionExpiredError`.
+- Add support for PyArrow 20
 
 ## Other changes
