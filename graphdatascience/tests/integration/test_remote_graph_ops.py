@@ -11,6 +11,7 @@ GRAPH_NAME = "g"
 @pytest.fixture(autouse=True, scope="class")
 def run_around_tests(gds_with_cloud_setup: AuraGraphDataScience) -> Generator[None, None, None]:
     # Runs before each test
+    gds_with_cloud_setup.set_database("neo4j")
     gds_with_cloud_setup.run_cypher(
         """
         CREATE
@@ -27,6 +28,7 @@ def run_around_tests(gds_with_cloud_setup: AuraGraphDataScience) -> Generator[No
     yield  # Test runs here
 
     # Runs after each test
+    gds_with_cloud_setup.set_database("neo4j")
     gds_with_cloud_setup.run_cypher("MATCH (n) DETACH DELETE n")
 
     res = gds_with_cloud_setup.graph.list()
@@ -43,31 +45,45 @@ def test_remote_projection(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     assert result["nodeCount"] == 3
 
 
-@pytest.mark.cloud_architecture
+# @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_projection_and_writeback_custom_database_name(gds_with_cloud_setup: AuraGraphDataScience) -> None:
     gds_with_cloud_setup.run_cypher("CREATE DATABASE test1234 IF NOT EXISTS")
     gds_with_cloud_setup.set_database("test1234")
-    gds_with_cloud_setup.run_cypher("CREATE ()-[:T]->()")
-    G, projection_result = gds_with_cloud_setup.graph.project(
-        GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)"
-    )
 
-    assert G.name() == GRAPH_NAME
-    assert projection_result["nodeCount"] == 2
-    assert projection_result["relationshipCount"] == 1
+    try:
+        gds_with_cloud_setup.run_cypher("CREATE ()-[:T]->()")
+        G, projection_result = gds_with_cloud_setup.graph.project(
+            GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)"
+        )
 
-    write_result = gds_with_cloud_setup.wcc.write(G, writeProperty="wcc")
+        assert G.name() == GRAPH_NAME
+        assert projection_result["nodeCount"] == 2
+        assert projection_result["relationshipCount"] == 1
 
-    assert write_result["nodePropertiesWritten"] == 2
-    count_wcc_nodes_query = "MATCH (n WHERE n.wcc IS NOT NULL) RETURN count(*) AS c"
-    nodes_with_wcc_custom_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
-    assert nodes_with_wcc_custom_db == 2
-    gds_with_cloud_setup.set_database("neo4j")
-    # we get a warning because property wcc doesn't exist in the database -- which is good!
-    with pytest.warns(RuntimeWarning):
-        nodes_with_wcc_default_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
+        write_result = gds_with_cloud_setup.wcc.write(G, writeProperty="wcc")
+
+        assert write_result["nodePropertiesWritten"] == 2
+        count_wcc_nodes_query = "MATCH (n WHERE n.wcc IS NOT NULL) RETURN count(*) AS c"
+        nodes_with_wcc_custom_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
+        assert nodes_with_wcc_custom_db == 2
+        gds_with_cloud_setup.set_database("neo4j")
+
+        db_knows_wcc = gds_with_cloud_setup.run_cypher(
+            "CALL db.propertyKeys() YIELD propertyKey WHERE propertyKey = 'wcc' RETURN count(*) > 0"
+        ).squeeze()
+
+        if db_knows_wcc:
+            # this is the case if you have a dirty neo4j database with wcc set earlier
+            nodes_with_wcc_default_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
+        else:
+            # we get a warning because property wcc doesn't exist in the database -- which is good!
+            with pytest.warns(RuntimeWarning):
+                nodes_with_wcc_default_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
         assert nodes_with_wcc_default_db == 0
+    finally:
+        gds_with_cloud_setup.run_cypher("DROP DATABASE test1234 IF EXISTS")
+        gds_with_cloud_setup.set_database("neo4j")
 
 
 @pytest.mark.cloud_architecture
