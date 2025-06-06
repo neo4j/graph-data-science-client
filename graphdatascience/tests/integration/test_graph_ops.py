@@ -253,13 +253,15 @@ def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     assert result["graphName"] == GRAPH_NAME
     assert result["dbName"] == MY_DB_NAME
 
-    runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
-    runner.set_database(MY_DB_NAME)
-    node_count = runner.run_cypher("MATCH (n) RETURN COUNT(n) AS c").squeeze()
+    try:
+        runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+        runner.set_database(MY_DB_NAME)
+        node_count = runner.run_cypher("MATCH (n) RETURN COUNT(n) AS c").squeeze()
 
-    assert node_count == 3
-    runner.set_database(DB)
-    runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+        assert node_count == 3
+    finally:
+        runner.set_database(DB)
+        runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
 
 @pytest.mark.filterwarnings("ignore: The query used a deprecated procedure.")
