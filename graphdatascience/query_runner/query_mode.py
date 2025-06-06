@@ -7,7 +7,7 @@ class QueryMode(str, Enum):
     READ = "read"
     WRITE = "write"
 
-    def neo4j_routing(self) -> neo4j.RoutingControl:
+    def neo4j_routing(self) -> "neo4j.RoutingControl":
         if self == QueryMode.READ:
             return neo4j.RoutingControl.READ
         elif self == QueryMode.WRITE:
