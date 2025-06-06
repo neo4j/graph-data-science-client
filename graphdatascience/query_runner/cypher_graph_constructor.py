@@ -110,9 +110,8 @@ class CypherGraphConstructor(GraphConstructor):
             should_warn = license == "Licensed"
         except Exception as e:
             # It's not a user's concern whether Arrow is set up or not in AuraDS.
-            if (
-                "There is no procedure with the name `gds.debug.sysInfo` "
-                "registered for this database instance." in str(e)
+            if "There is no procedure with the name `gds.debug.sysInfo` registered for this database instance." in str(
+                e
             ):
                 should_warn = False
             else:

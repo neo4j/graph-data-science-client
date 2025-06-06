@@ -14,7 +14,7 @@ def before_log(
         if retry_state.attempt_number > 1:  # only log on actual retry
             logger.log(
                 log_level,
-                f"Retry of '{fn_name}', " f"attempt: {retry_state.attempt_number}",
+                f"Retry of '{fn_name}', attempt: {retry_state.attempt_number}",
             )
 
     return log_it

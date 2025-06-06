@@ -158,7 +158,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
             duplicate_properties = set(db_node_properties).intersection(set(node_properties))
             if duplicate_properties:
                 raise ValueError(
-                    f"Duplicate property keys '{duplicate_properties}' in db_node_properties and " f"node_properties."
+                    f"Duplicate property keys '{duplicate_properties}' in db_node_properties and node_properties."
                 )
 
             unique_node_ids = result["nodeId"].drop_duplicates().tolist()
