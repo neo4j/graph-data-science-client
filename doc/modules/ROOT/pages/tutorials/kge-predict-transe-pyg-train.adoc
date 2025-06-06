@@ -317,7 +317,7 @@ def train_model_with_pyg():
         print(f"Epoch: {epoch:03d}, Loss: {loss:.4f}")
         if epoch % 75 == 0:
             rank, hits = test(val_tensor_data)
-            print(f"Epoch: {epoch:03d}, Val Mean Rank: {rank:.2f}, " f"Val Hits@10: {hits:.4f}")
+            print(f"Epoch: {epoch:03d}, Val Mean Rank: {rank:.2f}, Val Hits@10: {hits:.4f}")
 
     torch.save(model, f"./model_{epoch_count}.pt")
 
