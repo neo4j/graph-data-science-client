@@ -856,17 +856,33 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
 
+.. py:function:: gds.closeness.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.closeness.stats(G: Graph, **config: Any) -> Series[Any]
 
     Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+
+.. py:function:: gds.closeness.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.closeness.stream(G: Graph, **config: Any) -> DataFrame
 
     Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
 
+.. py:function:: gds.closeness.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.closeness.write(G: Graph, **config: Any) -> Series[Any]
 
     Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+
+.. py:function:: gds.closeness.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.closeness.harmonic.mutate(G: Graph, **config: Any) -> DataFrame
 
