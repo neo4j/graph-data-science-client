@@ -2,7 +2,7 @@
 
 ## Breaking changes
 
-* Drop support for PyArrow 16
+- Drop support for PyArrow 16
 
 ## New features
 
@@ -20,5 +20,6 @@
   - `DbmsConnectionInfo::from_env`
 - Retry internal functions known to be idempotent. Reduces issues such as `SessionExpiredError`.
 - Add support for PyArrow 20
+- Add support for more advanced authentication in `DbmsConnectionInfo`. Allowing to pass `auth` of type `neo4j.Auth` instead of username + password.
 
 ## Other changes

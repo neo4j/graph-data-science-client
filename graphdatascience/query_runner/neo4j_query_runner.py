@@ -32,7 +32,7 @@ class Neo4jQueryRunner(QueryRunner):
     @staticmethod
     def create_for_db(
         endpoint: Union[str, neo4j.Driver],
-        auth: Optional[tuple[str, str]] = None,
+        auth: Union[tuple[str, str], neo4j.Auth, None] = None,
         aura_ds: bool = False,
         database: Optional[str] = None,
         bookmarks: Optional[Any] = None,
@@ -79,7 +79,7 @@ class Neo4jQueryRunner(QueryRunner):
     @staticmethod
     def create_for_session(
         endpoint: str,
-        auth: Optional[tuple[str, str]] = None,
+        auth: Union[tuple[str, str], neo4j.Auth, None] = None,
         show_progress: bool = True,
     ) -> Neo4jQueryRunner:
         driver_config: dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
@@ -125,7 +125,7 @@ class Neo4jQueryRunner(QueryRunner):
         self,
         driver: neo4j.Driver,
         protocol: str,
-        auth: Optional[tuple[str, str]] = None,
+        auth: Union[tuple[str, str], neo4j.Auth, None] = None,
         config: dict[str, Any] = {},
         database: Optional[str] = neo4j.DEFAULT_DATABASE,
         auto_close: bool = False,
