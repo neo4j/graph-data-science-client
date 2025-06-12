@@ -4,6 +4,7 @@ import warnings
 from types import TracebackType
 from typing import Any, Optional, Type, Union
 
+import neo4j
 from neo4j import Driver
 from pandas import DataFrame
 
@@ -78,8 +79,10 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         if isinstance(endpoint, QueryRunner):
             self._query_runner = endpoint
         else:
+            if auth:
+                db_auth = neo4j.basic_auth(*auth)
             self._query_runner = Neo4jQueryRunner.create_for_db(
-                endpoint, auth, aura_ds, database, bookmarks, show_progress
+                endpoint, db_auth, aura_ds, database, bookmarks, show_progress
             )
 
         self._server_version = self._query_runner.server_version()

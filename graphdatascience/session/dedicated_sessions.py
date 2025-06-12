@@ -111,7 +111,7 @@ class DedicatedSessions:
     ) -> Neo4jQueryRunner:
         db_runner = Neo4jQueryRunner.create_for_db(
             endpoint=db_connection.uri,
-            auth=db_connection.auth(),
+            auth=db_connection.get_auth(),
             aura_ds=True,
             show_progress=False,
             database=db_connection.database,
