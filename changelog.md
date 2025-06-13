@@ -9,6 +9,7 @@
 ## Bug fixes
 
 - Fixed a bug where remote projections would fail when the database is clustered
+- Fixed a bug where the validation of gds.graph.project.cypher would fail when the return clause was not uppercase
 
 ## Improvements
 
