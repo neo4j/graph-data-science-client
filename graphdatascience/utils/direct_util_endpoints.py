@@ -48,8 +48,7 @@ class DirectUtilEndpoints(CallerBase):
         else:
             query = "MATCH (n) RETURN id(n) AS id"
 
-        # TODO use execute query
-        node_match = self._query_runner.run_cypher(query, custom_error=False)
+        node_match = self._query_runner.run_retryable_cypher(query, custom_error=False)
 
         if len(node_match) != 1:
             raise ValueError(f"Filter did not match with exactly one node: {node_match}")
@@ -84,7 +83,7 @@ class DirectUtilEndpoints(CallerBase):
             A DataFrame containing all available GDS procedures.
         """
         namespace = self._namespace + ".list"
-        return self._query_runner.call_procedure(endpoint=namespace, custom_error=False)
+        return self._query_runner.call_procedure(endpoint=namespace, custom_error=False, retryable=True)
 
 
 class IndirectUtilAlphaEndpoints(CallerBase):
