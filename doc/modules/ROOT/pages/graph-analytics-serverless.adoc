@@ -94,10 +94,10 @@ sessions.get_or_create(
 |===
 | Name          | Type               | Optional | Default | Description
 | session_name  | str                | no       | -       | Name of the session. Must be unique within the project.
-| memory        | SessionMemory      | no       | -       | Amount of memory available to the session. https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[Supported values].
-| db_connection | DbmsConnectionInfo | yes      | None    | Bolt server URL, username, and password to a Neo4j DBMS. Required for the Attached and Self-managed types.
+| memory        | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[SessionMemory]      | no       | -       | Amount of memory available to the session.
+| db_connection |  https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/DbmsConnectionInfo[DbmsConnectionInfo] | yes      | None    | Bolt server URL, username, and password to a Neo4j DBMS. Required for the Attached and Self-managed types. Alternatively to username and password, you can provide a `neo4j.Auth` https://neo4j.com/docs/python-manual/current/connect-advanced/#authentication-methods[object].
 | ttl           | datetime.timedelta | yes      | 1h      | Time-to-live for the session.
-| cloud_location| CloudLocation      | yes      | None    | Aura-supported cloud provider and region where the GDS Session will run. Required for the Self-managed and Standalone types.
+| cloud_location| https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/cloud_location[CloudLocation]      | yes      | None    | Aura-supported cloud provider and region where the GDS Session will run. Required for the Self-managed and Standalone types.
 | timeout       | int                | yes      | None    | Seconds to wait for the session to enter Ready state. If the time is exceeded, an error will be returned.
 |===
 
@@ -198,7 +198,7 @@ sessions.delete(session_name="my-new-session")
 === Estimating session memory
 
 In order to help determine a good session size for a given workload, there is the `estimate()` function.
-By providing expected node and relationship counts as well as algorithm categories that should be used, it will return an estimated size of the session.
+By providing expected node and relationship counts as well as https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/algorithm_category[algorithm categories] that should be used, it will return an estimated size of the session.
 
 .Estimating the size of a GDS Session via the GdsSessions object:
 [source, python, role=no-test]
@@ -257,7 +257,7 @@ gds.graph.project(
 [opts="header",cols="1m,1m,4", role="no-break"]
 |===
 | Name   | Type        | Description
-| graph  | Graph       | Graph object representing the projected graph.
+| graph  | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/graph_object[Graph]       | Graph object representing the projected graph.
 | result | Series[Any] | Statistical data about the projection.
 |===
 

@@ -1,4 +1,5 @@
 import neo4j
+
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 
 

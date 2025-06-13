@@ -79,6 +79,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         if isinstance(endpoint, QueryRunner):
             self._query_runner = endpoint
         else:
+            db_auth = None
             if auth:
                 db_auth = neo4j.basic_auth(*auth)
             self._query_runner = Neo4jQueryRunner.create_for_db(
