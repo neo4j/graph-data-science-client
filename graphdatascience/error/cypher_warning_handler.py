@@ -19,21 +19,12 @@ def filter_id_func_deprecation_warning() -> Callable[[F], F]:
                 message=r"^The query used a deprecated function: `id`\.",
             )
 
+            # previously      The query used a deprecated function. ('id' is no longer supported)
+            # since 2025.04.0 The query used a deprecated function. ('id' has been replaced by 'elementId or an application-generated id')
+            # since 2025.06   The query used a deprecated function. ('id' has been replaced by 'elementId or consider using an application-generated id')
             warnings.filterwarnings(
                 "ignore",
-                message=r"^The query used a deprecated function. \('id' is no longer supported\)",
-            )
-
-            # since 2025.04.0
-            warnings.filterwarnings(
-                "ignore",
-                message=r"^The query used a deprecated function. \('id' has been replaced by 'elementId or an application-generated id'\)",
-            )
-
-            # since 2025.06
-            warnings.filterwarnings(
-                "ignore",
-                message=r"ˆThe query used a deprecated function. \('id' has been replaced by 'elementId or consider using an application-generated id'\)",
+                message=r"ˆThe query used a deprecated function. \('id'.*",
             )
 
             return func(self, *args, **kwargs)
