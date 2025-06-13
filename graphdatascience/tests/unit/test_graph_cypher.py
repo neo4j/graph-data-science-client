@@ -107,8 +107,8 @@ def test_with_multiple_returns(gds: GraphDataScience) -> None:
         "MATCH (s)-->(t) RETURN gds.graph.project('g' + foo, s, t)",
         "MATCH (s)-->(t) RETURN gds.graph.project('g' + CALL foo(bar), s, t)",
         "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t)",
-        "MATCH (s)-->(t) RETURN gds.graph.project($the_gg, s, t)",
-        "MATCH (s)-->(t) RETURN gds.graph.project($graph_name, s, t, { property: labels(s) })",
+        "MATCH (s)-->(t) ReTuRn gds.graph.project($the_gg, s, t)",
+        "MATCH (s)-->(t) return gds.graph.project($graph_name, s, t, { property: labels(s) })",
     ],
 )
 def test_verify_query_ends_with_return_clause(query: str) -> None:

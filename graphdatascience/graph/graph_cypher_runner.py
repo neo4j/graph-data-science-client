@@ -103,7 +103,7 @@ class GraphCypherRunner(CallerBase):
                             at_end = True
                             break
 
-            if query_token == "RETURN":
+            if query_token.upper() == "RETURN":
                 # State 1: We found the start of a `RETURN` clause.
                 # Check if it is the `RETURN gds.graph.project` call.
                 # We split tokens on `__separators` and flatten the nested iters.
