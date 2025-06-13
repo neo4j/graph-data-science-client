@@ -3,6 +3,7 @@ import re
 from datetime import datetime, timedelta, timezone
 from typing import Optional, cast
 
+import neo4j
 import pytest
 from pytest_mock import MockerFixture
 
@@ -352,7 +353,7 @@ def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> No
     assert gds_parameters == {  # type: ignore
         "db_runner": {
             "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
-            "auth": ("dbuser", "db_pw"),
+            "auth": neo4j.basic_auth("dbuser", "db_pw"),
             "aura_ds": True,
             "database": None,
             "show_progress": False,
@@ -396,7 +397,7 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
     assert gds_credentials == {  # type: ignore
         "db_runner": {
             "endpoint": "neo4j+s://foo.bar",
-            "auth": ("dbuser", "db_pw"),
+            "auth": neo4j.basic_auth("dbuser", "db_pw"),
             "aura_ds": True,
             "database": None,
             "show_progress": False,
@@ -444,7 +445,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     assert gds_args1 == {  # type: ignore
         "db_runner": {
             "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
-            "auth": ("dbuser", "db_pw"),
+            "auth": neo4j.basic_auth("dbuser", "db_pw"),
             "aura_ds": True,
             "database": None,
             "show_progress": False,

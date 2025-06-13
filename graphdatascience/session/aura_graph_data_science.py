@@ -44,7 +44,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
     ) -> AuraGraphDataScience:
         session_bolt_query_runner = Neo4jQueryRunner.create_for_session(
             endpoint=session_bolt_connection_info.uri,
-            auth=session_bolt_connection_info.auth(),
+            auth=session_bolt_connection_info.get_auth(),
             show_progress=show_progress,
         )
 
@@ -75,7 +75,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             else:
                 db_bolt_query_runner = Neo4jQueryRunner.create_for_db(
                     db_endpoint.uri,
-                    db_endpoint.auth(),
+                    db_endpoint.get_auth(),
                     aura_ds=True,
                     show_progress=False,
                     database=db_endpoint.database,
