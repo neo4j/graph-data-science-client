@@ -11,7 +11,9 @@ def test_dbms_connection_info_username_password() -> None:
         database="neo4j",
     )
 
-    assert dci.get_auth() == neo4j.basic_auth("neo4j", "password")
+    auth = dci.get_auth()
+
+    assert (auth.principal, auth.credentials) == ("neo4j", "password")  # type:ignore
 
 
 def test_dbms_connection_info_advanced_auth() -> None:

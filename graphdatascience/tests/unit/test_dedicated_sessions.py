@@ -3,7 +3,6 @@ import re
 from datetime import datetime, timedelta, timezone
 from typing import Optional, cast
 
-import neo4j
 import pytest
 from pytest_mock import MockerFixture
 
@@ -350,10 +349,13 @@ def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> No
     arrow_authentication = gds_parameters["arrow_authentication"]  # type: ignore
     del gds_parameters["arrow_authentication"]
 
+    dbms_authentication = gds_parameters["db_runner"].pop("auth")  # type: ignore
+
+    assert (dbms_authentication.principal, dbms_authentication.credentials) == ("dbuser", "db_pw")
+
     assert gds_parameters == {  # type: ignore
         "db_runner": {
             "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
-            "auth": neo4j.basic_auth("dbuser", "db_pw"),
             "aura_ds": True,
             "database": None,
             "show_progress": False,
@@ -394,10 +396,13 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
     arrow_authentication = gds_credentials["arrow_authentication"]  # type: ignore
     del gds_credentials["arrow_authentication"]
 
+    dbms_authentication = gds_credentials["db_runner"].pop("auth")  # type: ignore
+
+    assert (dbms_authentication.principal, dbms_authentication.credentials) == ("dbuser", "db_pw")
+
     assert gds_credentials == {  # type: ignore
         "db_runner": {
             "endpoint": "neo4j+s://foo.bar",
-            "auth": neo4j.basic_auth("dbuser", "db_pw"),
             "aura_ds": True,
             "database": None,
             "show_progress": False,
@@ -442,10 +447,15 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     del gds_args1["arrow_authentication"]
     del gds_args2["arrow_authentication"]
 
+    actual_auth_1 = gds_args1["db_runner"].pop("auth")  # type: ignore
+    actual_auth_2 = gds_args2["db_runner"].pop("auth")  # type: ignore
+
+    assert (actual_auth_1.principal, actual_auth_1.credentials) == ("dbuser", "db_pw")
+    assert (actual_auth_2.principal, actual_auth_2.credentials) == ("dbuser", "db_pw")
+
     assert gds_args1 == {  # type: ignore
         "db_runner": {
             "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
-            "auth": neo4j.basic_auth("dbuser", "db_pw"),
             "aura_ds": True,
             "database": None,
             "show_progress": False,
@@ -456,6 +466,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
         ),
         "session_id": "ffff0-ffff1",
     }
+
     assert gds_args1 == gds_args2
 
     assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
