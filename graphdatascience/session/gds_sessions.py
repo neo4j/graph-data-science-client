@@ -35,9 +35,9 @@ class AuraAPICredentials:
         """
         Create an AuraApi instance from environment variables.
         The environment variables are:
-            - CLIENT_ID
-            - CLIENT_SECRET
-            - PROJECT_ID
+        - CLIENT_ID
+        - CLIENT_SECRET
+        - PROJECT_ID
         """
         client_id = os.environ["CLIENT_ID"]
         client_secret = os.environ["CLIENT_SECRET"]
