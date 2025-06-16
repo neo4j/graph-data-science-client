@@ -74,6 +74,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     The All Pairs Shortest Path (APSP) calculates the shortest (weighted) path
     between all pairs of nodes.
 
+.. py:function:: gds.allShortestPaths.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.alpha.allShortestPaths.stream(G: Graph, **config: Any) -> DataFrame
 
     The All Pairs Shortest Path (APSP) calculates the shortest (weighted) path
