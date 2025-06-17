@@ -121,6 +121,14 @@
   },
   {
     "function": {
+      "name": "gds.allShortestPaths.stream.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
       "name": "gds.alpha.allShortestPaths.stream",
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
