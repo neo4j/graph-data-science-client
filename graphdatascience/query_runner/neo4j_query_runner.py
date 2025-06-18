@@ -356,7 +356,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._show_progress = show_progress
 
     def cloneWithoutRouting(self, host: str, port: int) -> QueryRunner:
-        protocol=self._protocol.replace("neo4j", "bolt")
+        protocol = self._protocol.replace("neo4j", "bolt")
         endpoint = "{}://{}:{}".format(protocol, host, port)
         driver = neo4j.GraphDatabase.driver(endpoint, auth=self._auth, **self.driver_config())
 
