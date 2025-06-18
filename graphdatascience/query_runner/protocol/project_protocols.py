@@ -163,7 +163,7 @@ class ProjectProtocolV3(ProjectProtocol):
                 yields,
                 database=database,
                 logging=logging,
-                retryable=True,
+                retryable=False,
                 custom_error=False,
             )
 
