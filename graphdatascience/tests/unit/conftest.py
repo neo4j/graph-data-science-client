@@ -138,7 +138,7 @@ class CollectingQueryRunner(QueryRunner):
             self, graph_name, concurrency, undirected_relationship_types, self._server_version
         )
 
-    def clone(self, host: str, port: int) -> QueryRunner:
+    def cloneWithoutRouting(self, host: str, port: int) -> QueryRunner:
         return self
 
     def set__mock_result(self, result: DataFrame) -> None:

@@ -144,10 +144,11 @@ class ProjectProtocolV3(ProjectProtocol):
             database,
             logging=logging,
             custom_error=False,
+            retryable=True,
         ).squeeze()
         member_host = response["host"]
         member_port = response["port"] if ("port" in response.index) else 7687
-        projection_query_runner = query_runner.clone(member_host, member_port)
+        projection_query_runner = query_runner.cloneWithoutRouting(member_host, member_port)
 
         @retry(
             reraise=True,
@@ -163,7 +164,7 @@ class ProjectProtocolV3(ProjectProtocol):
                 yields,
                 database=database,
                 logging=logging,
-                retryable=False,
+                retryable=True,
                 custom_error=False,
             )
 

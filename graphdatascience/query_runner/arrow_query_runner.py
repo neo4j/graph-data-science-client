@@ -225,10 +225,10 @@ class ArrowQueryRunner(QueryRunner):
         self._fallback_query_runner.close()
         self._gds_arrow_client.close()
 
-    def clone(self, host: str, port: int) -> "QueryRunner":
+    def cloneWithoutRouting(self, host: str, port: int) -> "QueryRunner":
         return ArrowQueryRunner(
             self._gds_arrow_client,
-            self._fallback_query_runner.clone(host, port),
+            self._fallback_query_runner.cloneWithoutRouting(host, port),
             self._server_version,
         )
 
