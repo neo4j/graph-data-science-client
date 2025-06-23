@@ -5,7 +5,7 @@ from pandas import DataFrame, Series
 from ...call_parameters import CallParameters
 from ...graph.graph_object import Graph
 from ...query_runner.query_runner import QueryRunner
-from ..api.wcc_endpoints import WccEndpoints
+from ..api.wcc_endpoints import WccEndpoints, WccMutateResult
 
 
 class WccCypherEndpoints(WccEndpoints):
@@ -32,7 +32,7 @@ class WccCypherEndpoints(WccEndpoints):
         seed_property: Optional[str] = None,
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
-    ) -> Series[Any]:
+    ) -> WccMutateResult:
         # Build configuration dictionary from parameters
         config: dict[str, Any] = {
             "mutateProperty": mutate_property,
@@ -66,7 +66,17 @@ class WccCypherEndpoints(WccEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.wcc.mutate", params=params).squeeze()  # type: ignore
+        cypher_result = self._query_runner.call_procedure(endpoint="gds.wcc.mutate", params=params).squeeze()
+
+        return WccMutateResult(
+            cypher_result["componentCount"],
+            cypher_result["componentDistribution"],
+            cypher_result["preProcessingMillis"],
+            cypher_result["computeMillis"],
+            cypher_result["postProcessingMillis"],
+            cypher_result["mutateMillis"],
+            cypher_result["nodePropertiesWritten"],
+        )
 
     def stats(
         self,
@@ -82,7 +92,7 @@ class WccCypherEndpoints(WccEndpoints):
         seed_property: Optional[str] = None,
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
-    ) -> Series[Any]:
+    ) -> Series:
         # Build configuration dictionary from parameters
         config: dict[str, Any] = {}
 
@@ -185,7 +195,7 @@ class WccCypherEndpoints(WccEndpoints):
         relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[int] = None,
         write_to_result_store: Optional[bool] = None,
-    ) -> Series[Any]:
+    ) -> Series:
         # Build configuration dictionary from parameters
         config: dict[str, Any] = {
             "writeProperty": write_property,

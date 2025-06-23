@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Any, List, Optional
 
 from pandas import DataFrame, Series
@@ -27,7 +30,7 @@ class WccEndpoints(ABC):
         seed_property: Optional[str] = None,
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
-    ) -> Series[Any]:
+    ) -> WccMutateResult:
         """
         Executes the WCC algorithm and writes the results to the in-memory graph as node properties.
 
@@ -82,7 +85,7 @@ class WccEndpoints(ABC):
         seed_property: Optional[str] = None,
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
-    ) -> Series[Any]:
+    ) -> Series:
         """
         Executes the WCC algorithm and returns statistics.
 
@@ -195,7 +198,7 @@ class WccEndpoints(ABC):
         relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
         write_to_result_store: Optional[bool] = None,
-    ) -> Series[Any]:
+    ) -> Series:
         """
         Executes the WCC algorithm and writes the results to the Neo4j database.
 
@@ -240,3 +243,15 @@ class WccEndpoints(ABC):
             Algorithm metrics and statistics
         """
         pass
+
+
+@dataclass(frozen=True, repr=True)
+class WccMutateResult:
+    component_count: int
+    component_distribution: dict[str, Any]
+    pre_processing_millis: int
+    compute_millis: int
+    post_processing_millis: int
+    mutate_millis: int
+    node_properties_written: int
+    configuration: dict[str, Any]
