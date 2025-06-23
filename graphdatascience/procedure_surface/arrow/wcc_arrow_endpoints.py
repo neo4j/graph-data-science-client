@@ -2,20 +2,20 @@ from typing import Any, List, Optional
 
 from pandas import DataFrame
 
-from ...call_parameters import CallParameters
+from ...arrow_client.authenticated_arrow_client import AuthenticatedArrowClient
+from ...arrow_client.v2.job_client import JobClient
+from ...arrow_client.v2.mutation_client import MutationClient
+from ...arrow_client.v2.write_back_client import WriteBackClient
 from ...graph.graph_object import Graph
-from ...query_runner.query_runner import QueryRunner
 from ..api.wcc_endpoints import WccEndpoints, WccMutateResult, WccStatsResult, WccWriteResult
 
+WCC_ENDPOINT = "v2/community.wcc"
 
-class WccCypherEndpoints(WccEndpoints):
-    """
-    Implementation of the WCC algorithm endpoints.
-    This class handles the actual execution by forwarding calls to the query runner.
-    """
 
-    def __init__(self, query_runner: QueryRunner):
-        self._query_runner = query_runner
+class WccArrowEndpoints(WccEndpoints):
+    def __init__(self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[WriteBackClient]):
+        self._arrow_client = arrow_client
+        self._write_back_client = write_back_client
 
     def mutate(
         self,
@@ -33,13 +33,8 @@ class WccCypherEndpoints(WccEndpoints):
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
     ) -> WccMutateResult:
-        # Build configuration dictionary from parameters
-        config: dict[str, Any] = {
-            "mutateProperty": mutate_property,
-        }
-
-        self._create_procedure_config(
-            config,
+        config = self._build_configuration(
+            G,
             concurrency,
             consecutive_ids,
             job_id,
@@ -51,24 +46,22 @@ class WccCypherEndpoints(WccEndpoints):
             seed_property,
             sudo,
             threshold,
-            username,
         )
 
-        # Run procedure and return results
-        params = CallParameters(graph_name=G.name(), config=config)
-        params.ensure_job_id_in_config()
+        job_id = JobClient.run_job_and_wait(self._arrow_client, WCC_ENDPOINT, config)
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.wcc.mutate", params=params).squeeze()
+        mutate_result = MutationClient.mutate_node_property(self._arrow_client, job_id, mutate_property)
+        computation_result = JobClient.get_summary(self._arrow_client, job_id)
 
         return WccMutateResult(
-            cypher_result["componentCount"],
-            cypher_result["componentDistribution"],
-            cypher_result["preProcessingMillis"],
-            cypher_result["computeMillis"],
-            cypher_result["postProcessingMillis"],
-            cypher_result["mutateMillis"],
-            cypher_result["nodePropertiesWritten"],
-            cypher_result["configuration"],
+            computation_result["componentCount"],
+            computation_result["componentDistribution"],
+            computation_result["preProcessingMillis"],
+            computation_result["computeMillis"],
+            computation_result["postProcessingMillis"],
+            0,
+            mutate_result.nodePropertiesWritten,
+            computation_result["configuration"],
         )
 
     def stats(
@@ -86,11 +79,8 @@ class WccCypherEndpoints(WccEndpoints):
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
     ) -> WccStatsResult:
-        # Build configuration dictionary from parameters
-        config: dict[str, Any] = {}
-
-        self._create_procedure_config(
-            config,
+        config = self._build_configuration(
+            G,
             concurrency,
             consecutive_ids,
             job_id,
@@ -102,22 +92,18 @@ class WccCypherEndpoints(WccEndpoints):
             seed_property,
             sudo,
             threshold,
-            username,
         )
 
-        # Run procedure and return results
-        params = CallParameters(graph_name=G.name(), config=config)
-        params.ensure_job_id_in_config()
-
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.wcc.stats", params=params).squeeze()  # type: ignore
+        job_id = JobClient.run_job_and_wait(self._arrow_client, WCC_ENDPOINT, config)
+        computation_result = JobClient.get_summary(self._arrow_client, job_id)
 
         return WccStatsResult(
-            cypher_result["componentCount"],
-            cypher_result["componentDistribution"],
-            cypher_result["preProcessingMillis"],
-            cypher_result["computeMillis"],
-            cypher_result["postProcessingMillis"],
-            cypher_result["configuration"],
+            computation_result["componentCount"],
+            computation_result["componentDistribution"],
+            computation_result["preProcessingMillis"],
+            computation_result["computeMillis"],
+            computation_result["postProcessingMillis"],
+            computation_result["configuration"],
         )
 
     def stream(
@@ -136,11 +122,8 @@ class WccCypherEndpoints(WccEndpoints):
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
     ) -> DataFrame:
-        # Build configuration dictionary from parameters
-        config: dict[str, Any] = {}
-
-        self._create_procedure_config(
-            config,
+        config = self._build_configuration(
+            G,
             concurrency,
             consecutive_ids,
             job_id,
@@ -152,14 +135,10 @@ class WccCypherEndpoints(WccEndpoints):
             seed_property,
             sudo,
             threshold,
-            username,
         )
 
-        # Run procedure and return results
-        params = CallParameters(graph_name=G.name(), config=config)
-        params.ensure_job_id_in_config()
-
-        return self._query_runner.call_procedure(endpoint="gds.wcc.stream", params=params)
+        job_id = JobClient.run_job_and_wait(self._arrow_client, WCC_ENDPOINT, config)
+        return JobClient.stream_results(self._arrow_client, job_id)
 
     def write(
         self,
@@ -179,12 +158,8 @@ class WccCypherEndpoints(WccEndpoints):
         relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[int] = None,
     ) -> WccWriteResult:
-        # Build configuration dictionary from parameters
-        config: dict[str, Any] = {
-            "writeProperty": write_property,
-        }
-        self._create_procedure_config(
-            config,
+        config = self._build_configuration(
+            G,
             concurrency,
             consecutive_ids,
             job_id,
@@ -196,31 +171,29 @@ class WccCypherEndpoints(WccEndpoints):
             seed_property,
             sudo,
             threshold,
-            username,
         )
 
-        if write_concurrency is not None:
-            config["writeConcurrency"] = write_concurrency
+        job_id = JobClient.run_job_and_wait(self._arrow_client, WCC_ENDPOINT, config)
+        computation_result = JobClient.get_summary(self._arrow_client, job_id)
 
-        params = CallParameters(graph_name=G.name(), config=config)
-        params.ensure_job_id_in_config()
-
-        result = self._query_runner.call_procedure(endpoint="gds.wcc.write", params=params).squeeze()  # type: ignore
+        write_millis = self._write_back_client.write(
+            G.name(), job_id, write_concurrency if write_concurrency is not None else concurrency
+        )
 
         return WccWriteResult(
-            result["componentCount"],
-            result["componentDistribution"],
-            result["preProcessingMillis"],
-            result["computeMillis"],
-            result["writeMillis"],
-            result["postProcessingMillis"],
-            result["nodePropertiesWritten"],
-            result["configuration"],
+            computation_result["componentCount"],
+            computation_result["componentDistribution"],
+            computation_result["preProcessingMillis"],
+            computation_result["computeMillis"],
+            write_millis,
+            computation_result["postProcessingMillis"],
+            computation_result["nodePropertiesWritten"],
+            computation_result["configuration"],
         )
 
     @staticmethod
-    def _create_procedure_config(
-        config: dict[str, Any],
+    def _build_configuration(
+        G: Graph,
         concurrency: Optional[int],
         consecutive_ids: Optional[bool],
         job_id: Optional[str],
@@ -232,9 +205,11 @@ class WccCypherEndpoints(WccEndpoints):
         seed_property: Optional[str],
         sudo: Optional[bool],
         threshold: Optional[float],
-        username: Optional[str],
     ):
-        # Add optional parameters
+        config: dict[str, Any] = {
+            "graphName": G.name(),
+        }
+
         if min_component_size is not None:
             config["minComponentSize"] = min_component_size
         if threshold is not None:
@@ -247,8 +222,6 @@ class WccCypherEndpoints(WccEndpoints):
             config["sudo"] = sudo
         if log_progress is not None:
             config["logProgress"] = log_progress
-        if username is not None:
-            config["username"] = username
         if concurrency is not None:
             config["concurrency"] = concurrency
         if job_id is not None:
@@ -259,3 +232,5 @@ class WccCypherEndpoints(WccEndpoints):
             config["consecutiveIds"] = consecutive_ids
         if relationship_weight_property is not None:
             config["relationshipWeightProperty"] = relationship_weight_property
+
+        return config

@@ -1,33 +1,41 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, Union, Any
+from dataclasses import dataclass
+from typing import Any, Optional, Union
 
 from pyarrow import __version__ as arrow_version
 from pyarrow import flight
-from pyarrow._flight import FlightTimedOutError, FlightUnavailableError, FlightInternalError, Action
-from tenacity import retry_any, retry_if_exception_type, stop_after_delay, stop_after_attempt, wait_exponential, retry
+from pyarrow._flight import (
+    Action,
+    FlightInternalError,
+    FlightStreamReader,
+    FlightTimedOutError,
+    FlightUnavailableError,
+    Ticket,
+)
+from tenacity import retry, retry_any, retry_if_exception_type, stop_after_attempt, stop_after_delay, wait_exponential
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.retry_utils.retry_config import RetryConfig
-from .middleware.AuthMiddleware import AuthMiddleware, AuthFactory
-from .middleware.UserAgentMiddleware import UserAgentFactory
+
 from ..retry_utils.retry_utils import before_log
 from ..version import __version__
+from .middleware.AuthMiddleware import AuthFactory, AuthMiddleware
+from .middleware.UserAgentMiddleware import UserAgentFactory
 
 
 class AuthenticatedArrowClient:
-
     @staticmethod
     def create(
-            arrow_info: ArrowInfo,
-            auth: Optional[ArrowAuthentication] = None,
-            encrypted: bool = False,
-            disable_server_verification: bool = False,
-            tls_root_certs: Optional[bytes] = None,
-            connection_string_override: Optional[str] = None,
-            retry_config: Optional[RetryConfig] = None,
+        arrow_info: ArrowInfo,
+        auth: Optional[ArrowAuthentication] = None,
+        encrypted: bool = False,
+        disable_server_verification: bool = False,
+        tls_root_certs: Optional[bytes] = None,
+        connection_string_override: Optional[str] = None,
+        retry_config: Optional[RetryConfig] = None,
     ) -> AuthenticatedArrowClient:
         connection_string: str
         if connection_string_override is not None:
@@ -59,15 +67,15 @@ class AuthenticatedArrowClient:
         )
 
     def __init__(
-            self,
-            host: str,
-            retry_config: RetryConfig,
-            port: int = 8491,
-            auth: Optional[Union[ArrowAuthentication, tuple[str, str]]] = None,
-            encrypted: bool = False,
-            disable_server_verification: bool = False,
-            tls_root_certs: Optional[bytes] = None,
-            user_agent: Optional[str] = None,
+        self,
+        host: str,
+        retry_config: RetryConfig,
+        port: int = 8491,
+        auth: Optional[Union[ArrowAuthentication, tuple[str, str]]] = None,
+        encrypted: bool = False,
+        disable_server_verification: bool = False,
+        tls_root_certs: Optional[bytes] = None,
+        user_agent: Optional[str] = None,
     ):
         """Creates a new GdsArrowClient instance.
 
@@ -85,8 +93,6 @@ class AuthenticatedArrowClient:
             A flag that disables server verification for TLS connections (default is False)
         tls_root_certs: Optional[bytes]
             PEM-encoded certificates that are used for the connection to the GDS Arrow Flight server
-        arrow_endpoint_version:
-            The version of the Arrow endpoint to use (default is ArrowEndpointVersion.V1)
         user_agent: Optional[str]
             The user agent string to use for the connection. (default is `neo4j-graphdatascience-v[VERSION] pyarrow-v[PYARROW_VERSION])
         retry_config: Optional[RetryConfig]
@@ -117,6 +123,48 @@ class AuthenticatedArrowClient:
 
         self._flight_client = self._instantiate_flight_client()
 
+    def connection_info(self) -> ConnectionInfo:
+        """
+        Returns the host and port of the GDS Arrow server.
+
+        Returns
+        -------
+        tuple[str, int]
+            the host and port of the GDS Arrow server
+        """
+        return ConnectionInfo(self._host, self._port, self._encrypted)
+
+    def request_token(self) -> Optional[str]:
+        """
+        Requests a token from the server and returns it.
+
+        Returns
+        -------
+        Optional[str]
+            a token from the server and returns it.
+        """
+
+        @retry(
+            reraise=True,
+            before=before_log("Request token", self._logger, logging.DEBUG),
+            retry=self._retry_config.retry,
+            stop=self._retry_config.stop,
+            wait=self._retry_config.wait,
+        )
+        def auth_with_retry() -> None:
+            client = self._flight_client
+            if self._auth:
+                auth_pair = self._auth.auth_pair()
+                client.authenticate_basic_token(auth_pair[0], auth_pair[1])
+
+        if self._auth:
+            auth_with_retry()
+            return self._auth_middleware.token()
+        else:
+            return "IGNORED"
+
+    def get_stream(self, ticket: Ticket) -> FlightStreamReader:
+        return self._flight_client.do_get(ticket)
 
     def do_action(self, endpoint: str, payload: bytes):
         return self._flight_client.do_action(Action(endpoint, payload))
@@ -155,3 +203,8 @@ class AuthenticatedArrowClient:
         return flight.FlightClient(location, **client_options)
 
 
+@dataclass
+class ConnectionInfo:
+    host: str
+    port: int
+    encrypted: bool
