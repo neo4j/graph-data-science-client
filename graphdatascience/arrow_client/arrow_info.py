@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ..query_runner.query_runner import QueryRunner
-from ..server_version.server_version import ServerVersion
+from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 @dataclass(frozen=True)

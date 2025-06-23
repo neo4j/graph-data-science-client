@@ -10,8 +10,8 @@ from pytest_mock import MockerFixture
 from graphdatascience import QueryRunner
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph_data_science import GraphDataScience
-from graphdatascience.query_runner.arrow_authentication import UsernamePasswordAuthentication
-from graphdatascience.query_runner.arrow_info import ArrowInfo
+from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
+from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.query_runner.cypher_graph_constructor import (
     CypherGraphConstructor,
 )

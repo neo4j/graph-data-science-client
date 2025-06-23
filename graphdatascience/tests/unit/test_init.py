@@ -4,7 +4,7 @@ import pytest
 from pandas import DataFrame
 
 from graphdatascience.graph_data_science import GraphDataScience
-from graphdatascience.query_runner.arrow_info import ArrowInfo
+from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 

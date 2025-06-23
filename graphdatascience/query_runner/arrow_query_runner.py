@@ -5,12 +5,12 @@ from typing import Any, Optional
 
 from pandas import DataFrame
 
-from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
+from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.retry_utils.retry_config import RetryConfig
 
 from ..call_parameters import CallParameters
-from ..query_runner.arrow_info import ArrowInfo
+from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from ..server_version.server_version import ServerVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .gds_arrow_client import GdsArrowClient

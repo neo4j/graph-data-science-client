@@ -13,8 +13,8 @@ from graphdatascience.endpoints import (
 )
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
 from graphdatascience.graph.graph_remote_proc_runner import GraphRemoteProcRunner
-from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
-from graphdatascience.query_runner.arrow_info import ArrowInfo
+from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
+from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
