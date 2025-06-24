@@ -6,8 +6,8 @@ import neo4j.exceptions
 import pytest
 from neo4j import Driver, GraphDatabase
 
-from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
+from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience

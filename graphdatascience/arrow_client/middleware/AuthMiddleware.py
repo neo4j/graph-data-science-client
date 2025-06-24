@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import base64
 import time
-from typing import Optional, Any
+from typing import Any, Optional
 
 from pyarrow._flight import ClientMiddleware, ClientMiddlewareFactory
 

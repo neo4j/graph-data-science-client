@@ -9,6 +9,7 @@ from neo4j import Driver
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
+from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.procedure_surface.api.wcc_endpoints import WccEndpoints
 from graphdatascience.procedure_surface.cypher.wcc_proc_runner import WccCypherEndpoints
 
@@ -16,7 +17,6 @@ from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
 from .graph.graph_proc_runner import GraphProcRunner
-from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner

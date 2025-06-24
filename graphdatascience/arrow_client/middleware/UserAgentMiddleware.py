@@ -4,6 +4,7 @@ from typing import Any
 
 from pyarrow._flight import ClientMiddleware, ClientMiddlewareFactory
 
+
 class UserAgentFactory(ClientMiddlewareFactory):  # type: ignore
     def __init__(self, useragent: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -11,6 +12,7 @@ class UserAgentFactory(ClientMiddlewareFactory):  # type: ignore
 
     def start_call(self, info: Any) -> ClientMiddleware:
         return self._middleware
+
 
 class UserAgentMiddleware(ClientMiddleware):  # type: ignore
     def __init__(self, useragent: str, *args: Any, **kwargs: Any) -> None:

@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True, repr=True)
 class JobIdConfig:
     jobId: str
+
 
 @dataclass(frozen=True, repr=True)
 class JobStatus:
