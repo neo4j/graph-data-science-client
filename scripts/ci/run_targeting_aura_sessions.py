@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.DEBUG)
 def main() -> None:
     client_id = os.environ["AURA_API_CLIENT_ID"]
     client_secret = os.environ["AURA_API_CLIENT_SECRET"]
-    project_id = os.environ.get("AURA_API_TENANT_ID")
+    project_id = os.environ.get("AURA_PROJECT_ID")
     aura_api = AuraApiCI(client_id=client_id, client_secret=client_secret, project_id=project_id)
 
     MAX_INT = 1000000
