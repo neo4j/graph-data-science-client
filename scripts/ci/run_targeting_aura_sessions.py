@@ -22,7 +22,7 @@ def main() -> None:
     MAX_INT = 1000000
     instance_name = f"ci-build-{sys.argv[1]}" if len(sys.argv) > 1 else "ci-instance-" + str(rd.randint(0, MAX_INT))
 
-    create_result = aura_api.create_instance(instance_name, memory="1GB", type="professional-db")
+    create_result = aura_api.create_instance(instance_name, memory="2GB", type="enterprise-db")
     instance_id = create_result["id"]
     logging.info(f"Creation of database with id '{instance_id}'")
 
@@ -49,7 +49,7 @@ def main() -> None:
         else:
             project_id_part = ""
 
-        cmd = f"CLIENT_ID={client_id} CLIENT_SECRET={client_secret} {project_id_part} NEO4J_URI={uri} NEO4J_USERNAME={username} NEO4J_PASSWORD={password} tox -e jupyter-notebook-session-ci"
+        cmd = f"AURA_ENV=staging CLIENT_ID={client_id} CLIENT_SECRET={client_secret} {project_id_part} NEO4J_URI={uri} NEO4J_USERNAME={username} NEO4J_PASSWORD={password} tox -e jupyter-notebook-session-ci"
 
         if os.system(cmd) != 0:
             raise Exception("Failed to run notebooks")

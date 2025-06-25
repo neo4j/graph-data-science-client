@@ -48,9 +48,6 @@ class AuraApiCI:
 
         return AuraApiCI.AuraAuthToken(response.json())
 
-    def create_ds_instance(self, name: str) -> dict[str, Any]:
-        return self.create_instance(name, memory="8GB", type="gds")
-
     def create_instance(self, name: str, memory: str, type: str) -> dict[str, Any]:
         CREATE_OK_MAX_WAIT_TIME = 10
 
@@ -81,7 +78,13 @@ class AuraApiCI:
             if should_retry:
                 logging.debug(f"Error code: {response.status_code} - Retrying in {wait_time} s")
 
-        return response.json()["data"]  # type: ignore
+
+        response_json = response.json()
+        if "errors" in response_json:
+            raise Exception(response_json["errors"])
+
+        return response_json["data"]  # type: ignore
+
 
     def check_running(self, db_id: str) -> None:
         RUNNING_MAX_WAIT_TIME = 60 * 5
