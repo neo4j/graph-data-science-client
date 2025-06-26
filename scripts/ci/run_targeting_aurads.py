@@ -37,7 +37,7 @@ def main() -> None:
     MAX_INT = 1000000
     instance_name = f"ci-build-{sys.argv[2]}" if len(sys.argv) > 1 else "ci-instance-" + str(rd.randint(0, MAX_INT))
 
-    create_result = aura_api.create_ds_instance(instance_name)
+    create_result = aura_api.create_instance(instance_name, memory="8GB", type="gds")
     instance_id = create_result["id"]
     logging.info("Creation of database accepted")
 
