@@ -1,14 +1,15 @@
+import pandas as pd
 import pytest
 
 from graphdatascience.graph.graph_object import Graph
+from graphdatascience.procedure_surface.api.wcc_endpoints import WccMutateResult, WccStatsResult, WccWriteResult
 from graphdatascience.procedure_surface.cypher.wcc_proc_runner import WccCypherEndpoints
-from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.tests.unit.conftest import CollectingQueryRunner
+from graphdatascience.tests.unit.conftest import CollectingQueryRunner, DEFAULT_SERVER_VERSION
 
 
 @pytest.fixture
 def query_runner() -> CollectingQueryRunner:
-    return CollectingQueryRunner(ServerVersion(2, 16, 0))
+    return CollectingQueryRunner(DEFAULT_SERVER_VERSION)
 
 
 @pytest.fixture
@@ -21,8 +22,24 @@ def graph(query_runner: CollectingQueryRunner) -> Graph:
     return Graph("test_graph", query_runner)
 
 
-def test_mutate_basic(wcc_endpoints: WccCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner) -> None:
-    wcc_endpoints.mutate(graph, "componentId")
+def test_mutate_basic(graph: Graph) -> None:
+    result = {
+        "nodePropertiesWritten": 5,
+        "mutateMillis": 42,
+        "componentCount": 3,
+        "preProcessingMillis": 10,
+        "computeMillis": 20,
+        "postProcessingMillis": 12,
+        "componentDistribution": {"foo": 42},
+        "configuration": {"bar": 1337},
+    }
+
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION,
+        {"wcc.mutate" : pd.DataFrame([result])}
+    )
+
+    result_obj = WccCypherEndpoints(query_runner).mutate(graph, "componentId")
 
     assert len(query_runner.queries) == 1
     assert "gds.wcc.mutate" in query_runner.queries[0]
@@ -32,11 +49,37 @@ def test_mutate_basic(wcc_endpoints: WccCypherEndpoints, graph: Graph, query_run
     assert config["mutateProperty"] == "componentId"
     assert "jobId" in config
 
+    assert isinstance(result_obj, WccMutateResult)
+    assert result_obj.node_properties_written == 5
+    assert result_obj.mutate_millis == 42
+    assert result_obj.component_count == 3
+    assert result_obj.pre_processing_millis == 10
+    assert result_obj.compute_millis == 20
+    assert result_obj.post_processing_millis == 12
+    assert result_obj.component_distribution == {"foo": 42}
+    assert result_obj.configuration == {"bar": 1337}
+
 
 def test_mutate_with_optional_params(
-    wcc_endpoints: WccCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
+   graph: Graph
 ) -> None:
-    wcc_endpoints.mutate(
+    result = {
+        "nodePropertiesWritten": 5,
+        "mutateMillis": 42,
+        "componentCount": 3,
+        "preProcessingMillis": 10,
+        "computeMillis": 20,
+        "postProcessingMillis": 12,
+        "componentDistribution": {"foo": 42},
+        "configuration": {"bar": 1337},
+    }
+
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION,
+        {"wcc.mutate" : pd.DataFrame([result])}
+    )
+
+    WccCypherEndpoints(query_runner).mutate(
         graph,
         "componentId",
         threshold=0.5,
@@ -72,8 +115,22 @@ def test_mutate_with_optional_params(
     }
 
 
-def test_stats_basic(wcc_endpoints: WccCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner) -> None:
-    wcc_endpoints.stats(graph)
+def test_stats_basic(graph: Graph) -> None:
+    result = {
+        "componentCount": 3,
+        "preProcessingMillis": 10,
+        "computeMillis": 20,
+        "postProcessingMillis": 12,
+        "componentDistribution": {"foo": 42},
+        "configuration": {"bar": 1337}
+    }
+
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION,
+        {"wcc.stats": pd.DataFrame([result])}
+    )
+
+    result_obj = WccCypherEndpoints(query_runner).stats(graph)
 
     assert len(query_runner.queries) == 1
     assert "gds.wcc.stats" in query_runner.queries[0]
@@ -82,11 +139,33 @@ def test_stats_basic(wcc_endpoints: WccCypherEndpoints, graph: Graph, query_runn
     config = params["config"]
     assert "jobId" in config
 
+    assert isinstance(result_obj, WccStatsResult)
+    assert result_obj.component_count == 3
+    assert result_obj.pre_processing_millis == 10
+    assert result_obj.compute_millis == 20
+    assert result_obj.post_processing_millis == 12
+    assert result_obj.component_distribution == {"foo": 42}
+    assert result_obj.configuration == {"bar": 1337}
+
 
 def test_stats_with_optional_params(
-    wcc_endpoints: WccCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
+    graph: Graph
 ) -> None:
-    wcc_endpoints.stats(
+    result = {
+        "componentCount": 3,
+        "preProcessingMillis": 10,
+        "computeMillis": 20,
+        "postProcessingMillis": 12,
+        "componentDistribution": {"foo": 42},
+        "configuration": {"bar": 1337}
+    }
+
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION,
+        {"wcc.stats": pd.DataFrame([result])}
+    )
+
+    WccCypherEndpoints(query_runner).stats(
         graph,
         threshold=0.5,
         relationship_types=["REL"],
@@ -170,8 +249,24 @@ def test_stream_with_optional_params(
     }
 
 
-def test_write_basic(wcc_endpoints: WccCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner) -> None:
-    wcc_endpoints.write(graph, "componentId")
+def test_write_basic(graph: Graph) -> None:
+    result = {
+        "componentCount": 3,
+        "preProcessingMillis": 10,
+        "computeMillis": 20,
+        "writeMillis": 15,
+        "postProcessingMillis": 12,
+        "nodePropertiesWritten": 5,
+        "componentDistribution": {"foo": 42},
+        "configuration": {"bar": 1337}
+    }
+
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION,
+        {"wcc.write": pd.DataFrame([result])}
+    )
+
+    result_obj = WccCypherEndpoints(query_runner).write(graph, "componentId")
 
     assert len(query_runner.queries) == 1
     assert "gds.wcc.write" in query_runner.queries[0]
@@ -181,11 +276,37 @@ def test_write_basic(wcc_endpoints: WccCypherEndpoints, graph: Graph, query_runn
     assert config["writeProperty"] == "componentId"
     assert "jobId" in config
 
+    assert isinstance(result_obj, WccWriteResult)
+    assert result_obj.component_count == 3
+    assert result_obj.pre_processing_millis == 10
+    assert result_obj.compute_millis == 20
+    assert result_obj.write_millis == 15
+    assert result_obj.post_processing_millis == 12
+    assert result_obj.node_properties_written == 5
+    assert result_obj.component_distribution == {"foo": 42}
+    assert result_obj.configuration == {"bar": 1337}
+
 
 def test_write_with_optional_params(
-    wcc_endpoints: WccCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
+    graph: Graph
 ) -> None:
-    wcc_endpoints.write(
+    result = {
+        "componentCount": 3,
+        "preProcessingMillis": 10,
+        "computeMillis": 20,
+        "writeMillis": 15,
+        "postProcessingMillis": 12,
+        "nodePropertiesWritten": 5,
+        "componentDistribution": {"foo": 42},
+        "configuration": {"bar": 1337}
+    }
+
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION,
+        {"wcc.write": pd.DataFrame([result])}
+    )
+
+    WccCypherEndpoints(query_runner).write(
         graph,
         "componentId",
         min_component_size=2,
@@ -201,7 +322,6 @@ def test_write_with_optional_params(
         consecutive_ids=True,
         relationship_weight_property="weight",
         write_concurrency=4,
-        write_to_result_store=True,
     )
 
     assert len(query_runner.queries) == 1
@@ -223,5 +343,4 @@ def test_write_with_optional_params(
         "consecutiveIds": True,
         "relationshipWeightProperty": "weight",
         "writeConcurrency": 4,
-        "writeToResultStore": True,
     }
