@@ -4,7 +4,7 @@ import pytest
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.procedure_surface.api.wcc_endpoints import WccMutateResult, WccStatsResult, WccWriteResult
 from graphdatascience.procedure_surface.cypher.wcc_proc_runner import WccCypherEndpoints
-from graphdatascience.tests.unit.conftest import CollectingQueryRunner, DEFAULT_SERVER_VERSION
+from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 
 
 @pytest.fixture
@@ -34,10 +34,7 @@ def test_mutate_basic(graph: Graph) -> None:
         "configuration": {"bar": 1337},
     }
 
-    query_runner = CollectingQueryRunner(
-        DEFAULT_SERVER_VERSION,
-        {"wcc.mutate" : pd.DataFrame([result])}
-    )
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"wcc.mutate": pd.DataFrame([result])})
 
     result_obj = WccCypherEndpoints(query_runner).mutate(graph, "componentId")
 
@@ -60,9 +57,7 @@ def test_mutate_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_mutate_with_optional_params(
-   graph: Graph
-) -> None:
+def test_mutate_with_optional_params(graph: Graph) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "mutateMillis": 42,
@@ -74,10 +69,7 @@ def test_mutate_with_optional_params(
         "configuration": {"bar": 1337},
     }
 
-    query_runner = CollectingQueryRunner(
-        DEFAULT_SERVER_VERSION,
-        {"wcc.mutate" : pd.DataFrame([result])}
-    )
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"wcc.mutate": pd.DataFrame([result])})
 
     WccCypherEndpoints(query_runner).mutate(
         graph,
@@ -122,13 +114,10 @@ def test_stats_basic(graph: Graph) -> None:
         "computeMillis": 20,
         "postProcessingMillis": 12,
         "componentDistribution": {"foo": 42},
-        "configuration": {"bar": 1337}
+        "configuration": {"bar": 1337},
     }
 
-    query_runner = CollectingQueryRunner(
-        DEFAULT_SERVER_VERSION,
-        {"wcc.stats": pd.DataFrame([result])}
-    )
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"wcc.stats": pd.DataFrame([result])})
 
     result_obj = WccCypherEndpoints(query_runner).stats(graph)
 
@@ -148,22 +137,17 @@ def test_stats_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_stats_with_optional_params(
-    graph: Graph
-) -> None:
+def test_stats_with_optional_params(graph: Graph) -> None:
     result = {
         "componentCount": 3,
         "preProcessingMillis": 10,
         "computeMillis": 20,
         "postProcessingMillis": 12,
         "componentDistribution": {"foo": 42},
-        "configuration": {"bar": 1337}
+        "configuration": {"bar": 1337},
     }
 
-    query_runner = CollectingQueryRunner(
-        DEFAULT_SERVER_VERSION,
-        {"wcc.stats": pd.DataFrame([result])}
-    )
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"wcc.stats": pd.DataFrame([result])})
 
     WccCypherEndpoints(query_runner).stats(
         graph,
@@ -258,13 +242,10 @@ def test_write_basic(graph: Graph) -> None:
         "postProcessingMillis": 12,
         "nodePropertiesWritten": 5,
         "componentDistribution": {"foo": 42},
-        "configuration": {"bar": 1337}
+        "configuration": {"bar": 1337},
     }
 
-    query_runner = CollectingQueryRunner(
-        DEFAULT_SERVER_VERSION,
-        {"wcc.write": pd.DataFrame([result])}
-    )
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"wcc.write": pd.DataFrame([result])})
 
     result_obj = WccCypherEndpoints(query_runner).write(graph, "componentId")
 
@@ -287,9 +268,7 @@ def test_write_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_write_with_optional_params(
-    graph: Graph
-) -> None:
+def test_write_with_optional_params(graph: Graph) -> None:
     result = {
         "componentCount": 3,
         "preProcessingMillis": 10,
@@ -298,13 +277,10 @@ def test_write_with_optional_params(
         "postProcessingMillis": 12,
         "nodePropertiesWritten": 5,
         "componentDistribution": {"foo": 42},
-        "configuration": {"bar": 1337}
+        "configuration": {"bar": 1337},
     }
 
-    query_runner = CollectingQueryRunner(
-        DEFAULT_SERVER_VERSION,
-        {"wcc.write": pd.DataFrame([result])}
-    )
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"wcc.write": pd.DataFrame([result])})
 
     WccCypherEndpoints(query_runner).write(
         graph,

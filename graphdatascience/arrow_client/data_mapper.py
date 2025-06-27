@@ -19,8 +19,8 @@ class DataMapper:
         return rows[0]
 
     @staticmethod
-    def deserialize(input_stream, cls: Type[T]) -> list[T]:
-        def deserialize_row(row: Any):
+    def deserialize(input_stream: Iterator[Result], cls: Type[T]) -> list[T]:
+        def deserialize_row(row: Result):  # type:ignore
             result_dicts = json.loads(row.body.to_pybytes().decode())
             if cls == Dict:
                 return result_dicts
@@ -46,10 +46,10 @@ class DataMapper:
 
                 # Handle nested dataclasses
                 if dataclasses.is_dataclass(field_type) and isinstance(value, dict):
-                    filtered_data[key] = DataMapper.dict_to_dataclass(value, field_type, strict)
+                    filtered_data[key] = DataMapper.dict_to_dataclass(value, field_type, strict)  # type:ignore
                 else:
                     filtered_data[key] = value
             elif strict:
                 raise ValueError(f"Extra field '{key}' not allowed in {cls.__name__}")
 
-        return cls(**filtered_data)
+        return cls(**filtered_data)  # type: ignore

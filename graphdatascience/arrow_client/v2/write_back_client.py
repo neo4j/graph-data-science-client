@@ -40,10 +40,15 @@ class WriteBackClient:
         return int((time.time() - start_time) * 1000)
 
     def _arrow_configuration(self) -> dict[str, Any]:
-        host, port, encrypted = self._arrow_client.connection_info()
+        connection_info = self._arrow_client.connection_info()
         token = self._arrow_client.request_token()
         if token is None:
             token = "IGNORED"
-        arrow_config = {"host": host, "port": port, "token": token, "encrypted": encrypted()}
+        arrow_config = {
+            "host": connection_info.host,
+            "port": connection_info.port,
+            "token": token,
+            "encrypted": connection_info.encrypted,
+        }
 
         return arrow_config

@@ -233,7 +233,7 @@ class WccCypherEndpoints(WccEndpoints):
         sudo: Optional[bool],
         threshold: Optional[float],
         username: Optional[str],
-    ):
+    ) -> None:
         # Add optional parameters
         if min_component_size is not None:
             config["minComponentSize"] = min_component_size

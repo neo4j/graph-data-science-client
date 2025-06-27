@@ -10,7 +10,6 @@ from pandas import DataFrame
 
 from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.arrow_client.arrow_info import ArrowInfo
-from graphdatascience.procedure_surface.api.wcc_endpoints import WccEndpoints
 from graphdatascience.procedure_surface.cypher.wcc_proc_runner import WccCypherEndpoints
 
 from .call_builder import IndirectCallBuilder
@@ -125,9 +124,9 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def graph(self) -> GraphProcRunner:
         return GraphProcRunner(self._query_runner, f"{self._namespace}.graph", self._server_version)
 
-    @property
-    def wcc(self) -> WccEndpoints:
-        return self._wcc_endpoints
+    # @property
+    # def wcc(self) -> WccEndpoints:
+    #     return self._wcc_endpoints
 
     @property
     def util(self) -> UtilProcRunner:

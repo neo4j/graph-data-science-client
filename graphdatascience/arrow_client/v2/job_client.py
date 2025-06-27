@@ -26,7 +26,7 @@ class JobClient:
         return DataMapper.deserialize_single(res, JobIdConfig).jobId
 
     @staticmethod
-    def wait_for_job(client: AuthenticatedArrowClient, job_id: str):
+    def wait_for_job(client: AuthenticatedArrowClient, job_id: str) -> None:
         while True:
             job_id_config = {"jobId": job_id}
             encoded_config = json.dumps(job_id_config).encode("utf-8")
@@ -42,7 +42,7 @@ class JobClient:
         encoded_config = json.dumps(job_id_config).encode("utf-8")
 
         res = client.do_action_with_retry(RESULTS_SUMMARY_ENDPOINT, encoded_config)
-        return DataMapper.deserialize_single(res, Dict)
+        return DataMapper.deserialize_single(res, Dict[str, Any])
 
     @staticmethod
     def stream_results(client: AuthenticatedArrowClient, job_id: str) -> DataFrame:

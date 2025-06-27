@@ -27,18 +27,18 @@ class ExampleDataclass:
         ),
     ],
 )
-def test_dict_to_dataclass(input_data: Dict[str, Any], expected_output: ExampleDataclass):
+def test_dict_to_dataclass(input_data: Dict[str, Any], expected_output: ExampleDataclass) -> None:
     result = DataMapper.dict_to_dataclass(input_data, ExampleDataclass)
     assert result == expected_output
 
 
-def test_dict_to_dataclass_strict_mode_rejects_extra_fields():
+def test_dict_to_dataclass_strict_mode_rejects_extra_fields() -> None:
     input_data = {"field_one": "test", "field_two": 123, "nested": {"nested_field": 456}, "extra_field": "not_allowed"}
 
     with pytest.raises(ValueError, match="Extra field 'extra_field' not allowed in ExampleDataclass"):
         DataMapper.dict_to_dataclass(input_data, ExampleDataclass, strict=True)
 
 
-def test_dict_to_dataclass_non_dataclass_error():
+def test_dict_to_dataclass_non_dataclass_error() -> None:
     with pytest.raises(ValueError, match="is not a dataclass"):
         DataMapper.dict_to_dataclass({"key": "value"}, int)

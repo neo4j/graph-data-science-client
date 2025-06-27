@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Any, Optional, Union
+from typing import Any, Iterator, Optional
 
 from pyarrow import __version__ as arrow_version
 from pyarrow import flight
@@ -12,6 +12,7 @@ from pyarrow._flight import (
     FlightStreamReader,
     FlightTimedOutError,
     FlightUnavailableError,
+    Result,
     Ticket,
 )
 from tenacity import retry, retry_any, retry_if_exception_type, stop_after_attempt, stop_after_delay, wait_exponential
@@ -71,7 +72,7 @@ class AuthenticatedArrowClient:
         host: str,
         retry_config: RetryConfig,
         port: int = 8491,
-        auth: Optional[Union[ArrowAuthentication, tuple[str, str]]] = None,
+        auth: Optional[ArrowAuthentication] = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
         tls_root_certs: Optional[bytes] = None,
@@ -85,7 +86,7 @@ class AuthenticatedArrowClient:
             The host address of the GDS Arrow server
         port: int
             The host port of the GDS Arrow server (default is 8491)
-        auth: Optional[Union[ArrowAuthentication, tuple[str, str]]]
+        auth: Optional[ArrowAuthentication]
             Either an implementation of ArrowAuthentication providing a pair to be used for basic authentication, or a username, password tuple
         encrypted: bool
             A flag that indicates whether the connection should be encrypted (default is False)
@@ -166,10 +167,10 @@ class AuthenticatedArrowClient:
     def get_stream(self, ticket: Ticket) -> FlightStreamReader:
         return self._flight_client.do_get(ticket)
 
-    def do_action(self, endpoint: str, payload: bytes):
-        return self._flight_client.do_action(Action(endpoint, payload))
+    def do_action(self, endpoint: str, payload: bytes) -> Iterator[Result]:
+        return self._flight_client.do_action(Action(endpoint, payload))  # type: ignore
 
-    def do_action_with_retry(self, endpoint: str, payload: bytes):
+    def do_action_with_retry(self, endpoint: str, payload: bytes) -> Iterator[Result]:
         @retry(
             reraise=True,
             before=before_log("Send action", self._logger, logging.DEBUG),
@@ -177,7 +178,7 @@ class AuthenticatedArrowClient:
             stop=self._retry_config.stop,
             wait=self._retry_config.wait,
         )
-        def run_with_retry():
+        def run_with_retry() -> Iterator[Result]:
             return self.do_action(endpoint, payload)
 
         return run_with_retry()

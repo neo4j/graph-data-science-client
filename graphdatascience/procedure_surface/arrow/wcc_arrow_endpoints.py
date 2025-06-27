@@ -176,6 +176,9 @@ class WccArrowEndpoints(WccEndpoints):
         job_id = JobClient.run_job_and_wait(self._arrow_client, WCC_ENDPOINT, config)
         computation_result = JobClient.get_summary(self._arrow_client, job_id)
 
+        if self._write_back_client is None:
+            raise Exception("Write back client is not initialized")
+
         write_millis = self._write_back_client.write(
             G.name(), job_id, write_concurrency if write_concurrency is not None else concurrency
         )
@@ -205,7 +208,7 @@ class WccArrowEndpoints(WccEndpoints):
         seed_property: Optional[str],
         sudo: Optional[bool],
         threshold: Optional[float],
-    ):
+    ) -> dict[str, Any]:
         config: dict[str, Any] = {
             "graphName": G.name(),
         }
