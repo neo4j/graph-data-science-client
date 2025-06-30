@@ -45,6 +45,7 @@ class SessionMemory(Enum):
     Enumeration representing session main memory configurations.
     """
 
+    m_2GB = SessionMemoryValue("2GB")
     m_4GB = SessionMemoryValue("4GB")
     m_8GB = SessionMemoryValue("8GB")
     m_16GB = SessionMemoryValue("16GB")
