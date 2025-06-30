@@ -78,13 +78,11 @@ class AuraApiCI:
             if should_retry:
                 logging.debug(f"Error code: {response.status_code} - Retrying in {wait_time} s")
 
-
         response_json = response.json()
         if "errors" in response_json:
             raise Exception(response_json["errors"])
 
         return response_json["data"]  # type: ignore
-
 
     def check_running(self, db_id: str) -> None:
         RUNNING_MAX_WAIT_TIME = 60 * 5
