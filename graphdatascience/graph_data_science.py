@@ -8,13 +8,14 @@ import neo4j
 from neo4j import Driver
 from pandas import DataFrame
 
-from graphdatascience.query_runner.arrow_authentication import UsernamePasswordAuthentication
+from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
+from graphdatascience.arrow_client.arrow_info import ArrowInfo
+from graphdatascience.procedure_surface.cypher.wcc_proc_runner import WccCypherEndpoints
 
 from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
 from .graph.graph_proc_runner import GraphProcRunner
-from .query_runner.arrow_info import ArrowInfo
 from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
@@ -117,9 +118,15 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         self._query_runner.set_show_progress(show_progress)
         super().__init__(self._query_runner, namespace="gds", server_version=self._server_version)
 
+        self._wcc_endpoints = WccCypherEndpoints(self._query_runner)
+
     @property
     def graph(self) -> GraphProcRunner:
         return GraphProcRunner(self._query_runner, f"{self._namespace}.graph", self._server_version)
+
+    # @property
+    # def wcc(self) -> WccEndpoints:
+    #     return self._wcc_endpoints
 
     @property
     def util(self) -> UtilProcRunner:

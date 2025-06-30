@@ -5,7 +5,7 @@ import warnings
 from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 
-from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
+from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi

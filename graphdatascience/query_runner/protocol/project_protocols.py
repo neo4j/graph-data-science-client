@@ -25,7 +25,7 @@ class ProjectProtocol(ABC):
     def run_projection(
         self,
         query_runner: QueryRunner,
-        endpoint: str,
+        query: str,
         params: CallParameters,
         terminationFlag: TerminationFlag,
         yields: Optional[list[str]] = None,
