@@ -2,7 +2,7 @@ import pytest
 from pyarrow.flight import FlightUnavailableError
 from tenacity import retry_any, stop_after_attempt, wait_fixed
 
-from graphdatascience.query_runner.arrow_info import ArrowInfo
+from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.retry_utils.retry_config import RetryConfig
 from graphdatascience.server_version.server_version import ServerVersion

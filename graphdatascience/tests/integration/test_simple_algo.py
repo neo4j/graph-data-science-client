@@ -57,7 +57,7 @@ def test_wcc_stats(gds: GraphDataScience) -> None:
 def test_wcc_stats_estimate(gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    result = gds.wcc.stats.estimate(G)
+    result = gds.wcc.stats.estimate(G)  # type: ignore
 
     assert result["requiredMemory"]
 

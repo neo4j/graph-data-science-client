@@ -62,7 +62,7 @@ def test_remote_projection_and_writeback_custom_database_name(gds_with_cloud_set
         assert projection_result["nodeCount"] == 2
         assert projection_result["relationshipCount"] == 1
 
-        write_result = gds_with_cloud_setup.wcc.write(G, writeProperty="wcc")
+        write_result = gds_with_cloud_setup.wcc.write(G, writeProperty="wcc")  # type: ignore
 
         assert write_result["nodePropertiesWritten"] == 2
         count_wcc_nodes_query = "MATCH (n WHERE n.wcc IS NOT NULL) RETURN count(*) AS c"
@@ -234,6 +234,6 @@ def test_empty_graph_write_back(
 
     assert G.node_count() == 0
 
-    result = gds_with_cloud_setup.wcc.write(G, writeProperty="wcc")
+    result = gds_with_cloud_setup.wcc.write(G, writeProperty="wcc")  # type: ignore
 
     assert result["nodePropertiesWritten"] == 0

@@ -14,8 +14,8 @@ from pyarrow.flight import (
     Ticket,
 )
 
-from graphdatascience.query_runner.arrow_authentication import UsernamePasswordAuthentication
-from graphdatascience.query_runner.arrow_info import ArrowInfo
+from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
+from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.query_runner.gds_arrow_client import AuthMiddleware, GdsArrowClient
 
 ActionParam = Union[str, tuple[str, Any], Action]

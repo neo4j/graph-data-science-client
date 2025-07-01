@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import warnings
 from types import TracebackType
 from typing import Any, Optional, Type, Union
@@ -8,13 +9,15 @@ import neo4j
 from neo4j import Driver
 from pandas import DataFrame
 
-from graphdatascience.query_runner.arrow_authentication import UsernamePasswordAuthentication
+from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
+from graphdatascience.arrow_client.arrow_info import ArrowInfo
+from graphdatascience.procedure_surface.cypher.wcc_cypher_endpoints import WccCypherEndpoints
 
 from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
 from .graph.graph_proc_runner import GraphProcRunner
-from .query_runner.arrow_info import ArrowInfo
+from .procedure_surface.api.wcc_endpoints import WccEndpoints
 from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
@@ -117,9 +120,20 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         self._query_runner.set_show_progress(show_progress)
         super().__init__(self._query_runner, namespace="gds", server_version=self._server_version)
 
+        self._wcc_endpoints: Optional[WccEndpoints] = None
+        if os.environ.get("ENABLE_EXPLICIT_ENDPOINTS") is not None:
+            self._wcc_endpoints = WccCypherEndpoints(self._query_runner)
+
     @property
     def graph(self) -> GraphProcRunner:
         return GraphProcRunner(self._query_runner, f"{self._namespace}.graph", self._server_version)
+
+    @property
+    def wcc(self) -> Union[WccEndpoints, IndirectCallBuilder]:
+        if self._wcc_endpoints is None:
+            return IndirectCallBuilder(self._query_runner, f"gds.{self._namespace}.wcc", self._server_version)
+
+        return self._wcc_endpoints
 
     @property
     def util(self) -> UtilProcRunner:
