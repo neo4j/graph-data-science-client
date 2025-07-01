@@ -11,7 +11,7 @@ from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_api_responses import SessionDetails
 from graphdatascience.session.aura_api_token_authentication import AuraApiTokenAuthentication
-from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience, AuraGraphDataScienceFactory
 from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.session_info import SessionInfo
@@ -210,9 +210,9 @@ class DedicatedSessions:
         arrow_authentication: ArrowAuthentication,
         db_runner: Optional[Neo4jQueryRunner],
     ) -> AuraGraphDataScience:
-        return AuraGraphDataScience.create(
+        return AuraGraphDataScienceFactory(
             session_bolt_connection_info=session_bolt_connection_info,
             arrow_authentication=arrow_authentication,
             db_endpoint=db_runner,
             delete_fn=lambda: self._aura_api.delete_session(session_id=session_id),
-        )
+        ).create()

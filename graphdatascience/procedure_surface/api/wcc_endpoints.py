@@ -253,6 +253,9 @@ class WccMutateResult:
     node_properties_written: int
     configuration: dict[str, Any]
 
+    def __getitem__(self, item: str) -> Any:
+        return getattr(self, item)
+
 
 @dataclass(frozen=True, repr=True)
 class WccStatsResult:
@@ -262,6 +265,9 @@ class WccStatsResult:
     compute_millis: int
     post_processing_millis: int
     configuration: dict[str, Any]
+
+    def __getitem__(self, item: str) -> Any:
+        return getattr(self, item)
 
 
 @dataclass(frozen=True, repr=True)
@@ -274,3 +280,6 @@ class WccWriteResult:
     post_processing_millis: int
     node_properties_written: int
     configuration: dict[str, Any]
+
+    def __getitem__(self, item: str) -> Any:
+        return getattr(self, item)
