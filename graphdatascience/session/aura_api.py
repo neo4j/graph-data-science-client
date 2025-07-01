@@ -351,8 +351,17 @@ class AuraApi:
 
     def _check_status_code(self, resp: requests.Response) -> None:
         if resp.status_code >= 400:
+            message = ""
+            try:
+                message = resp.json()
+            except requests.JSONDecodeError:
+                try:
+                    message = resp.text
+                except Exception:
+                    message = f"Not parsable body `{resp.raw.data!r}`"
+
             raise AuraApiError(
-                f"Request for {resp.url} failed with status code {resp.status_code} - {resp.reason}: {resp.json()}",
+                f"Request for {resp.url} failed with status code {resp.status_code} - {resp.reason}: `{message}`",
                 status_code=resp.status_code,
             )
 
