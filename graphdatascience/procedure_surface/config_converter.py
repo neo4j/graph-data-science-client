@@ -1,18 +1,13 @@
-from typing import Optional, Any, Dict
-
-from graphdatascience import Graph
+from typing import Any, Dict, Optional
 
 
-class ArrowConfigConverter:
-
+class ConfigConverter:
     @staticmethod
-    def build_configuration(G: Graph, **kwargs: Optional[Any]) -> dict[str, Any]:
-        config: dict[str, Any] = {
-            "graphName": G.name(),
-        }
+    def convert_to_gds_config(**kwargs: Optional[Any]) -> dict[str, Any]:
+        config: dict[str, Any] = {}
 
         # Process kwargs
-        processed_kwargs = ArrowConfigConverter._process_dict_values(kwargs)
+        processed_kwargs = ConfigConverter._process_dict_values(kwargs)
         config.update(processed_kwargs)
 
         return config
@@ -20,8 +15,8 @@ class ArrowConfigConverter:
     @staticmethod
     def _convert_to_camel_case(name: str) -> str:
         """Convert a snake_case string to camelCase."""
-        parts = name.split('_')
-        return ''.join([word.capitalize() if i > 0 else word.lower() for i, word in enumerate(parts)])
+        parts = name.split("_")
+        return "".join([word.capitalize() if i > 0 else word.lower() for i, word in enumerate(parts)])
 
     @staticmethod
     def _process_dict_values(input_dict: Dict[str, Any]) -> Dict[str, Any]:
@@ -29,10 +24,10 @@ class ArrowConfigConverter:
         result = {}
         for key, value in input_dict.items():
             if value is not None:
-                camel_key = ArrowConfigConverter._convert_to_camel_case(key)
+                camel_key = ConfigConverter._convert_to_camel_case(key)
                 # Recursively process nested dictionaries
                 if isinstance(value, dict):
-                    result[camel_key] = ArrowConfigConverter._process_dict_values(value)
+                    result[camel_key] = ConfigConverter._process_dict_values(value)
                 else:
                     result[camel_key] = value
         return result

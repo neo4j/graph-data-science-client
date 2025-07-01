@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from pandas import DataFrame
 
@@ -6,6 +6,7 @@ from ...call_parameters import CallParameters
 from ...graph.graph_object import Graph
 from ...query_runner.query_runner import QueryRunner
 from ..api.wcc_endpoints import WccEndpoints, WccMutateResult, WccStatsResult, WccWriteResult
+from ..config_converter import ConfigConverter
 
 
 class WccCypherEndpoints(WccEndpoints):
@@ -33,25 +34,19 @@ class WccCypherEndpoints(WccEndpoints):
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
     ) -> WccMutateResult:
-        # Build configuration dictionary from parameters
-        config: dict[str, Any] = {
-            "mutateProperty": mutate_property,
-        }
-
-        self._create_procedure_config(
-            config,
-            concurrency,
-            consecutive_ids,
-            job_id,
-            log_progress,
-            None,
-            node_labels,
-            relationship_types,
-            relationship_weight_property,
-            seed_property,
-            sudo,
-            threshold,
-            username,
+        config = ConfigConverter.convert_to_gds_config(
+            mutate_property=mutate_property,
+            concurrency=concurrency,
+            consecutive_ids=consecutive_ids,
+            job_id=job_id,
+            log_progress=log_progress,
+            node_labels=node_labels,
+            relationship_types=relationship_types,
+            relationship_weight_property=relationship_weight_property,
+            seed_property=seed_property,
+            sudo=sudo,
+            threshold=threshold,
+            username=username,
         )
 
         # Run procedure and return results
@@ -86,23 +81,18 @@ class WccCypherEndpoints(WccEndpoints):
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
     ) -> WccStatsResult:
-        # Build configuration dictionary from parameters
-        config: dict[str, Any] = {}
-
-        self._create_procedure_config(
-            config,
-            concurrency,
-            consecutive_ids,
-            job_id,
-            log_progress,
-            None,
-            node_labels,
-            relationship_types,
-            relationship_weight_property,
-            seed_property,
-            sudo,
-            threshold,
-            username,
+        config = ConfigConverter.convert_to_gds_config(
+            concurrency=concurrency,
+            consecutive_ids=consecutive_ids,
+            job_id=job_id,
+            log_progress=log_progress,
+            node_labels=node_labels,
+            relationship_types=relationship_types,
+            relationship_weight_property=relationship_weight_property,
+            seed_property=seed_property,
+            sudo=sudo,
+            threshold=threshold,
+            username=username,
         )
 
         # Run procedure and return results
@@ -136,23 +126,19 @@ class WccCypherEndpoints(WccEndpoints):
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
     ) -> DataFrame:
-        # Build configuration dictionary from parameters
-        config: dict[str, Any] = {}
-
-        self._create_procedure_config(
-            config,
-            concurrency,
-            consecutive_ids,
-            job_id,
-            log_progress,
-            min_component_size,
-            node_labels,
-            relationship_types,
-            relationship_weight_property,
-            seed_property,
-            sudo,
-            threshold,
-            username,
+        config = ConfigConverter.convert_to_gds_config(
+            concurrency=concurrency,
+            consecutive_ids=consecutive_ids,
+            job_id=job_id,
+            log_progress=log_progress,
+            min_component_size=min_component_size,
+            node_labels=node_labels,
+            relationship_types=relationship_types,
+            relationship_weight_property=relationship_weight_property,
+            seed_property=seed_property,
+            sudo=sudo,
+            threshold=threshold,
+            username=username,
         )
 
         # Run procedure and return results
@@ -179,24 +165,20 @@ class WccCypherEndpoints(WccEndpoints):
         relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[int] = None,
     ) -> WccWriteResult:
-        # Build configuration dictionary from parameters
-        config: dict[str, Any] = {
-            "writeProperty": write_property,
-        }
-        self._create_procedure_config(
-            config,
-            concurrency,
-            consecutive_ids,
-            job_id,
-            log_progress,
-            min_component_size,
-            node_labels,
-            relationship_types,
-            relationship_weight_property,
-            seed_property,
-            sudo,
-            threshold,
-            username,
+        config = ConfigConverter.convert_to_gds_config(
+            write_property=write_property,
+            concurrency=concurrency,
+            consecutive_ids=consecutive_ids,
+            job_id=job_id,
+            log_progress=log_progress,
+            min_component_size=min_component_size,
+            node_labels=node_labels,
+            relationship_types=relationship_types,
+            relationship_weight_property=relationship_weight_property,
+            seed_property=seed_property,
+            sudo=sudo,
+            threshold=threshold,
+            username=username,
         )
 
         if write_concurrency is not None:
@@ -217,45 +199,3 @@ class WccCypherEndpoints(WccEndpoints):
             result["nodePropertiesWritten"],
             result["configuration"],
         )
-
-    @staticmethod
-    def _create_procedure_config(
-        config: dict[str, Any],
-        concurrency: Optional[int],
-        consecutive_ids: Optional[bool],
-        job_id: Optional[str],
-        log_progress: Optional[bool],
-        min_component_size: Optional[int],
-        node_labels: Optional[List[str]],
-        relationship_types: Optional[List[str]],
-        relationship_weight_property: Optional[str],
-        seed_property: Optional[str],
-        sudo: Optional[bool],
-        threshold: Optional[float],
-        username: Optional[str],
-    ) -> None:
-        # Add optional parameters
-        if min_component_size is not None:
-            config["minComponentSize"] = min_component_size
-        if threshold is not None:
-            config["threshold"] = threshold
-        if relationship_types is not None:
-            config["relationshipTypes"] = relationship_types
-        if node_labels is not None:
-            config["nodeLabels"] = node_labels
-        if sudo is not None:
-            config["sudo"] = sudo
-        if log_progress is not None:
-            config["logProgress"] = log_progress
-        if username is not None:
-            config["username"] = username
-        if concurrency is not None:
-            config["concurrency"] = concurrency
-        if job_id is not None:
-            config["jobId"] = job_id
-        if seed_property is not None:
-            config["seedProperty"] = seed_property
-        if consecutive_ids is not None:
-            config["consecutiveIds"] = consecutive_ids
-        if relationship_weight_property is not None:
-            config["relationshipWeightProperty"] = relationship_weight_property
