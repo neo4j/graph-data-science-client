@@ -2,6 +2,7 @@ from typing import Any, List, Optional
 
 from pandas import DataFrame
 
+from .arrow_config_converter import ArrowConfigConverter
 from ...arrow_client.authenticated_arrow_client import AuthenticatedArrowClient
 from ...arrow_client.v2.job_client import JobClient
 from ...arrow_client.v2.mutation_client import MutationClient
@@ -33,19 +34,18 @@ class WccArrowEndpoints(WccEndpoints):
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
     ) -> WccMutateResult:
-        config = self._build_configuration(
+        config = ArrowConfigConverter.build_configuration(
             G,
-            concurrency,
-            consecutive_ids,
-            job_id,
-            log_progress,
-            None,
-            node_labels,
-            relationship_types,
-            relationship_weight_property,
-            seed_property,
-            sudo,
-            threshold,
+            concurrency = concurrency,
+            consecutive_ids = consecutive_ids,
+            job_id = job_id,
+            log_progress = log_progress,
+            node_labels = node_labels,
+            relationship_types = relationship_types,
+            relationship_weight_property = relationship_weight_property,
+            seed_property = seed_property,
+            sudo = sudo,
+            threshold = threshold,
         )
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, WCC_ENDPOINT, config)
@@ -79,19 +79,18 @@ class WccArrowEndpoints(WccEndpoints):
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
     ) -> WccStatsResult:
-        config = self._build_configuration(
+        config = ArrowConfigConverter.build_configuration(
             G,
-            concurrency,
-            consecutive_ids,
-            job_id,
-            log_progress,
-            None,
-            node_labels,
-            relationship_types,
-            relationship_weight_property,
-            seed_property,
-            sudo,
-            threshold,
+            concurrency = concurrency,
+            consecutive_ids = consecutive_ids,
+            job_id = job_id,
+            log_progress = log_progress,
+            node_labels = node_labels,
+            relationship_types = relationship_types,
+            relationship_weight_property = relationship_weight_property,
+            seed_property = seed_property,
+            sudo = sudo,
+            threshold = threshold,
         )
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, WCC_ENDPOINT, config)
@@ -122,19 +121,19 @@ class WccArrowEndpoints(WccEndpoints):
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
     ) -> DataFrame:
-        config = self._build_configuration(
+        config = ArrowConfigConverter.build_configuration(
             G,
-            concurrency,
-            consecutive_ids,
-            job_id,
-            log_progress,
-            min_component_size,
-            node_labels,
-            relationship_types,
-            relationship_weight_property,
-            seed_property,
-            sudo,
-            threshold,
+            concurrency = concurrency,
+            consecutive_ids = consecutive_ids,
+            job_id = job_id,
+            log_progress = log_progress,
+            min_component_size = min_component_size,
+            node_labels = node_labels,
+            relationship_types = relationship_types,
+            relationship_weight_property = relationship_weight_property,
+            seed_property = seed_property,
+            sudo = sudo,
+            threshold = threshold,
         )
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, WCC_ENDPOINT, config)
@@ -158,19 +157,20 @@ class WccArrowEndpoints(WccEndpoints):
         relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[int] = None,
     ) -> WccWriteResult:
-        config = self._build_configuration(
+        
+        config = ArrowConfigConverter.build_configuration(
             G,
-            concurrency,
-            consecutive_ids,
-            job_id,
-            log_progress,
-            min_component_size,
-            node_labels,
-            relationship_types,
-            relationship_weight_property,
-            seed_property,
-            sudo,
-            threshold,
+            concurrency = concurrency,
+            consecutive_ids = consecutive_ids,
+            job_id = job_id,
+            log_progress = log_progress,
+            min_component_size = min_component_size,
+            node_labels = node_labels,
+            relationship_types = relationship_types,
+            relationship_weight_property = relationship_weight_property,
+            seed_property = seed_property,
+            sudo = sudo,
+            threshold = threshold,
         )
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, WCC_ENDPOINT, config)
@@ -193,47 +193,3 @@ class WccArrowEndpoints(WccEndpoints):
             computation_result["nodePropertiesWritten"],
             computation_result["configuration"],
         )
-
-    @staticmethod
-    def _build_configuration(
-        G: Graph,
-        concurrency: Optional[int],
-        consecutive_ids: Optional[bool],
-        job_id: Optional[str],
-        log_progress: Optional[bool],
-        min_component_size: Optional[int],
-        node_labels: Optional[List[str]],
-        relationship_types: Optional[List[str]],
-        relationship_weight_property: Optional[str],
-        seed_property: Optional[str],
-        sudo: Optional[bool],
-        threshold: Optional[float],
-    ) -> dict[str, Any]:
-        config: dict[str, Any] = {
-            "graphName": G.name(),
-        }
-
-        if min_component_size is not None:
-            config["minComponentSize"] = min_component_size
-        if threshold is not None:
-            config["threshold"] = threshold
-        if relationship_types is not None:
-            config["relationshipTypes"] = relationship_types
-        if node_labels is not None:
-            config["nodeLabels"] = node_labels
-        if sudo is not None:
-            config["sudo"] = sudo
-        if log_progress is not None:
-            config["logProgress"] = log_progress
-        if concurrency is not None:
-            config["concurrency"] = concurrency
-        if job_id is not None:
-            config["jobId"] = job_id
-        if seed_property is not None:
-            config["seedProperty"] = seed_property
-        if consecutive_ids is not None:
-            config["consecutiveIds"] = consecutive_ids
-        if relationship_weight_property is not None:
-            config["relationshipWeightProperty"] = relationship_weight_property
-
-        return config
