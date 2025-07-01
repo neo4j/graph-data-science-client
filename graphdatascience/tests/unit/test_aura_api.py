@@ -948,6 +948,43 @@ def test_list_missing_instance(requests_mock: Mocker) -> None:
     assert api.list_instance("id0") is None
 
 
+def test_list_instance_unknown_error(requests_mock: Mocker) -> None:
+    api = AuraApi("", "", project_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1/instances/id0",
+        status_code=500,
+        reason="Not Found",
+        text="my text",
+    )
+
+    with pytest.raises(
+        AuraApiError,
+        match="Request for https://api.neo4j.io/v1/instances/id0 failed with status code 500 - Not Found: `my text`'",
+    ):
+        api.list_instance("id0")
+
+
+def test_list_instance_unknown_error_empty_body(requests_mock: Mocker) -> None:
+    api = AuraApi("", "", project_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1/instances/id0",
+        status_code=500,
+        reason="Not Found",
+    )
+
+    with pytest.raises(
+        AuraApiError,
+        match="Request for https://api.neo4j.io/v1/instances/id0 failed with status code 500 - Not Found: ``",
+    ):
+        api.list_instance("id0")
+
+
 def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> None:
     mock_auth_token(requests_mock)
     requests_mock.get(
