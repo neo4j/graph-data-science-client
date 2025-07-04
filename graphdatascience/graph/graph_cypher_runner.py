@@ -6,6 +6,8 @@ from typing import Any, Optional
 
 from pandas import Series
 
+from graphdatascience.query_runner.query_mode import QueryMode
+
 from ..caller_base import CallerBase
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
@@ -46,7 +48,7 @@ class GraphCypherRunner(CallerBase):
         GraphCypherRunner._verify_query_ends_with_return_clause(self._namespace, query)
 
         result: Optional[dict[str, Any]] = self._query_runner.run_retryable_cypher(
-            query, params, database, custom_error=False
+            query, params, database, custom_error=False, mode=QueryMode.READ
         ).squeeze()
 
         if not result:

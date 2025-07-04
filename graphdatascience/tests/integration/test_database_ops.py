@@ -8,6 +8,7 @@ from neo4j import Driver
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.progress.static_progress_provider import StaticProgressProvider
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.tests.integration.conftest import AUTH, URI
 from graphdatascience.version import __version__
 
@@ -158,6 +159,11 @@ def test_aurads_accepts_neo4j_s() -> None:
 
 def test_run_cypher(gds: GraphDataScience) -> None:
     result = gds.run_cypher("CALL gds.list()")
+    assert len(result) > 10
+
+
+def test_run_read_cypher(gds: GraphDataScience) -> None:
+    result = gds.run_cypher("CALL gds.list()", mode=QueryMode.READ, retryable=True)
     assert len(result) > 10
 
 

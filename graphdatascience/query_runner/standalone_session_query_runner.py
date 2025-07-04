@@ -60,6 +60,7 @@ class StandaloneSessionQueryRunner(QueryRunner):
         query: str,
         params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
+        mode: Optional[QueryMode] = None,
         custom_error: bool = True,
     ) -> DataFrame:
         raise NotImplementedError
@@ -69,6 +70,7 @@ class StandaloneSessionQueryRunner(QueryRunner):
         query: str,
         params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
+        mode: Optional[QueryMode] = None,
         custom_error: bool = True,
     ) -> DataFrame:
         raise NotImplementedError

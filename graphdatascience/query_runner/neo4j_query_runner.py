@@ -161,11 +161,15 @@ class Neo4jQueryRunner(QueryRunner):
         query: str,
         params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
+        mode: Optional[QueryMode] = None,
         custom_error: bool = True,
         connectivity_retry_config: Optional[ConnectivityRetriesConfig] = None,
     ) -> DataFrame:
         if params is None:
             params = {}
+
+        if mode is None:
+            mode = QueryMode.WRITE
 
         if database is None:
             database = self._database
@@ -174,7 +178,11 @@ class Neo4jQueryRunner(QueryRunner):
             connectivity_retry_config = Neo4jQueryRunner.ConnectivityRetriesConfig()
         self._verify_connectivity(database=database, retry_config=connectivity_retry_config)
 
-        with self._driver.session(database=database, bookmarks=self.bookmarks()) as session:
+        with self._driver.session(
+            database=database,
+            bookmarks=self.bookmarks(),
+            default_access_mode=mode.neo4j_access_mode(),
+        ) as session:
             try:
                 result = session.run(query, params)
             except Exception as e:
@@ -205,18 +213,18 @@ class Neo4jQueryRunner(QueryRunner):
         query: str,
         params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
-        custom_error: bool = True,
         mode: Optional[QueryMode] = None,
+        custom_error: bool = True,
         connectivity_retry_config: Optional[ConnectivityRetriesConfig] = None,
     ) -> DataFrame:
         if not database:
             database = self._database
 
         if self._NEO4J_DRIVER_VERSION < SemanticVersion(5, 5, 0):
-            return self.run_cypher(query, params, database, custom_error, connectivity_retry_config)
+            return self.run_cypher(query, params, database, mode, custom_error, connectivity_retry_config)
 
         if not mode:
-            routing = neo4j.RoutingControl.READ
+            routing = neo4j.RoutingControl.WRITE
         else:
             routing = mode.neo4j_routing()
 
@@ -263,9 +271,9 @@ class Neo4jQueryRunner(QueryRunner):
 
         def run_cypher_query() -> DataFrame:
             if retryable:
-                return self.run_retryable_cypher(query, params, database, custom_error, mode=mode)
+                return self.run_retryable_cypher(query, params, database, custom_error=custom_error, mode=mode)
             else:
-                return self.run_cypher(query, params, database, custom_error)
+                return self.run_cypher(query, params, database, custom_error=custom_error)
 
         job_id = None if not params else params.get_job_id()
         if self._resolve_show_progress(logging) and job_id:

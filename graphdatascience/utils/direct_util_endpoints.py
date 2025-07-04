@@ -2,6 +2,8 @@ from typing import Any
 
 from pandas import DataFrame
 
+from graphdatascience.query_runner.query_mode import QueryMode
+
 from ..call_parameters import CallParameters
 from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
@@ -48,7 +50,7 @@ class DirectUtilEndpoints(CallerBase):
         else:
             query = "MATCH (n) RETURN id(n) AS id"
 
-        node_match = self._query_runner.run_retryable_cypher(query, custom_error=False)
+        node_match = self._query_runner.run_retryable_cypher(query, custom_error=False, mode=QueryMode.READ)
 
         if len(node_match) != 1:
             raise ValueError(f"Filter did not match with exactly one node: {node_match}")

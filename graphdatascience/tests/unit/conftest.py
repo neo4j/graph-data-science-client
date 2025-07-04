@@ -39,6 +39,7 @@ class CollectingQueryRunner(QueryRunner):
             self._result_map = result_mock
 
         self.queries: list[str] = []
+        self.run_args: list[dict[str, Any]] = []
         self.params: list[dict[str, Any]] = []
         self._server_version = server_version
         self._database = "dummy"
@@ -60,7 +61,10 @@ class CollectingQueryRunner(QueryRunner):
         yields_clause = "" if yields is None else " YIELD " + ", ".join(yields)
         query = f"CALL {endpoint}({params.placeholder_str()}){yields_clause}"
 
-        return self.run_cypher(query, params, database, custom_error)
+        if retryable:
+            return self.run_retryable_cypher(query, params, database, mode, custom_error)
+        else:
+            return self.run_cypher(query, params, database, mode, custom_error)
 
     def call_function(self, endpoint: str, params: Optional[CallParameters] = None) -> Any:
         if params is None:
@@ -70,13 +74,19 @@ class CollectingQueryRunner(QueryRunner):
         return self.run_cypher(query, params).squeeze()
 
     def run_cypher(
-        self, query: str, params: Optional[dict[str, Any]] = None, db: Optional[str] = None, custom_error: bool = True
+        self,
+        query: str,
+        params: Optional[dict[str, Any]] = None,
+        db: Optional[str] = None,
+        mode: Optional[QueryMode] = None,
+        custom_error: bool = True,
     ) -> DataFrame:
         if params is None:
             params = {}
 
         self.queries.append(query)
         self.params.append(dict(params.items()))
+        self.run_args.append({"db": db, "mode": mode, "custom_error": custom_error, "retryable": False})
 
         result = self.get_mock_result(query)
 
@@ -90,9 +100,22 @@ class CollectingQueryRunner(QueryRunner):
         query: str,
         params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
+        mode: Optional[QueryMode] = None,
         custom_error: bool = True,
     ) -> DataFrame:
-        return self.run_cypher(query, params, database, custom_error)
+        if params is None:
+            params = {}
+
+        self.queries.append(query)
+        self.params.append(dict(params.items()))
+        self.run_args.append({"db": database, "mode": mode, "custom_error": custom_error, "retryable": True})
+
+        result = self.get_mock_result(query)
+
+        if isinstance(result, Exception):
+            raise result
+        else:
+            return result
 
     def server_version(self) -> ServerVersion:
         return self._server_version
@@ -112,6 +135,11 @@ class CollectingQueryRunner(QueryRunner):
         if len(self.params) == 0:
             return {}
         return self.params[-1]
+
+    def last_run_args(self) -> dict[str, Any]:
+        if len(self.run_args) == 0:
+            return {}
+        return self.run_args[-1]
 
     def set_database(self, database: str) -> None:
         self._database = database

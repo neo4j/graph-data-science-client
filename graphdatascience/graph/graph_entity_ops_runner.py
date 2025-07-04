@@ -5,6 +5,8 @@ from warnings import filterwarnings
 import pandas as pd
 from pandas import DataFrame, Series
 
+from graphdatascience.query_runner.query_mode import QueryMode
+
 from ..call_parameters import CallParameters
 from ..error.cypher_warning_handler import (
     filter_id_func_deprecation_warning,
@@ -164,7 +166,9 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
             unique_node_ids = result["nodeId"].drop_duplicates().tolist()
 
             db_properties_df = query_runner.run_retryable_cypher(
-                GraphNodePropertiesRunner._build_query(db_node_properties), params={"ids": unique_node_ids}
+                GraphNodePropertiesRunner._build_query(db_node_properties),
+                params={"ids": unique_node_ids},
+                mode=QueryMode.READ,
             )
 
             if "propertyValue" not in result.keys():

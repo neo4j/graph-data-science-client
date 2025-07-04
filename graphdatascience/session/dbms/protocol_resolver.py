@@ -3,6 +3,7 @@ from typing import Optional
 from neo4j.exceptions import Neo4jError
 
 from graphdatascience import QueryRunner
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 
 
@@ -37,7 +38,8 @@ class ProtocolVersionResolver:
         try:
             version_list = []
             for version_string in self._query_runner.run_retryable_cypher(
-                "CALL gds.session.dbms.protocol.version() YIELD version"
+                "CALL gds.session.dbms.protocol.version() YIELD version",
+                mode=QueryMode.READ,
             )["version"].to_list():
                 parsed_version = self._from_str(version_string)
                 if parsed_version:
