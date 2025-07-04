@@ -54,18 +54,20 @@ class SessionQueryRunner(QueryRunner):
         query: str,
         params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
+        mode: Optional[QueryMode] = None,
         custom_error: bool = True,
     ) -> DataFrame:
-        return self._db_query_runner.run_cypher(query, params, database, custom_error)
+        return self._db_query_runner.run_cypher(query, params, database, mode, custom_error)
 
     def run_retryable_cypher(
         self,
         query: str,
         params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
+        mode: Optional[QueryMode] = None,
         custom_error: bool = True,
     ) -> DataFrame:
-        return self._db_query_runner.run_retryable_cypher(query, params, database, custom_error=custom_error)
+        return self._db_query_runner.run_retryable_cypher(query, params, database, mode=mode, custom_error=custom_error)
 
     def call_function(self, endpoint: str, params: Optional[CallParameters] = None) -> Any:
         return self._gds_query_runner.call_function(endpoint, params)

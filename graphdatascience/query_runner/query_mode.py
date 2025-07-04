@@ -14,3 +14,11 @@ class QueryMode(str, Enum):
             return neo4j.RoutingControl.WRITE
         else:
             raise ValueError(f"Unknown query mode: {self}")
+
+    def neo4j_access_mode(self) -> str:
+        if self == QueryMode.READ:
+            return neo4j.READ_ACCESS
+        elif self == QueryMode.WRITE:
+            return neo4j.WRITE_ACCESS
+        else:
+            raise ValueError(f"Unknown query mode: {self}")

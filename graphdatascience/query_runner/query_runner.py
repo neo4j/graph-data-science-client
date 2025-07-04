@@ -35,6 +35,7 @@ class QueryRunner(ABC):
         query: str,
         params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
+        mode: Optional[QueryMode] = None,
         custom_error: bool = True,
     ) -> DataFrame:
         pass
@@ -45,6 +46,7 @@ class QueryRunner(ABC):
         query: str,
         params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
+        mode: Optional[QueryMode] = None,
         custom_error: bool = True,
     ) -> DataFrame:
         pass
