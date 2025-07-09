@@ -4,6 +4,10 @@
 
 ## New features
 
+- `sessions.get_or_create()` now supports passing in a manual selection of root certificates for verifying server certificate
+- `sessions.get_or_create()` now supports disabling server certificate verification
+
+
 ## Bug fixes
 
 - Fix reporting error based on http responses from the Aura-API with an invalid JSON body. Earlier the client would report JSONDecodeError instead of showing the actual issue.
