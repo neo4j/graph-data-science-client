@@ -18,6 +18,7 @@ from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.session_query_runner import SessionQueryRunner
 from graphdatascience.query_runner.standalone_session_query_runner import StandaloneSessionQueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
@@ -115,6 +116,8 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         query: str,
         params: Optional[dict[str, Any]] = None,
         database: Optional[str] = None,
+        retryable: bool = False,
+        mode: QueryMode = QueryMode.WRITE,
     ) -> DataFrame:
         """
         Run a Cypher query against the Neo4j database.
@@ -127,11 +130,18 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             parameters to the query
         database: str
             the database on which to run the query
+        retryable: bool
+            whether the query can be automatically retried. Make sure the query is idempotent if set to True.
+        mode: QueryMode
+            the query mode to use (READ or WRITE). Set based on the operation performed in the query.
 
         Returns:
             The query result as a DataFrame
         """
-        return self._query_runner.run_cypher(query, params, database, False)
+        if retryable:
+            return self._query_runner.run_retryable_cypher(query, params, database, custom_error=False, mode=mode)
+        else:
+            return self._query_runner.run_cypher(query, params, database, custom_error=False, mode=mode)
 
     @property
     def graph(self) -> GraphRemoteProcRunner:

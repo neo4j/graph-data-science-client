@@ -7,6 +7,8 @@ from uuid import uuid4
 
 from pandas import DataFrame, concat
 
+from graphdatascience.query_runner.query_mode import QueryMode
+
 from ..server_version.server_version import ServerVersion
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
@@ -105,7 +107,9 @@ class CypherGraphConstructor(GraphConstructor):
     def _should_warn_about_arrow_missing(self) -> bool:
         try:
             license: str = self._query_runner.run_retryable_cypher(
-                "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value", custom_error=False
+                "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value",
+                custom_error=False,
+                mode=QueryMode.READ,
             ).squeeze()
             should_warn = license == "Licensed"
         except Exception as e:

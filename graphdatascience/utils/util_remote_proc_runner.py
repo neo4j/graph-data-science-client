@@ -1,5 +1,7 @@
 from typing import Any
 
+from graphdatascience.query_runner.query_mode import QueryMode
+
 from ..error.cypher_warning_handler import (
     filter_id_func_deprecation_warning,
 )
@@ -24,7 +26,7 @@ class UtilRemoteProcRunner(UncallableNamespace, IllegalAttrChecker):
         query = "MATCH (n) WHERE id(n) = $nodeId RETURN n"
         params = {"nodeId": node_id}
 
-        return self._query_runner.run_retryable_cypher(query=query, params=params).squeeze()
+        return self._query_runner.run_retryable_cypher(query=query, params=params, mode=QueryMode.READ).squeeze()
 
     @filter_id_func_deprecation_warning()
     def asNodes(self, node_ids: list[int]) -> list[Any]:
@@ -41,7 +43,7 @@ class UtilRemoteProcRunner(UncallableNamespace, IllegalAttrChecker):
         query = "MATCH (n) WHERE id(n) IN $nodeIds RETURN collect(n)"
         params = {"nodeIds": node_ids}
 
-        return self._query_runner.run_retryable_cypher(query=query, params=params).squeeze()  # type: ignore
+        return self._query_runner.run_retryable_cypher(query=query, params=params, mode=QueryMode.READ).squeeze()  # type: ignore
 
     @property
     def nodeProperty(self) -> NodePropertyFuncRunner:

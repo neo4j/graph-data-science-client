@@ -9,6 +9,7 @@ from neo4j import Driver
 from pandas import DataFrame
 
 from graphdatascience.query_runner.arrow_authentication import UsernamePasswordAuthentication
+from graphdatascience.query_runner.query_mode import QueryMode
 
 from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
@@ -199,7 +200,12 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         return self._query_runner.last_bookmarks()
 
     def run_cypher(
-        self, query: str, params: Optional[dict[str, Any]] = None, database: Optional[str] = None
+        self,
+        query: str,
+        params: Optional[dict[str, Any]] = None,
+        database: Optional[str] = None,
+        retryable: bool = False,
+        mode: QueryMode = QueryMode.WRITE,
     ) -> DataFrame:
         """
         Run a Cypher query
@@ -212,6 +218,10 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             parameters to the query
         database: str
             the database on which to run the query
+        retryable: bool
+            whether the query can be automatically retried. Make sure the query is idempotent if set to True.
+        mode: QueryMode
+            the query mode to use (READ or WRITE). Set based on the operation performed in the query.
 
         Returns:
             The query result as a DataFrame
@@ -222,8 +232,10 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         if isinstance(self._query_runner, ArrowQueryRunner):
             qr = self._query_runner.fallback_query_runner()
 
-        # not using qr.run_retryable_cypher as we dont know if it can be retried
-        return qr.run_cypher(query, params, database, False)
+        if retryable:
+            return qr.run_retryable_cypher(query, params, database, custom_error=False, mode=mode)
+        else:
+            return qr.run_cypher(query, params, database, custom_error=False, mode=mode)
 
     def driver_config(self) -> dict[str, Any]:
         """
