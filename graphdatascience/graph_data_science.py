@@ -42,6 +42,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
         show_progress: bool = True,
+        arrow_client_options: Optional[dict[str, Any]] = None,
     ):
         """
         Construct a new GraphDataScience object.
@@ -65,14 +66,20 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                 - True will make the client discover the connection URI to the GDS Arrow server via the Neo4j endpoint.
                 - False will make the client use Bolt for all operations.
         arrow_disable_server_verification : bool, default True
+            .. deprecated:: 1.16
+                Use arrow_client_options instead
             A flag that overrides other TLS settings and disables server verification for TLS connections.
         arrow_tls_root_certs : Optional[bytes], default None
+            .. deprecated:: 1.16
+                Use arrow_client_options instead
             PEM-encoded certificates that are used for the connection to the
             GDS Arrow Flight server.
         bookmarks : Optional[Any], default None
             The Neo4j bookmarks to require a certain state before the next query gets executed.
         show_progress : bool, default True
             A flag to indicate whether to show progress bars for running procedures.
+        arrow_client_options : Optional[dict[str, Any]], default None
+            Additional options to be passed to the Arrow Flight client.
         """
         if aura_ds:
             GraphDataScience._validate_endpoint(endpoint)
@@ -105,14 +112,19 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                 username, password = auth
                 arrow_auth = UsernamePasswordAuthentication(username, password)
 
+            if arrow_client_options is None:
+                arrow_client_options = {}
+            if arrow_disable_server_verification:
+                arrow_client_options["disable_server_verification"] = True
+            if arrow_tls_root_certs is not None:
+                arrow_client_options["tls_root_certs"] = arrow_tls_root_certs
             self._query_runner = ArrowQueryRunner.create(
                 self._query_runner,
-                arrow_info,
-                arrow_auth,
-                self._query_runner.encrypted(),
-                arrow_disable_server_verification,
-                arrow_tls_root_certs,
-                None if arrow is True else arrow,
+                arrow_info=arrow_info,
+                arrow_authentication=arrow_auth,
+                encrypted=self._query_runner.encrypted(),
+                arrow_client_options=arrow_client_options,
+                connection_string_override=None if arrow is True else arrow,
             )
 
         self._query_runner.set_show_progress(show_progress)

@@ -68,7 +68,7 @@ class Graph:
         """
         return self._graph_info(["database"])  # type: ignore
 
-    def configuration(self) -> "Series[Any]":
+    def configuration(self) -> Series[Any]:
         """
         Returns:
             the configuration of the graph

@@ -4,8 +4,7 @@
 
 ## New features
 
-- `sessions.get_or_create()` now supports passing in a manual selection of root certificates for verifying server certificate
-- `sessions.get_or_create()` now supports disabling server certificate verification
+- `sessions.get_or_create()` now supports passing additional configuration options for the Arrow Flight Client
 
 
 ## Bug fixes

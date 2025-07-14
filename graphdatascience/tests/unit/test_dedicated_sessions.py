@@ -365,8 +365,7 @@ def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> No
             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
         ),
         "session_id": "ffff0-ffff1",
-        "disable_server_verification": False,
-        "tls_root_certs": None,
+        "arrow_client_options": None,
     }
 
     assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
@@ -379,7 +378,7 @@ def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> No
     assert actual_session.ttl == ttl
 
 
-def test_create_attached_session_passthrough_tls_settings(mocker: MockerFixture, aura_api: AuraApi) -> None:
+def test_create_attached_session_passthrough_arrow_settings(mocker: MockerFixture, aura_api: AuraApi) -> None:
     _setup_db_instance(aura_api)
 
     sessions = DedicatedSessions(aura_api)
@@ -388,14 +387,12 @@ def test_create_attached_session_passthrough_tls_settings(mocker: MockerFixture,
     patch_neo4j_query_runner(mocker)
 
     ttl = timedelta(hours=42)
-    fake_certs = bytes(1)
     gds_parameters = sessions.get_or_create(
         "my-session",
         SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+s://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
         ttl=ttl,
-        disable_server_verification=True,
-        tls_root_certs=fake_certs,
+        arrow_client_options={"foo": "bar"},
     )
 
     arrow_authentication = gds_parameters["arrow_authentication"]  # type: ignore
@@ -417,8 +414,7 @@ def test_create_attached_session_passthrough_tls_settings(mocker: MockerFixture,
             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
         ),
         "session_id": "ffff0-ffff1",
-        "disable_server_verification": True,
-        "tls_root_certs": fake_certs,
+        "arrow_client_options": {"foo": "bar"},
     }
 
     assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
@@ -466,8 +462,7 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
         ),
         "session_id": "None-ffff0",
-        "disable_server_verification": False,
-        "tls_root_certs": None,
+        "arrow_client_options": None,
     }
 
     assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
@@ -521,8 +516,7 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
         ),
         "session_id": "ffff0-ffff1",
-        "disable_server_verification": False,
-        "tls_root_certs": None,
+        "arrow_client_options": None,
     }
 
     assert gds_args1 == gds_args2

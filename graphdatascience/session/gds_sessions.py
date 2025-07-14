@@ -106,8 +106,7 @@ class GdsSessions:
         cloud_location: Optional[CloudLocation] = None,
         timeout: Optional[int] = None,
         neo4j_driver_config: Optional[dict[str, Any]] = None,
-        tls_root_certs: Optional[bytes] = None,
-        disable_server_verification: bool = False,
+        arrow_client_options: Optional[dict[str, Any]] = None,
     ) -> AuraGraphDataScience:
         """
         Retrieves an existing session with the given session name and database connection,
@@ -124,8 +123,7 @@ class GdsSessions:
             cloud_location (Optional[CloudLocation]): The cloud location. Required if the GDS session is for a self-managed database.
             timeout (Optional[int]): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
             neo4j_driver_config (Optional[dict[str, Any]]): Optional configuration for the Neo4j driver.
-            tls_root_certs (Optional[bytes]): Manually specify PEM-encoded root certificates used for verifying server certificate. If not specified, platform-specific default root certificates will be used.
-            disable_server_verification (bool): Set to True to disable server certificate verification. Use with caution.
+            arrow_client_options (Optional[dict[str, Any]]): Optional configuration for the Arrow Flight client.
         Returns:
             AuraGraphDataScience: The session.
         """
@@ -137,8 +135,7 @@ class GdsSessions:
             cloud_location=cloud_location,
             timeout=timeout,
             neo4j_driver_options=neo4j_driver_config,
-            tls_root_certs=tls_root_certs,
-            disable_server_verification=disable_server_verification,
+            arrow_client_options=arrow_client_options,
         )
 
     def delete(self, *, session_name: Optional[str] = None, session_id: Optional[str] = None) -> bool:
