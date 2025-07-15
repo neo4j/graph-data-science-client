@@ -42,9 +42,9 @@ Please note that the `GraphDataScience` object needs to communicate with a Neo4j
 If there is no such database, you will need to <<specifying-targeted-database, provide a valid database using the `database` keyword parameter>>.
 
 
-=== Aura Graph Analytics Serverless
+=== Aura Graph Analytics
 
-The GDS Python Client has dedicated support for the xref:graph-analytics-serverless.adoc[Aura Graph Analytics Serverless] offering.
+The GDS Python Client has dedicated support for the xref:graph-analytics-serverless.adoc[Aura Graph Analytics] offering.
 
 This example shows how to instantiate the `GraphDataScience` object using an Aura API key pair and AuraDB connection information.
 

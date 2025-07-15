@@ -24,7 +24,7 @@ AuraDS (which comes with GDS preinstalled) or Neo4j Desktop.
 
 TIP: Alternatively, you can use
 https://neo4j.com/docs/graph-data-science-client/current/graph-analytics-serverless/[Aura
-Graph Analytics Serverless] and skip the whole Setup section below.
+Graph Analytics] and skip the whole Setup section below.
 
 Once the credentials to this environment are available, we can install
 the `graphdatascience` package and import the client class.

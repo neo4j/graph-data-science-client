@@ -1,6 +1,6 @@
 // DO NOT EDIT - AsciiDoc file generated automatically
 
-= Graph Analytics Serverless for Self-Managed Neo4j DB
+= Aura Graph Analytics for Self-Managed Neo4j DB
 
 
 https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/graph-analytics-serverless-self-managed.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
@@ -26,7 +26,7 @@ example].
 == Prerequisites
 
 This notebook requires having a Neo4j instance available and that the
-Graph Analytics Serverless
+Aura Graph Analytics
 https://neo4j.com/docs/aura/graph-analytics/#aura-gds-serverless[feature]
 is enabled for your Neo4j Aura project.
 

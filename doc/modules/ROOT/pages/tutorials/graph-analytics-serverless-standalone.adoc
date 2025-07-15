@@ -1,6 +1,6 @@
 // DO NOT EDIT - AsciiDoc file generated automatically
 
-= Graph Analytics Serverless for non-Neo4j data sources
+= Aura Graph Analytics for non-Neo4j data sources
 
 
 https://colab.research.google.com/github/neo4j/graph-data-science-client/blob/main/examples/graph-analytics-serverless-standalone.ipynb[image:https://colab.research.google.com/assets/colab-badge.svg[Open
@@ -25,7 +25,7 @@ link:../graph-analytics-serverless-self-managed[this example].
 
 == Prerequisites
 
-This notebook requires having the Graph Analytics Serverless
+This notebook requires having the Aura Graph Analytics
 https://neo4j.com/docs/aura/graph-analytics/#aura-gds-serverless[feature]
 enabled for your Neo4j Aura project.
 
