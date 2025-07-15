@@ -142,9 +142,7 @@ class GdsArrowClient:
         self._retry_config = retry_config
         self._logger = logging.getLogger("gds_arrow_client")
 
-        self._arrow_client_options: dict[str, Any] = arrow_client_options  # type: ignore
-        if self._arrow_client_options is None:
-            self._arrow_client_options = {}
+        self._arrow_client_options = arrow_client_options if arrow_client_options is not None else {}
 
         if disable_server_verification:
             self._arrow_client_options["disable_server_verification"] = True
@@ -185,7 +183,7 @@ class GdsArrowClient:
                     AuthFactory(self._auth_middleware),
                     UserAgentFactory(useragent=user_agent),
                 ]
-            )  # type: ignore
+            )
 
         return flight.FlightClient(location, **client_options)
 
