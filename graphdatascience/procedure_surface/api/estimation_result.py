@@ -1,9 +1,14 @@
-from dataclasses import dataclass
+from __future__ import annotations
+
 from typing import Any
 
+from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
 
-@dataclass(frozen=True, repr=True)
-class EstimationResult:
+
+class EstimationResult(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel)
+
     node_count: int
     relationship_count: int
     required_memory: str
@@ -16,3 +21,7 @@ class EstimationResult:
 
     def __getitem__(self, item: str) -> Any:
         return getattr(self, item)
+
+    @staticmethod
+    def from_cypher(cypher_result: dict[str, Any]) -> EstimationResult:
+        return EstimationResult(**cypher_result)

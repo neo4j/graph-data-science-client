@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from typing import Any, List, Optional
 
 from pandas import DataFrame
+from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
 
 from ...graph.graph_object import Graph
 from .estimation_result import EstimationResult
@@ -272,8 +273,9 @@ class WccEndpoints(ABC):
         pass
 
 
-@dataclass(frozen=True, repr=True)
-class WccMutateResult:
+class WccMutateResult(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel)
+
     component_count: int
     component_distribution: dict[str, Any]
     pre_processing_millis: int
@@ -287,8 +289,9 @@ class WccMutateResult:
         return getattr(self, item)
 
 
-@dataclass(frozen=True, repr=True)
-class WccStatsResult:
+class WccStatsResult(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel)
+
     component_count: int
     component_distribution: dict[str, Any]
     pre_processing_millis: int
@@ -300,8 +303,9 @@ class WccStatsResult:
         return getattr(self, item)
 
 
-@dataclass(frozen=True, repr=True)
-class WccWriteResult:
+class WccWriteResult(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel)
+
     component_count: int
     component_distribution: dict[str, Any]
     pre_processing_millis: int
