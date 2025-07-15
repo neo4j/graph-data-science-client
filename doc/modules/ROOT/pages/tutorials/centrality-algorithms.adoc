@@ -28,7 +28,7 @@ connection to the database.
 
 TIP: Alternatively, you can use
 https://neo4j.com/docs/graph-data-science-client/current/graph-analytics-serverless/[Aura
-Graph Analytics Serverless] and skip the whole Setup section below.
+Graph Analytics] and skip the whole Setup section below.
 
 [source, python, role=no-test]
 ----
