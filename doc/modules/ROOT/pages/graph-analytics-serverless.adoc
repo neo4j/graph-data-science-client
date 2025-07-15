@@ -111,8 +111,8 @@ sessions.get_or_create(
 | ttl                         | datetime.timedelta | yes      | 1h      | Time-to-live for the session.
 | cloud_location              | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/cloud_location[CloudLocation]      | yes      | None    | Aura-supported cloud provider and region where the GDS Session will run. Required for the Self-managed and Standalone types.
 | timeout                     | int                | yes      | None    | Seconds to wait for the session to enter Ready state. If the time is exceeded, an error will be returned.
-| neo4j_driver_options        | dict[str, any]     | yes      | None    | Additional options passed to the Neo4j driver
-| arrow_client_options        | dict[str, any]     | yes      | None    | Additional options passed to the Arrow Flight Client
+| neo4j_driver_options        | dict[str, any]     | yes      | None    | Additional options passed to the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified.
+| arrow_client_options        | dict[str, any]     | yes      | None    | Additional options passed to the Arrow Flight Client used to connect to the Session.
 |===
 
 
