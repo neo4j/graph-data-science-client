@@ -4,6 +4,9 @@
 
 ## New features
 
+- `sessions.get_or_create()` now supports passing additional configuration options for the Arrow Flight Client
+
+
 ## Bug fixes
 
 - Fix reporting error based on http responses from the Aura-API with an invalid JSON body. Earlier the client would report JSONDecodeError instead of showing the actual issue.

@@ -63,6 +63,7 @@ class DedicatedSessions:
         cloud_location: Optional[CloudLocation] = None,
         timeout: Optional[int] = None,
         neo4j_driver_options: Optional[dict[str, Any]] = None,
+        arrow_client_options: Optional[dict[str, Any]] = None,
     ) -> AuraGraphDataScience:
         if db_connection is None:
             if not cloud_location:
@@ -104,6 +105,7 @@ class DedicatedSessions:
             session_bolt_connection_info=session_bolt_connection_info,
             arrow_authentication=arrow_authentication,
             db_runner=db_runner,
+            arrow_client_options=arrow_client_options,
         )
 
     def _create_db_runner(
@@ -209,10 +211,12 @@ class DedicatedSessions:
         session_bolt_connection_info: DbmsConnectionInfo,
         arrow_authentication: ArrowAuthentication,
         db_runner: Optional[Neo4jQueryRunner],
+        arrow_client_options: Optional[dict[str, Any]] = None,
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience.create(
             session_bolt_connection_info=session_bolt_connection_info,
             arrow_authentication=arrow_authentication,
             db_endpoint=db_runner,
             delete_fn=lambda: self._aura_api.delete_session(session_id=session_id),
+            arrow_client_options=arrow_client_options,
         )

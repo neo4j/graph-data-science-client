@@ -25,8 +25,7 @@ class ArrowQueryRunner(QueryRunner):
         arrow_info: ArrowInfo,
         arrow_authentication: Optional[ArrowAuthentication] = None,
         encrypted: bool = False,
-        disable_server_verification: bool = False,
-        tls_root_certs: Optional[bytes] = None,
+        arrow_client_options: Optional[dict[str, Any]] = None,
         connection_string_override: Optional[str] = None,
         retry_config: Optional[RetryConfig] = None,
     ) -> ArrowQueryRunner:
@@ -34,13 +33,12 @@ class ArrowQueryRunner(QueryRunner):
             raise ValueError("Arrow is not enabled on the server")
 
         gds_arrow_client = GdsArrowClient.create(
-            arrow_info,
-            arrow_authentication,
-            encrypted,
-            disable_server_verification,
-            tls_root_certs,
-            connection_string_override,
+            arrow_info=arrow_info,
+            auth=arrow_authentication,
+            encrypted=encrypted,
+            connection_string_override=connection_string_override,
             retry_config=retry_config,
+            arrow_client_options=arrow_client_options,
         )
 
         return ArrowQueryRunner(gds_arrow_client, fallback_query_runner, fallback_query_runner.server_version())

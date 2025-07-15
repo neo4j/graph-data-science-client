@@ -106,6 +106,7 @@ class GdsSessions:
         cloud_location: Optional[CloudLocation] = None,
         timeout: Optional[int] = None,
         neo4j_driver_config: Optional[dict[str, Any]] = None,
+        arrow_client_options: Optional[dict[str, Any]] = None,
     ) -> AuraGraphDataScience:
         """
         Retrieves an existing session with the given session name and database connection,
@@ -121,7 +122,8 @@ class GdsSessions:
             ttl: (Optional[timedelta]): The sessions time to live after inactivity in seconds.
             cloud_location (Optional[CloudLocation]): The cloud location. Required if the GDS session is for a self-managed database.
             timeout (Optional[int]): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
-            neo4j_driver_config (Optional[dict[str, Any]]): Optional configuration for the Neo4j driver.
+           neo4j_driver_config (Optional[dict[str, Any]]): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified..
+            arrow_client_options (Optional[dict[str, Any]]): Optional configuration for the Arrow Flight client.
         Returns:
             AuraGraphDataScience: The session.
         """
@@ -133,6 +135,7 @@ class GdsSessions:
             cloud_location=cloud_location,
             timeout=timeout,
             neo4j_driver_options=neo4j_driver_config,
+            arrow_client_options=arrow_client_options,
         )
 
     def delete(self, *, session_name: Optional[str] = None, session_id: Optional[str] = None) -> bool:

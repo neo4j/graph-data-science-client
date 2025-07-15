@@ -38,8 +38,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_authentication: Optional[ArrowAuthentication],
         db_endpoint: Optional[Union[Neo4jQueryRunner, DbmsConnectionInfo]],
         delete_fn: Callable[[], bool],
-        arrow_disable_server_verification: bool = False,
-        arrow_tls_root_certs: Optional[bytes] = None,
+        arrow_client_options: Optional[dict[str, Any]] = None,
         bookmarks: Optional[Any] = None,
         show_progress: bool = True,
     ) -> AuraGraphDataScience:
@@ -55,8 +54,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_info=arrow_info,
             arrow_authentication=arrow_authentication,
             encrypted=session_bolt_query_runner.encrypted(),
-            disable_server_verification=arrow_disable_server_verification,
-            tls_root_certs=arrow_tls_root_certs,
+            arrow_client_options=arrow_client_options,
         )
 
         # TODO: merge with the gds_arrow_client created inside ArrowQueryRunner
@@ -64,8 +62,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_info,
             arrow_authentication,
             session_bolt_query_runner.encrypted(),
-            arrow_disable_server_verification,
-            arrow_tls_root_certs,
+            arrow_client_options=arrow_client_options,
         )
 
         gds_version = session_bolt_query_runner.server_version()

@@ -55,6 +55,7 @@ class GdsArrowClient:
         tls_root_certs: Optional[bytes] = None,
         connection_string_override: Optional[str] = None,
         retry_config: Optional[RetryConfig] = None,
+        arrow_client_options: Optional[dict[str, Any]] = None,
     ) -> GdsArrowClient:
         connection_string: str
         if connection_string_override is not None:
@@ -78,14 +79,15 @@ class GdsArrowClient:
             )
 
         return GdsArrowClient(
-            host,
-            retry_config,
-            int(port),
-            auth,
-            encrypted,
-            disable_server_verification,
-            tls_root_certs,
-            arrow_endpoint_version,
+            host=host,
+            retry_config=retry_config,
+            port=int(port),
+            auth=auth,
+            encrypted=encrypted,
+            disable_server_verification=disable_server_verification,
+            tls_root_certs=tls_root_certs,
+            arrow_endpoint_version=arrow_endpoint_version,
+            arrow_client_options=arrow_client_options,
         )
 
     def __init__(
@@ -99,6 +101,7 @@ class GdsArrowClient:
         tls_root_certs: Optional[bytes] = None,
         arrow_endpoint_version: ArrowEndpointVersion = ArrowEndpointVersion.V1,
         user_agent: Optional[str] = None,
+        arrow_client_options: Optional[dict[str, Any]] = None,
     ):
         """Creates a new GdsArrowClient instance.
 
@@ -113,8 +116,12 @@ class GdsArrowClient:
         encrypted: bool
             A flag that indicates whether the connection should be encrypted (default is False)
         disable_server_verification: bool
+            .. deprecated:: 1.16
+                Use arrow_client_options instead
             A flag that disables server verification for TLS connections (default is False)
         tls_root_certs: Optional[bytes]
+            .. deprecated:: 1.16
+                Use arrow_client_options instead
             PEM-encoded certificates that are used for the connection to the GDS Arrow Flight server
         arrow_endpoint_version:
             The version of the Arrow endpoint to use (default is ArrowEndpointVersion.V1)
@@ -122,17 +129,25 @@ class GdsArrowClient:
             The user agent string to use for the connection. (default is `neo4j-graphdatascience-v[VERSION] pyarrow-v[PYARROW_VERSION])
         retry_config: Optional[RetryConfig]
             The retry configuration to use for the Arrow requests send by the client.
+        arrow_client_options: Optional[dict[str, Any]]
+            Additional configuration for the Arrow flight client.
+
         """
         self._arrow_endpoint_version = arrow_endpoint_version
         self._host = host
         self._port = port
         self._auth = None
         self._encrypted = encrypted
-        self._disable_server_verification = disable_server_verification
-        self._tls_root_certs = tls_root_certs
         self._user_agent = user_agent
         self._retry_config = retry_config
         self._logger = logging.getLogger("gds_arrow_client")
+
+        self._arrow_client_options = arrow_client_options if arrow_client_options is not None else {}
+
+        if disable_server_verification:
+            self._arrow_client_options["disable_server_verification"] = True
+        if tls_root_certs is not None:
+            self._arrow_client_options["tls_root_certs"] = tls_root_certs
 
         if auth:
             if not isinstance(auth, ArrowAuthentication):
@@ -149,18 +164,27 @@ class GdsArrowClient:
             if self._encrypted
             else flight.Location.for_grpc_tcp(self._host, self._port)
         )
-        client_options: dict[str, Any] = {"disable_server_verification": self._disable_server_verification}
+
+        client_options = self._arrow_client_options.copy()
+
         if self._auth:
             user_agent = f"neo4j-graphdatascience-v{__version__} pyarrow-v{arrow_version}"
             if self._user_agent:
                 user_agent = self._user_agent
 
-            client_options["middleware"] = [
-                AuthFactory(self._auth_middleware),
-                UserAgentFactory(useragent=user_agent),
-            ]
-        if self._tls_root_certs:
-            client_options["tls_root_certs"] = self._tls_root_certs
+            if "middleware" in client_options:
+                if not isinstance(client_options["middleware"], list):
+                    raise TypeError("client_options['middleware'] must be a list")
+            else:
+                client_options["middleware"] = []
+
+            client_options["middleware"].extend(
+                [
+                    AuthFactory(self._auth_middleware),
+                    UserAgentFactory(useragent=user_agent),
+                ]
+            )
+
         return flight.FlightClient(location, **client_options)
 
     def connection_info(self) -> tuple[str, int]:
