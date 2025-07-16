@@ -12,7 +12,8 @@ def test_estimation_result_initialization() -> None:
         bytesMax=1000,
         heapPercentageMin=0.1,
         heapPercentageMax=0.5,
-    )
+    )  # type: ignore
+
     assert estimation_result.node_count == 5
     assert estimation_result.relationship_count == 10
     assert estimation_result.required_memory == "512MB"
@@ -35,7 +36,8 @@ def test_estimation_result_getitem() -> None:
         bytesMax=1000,
         heapPercentageMin=0.1,
         heapPercentageMax=0.5,
-    )
+    )  # type: ignore
+
     assert estimation_result["node_count"] == 5
     assert estimation_result["relationship_count"] == 10
     assert estimation_result["required_memory"] == "512MB"
