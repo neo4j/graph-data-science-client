@@ -68,10 +68,12 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_disable_server_verification : bool, default True
             .. deprecated:: 1.16
                 Use arrow_client_options instead
+            
             A flag that overrides other TLS settings and disables server verification for TLS connections.
         arrow_tls_root_certs : Optional[bytes], default None
             .. deprecated:: 1.16
                 Use arrow_client_options instead
+            
             PEM-encoded certificates that are used for the connection to the
             GDS Arrow Flight server.
         bookmarks : Optional[Any], default None
