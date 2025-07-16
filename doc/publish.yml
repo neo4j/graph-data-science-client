@@ -8,7 +8,9 @@ content:
   - url: ../
     edit_url: '{web_url}/tree/{refname}/{path}'
     start_path: doc
-    branches: ['1.14', '1.15', '1.16', 'main']
+    # Includes previous version and current.
+    # Does not include preview (main) as it is no longer necessary.
+    branches: ['1.14', '1.15', '1.16']
     include: doc/
     exclude:
     - '!**/_includes/*'
@@ -53,7 +55,7 @@ asciidoc:
     common-license-page-uri: https://neo4j.com/docs/license/
     operations-manual-base-uri: https://neo4j.com/docs/operations-manual/
     neo4j-docs-base-uri: https://neo4j.com/docs
-    api-version: 1.17-preview
+    api-version: 1.17
     # User research promo
     page-ad-overline-link: https://p.consentkit.com/baf41f1b-7816-4e04-82a7-b4c6d93ddf19/?ref=gds-docs
     page-ad-title: Join the User Research panel
