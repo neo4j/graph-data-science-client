@@ -102,16 +102,7 @@ class AuthenticatedArrowClient:
         self._user_agent = user_agent
         self._retry_config = retry_config
         self._logger = logging.getLogger("gds_arrow_client")
-        self._retry_config = RetryConfig(
-            retry=retry_any(
-                retry_if_exception_type(FlightTimedOutError),
-                retry_if_exception_type(FlightUnavailableError),
-                retry_if_exception_type(FlightInternalError),
-            ),
-            stop=(stop_after_delay(10) | stop_after_attempt(5)),
-            wait=wait_exponential(multiplier=1, min=1, max=10),
-        )
-
+        self._retry_config = retry_config
         if auth:
             self._auth = auth
             self._auth_middleware = AuthMiddleware(auth)
