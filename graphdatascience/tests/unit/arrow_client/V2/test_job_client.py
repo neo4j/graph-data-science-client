@@ -12,17 +12,14 @@ class TestJobClient(unittest.TestCase):
         self.mock_client = MagicMock()
 
     def test_run_job(self) -> None:
-        # Setup
         job_id = "test-job-123"
         endpoint = "v2/test.endpoint"
         config = {"param1": "value1", "param2": 42}
 
         self.mock_client.do_action_with_retry.return_value = iter([ArrowTestResult({"jobId": job_id})])
 
-        # Execute
         result = JobClient.run_job(self.mock_client, endpoint, config)
 
-        # Verify
         expected_config = json.dumps(config).encode("utf-8")
         self.mock_client.do_action_with_retry.assert_called_once_with(endpoint, expected_config)
         self.assertEqual(result, job_id)
