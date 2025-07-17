@@ -92,15 +92,15 @@ or the manual for more details on the parameters.
 ----
 from graphdatascience.session import AlgorithmCategory, CloudLocation, SessionMemory
 
-# Explicitly define the size of the session
-memory = SessionMemory.m_8GB
-
 # Estimate the memory needed for the GDS session
 memory = sessions.estimate(
     node_count=20,
     relationship_count=50,
     algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
 )
+
+# Explicitly define the size of the session
+memory = SessionMemory.m_2GB
 
 print(f"Estimated memory: {memory}")
 
