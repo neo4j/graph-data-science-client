@@ -93,15 +93,17 @@ or the manual for more details on the parameters.
 ----
 from graphdatascience.session import AlgorithmCategory, SessionMemory
 
-# Explicitly define the size of the session
-memory = SessionMemory.m_8GB
-
 # Estimate the memory needed for the GDS session
 memory = sessions.estimate(
     node_count=20,
     relationship_count=50,
     algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
 )
+
+print(f"Estimated memory for the session: {memory}")
+
+# Explicitly define the size of the session
+memory = SessionMemory.m_2GB
 ----
 
 [source, python, role=no-test]
@@ -122,9 +124,9 @@ db_connection = DbmsConnectionInfo(
 gds = sessions.get_or_create(
     # we give it a representative name
     session_name="people_and_fruits",
-    memory=SessionMemory.m_4GB,
+    memory=memory,
     db_connection=db_connection,
-    ttl=timedelta(minutes=2),
+    ttl=timedelta(minutes=30),
 )
 ----
 
