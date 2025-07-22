@@ -1,13 +1,13 @@
-from typing import List, Optional, Any
+from typing import Any, List, Optional
 
 from pandas import DataFrame
 
-from ..api.estimation_result import EstimationResult
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.job_client import JobClient
 from ...arrow_client.v2.mutation_client import MutationClient
 from ...arrow_client.v2.write_back_client import WriteBackClient
 from ...graph.graph_object import Graph
+from ..api.estimation_result import EstimationResult
 from ..api.wcc_endpoints import WccEndpoints, WccMutateResult, WccStatsResult, WccWriteResult
 from ..utils.config_converter import ConfigConverter
 

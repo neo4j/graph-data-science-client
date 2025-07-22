@@ -45,19 +45,24 @@ class JobClient:
         return deserialize_single(res)
 
     @staticmethod
-    def stream_results(client: AuthenticatedArrowClient, job_id: str) -> DataFrame:
-        encoded_config = JobIdConfig(jobId=job_id).dump_json().encode("utf-8")
+    def stream_results(client: AuthenticatedArrowClient,graph_name: str, job_id: str) -> DataFrame:
+        payload = {
+            "graphName": graph_name,
+            "jobId": job_id,
+        }
 
-        res = client.do_action_with_retry("v2/results.stream", encoded_config)
+        res = client.do_action_with_retry("v2/results.stream", json.dumps(payload).encode("utf-8"))
         export_job_id = JobIdConfig(**deserialize_single(res)).job_id
 
         payload = {
+            "version": "v2",
             "name": export_job_id,
-            "version": 1,
+            "body": {}
         }
 
         ticket = Ticket(json.dumps(payload).encode("utf-8"))
-        with client.get_stream(ticket) as get:
-            arrow_table = get.read_all()
 
+        get = client.get_stream(ticket)
+        arrow_table = get.read_all()
         return arrow_table.to_pandas(types_mapper=ArrowDtype)  # type: ignore
+
