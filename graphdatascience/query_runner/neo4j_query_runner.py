@@ -229,14 +229,20 @@ class Neo4jQueryRunner(QueryRunner):
             routing = mode.neo4j_routing()
 
         try:
-            return self._driver.execute_query(
+            bookmark_manager = neo4j.GraphDatabase.bookmark_manager(self.bookmarks())
+
+            result = self._driver.execute_query(
                 query_=query,
                 parameters_=params,
                 database_=database,
                 result_transformer_=neo4j.Result.to_df,
-                bookmark_manager_=self.bookmarks(),
+                bookmark_manager_=bookmark_manager,
                 routing_=routing,
             )
+
+            self._last_bookmarks = neo4j.Bookmarks.from_raw_values(bookmark_manager.get_bookmarks())
+
+            return result
         except Exception as e:
             if custom_error:
                 Neo4jQueryRunner.handle_driver_exception(self._driver, e)

@@ -167,6 +167,25 @@ def test_run_read_cypher(gds: GraphDataScience) -> None:
     assert len(result) > 10
 
 
+def test_run_cypher_with_bookmarks(gds: GraphDataScience) -> None:
+    gds.run_cypher("RETURN true")
+    bookmarks_from_standard = gds.last_bookmarks()
+    gds.set_bookmarks(bookmarks_from_standard)
+
+    assert bookmarks_from_standard is not None
+
+    gds.run_cypher("RETURN true", retryable=True)
+    bookmarks_from_retryable = gds.last_bookmarks()
+
+    assert bookmarks_from_retryable is not None
+    assert bookmarks_from_retryable != bookmarks_from_standard
+
+    gds.set_bookmarks(bookmarks_from_retryable)
+
+    gds.run_cypher("RETURN true", retryable=True)
+    gds.run_cypher("RETURN true", retryable=False)
+
+
 def test_server_version(gds: GraphDataScience) -> None:
     cached_server_version = gds._server_version
     server_version_string = gds.version()
