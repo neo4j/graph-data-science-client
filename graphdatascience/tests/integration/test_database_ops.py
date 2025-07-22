@@ -168,13 +168,14 @@ def test_run_read_cypher(gds: GraphDataScience) -> None:
 
 
 def test_run_cypher_with_bookmarks(gds: GraphDataScience) -> None:
-    gds.run_cypher("RETURN true")
+    query = "CREATE (n: Node) RETURN n"
+    gds.run_cypher(query)
     bookmarks_from_standard = gds.last_bookmarks()
     gds.set_bookmarks(bookmarks_from_standard)
 
     assert bookmarks_from_standard is not None
 
-    gds.run_cypher("RETURN true", retryable=True)
+    gds.run_cypher(query, retryable=True)
     bookmarks_from_retryable = gds.last_bookmarks()
 
     assert bookmarks_from_retryable is not None
@@ -182,8 +183,8 @@ def test_run_cypher_with_bookmarks(gds: GraphDataScience) -> None:
 
     gds.set_bookmarks(bookmarks_from_retryable)
 
-    gds.run_cypher("RETURN true", retryable=True)
-    gds.run_cypher("RETURN true", retryable=False)
+    gds.run_cypher(query, retryable=True)
+    gds.run_cypher(query, retryable=False)
 
 
 def test_server_version(gds: GraphDataScience) -> None:
