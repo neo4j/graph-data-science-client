@@ -299,7 +299,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         arrow_tls_root_certs : Optional[bytes], default None
             .. deprecated:: 1.16
                 Use arrow_client_options instead
-                
+
             PEM-encoded certificates that are used for the connection to the
             GDS Arrow Flight server.
         bookmarks : Optional[Any], default None
