@@ -266,11 +266,51 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         driver: Driver,
         auth: Optional[tuple[str, str]] = None,
         database: Optional[str] = None,
-        arrow: bool = True,
+        arrow: Union[str, bool] = True,
         arrow_disable_server_verification: bool = True,
         arrow_tls_root_certs: Optional[bytes] = None,
         bookmarks: Optional[Any] = None,
-    ) -> "GraphDataScience":
+        arrow_client_options: Optional[dict[str, Any]] = None,
+    ) -> GraphDataScience:
+        """
+        Construct a new GraphDataScience object from an existing Neo4j Driver.
+        This method is useful when you already have a Neo4j Driver instance and want to use it with the GDS client.
+
+        Parameters
+        ----------
+        driver: Driver
+            The Neo4j Driver instance to use.
+        auth : Optional[Tuple[str, str]], default None
+            A username, password pair for authentication.
+        database: Optional[str], default None
+            The Neo4j database to query against.
+        arrow : Union[str, bool], default True
+            Arrow connection information. This is either a string or a bool.
+
+            - If it is a string, it will be interpreted as a connection URL to a GDS Arrow Server.
+            - If it is a bool:
+                - True will make the client discover the connection URI to the GDS Arrow server via the Neo4j endpoint.
+                - False will make the client use Bolt for all operations.
+        arrow_disable_server_verification : bool, default True
+            .. deprecated:: 1.16
+                Use arrow_client_options instead
+
+            A flag that overrides other TLS settings and disables server verification for TLS connections.
+        arrow_tls_root_certs : Optional[bytes], default None
+            .. deprecated:: 1.16
+                Use arrow_client_options instead
+                
+            PEM-encoded certificates that are used for the connection to the
+            GDS Arrow Flight server.
+        bookmarks : Optional[Any], default None
+            The Neo4j bookmarks to require a certain state before the next query gets executed.
+        show_progress : bool, default True
+            A flag to indicate whether to show progress bars for running procedures.
+        arrow_client_options : Optional[dict[str, Any]], default None
+            Additional options to be passed to the Arrow Flight client.
+        Returns:
+            A new GraphDataScience object. configured with the provided Neo4j Driver.
+        """
         return cls(
             driver,
             auth=auth,
@@ -279,6 +319,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_disable_server_verification=arrow_disable_server_verification,
             arrow_tls_root_certs=arrow_tls_root_certs,
             bookmarks=bookmarks,
+            arrow_client_options=arrow_client_options,
         )
 
     @staticmethod
