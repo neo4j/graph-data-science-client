@@ -174,8 +174,7 @@ class WccArrowEndpoints(WccEndpoints):
 
         return WccWriteResult(**computation_result)
 
-    def estimate(self, graph_name: Optional[str] = None,
-                 projection_config: Optional[dict[str, Any]] = None) -> EstimationResult:
+    def estimate(
+        self, graph_name: Optional[str] = None, projection_config: Optional[dict[str, Any]] = None
+    ) -> EstimationResult:
         pass
-
-

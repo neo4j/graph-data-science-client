@@ -6,6 +6,7 @@ from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 from testcontainers.neo4j import Neo4jContainer
 
+from graphdatascience import QueryRunner
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
@@ -27,7 +28,7 @@ def neo4j_database_container() -> Generator[Neo4jContainer, None, None]:
 
 
 @pytest.fixture
-def query_runner(neo4j_database_container: DockerContainer):
+def query_runner(neo4j_database_container: DockerContainer) -> Generator[QueryRunner, None, None]:
     yield Neo4jQueryRunner.create_for_db(
         f"bolt://localhost:{neo4j_database_container.get_exposed_port(7687)}",
         ("neo4j", "password"),
