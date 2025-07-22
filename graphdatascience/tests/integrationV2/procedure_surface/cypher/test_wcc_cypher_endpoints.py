@@ -1,37 +1,38 @@
-import json
-
 import pytest
 
-from graphdatascience import Graph
-from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
+from graphdatascience import Graph, QueryRunner
 from graphdatascience.procedure_surface.arrow.arrow_wcc_endpoints import WccArrowEndpoints
-
-
-class MockGraph(Graph):
-    def __init__(self, name: str):
-        self._name = name
-
-    def name(self) -> str:
-        return self._name
+from graphdatascience.procedure_surface.cypher.wcc_cypher_endpoints import WccCypherEndpoints
+from graphdatascience.tests.integrationV2.procedure_surface.cypher.conftest import query_runner
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient):
-    gdl = """
-    (a: Node)
-    (b: Node)
-    (c: Node)
+def sample_graph(query_runner: QueryRunner):
+    create_statement = """
+    CREATE
+    (a: Node),
+    (b: Node),
+    (c: Node),
     (a)-[:REL]->(c)
     """
 
-    arrow_client.do_action( "v2/graph.fromGDL", json.dumps({"graphName": "g", "gdlGraph": gdl}).encode("utf-8"))
-    yield MockGraph("g")
-    arrow_client.do_action( "v2/graph.drop", json.dumps({"graphName": "g"}).encode("utf-8"))
+    query_runner.run_cypher(create_statement)
+
+    query_runner.run_cypher("""
+        MATCH (n)
+        OPTIONAL MATCH (n)-[r]->(m)
+        WITH gds.graph.project('g', n, m, {}) AS G
+        RETURN G
+    """)
+
+    yield Graph("g", query_runner)
+
+    query_runner.run_cypher("CALL gds.graph.drop('g')")
+    query_runner.run_cypher("MATCH (n) DETACH DELETE n")
 
 @pytest.fixture
-def wcc_endpoints(arrow_client: AuthenticatedArrowClient):
-    yield WccArrowEndpoints(arrow_client)
+def wcc_endpoints(query_runner: QueryRunner):
+    yield WccCypherEndpoints(query_runner)
 
 
 def test_wcc_stats(wcc_endpoints: WccArrowEndpoints, sample_graph: Graph):
