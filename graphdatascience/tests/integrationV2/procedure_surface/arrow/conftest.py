@@ -5,7 +5,6 @@ from typing import Generator
 import pytest
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
-from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.arrow_client.arrow_info import ArrowInfo
@@ -29,26 +28,11 @@ def password_file() -> Generator[str, None, None]:
 
 
 @pytest.fixture(scope="session")
-def neo4j_database_container() -> Generator[Neo4jContainer, None, None]:
-    neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", "neo4j:5.11-enterprise")
-
-    neo4j_container = (
-        Neo4jContainer(
-            image=neo4j_image,
-        )
-        .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
-        .with_env("NEO4J_dbms_security_procedures_unrestricted", "gds.*")
-        .with_env("NEO4J_dbms_security_procedures_allowlist", "gds.*")
-    )
-
-    with neo4j_container as neo4j_db:
-        wait_for_logs(neo4j_db)
-        yield neo4j_db
-
-
-@pytest.fixture(scope="session")
 def session_container(password_file: str) -> Generator[DockerContainer, None, None]:
-    session_image = os.getenv("GDS_SESSION_IMAGE")
+    session_image = os.getenv(
+        "GDS_SESSION_IMAGE",
+        "europe-west1-docker.pkg.dev/aura-docker-images/aura/gds-session:97ac47f7928c0533b3099539f0f5b3058a52c203",
+    )
 
     if session_image is None:
         raise ValueError("GDS_SESSION_IMAGE environment variable is not set")

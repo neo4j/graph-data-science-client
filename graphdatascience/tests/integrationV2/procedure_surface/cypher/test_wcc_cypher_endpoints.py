@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience import Graph, QueryRunner
-from graphdatascience.procedure_surface.arrow.arrow_wcc_endpoints import WccArrowEndpoints
+from graphdatascience.procedure_surface.arrow.wcc_arrow_endpoints import WccArrowEndpoints
 from graphdatascience.procedure_surface.cypher.wcc_cypher_endpoints import WccCypherEndpoints
 
 
@@ -73,3 +73,17 @@ def test_wcc_mutate(wcc_endpoints: WccArrowEndpoints, sample_graph: Graph) -> No
     assert result.post_processing_millis >= 0
     assert result.mutate_millis >= 0
     assert result.node_properties_written == 3
+
+
+def test_wcc_estimate(wcc_endpoints: WccArrowEndpoints, sample_graph: Graph) -> None:
+    result = wcc_endpoints.estimate(sample_graph)
+
+    assert result.node_count == 3
+    assert result.relationship_count == 1
+    assert "Bytes" in result.required_memory
+    # assert result.tree_view > 0
+    # assert result.map_view > 0
+    assert result.bytes_min > 0
+    assert result.bytes_max > 0
+    assert result.heap_percentage_min > 0
+    assert result.heap_percentage_max > 0

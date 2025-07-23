@@ -1,8 +1,10 @@
+import json
 from typing import Any, List, Optional
 
 from pandas import DataFrame
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from ...arrow_client.v2.data_mapper_utils import deserialize_single
 from ...arrow_client.v2.job_client import JobClient
 from ...arrow_client.v2.mutation_client import MutationClient
 from ...arrow_client.v2.write_back_client import WriteBackClient
@@ -175,6 +177,15 @@ class WccArrowEndpoints(WccEndpoints):
         return WccWriteResult(**computation_result)
 
     def estimate(
-        self, graph_name: Optional[str] = None, projection_config: Optional[dict[str, Any]] = None
+        self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
     ) -> EstimationResult:
-        pass
+        if G is not None:
+            payload = {"graphName": G.name()}
+        elif projection_config is not None:
+            payload = projection_config
+        else:
+            raise ValueError("Either graph_name or projection_config must be provided.")
+
+        res = self._arrow_client.do_action_with_retry("v2/community.wcc.estimate", json.dumps(payload).encode("utf-8"))
+
+        return EstimationResult(**deserialize_single(res))

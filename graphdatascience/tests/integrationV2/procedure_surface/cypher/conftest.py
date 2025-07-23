@@ -11,7 +11,7 @@ from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
 @pytest.fixture(scope="session")
-def neo4j_database_container() -> Generator[Neo4jContainer, None, None]:
+def gds_plugin_container() -> Generator[Neo4jContainer, None, None]:
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", "neo4j:enterprise")
 
     neo4j_container = (
@@ -28,8 +28,8 @@ def neo4j_database_container() -> Generator[Neo4jContainer, None, None]:
 
 
 @pytest.fixture
-def query_runner(neo4j_database_container: DockerContainer) -> Generator[QueryRunner, None, None]:
+def query_runner(gds_plugin_container: DockerContainer) -> Generator[QueryRunner, None, None]:
     yield Neo4jQueryRunner.create_for_db(
-        f"bolt://localhost:{neo4j_database_container.get_exposed_port(7687)}",
+        f"bolt://localhost:{gds_plugin_container.get_exposed_port(7687)}",
         ("neo4j", "password"),
     )

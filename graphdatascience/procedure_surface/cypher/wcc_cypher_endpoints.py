@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
@@ -177,18 +178,20 @@ class WccCypherEndpoints(WccEndpoints):
         return WccWriteResult(**result.to_dict())
 
     def estimate(
-        self, graph_name: Optional[str] = None, projection_config: Optional[dict[str, Any]] = None
+        self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
     ) -> EstimationResult:
-        config: Union[str, dict[str, Any]] = {}
+        config: Union[dict[str, Any]] = OrderedDict()
 
-        if graph_name is not None:
-            config = graph_name
+        if G is not None:
+            config["graphNameOrConfiguration"] = G.name()
         elif projection_config is not None:
-            config = projection_config
+            config["graphNameOrConfiguration"] = projection_config
         else:
             raise ValueError("Either graph_name or projection_config must be provided.")
 
-        params = CallParameters(config=config)
+        config["algoConfig"] = {}
+
+        params = CallParameters(**config)
 
         result = self._query_runner.call_procedure(endpoint="gds.wcc.stats.estimate", params=params).squeeze()
 
