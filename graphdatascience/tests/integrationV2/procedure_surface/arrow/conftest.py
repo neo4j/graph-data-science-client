@@ -30,8 +30,7 @@ def password_file() -> Generator[str, None, None]:
 @pytest.fixture(scope="session")
 def session_container(password_file: str) -> Generator[DockerContainer, None, None]:
     session_image = os.getenv(
-        "GDS_SESSION_IMAGE",
-        "europe-west1-docker.pkg.dev/aura-docker-images/aura/gds-session:97ac47f7928c0533b3099539f0f5b3058a52c203",
+        "GDS_SESSION_IMAGE"
     )
 
     if session_image is None:
