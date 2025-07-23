@@ -29,9 +29,7 @@ def password_file() -> Generator[str, None, None]:
 
 @pytest.fixture(scope="session")
 def session_container(password_file: str) -> Generator[DockerContainer, None, None]:
-    session_image = os.getenv(
-        "GDS_SESSION_IMAGE"
-    )
+    session_image = os.getenv("GDS_SESSION_IMAGE")
 
     if session_image is None:
         raise ValueError("GDS_SESSION_IMAGE environment variable is not set")
