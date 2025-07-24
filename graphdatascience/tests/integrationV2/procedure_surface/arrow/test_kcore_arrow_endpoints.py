@@ -5,16 +5,8 @@ import pytest
 
 from graphdatascience import Graph
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.procedure_surface.arrow.kcore_arrow_endpoints import KCoreArrowEndpoints
-
-
-class MockGraph(Graph):
-    def __init__(self, name: str):
-        self._name = name
-
-    def name(self) -> str:
-        return self._name
+from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
@@ -35,16 +27,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
     (a)-[:REL]->(d)
     """
 
-    arrow_client.do_action("v2/graph.fromGDL", json.dumps({"graphName": "kcore_g", "gdlGraph": gdl}).encode("utf-8"))
-    JobClient.run_job_and_wait(
-        arrow_client,
-        "v2/graph.relationships.toUndirected",
-        {"graphName": "kcore_g", "relationshipType": "REL", "mutateRelationshipType": "REL2"},
-    )
-    arrow_client.do_action(
-        "v2/graph.relationships.drop", json.dumps({"graphName": "kcore_g", "relationshipType": "REL"}).encode("utf-8")
-    )
-    yield MockGraph("kcore_g")
+    yield create_graph(arrow_client, "kcore_g", gdl, ("REL", "REL2"))
     arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "kcore_g"}).encode("utf-8"))
 
 

@@ -6,14 +6,7 @@ import pytest
 from graphdatascience import Graph
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.arrow.louvain_arrow_endpoints import LouvainArrowEndpoints
-
-
-class MockGraph(Graph):
-    def __init__(self, name: str):
-        self._name = name
-
-    def name(self) -> str:
-        return self._name
+from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
@@ -33,8 +26,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
     (f)-[:REL]->(d)
     """
 
-    arrow_client.do_action("v2/graph.fromGDL", json.dumps({"graphName": "louvain_g", "gdlGraph": gdl}).encode("utf-8"))
-    yield MockGraph("louvain_g")
+    yield create_graph(arrow_client, "louvain_g", gdl)
     arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "louvain_g"}).encode("utf-8"))
 
 
