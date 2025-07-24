@@ -246,7 +246,7 @@ class WccEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        graph_name: Optional[str] = None,
+        G: Optional[Graph] = None,
         projection_config: Optional[dict[str, Any]] = None,
     ) -> EstimationResult:
         """
@@ -259,8 +259,8 @@ class WccEndpoints(ABC):
 
         Parameters
         ----------
-        graph_name : Optional[str], optional
-            Name of the graph to be used in the estimation
+        G : Optional[Graph], optional
+            The graph to be used in the estimation
         projection_config : Optional[dict[str, Any]], optional
             Configuration dictionary for the projection.
 

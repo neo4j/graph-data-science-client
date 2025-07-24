@@ -1,24 +1,25 @@
-from collections import OrderedDict
-from typing import Any, List, Optional, Union
+import json
+from typing import Any, List, Optional
 
 from pandas import DataFrame
 
-from ...call_parameters import CallParameters
+from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from ...arrow_client.v2.data_mapper_utils import deserialize_single
+from ...arrow_client.v2.job_client import JobClient
+from ...arrow_client.v2.mutation_client import MutationClient
+from ...arrow_client.v2.write_back_client import WriteBackClient
 from ...graph.graph_object import Graph
-from ...query_runner.query_runner import QueryRunner
 from ..api.estimation_result import EstimationResult
 from ..api.wcc_endpoints import WccEndpoints, WccMutateResult, WccStatsResult, WccWriteResult
 from ..utils.config_converter import ConfigConverter
 
+WCC_ENDPOINT = "v2/community.wcc"
 
-class WccCypherEndpoints(WccEndpoints):
-    """
-    Implementation of the WCC algorithm endpoints.
-    This class handles the actual execution by forwarding calls to the query runner.
-    """
 
-    def __init__(self, query_runner: QueryRunner):
-        self._query_runner = query_runner
+class WccArrowEndpoints(WccEndpoints):
+    def __init__(self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[WriteBackClient] = None):
+        self._arrow_client = arrow_client
+        self._write_back_client = write_back_client
 
     def mutate(
         self,
@@ -37,7 +38,7 @@ class WccCypherEndpoints(WccEndpoints):
         relationship_weight_property: Optional[str] = None,
     ) -> WccMutateResult:
         config = ConfigConverter.convert_to_gds_config(
-            mutate_property=mutate_property,
+            graph_name=G.name(),
             concurrency=concurrency,
             consecutive_ids=consecutive_ids,
             job_id=job_id,
@@ -48,16 +49,17 @@ class WccCypherEndpoints(WccEndpoints):
             seed_property=seed_property,
             sudo=sudo,
             threshold=threshold,
-            username=username,
         )
 
-        # Run procedure and return results
-        params = CallParameters(graph_name=G.name(), config=config)
-        params.ensure_job_id_in_config()
+        job_id = JobClient.run_job_and_wait(self._arrow_client, WCC_ENDPOINT, config)
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.wcc.mutate", params=params).squeeze()
+        mutate_result = MutationClient.mutate_node_property(self._arrow_client, job_id, mutate_property)
+        computation_result = JobClient.get_summary(self._arrow_client, job_id)
 
-        return WccMutateResult(**cypher_result.to_dict())
+        computation_result["nodePropertiesWritten"] = mutate_result.node_properties_written
+        computation_result["mutateMillis"] = 0
+
+        return WccMutateResult(**computation_result)
 
     def stats(
         self,
@@ -75,6 +77,7 @@ class WccCypherEndpoints(WccEndpoints):
         relationship_weight_property: Optional[str] = None,
     ) -> WccStatsResult:
         config = ConfigConverter.convert_to_gds_config(
+            graph_name=G.name(),
             concurrency=concurrency,
             consecutive_ids=consecutive_ids,
             job_id=job_id,
@@ -85,16 +88,12 @@ class WccCypherEndpoints(WccEndpoints):
             seed_property=seed_property,
             sudo=sudo,
             threshold=threshold,
-            username=username,
         )
 
-        # Run procedure and return results
-        params = CallParameters(graph_name=G.name(), config=config)
-        params.ensure_job_id_in_config()
+        job_id = JobClient.run_job_and_wait(self._arrow_client, WCC_ENDPOINT, config)
+        computation_result = JobClient.get_summary(self._arrow_client, job_id)
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.wcc.stats", params=params).squeeze()  # type: ignore
-
-        return WccStatsResult(**cypher_result.to_dict())
+        return WccStatsResult(**computation_result)
 
     def stream(
         self,
@@ -113,6 +112,7 @@ class WccCypherEndpoints(WccEndpoints):
         relationship_weight_property: Optional[str] = None,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
+            graph_name=G.name(),
             concurrency=concurrency,
             consecutive_ids=consecutive_ids,
             job_id=job_id,
@@ -124,14 +124,10 @@ class WccCypherEndpoints(WccEndpoints):
             seed_property=seed_property,
             sudo=sudo,
             threshold=threshold,
-            username=username,
         )
 
-        # Run procedure and return results
-        params = CallParameters(graph_name=G.name(), config=config)
-        params.ensure_job_id_in_config()
-
-        return self._query_runner.call_procedure(endpoint="gds.wcc.stream", params=params)
+        job_id = JobClient.run_job_and_wait(self._arrow_client, WCC_ENDPOINT, config)
+        return JobClient.stream_results(self._arrow_client, G.name(), job_id)
 
     def write(
         self,
@@ -152,7 +148,7 @@ class WccCypherEndpoints(WccEndpoints):
         write_concurrency: Optional[int] = None,
     ) -> WccWriteResult:
         config = ConfigConverter.convert_to_gds_config(
-            write_property=write_property,
+            graph_name=G.name(),
             concurrency=concurrency,
             consecutive_ids=consecutive_ids,
             job_id=job_id,
@@ -164,35 +160,32 @@ class WccCypherEndpoints(WccEndpoints):
             seed_property=seed_property,
             sudo=sudo,
             threshold=threshold,
-            username=username,
         )
 
-        if write_concurrency is not None:
-            config["writeConcurrency"] = write_concurrency
+        job_id = JobClient.run_job_and_wait(self._arrow_client, WCC_ENDPOINT, config)
+        computation_result = JobClient.get_summary(self._arrow_client, job_id)
 
-        params = CallParameters(graph_name=G.name(), config=config)
-        params.ensure_job_id_in_config()
+        if self._write_back_client is None:
+            raise Exception("Write back client is not initialized")
 
-        result = self._query_runner.call_procedure(endpoint="gds.wcc.write", params=params).squeeze()  # type: ignore
+        write_millis = self._write_back_client.write(
+            G.name(), job_id, write_concurrency if write_concurrency is not None else concurrency
+        )
 
-        return WccWriteResult(**result.to_dict())
+        computation_result["writeMillis"] = write_millis
+
+        return WccWriteResult(**computation_result)
 
     def estimate(
         self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
     ) -> EstimationResult:
-        config: Union[dict[str, Any]] = OrderedDict()
-
         if G is not None:
-            config["graphNameOrConfiguration"] = G.name()
+            payload = {"graphName": G.name()}
         elif projection_config is not None:
-            config["graphNameOrConfiguration"] = projection_config
+            payload = projection_config
         else:
             raise ValueError("Either graph_name or projection_config must be provided.")
 
-        config["algoConfig"] = {}
+        res = self._arrow_client.do_action_with_retry("v2/community.wcc.estimate", json.dumps(payload).encode("utf-8"))
 
-        params = CallParameters(**config)
-
-        result = self._query_runner.call_procedure(endpoint="gds.wcc.stats.estimate", params=params).squeeze()
-
-        return EstimationResult(**result.to_dict())
+        return EstimationResult(**deserialize_single(res))

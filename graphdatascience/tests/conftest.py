@@ -16,3 +16,4 @@ def pytest_addoption(parser: Any) -> None:
     parser.addoption(
         "--include-cloud-architecture", action="store_true", help="include tests resuiring a cloud architecture setup"
     )
+    parser.addoption("--include-integration-v2", action="store_true", help="include integration tests for v2")

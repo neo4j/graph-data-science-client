@@ -337,7 +337,7 @@ def test_estimate_with_graph_name(graph: Graph) -> None:
 
     query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"wcc.stats.estimate": pd.DataFrame([result])})
 
-    estimate = WccCypherEndpoints(query_runner).estimate(graph_name=graph.name())
+    estimate = WccCypherEndpoints(query_runner).estimate(G=graph)
 
     assert estimate.node_count == 100
     assert estimate.relationship_count == 200
@@ -348,7 +348,7 @@ def test_estimate_with_graph_name(graph: Graph) -> None:
     assert len(query_runner.queries) == 1
     assert "gds.wcc.stats.estimate" in query_runner.queries[0]
     params = query_runner.params[0]
-    assert params["config"] == "test_graph"
+    assert params["graphNameOrConfiguration"] == "test_graph"
 
 
 def test_estimate_with_projection_config() -> None:
