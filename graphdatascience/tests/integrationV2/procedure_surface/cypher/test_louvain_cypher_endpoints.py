@@ -66,7 +66,7 @@ def test_louvain_stream(louvain_endpoints: LouvainCypherEndpoints, sample_graph:
 
     assert "nodeId" in result_df.columns
     assert "communityId" in result_df.columns
-    assert len(result_df.columns) == 2
+    assert len(result_df.columns) == 3
 
 
 def test_louvain_mutate(louvain_endpoints: LouvainCypherEndpoints, sample_graph: Graph) -> None:

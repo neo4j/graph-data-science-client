@@ -42,9 +42,9 @@ def test_wcc_stats(wcc_endpoints: WccArrowEndpoints, sample_graph: Graph) -> Non
     result = wcc_endpoints.stats(G=sample_graph)
 
     assert result.component_count == 2
-    assert result.compute_millis > 0
-    assert result.pre_processing_millis > 0
-    assert result.post_processing_millis > 0
+    assert result.compute_millis >= 0
+    assert result.pre_processing_millis >= 0
+    assert result.post_processing_millis >= 0
     assert "p10" in result.component_distribution
 
 

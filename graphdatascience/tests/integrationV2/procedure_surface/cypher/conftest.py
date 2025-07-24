@@ -25,6 +25,8 @@ def gds_plugin_container() -> Generator[Neo4jContainer, None, None]:
     with neo4j_container as neo4j_db:
         wait_for_logs(neo4j_db, "Started.")
         yield neo4j_db
+        stdout, stderr = neo4j_db.get_logs()
+        print(stdout)
 
 
 @pytest.fixture
