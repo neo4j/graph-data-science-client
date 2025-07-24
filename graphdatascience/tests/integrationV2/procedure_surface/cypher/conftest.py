@@ -25,11 +25,15 @@ def gds_plugin_container() -> Generator[Neo4jContainer, None, None]:
     with neo4j_container as neo4j_db:
         wait_for_logs(neo4j_db, "Started.")
         yield neo4j_db
+        stdout, stderr = neo4j_db.get_logs()
+        print(stdout)
 
 
 @pytest.fixture
 def query_runner(gds_plugin_container: DockerContainer) -> Generator[QueryRunner, None, None]:
-    yield Neo4jQueryRunner.create_for_db(
+    query_runner = Neo4jQueryRunner.create_for_db(
         f"bolt://localhost:{gds_plugin_container.get_exposed_port(7687)}",
         ("neo4j", "password"),
     )
+    yield query_runner
+    query_runner.close()

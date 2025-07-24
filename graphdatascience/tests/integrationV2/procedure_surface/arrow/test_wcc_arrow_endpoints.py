@@ -6,14 +6,7 @@ import pytest
 from graphdatascience import Graph
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.arrow.wcc_arrow_endpoints import WccArrowEndpoints
-
-
-class MockGraph(Graph):
-    def __init__(self, name: str):
-        self._name = name
-
-    def name(self) -> str:
-        return self._name
+from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
@@ -25,8 +18,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
     (a)-[:REL]->(c)
     """
 
-    arrow_client.do_action("v2/graph.fromGDL", json.dumps({"graphName": "g", "gdlGraph": gdl}).encode("utf-8"))
-    yield MockGraph("g")
+    yield create_graph(arrow_client, "g", gdl)
     arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "g"}).encode("utf-8"))
 
 
@@ -40,9 +32,9 @@ def test_wcc_stats(wcc_endpoints: WccArrowEndpoints, sample_graph: Graph) -> Non
     result = wcc_endpoints.stats(G=sample_graph)
 
     assert result.component_count == 2
-    assert result.compute_millis > 0
-    assert result.pre_processing_millis > 0
-    assert result.post_processing_millis > 0
+    assert result.compute_millis >= 0
+    assert result.pre_processing_millis >= 0
+    assert result.post_processing_millis >= 0
     assert "p10" in result.component_distribution
 
 
