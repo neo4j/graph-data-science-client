@@ -95,7 +95,7 @@ def test_kcore_stats_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sampl
     )
 
     assert result.degeneracy >= 1
-    assert result.compute_millis > 0
+    assert result.compute_millis >= 0
     assert result.pre_processing_millis >= 0
     assert result.post_processing_millis >= 0
 

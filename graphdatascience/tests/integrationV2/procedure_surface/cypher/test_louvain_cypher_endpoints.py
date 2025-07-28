@@ -153,8 +153,8 @@ def test_louvain_stream_with_parameters(louvain_endpoints: LouvainCypherEndpoint
 
     assert "nodeId" in result_df.columns
     assert "communityId" in result_df.columns
-    # When include_intermediate_communities is False, should only have 2 columns
-    assert len(result_df.columns) == 2
+    assert result_df["intermediateCommunityIds"].isnull().all()
+    assert len(result_df) == 6
 
 
 def test_louvain_mutate_with_parameters(louvain_endpoints: LouvainCypherEndpoints, sample_graph: Graph) -> None:
