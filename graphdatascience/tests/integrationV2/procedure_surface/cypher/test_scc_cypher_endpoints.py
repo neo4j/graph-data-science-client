@@ -1,6 +1,5 @@
 from typing import Generator
 
-import pandas as pd
 import pytest
 
 from graphdatascience import QueryRunner
@@ -47,6 +46,7 @@ def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
 
     query_runner.run_cypher("CALL gds.graph.drop('g')")
     query_runner.run_cypher("MATCH (n) DETACH DELETE n")
+
 
 @pytest.fixture
 def scc_endpoints(query_runner: QueryRunner) -> SccCypherEndpoints:

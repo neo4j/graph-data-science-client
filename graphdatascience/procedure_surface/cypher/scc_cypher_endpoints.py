@@ -168,4 +168,4 @@ class SccCypherEndpoints(SccEndpoints):
 
         result = self._query_runner.call_procedure(endpoint="gds.scc.stats.estimate", params=params).squeeze()
 
-        return EstimationResult(**result.to_dict()) 
+        return EstimationResult(**result.to_dict())

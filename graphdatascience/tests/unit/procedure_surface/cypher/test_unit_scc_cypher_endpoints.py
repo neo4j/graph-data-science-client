@@ -285,4 +285,4 @@ def test_estimate_without_params() -> None:
     query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION)
 
     with pytest.raises(ValueError, match="Either graph_name or projection_config must be provided."):
-        SccCypherEndpoints(query_runner).estimate() 
+        SccCypherEndpoints(query_runner).estimate()
