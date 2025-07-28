@@ -277,4 +277,4 @@ class SccWriteResult(BaseModel):
     configuration: dict[str, Any]
 
     def __getitem__(self, item: str) -> Any:
-        return getattr(self, item) 
+        return getattr(self, item)
