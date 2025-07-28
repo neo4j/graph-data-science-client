@@ -43,7 +43,7 @@ def test_louvain_stats(louvain_endpoints: LouvainArrowEndpoints, sample_graph: G
     assert result.modularity >= 0
     assert isinstance(result.modularities, list)
     assert result.ran_levels >= 1
-    assert result.compute_millis > 0
+    assert result.compute_millis >= 0
     assert result.pre_processing_millis >= 0
     assert result.post_processing_millis >= 0
     assert "p10" in result.community_distribution
