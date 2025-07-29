@@ -25,8 +25,6 @@ class KCoreArrowEndpoints(KCoreEndpoints):
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-        target_nodes: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
     ) -> KCoreMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -35,9 +33,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
             log_progress=log_progress,
             node_labels=node_labels,
             relationship_types=relationship_types,
-            relationship_weight_property=relationship_weight_property,
             sudo=sudo,
-            target_nodes=target_nodes,
         )
 
         computation_result, node_properties_written = self._node_property_endpoints.run_job_and_mutate(
@@ -59,8 +55,6 @@ class KCoreArrowEndpoints(KCoreEndpoints):
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-        target_nodes: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
     ) -> KCoreStatsResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -69,9 +63,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
             log_progress=log_progress,
             node_labels=node_labels,
             relationship_types=relationship_types,
-            relationship_weight_property=relationship_weight_property,
             sudo=sudo,
-            target_nodes=target_nodes,
         )
 
         computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/community.kcore", G, config)
@@ -88,8 +80,6 @@ class KCoreArrowEndpoints(KCoreEndpoints):
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-        target_nodes: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -98,9 +88,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
             log_progress=log_progress,
             node_labels=node_labels,
             relationship_types=relationship_types,
-            relationship_weight_property=relationship_weight_property,
             sudo=sudo,
-            target_nodes=target_nodes,
         )
 
         return self._node_property_endpoints.run_job_and_stream("v2/community.kcore", G, config)

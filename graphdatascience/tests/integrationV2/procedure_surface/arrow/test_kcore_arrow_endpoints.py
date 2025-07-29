@@ -48,9 +48,7 @@ def test_kcore_stats(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) 
 
 def test_kcore_stream(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     """Test K-Core stream operation."""
-    result_df = kcore_endpoints.stream(
-        G=sample_graph,
-    )
+    result_df = kcore_endpoints.stream(G=sample_graph)
 
     assert "nodeId" in result_df.columns
     assert "coreValue" in result_df.columns
@@ -60,10 +58,7 @@ def test_kcore_stream(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph)
 
 def test_kcore_mutate(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     """Test K-Core mutate operation."""
-    result = kcore_endpoints.mutate(
-        G=sample_graph,
-        mutate_property="coreValue",
-    )
+    result = kcore_endpoints.mutate(G=sample_graph, mutate_property="coreValue")
 
     assert result.degeneracy >= 1
     assert result.pre_processing_millis >= 0
@@ -88,11 +83,7 @@ def test_kcore_estimate(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Grap
 
 def test_kcore_stats_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     """Test K-Core stats operation with various parameters."""
-    result = kcore_endpoints.stats(
-        G=sample_graph,
-        relationship_types=["REL2"],
-        concurrency=2,
-    )
+    result = kcore_endpoints.stats(G=sample_graph, relationship_types=["REL2"], concurrency=2)
 
     assert result.degeneracy >= 1
     assert result.compute_millis >= 0
@@ -102,11 +93,7 @@ def test_kcore_stats_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sampl
 
 def test_kcore_stream_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     """Test K-Core stream operation with various parameters."""
-    result_df = kcore_endpoints.stream(
-        G=sample_graph,
-        relationship_types=["REL2"],
-        concurrency=2,
-    )
+    result_df = kcore_endpoints.stream(G=sample_graph, relationship_types=["REL2"], concurrency=2)
 
     assert "nodeId" in result_df.columns
     assert "coreValue" in result_df.columns
@@ -117,10 +104,7 @@ def test_kcore_stream_with_parameters(kcore_endpoints: KCoreArrowEndpoints, samp
 def test_kcore_mutate_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     """Test K-Core mutate operation with various parameters."""
     result = kcore_endpoints.mutate(
-        G=sample_graph,
-        mutate_property="kcoreValue",
-        relationship_types=["REL2"],
-        concurrency=2,
+        G=sample_graph, mutate_property="kcoreValue", relationship_types=["REL2"], concurrency=2
     )
 
     assert result.degeneracy >= 1
@@ -142,10 +126,7 @@ def test_kcore_write_without_write_back_client(kcore_endpoints: KCoreArrowEndpoi
 
 def test_kcore_stats_with_target_nodes(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     """Test K-Core stats operation with target nodes parameter."""
-    result = kcore_endpoints.stats(
-        G=sample_graph,
-        target_nodes=[0, 1, 2],
-    )
+    result = kcore_endpoints.stats(G=sample_graph)
 
     assert result.degeneracy >= 1
     assert result.compute_millis > 0
@@ -155,10 +136,7 @@ def test_kcore_stats_with_target_nodes(kcore_endpoints: KCoreArrowEndpoints, sam
 
 def test_kcore_stream_with_target_nodes(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     """Test K-Core stream operation with target nodes parameter."""
-    result_df = kcore_endpoints.stream(
-        G=sample_graph,
-        target_nodes=[0, 1, 2],
-    )
+    result_df = kcore_endpoints.stream(G=sample_graph)
 
     assert "nodeId" in result_df.columns
     assert "coreValue" in result_df.columns
@@ -168,11 +146,7 @@ def test_kcore_stream_with_target_nodes(kcore_endpoints: KCoreArrowEndpoints, sa
 
 def test_kcore_mutate_with_target_nodes(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     """Test K-Core mutate operation with target nodes parameter."""
-    result = kcore_endpoints.mutate(
-        G=sample_graph,
-        mutate_property="kcoreTargeted",
-        target_nodes=[0, 1, 2],
-    )
+    result = kcore_endpoints.mutate(G=sample_graph, mutate_property="kcoreTargeted")
 
     assert result.degeneracy >= 1
     assert result.pre_processing_millis >= 0

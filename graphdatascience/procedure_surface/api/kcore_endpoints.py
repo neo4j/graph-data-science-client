@@ -28,8 +28,6 @@ class KCoreEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        target_nodes: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
     ) -> KCoreMutateResult:
         """
         Executes the K-Core algorithm and writes the results to the in-memory graph as node properties.
@@ -54,10 +52,6 @@ class KCoreEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        target_nodes : Optional[Any], default=None
-            Subset of nodes to compute the algorithm for
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
 
         Returns
         -------
@@ -77,8 +71,6 @@ class KCoreEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        target_nodes: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
     ) -> KCoreStatsResult:
         """
         Executes the K-Core algorithm and returns statistics.
@@ -101,10 +93,6 @@ class KCoreEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        target_nodes : Optional[Any], default=None
-            Subset of nodes to compute the algorithm for
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
 
         Returns
         -------
@@ -124,8 +112,6 @@ class KCoreEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        target_nodes: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
     ) -> DataFrame:
         """
         Executes the K-Core algorithm and returns a stream of results.
@@ -148,10 +134,6 @@ class KCoreEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        target_nodes : Optional[Any], default=None
-            Subset of nodes to compute the algorithm for
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
 
         Returns
         -------

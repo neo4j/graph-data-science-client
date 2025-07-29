@@ -31,8 +31,6 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-        target_nodes: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
     ) -> KCoreMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             mutate_property=mutate_property,
@@ -41,9 +39,7 @@ class KCoreCypherEndpoints(KCoreEndpoints):
             log_progress=log_progress,
             node_labels=node_labels,
             relationship_types=relationship_types,
-            relationship_weight_property=relationship_weight_property,
             sudo=sudo,
-            target_nodes=target_nodes,
             username=username,
         )
 
@@ -64,8 +60,6 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-        target_nodes: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
     ) -> KCoreStatsResult:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -73,9 +67,7 @@ class KCoreCypherEndpoints(KCoreEndpoints):
             log_progress=log_progress,
             node_labels=node_labels,
             relationship_types=relationship_types,
-            relationship_weight_property=relationship_weight_property,
             sudo=sudo,
-            target_nodes=target_nodes,
             username=username,
         )
 
@@ -96,8 +88,6 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-        target_nodes: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -105,9 +95,7 @@ class KCoreCypherEndpoints(KCoreEndpoints):
             log_progress=log_progress,
             node_labels=node_labels,
             relationship_types=relationship_types,
-            relationship_weight_property=relationship_weight_property,
             sudo=sudo,
-            target_nodes=target_nodes,
             username=username,
         )
 
