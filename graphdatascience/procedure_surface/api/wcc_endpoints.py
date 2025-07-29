@@ -250,12 +250,7 @@ class WccEndpoints(ABC):
         projection_config: Optional[dict[str, Any]] = None,
     ) -> EstimationResult:
         """
-        Estimate the results based on the provided graph and configuration.
-
-        This abstract method is intended to be implemented in a subclass to provide
-        specific functionality for estimating outcomes based on a graph name and a
-        projection configuration object. The implementation should use the given
-        parameters to compute and return an appropriate estimation result.
+        Estimate the memory consumption of an algorithm run.
 
         Parameters
         ----------
@@ -267,8 +262,7 @@ class WccEndpoints(ABC):
         Returns
         -------
         EstimationResult
-            An object containing the result of the estimation, with relevant details
-            as defined by the specific implementation.
+            An object containing the result of the estimation
         """
         pass
 
