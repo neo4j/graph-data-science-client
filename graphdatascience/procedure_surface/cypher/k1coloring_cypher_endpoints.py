@@ -1,5 +1,4 @@
-from collections import OrderedDict
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional
 
 from pandas import DataFrame
 
@@ -14,6 +13,7 @@ from ..api.k1coloring_endpoints import (
     K1ColoringWriteResult,
 )
 from ..utils.config_converter import ConfigConverter
+from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 
 
 class K1ColoringCypherEndpoints(K1ColoringEndpoints):
@@ -169,19 +169,9 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
     def estimate(
         self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
     ) -> EstimationResult:
-        config: Union[dict[str, Any]] = OrderedDict()
-
-        if G is not None:
-            config["graphNameOrConfiguration"] = G.name()
-        elif projection_config is not None:
-            config["graphNameOrConfiguration"] = projection_config
-        else:
-            raise ValueError("Either graph_name or projection_config must be provided.")
-
-        config["algoConfig"] = {}
-
-        params = CallParameters(**config)
-
-        result = self._query_runner.call_procedure(endpoint="gds.k1coloring.stats.estimate", params=params).squeeze()
-
-        return EstimationResult(**result.to_dict())
+        return estimate_algorithm(
+            endpoint="gds.k1coloring.stats.estimate",
+            query_runner=self._query_runner,
+            G=G,
+            projection_config=projection_config,
+        )
