@@ -3,8 +3,8 @@ from typing import Any, Optional, Union
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.graph_object import Graph
-from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.query_runner.query_runner import QueryRunner
 
 
 def estimate_algorithm(
