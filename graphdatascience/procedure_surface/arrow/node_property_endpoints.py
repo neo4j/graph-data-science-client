@@ -47,8 +47,6 @@ class NodePropertyEndpoints:
             config.pop("writeProperty", None)
             config.pop("writeMillis", None)
 
-        print(computation_result)
-
         return computation_result
 
     def run_job_and_stream(self, endpoint: str, G: Graph, config: Dict[str, Any]) -> DataFrame:

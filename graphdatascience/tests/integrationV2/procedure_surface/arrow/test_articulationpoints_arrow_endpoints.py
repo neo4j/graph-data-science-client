@@ -48,7 +48,6 @@ def test_articulationpoints_mutate(
     assert result.compute_millis >= 0
     assert result.mutate_millis >= 0
     assert result.node_properties_written == 3
-    print(result.configuration)
     assert "articulationPoint" in result.configuration["mutateProperty"]
 
 

@@ -35,38 +35,6 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
     ) -> ArticulationPointsMutateResult:
-        """
-        Executes the ArticulationPoints algorithm and writes the results to the in-memory graph as node properties.
-
-        ArticulationPoints is an algorithm that finds nodes that disconnect components if removed.
-        These nodes are critical for the connectivity of the graph.
-
-        Parameters
-        ----------
-        G : Graph
-            The graph to run the algorithm on
-        mutate_property : str
-            The property name to store the articulation point flag for each node
-        relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
-            Override memory estimation limits
-        log_progress : Optional[bool], default=None
-            Whether to log progress
-        username : Optional[str], default=None
-            The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
-            The number of concurrent threads
-        job_id : Optional[Any], default=None
-            An identifier for the job
-
-        Returns
-        -------
-        ArticulationPointsMutateResult
-            Algorithm metrics and statistics including the count of articulation points found
-        """
         config = ConfigConverter.convert_to_gds_config(
             mutate_property=mutate_property,
             concurrency=concurrency,
@@ -99,36 +67,6 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
     ) -> ArticulationPointsStatsResult:
-        """
-        Executes the ArticulationPoints algorithm and returns result statistics without writing the result to Neo4j.
-
-        ArticulationPoints is an algorithm that finds nodes that disconnect components if removed.
-        These nodes are critical for the connectivity of the graph.
-
-        Parameters
-        ----------
-        G : Graph
-            The graph to run the algorithm on
-        relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
-            Override memory estimation limits
-        log_progress : Optional[bool], default=None
-            Whether to log progress
-        username : Optional[str], default=None
-            The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
-            The number of concurrent threads
-        job_id : Optional[Any], default=None
-            An identifier for the job
-
-        Returns
-        -------
-        ArticulationPointsStatsResult
-            Algorithm statistics including the count of articulation points found
-        """
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
             job_id=job_id,
@@ -160,39 +98,6 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
     ) -> DataFrame:
-        """
-        Executes the ArticulationPoints algorithm and returns results as a stream.
-
-        ArticulationPoints is an algorithm that finds nodes that disconnect components if removed.
-        These nodes are critical for the connectivity of the graph. The stream mode returns
-        individual articulation points with their resulting component information.
-
-        Parameters
-        ----------
-        G : Graph
-            The graph to run the algorithm on
-        relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
-            Override memory estimation limits
-        log_progress : Optional[bool], default=None
-            Whether to log progress
-        username : Optional[str], default=None
-            The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
-            The number of concurrent threads
-        job_id : Optional[Any], default=None
-            An identifier for the job
-
-        Returns
-        -------
-        DataFrame
-            A DataFrame containing articulation points with columns:
-            - nodeId: The ID of the articulation point
-            - resultingComponents: Information about resulting components
-        """
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
             job_id=job_id,
@@ -223,42 +128,6 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         write_concurrency: Optional[Any] = None,
         write_to_result_store: Optional[bool] = None,
     ) -> ArticulationPointsWriteResult:
-        """
-        Executes the ArticulationPoints algorithm and writes the results back to the Neo4j database.
-
-        ArticulationPoints is an algorithm that finds nodes that disconnect components if removed.
-        These nodes are critical for the connectivity of the graph.
-
-        Parameters
-        ----------
-        G : Graph
-            The graph to run the algorithm on
-        write_property : str
-            The property name to store the articulation point flag for each node
-        relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
-            Override memory estimation limits
-        log_progress : Optional[bool], default=None
-            Whether to log progress
-        username : Optional[str], default=None
-            The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
-            The number of concurrent threads
-        job_id : Optional[Any], default=None
-            An identifier for the job
-        write_concurrency : Optional[Any], default=None
-            The number of concurrent threads for writing
-        write_to_result_store : Optional[bool], default=None
-            Whether to write results to the result store
-
-        Returns
-        -------
-        ArticulationPointsWriteResult
-            Algorithm metrics and statistics including the count of articulation points found
-        """
         config = ConfigConverter.convert_to_gds_config(
             write_property=write_property,
             concurrency=concurrency,

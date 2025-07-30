@@ -36,45 +36,6 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
         job_id: Optional[Any] = None,
         relationship_weight_property: Optional[str] = None,
     ) -> BetweennessMutateResult:
-        """
-        Executes the Betweenness Centrality algorithm and writes the results to the in-memory graph as node properties.
-
-        Betweenness centrality measures the relative information flow that passes through a node.
-        It identifies nodes that serve as bridges or intermediaries in the network by quantifying
-        how often each node lies on the shortest path between other pairs of nodes.
-
-        Parameters
-        ----------
-        G : Graph
-            The graph to run the algorithm on
-        mutate_property : str
-            The property name to store the betweenness centrality score for each node
-        sampling_size : Optional[int], default=None
-            The number of nodes to use for sampling. If not specified, all nodes are used
-        sampling_seed : Optional[int], default=None
-            The seed value for sampling randomization
-        relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
-            Override memory estimation limits
-        log_progress : Optional[bool], default=None
-            Whether to log progress
-        username : Optional[str], default=None
-            The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
-            The number of concurrent threads
-        job_id : Optional[Any], default=None
-            An identifier for the job
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights
-
-        Returns
-        -------
-        BetweennessMutateResult
-            Algorithm metrics and statistics including centrality distribution
-        """
         config = self._node_property_endpoints.create_base_config(
             G,
             concurrency=concurrency,
@@ -109,43 +70,6 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
         job_id: Optional[Any] = None,
         relationship_weight_property: Optional[str] = None,
     ) -> BetweennessStatsResult:
-        """
-        Executes the Betweenness Centrality algorithm and returns result statistics without writing the result to Neo4j.
-
-        Betweenness centrality measures the relative information flow that passes through a node.
-        This stats mode allows you to analyze the distribution and statistics of betweenness centrality
-        values without modifying the graph.
-
-        Parameters
-        ----------
-        G : Graph
-            The graph to run the algorithm on
-        sampling_size : Optional[int], default=None
-            The number of nodes to use for sampling. If not specified, all nodes are used
-        sampling_seed : Optional[int], default=None
-            The seed value for sampling randomization
-        relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
-            Override memory estimation limits
-        log_progress : Optional[bool], default=None
-            Whether to log progress
-        username : Optional[str], default=None
-            The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
-            The number of concurrent threads
-        job_id : Optional[Any], default=None
-            An identifier for the job
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights
-
-        Returns
-        -------
-        BetweennessStatsResult
-            Algorithm statistics including centrality distribution
-        """
         config = self._node_property_endpoints.create_base_config(
             G,
             concurrency=concurrency,
@@ -180,42 +104,6 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
         job_id: Optional[Any] = None,
         relationship_weight_property: Optional[str] = None,
     ) -> DataFrame:
-        """
-        Executes the Betweenness Centrality algorithm and returns the results as a stream.
-
-        Betweenness centrality measures the relative information flow that passes through a node.
-        The stream mode returns individual node results that can be processed incrementally.
-
-        Parameters
-        ----------
-        G : Graph
-            The graph to run the algorithm on
-        sampling_size : Optional[int], default=None
-            The number of nodes to use for sampling. If not specified, all nodes are used
-        sampling_seed : Optional[int], default=None
-            The seed value for sampling randomization
-        relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
-            Override memory estimation limits
-        log_progress : Optional[bool], default=None
-            Whether to log progress
-        username : Optional[str], default=None
-            The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
-            The number of concurrent threads
-        job_id : Optional[Any], default=None
-            An identifier for the job
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights
-
-        Returns
-        -------
-        DataFrame
-            DataFrame with nodeId and score columns containing betweenness centrality results
-        """
         config = self._node_property_endpoints.create_base_config(
             G,
             concurrency=concurrency,
@@ -249,48 +137,6 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
         write_concurrency: Optional[Any] = None,
         write_to_result_store: Optional[bool] = None,
     ) -> BetweennessWriteResult:
-        """
-        Executes the Betweenness Centrality algorithm and writes the results to the Neo4j database.
-
-        Betweenness centrality measures the relative information flow that passes through a node.
-        The write mode persists the centrality scores as node properties in the Neo4j database.
-
-        Parameters
-        ----------
-        G : Graph
-            The graph to run the algorithm on
-        write_property : str
-            The property name to store the betweenness centrality score for each node
-        sampling_size : Optional[int], default=None
-            The number of nodes to use for sampling. If not specified, all nodes are used
-        sampling_seed : Optional[int], default=None
-            The seed value for sampling randomization
-        relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
-            Override memory estimation limits
-        log_progress : Optional[bool], default=None
-            Whether to log progress
-        username : Optional[str], default=None
-            The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
-            The number of concurrent threads
-        job_id : Optional[Any], default=None
-            An identifier for the job
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights
-        write_concurrency : Optional[Any], default=None
-            The number of concurrent threads during the write phase
-        write_to_result_store : Optional[bool], default=None
-            Whether to write results to the result store
-
-        Returns
-        -------
-        BetweennessWriteResult
-            Algorithm metrics and statistics including centrality distribution
-        """
         config = self._node_property_endpoints.create_base_config(
             G,
             concurrency=concurrency,
@@ -317,19 +163,4 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
     def estimate(
         self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
     ) -> EstimationResult:
-        """
-        Estimates the memory requirements for running the Betweenness Centrality algorithm.
-
-        Parameters
-        ----------
-        G : Optional[Graph], default=None
-            The graph to estimate memory requirements for
-        projection_config : Optional[dict[str, Any]], default=None
-            Configuration for graph projection
-
-        Returns
-        -------
-        EstimationResult
-            Memory estimation results
-        """
         return self._node_property_endpoints.estimate("v2/centrality.betweenness.estimate", G, projection_config)
