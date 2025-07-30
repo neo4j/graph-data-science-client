@@ -178,7 +178,6 @@ class K1ColoringEndpoints(ABC):
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = None,
         min_community_size: Optional[int] = None,
     ) -> K1ColoringWriteResult:
         """

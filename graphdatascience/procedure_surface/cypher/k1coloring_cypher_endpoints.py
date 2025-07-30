@@ -138,7 +138,6 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = None,
         min_community_size: Optional[int] = None,
     ) -> K1ColoringWriteResult:
         config = ConfigConverter.convert_to_gds_config(
@@ -153,12 +152,8 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
             relationship_types=relationship_types,
             sudo=sudo,
             username=username,
+            write_concurrency=write_concurrency,
         )
-
-        if write_concurrency is not None:
-            config["writeConcurrency"] = write_concurrency
-        if write_to_result_store is not None:
-            config["writeToResultStore"] = write_to_result_store
 
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()

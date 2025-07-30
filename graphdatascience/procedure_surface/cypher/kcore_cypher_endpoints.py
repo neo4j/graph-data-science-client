@@ -131,10 +131,8 @@ class KCoreCypherEndpoints(KCoreEndpoints):
             sudo=sudo,
             target_nodes=target_nodes,
             username=username,
+            write_concurrency=write_concurrency,
         )
-
-        if write_concurrency is not None:
-            config["writeConcurrency"] = write_concurrency
 
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()

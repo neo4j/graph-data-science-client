@@ -112,7 +112,6 @@ class SccArrowEndpoints(SccEndpoints):
         job_id: Optional[str] = None,
         consecutive_ids: Optional[bool] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = None,
     ) -> SccWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,

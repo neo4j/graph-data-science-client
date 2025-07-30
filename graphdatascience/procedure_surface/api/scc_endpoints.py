@@ -165,7 +165,6 @@ class SccEndpoints(ABC):
         job_id: Optional[Any] = None,
         consecutive_ids: Optional[bool] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = None,
     ) -> SccWriteResult:
         """
         Executes the SCC algorithm and writes the results to the Neo4j database.

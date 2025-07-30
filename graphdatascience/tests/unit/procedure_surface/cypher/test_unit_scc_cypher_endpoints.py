@@ -238,7 +238,6 @@ def test_write_with_optional_params(graph: Graph) -> None:
         job_id="test-job",
         consecutive_ids=True,
         write_concurrency=4,
-        write_to_result_store=True,
     )
 
     assert len(query_runner.queries) == 1

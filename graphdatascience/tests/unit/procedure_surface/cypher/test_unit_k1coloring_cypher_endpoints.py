@@ -292,7 +292,6 @@ def test_write_with_optional_params(graph: Graph) -> None:
         concurrency=4,
         job_id="test-job",
         write_concurrency=2,
-        write_to_result_store=True,
         min_community_size=2,
     )
 

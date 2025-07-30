@@ -129,7 +129,6 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = None,
         min_community_size: Optional[int] = None,
     ) -> K1ColoringWriteResult:
         config = self._node_property_endpoints.create_base_config(

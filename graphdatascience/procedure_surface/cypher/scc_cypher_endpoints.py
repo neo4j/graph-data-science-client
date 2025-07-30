@@ -124,7 +124,6 @@ class SccCypherEndpoints(SccEndpoints):
         job_id: Optional[str] = None,
         consecutive_ids: Optional[bool] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = None,
     ) -> SccWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             write_property=write_property,
@@ -136,13 +135,8 @@ class SccCypherEndpoints(SccEndpoints):
             relationship_types=relationship_types,
             sudo=sudo,
             username=username,
+            write_concurrency=write_concurrency,
         )
-
-        if write_concurrency is not None:
-            config["writeConcurrency"] = write_concurrency
-
-        if write_to_result_store is not None:
-            config["writeToResultStore"] = write_to_result_store
 
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
