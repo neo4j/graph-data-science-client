@@ -38,14 +38,9 @@ class SccArrowEndpoints(SccEndpoints):
             sudo=sudo,
         )
 
-        computation_result, mutate_result = self._node_property_endpoints.run_job_and_mutate(
-            "v2/community.scc", G, config, mutate_property
-        )
+        result = self._node_property_endpoints.run_job_and_mutate("v2/community.scc", G, config, mutate_property)
 
-        computation_result["nodePropertiesWritten"] = mutate_result.node_properties_written
-        computation_result["mutateMillis"] = mutate_result.mutate_millis
-
-        return SccMutateResult(**computation_result)
+        return SccMutateResult(**result)
 
     def stats(
         self,

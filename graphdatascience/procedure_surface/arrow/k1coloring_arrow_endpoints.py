@@ -46,14 +46,9 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
             username=username,
         )
 
-        computation_result, mutate_result = self._node_property_endpoints.run_job_and_mutate(
-            "v2/community.k1coloring", G, config, mutate_property
-        )
+        result = self._node_property_endpoints.run_job_and_mutate("v2/community.k1coloring", G, config, mutate_property)
 
-        computation_result["nodeCount"] = mutate_result.node_properties_written
-        computation_result["mutateMillis"] = mutate_result.mutate_millis
-
-        return K1ColoringMutateResult(**computation_result)
+        return K1ColoringMutateResult(**result)
 
     def stats(
         self,

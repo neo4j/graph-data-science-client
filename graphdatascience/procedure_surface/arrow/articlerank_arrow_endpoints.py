@@ -53,14 +53,11 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
             tolerance=tolerance,
         )
 
-        computation_result, mutate_result = self._node_property_endpoints.run_job_and_mutate(
+        result = self._node_property_endpoints.run_job_and_mutate(
             "v2/centrality.articleRank", G, config, mutate_property
         )
 
-        computation_result["nodePropertiesWritten"] = mutate_result.node_properties_written
-        computation_result["mutateMillis"] = mutate_result.mutate_millis
-
-        return ArticleRankMutateResult(**computation_result)
+        return ArticleRankMutateResult(**result)
 
     def stats(
         self,
