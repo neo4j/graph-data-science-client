@@ -140,13 +140,11 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
             username=username,
         )
 
-        computation_result, write_millis = self._node_property_endpoints.run_job_and_write(
+        result = self._node_property_endpoints.run_job_and_write(
             "v2/community.k1coloring", G, config, write_concurrency, concurrency
         )
 
-        computation_result["writeMillis"] = write_millis
-
-        return K1ColoringWriteResult(**computation_result)
+        return K1ColoringWriteResult(**result)
 
     def estimate(
         self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None

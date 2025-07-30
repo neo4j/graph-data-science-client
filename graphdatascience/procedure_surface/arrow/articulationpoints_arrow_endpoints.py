@@ -121,13 +121,11 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
             write_to_result_store=write_to_result_store,
         )
 
-        computation_result, write_millis = self._node_property_endpoints.run_job_and_write(
+        result = self._node_property_endpoints.run_job_and_write(
             "v2/centrality.articulationPoints", G, config, write_concurrency, concurrency
         )
 
-        computation_result["writeMillis"] = write_millis
-
-        return ArticulationPointsWriteResult(**computation_result)
+        return ArticulationPointsWriteResult(**result)
 
     def estimate(
         self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None

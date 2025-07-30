@@ -152,13 +152,11 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
             write_to_result_store=write_to_result_store,
         )
 
-        computation_result, write_millis = self._node_property_endpoints.run_job_and_write(
+        result = self._node_property_endpoints.run_job_and_write(
             "v2/centrality.betweenness", G, config, write_concurrency, concurrency
         )
 
-        computation_result["writeMillis"] = write_millis
-
-        return BetweennessWriteResult(**computation_result)
+        return BetweennessWriteResult(**result)
 
     def estimate(
         self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None

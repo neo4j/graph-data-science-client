@@ -168,13 +168,11 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
             tolerance=tolerance,
         )
 
-        computation_result, write_millis = self._node_property_endpoints.run_job_and_write(
+        result = self._node_property_endpoints.run_job_and_write(
             "v2/centrality.articleRank", G, config, write_concurrency, concurrency
         )
 
-        computation_result["writeMillis"] = write_millis
-
-        return ArticleRankWriteResult(**computation_result)
+        return ArticleRankWriteResult(**result)
 
     def estimate(
         self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
