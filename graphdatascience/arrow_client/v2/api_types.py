@@ -12,5 +12,6 @@ class JobStatus(ArrowBaseModel):
 
 
 class MutateResult(ArrowBaseModel):
+    mutate_millis: int
     node_properties_written: int
     relationships_written: int

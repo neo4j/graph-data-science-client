@@ -50,12 +50,12 @@ class LouvainArrowEndpoints(LouvainEndpoints):
             tolerance=tolerance,
         )
 
-        computation_result, node_properties_written = self._node_property_endpoints.run_job_and_mutate(
+        computation_result, mutate_result = self._node_property_endpoints.run_job_and_mutate(
             "v2/community.louvain", G, config, mutate_property
         )
 
-        computation_result["nodePropertiesWritten"] = node_properties_written
-        computation_result["mutateMillis"] = 0
+        computation_result["nodePropertiesWritten"] = mutate_result.node_properties_written
+        computation_result["mutateMillis"] = mutate_result.mutate_millis
 
         return LouvainMutateResult(**computation_result)
 
@@ -156,7 +156,6 @@ class LouvainArrowEndpoints(LouvainEndpoints):
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = None,
         min_community_size: Optional[int] = None,
     ) -> LouvainWriteResult:
         config = self._node_property_endpoints.create_base_config(
@@ -175,7 +174,7 @@ class LouvainArrowEndpoints(LouvainEndpoints):
             seed_property=seed_property,
             sudo=sudo,
             tolerance=tolerance,
-            write_to_result_store=write_to_result_store,
+            write_concurrency=write_concurrency,
         )
 
         computation_result, write_millis = self._node_property_endpoints.run_job_and_write(

@@ -168,7 +168,6 @@ class LouvainCypherEndpoints(LouvainEndpoints):
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = None,
         min_community_size: Optional[int] = None,
     ) -> LouvainWriteResult:
         config = ConfigConverter.convert_to_gds_config(
@@ -188,11 +187,8 @@ class LouvainCypherEndpoints(LouvainEndpoints):
             sudo=sudo,
             tolerance=tolerance,
             username=username,
-            write_to_result_store=write_to_result_store,
+            write_concurrency=write_concurrency,
         )
-
-        if write_concurrency is not None:
-            config["writeConcurrency"] = write_concurrency
 
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()

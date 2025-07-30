@@ -228,7 +228,6 @@ class LouvainEndpoints(ABC):
         consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = None,
         min_community_size: Optional[int] = None,
     ) -> LouvainWriteResult:
         """

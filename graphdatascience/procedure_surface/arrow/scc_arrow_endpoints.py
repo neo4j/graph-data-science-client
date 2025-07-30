@@ -38,12 +38,12 @@ class SccArrowEndpoints(SccEndpoints):
             sudo=sudo,
         )
 
-        computation_result, node_properties_written = self._node_property_endpoints.run_job_and_mutate(
+        computation_result, mutate_result = self._node_property_endpoints.run_job_and_mutate(
             "v2/community.scc", G, config, mutate_property
         )
 
-        computation_result["nodePropertiesWritten"] = node_properties_written
-        computation_result["mutateMillis"] = 0
+        computation_result["nodePropertiesWritten"] = mutate_result.node_properties_written
+        computation_result["mutateMillis"] = mutate_result.mutate_millis
 
         return SccMutateResult(**computation_result)
 
@@ -112,7 +112,6 @@ class SccArrowEndpoints(SccEndpoints):
         job_id: Optional[str] = None,
         consecutive_ids: Optional[bool] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = None,
     ) -> SccWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,

@@ -3,6 +3,8 @@ from typing import Any, Dict, Optional
 
 from pandas import DataFrame
 
+from graphdatascience.arrow_client.v2.api_types import MutateResult
+
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.data_mapper_utils import deserialize_single
 from ...arrow_client.v2.job_client import JobClient
@@ -30,12 +32,12 @@ class NodePropertyEndpoints:
 
     def run_job_and_mutate(
         self, endpoint: str, G: Graph, config: Dict[str, Any], mutate_property: str
-    ) -> tuple[Dict[str, Any], int]:
+    ) -> tuple[Dict[str, Any], MutateResult]:
         """Run a job, mutate node properties, and return summary with mutation result."""
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config)
         mutate_result = MutationClient.mutate_node_property(self._arrow_client, job_id, mutate_property)
         computation_result = JobClient.get_summary(self._arrow_client, job_id)
-        return computation_result, mutate_result.node_properties_written
+        return computation_result, mutate_result
 
     def run_job_and_stream(self, endpoint: str, G: Graph, config: Dict[str, Any]) -> DataFrame:
         """Run a job and return streamed results."""
