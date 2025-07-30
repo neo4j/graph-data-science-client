@@ -36,14 +36,9 @@ class KCoreArrowEndpoints(KCoreEndpoints):
             sudo=sudo,
         )
 
-        computation_result, mutate_result = self._node_property_endpoints.run_job_and_mutate(
-            "v2/community.kcore", G, config, mutate_property
-        )
+        result = self._node_property_endpoints.run_job_and_mutate("v2/community.kcore", G, config, mutate_property)
 
-        computation_result["nodePropertiesWritten"] = mutate_result.node_properties_written
-        computation_result["mutateMillis"] = mutate_result.mutate_millis
-
-        return KCoreMutateResult(**computation_result)
+        return KCoreMutateResult(**result)
 
     def stats(
         self,
