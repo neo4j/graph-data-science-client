@@ -60,7 +60,7 @@ def test_articlerank_mutate(articlerank_endpoints: ArticleRankArrowEndpoints, sa
     )
 
     assert result.ran_iterations > 0
-    assert result.did_converge in [True, False]
+    assert result.did_converge
     assert "p50" in result.centrality_distribution
     assert result.pre_processing_millis >= 0
     assert result.compute_millis >= 0
