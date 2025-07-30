@@ -50,12 +50,12 @@ class LouvainArrowEndpoints(LouvainEndpoints):
             tolerance=tolerance,
         )
 
-        computation_result, node_properties_written = self._node_property_endpoints.run_job_and_mutate(
+        computation_result, mutate_result = self._node_property_endpoints.run_job_and_mutate(
             "v2/community.louvain", G, config, mutate_property
         )
 
-        computation_result["nodePropertiesWritten"] = node_properties_written
-        computation_result["mutateMillis"] = 0
+        computation_result["nodePropertiesWritten"] = mutate_result.node_properties_written
+        computation_result["mutateMillis"] = mutate_result.mutate_millis
 
         return LouvainMutateResult(**computation_result)
 
