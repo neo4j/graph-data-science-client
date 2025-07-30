@@ -61,7 +61,7 @@ class NodePropertyEndpoints:
         config: Dict[str, Any],
         write_concurrency: Optional[int] = None,
         concurrency: Optional[int] = None,
-    ) -> tuple[Dict[str, Any], int]:
+    ) -> Dict[str, Any]:
         """Run a job, write results, and return summary with write time."""
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config)
         computation_result = JobClient.get_summary(self._arrow_client, job_id)
@@ -73,7 +73,10 @@ class NodePropertyEndpoints:
             G.name(), job_id, write_concurrency if write_concurrency is not None else concurrency
         )
 
-        return computation_result, write_millis
+        # modify computation result to include write details
+        computation_result["writeMillis"] = write_millis
+
+        return computation_result
 
     def create_base_config(self, G: Graph, **kwargs: Any) -> Dict[str, Any]:
         """Create base configuration with common parameters."""

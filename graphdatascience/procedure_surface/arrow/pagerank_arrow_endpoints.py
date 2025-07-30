@@ -159,13 +159,10 @@ class PageRankArrowEndpoints(PageRankEndpoints):
             tolerance=tolerance,
         )
 
-        computation_result, write_millis = self._node_property_endpoints.run_job_and_write(
+        result = self._node_property_endpoints.run_job_and_write(
             "v2/centrality.pageRank", G, config, write_concurrency, concurrency
         )
-
-        computation_result["writeMillis"] = write_millis
-
-        return PageRankWriteResult(**computation_result)
+        return PageRankWriteResult(**result)
 
     def estimate(
         self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None

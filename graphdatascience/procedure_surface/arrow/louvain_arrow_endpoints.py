@@ -172,13 +172,11 @@ class LouvainArrowEndpoints(LouvainEndpoints):
             write_concurrency=write_concurrency,
         )
 
-        computation_result, write_millis = self._node_property_endpoints.run_job_and_write(
+        result = self._node_property_endpoints.run_job_and_write(
             "v2/community.louvain", G, config, write_concurrency, concurrency
         )
 
-        computation_result["writeMillis"] = write_millis
-
-        return LouvainWriteResult(**computation_result)
+        return LouvainWriteResult(**result)
 
     def estimate(
         self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
