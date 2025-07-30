@@ -1,0 +1,221 @@
+import pandas as pd
+import pytest
+
+from graphdatascience.graph.graph_object import Graph
+from graphdatascience.procedure_surface.api.articlerank_endpoints import (
+    ArticleRankMutateResult,
+    ArticleRankStatsResult,
+    ArticleRankWriteResult,
+)
+from graphdatascience.procedure_surface.cypher.articlerank_cypher_endpoints import ArticleRankCypherEndpoints
+from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+
+
+@pytest.fixture
+def query_runner() -> CollectingQueryRunner:
+    return CollectingQueryRunner(DEFAULT_SERVER_VERSION, {})
+
+
+@pytest.fixture
+def articlerank_endpoints(query_runner: CollectingQueryRunner) -> ArticleRankCypherEndpoints:
+    return ArticleRankCypherEndpoints(query_runner)
+
+
+@pytest.fixture
+def graph(query_runner: CollectingQueryRunner) -> Graph:
+    return Graph("test_graph", query_runner)
+
+
+def test_mutate_basic(graph: Graph) -> None:
+    result = {
+        "nodePropertiesWritten": 5,
+        "mutateMillis": 42,
+        "ranIterations": 20,
+        "didConverge": True,
+        "preProcessingMillis": 10,
+        "computeMillis": 20,
+        "postProcessingMillis": 12,
+        "centralityDistribution": {"foo": 42},
+        "configuration": {"bar": 1337},
+    }
+
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"articleRank.mutate": pd.DataFrame([result])})
+
+    result_obj = ArticleRankCypherEndpoints(query_runner).mutate(graph, "articlerank")
+
+    assert len(query_runner.queries) == 1
+    assert "gds.articleRank.mutate" in query_runner.queries[0]
+    params = query_runner.params[0]
+    assert params["graph_name"] == "test_graph"
+    config = params["config"]
+    assert config["mutateProperty"] == "articlerank"
+    assert "jobId" in config
+
+    assert isinstance(result_obj, ArticleRankMutateResult)
+    assert result_obj.node_properties_written == 5
+    assert result_obj.mutate_millis == 42
+    assert result_obj.ran_iterations == 20
+    assert result_obj.did_converge is True
+    assert result_obj.pre_processing_millis == 10
+    assert result_obj.compute_millis == 20
+    assert result_obj.post_processing_millis == 12
+    assert result_obj.centrality_distribution == {"foo": 42}
+    assert result_obj.configuration == {"bar": 1337}
+
+
+def test_mutate_with_optional_params(graph: Graph) -> None:
+    result = {
+        "nodePropertiesWritten": 5,
+        "mutateMillis": 42,
+        "ranIterations": 20,
+        "didConverge": True,
+        "preProcessingMillis": 10,
+        "computeMillis": 20,
+        "postProcessingMillis": 12,
+        "centralityDistribution": {"foo": 42},
+        "configuration": {"bar": 1337},
+    }
+
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"articleRank.mutate": pd.DataFrame([result])})
+
+    ArticleRankCypherEndpoints(query_runner).mutate(
+        graph,
+        "articlerank",
+        damping_factor=0.85,
+        tolerance=0.0001,
+        max_iterations=20,
+        scaler={"type": "L2Norm"},
+        relationship_types=["REL"],
+        node_labels=["Person"],
+        sudo=True,
+        log_progress=True,
+        username="neo4j",
+        concurrency=4,
+        job_id="test-job",
+        relationship_weight_property="weight",
+        source_nodes=[1, 2, 3],
+    )
+
+    assert len(query_runner.queries) == 1
+    assert "gds.articleRank.mutate" in query_runner.queries[0]
+    params = query_runner.params[0]
+    assert params["graph_name"] == "test_graph"
+    assert params["config"] == {
+        "mutateProperty": "articlerank",
+        "dampingFactor": 0.85,
+        "tolerance": 0.0001,
+        "maxIterations": 20,
+        "scaler": {"type": "L2Norm"},
+        "relationshipTypes": ["REL"],
+        "nodeLabels": ["Person"],
+        "sudo": True,
+        "logProgress": True,
+        "username": "neo4j",
+        "concurrency": 4,
+        "jobId": "test-job",
+        "relationshipWeightProperty": "weight",
+        "sourceNodes": [1, 2, 3],
+    }
+
+
+def test_stats_basic(graph: Graph) -> None:
+    result = {
+        "ranIterations": 20,
+        "didConverge": True,
+        "preProcessingMillis": 10,
+        "computeMillis": 20,
+        "postProcessingMillis": 12,
+        "centralityDistribution": {"foo": 42},
+        "configuration": {"bar": 1337},
+    }
+
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"articleRank.stats": pd.DataFrame([result])})
+
+    result_obj = ArticleRankCypherEndpoints(query_runner).stats(graph)
+
+    assert len(query_runner.queries) == 1
+    assert "gds.articleRank.stats" in query_runner.queries[0]
+    params = query_runner.params[0]
+    assert params["graph_name"] == "test_graph"
+    assert "jobId" in params["config"]
+
+    assert isinstance(result_obj, ArticleRankStatsResult)
+    assert result_obj.ran_iterations == 20
+    assert result_obj.did_converge is True
+    assert result_obj.pre_processing_millis == 10
+    assert result_obj.compute_millis == 20
+    assert result_obj.post_processing_millis == 12
+    assert result_obj.centrality_distribution == {"foo": 42}
+    assert result_obj.configuration == {"bar": 1337}
+
+
+def test_stream_basic(
+    articlerank_endpoints: ArticleRankCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
+) -> None:
+    articlerank_endpoints.stream(graph)
+
+    assert len(query_runner.queries) == 1
+    assert "gds.articleRank.stream" in query_runner.queries[0]
+    params = query_runner.params[0]
+    assert params["graph_name"] == "test_graph"
+    config = params["config"]
+    assert "jobId" in config
+
+
+def test_write_basic(graph: Graph) -> None:
+    result = {
+        "nodePropertiesWritten": 5,
+        "writeMillis": 42,
+        "ranIterations": 20,
+        "didConverge": True,
+        "preProcessingMillis": 10,
+        "computeMillis": 20,
+        "postProcessingMillis": 12,
+        "centralityDistribution": {"foo": 42},
+        "configuration": {"bar": 1337},
+    }
+
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"articleRank.write": pd.DataFrame([result])})
+
+    result_obj = ArticleRankCypherEndpoints(query_runner).write(graph, "articlerank")
+
+    assert len(query_runner.queries) == 1
+    assert "gds.articleRank.write" in query_runner.queries[0]
+    params = query_runner.params[0]
+    assert params["graph_name"] == "test_graph"
+    config = params["config"]
+    assert config["writeProperty"] == "articlerank"
+    assert "jobId" in config
+
+    assert isinstance(result_obj, ArticleRankWriteResult)
+    assert result_obj.node_properties_written == 5
+    assert result_obj.write_millis == 42
+
+
+def test_estimate_with_graph_name(graph: Graph) -> None:
+    result = {
+        "nodeCount": 100,
+        "relationshipCount": 200,
+        "requiredMemory": "1024 Bytes",
+        "bytesMin": 1024,
+        "bytesMax": 2048,
+        "heapPercentageMin": 1.0,
+        "heapPercentageMax": 2.0,
+    }
+
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION, {"articleRank.stream.estimate": pd.DataFrame([result])}
+    )
+
+    ArticleRankCypherEndpoints(query_runner).estimate(graph)
+
+    assert len(query_runner.queries) == 1
+    assert "gds.articleRank.stream.estimate" in query_runner.queries[0]
+
+
+def test_estimate_raises_value_error_when_no_arguments() -> None:
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {})
+    articlerank_endpoints = ArticleRankCypherEndpoints(query_runner)
+
+    with pytest.raises(ValueError, match="Either 'G' or 'projection_config' must be provided"):
+        articlerank_endpoints.estimate()

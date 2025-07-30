@@ -11,9 +11,9 @@ from ...graph.graph_object import Graph
 from .estimation_result import EstimationResult
 
 
-class PageRankEndpoints(ABC):
+class ArticleRankEndpoints(ABC):
     """
-    Abstract base class defining the API for the PageRank algorithm.
+    Abstract base class defining the API for the ArticleRank algorithm.
     """
 
     @abstractmethod
@@ -34,16 +34,16 @@ class PageRankEndpoints(ABC):
         job_id: Optional[Any] = None,
         relationship_weight_property: Optional[str] = None,
         source_nodes: Optional[Any] = None,
-    ) -> PageRankMutateResult:
+    ) -> ArticleRankMutateResult:
         """
-        Executes the PageRank algorithm and writes the results to the in-memory graph as node properties.
+        Executes the ArticleRank algorithm and writes the results back to the graph as a node property.
 
         Parameters
         ----------
         G : Graph
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the PageRank score for each node
+            The property name to store the ArticleRank score for each node
         damping_factor : Optional[float], default=None
             The damping factor controls the probability of a random jump to a random node
         tolerance : Optional[float], default=None
@@ -69,14 +69,13 @@ class PageRankEndpoints(ABC):
         relationship_weight_property : Optional[str], default=None
             The property name that contains weight
         source_nodes : Optional[Any], default=None
-            The source nodes for personalized PageRank
+            The source nodes for personalized ArticleRank
 
         Returns
         -------
-        PageRankMutateResult
+        ArticleRankMutateResult
             Algorithm metrics and statistics
         """
-        pass
 
     @abstractmethod
     def stats(
@@ -95,9 +94,9 @@ class PageRankEndpoints(ABC):
         job_id: Optional[Any] = None,
         relationship_weight_property: Optional[str] = None,
         source_nodes: Optional[Any] = None,
-    ) -> PageRankStatsResult:
+    ) -> ArticleRankStatsResult:
         """
-        Executes the PageRank algorithm and returns statistics.
+        Executes the ArticleRank algorithm and returns result statistics without writing the result to Neo4j.
 
         Parameters
         ----------
@@ -128,14 +127,13 @@ class PageRankEndpoints(ABC):
         relationship_weight_property : Optional[str], default=None
             The property name that contains weight
         source_nodes : Optional[Any], default=None
-            The source nodes for personalized PageRank
+            The source nodes for personalized ArticleRank
 
         Returns
         -------
-        PageRankStatsResult
+        ArticleRankStatsResult
             Algorithm statistics
         """
-        pass
 
     @abstractmethod
     def stream(
@@ -156,7 +154,7 @@ class PageRankEndpoints(ABC):
         source_nodes: Optional[Any] = None,
     ) -> DataFrame:
         """
-        Executes the PageRank algorithm and returns a stream of results.
+        Executes the ArticleRank algorithm and returns the results as a stream.
 
         Parameters
         ----------
@@ -187,14 +185,13 @@ class PageRankEndpoints(ABC):
         relationship_weight_property : Optional[str], default=None
             The property name that contains weight
         source_nodes : Optional[Any], default=None
-            The source nodes for personalized PageRank
+            The source nodes for personalized ArticleRank
 
         Returns
         -------
         DataFrame
-            DataFrame with node IDs and their PageRank scores
+            DataFrame with node IDs and their ArticleRank scores
         """
-        pass
 
     @abstractmethod
     def write(
@@ -215,16 +212,16 @@ class PageRankEndpoints(ABC):
         relationship_weight_property: Optional[str] = None,
         source_nodes: Optional[Any] = None,
         write_concurrency: Optional[int] = None,
-    ) -> PageRankWriteResult:
+    ) -> ArticleRankWriteResult:
         """
-        Executes the PageRank algorithm and writes the results back to the database.
+        Executes the ArticleRank algorithm and writes the results to Neo4j.
 
         Parameters
         ----------
         G : Graph
             The graph to run the algorithm on
         write_property : str
-            The property name to write the PageRank score for each node
+            The property name to write the ArticleRank score for each node
         damping_factor : Optional[float], default=None
             The damping factor controls the probability of a random jump to a random node
         tolerance : Optional[float], default=None
@@ -250,23 +247,22 @@ class PageRankEndpoints(ABC):
         relationship_weight_property : Optional[str], default=None
             The property name that contains weight
         source_nodes : Optional[Any], default=None
-            The source nodes for personalized PageRank
+            The source nodes for personalized ArticleRank
         write_concurrency : Optional[int], default=None
             The number of concurrent threads used for writing
 
         Returns
         -------
-        PageRankWriteResult
+        ArticleRankWriteResult
             Algorithm metrics and statistics
         """
-        pass
 
     @abstractmethod
     def estimate(
         self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
     ) -> EstimationResult:
         """
-        Estimates the memory requirements for running the PageRank algorithm.
+        Returns an estimation of the memory consumption for that procedure.
 
         Parameters
         ----------
@@ -280,10 +276,9 @@ class PageRankEndpoints(ABC):
         EstimationResult
             Memory estimation details
         """
-        pass
 
 
-class PageRankMutateResult(BaseModel):
+class ArticleRankMutateResult(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
     ran_iterations: int
@@ -300,7 +295,7 @@ class PageRankMutateResult(BaseModel):
         return self.__dict__[item]
 
 
-class PageRankStatsResult(BaseModel):
+class ArticleRankStatsResult(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
     ran_iterations: int
@@ -315,7 +310,7 @@ class PageRankStatsResult(BaseModel):
         return self.__dict__[item]
 
 
-class PageRankWriteResult(BaseModel):
+class ArticleRankWriteResult(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
     ran_iterations: int

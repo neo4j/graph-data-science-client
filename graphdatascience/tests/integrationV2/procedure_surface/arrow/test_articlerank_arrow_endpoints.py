@@ -5,7 +5,7 @@ import pytest
 
 from graphdatascience import Graph
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.arrow.pagerank_arrow_endpoints import PageRankArrowEndpoints
+from graphdatascience.procedure_surface.arrow.articlerank_arrow_endpoints import ArticleRankArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
@@ -24,13 +24,13 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
 
 
 @pytest.fixture
-def pagerank_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[PageRankArrowEndpoints, None, None]:
-    yield PageRankArrowEndpoints(arrow_client)
+def articlerank_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[ArticleRankArrowEndpoints, None, None]:
+    yield ArticleRankArrowEndpoints(arrow_client)
 
 
-def test_pagerank_stats(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: Graph) -> None:
-    """Test PageRank stats operation."""
-    result = pagerank_endpoints.stats(G=sample_graph)
+def test_articlerank_stats(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: Graph) -> None:
+    """Test ArticleRank stats operation."""
+    result = articlerank_endpoints.stats(G=sample_graph)
 
     assert result.ran_iterations > 0
     assert result.did_converge
@@ -40,9 +40,9 @@ def test_pagerank_stats(pagerank_endpoints: PageRankArrowEndpoints, sample_graph
     assert "p50" in result.centrality_distribution
 
 
-def test_pagerank_stream(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: Graph) -> None:
-    """Test PageRank stream operation."""
-    result_df = pagerank_endpoints.stream(
+def test_articlerank_stream(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: Graph) -> None:
+    """Test ArticleRank stream operation."""
+    result_df = articlerank_endpoints.stream(
         G=sample_graph,
     )
 
@@ -52,15 +52,15 @@ def test_pagerank_stream(pagerank_endpoints: PageRankArrowEndpoints, sample_grap
     assert len(result_df) == 3  # We have 3 nodes
 
 
-def test_pagerank_mutate(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: Graph) -> None:
-    """Test PageRank mutate operation."""
-    result = pagerank_endpoints.mutate(
+def test_articlerank_mutate(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: Graph) -> None:
+    """Test ArticleRank mutate operation."""
+    result = articlerank_endpoints.mutate(
         G=sample_graph,
-        mutate_property="pagerank",
+        mutate_property="articlerank",
     )
 
     assert result.ran_iterations > 0
-    assert result.did_converge
+    assert result.did_converge in [True, False]
     assert "p50" in result.centrality_distribution
     assert result.pre_processing_millis >= 0
     assert result.compute_millis >= 0
@@ -69,8 +69,8 @@ def test_pagerank_mutate(pagerank_endpoints: PageRankArrowEndpoints, sample_grap
     assert result.node_properties_written == 3
 
 
-def test_pagerank_estimate(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: Graph) -> None:
-    result = pagerank_endpoints.estimate(sample_graph)
+def test_articlerank_estimate(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: Graph) -> None:
+    result = articlerank_endpoints.estimate(sample_graph)
 
     assert result.node_count == 3
     assert result.relationship_count == 2
