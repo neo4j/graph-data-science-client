@@ -9,6 +9,10 @@ from ...graph.graph_object import Graph
 
 
 class ArticulationPointsEndpoints(ABC):
+    """
+    Abstract base class defining the API for the Articulation Points algorithm.
+    """
+
     @abstractmethod
     def mutate(
         self,
@@ -24,9 +28,6 @@ class ArticulationPointsEndpoints(ABC):
     ) -> "ArticulationPointsMutateResult":
         """
         Executes the ArticulationPoints algorithm and writes the results to the in-memory graph as node properties.
-
-        ArticulationPoints is an algorithm that finds nodes that disconnect components if removed.
-        These nodes are critical for the connectivity of the graph.
 
         Parameters
         ----------
@@ -70,9 +71,6 @@ class ArticulationPointsEndpoints(ABC):
         """
         Executes the ArticulationPoints algorithm and returns result statistics without writing the result to Neo4j.
 
-        ArticulationPoints is an algorithm that finds nodes that disconnect components if removed.
-        These nodes are critical for the connectivity of the graph.
-
         Parameters
         ----------
         G : Graph
@@ -112,10 +110,6 @@ class ArticulationPointsEndpoints(ABC):
     ) -> "DataFrame":
         """
         Executes the ArticulationPoints algorithm and returns results as a stream.
-
-        ArticulationPoints is an algorithm that finds nodes that disconnect components if removed.
-        These nodes are critical for the connectivity of the graph. The stream mode returns
-        individual articulation points with their resulting component information.
 
         Parameters
         ----------
@@ -161,9 +155,6 @@ class ArticulationPointsEndpoints(ABC):
     ) -> "ArticulationPointsWriteResult":
         """
         Executes the ArticulationPoints algorithm and writes the results back to the Neo4j database.
-
-        ArticulationPoints is an algorithm that finds nodes that disconnect components if removed.
-        These nodes are critical for the connectivity of the graph.
 
         Parameters
         ----------

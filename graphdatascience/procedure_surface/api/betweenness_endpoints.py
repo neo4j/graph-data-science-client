@@ -14,10 +14,6 @@ from .estimation_result import EstimationResult
 class BetweennessEndpoints(ABC):
     """
     Abstract base class defining the API for the Betweenness Centrality algorithm.
-
-    Betweenness centrality measures the relative information flow that passes through a node.
-    It quantifies how often a node lies on the shortest path between other pairs of nodes.
-    Nodes with high betweenness centrality serve as crucial bridges or intermediaries in the network.
     """
 
     @abstractmethod
@@ -38,10 +34,6 @@ class BetweennessEndpoints(ABC):
     ) -> BetweennessMutateResult:
         """
         Executes the Betweenness Centrality algorithm and writes the results to the in-memory graph as node properties.
-
-        Betweenness centrality measures the relative information flow that passes through a node.
-        It identifies nodes that serve as bridges or intermediaries in the network by quantifying
-        how often each node lies on the shortest path between other pairs of nodes.
 
         Parameters
         ----------
@@ -94,10 +86,6 @@ class BetweennessEndpoints(ABC):
         """
         Executes the Betweenness Centrality algorithm and returns result statistics without writing the result to Neo4j.
 
-        Betweenness centrality measures the relative information flow that passes through a node.
-        This stats mode allows you to analyze the distribution and statistics of betweenness centrality
-        values without modifying the graph.
-
         Parameters
         ----------
         G : Graph
@@ -146,9 +134,6 @@ class BetweennessEndpoints(ABC):
     ) -> DataFrame:
         """
         Executes the Betweenness Centrality algorithm and returns the results as a stream.
-
-        Betweenness centrality measures the relative information flow that passes through a node.
-        The stream mode returns individual node results that can be processed incrementally.
 
         Parameters
         ----------
@@ -201,9 +186,6 @@ class BetweennessEndpoints(ABC):
     ) -> BetweennessWriteResult:
         """
         Executes the Betweenness Centrality algorithm and writes the results to the Neo4j database.
-
-        Betweenness centrality measures the relative information flow that passes through a node.
-        The write mode persists the centrality scores as node properties in the Neo4j database.
 
         Parameters
         ----------
