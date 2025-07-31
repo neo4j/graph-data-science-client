@@ -11,7 +11,12 @@ from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.procedure_surface.api.catalog_endpoints import CatalogEndpoints, GraphListResult
+from graphdatascience.procedure_surface.api.catalog_endpoints import (
+    CatalogEndpoints,
+    GraphFilterResult,
+    GraphListResult,
+)
+from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
@@ -80,6 +85,28 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         )
 
         return ProjectionResult(**JobClient.get_summary(self._arrow_client, job_id))
+
+    def filter(
+        self,
+        G: Graph,
+        graph_name: str,
+        node_filter: str,
+        relationship_filter: str,
+        concurrency: Optional[int] = None,
+        job_id: Optional[str] = None,
+    ) -> GraphFilterResult:
+        config = ConfigConverter.convert_to_gds_config(
+            fromGraphName=G.name(),
+            graphName=graph_name,
+            nodeFilter=node_filter,
+            relationshipFilter=relationship_filter,
+            concurrency=concurrency,
+            jobId=job_id,
+        )
+
+        job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.project.filter", config)
+
+        return GraphFilterResult(**JobClient.get_summary(self._arrow_client, job_id))
 
     def _arrow_config(self) -> dict[str, Any]:
         connection_info = self._arrow_client.connection_info()

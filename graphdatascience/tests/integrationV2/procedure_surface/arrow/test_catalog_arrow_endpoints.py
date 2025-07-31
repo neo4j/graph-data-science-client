@@ -13,9 +13,9 @@ from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation
 @pytest.fixture
 def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     gdl = """
-    (a: Node)
-    (b: Node)
-    (c: Node)
+    (a :Node:A)
+    (b :Node:A)
+    (c :Node:B)
     (a)-[:REL]->(c)
     """
 
@@ -76,3 +76,20 @@ def test_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryR
         assert len(endpoints.list("g")) == 1
     finally:
         arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "g"}).encode("utf-8"))
+
+
+def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
+    try:
+        result = catalog_endpoints.filter(
+            sample_graph, graph_name="filtered", node_filter="n:A", relationship_filter="*"
+        )
+
+        assert result.node_count == 2
+        assert result.relationship_count == 0
+        assert result.from_graph_name == sample_graph.name()
+        assert result.graph_name == "filtered"
+        assert result.project_millis >= 0
+    finally:
+        catalog_endpoints._arrow_client.do_action(
+            "v2/graph.drop", json.dumps({"graphName": "filtered"}).encode("utf-8")
+        )
