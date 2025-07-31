@@ -9,7 +9,7 @@ from pydantic.alias_generators import to_camel
 
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
+from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize, deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.procedure_surface.api.catalog_endpoints import (
     CatalogEndpoints,
@@ -85,6 +85,12 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         )
 
         return ProjectionResult(**JobClient.get_summary(self._arrow_client, job_id))
+
+    def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> GraphListResult:
+        graph_name = G if isinstance(G, str) else G.name()
+        config = ConfigConverter.convert_to_gds_config(graphName=graph_name, failIfMissing=fail_if_missing)
+        result = self._arrow_client.do_action_with_retry("v2/graph.drop", json.dumps(config).encode("utf-8"))
+        return GraphListResult(**deserialize_single(result))
 
     def filter(
         self,
