@@ -11,7 +11,7 @@ from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="package")
 def password_file() -> Generator[str, None, None]:
     """Create a temporary file and return its path."""
     temp_dir = tempfile.mkdtemp()
@@ -27,7 +27,7 @@ def password_file() -> Generator[str, None, None]:
     os.rmdir(temp_dir)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="package")
 def session_container(password_file: str) -> Generator[DockerContainer, None, None]:
     session_image = os.getenv("GDS_SESSION_IMAGE")
 
@@ -53,7 +53,7 @@ def session_container(password_file: str) -> Generator[DockerContainer, None, No
         print(stdout)
 
 
-@pytest.fixture
+@pytest.fixture(scope="package")
 def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient:
     """Create an authenticated Arrow client connected to the session container."""
     host = session_container.get_container_host_ip()
