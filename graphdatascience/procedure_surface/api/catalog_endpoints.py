@@ -14,6 +14,42 @@ from graphdatascience import Graph
 class CatalogEndpoints(ABC):
     @abstractmethod
     def list(self, G: Optional[Union[Graph, str]] = None) -> List[GraphListResult]:
+        """List graphs in the graph catalog.
+
+        Args:
+            G (Optional[Union[Graph, str]], optional): Graph object or name to filter results.
+               If None, list all graphs. Defaults to None.
+
+        Returns:
+            List[GraphListResult]: List of graph metadata objects containing information like
+                                 graph name, node count, relationship count, etc.
+        """
+        pass
+
+    @abstractmethod
+    def filter(
+        self,
+        G: Graph,
+        graph_name: str,
+        node_filter: str,
+        relationship_filter: str,
+        concurrency: Optional[int] = None,
+        job_id: Optional[str] = None,
+    ) -> GraphFilterResult:
+        """Create a subgraph of a graph based on a filter expression.
+
+        Args:
+            G (Graph): Graph object to filter on
+            graph_name (str): Name of subgraph to create
+            node_filter (str): Filter expression for nodes
+            relationship_filter (str): Filter expression for relationships
+            concurrency (Optional[int], optional): Number of concurrent threads to use. Defaults to None.
+            job_id (Optional[str], optional): Unique identifier for the filtering job. Defaults to None.
+
+        Returns:
+            GraphFilterResult: Filter result containing information like
+                                graph name, node count, relationship count, etc.
+        """
         pass
 
 
@@ -40,3 +76,15 @@ class GraphListResult(BaseModel):
         if isinstance(value, str):
             return re.sub(r"\[.*\]$", "", value)
         return value
+
+
+class GraphFilterResult(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel)
+
+    graph_name: str
+    from_graph_name: str
+    node_filter: str
+    relationship_filter: str
+    node_count: int
+    relationship_count: int
+    project_millis: int
