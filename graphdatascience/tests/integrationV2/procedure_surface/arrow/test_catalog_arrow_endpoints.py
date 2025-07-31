@@ -3,6 +3,7 @@ import json
 from typing import Generator
 
 import pytest
+from pyarrow import ArrowKeyError
 
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -29,7 +30,6 @@ def catalog_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[Catal
 
 
 def test_list_with_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
-    """Test listing graphs with a specific graph."""
     results = catalog_endpoints.list(G=sample_graph)
 
     assert len(results) == 1
@@ -46,7 +46,7 @@ def test_list_with_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph:
     assert "KiB" in result.memory_usage
     assert result.size_in_bytes > 20000
     assert result.modification_time < datetime.datetime.now(datetime.timezone.utc)
-    assert "p50" in result.degree_distribution
+    assert "p50" in result.degree_distribution  # type: ignore
 
 
 def test_list_without_graph(
@@ -58,6 +58,18 @@ def test_list_without_graph(
 
     assert len(result) == 2
     assert set(g.graph_name for g in result) == {sample_graph.name(), g2.name()}
+
+
+def test_drop(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
+    res = catalog_endpoints.drop(sample_graph)
+
+    assert res.graph_name == sample_graph.name()
+    assert len(catalog_endpoints.list()) == 0
+
+
+def test_drop_nonexistent(catalog_endpoints: CatalogArrowEndpoints) -> None:
+    with pytest.raises(ArrowKeyError, match="does not exist on database"):
+        catalog_endpoints.drop("nonexistent", fail_if_missing=True)
 
 
 def test_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> None:
@@ -75,7 +87,7 @@ def test_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryR
 
         assert len(endpoints.list("g")) == 1
     finally:
-        arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "g"}).encode("utf-8"))
+        endpoints.drop("g")
 
 
 def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
@@ -90,6 +102,4 @@ def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Gr
         assert result.graph_name == "filtered"
         assert result.project_millis >= 0
     finally:
-        catalog_endpoints._arrow_client.do_action(
-            "v2/graph.drop", json.dumps({"graphName": "filtered"}).encode("utf-8")
-        )
+        catalog_endpoints.drop("filtered")

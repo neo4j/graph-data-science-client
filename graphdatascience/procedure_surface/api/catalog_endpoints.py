@@ -27,6 +27,19 @@ class CatalogEndpoints(ABC):
         pass
 
     @abstractmethod
+    def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> GraphListResult:
+        """Drop a graph from the graph catalog.
+
+        Args:
+            G (Union[Graph, str]): Graph object or name to drop.
+            fail_if_missing (Optional[bool], optional): Whether to fail if the graph is missing. Defaults to None.
+
+        Returns:
+              GraphListResult: Graph metadata object containing information like
+                               graph name, node count, relationship count, etc.
+        """
+
+    @abstractmethod
     def filter(
         self,
         G: Graph,
@@ -68,7 +81,7 @@ class GraphListResult(BaseModel):
     modification_time: datetime
     graph_schema: dict[str, Any] = Field(alias="schema")
     schema_with_orientation: dict[str, Any]
-    degree_distribution: dict[str, Any]
+    degree_distribution: Optional[dict[str, Any]] = None
 
     @field_validator("creation_time", "modification_time", mode="before")
     @classmethod
