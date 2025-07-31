@@ -7,9 +7,11 @@ import pytest
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
+from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 LOGGER = logging.getLogger(__name__)
 
@@ -45,6 +47,7 @@ def session_container(password_dir: Path, logs_dir: Path, inside_ci: bool) -> Ge
         .with_env("DNS_NAME", "gds-session")
         .with_env("PAGE_CACHE_SIZE", "100M")
         .with_exposed_ports(8491)
+        .with_exposed_ports(7687)
         .with_network_aliases(["gds-session"])
         .with_volume_mapping(password_dir, "/passwords")
     )
@@ -76,3 +79,38 @@ def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient
         auth=UsernamePasswordAuthentication("neo4j", "password"),
         encrypted=False,
     )
+
+
+@pytest.fixture(scope="session")
+def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None]:
+    neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE")
+
+    if neo4j_image is None:
+        raise ValueError("NEO4J_DATABASE_IMAGE environment variable is not set")
+
+    db_container = (
+        DockerContainer(image=neo4j_image, network_mode="host")
+        .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
+        .with_env("NEO4J_AUTH", "neo4j/password")
+        .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
+    )
+
+    # .with_env("NEO4J_AUTH", "neo4j/password"))
+
+    with db_container as db_container:
+        wait_for_logs(db_container, "Started.")
+        stdout, stderr = db_container.get_logs()
+        print(stdout)
+        yield db_container
+        stdout, stderr = db_container.get_logs()
+        print(stdout)
+
+
+@pytest.fixture
+def query_runner(neo4j_container: DockerContainer) -> Generator[QueryRunner, None, None]:
+    query_runner = Neo4jQueryRunner.create_for_db(
+        "bolt://localhost:7687",
+        ("neo4j", "password"),
+    )
+    yield query_runner
+    query_runner.close()

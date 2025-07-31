@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import re
+from abc import ABC, abstractmethod
 from datetime import datetime
-from abc import ABC
-from typing import Optional, Any
+from typing import Any, List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic.alias_generators import to_camel
@@ -12,10 +12,9 @@ from graphdatascience import Graph
 
 
 class CatalogEndpoints(ABC):
-
-    def list(self, G: Optional[Graph] = None) -> GraphListResult:
+    @abstractmethod
+    def list(self, G: Optional[Union[Graph, str]] = None) -> List[GraphListResult]:
         pass
-
 
 
 class GraphListResult(BaseModel):
@@ -31,13 +30,13 @@ class GraphListResult(BaseModel):
     relationship_count: int
     creation_time: datetime
     modification_time: datetime
-    graph_schema: dict[str, Any] = Field(alias='schema')
+    graph_schema: dict[str, Any] = Field(alias="schema")
     schema_with_orientation: dict[str, Any]
     degree_distribution: dict[str, Any]
 
     @field_validator("creation_time", "modification_time", mode="before")
     @classmethod
-    def strip_timezone(cls, value):
+    def strip_timezone(cls, value: Any) -> Any:
         if isinstance(value, str):
-            return re.sub(r'\[.*\]$', '', value)
+            return re.sub(r"\[.*\]$", "", value)
         return value
