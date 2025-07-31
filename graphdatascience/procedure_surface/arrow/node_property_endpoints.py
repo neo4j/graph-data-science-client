@@ -1,4 +1,3 @@
-import json
 from typing import Any, Dict, Optional
 
 from pandas import DataFrame
@@ -80,6 +79,6 @@ class NodePropertyEndpoints:
         else:
             raise ValueError("Either graph_name or projection_config must be provided.")
 
-        res = self._arrow_client.do_action_with_retry(estimate_endpoint, json.dumps(payload).encode("utf-8"))
+        res = self._arrow_client.do_action_with_retry(estimate_endpoint, payload)
 
         return EstimationResult(**deserialize_single(res))

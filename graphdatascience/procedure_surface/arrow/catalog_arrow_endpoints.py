@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from typing import Any, List, Optional, Union
 from uuid import uuid4
 
@@ -37,7 +36,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         payload = {"graphName": name} if G else {}
 
-        result = self._arrow_client.do_action_with_retry("V2/graph.list", json.dumps(payload).encode("utf-8"))
+        result = self._arrow_client.do_action_with_retry("v2/graph.list", payload)
 
         return [GraphListResult(**x) for x in deserialize(result)]
 
@@ -89,7 +88,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
     def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> GraphListResult:
         graph_name = G if isinstance(G, str) else G.name()
         config = ConfigConverter.convert_to_gds_config(graphName=graph_name, failIfMissing=fail_if_missing)
-        result = self._arrow_client.do_action_with_retry("v2/graph.drop", json.dumps(config).encode("utf-8"))
+        result = self._arrow_client.do_action_with_retry("v2/graph.drop", config)
         return GraphListResult(**deserialize_single(result))
 
     def filter(

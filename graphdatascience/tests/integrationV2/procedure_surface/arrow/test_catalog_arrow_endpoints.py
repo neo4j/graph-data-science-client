@@ -1,5 +1,4 @@
 import datetime
-import json
 from typing import Generator
 
 import pytest
@@ -21,7 +20,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
     """
 
     yield create_graph(arrow_client, "g", gdl)
-    arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "g"}).encode("utf-8"))
+    CatalogArrowEndpoints(arrow_client).drop("g")
 
 
 @pytest.fixture
@@ -52,9 +51,11 @@ def test_list_with_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph:
 def test_list_without_graph(
     catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph, arrow_client: AuthenticatedArrowClient
 ) -> None:
-    g2 = create_graph(arrow_client, "second_graph", "()")
-    result = catalog_endpoints.list()
-    arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "g2"}).encode("utf-8"))
+    try:
+        g2 = create_graph(arrow_client, "second_graph", "()")
+        result = catalog_endpoints.list()
+    finally:
+        CatalogArrowEndpoints(arrow_client).drop("g")
 
     assert len(result) == 2
     assert set(g.graph_name for g in result) == {sample_graph.name(), g2.name()}

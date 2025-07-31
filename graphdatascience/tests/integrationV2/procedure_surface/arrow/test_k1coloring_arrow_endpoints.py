@@ -1,10 +1,10 @@
-import json
 from typing import Generator
 
 import pytest
 
 from graphdatascience import Graph
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.k1coloring_arrow_endpoints import K1ColoringArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
@@ -21,7 +21,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
     """
 
     yield create_graph(arrow_client, "g", gdl)
-    arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "g"}).encode("utf-8"))
+    CatalogArrowEndpoints(arrow_client).drop("g")
 
 
 @pytest.fixture
