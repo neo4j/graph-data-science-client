@@ -3,9 +3,6 @@ from __future__ import annotations
 from typing import Any, List, Optional, Union
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
-
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize, deserialize_single
@@ -16,6 +13,7 @@ from graphdatascience.procedure_surface.api.catalog_endpoints import (
     GraphListResult,
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.procedure_surface.utils.GdsBaseModel import GdsBaseModel
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
@@ -128,9 +126,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         }
 
 
-class ProjectionResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class ProjectionResult(GdsBaseModel):
     graph_name: str
     node_count: int
     relationship_count: int
