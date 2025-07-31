@@ -21,8 +21,7 @@ class JobClient:
 
     @staticmethod
     def run_job(client: AuthenticatedArrowClient, endpoint: str, config: dict[str, Any]) -> str:
-        encoded_config = json.dumps(config).encode("utf-8")
-        res = client.do_action_with_retry(endpoint, encoded_config)
+        res = client.do_action_with_retry(endpoint, config)
 
         single = deserialize_single(res)
         return JobIdConfig(**single).job_id
@@ -30,18 +29,14 @@ class JobClient:
     @staticmethod
     def wait_for_job(client: AuthenticatedArrowClient, job_id: str) -> None:
         while True:
-            encoded_config = JobIdConfig(jobId=job_id).dump_json().encode("utf-8")
-
-            arrow_res = client.do_action_with_retry(JOB_STATUS_ENDPOINT, encoded_config)
+            arrow_res = client.do_action_with_retry(JOB_STATUS_ENDPOINT, JobIdConfig(jobId=job_id).dump_camel())
             job_status = JobStatus(**deserialize_single(arrow_res))
             if job_status.status == "Done":
                 break
 
     @staticmethod
     def get_summary(client: AuthenticatedArrowClient, job_id: str) -> dict[str, Any]:
-        encoded_config = JobIdConfig(jobId=job_id).dump_json().encode("utf-8")
-
-        res = client.do_action_with_retry(RESULTS_SUMMARY_ENDPOINT, encoded_config)
+        res = client.do_action_with_retry(RESULTS_SUMMARY_ENDPOINT, JobIdConfig(jobId=job_id).dump_camel())
         return deserialize_single(res)
 
     @staticmethod
@@ -51,7 +46,7 @@ class JobClient:
             "jobId": job_id,
         }
 
-        res = client.do_action_with_retry("v2/results.stream", json.dumps(payload).encode("utf-8"))
+        res = client.do_action_with_retry("v2/results.stream", payload)
         export_job_id = JobIdConfig(**deserialize_single(res)).job_id
 
         stream_payload = {"version": "v2", "name": export_job_id, "body": {}}

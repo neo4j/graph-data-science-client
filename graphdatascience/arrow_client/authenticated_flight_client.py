@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import json
 import logging
 from dataclasses import dataclass
-from typing import Any, Iterator, Optional
+from typing import Any, Iterator, Optional, Union
 
 from pyarrow import __version__ as arrow_version
 from pyarrow import flight
@@ -152,10 +153,12 @@ class AuthenticatedArrowClient:
     def get_stream(self, ticket: Ticket) -> FlightStreamReader:
         return self._flight_client.do_get(ticket)
 
-    def do_action(self, endpoint: str, payload: bytes) -> Iterator[Result]:
-        return self._flight_client.do_action(Action(endpoint, payload))  # type: ignore
+    def do_action(self, endpoint: str, payload: Union[bytes, dict[str, Any]]) -> Iterator[Result]:
+        payload_bytes = payload if isinstance(payload, bytes) else json.dumps(payload).encode("utf-8")
 
-    def do_action_with_retry(self, endpoint: str, payload: bytes) -> Iterator[Result]:
+        return self._flight_client.do_action(Action(endpoint, payload_bytes))  # type: ignore
+
+    def do_action_with_retry(self, endpoint: str, payload: Union[bytes, dict[str, Any]]) -> Iterator[Result]:
         @retry(
             reraise=True,
             before=before_log("Send action", self._logger, logging.DEBUG),
