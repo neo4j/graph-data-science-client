@@ -1,11 +1,10 @@
 import datetime
 import json
-from datetime import tzinfo
 from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph
+from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
@@ -49,7 +48,10 @@ def test_list_with_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph:
     assert result.modification_time < datetime.datetime.now(datetime.timezone.utc)
     assert "p50" in result.degree_distribution
 
-def test_list_without_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph, arrow_client: AuthenticatedArrowClient) -> None:
+
+def test_list_without_graph(
+    catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph, arrow_client: AuthenticatedArrowClient
+) -> None:
     g2 = create_graph(arrow_client, "second_graph", "()")
     result = catalog_endpoints.list()
     arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "g2"}).encode("utf-8"))
@@ -58,3 +60,19 @@ def test_list_without_graph(catalog_endpoints: CatalogArrowEndpoints, sample_gra
     assert set(g.graph_name for g in result) == {sample_graph.name(), g2.name()}
 
 
+def test_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> None:
+    try:
+        endpoints = CatalogArrowEndpoints(arrow_client, query_runner)
+        result = endpoints.project(
+            graph_name="g",
+            query="UNWIND range(1, 10) AS x WITH gds.graph.project.remote(x, null) as g RETURN g",
+        )
+
+        assert result.graph_name == "g"
+        assert result.node_count == 10
+        assert result.relationship_count == 0
+        assert result.project_millis >= 0
+
+        assert len(endpoints.list("g")) == 1
+    finally:
+        arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "g"}).encode("utf-8"))
