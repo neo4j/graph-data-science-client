@@ -47,7 +47,6 @@ def session_container(password_dir: Path, logs_dir: Path, inside_ci: bool) -> Ge
         .with_env("DNS_NAME", "gds-session")
         .with_env("PAGE_CACHE_SIZE", "100M")
         .with_exposed_ports(8491)
-        .with_exposed_ports(7687)
         .with_network_aliases(["gds-session"])
         .with_volume_mapping(password_dir, "/passwords")
     )
@@ -81,7 +80,7 @@ def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient
     )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="package")
 def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None]:
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE")
 
@@ -95,8 +94,6 @@ def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None
         .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
     )
 
-    # .with_env("NEO4J_AUTH", "neo4j/password"))
-
     with db_container as db_container:
         wait_for_logs(db_container, "Started.")
         stdout, stderr = db_container.get_logs()
@@ -106,7 +103,7 @@ def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None
         print(stdout)
 
 
-@pytest.fixture
+@pytest.fixture(scope="package")
 def query_runner(neo4j_container: DockerContainer) -> Generator[QueryRunner, None, None]:
     query_runner = Neo4jQueryRunner.create_for_db(
         "bolt://localhost:7687",
