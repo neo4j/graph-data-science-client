@@ -5,9 +5,8 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.base_result import BaseResult
-
 from ...graph.graph_object import Graph
+from ..utils.GdsBaseModel import GdsBaseModel
 from .estimation_result import EstimationResult
 
 
@@ -234,7 +233,7 @@ class SccEndpoints(ABC):
         pass
 
 
-class SccMutateResult(BaseResult):
+class SccMutateResult(GdsBaseModel):
     component_count: int
     component_distribution: dict[str, Any]
     pre_processing_millis: int
@@ -245,7 +244,7 @@ class SccMutateResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class SccStatsResult(BaseResult):
+class SccStatsResult(GdsBaseModel):
     component_count: int
     component_distribution: dict[str, Any]
     pre_processing_millis: int
@@ -254,7 +253,7 @@ class SccStatsResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class SccWriteResult(BaseResult):
+class SccWriteResult(GdsBaseModel):
     component_count: int
     component_distribution: dict[str, Any]
     pre_processing_millis: int

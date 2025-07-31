@@ -5,9 +5,8 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.base_result import BaseResult
-
 from ...graph.graph_object import Graph
+from ..utils.GdsBaseModel import GdsBaseModel
 from .estimation_result import EstimationResult
 
 
@@ -225,7 +224,7 @@ class KCoreEndpoints(ABC):
         pass
 
 
-class KCoreMutateResult(BaseResult):
+class KCoreMutateResult(GdsBaseModel):
     node_properties_written: int
     degeneracy: int
     pre_processing_millis: int
@@ -235,7 +234,7 @@ class KCoreMutateResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class KCoreStatsResult(BaseResult):
+class KCoreStatsResult(GdsBaseModel):
     degeneracy: int
     pre_processing_millis: int
     compute_millis: int
@@ -243,7 +242,7 @@ class KCoreStatsResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class KCoreWriteResult(BaseResult):
+class KCoreWriteResult(GdsBaseModel):
     node_properties_written: int
     degeneracy: int
     pre_processing_millis: int

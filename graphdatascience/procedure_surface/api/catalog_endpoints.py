@@ -5,10 +5,10 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Any, List, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
-from pydantic.alias_generators import to_camel
+from pydantic import Field, field_validator
 
 from graphdatascience import Graph
+from graphdatascience.procedure_surface.utils.GdsBaseModel import GdsBaseModel
 
 
 class CatalogEndpoints(ABC):
@@ -66,9 +66,7 @@ class CatalogEndpoints(ABC):
         pass
 
 
-class GraphListResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class GraphListResult(GdsBaseModel):
     graph_name: str
     database: str
     database_location: str
@@ -91,9 +89,7 @@ class GraphListResult(BaseModel):
         return value
 
 
-class GraphFilterResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class GraphFilterResult(GdsBaseModel):
     graph_name: str
     from_graph_name: str
     node_filter: str

@@ -5,9 +5,8 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.base_result import BaseResult
-
 from ...graph.graph_object import Graph
+from ..utils.GdsBaseModel import GdsBaseModel
 from .estimation_result import EstimationResult
 
 
@@ -255,7 +254,7 @@ class K1ColoringEndpoints(ABC):
         pass
 
 
-class K1ColoringMutateResult(BaseResult):
+class K1ColoringMutateResult(GdsBaseModel):
     node_count: int
     color_count: int
     ran_iterations: int
@@ -266,7 +265,7 @@ class K1ColoringMutateResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class K1ColoringStatsResult(BaseResult):
+class K1ColoringStatsResult(GdsBaseModel):
     node_count: int
     color_count: int
     ran_iterations: int
@@ -276,7 +275,7 @@ class K1ColoringStatsResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class K1ColoringWriteResult(BaseResult):
+class K1ColoringWriteResult(GdsBaseModel):
     node_count: int
     color_count: int
     ran_iterations: int

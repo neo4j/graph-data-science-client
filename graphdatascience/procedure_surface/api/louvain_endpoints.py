@@ -5,9 +5,8 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.base_result import BaseResult
-
 from ...graph.graph_object import Graph
+from ..utils.GdsBaseModel import GdsBaseModel
 from .estimation_result import EstimationResult
 
 
@@ -330,7 +329,7 @@ class LouvainEndpoints(ABC):
         pass
 
 
-class LouvainMutateResult(BaseResult):
+class LouvainMutateResult(GdsBaseModel):
     modularity: float
     modularities: List[Any]
     ran_levels: int
@@ -344,7 +343,7 @@ class LouvainMutateResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class LouvainStatsResult(BaseResult):
+class LouvainStatsResult(GdsBaseModel):
     modularity: float
     modularities: List[Any]
     ran_levels: int
@@ -356,7 +355,7 @@ class LouvainStatsResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class LouvainWriteResult(BaseResult):
+class LouvainWriteResult(GdsBaseModel):
     modularity: float
     modularities: List[Any]
     ran_levels: int
