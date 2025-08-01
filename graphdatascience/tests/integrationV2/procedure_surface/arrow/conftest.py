@@ -4,6 +4,7 @@ from typing import Generator
 
 import pytest
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.network import Network
 from testcontainers.core.waiting_utils import wait_for_logs
 
 from graphdatascience import QueryRunner
@@ -30,7 +31,13 @@ def password_file() -> Generator[str, None, None]:
 
 
 @pytest.fixture(scope="package")
-def session_container(password_file: str) -> Generator[DockerContainer, None, None]:
+def network() -> Generator[Network, None, None]:
+    with Network() as network:
+        yield network
+
+
+@pytest.fixture(scope="package")
+def session_container(password_file: str, network: Network) -> Generator[DockerContainer, None, None]:
     session_image = os.getenv("GDS_SESSION_IMAGE")
 
     if session_image is None:
@@ -44,8 +51,9 @@ def session_container(password_file: str) -> Generator[DockerContainer, None, No
         .with_env("DNS_NAME", "gds-session")
         .with_env("PAGE_CACHE_SIZE", "100M")
         .with_exposed_ports(8491)
-        .with_network_aliases(["gds-session"])
+        .with_network_aliases("gds-session")
         .with_volume_mapping(password_file, "/passwords")
+        .with_network(network)
     )
 
     with session_container as session_container:
@@ -61,35 +69,35 @@ def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient
     host = session_container.get_container_host_ip()
     port = session_container.get_exposed_port(8491)
 
-    if os.getenv("BUILD_NUMBER") is not None:
-        host = "host.docker.internal"
-
     return AuthenticatedArrowClient.create(
         arrow_info=ArrowInfo(f"{host}:{port}", True, True, ["v1", "v2"]),
         auth=UsernamePasswordAuthentication("neo4j", "password"),
         encrypted=False,
+        advertised_listen_address=("gds-session", 8491),
     )
 
 
 @pytest.fixture(scope="package")
-def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None]:
+def neo4j_container(
+    password_file: str, network: Network, session_container: DockerContainer
+) -> Generator[DockerContainer, None, None]:
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE")
 
     if neo4j_image is None:
         raise ValueError("NEO4J_DATABASE_IMAGE environment variable is not set")
+
+    host_ip = session_container.get_container_host_ip()
 
     db_container = (
         DockerContainer(image=neo4j_image)
         .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
         .with_env("NEO4J_AUTH", "neo4j/password")
         .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
-        .with_network_aliases(["neo4j-db"])
+        .with_env("NEO4j_server.server.bolt.advertised_listen_address", f"{host_ip}:7687")
+        .with_network_aliases("neo4j-db")
+        .with_network(network)
+        .with_bind_ports(7687, 7687)
     )
-
-    if os.getenv("BUILD_NUMBER") is None:
-        db_container.with_kwargs(network_mode="host")
-    else:
-        db_container.with_exposed_ports(7687)
 
     with db_container as db_container:
         wait_for_logs(db_container, "Started.")
@@ -100,12 +108,8 @@ def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None
 
 @pytest.fixture(scope="package")
 def query_runner(neo4j_container: DockerContainer) -> Generator[QueryRunner, None, None]:
-    host = "localhost"
+    host = neo4j_container.get_container_host_ip()
     port = 7687
-
-    if os.getenv("BUILD_NUMBER") is not None:
-        host = "host.docker.internal"
-        port = neo4j_container.get_exposed_port(7687)
 
     query_runner = Neo4jQueryRunner.create_for_db(
         f"bolt://{host}:{port}",
