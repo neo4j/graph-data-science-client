@@ -117,7 +117,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         return GraphFilterResult(**JobClient.get_summary(self._arrow_client, job_id))
 
     def _arrow_config(self) -> dict[str, Any]:
-        connection_info = self._arrow_client.connection_info()
+        connection_info = self._arrow_client.advertised_connection_info()
 
         token = self._arrow_client.request_token()
         if token is None:

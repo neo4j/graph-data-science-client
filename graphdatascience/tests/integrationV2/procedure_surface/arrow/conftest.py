@@ -5,6 +5,7 @@ from typing import Generator
 
 import pytest
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.network import Network
 from testcontainers.core.waiting_utils import wait_for_logs
 
 from graphdatascience import QueryRunner
@@ -30,9 +31,13 @@ def password_dir(tmpdir_factory: pytest.TempdirFactory) -> Generator[Path, None,
     # Clean up the file
     os.unlink(temp_file_path)
 
+@pytest.fixture(scope="package")
+def network() -> Generator[Network, None, None]:
+    with Network() as network:
+        yield network
 
 @pytest.fixture(scope="package")
-def session_container(password_dir: Path, logs_dir: Path, inside_ci: bool) -> Generator[DockerContainer, None, None]:
+def session_container(network: Network, password_dir: Path, logs_dir: Path, inside_ci: bool) -> Generator[DockerContainer, None, None]:
     session_image = os.getenv(
         "GDS_SESSION_IMAGE", "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest"
     )
@@ -47,8 +52,10 @@ def session_container(password_dir: Path, logs_dir: Path, inside_ci: bool) -> Ge
         .with_env("DNS_NAME", "gds-session")
         .with_env("PAGE_CACHE_SIZE", "100M")
         .with_exposed_ports(8491)
-        .with_network_aliases(["gds-session"])
+        .with_network_aliases("gds-session")
         .with_volume_mapping(password_dir, "/passwords")
+        .with_kwargs(extra_hosts=["host.docker.internal:host-gateway"])
+        # .with_network(network)
     )
 
     with session_container as session_container:
@@ -70,28 +77,34 @@ def session_container(password_dir: Path, logs_dir: Path, inside_ci: bool) -> Ge
 @pytest.fixture(scope="package")
 def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient:
     """Create an authenticated Arrow client connected to the session container."""
-    host = session_container.get_container_host_ip()
+    host = "host.docker.internal"
     port = session_container.get_exposed_port(8491)
 
     return AuthenticatedArrowClient.create(
         arrow_info=ArrowInfo(f"{host}:{port}", True, True, ["v1", "v2"]),
         auth=UsernamePasswordAuthentication("neo4j", "password"),
         encrypted=False,
+        advertised_listen_address=("gds-session", 8491),
     )
 
 
 @pytest.fixture(scope="package")
-def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None]:
+def neo4j_container(password_file: str, network: Network) -> Generator[DockerContainer, None, None]:
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE")
 
     if neo4j_image is None:
         raise ValueError("NEO4J_DATABASE_IMAGE environment variable is not set")
 
     db_container = (
-        DockerContainer(image=neo4j_image, network_mode="host")
+        DockerContainer(image=neo4j_image)
         .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
         .with_env("NEO4J_AUTH", "neo4j/password")
         .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
+        .with_env("NEO4J_server_bolt_advertised__address", "host.docker.internal:7687")
+        .with_network_aliases("neo4j-db")
+        .with_network(network)
+        .with_bind_ports(7687, 7687)
+        .with_kwargs(extra_hosts=["host.docker.internal:host-gateway"])
     )
 
     with db_container as db_container:
@@ -103,8 +116,11 @@ def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None
 
 @pytest.fixture(scope="package")
 def query_runner(neo4j_container: DockerContainer) -> Generator[QueryRunner, None, None]:
+    host = "host.docker.internal"
+    port = 7687
+
     query_runner = Neo4jQueryRunner.create_for_db(
-        "bolt://localhost:7687",
+        f"bolt://{host}:{port}",
         ("neo4j", "password"),
     )
     yield query_runner
