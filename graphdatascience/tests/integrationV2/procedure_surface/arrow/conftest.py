@@ -60,6 +60,10 @@ def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient
     """Create an authenticated Arrow client connected to the session container."""
     host = session_container.get_container_host_ip()
     port = session_container.get_exposed_port(8491)
+    if os.getenv("BUILD_NUMBER") is not None:
+        print("Using host from container")
+        host = "gds-session"
+        port = 8491
 
     return AuthenticatedArrowClient.create(
         arrow_info=ArrowInfo(f"{host}:{port}", True, True, ["v1", "v2"]),
@@ -80,6 +84,7 @@ def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None
         .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
         .with_env("NEO4J_AUTH", "neo4j/password")
         .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
+        .with_network_aliases(["neo4j-db"])
     )
 
     if os.getenv("BUILD_NUMBER") is None:
@@ -99,8 +104,7 @@ def query_runner(neo4j_container: DockerContainer) -> Generator[QueryRunner, Non
     host = "localhost"
     port = 7687
     if os.getenv("BUILD_NUMBER") is not None:
-        print("Using host from container")
-        host = "gds-session"
+        host = "neo4j-db"
 
     query_runner = Neo4jQueryRunner.create_for_db(
         f"bolt://{host}:{port}",
