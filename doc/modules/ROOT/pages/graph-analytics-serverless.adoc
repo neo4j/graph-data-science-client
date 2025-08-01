@@ -610,7 +610,7 @@ gds.wcc.write(
 You can run Cypher queries on the Neo4j DB using the `run_cypher()` method.
 There is no restriction on the type of query that can be run, but it is important to note that the query will be run on the Neo4j DB, and not on the GDS Session.
 
-NOTE: If you want to use Cypher to operate Aura Graph Analytics use the https://neo4j.com/docs/graph-data-science/current/installation/aura-graph-analytics-serverless/#_syntax[Cypher API].
+NOTE: If you want to use Cypher to operate Aura Graph Analytics use the https://neo4j.com/docs/graph-data-science/current/aura-graph-analytics/cypher[Cypher API].
 
 
 .Run a Cypher query to find our written-back embeddings:
