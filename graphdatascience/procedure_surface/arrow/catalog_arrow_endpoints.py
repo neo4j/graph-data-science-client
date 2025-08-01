@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize, deserialize_single
+from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.procedure_surface.api.catalog_endpoints import (
     CatalogEndpoints,
@@ -83,11 +83,16 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         return ProjectionResult(**JobClient.get_summary(self._arrow_client, job_id))
 
-    def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> GraphListResult:
+    def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphListResult]:
         graph_name = G if isinstance(G, str) else G.name()
-        config = ConfigConverter.convert_to_gds_config(graphName=graph_name, failIfMissing=fail_if_missing)
+        config = ConfigConverter.convert_to_gds_config(graph_name=graph_name, fail_if_missing=fail_if_missing)
         result = self._arrow_client.do_action_with_retry("v2/graph.drop", config)
-        return GraphListResult(**deserialize_single(result))
+        deserialized_results = deserialize(result)
+
+        if len(deserialized_results) == 1:
+            return GraphListResult(**deserialized_results[0])
+        else:
+            return None
 
     def filter(
         self,
@@ -99,12 +104,12 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         job_id: Optional[str] = None,
     ) -> GraphFilterResult:
         config = ConfigConverter.convert_to_gds_config(
-            fromGraphName=G.name(),
-            graphName=graph_name,
-            nodeFilter=node_filter,
-            relationshipFilter=relationship_filter,
+            from_graph_name=G.name(),
+            graph_name=graph_name,
+            node_filter=node_filter,
+            relationship_filter=relationship_filter,
             concurrency=concurrency,
-            jobId=job_id,
+            job_id=job_id,
         )
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.project.filter", config)

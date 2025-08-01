@@ -27,7 +27,7 @@ class CatalogEndpoints(ABC):
         pass
 
     @abstractmethod
-    def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> GraphListResult:
+    def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphListResult]:
         """Drop a graph from the graph catalog.
 
         Args:
