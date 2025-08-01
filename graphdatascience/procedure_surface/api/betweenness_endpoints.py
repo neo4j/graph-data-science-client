@@ -33,7 +33,7 @@ class BetweennessEndpoints(ABC):
         relationship_weight_property: Optional[str] = None,
     ) -> BetweennessMutateResult:
         """
-        Executes the Betweenness Centrality algorithm and writes the results to the in-memory graph as node properties.
+        Executes the Betweenness Centrality algorithm and returns result statistics without persisting the results
 
         Parameters
         ----------
@@ -182,7 +182,6 @@ class BetweennessEndpoints(ABC):
         job_id: Optional[Any] = None,
         relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = None,
     ) -> BetweennessWriteResult:
         """
         Executes the Betweenness Centrality algorithm and writes the results to the Neo4j database.
@@ -215,8 +214,6 @@ class BetweennessEndpoints(ABC):
             The property name that contains relationship weights
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads during the write phase
-        write_to_result_store : Optional[bool], default=None
-            Whether to write results to the result store
 
         Returns
         -------
