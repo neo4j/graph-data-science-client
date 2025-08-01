@@ -3,6 +3,7 @@ from typing import Generator
 
 import pytest
 from pyarrow import ArrowKeyError
+from pyarrow._flight import FlightServerError
 
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -20,7 +21,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
     """
 
     yield create_graph(arrow_client, "g", gdl)
-    CatalogArrowEndpoints(arrow_client).drop("g")
+    CatalogArrowEndpoints(arrow_client).drop("g", fail_if_missing=False)
 
 
 @pytest.fixture
@@ -55,7 +56,7 @@ def test_list_without_graph(
         g2 = create_graph(arrow_client, "second_graph", "()")
         result = catalog_endpoints.list()
     finally:
-        CatalogArrowEndpoints(arrow_client).drop("g")
+        CatalogArrowEndpoints(arrow_client).drop("second_graph")
 
     assert len(result) == 2
     assert set(g.graph_name for g in result) == {sample_graph.name(), g2.name()}
@@ -64,6 +65,7 @@ def test_list_without_graph(
 def test_drop(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
     res = catalog_endpoints.drop(sample_graph)
 
+    assert res is not None
     assert res.graph_name == sample_graph.name()
     assert len(catalog_endpoints.list()) == 0
 
@@ -88,7 +90,7 @@ def test_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryR
 
         assert len(endpoints.list("g")) == 1
     finally:
-        endpoints.drop("g")
+        endpoints.drop("g", fail_if_missing=False)
 
 
 def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
@@ -103,4 +105,8 @@ def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Gr
         assert result.graph_name == "filtered"
         assert result.project_millis >= 0
     finally:
-        catalog_endpoints.drop("filtered")
+        try:
+            catalog_endpoints.drop("filtered", fail_if_missing=False)
+        except FlightServerError:
+            # There is currently a bug in GDS that throws when deleting a GDL graph
+            pass

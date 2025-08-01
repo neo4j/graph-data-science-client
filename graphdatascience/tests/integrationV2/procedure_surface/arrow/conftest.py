@@ -96,11 +96,9 @@ def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None
 
     with db_container as db_container:
         wait_for_logs(db_container, "Started.")
-        stdout, stderr = db_container.get_logs()
-        print(stdout)
         yield db_container
-        stdout, stderr = db_container.get_logs()
-        print(stdout)
+        # stdout, stderr = db_container.get_logs()
+        # print(stdout)
 
 
 @pytest.fixture(scope="package")

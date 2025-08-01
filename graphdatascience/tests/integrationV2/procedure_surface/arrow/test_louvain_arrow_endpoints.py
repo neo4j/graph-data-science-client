@@ -27,7 +27,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
     """
 
     yield create_graph(arrow_client, "louvain_g", gdl)
-    CatalogArrowEndpoints(arrow_client).drop("g")
+    CatalogArrowEndpoints(arrow_client).drop("louvain_g")
 
 
 @pytest.fixture
