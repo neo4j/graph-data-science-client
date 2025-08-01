@@ -31,9 +31,7 @@ def gds_plugin_container() -> Generator[Neo4jContainer, None, None]:
 
 @pytest.fixture(scope="package")
 def query_runner(gds_plugin_container: DockerContainer) -> Generator[QueryRunner, None, None]:
-    host = "localhost"
-    if os.environ.get("BUILD_NUMBER") is not None:
-        host = "host.docker.internal"
+    host = gds_plugin_container.get_container_host_ip()
 
     query_runner = Neo4jQueryRunner.create_for_db(
         f"bolt://{host}:{gds_plugin_container.get_exposed_port(7687)}",
