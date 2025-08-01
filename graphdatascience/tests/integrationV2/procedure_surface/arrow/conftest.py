@@ -76,11 +76,16 @@ def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None
         raise ValueError("NEO4J_DATABASE_IMAGE environment variable is not set")
 
     db_container = (
-        DockerContainer(image=neo4j_image, network_mode="host")
+        DockerContainer(image=neo4j_image)
         .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
         .with_env("NEO4J_AUTH", "neo4j/password")
         .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
     )
+
+    if os.getenv("BUILD_NUMBER") is None:
+        db_container.with_kwargs(network_mode="host")
+    else:
+        db_container.with_exposed_ports(7687)
 
     with db_container as db_container:
         wait_for_logs(db_container, "Started.")
@@ -91,8 +96,14 @@ def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None
 
 @pytest.fixture(scope="package")
 def query_runner(neo4j_container: DockerContainer) -> Generator[QueryRunner, None, None]:
+    host = "localhost"
+    port = 7687
+    if os.getenv("BUILD_NUMBER") is not None:
+        host = neo4j_container.get_container_host_ip()
+        port = neo4j_container.get_exposed_port(7687)
+
     query_runner = Neo4jQueryRunner.create_for_db(
-        "bolt://localhost:7687",
+        f"bolt://{host}:{port}",
         ("neo4j", "password"),
     )
     yield query_runner
