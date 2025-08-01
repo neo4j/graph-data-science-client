@@ -1,4 +1,3 @@
-import json
 import math
 import time
 
@@ -13,8 +12,7 @@ class MutationClient:
     @staticmethod
     def mutate_node_property(client: AuthenticatedArrowClient, job_id: str, mutate_property: str) -> MutateResult:
         mutate_config = {"jobId": job_id, "mutateProperty": mutate_property}
-        encoded_config = json.dumps(mutate_config).encode("utf-8")
         start_time = time.time()
-        mutate_arrow_res = client.do_action_with_retry(MutationClient.MUTATE_ENDPOINT, encoded_config)
+        mutate_arrow_res = client.do_action_with_retry(MutationClient.MUTATE_ENDPOINT, mutate_config)
         mutate_millis = math.ceil((time.time() - start_time) * 1000)
         return MutateResult(mutateMillis=mutate_millis, **deserialize_single(mutate_arrow_res))
