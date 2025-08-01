@@ -99,8 +99,8 @@ def query_runner(neo4j_container: DockerContainer) -> Generator[QueryRunner, Non
     host = "localhost"
     port = 7687
     if os.getenv("BUILD_NUMBER") is not None:
-        host = neo4j_container.get_container_host_ip()
-        port = neo4j_container.get_exposed_port(7687)
+        print("Using host from container")
+        host = "gds-session"
 
     query_runner = Neo4jQueryRunner.create_for_db(
         f"bolt://{host}:{port}",
