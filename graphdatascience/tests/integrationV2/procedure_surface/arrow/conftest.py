@@ -103,6 +103,7 @@ def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None
 def query_runner(neo4j_container: DockerContainer) -> Generator[QueryRunner, None, None]:
     host = "localhost"
     port = 7687
+
     if os.getenv("BUILD_NUMBER") is not None:
         host = "neo4j-db"
 
