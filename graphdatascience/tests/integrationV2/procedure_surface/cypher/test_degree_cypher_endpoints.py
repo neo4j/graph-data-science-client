@@ -1,0 +1,85 @@
+from typing import Generator
+
+import pytest
+
+from graphdatascience import Graph, QueryRunner
+from graphdatascience.procedure_surface.cypher.degree_cypher_endpoints import DegreeCypherEndpoints
+
+
+@pytest.fixture
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
+    create_statement = """
+    CREATE
+    (a: Node {id: 0}),
+    (b: Node {id: 1}),
+    (c: Node {id: 2}),
+    (a)-[:REL]->(c),
+    (b)-[:REL]->(c)
+    """
+
+    query_runner.run_cypher(create_statement)
+
+    query_runner.run_cypher("""
+        MATCH (n)
+        OPTIONAL MATCH (n)-[r]->(m)
+        WITH gds.graph.project('g', n, m, {}) AS G
+        RETURN G
+    """)
+
+    yield Graph("g", query_runner)
+
+    query_runner.run_cypher("CALL gds.graph.drop('g')")
+    query_runner.run_cypher("MATCH (n) DETACH DELETE n")
+
+
+@pytest.fixture
+def degree_endpoints(query_runner: QueryRunner) -> Generator[DegreeCypherEndpoints, None, None]:
+    yield DegreeCypherEndpoints(query_runner)
+
+
+def test_degree_stats(degree_endpoints: DegreeCypherEndpoints, sample_graph: Graph) -> None:
+    """Test Degree stats operation."""
+    result = degree_endpoints.stats(G=sample_graph)
+
+    assert result.compute_millis > 0
+    assert result.pre_processing_millis >= 0
+    assert result.post_processing_millis >= 0
+    assert "p50" in result.centrality_distribution
+    assert isinstance(result.configuration, dict)
+
+
+def test_degree_stream(degree_endpoints: DegreeCypherEndpoints, sample_graph: Graph) -> None:
+    """Test Degree stream operation."""
+    result = degree_endpoints.stream(G=sample_graph)
+
+    assert len(result) == 3  # We have 3 nodes
+    assert "nodeId" in result.columns
+    assert "score" in result.columns
+
+
+def test_degree_mutate(degree_endpoints: DegreeCypherEndpoints, sample_graph: Graph) -> None:
+    """Test Degree mutate operation."""
+    result = degree_endpoints.mutate(G=sample_graph, mutate_property="degree")
+
+    assert result.node_properties_written == 3
+    assert result.compute_millis > 0
+    assert result.pre_processing_millis >= 0
+    assert result.post_processing_millis >= 0
+    assert result.mutate_millis >= 0
+    assert "p50" in result.centrality_distribution
+    assert isinstance(result.configuration, dict)
+    assert result.configuration.get("mutateProperty") == "degree"
+
+
+def test_degree_write(degree_endpoints: DegreeCypherEndpoints, sample_graph: Graph) -> None:
+    """Test Degree write operation."""
+    result = degree_endpoints.write(G=sample_graph, write_property="degree")
+
+    assert result.node_properties_written == 3
+    assert result.compute_millis > 0
+    assert result.pre_processing_millis >= 0
+    assert result.post_processing_millis >= 0
+    assert result.write_millis >= 0
+    assert "p50" in result.centrality_distribution
+    assert isinstance(result.configuration, dict)
+    assert result.configuration.get("writeProperty") == "degree"
