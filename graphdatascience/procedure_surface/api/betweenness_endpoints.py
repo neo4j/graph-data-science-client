@@ -7,6 +7,8 @@ from pandas import DataFrame
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
+from graphdatascience.procedure_surface.api.base_result import BaseResult
+
 from ...graph.graph_object import Graph
 from .estimation_result import EstimationResult
 
@@ -244,10 +246,8 @@ class BetweennessEndpoints(ABC):
         """
 
 
-class BetweennessMutateResult(BaseModel):
+class BetweennessMutateResult(BaseResult):
     """Result of running Betweenness Centrality algorithm with mutate mode."""
-
-    model_config = ConfigDict(alias_generator=to_camel)
 
     node_properties_written: int
     pre_processing_millis: int
@@ -257,14 +257,9 @@ class BetweennessMutateResult(BaseModel):
     centrality_distribution: dict[str, Any]
     configuration: dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return getattr(self, item)
 
-
-class BetweennessStatsResult(BaseModel):
+class BetweennessStatsResult(BaseResult):
     """Result of running Betweenness Centrality algorithm with stats mode."""
-
-    model_config = ConfigDict(alias_generator=to_camel)
 
     centrality_distribution: dict[str, Any]
     pre_processing_millis: int
@@ -272,14 +267,9 @@ class BetweennessStatsResult(BaseModel):
     post_processing_millis: int
     configuration: dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return getattr(self, item)
 
-
-class BetweennessWriteResult(BaseModel):
+class BetweennessWriteResult(BaseResult):
     """Result of running Betweenness Centrality algorithm with write mode."""
-
-    model_config = ConfigDict(alias_generator=to_camel)
 
     node_properties_written: int
     pre_processing_millis: int
@@ -288,6 +278,3 @@ class BetweennessWriteResult(BaseModel):
     write_millis: int
     centrality_distribution: dict[str, Any]
     configuration: dict[str, Any]
-
-    def __getitem__(self, item: str) -> Any:
-        return getattr(self, item)
