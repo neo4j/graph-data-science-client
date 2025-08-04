@@ -31,13 +31,7 @@ def password_file() -> Generator[str, None, None]:
 
 
 @pytest.fixture(scope="package")
-def network() -> Generator[Network, None, None]:
-    with Network() as network:
-        yield network
-
-
-@pytest.fixture(scope="package")
-def session_container(password_file: str, network: Network) -> Generator[DockerContainer, None, None]:
+def session_container(password_file: str) -> Generator[DockerContainer, None, None]:
     session_image = os.getenv("GDS_SESSION_IMAGE")
 
     if session_image is None:
@@ -53,7 +47,7 @@ def session_container(password_file: str, network: Network) -> Generator[DockerC
         .with_exposed_ports(8491)
         .with_network_aliases("gds-session")
         .with_volume_mapping(password_file, "/passwords")
-        .with_network(network)
+        .with_kwargs(extra_hosts=["host.docker.internal:host-gateway"])
     )
 
     with session_container as session_container:
@@ -73,30 +67,27 @@ def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient
         arrow_info=ArrowInfo(f"{host}:{port}", True, True, ["v1", "v2"]),
         auth=UsernamePasswordAuthentication("neo4j", "password"),
         encrypted=False,
-        advertised_listen_address=("gds-session", 8491),
+        advertised_listen_address=("host.docker.internal", port),
     )
 
 
 @pytest.fixture(scope="package")
-def neo4j_container(
-    password_file: str, network: Network, session_container: DockerContainer
-) -> Generator[DockerContainer, None, None]:
+def neo4j_container(session_container: DockerContainer,
+    password_file: str) -> Generator[DockerContainer, None, None]:
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE")
 
     if neo4j_image is None:
         raise ValueError("NEO4J_DATABASE_IMAGE environment variable is not set")
-
-    host_ip = session_container.get_container_host_ip()
 
     db_container = (
         DockerContainer(image=neo4j_image)
         .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
         .with_env("NEO4J_AUTH", "neo4j/password")
         .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
-        .with_env("NEO4j_server.server.bolt.advertised_listen_address", f"{host_ip}:7687")
+        .with_env("NEO4j_server.server.bolt.advertised_listen_address", f"{session_container.get_container_host_ip()}:7687")
         .with_network_aliases("neo4j-db")
-        .with_network(network)
         .with_bind_ports(7687, 7687)
+        .with_kwargs(extra_hosts=["host.docker.internal:host-gateway"])
     )
 
     with db_container as db_container:
