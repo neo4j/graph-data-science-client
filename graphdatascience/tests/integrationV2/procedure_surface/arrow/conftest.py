@@ -4,6 +4,7 @@ from typing import Generator
 
 import pytest
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.network import Network
 from testcontainers.core.waiting_utils import wait_for_logs
 
 from graphdatascience import QueryRunner
@@ -30,7 +31,12 @@ def password_file() -> Generator[str, None, None]:
 
 
 @pytest.fixture(scope="package")
-def session_container(password_file: str) -> Generator[DockerContainer, None, None]:
+def network() -> Generator[Network, None, None]:
+    with Network() as network:
+        yield network
+
+@pytest.fixture(scope="package")
+def session_container(network: Network, password_file: str) -> Generator[DockerContainer, None, None]:
     session_image = os.getenv("GDS_SESSION_IMAGE")
 
     if session_image is None:
@@ -47,6 +53,7 @@ def session_container(password_file: str) -> Generator[DockerContainer, None, No
         .with_network_aliases("gds-session")
         .with_volume_mapping(password_file, "/passwords")
         .with_kwargs(extra_hosts=["host.docker.internal:host-gateway"])
+        .with_network(network)
     )
 
     with session_container as session_container:
@@ -66,12 +73,12 @@ def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient
         arrow_info=ArrowInfo(f"{host}:{port}", True, True, ["v1", "v2"]),
         auth=UsernamePasswordAuthentication("neo4j", "password"),
         encrypted=False,
-        advertised_listen_address=("host.docker.internal", port),
+        advertised_listen_address=("gds-session", 8491),
     )
 
 
 @pytest.fixture(scope="package")
-def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None]:
+def neo4j_container(password_file: str, network: Network) -> Generator[DockerContainer, None, None]:
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE")
 
     if neo4j_image is None:
@@ -86,6 +93,7 @@ def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None
             "NEO4J_server_bolt_advertised__address", f"host.docker.internal:7687"
         )
         .with_network_aliases("neo4j-db")
+        .with_network(network)
         .with_bind_ports(7687, 7687)
         .with_kwargs(extra_hosts=["host.docker.internal:host-gateway"])
     )
