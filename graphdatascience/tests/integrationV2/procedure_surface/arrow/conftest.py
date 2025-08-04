@@ -71,7 +71,7 @@ def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient
 
 
 @pytest.fixture(scope="package")
-def neo4j_container(session_container: DockerContainer, password_file: str) -> Generator[DockerContainer, None, None]:
+def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None]:
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE")
 
     if neo4j_image is None:
@@ -83,7 +83,7 @@ def neo4j_container(session_container: DockerContainer, password_file: str) -> G
         .with_env("NEO4J_AUTH", "neo4j/password")
         .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
         .with_env(
-            "NEO4j_server.server.bolt.advertised_listen_address", f"{session_container.get_container_host_ip()}:7687"
+            "NEO4j_server.server.bolt.advertised_listen_address", f"host.docker.internal:7687"
         )
         .with_network_aliases("neo4j-db")
         .with_bind_ports(7687, 7687)
@@ -99,7 +99,7 @@ def neo4j_container(session_container: DockerContainer, password_file: str) -> G
 
 @pytest.fixture(scope="package")
 def query_runner(neo4j_container: DockerContainer) -> Generator[QueryRunner, None, None]:
-    host = "host.docker.internal:host-gateway"
+    host = "host.docker.internal"
     port = 7687
 
     query_runner = Neo4jQueryRunner.create_for_db(
