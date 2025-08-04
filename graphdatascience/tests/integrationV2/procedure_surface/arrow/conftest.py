@@ -99,7 +99,7 @@ def neo4j_container(session_container: DockerContainer, password_file: str) -> G
 
 @pytest.fixture(scope="package")
 def query_runner(neo4j_container: DockerContainer) -> Generator[QueryRunner, None, None]:
-    host = neo4j_container.get_container_host_ip()
+    host = "host.docker.internal:host-gateway"
     port = 7687
 
     query_runner = Neo4jQueryRunner.create_for_db(
