@@ -54,7 +54,7 @@ def session_container(network: Network, password_file: str) -> Generator[DockerC
         .with_network_aliases("gds-session")
         .with_volume_mapping(password_file, "/passwords")
         .with_kwargs(extra_hosts=["host.docker.internal:host-gateway"])
-        .with_network(network)
+        # .with_network(network)
     )
 
     with session_container as session_container:
