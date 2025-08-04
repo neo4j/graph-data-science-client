@@ -4,8 +4,6 @@ from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 
 from pandas import DataFrame
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 
