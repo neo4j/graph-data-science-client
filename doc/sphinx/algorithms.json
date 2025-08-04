@@ -1152,6 +1152,38 @@
   },
   {
     "function": {
+      "name": "gds.cliqueCounting.mutate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Counts the number of cliques, of different size, each node is part of."
+  },
+  {
+    "function": {
+      "name": "gds.cliqueCounting.stream",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "DataFrame"
+    },
+    "description": "Counts the number of cliques, of different size, each node is part of."
+  },
+  {
+    "function": {
+      "name": "gds.cliqueCounting.stats",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Counts the number of cliques, of different size, in the entire graph."
+  },
+  {
+    "function": {
+      "name": "gds.cliqueCounting.write",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Counts the number of cliques, of different size, each node is part of."
+  },
+  {
+    "function": {
       "name": "gds.scaleProperties.mutate",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
