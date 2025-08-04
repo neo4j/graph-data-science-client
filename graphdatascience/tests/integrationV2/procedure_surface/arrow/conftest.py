@@ -12,19 +12,17 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 
 
 @pytest.fixture(scope="package")
-def password_file() -> Generator[str, None, None]:
+def password_file(tmp_path) -> Generator[str, None, None]:
     """Create a temporary file and return its path."""
-    temp_dir = tempfile.mkdtemp()
-    temp_file_path = os.path.join(temp_dir, "password")
+    temp_file_path = os.path.join(tmp_path, "password")
 
     with open(temp_file_path, "w") as f:
         f.write("password")
 
-    yield temp_dir
+    yield tmp_path
 
-    # Clean up the file and directory
+    # Clean up the file
     os.unlink(temp_file_path)
-    os.rmdir(temp_dir)
 
 
 @pytest.fixture(scope="package")
