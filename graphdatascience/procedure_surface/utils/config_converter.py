@@ -16,6 +16,11 @@ class ConfigConverter:
     def _convert_to_camel_case(name: str) -> str:
         """Convert a snake_case string to camelCase."""
         parts = name.split("_")
+
+        # skip if already converted
+        if len(parts) == 1:
+            return name
+
         return "".join([word.capitalize() if i > 0 else word.lower() for i, word in enumerate(parts)])
 
     @staticmethod
