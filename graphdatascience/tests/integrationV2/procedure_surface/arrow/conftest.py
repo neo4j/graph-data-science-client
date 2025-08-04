@@ -83,7 +83,7 @@ def neo4j_container(password_file: str) -> Generator[DockerContainer, None, None
         .with_env("NEO4J_AUTH", "neo4j/password")
         .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
         .with_env(
-            "NEO4J_server.bolt.advertised_listen_address", f"host.docker.internal:7687"
+            "NEO4J_server_bolt_advertised__address", f"host.docker.internal:7687"
         )
         .with_network_aliases("neo4j-db")
         .with_bind_ports(7687, 7687)
