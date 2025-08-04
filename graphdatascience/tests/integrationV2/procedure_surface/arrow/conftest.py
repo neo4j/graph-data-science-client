@@ -35,6 +35,7 @@ def network() -> Generator[Network, None, None]:
     with Network() as network:
         yield network
 
+
 @pytest.fixture(scope="package")
 def session_container(network: Network, password_file: str) -> Generator[DockerContainer, None, None]:
     session_image = os.getenv("GDS_SESSION_IMAGE")
@@ -89,9 +90,7 @@ def neo4j_container(password_file: str, network: Network) -> Generator[DockerCon
         .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
         .with_env("NEO4J_AUTH", "neo4j/password")
         .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
-        .with_env(
-            "NEO4J_server_bolt_advertised__address", f"host.docker.internal:7687"
-        )
+        .with_env("NEO4J_server_bolt_advertised__address", "host.docker.internal:7687")
         .with_network_aliases("neo4j-db")
         .with_network(network)
         .with_bind_ports(7687, 7687)
