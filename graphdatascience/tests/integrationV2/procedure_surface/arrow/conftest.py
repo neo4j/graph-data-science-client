@@ -66,7 +66,7 @@ def session_container(network: Network, password_file: str) -> Generator[DockerC
 @pytest.fixture(scope="package")
 def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient:
     """Create an authenticated Arrow client connected to the session container."""
-    host = session_container.get_container_host_ip()
+    host = "host.docker.internal"
     port = session_container.get_exposed_port(8491)
 
     return AuthenticatedArrowClient.create(
