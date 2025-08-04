@@ -32,9 +32,10 @@ def gds_plugin_container() -> Generator[Neo4jContainer, None, None]:
 @pytest.fixture(scope="package")
 def query_runner(gds_plugin_container: DockerContainer) -> Generator[QueryRunner, None, None]:
     host = gds_plugin_container.get_container_host_ip()
+    port = gds_plugin_container.get_exposed_port(7687)
 
     query_runner = Neo4jQueryRunner.create_for_db(
-        f"bolt://{host}:{gds_plugin_container.get_exposed_port(7687)}",
+        f"bolt://{host}:{port}",
         ("neo4j", "password"),
     )
     yield query_runner
