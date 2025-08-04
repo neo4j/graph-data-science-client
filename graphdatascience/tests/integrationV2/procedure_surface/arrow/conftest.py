@@ -1,5 +1,5 @@
 import os
-import tempfile
+from pathlib import Path
 from typing import Generator
 
 import pytest
@@ -12,7 +12,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 
 
 @pytest.fixture(scope="package")
-def password_file(tmp_path) -> Generator[str, None, None]:
+def password_dir(tmp_path: Path) -> Generator[Path, None, None]:
     """Create a temporary file and return its path."""
     temp_file_path = os.path.join(tmp_path, "password")
 
@@ -26,7 +26,7 @@ def password_file(tmp_path) -> Generator[str, None, None]:
 
 
 @pytest.fixture(scope="package")
-def session_container(password_file: str) -> Generator[DockerContainer, None, None]:
+def session_container(password_dir: Path) -> Generator[DockerContainer, None, None]:
     session_image = os.getenv("GDS_SESSION_IMAGE")
 
     if session_image is None:
@@ -41,7 +41,7 @@ def session_container(password_file: str) -> Generator[DockerContainer, None, No
         .with_env("PAGE_CACHE_SIZE", "100M")
         .with_exposed_ports(8491)
         .with_network_aliases(["gds-session"])
-        .with_volume_mapping(password_file, "/passwords")
+        .with_volume_mapping(password_dir, "/passwords")
     )
 
     with session_container as session_container:
