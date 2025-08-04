@@ -4,7 +4,6 @@ from typing import Generator
 
 import pytest
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.network import Network
 from testcontainers.core.waiting_utils import wait_for_logs
 
 from graphdatascience import QueryRunner
@@ -72,8 +71,7 @@ def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient
 
 
 @pytest.fixture(scope="package")
-def neo4j_container(session_container: DockerContainer,
-    password_file: str) -> Generator[DockerContainer, None, None]:
+def neo4j_container(session_container: DockerContainer, password_file: str) -> Generator[DockerContainer, None, None]:
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE")
 
     if neo4j_image is None:
@@ -84,7 +82,9 @@ def neo4j_container(session_container: DockerContainer,
         .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
         .with_env("NEO4J_AUTH", "neo4j/password")
         .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
-        .with_env("NEO4j_server.server.bolt.advertised_listen_address", f"{session_container.get_container_host_ip()}:7687")
+        .with_env(
+            "NEO4j_server.server.bolt.advertised_listen_address", f"{session_container.get_container_host_ip()}:7687"
+        )
         .with_network_aliases("neo4j-db")
         .with_bind_ports(7687, 7687)
         .with_kwargs(extra_hosts=["host.docker.internal:host-gateway"])
