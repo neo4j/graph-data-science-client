@@ -83,3 +83,15 @@ def test_degree_write(degree_endpoints: DegreeCypherEndpoints, sample_graph: Gra
     assert "p50" in result.centrality_distribution
     assert isinstance(result.configuration, dict)
     assert result.configuration.get("writeProperty") == "degree"
+
+
+def test_degree_estimate(degree_endpoints: DegreeCypherEndpoints, sample_graph: Graph) -> None:
+    result = degree_endpoints.estimate(sample_graph)
+
+    assert result.node_count == 3
+    assert result.relationship_count == 2
+    assert "Bytes" in result.required_memory
+    assert result.bytes_min > 0
+    assert result.bytes_max > 0
+    assert result.heap_percentage_min > 0
+    assert result.heap_percentage_max > 0
