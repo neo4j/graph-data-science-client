@@ -1,6 +1,8 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
+
+from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 
 from ...call_parameters import CallParameters
 from ...graph.graph_object import Graph
@@ -192,23 +194,5 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
 
         return ArticleRankWriteResult(**cypher_result.to_dict())
 
-    def estimate(
-        self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
-    ) -> EstimationResult:
-        if G is None and projection_config is None:
-            raise ValueError("Either 'G' or 'projection_config' must be provided")
-
-        if G is not None:
-            # Use graph name for estimation
-            params = CallParameters(graph_name=G.name(), config={})
-            cypher_result = self._query_runner.call_procedure(
-                endpoint="gds.articleRank.stream.estimate", params=params
-            ).squeeze()
-        else:
-            # Use projection config for estimation
-            params = CallParameters(graph_name=projection_config, config={})
-            cypher_result = self._query_runner.call_procedure(
-                endpoint="gds.articleRank.stream.estimate", params=params
-            ).squeeze()
-
-        return EstimationResult(**cypher_result.to_dict())
+    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
+        return estimate_algorithm(endpoint="gds.articleRank.stats.estimate", query_runner=self._query_runner, G=G)

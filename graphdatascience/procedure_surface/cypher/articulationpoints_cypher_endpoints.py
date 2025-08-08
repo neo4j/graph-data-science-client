@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
@@ -126,7 +126,6 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = None,
     ) -> ArticulationPointsWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             write_property=write_property,
@@ -138,7 +137,6 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
             sudo=sudo,
             username=username,
             write_concurrency=write_concurrency,
-            write_to_result_store=write_to_result_store,
         )
 
         # Run procedure and return results
@@ -152,26 +150,21 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         return ArticulationPointsWriteResult(**cypher_result.to_dict())
 
     def estimate(
-        self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
+        self,
+        G: Union[Graph, dict[str, Any]],
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
     ) -> EstimationResult:
-        """
-        Estimates the memory requirements for running the ArticulationPoints algorithm.
-
-        Parameters
-        ----------
-        G : Optional[Graph], default=None
-            The graph to estimate memory requirements for
-        projection_config : Optional[dict[str, Any]], default=None
-            Configuration for graph projection
-
-        Returns
-        -------
-        EstimationResult
-            Memory estimation results
-        """
+        # Build algorithm configuration mirroring other algorithms (see CELF implementation)
+        algo_config = ConfigConverter.convert_to_gds_config(
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+        )
         return estimate_algorithm(
             endpoint="gds.articulationPoints.stats.estimate",
             query_runner=self._query_runner,
             G=G,
-            projection_config=projection_config,
+            algo_config=algo_config,
         )

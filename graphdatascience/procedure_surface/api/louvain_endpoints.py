@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 from pydantic import BaseModel, ConfigDict
@@ -269,8 +269,6 @@ class LouvainEndpoints(ABC):
             The property name that contains weight
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads during the write phase
-        write_to_result_store : Optional[bool], default=None
-            Whether to write results to the result store
         min_community_size : Optional[int], default=None
             Don't write communities with fewer nodes than this
 
@@ -282,20 +280,14 @@ class LouvainEndpoints(ABC):
         pass
 
     @abstractmethod
-    def estimate(
-        self,
-        G: Optional[Graph] = None,
-        projection_config: Optional[dict[str, Any]] = None,
-    ) -> EstimationResult:
+    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
 
         Parameters
         ----------
-        G : Optional[Graph], optional
-            The graph to be used in the estimation
-        projection_config : Optional[dict[str, Any]], optional
-            Configuration dictionary for the projection.
+        G : Union[Graph, dict[str, Any]]
+            The graph to run the algorithm on or a dictionary representing the graph.
 
         Returns
         -------

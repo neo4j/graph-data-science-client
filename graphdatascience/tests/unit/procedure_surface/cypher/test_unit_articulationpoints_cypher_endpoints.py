@@ -11,6 +11,7 @@ from graphdatascience.procedure_surface.cypher.articulationpoints_cypher_endpoin
     ArticulationPointsCypherEndpoints,
 )
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
 
 
 @pytest.fixture
@@ -199,7 +200,6 @@ def test_write_with_optional_params(
         concurrency=4,
         job_id="test-job",
         write_concurrency=2,
-        write_to_result_store=True,
     )
 
     assert len(query_runner.queries) == 1
@@ -216,5 +216,31 @@ def test_write_with_optional_params(
         "concurrency": 4,
         "jobId": "test-job",
         "writeConcurrency": 2,
-        "writeToResultStore": True,
     }
+
+
+def test_estimate_with_graph_name(graph: Graph) -> None:
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION, {"articulationPoints.stats.estimate": pd.DataFrame([estimate_mock_result()])}
+    )
+
+    ArticulationPointsCypherEndpoints(query_runner).estimate(graph)
+
+    assert len(query_runner.queries) == 1
+    assert "gds.articulationPoints.stats.estimate" in query_runner.queries[0]
+
+
+def test_estimate_with_projection_config(query_runner: CollectingQueryRunner) -> None:
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION, {"articulationPoints.stats.estimate": pd.DataFrame([estimate_mock_result()])}
+    )
+
+    projection_config = {
+        "nodeProjection": "*",
+        "relationshipProjection": "*",
+    }
+
+    ArticulationPointsCypherEndpoints(query_runner).estimate(projection_config, relationship_types=["REL"])
+
+    assert len(query_runner.queries) == 1
+    assert "gds.articulationPoints.stats.estimate" in query_runner.queries[0]

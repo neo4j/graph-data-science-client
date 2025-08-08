@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
@@ -143,7 +143,6 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         job_id: Optional[Any] = None,
         relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = None,
     ) -> BetweennessWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             write_property=write_property,
@@ -158,7 +157,6 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
             sudo=sudo,
             username=username,
             write_concurrency=write_concurrency,
-            write_to_result_store=write_to_result_store,
         )
 
         params = CallParameters(graph_name=G.name(), config=config)
@@ -168,12 +166,9 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
 
         return BetweennessWriteResult(**result.to_dict())
 
-    def estimate(
-        self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
-    ) -> EstimationResult:
+    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
         return estimate_algorithm(
             endpoint="gds.betweenness.stats.estimate",
             query_runner=self._query_runner,
             G=G,
-            projection_config=projection_config,
         )

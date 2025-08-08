@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
@@ -135,7 +135,6 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
         job_id: Optional[Any] = None,
         relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = None,
     ) -> BetweennessWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -149,7 +148,6 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
             sampling_seed=sampling_seed,
             sudo=sudo,
             username=username,
-            write_to_result_store=write_to_result_store,
         )
 
         result = self._node_property_endpoints.run_job_and_write(
@@ -158,7 +156,5 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
 
         return BetweennessWriteResult(**result)
 
-    def estimate(
-        self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
-    ) -> EstimationResult:
-        return self._node_property_endpoints.estimate("v2/centrality.betweenness.estimate", G, projection_config)
+    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
+        return self._node_property_endpoints.estimate("v2/centrality.betweenness.estimate", G)

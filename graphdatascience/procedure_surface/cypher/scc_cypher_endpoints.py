@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
@@ -146,8 +146,7 @@ class SccCypherEndpoints(SccEndpoints):
         return SccWriteResult(**result.to_dict())
 
     def estimate(
-        self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
+        self,
+        G: Union[Graph, dict[str, Any]],
     ) -> EstimationResult:
-        return estimate_algorithm(
-            endpoint="gds.scc.stats.estimate", query_runner=self._query_runner, G=G, projection_config=projection_config
-        )
+        return estimate_algorithm(endpoint="gds.scc.stats.estimate", query_runner=self._query_runner, G=G)
