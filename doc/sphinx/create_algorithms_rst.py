@@ -1,8 +1,6 @@
 import json
-import os
 from pathlib import Path
 from textwrap import dedent
-from typing import Any
 
 root_dir = Path(__file__).parent
 
