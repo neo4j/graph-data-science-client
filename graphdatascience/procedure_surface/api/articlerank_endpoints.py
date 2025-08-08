@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 from pydantic import BaseModel, ConfigDict
@@ -258,18 +258,14 @@ class ArticleRankEndpoints(ABC):
         """
 
     @abstractmethod
-    def estimate(
-        self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
-    ) -> EstimationResult:
+    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
         """
         Returns an estimation of the memory consumption for that procedure.
 
         Parameters
         ----------
-        G : Optional[Graph], default=None
-            The graph to estimate for
-        projection_config : Optional[dict[str, Any]], default=None
-            Configuration for graph projection
+        G : Union[Graph, dict[str, Any]]
+            The graph to run the algorithm on or a dictionary representing the graph.
 
         Returns
         -------

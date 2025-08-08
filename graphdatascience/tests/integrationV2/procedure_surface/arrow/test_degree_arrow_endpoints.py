@@ -61,6 +61,7 @@ def test_degree_mutate(degree_endpoints: DegreeArrowEndpoints, sample_graph: Gra
     assert "p50" in result.centrality_distribution
     assert isinstance(result.configuration, dict)
 
+
 def test_degree_estimate(degree_endpoints: DegreeArrowEndpoints, sample_graph: Graph) -> None:
     result = degree_endpoints.estimate(sample_graph)
 

@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
@@ -9,6 +8,7 @@ from ...query_runner.query_runner import QueryRunner
 from ..api.estimation_result import EstimationResult
 from ..api.pagerank_endpoints import PageRankEndpoints, PageRankMutateResult, PageRankStatsResult, PageRankWriteResult
 from ..utils.config_converter import ConfigConverter
+from .estimation_utils import estimate_algorithm
 
 
 class PageRankCypherEndpoints(PageRankEndpoints):
@@ -189,22 +189,5 @@ class PageRankCypherEndpoints(PageRankEndpoints):
 
         return PageRankWriteResult(**result.to_dict())
 
-    def estimate(
-        self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
-    ) -> EstimationResult:
-        config: Union[dict[str, Any]] = OrderedDict()
-
-        if G is not None:
-            config["graphNameOrConfiguration"] = G.name()
-        elif projection_config is not None:
-            config["graphNameOrConfiguration"] = projection_config
-        else:
-            raise ValueError("Either graph_name or projection_config must be provided.")
-
-        config["algoConfig"] = {}
-
-        params = CallParameters(**config)
-
-        result = self._query_runner.call_procedure(endpoint="gds.pageRank.stats.estimate", params=params).squeeze()
-
-        return EstimationResult(**result.to_dict())
+    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
+        return estimate_algorithm(endpoint="gds.pageRank.stats.estimate", query_runner=self._query_runner, G=G)

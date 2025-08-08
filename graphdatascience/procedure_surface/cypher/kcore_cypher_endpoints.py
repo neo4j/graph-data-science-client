@@ -1,5 +1,6 @@
 from typing import Any, List, Optional
 
+from git import Union
 from pandas import DataFrame
 
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
@@ -141,12 +142,5 @@ class KCoreCypherEndpoints(KCoreEndpoints):
 
         return KCoreWriteResult(**result.to_dict())
 
-    def estimate(
-        self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
-    ) -> EstimationResult:
-        return estimate_algorithm(
-            endpoint="gds.kcore.stats.estimate",
-            query_runner=self._query_runner,
-            G=G,
-            projection_config=projection_config,
-        )
+    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
+        return estimate_algorithm(endpoint="gds.kcore.stats.estimate", query_runner=self._query_runner, G=G)

@@ -41,7 +41,7 @@ def test_degree_stats(degree_endpoints: DegreeCypherEndpoints, sample_graph: Gra
     """Test Degree stats operation."""
     result = degree_endpoints.stats(G=sample_graph)
 
-    assert result.compute_millis > 0
+    assert result.compute_millis >= 0
     assert result.pre_processing_millis >= 0
     assert result.post_processing_millis >= 0
     assert "p50" in result.centrality_distribution

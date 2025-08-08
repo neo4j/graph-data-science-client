@@ -5,21 +5,24 @@ from pandas import DataFrame
 from ...call_parameters import CallParameters
 from ...graph.graph_object import Graph
 from ...query_runner.query_runner import QueryRunner
-from ..api.degree_endpoints import DegreeEndpoints, DegreeMutateResult, DegreeStatsResult, DegreeWriteResult
+from ..api.celf_endpoints import CelfEndpoints, CelfMutateResult, CelfStatsResult, CelfWriteResult
 from ..api.estimation_result import EstimationResult
 from ..utils.config_converter import ConfigConverter
 from .estimation_utils import estimate_algorithm
 
 
-class DegreeCypherEndpoints(DegreeEndpoints):
+class CelfCypherEndpoints(CelfEndpoints):
     def __init__(self, query_runner: QueryRunner):
         self._query_runner = query_runner
 
     def mutate(
         self,
         G: Graph,
+        seed_set_size: int,
         mutate_property: str,
-        orientation: Optional[Any] = None,
+        propagation_probability: Optional[float] = None,
+        monte_carlo_simulations: Optional[int] = None,
+        random_seed: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -27,11 +30,13 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
-    ) -> DegreeMutateResult:
+    ) -> CelfMutateResult:
         config = ConfigConverter.convert_to_gds_config(
+            seedSetSize=seed_set_size,
             mutateProperty=mutate_property,
-            orientation=orientation,
+            propagationProbability=propagation_probability,
+            monteCarloSimulations=monte_carlo_simulations,
+            randomSeed=random_seed,
             relationshipTypes=relationship_types,
             nodeLabels=node_labels,
             sudo=sudo,
@@ -39,7 +44,6 @@ class DegreeCypherEndpoints(DegreeEndpoints):
             username=username,
             concurrency=concurrency,
             jobId=job_id,
-            relationshipWeightProperty=relationship_weight_property,
         )
 
         params = CallParameters(
@@ -48,13 +52,18 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.degree.mutate", params=params).squeeze()
-        return DegreeMutateResult(**result.to_dict())
+        result = self._query_runner.call_procedure(
+            endpoint="gds.influenceMaximization.celf.mutate", params=params
+        ).squeeze()
+        return CelfMutateResult(**result.to_dict())
 
     def stats(
         self,
         G: Graph,
-        orientation: Optional[Any] = None,
+        seed_set_size: int,
+        propagation_probability: Optional[float] = None,
+        monte_carlo_simulations: Optional[int] = None,
+        random_seed: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -62,10 +71,12 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
-    ) -> DegreeStatsResult:
+    ) -> CelfStatsResult:
         config = ConfigConverter.convert_to_gds_config(
-            orientation=orientation,
+            seedSetSize=seed_set_size,
+            propagationProbability=propagation_probability,
+            monteCarloSimulations=monte_carlo_simulations,
+            randomSeed=random_seed,
             relationshipTypes=relationship_types,
             nodeLabels=node_labels,
             sudo=sudo,
@@ -73,7 +84,6 @@ class DegreeCypherEndpoints(DegreeEndpoints):
             username=username,
             concurrency=concurrency,
             jobId=job_id,
-            relationshipWeightProperty=relationship_weight_property,
         )
 
         params = CallParameters(
@@ -82,13 +92,18 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.degree.stats", params=params).squeeze()
-        return DegreeStatsResult(**result.to_dict())
+        result = self._query_runner.call_procedure(
+            endpoint="gds.influenceMaximization.celf.stats", params=params
+        ).squeeze()
+        return CelfStatsResult(**result.to_dict())
 
     def stream(
         self,
         G: Graph,
-        orientation: Optional[Any] = None,
+        seed_set_size: int,
+        propagation_probability: Optional[float] = None,
+        monte_carlo_simulations: Optional[int] = None,
+        random_seed: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -96,10 +111,12 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
-            orientation=orientation,
+            seedSetSize=seed_set_size,
+            propagationProbability=propagation_probability,
+            monteCarloSimulations=monte_carlo_simulations,
+            randomSeed=random_seed,
             relationshipTypes=relationship_types,
             nodeLabels=node_labels,
             sudo=sudo,
@@ -107,7 +124,6 @@ class DegreeCypherEndpoints(DegreeEndpoints):
             username=username,
             concurrency=concurrency,
             jobId=job_id,
-            relationshipWeightProperty=relationship_weight_property,
         )
 
         params = CallParameters(
@@ -116,13 +132,16 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.degree.stream", params=params)
+        return self._query_runner.call_procedure(endpoint="gds.influenceMaximization.celf.stream", params=params)
 
     def write(
         self,
         G: Graph,
+        seed_set_size: int,
         write_property: str,
-        orientation: Optional[Any] = None,
+        propagation_probability: Optional[float] = None,
+        monte_carlo_simulations: Optional[int] = None,
+        random_seed: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -130,12 +149,14 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
-    ) -> DegreeWriteResult:
+    ) -> CelfWriteResult:
         config = ConfigConverter.convert_to_gds_config(
+            seedSetSize=seed_set_size,
             writeProperty=write_property,
-            orientation=orientation,
+            propagationProbability=propagation_probability,
+            monteCarloSimulations=monte_carlo_simulations,
+            randomSeed=random_seed,
             relationshipTypes=relationship_types,
             nodeLabels=node_labels,
             sudo=sudo,
@@ -143,7 +164,6 @@ class DegreeCypherEndpoints(DegreeEndpoints):
             username=username,
             concurrency=concurrency,
             jobId=job_id,
-            relationshipWeightProperty=relationship_weight_property,
             writeConcurrency=write_concurrency,
         )
 
@@ -151,13 +171,32 @@ class DegreeCypherEndpoints(DegreeEndpoints):
             graph_name=G.name(),
             config=config,
         )
+        params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.degree.write", params=params).squeeze()
-        return DegreeWriteResult(**result.to_dict())
+        result = self._query_runner.call_procedure(
+            endpoint="gds.influenceMaximization.celf.write", params=params
+        ).squeeze()
+        return CelfWriteResult(**result.to_dict())
 
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
-        return estimate_algorithm(
-            endpoint="gds.degree.stats.estimate",
-            query_runner=self._query_runner,
-            G=G,
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        seed_set_size: int,
+        propagation_probability: Optional[float] = None,
+        monte_carlo_simulations: Optional[int] = None,
+        random_seed: Optional[Any] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+    ) -> EstimationResult:
+        algo_config = ConfigConverter.convert_to_gds_config(
+            seedSetSize=seed_set_size,
+            propagationProbability=propagation_probability,
+            monteCarloSimulations=monte_carlo_simulations,
+            randomSeed=random_seed,
+            relationshipTypes=relationship_types,
+            nodeLabels=node_labels,
+            concurrency=concurrency,
         )
+
+        return estimate_algorithm("gds.influenceMaximization.celf.stats.estimate", self._query_runner, G, algo_config)

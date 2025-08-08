@@ -355,17 +355,10 @@ def test_estimate_with_projection_config() -> None:
 
     query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"k1coloring.stats.estimate": pd.DataFrame([result])})
 
-    K1ColoringCypherEndpoints(query_runner).estimate(projection_config={"foo": "bar"})
+    K1ColoringCypherEndpoints(query_runner).estimate(G={"foo": "bar"})
 
     assert len(query_runner.queries) == 1
     assert "gds.k1coloring.stats.estimate" in query_runner.queries[0]
     params = query_runner.params[0]
     assert params["graphNameOrConfiguration"] == {"foo": "bar"}
     assert params["algoConfig"] == {}
-
-
-def test_estimate_raises_value_error_when_no_arguments() -> None:
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION)
-
-    with pytest.raises(ValueError, match="Either graph_name or projection_config must be provided."):
-        K1ColoringCypherEndpoints(query_runner).estimate()

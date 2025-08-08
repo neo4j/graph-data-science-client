@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 from pandas import DataFrame
 
@@ -82,16 +82,25 @@ class NodePropertyEndpoints:
         """Create base configuration with common parameters."""
         return ConfigConverter.convert_to_gds_config(graph_name=G.name(), **kwargs)
 
+    def create_estimate_config(self, **kwargs: Any) -> Dict[str, Any]:
+        """Create configuration for estimation."""
+        return ConfigConverter.convert_to_gds_config(**kwargs)
+
     def estimate(
-        self, estimate_endpoint: str, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
+        self,
+        estimate_endpoint: str,
+        G: Union[Graph, dict[str, Any]],
+        algo_config: Optional[dict[str, Any]] = None,
     ) -> EstimationResult:
         """Estimate memory requirements for the algorithm."""
-        if G is not None:
+        if isinstance(G, Graph):
             payload = {"graphName": G.name()}
-        elif projection_config is not None:
-            payload = projection_config
+        elif isinstance(G, dict):
+            payload = G
         else:
             raise ValueError("Either graph_name or projection_config must be provided.")
+
+        payload.update(algo_config or {})
 
         res = self._arrow_client.do_action_with_retry(estimate_endpoint, json.dumps(payload).encode("utf-8"))
 

@@ -211,11 +211,3 @@ def test_estimate_with_graph_name(graph: Graph) -> None:
 
     assert len(query_runner.queries) == 1
     assert "gds.articleRank.stream.estimate" in query_runner.queries[0]
-
-
-def test_estimate_raises_value_error_when_no_arguments() -> None:
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {})
-    articlerank_endpoints = ArticleRankCypherEndpoints(query_runner)
-
-    with pytest.raises(ValueError, match="Either 'G' or 'projection_config' must be provided"):
-        articlerank_endpoints.estimate()

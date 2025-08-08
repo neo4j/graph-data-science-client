@@ -366,7 +366,7 @@ def test_estimate_with_projection_config() -> None:
 
     query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"wcc.stats.estimate": pd.DataFrame([result])})
 
-    estimate = WccCypherEndpoints(query_runner).estimate(projection_config={"foo": "bar"})
+    estimate = WccCypherEndpoints(query_runner).estimate(G={"foo": "bar"})
 
     assert estimate.node_count == 100
     assert estimate.relationship_count == 200
@@ -378,10 +378,3 @@ def test_estimate_with_projection_config() -> None:
     assert "gds.wcc.stats.estimate" in query_runner.queries[0]
     params = query_runner.params[0]
     assert params["config"] == {"foo": "bar"}
-
-
-def test_estimate_raises_value_error_when_no_arguments() -> None:
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION)
-
-    with pytest.raises(ValueError, match="Either graph_name or projection_config must be provided."):
-        WccCypherEndpoints(query_runner).estimate()
