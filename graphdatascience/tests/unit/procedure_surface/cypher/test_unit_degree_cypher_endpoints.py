@@ -9,6 +9,7 @@ from graphdatascience.procedure_surface.api.degree_endpoints import (
 )
 from graphdatascience.procedure_surface.cypher.degree_cypher_endpoints import DegreeCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
 
 
 @pytest.fixture
@@ -127,10 +128,8 @@ def test_stream_basic(graph: Graph) -> None:
 
     assert len(query_runner.queries) == 1
     assert "gds.degree.stream" in query_runner.queries[0]
-    assert "YIELD nodeId, score" in query_runner.queries[0]
 
-    assert len(result) == 3
-    assert list(result.columns) == ["nodeId", "score"]
+    assert result.equals(result_df)
 
 
 def test_stream_with_optional_params(graph: Graph) -> None:
@@ -218,3 +217,17 @@ def test_write_with_optional_params(graph: Graph) -> None:
     assert isinstance(result_obj, DegreeWriteResult)
     assert result_obj.node_properties_written == 3
     assert result_obj.write_millis == 25
+
+
+def test_estimate(graph: Graph) -> None:
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION, {"gds.degree.stats.estimate": pd.DataFrame([estimate_mock_result()])}
+    )
+
+    estimate_result = DegreeCypherEndpoints(query_runner).estimate(graph)
+
+    assert len(query_runner.queries) == 1
+    assert "gds.degree.stats.estimate" in query_runner.queries[0]
+    params = query_runner.params[0]
+    assert params["graphNameOrConfiguration"] == "test_graph"
+    assert estimate_result.node_count == 100

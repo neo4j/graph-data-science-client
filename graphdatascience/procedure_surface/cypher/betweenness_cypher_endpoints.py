@@ -143,7 +143,6 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         job_id: Optional[Any] = None,
         relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = None,
     ) -> BetweennessWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             write_property=write_property,
@@ -158,7 +157,6 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
             sudo=sudo,
             username=username,
             write_concurrency=write_concurrency,
-            write_to_result_store=write_to_result_store,
         )
 
         params = CallParameters(graph_name=G.name(), config=config)

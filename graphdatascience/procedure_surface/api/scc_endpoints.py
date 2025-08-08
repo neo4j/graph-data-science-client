@@ -193,8 +193,6 @@ class SccEndpoints(ABC):
             Flag to decide whether component identifiers are mapped into a consecutive id space
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads during the write phase
-        write_to_result_store : Optional[bool], default=None
-            Whether to write to the result store
 
         Returns
         -------

@@ -5,6 +5,7 @@ from graphdatascience.graph.graph_object import Graph
 from graphdatascience.procedure_surface.api.scc_endpoints import SccMutateResult, SccStatsResult, SccWriteResult
 from graphdatascience.procedure_surface.cypher.scc_cypher_endpoints import SccCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
 
 
 @pytest.fixture
@@ -255,24 +256,13 @@ def test_write_with_optional_params(graph: Graph) -> None:
         "jobId": "test-job",
         "consecutiveIds": True,
         "writeConcurrency": 4,
-        "writeToResultStore": True,
     }
 
 
 def test_estimate_with_graph(graph: Graph) -> None:
-    result = {
-        "nodeCount": 100,
-        "relationshipCount": 200,
-        "requiredMemory": "1MB",
-        "treeView": "tree",
-        "mapView": {"foo": "bar"},
-        "bytesMin": 1000,
-        "bytesMax": 2000,
-        "heapPercentageMin": 0.1,
-        "heapPercentageMax": 0.2,
-    }
-
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"scc.stats.estimate": pd.DataFrame([result])})
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION, {"scc.stats.estimate": pd.DataFrame([estimate_mock_result()])}
+    )
 
     estimate = SccCypherEndpoints(query_runner).estimate(G=graph)
 
