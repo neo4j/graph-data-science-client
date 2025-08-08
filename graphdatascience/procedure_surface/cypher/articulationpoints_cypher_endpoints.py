@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
@@ -151,27 +151,7 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
 
         return ArticulationPointsWriteResult(**cypher_result.to_dict())
 
-    def estimate(
-        self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
-    ) -> EstimationResult:
-        """
-        Estimates the memory requirements for running the ArticulationPoints algorithm.
-
-        Parameters
-        ----------
-        G : Optional[Graph], default=None
-            The graph to estimate memory requirements for
-        projection_config : Optional[dict[str, Any]], default=None
-            Configuration for graph projection
-
-        Returns
-        -------
-        EstimationResult
-            Memory estimation results
-        """
+    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
         return estimate_algorithm(
-            endpoint="gds.articulationPoints.stats.estimate",
-            query_runner=self._query_runner,
-            G=G,
-            projection_config=projection_config,
+            endpoint="gds.articulationPoints.stats.estimate", query_runner=self._query_runner, G=G
         )

@@ -10,8 +10,8 @@ from graphdatascience.query_runner.query_runner import QueryRunner
 def estimate_algorithm(
     endpoint: str,
     query_runner: QueryRunner,
-    G: Optional[Graph] = None,
-    projection_config: Optional[dict[str, Any]] = None,
+    G: Union[Graph, dict[str, Any]],
+    algo_config: Optional[dict[str, Any]] = None,
 ) -> EstimationResult:
     """
     Estimate the memory consumption of an algorithm run.
@@ -29,6 +29,8 @@ def estimate_algorithm(
         The graph to be used in the estimation
     projection_config : Optional[dict[str, Any]], optional
         Configuration dictionary for the projection
+    algo_config : Optional[dict[str, Any]], optional
+        Additional algorithm-specific configuration parameters
 
     Returns
     -------
@@ -42,14 +44,14 @@ def estimate_algorithm(
     """
     config: Union[dict[str, Any]] = OrderedDict()
 
-    if G is not None:
+    if isinstance(G, Graph):
         config["graphNameOrConfiguration"] = G.name()
-    elif projection_config is not None:
-        config["graphNameOrConfiguration"] = projection_config
+    elif isinstance(G, dict):
+        config["graphNameOrConfiguration"] = G
     else:
-        raise ValueError("Either graph_name or projection_config must be provided.")
+        raise ValueError(f"G must be either a Graph instance or a configuration dictionary. But was {type(G)}.")
 
-    config["algoConfig"] = {}
+    config["algoConfig"] = algo_config or {}
 
     params = CallParameters(**config)
 

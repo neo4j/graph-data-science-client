@@ -278,10 +278,3 @@ def test_estimate_with_graph(graph: Graph) -> None:
 
     assert estimate.node_count == 100
     assert estimate.relationship_count == 200
-
-
-def test_estimate_without_params() -> None:
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION)
-
-    with pytest.raises(ValueError, match="Either graph_name or projection_config must be provided."):
-        SccCypherEndpoints(query_runner).estimate()

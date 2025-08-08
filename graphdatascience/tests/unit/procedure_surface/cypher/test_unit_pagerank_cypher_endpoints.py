@@ -391,7 +391,7 @@ def test_estimate_with_projection_config() -> None:
 
     query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"pageRank.stats.estimate": pd.DataFrame([result])})
 
-    estimate = PageRankCypherEndpoints(query_runner).estimate(projection_config={"foo": "bar"})
+    estimate = PageRankCypherEndpoints(query_runner).estimate(G={"foo": "bar"})
 
     assert estimate.node_count == 100
     assert estimate.relationship_count == 200
@@ -401,10 +401,3 @@ def test_estimate_with_projection_config() -> None:
 
     assert len(query_runner.queries) == 1
     assert "gds.pageRank.stats.estimate" in query_runner.queries[0]
-
-
-def test_estimate_raises_value_error_when_no_arguments() -> None:
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION)
-
-    with pytest.raises(ValueError, match="Either graph_name or projection_config must be provided."):
-        PageRankCypherEndpoints(query_runner).estimate()

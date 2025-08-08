@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
@@ -174,7 +174,5 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
 
         return ArticleRankWriteResult(**result)
 
-    def estimate(
-        self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
-    ) -> EstimationResult:
-        return self._node_property_endpoints.estimate("v2/centrality.articleRank.estimate", G, projection_config)
+    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
+        return self._node_property_endpoints.estimate("v2/centrality.articleRank.estimate", G)

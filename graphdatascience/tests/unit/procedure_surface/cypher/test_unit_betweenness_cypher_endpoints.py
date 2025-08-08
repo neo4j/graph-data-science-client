@@ -356,17 +356,10 @@ def test_estimate_with_projection_config() -> None:
     query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"betweenness.stats.estimate": pd.DataFrame([result])})
 
     projection_config = {"nodeProjection": "Node", "relationshipProjection": "REL"}
-    BetweennessCypherEndpoints(query_runner).estimate(projection_config=projection_config)
+    BetweennessCypherEndpoints(query_runner).estimate(G=projection_config)
 
     assert len(query_runner.queries) == 1
     assert "gds.betweenness.stats.estimate" in query_runner.queries[0]
     params = query_runner.params[0]
     assert params["nodeProjection"] == "Node"
     assert params["relationshipProjection"] == "REL"
-
-
-def test_estimate_raises_value_error_when_no_arguments() -> None:
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION)
-
-    with pytest.raises(ValueError):
-        BetweennessCypherEndpoints(query_runner).estimate()

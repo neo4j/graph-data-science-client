@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
@@ -168,12 +168,9 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
 
         return BetweennessWriteResult(**result.to_dict())
 
-    def estimate(
-        self, G: Optional[Graph] = None, projection_config: Optional[dict[str, Any]] = None
-    ) -> EstimationResult:
+    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
         return estimate_algorithm(
             endpoint="gds.betweenness.stats.estimate",
             query_runner=self._query_runner,
             G=G,
-            projection_config=projection_config,
         )
