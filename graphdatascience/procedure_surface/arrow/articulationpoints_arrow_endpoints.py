@@ -107,7 +107,6 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = None,
     ) -> ArticulationPointsWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -118,7 +117,6 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
             relationship_types=relationship_types,
             sudo=sudo,
             username=username,
-            write_to_result_store=write_to_result_store,
         )
 
         result = self._node_property_endpoints.run_job_and_write(
@@ -127,5 +125,11 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
 
         return ArticulationPointsWriteResult(**result)
 
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+    ) -> EstimationResult:
         return self._node_property_endpoints.estimate("v2/centrality.articulationPoints.estimate", G)

@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
 from ...graph.graph_object import Graph
+from .estimation_result import EstimationResult
 
 
 class ArticulationPointsEndpoints(ABC):
@@ -151,7 +152,6 @@ class ArticulationPointsEndpoints(ABC):
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = None,
     ) -> "ArticulationPointsWriteResult":
         """
         Executes the ArticulationPoints algorithm and writes the results back to the Neo4j database.
@@ -178,14 +178,47 @@ class ArticulationPointsEndpoints(ABC):
             An identifier for the job
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads for writing
-        write_to_result_store : Optional[bool], default=None
-            Whether to write results to the result store
 
         Returns
         -------
         ArticulationPointsWriteResult
             Algorithm metrics and statistics including the count of articulation points found
         """
+
+    @abstractmethod
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+    ) -> EstimationResult:
+        """
+        Estimate the memory consumption of the Articulation Points algorithm.
+
+        This method provides an estimate of the memory requirements for running the algorithm
+        on a given graph, helping with capacity planning and resource allocation.
+
+        Parameters
+        ----------
+        G : Union[Graph, dict[str, Any]]
+            The graph to be used in the estimation. Provided either as a Graph object or a configuration dictionary for the projection.
+        relationship_types : Optional[List[str]], default=None
+            The relationship types used to select relationships for this algorithm run.
+            If not specified, all relationship types are considered.
+        node_labels : Optional[List[str]], default=None
+            The node labels used to select nodes for this algorithm run.
+            If not specified, all node labels are considered.
+        concurrency : Optional[Any], default=None
+            The number of concurrent threads used for the estimation.
+            If not specified, uses the default concurrency level.
+
+        Returns
+        -------
+        EstimationResult
+            An object containing the result of the estimation including memory requirements
+        """
+        pass
 
 
 class ArticulationPointsMutateResult(BaseModel):
