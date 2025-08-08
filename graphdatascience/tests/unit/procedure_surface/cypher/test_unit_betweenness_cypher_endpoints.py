@@ -9,6 +9,7 @@ from graphdatascience.procedure_surface.api.betweenness_endpoints import (
 )
 from graphdatascience.procedure_surface.cypher.betweenness_cypher_endpoints import BetweennessCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
 
 
 @pytest.fixture
@@ -293,7 +294,6 @@ def test_write_with_optional_params(graph: Graph) -> None:
         job_id="test-job",
         relationship_weight_property="weight",
         write_concurrency=4,
-        write_to_result_store=True,
     )
 
     assert len(query_runner.queries) == 1
@@ -313,47 +313,26 @@ def test_write_with_optional_params(graph: Graph) -> None:
         "jobId": "test-job",
         "relationshipWeightProperty": "weight",
         "writeConcurrency": 4,
-        "writeToResultStore": True,
     }
 
 
 def test_estimate_with_graph_name(graph: Graph) -> None:
-    result = {
-        "requiredMemory": "1024 KiB",
-        "treeView": "1024 KiB",
-        "mapView": "1024 KiB",
-        "bytesMin": 1024,
-        "bytesMax": 2048,
-        "nodeCount": 100,
-        "relationshipCount": 200,
-        "heapPercentageMin": 0.1,
-        "heapPercentageMax": 0.2,
-    }
-
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"betweenness.stats.estimate": pd.DataFrame([result])})
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION, {"betweenness.stats.estimate": pd.DataFrame([estimate_mock_result()])}
+    )
 
     BetweennessCypherEndpoints(query_runner).estimate(graph)
 
     assert len(query_runner.queries) == 1
     assert "gds.betweenness.stats.estimate" in query_runner.queries[0]
     params = query_runner.params[0]
-    assert params["graph_name"] == "test_graph"
+    assert params["graphNameOrConfiguration"] == "test_graph"
 
 
 def test_estimate_with_projection_config() -> None:
-    result = {
-        "requiredMemory": "1024 KiB",
-        "treeView": "1024 KiB",
-        "mapView": "1024 KiB",
-        "bytesMin": 1024,
-        "bytesMax": 2048,
-        "nodeCount": 100,
-        "relationshipCount": 200,
-        "heapPercentageMin": 0.1,
-        "heapPercentageMax": 0.2,
-    }
-
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"betweenness.stats.estimate": pd.DataFrame([result])})
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION, {"betweenness.stats.estimate": pd.DataFrame([estimate_mock_result()])}
+    )
 
     projection_config = {"nodeProjection": "Node", "relationshipProjection": "REL"}
     BetweennessCypherEndpoints(query_runner).estimate(G=projection_config)
@@ -361,5 +340,4 @@ def test_estimate_with_projection_config() -> None:
     assert len(query_runner.queries) == 1
     assert "gds.betweenness.stats.estimate" in query_runner.queries[0]
     params = query_runner.params[0]
-    assert params["nodeProjection"] == "Node"
-    assert params["relationshipProjection"] == "REL"
+    assert params["graphNameOrConfiguration"] == projection_config

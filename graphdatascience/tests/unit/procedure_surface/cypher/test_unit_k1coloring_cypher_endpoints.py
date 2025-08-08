@@ -9,6 +9,7 @@ from graphdatascience.procedure_surface.api.k1coloring_endpoints import (
 )
 from graphdatascience.procedure_surface.cypher.k1coloring_cypher_endpoints import K1ColoringCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
 
 
 @pytest.fixture
@@ -311,25 +312,14 @@ def test_write_with_optional_params(graph: Graph) -> None:
         "concurrency": 4,
         "jobId": "test-job",
         "writeConcurrency": 2,
-        "writeToResultStore": True,
         "minCommunitySize": 2,
     }
 
 
 def test_estimate_with_graph_name(graph: Graph) -> None:
-    result = {
-        "nodeCount": 100,
-        "relationshipCount": 200,
-        "requiredMemory": "1 GB",
-        "treeView": "test",
-        "mapView": {"foo": "bar"},
-        "bytesMin": 100,
-        "bytesMax": 200,
-        "heapPercentageMin": 10.0,
-        "heapPercentageMax": 20.0,
-    }
-
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"k1coloring.stats.estimate": pd.DataFrame([result])})
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION, {"k1coloring.stats.estimate": pd.DataFrame([estimate_mock_result()])}
+    )
 
     K1ColoringCypherEndpoints(query_runner).estimate(G=graph)
 
@@ -341,19 +331,9 @@ def test_estimate_with_graph_name(graph: Graph) -> None:
 
 
 def test_estimate_with_projection_config() -> None:
-    result = {
-        "nodeCount": 100,
-        "relationshipCount": 200,
-        "requiredMemory": "1 GB",
-        "treeView": "test",
-        "mapView": {"foo": "bar"},
-        "bytesMin": 100,
-        "bytesMax": 200,
-        "heapPercentageMin": 10.0,
-        "heapPercentageMax": 20.0,
-    }
-
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"k1coloring.stats.estimate": pd.DataFrame([result])})
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION, {"k1coloring.stats.estimate": pd.DataFrame([estimate_mock_result()])}
+    )
 
     K1ColoringCypherEndpoints(query_runner).estimate(G={"foo": "bar"})
 

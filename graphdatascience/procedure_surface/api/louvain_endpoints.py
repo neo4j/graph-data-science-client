@@ -269,8 +269,6 @@ class LouvainEndpoints(ABC):
             The property name that contains weight
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads during the write phase
-        write_to_result_store : Optional[bool], default=None
-            Whether to write results to the result store
         min_community_size : Optional[int], default=None
             Don't write communities with fewer nodes than this
 

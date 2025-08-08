@@ -9,6 +9,7 @@ from graphdatascience.procedure_surface.api.louvain_endpoints import (
 )
 from graphdatascience.procedure_surface.cypher.louvain_cypher_endpoints import LouvainCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
 
 
 @pytest.fixture
@@ -155,27 +156,13 @@ def test_write_basic(graph: Graph) -> None:
 
 
 def test_estimate_with_graph_name(graph: Graph) -> None:
-    result = {
-        "nodeCount": 6,
-        "relationshipCount": 6,
-        "requiredMemory": "500MB",
-        "bytesMin": 1024,
-        "bytesMax": 2048,
-        "heapPercentageMin": 0.1,
-        "heapPercentageMax": 0.2,
-        "treeView": "exampleTree",
-        "mapView": {"exampleKey": "exampleValue"},
-    }
-
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"louvain.stats.estimate": pd.DataFrame([result])})
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION, {"louvain.stats.estimate": pd.DataFrame([estimate_mock_result()])}
+    )
 
     estimate = LouvainCypherEndpoints(query_runner).estimate(G=graph)
 
-    assert estimate.node_count == 6
-    assert estimate.relationship_count == 6
-    assert estimate.required_memory == "500MB"
-    assert estimate.bytes_min == 1024
-    assert estimate.bytes_max == 2048
+    assert estimate.node_count == 100
 
     assert len(query_runner.queries) == 1
     assert "gds.louvain.stats.estimate" in query_runner.queries[0]

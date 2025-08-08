@@ -9,6 +9,7 @@ from graphdatascience.procedure_surface.api.articlerank_endpoints import (
 )
 from graphdatascience.procedure_surface.cypher.articlerank_cypher_endpoints import ArticleRankCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
 
 
 @pytest.fixture
@@ -193,21 +194,12 @@ def test_write_basic(graph: Graph) -> None:
 
 
 def test_estimate_with_graph_name(graph: Graph) -> None:
-    result = {
-        "nodeCount": 100,
-        "relationshipCount": 200,
-        "requiredMemory": "1024 Bytes",
-        "bytesMin": 1024,
-        "bytesMax": 2048,
-        "heapPercentageMin": 1.0,
-        "heapPercentageMax": 2.0,
-    }
-
     query_runner = CollectingQueryRunner(
-        DEFAULT_SERVER_VERSION, {"articleRank.stream.estimate": pd.DataFrame([result])}
+        DEFAULT_SERVER_VERSION, {"articleRank.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )
 
-    ArticleRankCypherEndpoints(query_runner).estimate(graph)
+    result = ArticleRankCypherEndpoints(query_runner).estimate(graph)
 
     assert len(query_runner.queries) == 1
-    assert "gds.articleRank.stream.estimate" in query_runner.queries[0]
+    assert "gds.articleRank.stats.estimate" in query_runner.queries[0]
+    assert result.node_count == 100

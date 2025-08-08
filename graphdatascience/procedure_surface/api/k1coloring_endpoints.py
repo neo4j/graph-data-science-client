@@ -209,8 +209,6 @@ class K1ColoringEndpoints(ABC):
             An identifier for the job
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads during the write phase
-        write_to_result_store : Optional[bool], default=None
-            Whether to write to the result store
         min_community_size : Optional[int], default=None
             Only community ids of communities with a size greater than or equal to the given value are written to Neo4j
 

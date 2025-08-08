@@ -9,6 +9,7 @@ from graphdatascience.procedure_surface.api.celf_endpoints import (
 )
 from graphdatascience.procedure_surface.cypher.celf_cypher_endpoints import CelfCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
 
 
 @pytest.fixture
@@ -186,20 +187,8 @@ def test_write_basic(graph: Graph) -> None:
 
 
 def test_estimate_with_graph_name(graph: Graph) -> None:
-    result = {
-        "nodeCount": 100,
-        "relationshipCount": 200,
-        "requiredMemory": "1024 Bytes",
-        "bytesMin": 1024,
-        "bytesMax": 2048,
-        "heapPercentageMin": 1.0,
-        "heapPercentageMax": 2.0,
-        "treeView": "",
-        "mapView": {},
-    }
-
     query_runner = CollectingQueryRunner(
-        DEFAULT_SERVER_VERSION, {"influenceMaximization.celf.stats.estimate": pd.DataFrame([result])}
+        DEFAULT_SERVER_VERSION, {"influenceMaximization.celf.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )
 
     CelfCypherEndpoints(query_runner).estimate(graph, 5)
@@ -209,20 +198,8 @@ def test_estimate_with_graph_name(graph: Graph) -> None:
 
 
 def test_estimate_with_projection_config(query_runner: CollectingQueryRunner) -> None:
-    result = {
-        "nodeCount": 100,
-        "relationshipCount": 200,
-        "requiredMemory": "1024 Bytes",
-        "bytesMin": 1024,
-        "bytesMax": 2048,
-        "heapPercentageMin": 1.0,
-        "heapPercentageMax": 2.0,
-        "treeView": "",
-        "mapView": {},
-    }
-
     query_runner = CollectingQueryRunner(
-        DEFAULT_SERVER_VERSION, {"influenceMaximization.celf.stats.estimate": pd.DataFrame([result])}
+        DEFAULT_SERVER_VERSION, {"influenceMaximization.celf.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )
 
     projection_config = {

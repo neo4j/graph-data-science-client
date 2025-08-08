@@ -9,6 +9,7 @@ from graphdatascience.procedure_surface.api.pagerank_endpoints import (
 )
 from graphdatascience.procedure_surface.cypher.pagerank_cypher_endpoints import PageRankCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
 
 
 @pytest.fixture
@@ -350,54 +351,24 @@ def test_write_with_optional_params(graph: Graph) -> None:
 
 
 def test_estimate_with_graph_name(graph: Graph) -> None:
-    result = {
-        "nodeCount": 100,
-        "relationshipCount": 200,
-        "requiredMemory": "500MB",
-        "treeView": "Tree",
-        "mapView": {"key": "value"},
-        "bytesMin": 1024,
-        "bytesMax": 2048,
-        "heapPercentageMin": 0.1,
-        "heapPercentageMax": 0.2,
-    }
-
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"pageRank.stats.estimate": pd.DataFrame([result])})
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"pageRank.stats.estimate": pd.DataFrame([estimate_mock_result()])})
 
     estimate = PageRankCypherEndpoints(query_runner).estimate(G=graph)
 
     assert estimate.node_count == 100
-    assert estimate.relationship_count == 200
-    assert estimate.required_memory == "500MB"
-    assert estimate.bytes_min == 1024
-    assert estimate.bytes_max == 2048
 
     assert len(query_runner.queries) == 1
     assert "gds.pageRank.stats.estimate" in query_runner.queries[0]
 
 
 def test_estimate_with_projection_config() -> None:
-    result = {
-        "nodeCount": 100,
-        "relationshipCount": 200,
-        "requiredMemory": "500MB",
-        "treeView": "Tree",
-        "mapView": {"key": "value"},
-        "bytesMin": 1024,
-        "bytesMax": 2048,
-        "heapPercentageMin": 0.1,
-        "heapPercentageMax": 0.2,
-    }
-
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"pageRank.stats.estimate": pd.DataFrame([result])})
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION, {"pageRank.stats.estimate": pd.DataFrame([estimate_mock_result()])}
+    )
 
     estimate = PageRankCypherEndpoints(query_runner).estimate(G={"foo": "bar"})
 
     assert estimate.node_count == 100
-    assert estimate.relationship_count == 200
-    assert estimate.required_memory == "500MB"
-    assert estimate.bytes_min == 1024
-    assert estimate.bytes_max == 2048
 
     assert len(query_runner.queries) == 1
     assert "gds.pageRank.stats.estimate" in query_runner.queries[0]

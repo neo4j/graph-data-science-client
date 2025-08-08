@@ -135,7 +135,6 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
         job_id: Optional[Any] = None,
         relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = None,
     ) -> BetweennessWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -149,7 +148,6 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
             sampling_seed=sampling_seed,
             sudo=sudo,
             username=username,
-            write_to_result_store=write_to_result_store,
         )
 
         result = self._node_property_endpoints.run_job_and_write(
