@@ -205,6 +205,30 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     KNN computes distances based on the similarity of node properties.
     Filtered KNN extends this functionality, allowing filtering on source nodes and target nodes, respectively.
 
+.. py:function:: gds.alpha.linkprediction.adamicAdar(node1: int, node2: int, **config: Any) -> float
+
+    Given two nodes, calculate Adamic Adar similarity
+
+.. py:function:: gds.alpha.linkprediction.commonNeighbors(node1: int, node2: int, **config: Any) -> float
+
+    Given two nodes, returns the number of common neighbors
+
+.. py:function:: gds.alpha.linkprediction.preferentialAttachment(node1: int, node2: int, **config: Any) -> float
+
+    Given two nodes, calculate Preferential Attachment
+
+.. py:function:: gds.alpha.linkprediction.resourceAllocation(node1: int, node2: int, **config: Any) -> float
+
+    Given two nodes, calculate Resource Allocation similarity
+
+.. py:function:: gds.alpha.linkprediction.sameCommunity(node1: int, node2: int, communityProperty: Optional[str] = None) -> float
+
+    Given two nodes, indicates if they have the same community
+
+.. py:function:: gds.alpha.linkprediction.totalNeighbors(node1: int, node2: int, **config: Any) -> float
+
+    Given two nodes, calculate Total Neighbors
+
 .. py:function:: gds.alpha.maxkcut.mutate(G: Graph, **config: Any) -> Series[Any]
 
     Approximate Maximum k-cut maps each node into one of k disjoint communities
@@ -661,86 +685,6 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.cliqueCounting.mutate(G: Graph, **config: Any) -> Series[Any]
-
-    Counts the number of cliques, of different size, each node is part of.
-
-.. py:function:: gds.cliqueCounting.stream(G: Graph, **config: Any) -> DataFrame
-
-    Counts the number of cliques, of different size, each node is part of.
-
-.. py:function:: gds.cliqueCounting.stats(G: Graph, **config: Any) -> Series[Any]
-
-    Counts the number of cliques, of different size, in the entire graph.
-
-.. py:function:: gds.cliqueCounting.write(G: Graph, **config: Any) -> Series[Any]
-
-    Counts the number of cliques, of different size, each node is part of.
-
-.. py:function:: gds.scaleProperties.mutate(G: Graph, **config: Any) -> Series[Any]
-
-    Scale node properties
-
-.. py:function:: gds.scaleProperties.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
-
-.. py:function:: gds.scaleProperties.stats(G: Graph, **config: Any) -> Series[Any]
-
-    Scale node properties
-
-.. py:function:: gds.scaleProperties.stats.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
-
-.. py:function:: gds.scaleProperties.stream(G: Graph, **config: Any) -> DataFrame
-
-    Scale node properties
-
-.. py:function:: gds.scaleProperties.stream.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
-
-.. py:function:: gds.scaleProperties.write(G: Graph, **config: Any) -> Series[Any]
-
-    Scale node properties
-
-.. py:function:: gds.scaleProperties.write.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
-
-.. py:function:: gds.scc.mutate(G: Graph, **config: Any) -> Series[Any]
-
-    The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.
-
-.. py:function:: gds.scc.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for SCC.
-
-.. py:function:: gds.scc.stats(G: Graph, **config: Any) -> Series[Any]
-
-    The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.
-
-.. py:function:: gds.scc.stats.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for SCC.
-
-.. py:function:: gds.scc.stream(G: Graph, **config: Any) -> DataFrame
-
-    The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.
-
-.. py:function:: gds.scc.stream.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for SCC.
-
-.. py:function:: gds.scc.write(G: Graph, **config: Any) -> Series[Any]
-
-    The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.
-
-.. py:function:: gds.scc.write.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for SCC.
-
 .. py:function:: gds.beta.spanningTree.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The spanning tree algorithm visits all nodes that are in the same connected component as the starting node,
@@ -872,37 +816,21 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.closeness.mutate(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.cliqueCounting.mutate(G: Graph, **config: Any) -> DataFrame
 
-    Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
 
-.. py:function:: gds.closeness.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.cliqueCounting.stats(G: Graph, **config: Any) -> DataFrame
 
-    Returns an estimation of the memory consumption for that procedure.
+    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
 
-.. py:function:: gds.closeness.stats(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.cliqueCounting.stream(G: Graph, **config: Any) -> DataFrame
 
-    Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
 
-.. py:function:: gds.closeness.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.cliqueCounting.write(G: Graph, **config: Any) -> DataFrame
 
-    Returns an estimation of the memory consumption for that procedure.
-
-.. py:function:: gds.closeness.stream(G: Graph, **config: Any) -> DataFrame
-
-    Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
-
-.. py:function:: gds.closeness.stream.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
-
-.. py:function:: gds.closeness.write(G: Graph, **config: Any) -> Series[Any]
-
-    Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
-
-.. py:function:: gds.closeness.write.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
+    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
 
 .. py:function:: gds.closeness.harmonic.mutate(G: Graph, **config: Any) -> DataFrame
 
@@ -940,6 +868,38 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.closeness.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+
+.. py:function:: gds.closeness.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.closeness.stats(G: Graph, **config: Any) -> Series[Any]
+
+    Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+
+.. py:function:: gds.closeness.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.closeness.stream(G: Graph, **config: Any) -> DataFrame
+
+    Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+
+.. py:function:: gds.closeness.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.closeness.write(G: Graph, **config: Any) -> Series[Any]
+
+    Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+
+.. py:function:: gds.closeness.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.collapsePath.mutate(G: Graph, **config: Any) -> Series[Any]
 
     Collapse Path algorithm is a traversal algorithm capable of creating relationships between the start
@@ -950,13 +910,13 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Evaluates a division of nodes into communities based on the proportion of relationships
     that cross community boundaries.
 
-.. py:function:: gds.dag.topologicalSort.stream(G: Graph, **config: Any) -> DataFrame
-
-    Returns a topological ordering of the nodes in a directed acyclic graph (DAG).
-
 .. py:function:: gds.dag.longestPath.stream(G: Graph, **config: Any) -> DataFrame
 
     Finds the longest path that leads to a node in a directed acyclic graph (DAG).
+
+.. py:function:: gds.dag.topologicalSort.stream(G: Graph, **config: Any) -> DataFrame
+
+    Returns a topological ordering of the nodes in a directed acyclic graph (DAG).
 
 .. py:function:: gds.degree.mutate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1156,38 +1116,6 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.kmeans.mutate(G: Graph, **config: Any) -> Series[Any]
-
-    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
-
-.. py:function:: gds.kmeans.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
-
-.. py:function:: gds.kmeans.stats(G: Graph, **config: Any) -> Series[Any]
-
-    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
-
-.. py:function:: gds.kmeans.stats.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
-
-.. py:function:: gds.kmeans.stream(G: Graph, **config: Any) -> DataFrame
-
-    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
-
-.. py:function:: gds.kmeans.stream.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
-
-.. py:function:: gds.kmeans.write(G: Graph, **config: Any) -> Series[Any]
-
-    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
-
-.. py:function:: gds.kmeans.write.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
-
 .. py:function:: gds.k1coloring.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The K-1 Coloring algorithm assigns a color to every node in the graph.
@@ -1219,6 +1147,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.k1coloring.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.kSpanningTree.write(G: Graph, **config: Any) -> Series[Any]
+
+    The K-spanning tree algorithm starts from a root node and returns a spanning tree with exactly k nodes
 
 .. py:function:: gds.kcore.mutate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1252,43 +1184,35 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.knn.mutate(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.kmeans.mutate(G: Graph, **config: Any) -> Series[Any]
 
-    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance
-    between two nodes is among the k nearest distances compared to other nodes.
-    KNN computes distances based on the similarity of node properties
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
-.. py:function:: gds.knn.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.kmeans.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.knn.stats(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.kmeans.stats(G: Graph, **config: Any) -> Series[Any]
 
-    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance
-    between two nodes is among the k nearest distances compared to other nodes.
-    KNN computes distances based on the similarity of node properties
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
-.. py:function:: gds.knn.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.kmeans.stats.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.knn.stream(G: Graph, **config: Any) -> DataFrame
+.. py:function:: gds.kmeans.stream(G: Graph, **config: Any) -> DataFrame
 
-    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance
-    between two nodes is among the k nearest distances compared to other nodes.
-    KNN computes distances based on the similarity of node properties
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
-.. py:function:: gds.knn.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.kmeans.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.knn.write(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.kmeans.write(G: Graph, **config: Any) -> Series[Any]
 
-    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance
-    between two nodes is among the k nearest distances compared to other nodes.
-    KNN computes distances based on the similarity of node properties
+    The Kmeans  algorithm clusters nodes into different communities based on Euclidean distance
 
-.. py:function:: gds.knn.write.estimate(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.kmeans.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
 
@@ -1336,9 +1260,45 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.kSpanningTree.write(G: Graph, **config: Any) -> Series[Any]
+.. py:function:: gds.knn.mutate(G: Graph, **config: Any) -> Series[Any]
 
-    The K-spanning tree algorithm starts from a root node and returns a spanning tree with exactly k nodes
+    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance
+    between two nodes is among the k nearest distances compared to other nodes.
+    KNN computes distances based on the similarity of node properties
+
+.. py:function:: gds.knn.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.knn.stats(G: Graph, **config: Any) -> Series[Any]
+
+    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance
+    between two nodes is among the k nearest distances compared to other nodes.
+    KNN computes distances based on the similarity of node properties
+
+.. py:function:: gds.knn.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.knn.stream(G: Graph, **config: Any) -> DataFrame
+
+    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance
+    between two nodes is among the k nearest distances compared to other nodes.
+    KNN computes distances based on the similarity of node properties
+
+.. py:function:: gds.knn.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.knn.write(G: Graph, **config: Any) -> Series[Any]
+
+    The k-nearest neighbor graph algorithm constructs relationships between nodes if the distance
+    between two nodes is among the k nearest distances compared to other nodes.
+    KNN computes distances based on the similarity of node properties
+
+.. py:function:: gds.knn.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
 
 .. py:function:: gds.labelPropagation.mutate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1528,46 +1488,6 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.nodeSimilarity.mutate(G: Graph, **config: Any) -> Series[Any]
-
-    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
-    Two nodes are considered similar if they share many of the same neighbors.
-    Node Similarity computes pair-wise similarities based on the Jaccard metric.
-
-.. py:function:: gds.nodeSimilarity.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
-
-.. py:function:: gds.nodeSimilarity.stats(G: Graph, **config: Any) -> Series[Any]
-
-    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
-    Two nodes are considered similar if they share many of the same neighbors.
-    Node Similarity computes pair-wise similarities based on the Jaccard metric.
-
-.. py:function:: gds.nodeSimilarity.stats.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
-
-.. py:function:: gds.nodeSimilarity.stream(G: Graph, **config: Any) -> DataFrame
-
-    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
-    Two nodes are considered similar if they share many of the same neighbors.
-    Node Similarity computes pair-wise similarities based on the Jaccard metric.
-
-.. py:function:: gds.nodeSimilarity.stream.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
-
-.. py:function:: gds.nodeSimilarity.write(G: Graph, **config: Any) -> Series[Any]
-
-    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
-    Two nodes are considered similar if they share many of the same neighbors.
-    Node Similarity computes pair-wise similarities based on the Jaccard metric.
-
-.. py:function:: gds.nodeSimilarity.write.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
-
 .. py:function:: gds.nodeSimilarity.filtered.mutate(G: Graph, **config: Any) -> Series[Any]
 
     The Filtered Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
@@ -1612,6 +1532,46 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.nodeSimilarity.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
+    Two nodes are considered similar if they share many of the same neighbors.
+    Node Similarity computes pair-wise similarities based on the Jaccard metric.
+
+.. py:function:: gds.nodeSimilarity.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.nodeSimilarity.stats(G: Graph, **config: Any) -> Series[Any]
+
+    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
+    Two nodes are considered similar if they share many of the same neighbors.
+    Node Similarity computes pair-wise similarities based on the Jaccard metric.
+
+.. py:function:: gds.nodeSimilarity.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.nodeSimilarity.stream(G: Graph, **config: Any) -> DataFrame
+
+    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
+    Two nodes are considered similar if they share many of the same neighbors.
+    Node Similarity computes pair-wise similarities based on the Jaccard metric.
+
+.. py:function:: gds.nodeSimilarity.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.nodeSimilarity.write(G: Graph, **config: Any) -> Series[Any]
+
+    The Node Similarity algorithm compares a set of nodes based on the nodes they are connected to.
+    Two nodes are considered similar if they share many of the same neighbors.
+    Node Similarity computes pair-wise similarities based on the Jaccard metric.
+
+.. py:function:: gds.nodeSimilarity.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.pageRank.mutate(G: Graph, **config: Any) -> Series[Any]
 
     Page Rank is an algorithm that measures the transitive influence or connectivity of nodes.
@@ -1644,14 +1604,6 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.prizeSteinerTree.stream(G: Graph, **config: Any) -> DataFrame
-
-    An approximation algorithm for the prize collector steiner tree problem
-
-.. py:function:: gds.prizeSteinerTree.stream.estimate(G: Graph, **config: Any) -> Series[Any]
-
-    Returns an estimation of the memory consumption for that procedure.
-
 .. py:function:: gds.prizeSteinerTree.mutate(G: Graph, **config: Any) -> DataFrame
 
     An approximation algorithm for the prize collector steiner tree problem
@@ -1665,6 +1617,14 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     An approximation algorithm for the prize collector steiner tree problem
 
 .. py:function:: gds.prizeSteinerTree.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.prizeSteinerTree.stream(G: Graph, **config: Any) -> DataFrame
+
+    An approximation algorithm for the prize collector steiner tree problem
+
+.. py:function:: gds.prizeSteinerTree.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
 
@@ -1699,6 +1659,70 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.randomWalk.stream.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.scaleProperties.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    Scale node properties
+
+.. py:function:: gds.scaleProperties.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.scaleProperties.stats(G: Graph, **config: Any) -> Series[Any]
+
+    Scale node properties
+
+.. py:function:: gds.scaleProperties.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.scaleProperties.stream(G: Graph, **config: Any) -> DataFrame
+
+    Scale node properties
+
+.. py:function:: gds.scaleProperties.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.scaleProperties.write(G: Graph, **config: Any) -> Series[Any]
+
+    Scale node properties
+
+.. py:function:: gds.scaleProperties.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.scc.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.
+
+.. py:function:: gds.scc.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for SCC.
+
+.. py:function:: gds.scc.stats(G: Graph, **config: Any) -> Series[Any]
+
+    The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.
+
+.. py:function:: gds.scc.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for SCC.
+
+.. py:function:: gds.scc.stream(G: Graph, **config: Any) -> DataFrame
+
+    The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.
+
+.. py:function:: gds.scc.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for SCC.
+
+.. py:function:: gds.scc.write(G: Graph, **config: Any) -> Series[Any]
+
+    The SCC algorithm finds sets of connected nodes in an directed graph, where all nodes in the same set form a connected component.
+
+.. py:function:: gds.scc.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for SCC.
 
 .. py:function:: gds.shortestPath.astar.mutate(G: Graph, **config: Any) -> Series[Any]
 
@@ -1964,44 +1988,4 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.wcc.write.estimate(G: Graph, **config: Any) -> Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
-
-.. py:function:: gds.alpha.linkprediction.adamicAdar(node1: int, node2: int, **config: Any) -> float
-
-    Given two nodes, calculate Adamic Adar similarity
-
-.. py:function:: gds.alpha.linkprediction.commonNeighbors(node1: int, node2: int, **config: Any) -> float
-
-    Given two nodes, returns the number of common neighbors
-
-.. py:function:: gds.alpha.linkprediction.preferentialAttachment(node1: int, node2: int, **config: Any) -> float
-
-    Given two nodes, calculate Preferential Attachment
-
-.. py:function:: gds.alpha.linkprediction.resourceAllocation(node1: int, node2: int, **config: Any) -> float
-
-    Given two nodes, calculate Resource Allocation similarity
-
-.. py:function:: gds.alpha.linkprediction.sameCommunity(node1: int, node2: int, communityProperty: Optional[str] = None) -> float
-
-    Given two nodes, indicates if they have the same community
-
-.. py:function:: gds.alpha.linkprediction.totalNeighbors(node1: int, node2: int, **config: Any) -> float
-
-    Given two nodes, calculate Total Neighbors
-
-.. py:function:: gds.cliqueCounting.mutate(G: Graph, **config: Any) -> DataFrame
-
-    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
-
-.. py:function:: gds.cliqueCounting.stats(G: Graph, **config: Any) -> DataFrame
-
-    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
-
-.. py:function:: gds.cliqueCounting.stream(G: Graph, **config: Any) -> DataFrame
-
-    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
-
-.. py:function:: gds.cliqueCounting.write(G: Graph, **config: Any) -> DataFrame
-
-    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
 
