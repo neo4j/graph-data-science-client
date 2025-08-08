@@ -816,21 +816,21 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
-.. py:function:: gds.cliqueCounting.mutate(G: Graph, **config: Any) -> DataFrame
+.. py:function:: gds.cliqueCounting.mutate(G: Graph, **config: Any) -> Series[Any]
 
-    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
+    Counts the number of cliques, of different size, each node is part of.
 
-.. py:function:: gds.cliqueCounting.stats(G: Graph, **config: Any) -> DataFrame
+.. py:function:: gds.cliqueCounting.stats(G: Graph, **config: Any) -> Series[Any]
 
-    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
+    Counts the number of cliques, of different size, in the entire graph.
 
 .. py:function:: gds.cliqueCounting.stream(G: Graph, **config: Any) -> DataFrame
 
-    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
+    Counts the number of cliques, of different size, each node is part of.
 
-.. py:function:: gds.cliqueCounting.write(G: Graph, **config: Any) -> DataFrame
+.. py:function:: gds.cliqueCounting.write(G: Graph, **config: Any) -> Series[Any]
 
-    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
+    Counts the number of cliques, of different size, each node is part of.
 
 .. py:function:: gds.closeness.harmonic.mutate(G: Graph, **config: Any) -> DataFrame
 
