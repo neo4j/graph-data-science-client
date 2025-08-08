@@ -1989,3 +1989,19 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Given two nodes, calculate Total Neighbors
 
+.. py:function:: gds.cliqueCounting.mutate(G: Graph, **config: Any) -> DataFrame
+
+    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
+
+.. py:function:: gds.cliqueCounting.stats(G: Graph, **config: Any) -> DataFrame
+
+    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
+
+.. py:function:: gds.cliqueCounting.stream(G: Graph, **config: Any) -> DataFrame
+
+    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
+
+.. py:function:: gds.cliqueCounting.write(G: Graph, **config: Any) -> DataFrame
+
+    The Clique Counting algorithm count the number of cliques of each size for every node in the graph.
+
