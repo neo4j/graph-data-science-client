@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 from textwrap import dedent
+from typing import Any
 
 root_dir = Path(__file__).parent
 
@@ -24,22 +25,34 @@ with open(root_dir / "algorithms.json") as f, open(root_dir / "source/algorithms
         )
     )
 
+    algo_sections: dict[str, list[str]] = {}
+
     for function in functions:
         name, sig, ret_type = (
             function["function"]["name"],
             function["function"]["signature"],
             function["function"]["return_type"],
         )
-        fw.write(f".. py:function:: {name}({sig}) -> {ret_type}\n\n")
+        algo_lines = []
+
+        algo_lines.append(f".. py:function:: {name}({sig}) -> {ret_type}\n\n")
 
         if "description" in function:
             description = function["description"].strip()
             for desc in description.split("\n"):
-                fw.write(f"    {desc}\n")
+                algo_lines.append(f"    {desc}\n")
 
-            fw.write("\n")
+            algo_lines.append("\n")
 
         if "deprecated" in function:
             version, message = function["deprecated"]["version"], function["deprecated"]["message"]
-            fw.write(f".. deprecated:: {version}\n")
-            fw.write(f"   {message}\n\n")
+            algo_lines.append(f".. deprecated:: {version}\n")
+            algo_lines.append(f"   {message}\n\n")
+
+        algo_sections[name] = algo_lines
+
+    # sort by name
+    sorted_section = sorted(algo_sections.items(), key=lambda x: x[0])
+
+    for name, section in sorted_section:
+        fw.writelines(section)
