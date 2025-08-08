@@ -351,7 +351,9 @@ def test_write_with_optional_params(graph: Graph) -> None:
 
 
 def test_estimate_with_graph_name(graph: Graph) -> None:
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"pageRank.stats.estimate": pd.DataFrame([estimate_mock_result()])})
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION, {"pageRank.stats.estimate": pd.DataFrame([estimate_mock_result()])}
+    )
 
     estimate = PageRankCypherEndpoints(query_runner).estimate(G=graph)
 
