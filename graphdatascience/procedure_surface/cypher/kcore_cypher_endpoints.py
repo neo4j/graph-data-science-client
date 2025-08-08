@@ -1,6 +1,5 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
-from git import Union
 from pandas import DataFrame
 
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
