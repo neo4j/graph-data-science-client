@@ -3593,5 +3593,37 @@
       "return_type": "float"
     },
     "description": "Given two nodes, calculate Total Neighbors"
+  },
+  {
+    "function": {
+      "name": "gds.cliqueCounting.mutate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "DataFrame"
+    },
+    "description": "The Clique Counting algorithm count the number of cliques of each size for every node in the graph."
+  },
+  {
+    "function": {
+      "name": "gds.cliqueCounting.stats",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "DataFrame"
+    },
+    "description": "The Clique Counting algorithm count the number of cliques of each size for every node in the graph."
+  },
+  {
+    "function": {
+      "name": "gds.cliqueCounting.stream",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "DataFrame"
+    },
+    "description": "The Clique Counting algorithm count the number of cliques of each size for every node in the graph."
+  },
+  {
+    "function": {
+      "name": "gds.cliqueCounting.write",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "DataFrame"
+    },
+    "description": "The Clique Counting algorithm count the number of cliques of each size for every node in the graph."
   }
 ]
