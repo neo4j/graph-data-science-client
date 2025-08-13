@@ -60,7 +60,7 @@ class DegreeEndpoints(ABC):
         log_progress : Optional[bool], default=None
             Whether to log progress of the algorithm execution
         username : Optional[str], default=None
-            The username to attribute the procedure run to for auditing purposes
+            The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
             The number of concurrent threads used for the algorithm execution.
             If not specified, uses the default concurrency level.
@@ -116,7 +116,7 @@ class DegreeEndpoints(ABC):
         log_progress : Optional[bool], default=None
             Whether to log progress of the algorithm execution
         username : Optional[str], default=None
-            The username to attribute the procedure run to for auditing purposes
+            The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
             The number of concurrent threads used for the algorithm execution.
             If not specified, uses the default concurrency level.
@@ -172,7 +172,7 @@ class DegreeEndpoints(ABC):
         log_progress : Optional[bool], default=None
             Whether to log progress of the algorithm execution
         username : Optional[str], default=None
-            The username to attribute the procedure run to for auditing purposes
+            The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
             The number of concurrent threads used for the algorithm execution.
             If not specified, uses the default concurrency level.
@@ -233,7 +233,7 @@ class DegreeEndpoints(ABC):
         log_progress : Optional[bool], default=None
             Whether to log progress of the algorithm execution
         username : Optional[str], default=None
-            The username to attribute the procedure run to for auditing purposes
+            The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
             The number of concurrent threads used for the algorithm execution.
             If not specified, uses the default concurrency level.

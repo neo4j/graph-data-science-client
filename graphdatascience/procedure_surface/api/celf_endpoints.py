@@ -15,12 +15,7 @@ class CelfEndpoints(ABC):
     Abstract base class defining the API for the Cost Effective Lazy Forward (CELF) algorithm.
 
     The CELF algorithm aims to find k nodes that maximize the expected spread of influence
-    in the network. It's an optimization of the greedy algorithm for influence maximization
-    that uses lazy evaluation to improve performance while maintaining the same approximation
-    guarantees.
-
-    The algorithm works by iteratively selecting nodes that provide the maximum marginal
-    influence gain, using a lazy evaluation strategy to avoid redundant computations.
+    in the network.
     """
 
     @abstractmethod
@@ -53,10 +48,8 @@ class CelfEndpoints(ABC):
             The property name to store the influence spread value for each selected node
         propagation_probability : Optional[float], default=None
             The probability that influence spreads from one node to another.
-            If not specified, uses the default value from the algorithm configuration.
         monte_carlo_simulations : Optional[int], default=None
-            The number of Monte Carlo simulations used to estimate influence spread.
-            Higher values provide more accurate estimates but increase computation time.
+            The number of Monte-Carlo simulations.
         random_seed : Optional[Any], default=None
             Random seed for reproducible results. If not specified, uses a random seed.
         relationship_types : Optional[List[str]], default=None
@@ -71,7 +64,7 @@ class CelfEndpoints(ABC):
         log_progress : Optional[bool], default=None
             Whether to log progress of the algorithm execution
         username : Optional[str], default=None
-            The username to attribute the procedure run to for auditing purposes
+            The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
             The number of concurrent threads used for the algorithm execution.
             If not specified, uses the default concurrency level.
@@ -112,10 +105,8 @@ class CelfEndpoints(ABC):
             The number of nodes to select as the seed set for influence maximization
         propagation_probability : Optional[float], default=None
             The probability that influence spreads from one node to another.
-            If not specified, uses the default value from the algorithm configuration.
         monte_carlo_simulations : Optional[int], default=None
-            The number of Monte Carlo simulations used to estimate influence spread.
-            Higher values provide more accurate estimates but increase computation time.
+            The number of Monte-Carlo simulations.
         random_seed : Optional[Any], default=None
             Random seed for reproducible results. If not specified, uses a random seed.
         relationship_types : Optional[List[str]], default=None
@@ -130,7 +121,7 @@ class CelfEndpoints(ABC):
         log_progress : Optional[bool], default=None
             Whether to log progress of the algorithm execution
         username : Optional[str], default=None
-            The username to attribute the procedure run to for auditing purposes
+            The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
             The number of concurrent threads used for the algorithm execution.
             If not specified, uses the default concurrency level.
@@ -171,10 +162,8 @@ class CelfEndpoints(ABC):
             The number of nodes to select as the seed set for influence maximization
         propagation_probability : Optional[float], default=None
             The probability that influence spreads from one node to another.
-            If not specified, uses the default value from the algorithm configuration.
         monte_carlo_simulations : Optional[int], default=None
-            The number of Monte Carlo simulations used to estimate influence spread.
-            Higher values provide more accurate estimates but increase computation time.
+            The number of Monte-Carlo simulations.
         random_seed : Optional[Any], default=None
             Random seed for reproducible results. If not specified, uses a random seed.
         relationship_types : Optional[List[str]], default=None
@@ -189,7 +178,7 @@ class CelfEndpoints(ABC):
         log_progress : Optional[bool], default=None
             Whether to log progress of the algorithm execution
         username : Optional[str], default=None
-            The username to attribute the procedure run to for auditing purposes
+            The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
             The number of concurrent threads used for the algorithm execution.
             If not specified, uses the default concurrency level.
@@ -235,10 +224,8 @@ class CelfEndpoints(ABC):
             The property name to store the influence spread value for each selected node in the database
         propagation_probability : Optional[float], default=None
             The probability that influence spreads from one node to another.
-            If not specified, uses the default value from the algorithm configuration.
         monte_carlo_simulations : Optional[int], default=None
-            The number of Monte Carlo simulations used to estimate influence spread.
-            Higher values provide more accurate estimates but increase computation time.
+            The number of Monte-Carlo simulations.
         random_seed : Optional[Any], default=None
             Random seed for reproducible results. If not specified, uses a random seed.
         relationship_types : Optional[List[str]], default=None
@@ -253,7 +240,7 @@ class CelfEndpoints(ABC):
         log_progress : Optional[bool], default=None
             Whether to log progress of the algorithm execution
         username : Optional[str], default=None
-            The username to attribute the procedure run to for auditing purposes
+            The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
             The number of concurrent threads used for the algorithm execution.
             If not specified, uses the default concurrency level.
@@ -297,10 +284,8 @@ class CelfEndpoints(ABC):
             The number of nodes to select as the seed set for influence maximization.
         propagation_probability : Optional[float], default=None
             The probability that influence spreads from one node to another.
-            If not specified, uses the default value from the algorithm configuration.
         monte_carlo_simulations : Optional[int], default=None
-            The number of Monte Carlo simulations used to estimate influence spread.
-            Higher values provide more accurate estimates but increase computation time.
+            The number of Monte-Carlo simulations.
         random_seed : Optional[Any], default=None
             Random seed for reproducible results. If not specified, uses a random seed.
         relationship_types : Optional[List[str]], default=None
