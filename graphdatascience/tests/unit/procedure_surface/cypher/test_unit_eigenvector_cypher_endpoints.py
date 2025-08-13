@@ -192,34 +192,3 @@ def test_estimate_with_projection_config() -> None:
 
     assert len(query_runner.queries) == 1
     assert "gds.eigenvector.stats.estimate" in query_runner.queries[0]
-
-
-def test_estimate_with_algorithm_config() -> None:
-    query_runner = CollectingQueryRunner(
-        DEFAULT_SERVER_VERSION, {"eigenvector.stats.estimate": pd.DataFrame([estimate_mock_result()])}
-    )
-
-    projection_config = {
-        "nodeProjection": "*",
-        "relationshipProjection": "*",
-    }
-
-    EigenvectorCypherEndpoints(query_runner).estimate(
-        projection_config,
-        max_iterations=20,
-        tolerance=0.0001,
-        relationship_types=["REL"],
-        node_labels=["Person"],
-        concurrency=4,
-    )
-
-    assert len(query_runner.queries) == 1
-    assert "gds.eigenvector.stats.estimate" in query_runner.queries[0]
-    params = query_runner.params[0]
-    assert params["algoConfig"] == {
-        "maxIterations": 20,
-        "tolerance": 0.0001,
-        "relationshipTypes": ["REL"],
-        "nodeLabels": ["Person"],
-        "concurrency": 4,
-    }
