@@ -1,4 +1,6 @@
-from typing import Any
+import os
+from pathlib import Path
+from typing import Any, Generator
 
 import pytest
 
@@ -8,3 +10,17 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
         skip_v2 = pytest.mark.skip(reason="need --include-integration-v2 option to run")
         for item in items:
             item.add_marker(skip_v2)
+
+
+# best used with pytest --basetemp=tmp/pytest for easy access to logs
+@pytest.fixture(scope="session")
+def logs_dir(tmpdir_factory: pytest.TempdirFactory) -> Generator[Path, None, None]:
+    """Create a temporary file and return its path."""
+    tmp_dir = tmpdir_factory.mktemp("logs")
+
+    yield tmp_dir
+
+
+@pytest.fixture(scope="session")
+def inside_ci() -> bool:
+    return os.environ.get("BUILD_NUMBER") is not None
