@@ -24,12 +24,11 @@ def create_graph(
     deserialize_single(raw_res)
 
     if undirected is not None:
-        raw_res = JobClient.run_job_and_wait(
+        JobClient.run_job_and_wait(
             arrow_client,
             "v2/graph.relationships.toUndirected",
             {"graphName": graph_name, "relationshipType": undirected[0], "mutateRelationshipType": undirected[1]},
         )
-        deserialize_single(raw_res)
 
         raw_res = arrow_client.do_action(
             "v2/graph.relationships.drop",
