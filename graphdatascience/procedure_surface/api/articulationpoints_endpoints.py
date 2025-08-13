@@ -205,13 +205,10 @@ class ArticulationPointsEndpoints(ABC):
             The graph to be used in the estimation. Provided either as a Graph object or a configuration dictionary for the projection.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
-            If not specified, all relationship types are considered.
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run.
-            If not specified, all node labels are considered.
         concurrency : Optional[Any], default=None
             The number of concurrent threads used for the estimation.
-            If not specified, uses the default concurrency level.
 
         Returns
         -------

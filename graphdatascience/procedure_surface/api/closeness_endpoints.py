@@ -46,10 +46,8 @@ class ClosenessEndpoints(ABC):
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
-            If not specified, all relationship types are considered.
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run.
-            If not specified, all node labels are considered.
         sudo : Optional[bool], default=None
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
@@ -59,7 +57,6 @@ class ClosenessEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
             The number of concurrent threads used for the algorithm execution.
-            If not specified, uses the default concurrency level.
         job_id : Optional[Any], default=None
             An identifier for the job that can be used for monitoring and cancellation
 
@@ -94,10 +91,8 @@ class ClosenessEndpoints(ABC):
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
-            If not specified, all relationship types are considered.
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run.
-            If not specified, all node labels are considered.
         sudo : Optional[bool], default=None
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
@@ -107,7 +102,6 @@ class ClosenessEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
             The number of concurrent threads used for the algorithm execution.
-            If not specified, uses the default concurrency level.
         job_id : Optional[Any], default=None
             An identifier for the job that can be used for monitoring and cancellation
 
@@ -142,10 +136,8 @@ class ClosenessEndpoints(ABC):
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
-            If not specified, all relationship types are considered.
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run.
-            If not specified, all node labels are considered.
         sudo : Optional[bool], default=None
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
@@ -155,7 +147,6 @@ class ClosenessEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
             The number of concurrent threads used for the algorithm execution.
-            If not specified, uses the default concurrency level.
         job_id : Optional[Any], default=None
             An identifier for the job that can be used for monitoring and cancellation
 
@@ -195,10 +186,8 @@ class ClosenessEndpoints(ABC):
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
-            If not specified, all relationship types are considered.
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run.
-            If not specified, all node labels are considered.
         sudo : Optional[bool], default=None
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
@@ -208,12 +197,10 @@ class ClosenessEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
             The number of concurrent threads used for the algorithm execution.
-            If not specified, uses the default concurrency level.
         job_id : Optional[Any], default=None
             An identifier for the job that can be used for monitoring and cancellation
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads used during the write phase.
-            If not specified, uses the default write concurrency level.
 
         Returns
         -------

@@ -42,7 +42,7 @@ class BetweennessEndpoints(ABC):
         mutate_property : str
             The property name to store the betweenness centrality score for each node
         sampling_size : Optional[int], default=None
-            The number of nodes to use for sampling. If not specified, all nodes are used
+            The number of nodes to use for sampling.
         sampling_seed : Optional[int], default=None
             The seed value for sampling randomization
         relationship_types : Optional[List[str]], default=None
@@ -91,7 +91,7 @@ class BetweennessEndpoints(ABC):
         G : Graph
             The graph to run the algorithm on
         sampling_size : Optional[int], default=None
-            The number of nodes to use for sampling. If not specified, all nodes are used
+            The number of nodes to use for sampling.
         sampling_seed : Optional[int], default=None
             The seed value for sampling randomization
         relationship_types : Optional[List[str]], default=None
@@ -140,7 +140,7 @@ class BetweennessEndpoints(ABC):
         G : Graph
             The graph to run the algorithm on
         sampling_size : Optional[int], default=None
-            The number of nodes to use for sampling. If not specified, all nodes are used
+            The number of nodes to use for sampling.
         sampling_seed : Optional[int], default=None
             The seed value for sampling randomization
         relationship_types : Optional[List[str]], default=None
@@ -193,7 +193,7 @@ class BetweennessEndpoints(ABC):
         write_property : str
             The property name to store the betweenness centrality score for each node
         sampling_size : Optional[int], default=None
-            The number of nodes to use for sampling. If not specified, all nodes are used
+            The number of nodes to use for sampling.
         sampling_seed : Optional[int], default=None
             The seed value for sampling randomization
         relationship_types : Optional[List[str]], default=None
