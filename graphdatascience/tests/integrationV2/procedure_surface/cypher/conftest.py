@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import Generator
 
 import pytest
@@ -11,7 +12,7 @@ from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
 @pytest.fixture(scope="package")
-def gds_plugin_container() -> Generator[Neo4jContainer, None, None]:
+def gds_plugin_container(logs_dir: Path, inside_ci: bool) -> Generator[Neo4jContainer, None, None]:
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", "neo4j:enterprise")
 
     neo4j_container = (
@@ -26,7 +27,15 @@ def gds_plugin_container() -> Generator[Neo4jContainer, None, None]:
         wait_for_logs(neo4j_db, "Started.")
         yield neo4j_db
         stdout, stderr = neo4j_db.get_logs()
-        print(stdout)
+        if stderr:
+            print(f"Error logs from Neo4j container:\n{stderr}")
+
+        if inside_ci:
+            print(f"Neo4j container logs:\n{stdout}")
+
+        out_file = logs_dir / "neo4j_container.log"
+        with open(out_file, "w") as f:
+            f.write(str(stdout))
 
 
 @pytest.fixture(scope="package")

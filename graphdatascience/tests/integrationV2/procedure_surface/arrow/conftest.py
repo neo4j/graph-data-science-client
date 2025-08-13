@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 from typing import Generator
@@ -9,6 +10,8 @@ from testcontainers.core.waiting_utils import wait_for_logs
 from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+
+LOGGER = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="package")
@@ -27,11 +30,12 @@ def password_dir(tmpdir_factory: pytest.TempdirFactory) -> Generator[Path, None,
 
 
 @pytest.fixture(scope="package")
-def session_container(password_dir: Path) -> Generator[DockerContainer, None, None]:
-    session_image = os.getenv("GDS_SESSION_IMAGE")
+def session_container(password_dir: Path, logs_dir: Path, inside_ci: bool) -> Generator[DockerContainer, None, None]:
+    session_image = os.getenv(
+        "GDS_SESSION_IMAGE", "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest"
+    )
 
-    if session_image is None:
-        raise ValueError("GDS_SESSION_IMAGE environment variable is not set")
+    LOGGER.info(f"Using session image: {session_image}")
 
     session_container = (
         DockerContainer(
@@ -49,7 +53,16 @@ def session_container(password_dir: Path) -> Generator[DockerContainer, None, No
         wait_for_logs(session_container, "Running GDS tasks: 0")
         yield session_container
         stdout, stderr = session_container.get_logs()
-        print(stdout)
+
+        if stderr:
+            print(f"Error logs from session container:\n{stderr}")
+
+        if inside_ci:
+            print(f"Session container logs:\n{stdout}")
+
+        out_file = logs_dir / "session_container.log"
+        with open(out_file, "w") as f:
+            f.write(str(stdout))
 
 
 @pytest.fixture(scope="package")
