@@ -2,11 +2,13 @@ import pandas as pd
 import pytest
 
 from graphdatascience.graph.graph_object import Graph
-from graphdatascience.procedure_surface.api.closeness_endpoints import (
-    ClosenessStatsResult,
-    ClosenessWriteResult,
+from graphdatascience.procedure_surface.api.closeness_harmonic_endpoints import (
+    ClosenessHarmonicStatsResult,
+    ClosenessHarmonicWriteResult,
 )
-from graphdatascience.procedure_surface.cypher.closeness_cypher_endpoints import ClosenessCypherEndpoints
+from graphdatascience.procedure_surface.cypher.closeness_harmonic_cypher_endpoints import (
+    ClosenessHarmonicCypherEndpoints,
+)
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
 
@@ -17,8 +19,8 @@ def query_runner() -> CollectingQueryRunner:
 
 
 @pytest.fixture
-def closeness_endpoints(query_runner: CollectingQueryRunner) -> ClosenessCypherEndpoints:
-    return ClosenessCypherEndpoints(query_runner)
+def closeness_harmonic_endpoints(query_runner: CollectingQueryRunner) -> ClosenessHarmonicCypherEndpoints:
+    return ClosenessHarmonicCypherEndpoints(query_runner)
 
 
 @pytest.fixture
@@ -37,12 +39,11 @@ def test_mutate(graph: Graph) -> None:
         "configuration": {"bar": 1337},
     }
 
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"closeness.mutate": pd.DataFrame([result])})
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"closeness.harmonic.mutate": pd.DataFrame([result])})
 
-    ClosenessCypherEndpoints(query_runner).mutate(
+    ClosenessHarmonicCypherEndpoints(query_runner).mutate(
         graph,
-        "closeness",
-        use_wasserman_faust=True,
+        "harmonic_closeness",
         relationship_types=["REL"],
         node_labels=["Person"],
         sudo=True,
@@ -53,12 +54,11 @@ def test_mutate(graph: Graph) -> None:
     )
 
     assert len(query_runner.queries) == 1
-    assert "gds.closeness.mutate" in query_runner.queries[0]
+    assert "gds.closeness.harmonic.mutate" in query_runner.queries[0]
     params = query_runner.params[0]
     assert params["graph_name"] == "test_graph"
     assert params["config"] == {
-        "mutateProperty": "closeness",
-        "useWassermanFaust": True,
+        "mutateProperty": "harmonic_closeness",
         "relationshipTypes": ["REL"],
         "nodeLabels": ["Person"],
         "sudo": True,
@@ -78,17 +78,17 @@ def test_stats(graph: Graph) -> None:
         "configuration": {"bar": 1337},
     }
 
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"closeness.stats": pd.DataFrame([result])})
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"closeness.harmonic.stats": pd.DataFrame([result])})
 
-    result_obj = ClosenessCypherEndpoints(query_runner).stats(graph)
+    result_obj = ClosenessHarmonicCypherEndpoints(query_runner).stats(graph)
 
     assert len(query_runner.queries) == 1
-    assert "gds.closeness.stats" in query_runner.queries[0]
+    assert "gds.closeness.harmonic.stats" in query_runner.queries[0]
     params = query_runner.params[0]
     assert params["graph_name"] == "test_graph"
     assert "jobId" in params["config"]
 
-    assert isinstance(result_obj, ClosenessStatsResult)
+    assert isinstance(result_obj, ClosenessHarmonicStatsResult)
     assert result_obj.pre_processing_millis == 10
     assert result_obj.compute_millis == 20
     assert result_obj.post_processing_millis == 12
@@ -97,12 +97,12 @@ def test_stats(graph: Graph) -> None:
 
 
 def test_stream(
-    closeness_endpoints: ClosenessCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
+    closeness_harmonic_endpoints: ClosenessHarmonicCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
 ) -> None:
-    closeness_endpoints.stream(graph)
+    closeness_harmonic_endpoints.stream(graph)
 
     assert len(query_runner.queries) == 1
-    assert "gds.closeness.stream" in query_runner.queries[0]
+    assert "gds.closeness.harmonic.stream" in query_runner.queries[0]
     params = query_runner.params[0]
     assert params["graph_name"] == "test_graph"
     config = params["config"]
@@ -120,37 +120,37 @@ def test_write(graph: Graph) -> None:
         "configuration": {"bar": 1337},
     }
 
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"closeness.write": pd.DataFrame([result])})
+    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"closeness.harmonic.write": pd.DataFrame([result])})
 
-    result_obj = ClosenessCypherEndpoints(query_runner).write(graph, "closeness")
+    result_obj = ClosenessHarmonicCypherEndpoints(query_runner).write(graph, "harmonic_closeness")
 
     assert len(query_runner.queries) == 1
-    assert "gds.closeness.write" in query_runner.queries[0]
+    assert "gds.closeness.harmonic.write" in query_runner.queries[0]
     params = query_runner.params[0]
     assert params["graph_name"] == "test_graph"
     config = params["config"]
-    assert config["writeProperty"] == "closeness"
+    assert config["writeProperty"] == "harmonic_closeness"
     assert "jobId" in config
 
-    assert isinstance(result_obj, ClosenessWriteResult)
+    assert isinstance(result_obj, ClosenessHarmonicWriteResult)
     assert result_obj.node_properties_written == 5
     assert result_obj.write_millis == 42
 
 
 def test_estimate_with_graph_name(graph: Graph) -> None:
     query_runner = CollectingQueryRunner(
-        DEFAULT_SERVER_VERSION, {"closeness.stats.estimate": pd.DataFrame([estimate_mock_result()])}
+        DEFAULT_SERVER_VERSION, {"closeness.harmonic.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )
 
-    ClosenessCypherEndpoints(query_runner).estimate(graph)
+    ClosenessHarmonicCypherEndpoints(query_runner).estimate(graph)
 
     assert len(query_runner.queries) == 1
-    assert "gds.closeness.stats.estimate" in query_runner.queries[0]
+    assert "gds.closeness.harmonic.stats.estimate" in query_runner.queries[0]
 
 
 def test_estimate_with_projection_config() -> None:
     query_runner = CollectingQueryRunner(
-        DEFAULT_SERVER_VERSION, {"closeness.stats.estimate": pd.DataFrame([estimate_mock_result()])}
+        DEFAULT_SERVER_VERSION, {"closeness.harmonic.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )
 
     projection_config = {
@@ -158,7 +158,7 @@ def test_estimate_with_projection_config() -> None:
         "relationshipProjection": "*",
     }
 
-    ClosenessCypherEndpoints(query_runner).estimate(projection_config)
+    ClosenessHarmonicCypherEndpoints(query_runner).estimate(projection_config)
 
     assert len(query_runner.queries) == 1
-    assert "gds.closeness.stats.estimate" in query_runner.queries[0]
+    assert "gds.closeness.harmonic.stats.estimate" in query_runner.queries[0]
