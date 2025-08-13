@@ -1160,11 +1160,27 @@
   },
   {
     "function": {
+      "name": "gds.cliqueCounting.mutate.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
       "name": "gds.cliqueCounting.stream",
       "signature": "G: Graph, **config: Any",
       "return_type": "DataFrame"
     },
     "description": "Counts the number of cliques, of different size, each node is part of."
+  },
+  {
+    "function": {
+      "name": "gds.cliqueCounting.stream.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -1176,11 +1192,27 @@
   },
   {
     "function": {
+      "name": "gds.cliqueCounting.stats.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
       "name": "gds.cliqueCounting.write",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
     "description": "Counts the number of cliques, of different size, each node is part of."
+  },
+  {
+    "function": {
+      "name": "gds.cliqueCounting.write.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
