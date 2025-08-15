@@ -30,14 +30,24 @@ class DedicatedSessions:
         node_count: int,
         relationship_count: int,
         algorithm_categories: Optional[list[AlgorithmCategory]] = None,
+        node_label_count: int = 0,
+        node_property_count: int = 0,
+        relationship_property_count: int = 0,
     ) -> SessionMemory:
         if algorithm_categories is None:
             algorithm_categories = []
-        estimation = self._aura_api.estimate_size(node_count, relationship_count, algorithm_categories)
+        estimation = self._aura_api.estimate_size(
+            node_count=node_count,
+            node_label_count=node_label_count,
+            node_property_count=node_property_count,
+            relationship_count=relationship_count,
+            relationship_property_count=relationship_property_count,
+            algorithm_categories=algorithm_categories,
+        )
 
-        if estimation.did_exceed_maximum:
+        if estimation.exceeds_recommended():
             warnings.warn(
-                f"The estimated memory `{estimation.min_required_memory}` exceeds the maximum size"
+                f"The estimated memory `{estimation.estimated_memory}` exceeds the maximum size"
                 f" supported by your Aura project (`{estimation.recommended_size}`).",
                 ResourceWarning,
             )

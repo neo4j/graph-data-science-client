@@ -72,6 +72,9 @@ class GdsSessions:
         node_count: int,
         relationship_count: int,
         algorithm_categories: Optional[list[AlgorithmCategory]] = None,
+        node_label_count: int = 0,
+        node_property_count: int = 0,
+        relationship_property_count: int = 0,
     ) -> SessionMemory:
         """
         Estimates the memory required for a session with the given node and relationship counts.
@@ -80,13 +83,22 @@ class GdsSessions:
             node_count (int): The number of nodes.
             relationship_count (int): The number of relationships.
             algorithm_categories (Optional[list[AlgorithmCategory]]): The algorithm categories to consider.
-
+            node_label_count (int): The number of node labels.
+            node_property_count (int): The number of node properties.
+            relationship_property_count (int): The number of relationship properties.
         Returns:
             SessionMemory: The estimated memory required for the session.
         """
         if algorithm_categories is None:
             algorithm_categories = []
-        return self._impl.estimate(node_count, relationship_count, algorithm_categories)
+        return self._impl.estimate(
+            node_count=node_count,
+            relationship_count=relationship_count,
+            algorithm_categories=algorithm_categories,
+            node_label_count=node_label_count,
+            node_property_count=node_property_count,
+            relationship_property_count=relationship_property_count,
+        )
 
     def available_cloud_locations(self) -> list[CloudLocation]:
         """
