@@ -9,7 +9,9 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
     if not config.getoption("--include-integration-v2"):
         skip_v2 = pytest.mark.skip(reason="need --include-integration-v2 option to run")
         for item in items:
-            item.add_marker(skip_v2)
+            # otherwise would also skip lots of other test
+            if "integrationV2" in str(item.fspath):
+                item.add_marker(skip_v2)
 
 
 # best used with pytest --basetemp=tmp/pytest for easy access to logs
