@@ -14,7 +14,7 @@ def mock_arrow_client(mocker: MockerFixture) -> AuthenticatedArrowClient:
     client = mocker.Mock(spec=AuthenticatedArrowClient)
     client.connection_info.return_value = mocker.Mock(host="localhost", port=8080, encrypted=False)
     client.request_token.return_value = "test_token"
-    return client
+    return client  # type: ignore
 
 
 @pytest.fixture
@@ -53,5 +53,5 @@ def test_write_calls_run_write_back(write_back_client: WriteBackClient, mocker: 
 
     duration = write_back_client.write(graph_name, job_id, concurrency)
 
-    write_back_client._write_protocol.run_write_back.assert_called_once()
+    write_back_client._write_protocol.run_write_back.assert_called_once()  # type: ignore
     assert duration >= 0
