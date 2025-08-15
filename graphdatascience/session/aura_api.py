@@ -303,13 +303,21 @@ class AuraApi:
         return WaitResult.from_error(f"Instance is not running after waiting for {waited_time} seconds")
 
     def estimate_size(
-        self, node_count: int, relationship_count: int, algorithm_categories: list[AlgorithmCategory]
+        self,
+        node_count: int,
+        node_label_count: int,
+        node_property_count: int,
+        relationship_count: int,
+        relationship_property_count: int,
+        algorithm_categories: list[AlgorithmCategory],
     ) -> EstimationDetails:
         data = {
             "node_count": node_count,
+            "node_label_count": node_label_count,
+            "node_property_count": node_property_count,
             "relationship_count": relationship_count,
+            "relationship_property_count": relationship_property_count,
             "algorithm_categories": [i.value for i in algorithm_categories],
-            "instance_type": "dsenterprise",
         }
 
         response = self._request_session.post(f"{self._base_uri}/v1/instances/sizing", json=data)
