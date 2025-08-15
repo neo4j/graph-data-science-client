@@ -1,27 +1,25 @@
-import unittest
-from unittest.mock import MagicMock
+import json
 
-from graphdatascience.arrow_client.v2.api_types import MutateResult
+from pytest_mock import MockerFixture
+
 from graphdatascience.arrow_client.v2.mutation_client import MutationClient
 from graphdatascience.tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
 
 
-class TestMutationClient(unittest.TestCase):
-    def setUp(self) -> None:
-        self.mock_client = MagicMock()
+def test_mutate_node_property_success(mocker: MockerFixture) -> None:
+    job_id = "test-job-123"
+    arrow_mutation_result = {"nodePropertiesWritten": 42, "relationshipsWritten": 1337}
 
-    def test_mutate_node_property_success(self) -> None:
-        job_id = "test-job-123"
-        expected_mutation_result = MutateResult(nodePropertiesWritten=42, relationshipsWritten=1337)
+    mock_client = mocker.Mock()
+    mock_client.do_action_with_retry.return_value = iter([ArrowTestResult(arrow_mutation_result)])
 
-        self.mock_client.do_action_with_retry.return_value = iter(
-            [ArrowTestResult(expected_mutation_result.dump_camel())]
-        )
+    result = MutationClient.mutate_node_property(mock_client, job_id, "propertyName")
 
-        result = MutationClient.mutate_node_property(self.mock_client, job_id, "propertyName")
+    assert result.node_properties_written == 42
+    assert result.relationships_written == 1337
+    assert result.mutate_millis > 0
 
-        assert result == expected_mutation_result
+    args, _ = mock_client.do_action_with_retry.call_args
 
-        self.mock_client.do_action_with_retry.assert_called_once_with(
-            MutationClient.MUTATE_ENDPOINT, b'{"jobId": "test-job-123", "mutateProperty": "propertyName"}'
-        )
+    assert args[0] == MutationClient.MUTATE_ENDPOINT
+    assert json.loads(args[1]) == {"jobId": "test-job-123", "mutateProperty": "propertyName"}

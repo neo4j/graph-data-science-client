@@ -1,109 +1,112 @@
 import json
-import unittest
-from unittest.mock import MagicMock
+
+from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.v2.api_types import JobIdConfig, JobStatus
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
 
 
-class TestJobClient(unittest.TestCase):
-    def setUp(self) -> None:
-        self.mock_client = MagicMock()
+def test_run_job(mocker: MockerFixture) -> None:
+    mock_client = mocker.Mock()
+    job_id = "test-job-123"
+    endpoint = "v2/test.endpoint"
+    config = {"param1": "value1", "param2": 42}
 
-    def test_run_job(self) -> None:
-        job_id = "test-job-123"
-        endpoint = "v2/test.endpoint"
-        config = {"param1": "value1", "param2": 42}
+    mock_client.do_action_with_retry.return_value = iter([ArrowTestResult({"jobId": job_id})])
 
-        self.mock_client.do_action_with_retry.return_value = iter([ArrowTestResult({"jobId": job_id})])
+    result = JobClient.run_job(mock_client, endpoint, config)
 
-        result = JobClient.run_job(self.mock_client, endpoint, config)
+    expected_config = json.dumps(config).encode("utf-8")
+    mock_client.do_action_with_retry.assert_called_once_with(endpoint, expected_config)
+    assert result == job_id
 
-        expected_config = json.dumps(config).encode("utf-8")
-        self.mock_client.do_action_with_retry.assert_called_once_with(endpoint, expected_config)
-        self.assertEqual(result, job_id)
 
-    def test_run_job_and_wait(
-        self,
-    ) -> None:
-        job_id = "test-job-456"
-        endpoint = "v2/test.endpoint"
-        config = {"param": "value"}
+def test_run_job_and_wait(mocker: MockerFixture) -> None:
+    mock_client = mocker.Mock()
+    job_id = "test-job-456"
+    endpoint = "v2/test.endpoint"
+    config = {"param": "value"}
 
-        job_id_config = JobIdConfig(jobId=job_id)
+    job_id_config = JobIdConfig(jobId=job_id)
 
-        status = JobStatus(
-            jobId=job_id,
-            progress=1.0,
-            status="Done",
-        )
+    status = JobStatus(
+        jobId=job_id,
+        progress=1.0,
+        status="Done",
+    )
 
-        do_action_with_retry = MagicMock()
-        do_action_with_retry.side_effect = [
-            iter([ArrowTestResult(job_id_config.dump_camel())]),
-            iter([ArrowTestResult(status.dump_camel())]),
-        ]
+    do_action_with_retry = mocker.Mock()
+    do_action_with_retry.side_effect = [
+        iter([ArrowTestResult(job_id_config.dump_camel())]),
+        iter([ArrowTestResult(status.dump_camel())]),
+    ]
 
-        self.mock_client.do_action_with_retry = do_action_with_retry
+    mock_client.do_action_with_retry = do_action_with_retry
 
-        result = JobClient.run_job_and_wait(self.mock_client, endpoint, config)
+    result = JobClient.run_job_and_wait(mock_client, endpoint, config)
 
-        do_action_with_retry.assert_called_with("v2/jobs.status", job_id_config.dump_json().encode("utf-8"))
-        self.assertEqual(result, job_id)
+    do_action_with_retry.assert_called_with("v2/jobs.status", job_id_config.dump_json().encode("utf-8"))
+    assert result == job_id
 
-    def test_wait_for_job_completes_immediately(self) -> None:
-        job_id = "test-job-789"
 
-        status = JobStatus(
-            jobId=job_id,
-            progress=1.0,
-            status="Done",
-        )
+def test_wait_for_job_completes_immediately(mocker: MockerFixture) -> None:
+    mock_client = mocker.Mock()
+    job_id = "test-job-789"
 
-        self.mock_client.do_action_with_retry.return_value = iter([ArrowTestResult(status.dump_camel())])
+    status = JobStatus(
+        jobId=job_id,
+        progress=1.0,
+        status="Done",
+    )
 
-        JobClient.wait_for_job(self.mock_client, job_id)
+    mock_client.do_action_with_retry.return_value = iter([ArrowTestResult(status.dump_camel())])
 
-        self.mock_client.do_action_with_retry.assert_called_once_with(
-            "v2/jobs.status", JobIdConfig(jobId=job_id).dump_json().encode("utf-8")
-        )
+    JobClient.wait_for_job(mock_client, job_id)
 
-    def test_wait_for_job_waits_for_completion(self) -> None:
-        job_id = "test-job-waiting"
-        status_running = JobStatus(
-            jobId=job_id,
-            progress=0.5,
-            status="RUNNING",
-        )
-        status_done = JobStatus(
-            jobId=job_id,
-            progress=1.0,
-            status="Done",
-        )
+    mock_client.do_action_with_retry.assert_called_once_with(
+        "v2/jobs.status", JobIdConfig(jobId=job_id).dump_json().encode("utf-8")
+    )
 
-        do_action_with_retry = MagicMock()
-        do_action_with_retry.side_effect = [
-            iter([ArrowTestResult(status_running.dump_camel())]),
-            iter([ArrowTestResult(status_done.dump_camel())]),
-        ]
 
-        self.mock_client.do_action_with_retry = do_action_with_retry
+def test_wait_for_job_waits_for_completion(mocker: MockerFixture) -> None:
+    mock_client = mocker.Mock()
+    job_id = "test-job-waiting"
+    status_running = JobStatus(
+        jobId=job_id,
+        progress=0.5,
+        status="RUNNING",
+    )
+    status_done = JobStatus(
+        jobId=job_id,
+        progress=1.0,
+        status="Done",
+    )
 
-        JobClient.wait_for_job(self.mock_client, job_id)
+    do_action_with_retry = mocker.Mock()
+    do_action_with_retry.side_effect = [
+        iter([ArrowTestResult(status_running.dump_camel())]),
+        iter([ArrowTestResult(status_done.dump_camel())]),
+    ]
 
-        self.assertEqual(self.mock_client.do_action_with_retry.call_count, 2)
+    mock_client.do_action_with_retry = do_action_with_retry
 
-    def test_get_summary(self) -> None:
-        # Setup
-        job_id = "summary-job-123"
-        expected_summary = {"nodeCount": 100, "relationshipCount": 200, "requiredMemory": "1GB"}
+    JobClient.wait_for_job(mock_client, job_id)
 
-        self.mock_client.do_action_with_retry.return_value = iter([ArrowTestResult(expected_summary)])
+    assert mock_client.do_action_with_retry.call_count == 2
 
-        result = JobClient.get_summary(self.mock_client, job_id)
 
-        self.mock_client.do_action_with_retry.assert_called_once_with(
-            "v2/results.summary", JobIdConfig(jobId=job_id).dump_json().encode("utf-8")
-        )
-        self.assertEqual(result, expected_summary)
+def test_get_summary(mocker: MockerFixture) -> None:
+    mock_client = mocker.Mock()
+    # Setup
+    job_id = "summary-job-123"
+    expected_summary = {"nodeCount": 100, "relationshipCount": 200, "requiredMemory": "1GB"}
+
+    mock_client.do_action_with_retry.return_value = iter([ArrowTestResult(expected_summary)])
+
+    result = JobClient.get_summary(mock_client, job_id)
+
+    mock_client.do_action_with_retry.assert_called_once_with(
+        "v2/results.summary", JobIdConfig(jobId=job_id).dump_json().encode("utf-8")
+    )
+    assert result == expected_summary

@@ -1,8 +1,8 @@
 from typing import Optional
-from unittest.mock import Mock
 
 import pytest
 from pandas import DataFrame
+from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.write_back_client import WriteBackClient
@@ -10,9 +10,9 @@ from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, Collect
 
 
 @pytest.fixture
-def mock_arrow_client() -> AuthenticatedArrowClient:
-    client = Mock(spec=AuthenticatedArrowClient)
-    client.connection_info.return_value = Mock(host="localhost", port=8080, encrypted=False)
+def mock_arrow_client(mocker: MockerFixture) -> AuthenticatedArrowClient:
+    client = mocker.Mock(spec=AuthenticatedArrowClient)
+    client.connection_info.return_value = mocker.Mock(host="localhost", port=8080, encrypted=False)
     client.request_token.return_value = "test_token"
     return client
 
@@ -44,12 +44,12 @@ def test_arrow_configuration(write_back_client: WriteBackClient, mock_arrow_clie
     assert config == expected_config
 
 
-def test_write_calls_run_write_back(write_back_client: WriteBackClient) -> None:
+def test_write_calls_run_write_back(write_back_client: WriteBackClient, mocker: MockerFixture) -> None:
     graph_name = "test_graph"
     job_id = "123"
     concurrency: Optional[int] = 4
 
-    write_back_client._write_protocol.run_write_back = Mock()  # type: ignore
+    write_back_client._write_protocol.run_write_back = mocker.Mock()  # type: ignore
 
     duration = write_back_client.write(graph_name, job_id, concurrency)
 
