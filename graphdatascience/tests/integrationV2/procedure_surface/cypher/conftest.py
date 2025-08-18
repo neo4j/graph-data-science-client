@@ -35,7 +35,7 @@ def gds_plugin_container(logs_dir: Path, inside_ci: bool) -> Generator[Neo4jCont
 
         out_file = logs_dir / "neo4j_container.log"
         with open(out_file, "w") as f:
-            f.write(str(stdout))
+            f.write(stdout.decode("utf-8"))
 
 
 @pytest.fixture(scope="package")

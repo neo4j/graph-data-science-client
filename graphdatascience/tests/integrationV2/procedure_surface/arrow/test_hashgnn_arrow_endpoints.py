@@ -1,0 +1,92 @@
+import json
+from typing import Generator
+
+import pytest
+
+from graphdatascience import Graph
+from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.procedure_surface.arrow.hashgnn_arrow_endpoints import HashGNNArrowEndpoints
+from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
+
+
+@pytest.fixture
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+    gdl = """
+    CREATE
+    (a: Node {feature: [1L, 0L, 1L, 0L]}),
+    (b: Node {feature: [0L, 1L, 0L, 1L]}),
+    (c: Node {feature: [1L, 1L, 0L, 0L]}),
+    (d: Node {feature: [0L, 0L, 1L, 1L]}),
+    (a)-[:REL]->(b),
+    (b)-[:REL]->(c),
+    (c)-[:REL]->(d),
+    (d)-[:REL]->(a)
+    """
+
+    yield create_graph(arrow_client, "g", gdl)
+    arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "g"}).encode("utf-8"))
+
+
+@pytest.fixture
+def hashgnn_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[HashGNNArrowEndpoints, None, None]:
+    yield HashGNNArrowEndpoints(arrow_client)
+
+
+def test_hashgnn_mutate(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: Graph) -> None:
+    """Test HashGNN mutate operation."""
+    result = hashgnn_endpoints.mutate(
+        G=sample_graph,
+        iterations=2,
+        embedding_density=256,
+        mutate_property="hashgnn_embedding",
+        feature_properties=["feature"],
+    )
+
+    assert result.pre_processing_millis >= 0
+    assert result.compute_millis >= 0
+    assert result.mutate_millis >= 0
+    assert result.node_properties_written == 4
+    assert result.configuration is not None
+
+
+def test_hashgnn_stream(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: Graph) -> None:
+    """Test HashGNN stream operation."""
+    result = hashgnn_endpoints.stream(
+        G=sample_graph,
+        iterations=2,
+        embedding_density=4,
+        feature_properties=["feature"],
+    )
+
+    assert len(result) == 4  # We have 4 nodes
+    assert set(result.columns) == {"nodeId", "embedding"}
+
+
+def test_hashgnn_write(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: Graph) -> None:
+    """Test HashGNN write operation."""
+    with pytest.raises(Exception, match="Write back client is not initialized"):
+        hashgnn_endpoints.write(
+            G=sample_graph,
+            iterations=2,
+            embedding_density=64,
+            write_property="hashgnn_embedding",
+            feature_properties=["feature"],
+        )
+
+
+def test_hashgnn_estimate(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: Graph) -> None:
+    """Test HashGNN estimate operation."""
+    result = hashgnn_endpoints.estimate(
+        G=sample_graph,
+        iterations=2,
+        embedding_density=4,
+        feature_properties=["feature"],
+    )
+
+    assert result.node_count == 4
+    assert result.relationship_count == 4
+    assert "KiB" in result.required_memory
+    assert result.bytes_min > 0
+    assert result.bytes_max > 0
+    assert result.heap_percentage_min > 0
+    assert result.heap_percentage_max > 0
