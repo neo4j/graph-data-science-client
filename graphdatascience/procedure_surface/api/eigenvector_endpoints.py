@@ -271,7 +271,7 @@ class EigenvectorEndpoints(ABC):
         concurrency: Optional[Any] = None,
     ) -> EstimationResult:
         """
-        Estimate the memory consumption of an Eigenvector Centrality algorithm run.
+        Estimate the memory consumption of an algorithm run.
 
         Parameters
         ----------

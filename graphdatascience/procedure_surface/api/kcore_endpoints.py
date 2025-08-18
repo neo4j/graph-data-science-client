@@ -196,7 +196,13 @@ class KCoreEndpoints(ABC):
         pass
 
     @abstractmethod
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+    ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
 
@@ -204,11 +210,17 @@ class KCoreEndpoints(ABC):
         ----------
         G : Union[Graph, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
+        relationship_types : Optional[List[str]], default=None
+            The relationship types used to select relationships for this algorithm run
+        node_labels : Optional[List[str]], default=None
+            The node labels used to select nodes for this algorithm run
+        concurrency : Optional[Any], default=None
+            The number of concurrent threads
 
         Returns
         -------
         EstimationResult
-            An object containing the result of the estimation
+            Memory estimation details
         """
         pass
 

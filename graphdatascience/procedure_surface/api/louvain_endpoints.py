@@ -280,7 +280,20 @@ class LouvainEndpoints(ABC):
         pass
 
     @abstractmethod
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        tolerance: Optional[float] = None,
+        max_levels: Optional[int] = None,
+        include_intermediate_communities: Optional[bool] = None,
+        max_iterations: Optional[int] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+        seed_property: Optional[str] = None,
+        consecutive_ids: Optional[bool] = None,
+        relationship_weight_property: Optional[str] = None,
+    ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
 
@@ -288,6 +301,26 @@ class LouvainEndpoints(ABC):
         ----------
         G : Union[Graph, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
+        tolerance : Optional[float], default=None
+            The tolerance value for the algorithm convergence
+        max_levels : Optional[int], default=None
+            The maximum number of levels in the hierarchy
+        include_intermediate_communities : Optional[bool], default=None
+            Whether to include intermediate community assignments
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations per level
+        relationship_types : Optional[List[str]], default=None
+            The relationship types used to select relationships for this algorithm run
+        node_labels : Optional[List[str]], default=None
+            The node labels used to select nodes for this algorithm run
+        concurrency : Optional[Any], default=None
+            The number of concurrent threads
+        seed_property : Optional[str], default=None
+            A property to use as the starting community id for a node
+        consecutive_ids : Optional[bool], default=None
+            Flag to decide if the component identifiers should be returned consecutively or not
+        relationship_weight_property : Optional[str], default=None
+            The property name that contains weight
 
         Returns
         -------

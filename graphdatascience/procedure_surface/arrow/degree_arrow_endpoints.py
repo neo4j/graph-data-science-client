@@ -133,5 +133,20 @@ class DegreeArrowEndpoints(DegreeEndpoints):
 
         return DegreeWriteResult(**result)
 
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
-        return self._node_property_endpoints.estimate("v2/centrality.degree.estimate", G)
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        orientation: Optional[Any] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+        relationship_weight_property: Optional[str] = None,
+    ) -> EstimationResult:
+        config = self._node_property_endpoints.create_estimate_config(
+            orientation=orientation,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+            relationship_weight_property=relationship_weight_property,
+        )
+        return self._node_property_endpoints.estimate("v2/centrality.degree.estimate", G, config)

@@ -194,10 +194,7 @@ class ArticulationPointsEndpoints(ABC):
         concurrency: Optional[Any] = None,
     ) -> EstimationResult:
         """
-        Estimate the memory consumption of the Articulation Points algorithm.
-
-        This method provides an estimate of the memory requirements for running the algorithm
-        on a given graph, helping with capacity planning and resource allocation.
+        Estimate the memory consumption of an algorithm run.
 
         Parameters
         ----------

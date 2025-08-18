@@ -132,4 +132,9 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
     ) -> EstimationResult:
-        return self._node_property_endpoints.estimate("v2/centrality.articulationPoints.estimate", G)
+        config = self._node_property_endpoints.create_estimate_config(
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+        )
+        return self._node_property_endpoints.estimate("v2/centrality.articulationPoints.estimate", G, config)

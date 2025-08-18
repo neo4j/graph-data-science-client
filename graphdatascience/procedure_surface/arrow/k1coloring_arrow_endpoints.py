@@ -146,5 +146,20 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
 
         return K1ColoringWriteResult(**result)
 
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
-        return self._node_property_endpoints.estimate("v2/community.k1coloring.estimate", G)
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        batch_size: Optional[int] = None,
+        max_iterations: Optional[int] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+    ) -> EstimationResult:
+        config = self._node_property_endpoints.create_estimate_config(
+            batch_size=batch_size,
+            max_iterations=max_iterations,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+        )
+        return self._node_property_endpoints.estimate("v2/community.k1coloring.estimate", G, algo_config=config)

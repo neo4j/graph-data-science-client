@@ -153,5 +153,24 @@ class WccArrowEndpoints(WccEndpoints):
 
         return WccWriteResult(**result)
 
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
-        return self._node_property_endpoints.estimate("v2/community.wcc.estimate", G)
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        threshold: Optional[float] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+        seed_property: Optional[str] = None,
+        consecutive_ids: Optional[bool] = None,
+        relationship_weight_property: Optional[str] = None,
+    ) -> EstimationResult:
+        config = self._node_property_endpoints.create_estimate_config(
+            threshold=threshold,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+            seed_property=seed_property,
+            consecutive_ids=consecutive_ids,
+            relationship_weight_property=relationship_weight_property,
+        )
+        return self._node_property_endpoints.estimate("v2/community.wcc.estimate", G, config)

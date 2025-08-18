@@ -222,7 +222,16 @@ class BetweennessEndpoints(ABC):
         """
 
     @abstractmethod
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        sampling_size: Optional[int] = None,
+        sampling_seed: Optional[int] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+        relationship_weight_property: Optional[str] = None,
+    ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
 
@@ -230,11 +239,23 @@ class BetweennessEndpoints(ABC):
         ----------
         G : Union[Graph, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
+        sampling_size : Optional[int], default=None
+            The number of nodes to use for sampling.
+        sampling_seed : Optional[int], default=None
+            The seed value for sampling randomization
+        relationship_types : Optional[List[str]], default=None
+            The relationship types used to select relationships for this algorithm run
+        node_labels : Optional[List[str]], default=None
+            The node labels used to select nodes for this algorithm run
+        concurrency : Optional[Any], default=None
+            The number of concurrent threads
+        relationship_weight_property : Optional[str], default=None
+            The property name that contains weight
 
         Returns
         -------
         EstimationResult
-            An object containing the result of the estimation
+            Memory estimation details
         """
 
 
