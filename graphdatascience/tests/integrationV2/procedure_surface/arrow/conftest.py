@@ -62,7 +62,7 @@ def session_container(password_dir: Path, logs_dir: Path, inside_ci: bool) -> Ge
 
         out_file = logs_dir / "session_container.log"
         with open(out_file, "w") as f:
-            f.write(str(stdout))
+            f.write(stdout.decode("utf-8"))
 
 
 @pytest.fixture(scope="package")
