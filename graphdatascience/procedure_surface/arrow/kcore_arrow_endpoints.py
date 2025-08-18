@@ -120,5 +120,16 @@ class KCoreArrowEndpoints(KCoreEndpoints):
         )
         return KCoreWriteResult(**result)
 
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
-        return self._node_property_endpoints.estimate("v2/community.kcore.estimate", G)
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+    ) -> EstimationResult:
+        config = self._node_property_endpoints.create_estimate_config(
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+        )
+        return self._node_property_endpoints.estimate("v2/community.kcore.estimate", G, config)

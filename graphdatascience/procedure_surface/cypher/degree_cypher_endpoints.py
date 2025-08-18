@@ -155,9 +155,25 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         result = self._query_runner.call_procedure(endpoint="gds.degree.write", params=params).squeeze()
         return DegreeWriteResult(**result.to_dict())
 
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        orientation: Optional[Any] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+        relationship_weight_property: Optional[str] = None,
+    ) -> EstimationResult:
+        algo_config = ConfigConverter.convert_to_gds_config(
+            orientation=orientation,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+            relationship_weight_property=relationship_weight_property,
+        )
         return estimate_algorithm(
             endpoint="gds.degree.stats.estimate",
             query_runner=self._query_runner,
             G=G,
+            algo_config=algo_config,
         )

@@ -244,7 +244,17 @@ class WccEndpoints(ABC):
         pass
 
     @abstractmethod
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        threshold: Optional[float] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+        seed_property: Optional[str] = None,
+        consecutive_ids: Optional[bool] = None,
+        relationship_weight_property: Optional[str] = None,
+    ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
 
@@ -252,11 +262,25 @@ class WccEndpoints(ABC):
         ----------
         G : Union[Graph, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
+        threshold : Optional[float], default=None
+            The minimum required weight to consider a relationship during traversal
+        relationship_types : Optional[List[str]], default=None
+            The relationship types used to select relationships for this algorithm run
+        node_labels : Optional[List[str]], default=None
+            The node labels used to select nodes for this algorithm run
+        concurrency : Optional[Any], default=None
+            The number of concurrent threads
+        seed_property : Optional[str], default=None
+            A property to use as the starting component id for a node
+        consecutive_ids : Optional[bool], default=None
+            Flag to decide if the component identifiers should be returned consecutively or not
+        relationship_weight_property : Optional[str], default=None
+            The property name that contains weight
 
         Returns
         -------
         EstimationResult
-            An object containing the result of the estimation
+            Memory estimation details
         """
         pass
 

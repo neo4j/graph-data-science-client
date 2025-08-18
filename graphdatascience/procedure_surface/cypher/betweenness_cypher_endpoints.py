@@ -166,9 +166,27 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
 
         return BetweennessWriteResult(**result.to_dict())
 
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        sampling_size: Optional[int] = None,
+        sampling_seed: Optional[int] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+        relationship_weight_property: Optional[str] = None,
+    ) -> EstimationResult:
+        algo_config = ConfigConverter.convert_to_gds_config(
+            sampling_size=sampling_size,
+            sampling_seed=sampling_seed,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+            relationship_weight_property=relationship_weight_property,
+        )
         return estimate_algorithm(
             endpoint="gds.betweenness.stats.estimate",
             query_runner=self._query_runner,
             G=G,
+            algo_config=algo_config,
         )

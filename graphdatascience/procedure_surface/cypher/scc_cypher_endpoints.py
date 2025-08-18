@@ -148,5 +148,17 @@ class SccCypherEndpoints(SccEndpoints):
     def estimate(
         self,
         G: Union[Graph, dict[str, Any]],
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+        consecutive_ids: Optional[bool] = None,
     ) -> EstimationResult:
-        return estimate_algorithm(endpoint="gds.scc.stats.estimate", query_runner=self._query_runner, G=G)
+        algo_config = ConfigConverter.convert_to_gds_config(
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+            consecutive_ids=consecutive_ids,
+        )
+        return estimate_algorithm(
+            endpoint="gds.scc.stats.estimate", query_runner=self._query_runner, G=G, algo_config=algo_config
+        )

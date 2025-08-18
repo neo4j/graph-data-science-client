@@ -262,14 +262,44 @@ class PageRankEndpoints(ABC):
         pass
 
     @abstractmethod
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        damping_factor: Optional[float] = None,
+        tolerance: Optional[float] = None,
+        max_iterations: Optional[int] = None,
+        scaler: Optional[Any] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+        relationship_weight_property: Optional[str] = None,
+        source_nodes: Optional[Any] = None,
+    ) -> EstimationResult:
         """
-        Estimates the memory requirements for running the PageRank algorithm.
+        Estimate the memory consumption of an algorithm run.
 
         Parameters
         ----------
         G : Union[Graph, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
+        damping_factor : Optional[float], default=None
+            The damping factor controls the probability of a random jump to a random node
+        tolerance : Optional[float], default=None
+            Minimum change in scores between iterations
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations to run
+        scaler : Optional[Any], default=None
+            Configuration for scaling the scores
+        relationship_types : Optional[List[str]], default=None
+            The relationships types used to select relationships for this algorithm run
+        node_labels : Optional[List[str]], default=None
+            The node labels used to select nodes for this algorithm run
+        concurrency : Optional[Any], default=None
+            The number of concurrent threads
+        relationship_weight_property : Optional[str], default=None
+            The property name that contains weight
+        source_nodes : Optional[Any], default=None
+            The source nodes for personalized PageRank
 
         Returns
         -------

@@ -164,5 +164,28 @@ class PageRankArrowEndpoints(PageRankEndpoints):
         )
         return PageRankWriteResult(**result)
 
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
-        return self._node_property_endpoints.estimate("v2/centrality.pageRank.estimate", G)
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        damping_factor: Optional[float] = None,
+        tolerance: Optional[float] = None,
+        max_iterations: Optional[int] = None,
+        scaler: Optional[Any] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+        relationship_weight_property: Optional[str] = None,
+        source_nodes: Optional[Any] = None,
+    ) -> EstimationResult:
+        config = self._node_property_endpoints.create_estimate_config(
+            damping_factor=damping_factor,
+            tolerance=tolerance,
+            max_iterations=max_iterations,
+            scaler=scaler,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+            relationship_weight_property=relationship_weight_property,
+            source_nodes=source_nodes,
+        )
+        return self._node_property_endpoints.estimate("v2/centrality.pageRank.estimate", G, config)

@@ -125,5 +125,18 @@ class SccArrowEndpoints(SccEndpoints):
 
         return SccWriteResult(**result)
 
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
-        return self._node_property_endpoints.estimate("v2/community.scc.estimate", G)
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+        consecutive_ids: Optional[bool] = None,
+    ) -> EstimationResult:
+        config = self._node_property_endpoints.create_estimate_config(
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+            consecutive_ids=consecutive_ids,
+        )
+        return self._node_property_endpoints.estimate("v2/community.scc.estimate", G, config)

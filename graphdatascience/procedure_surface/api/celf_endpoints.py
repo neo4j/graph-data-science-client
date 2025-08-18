@@ -244,7 +244,6 @@ class CelfEndpoints(ABC):
         """
         pass
 
-    # TODO add for params for estimate in other endpoints as well (missed before)
     @abstractmethod
     def estimate(
         self,
@@ -258,10 +257,7 @@ class CelfEndpoints(ABC):
         concurrency: Optional[Any] = None,
     ) -> EstimationResult:
         """
-        Estimate the memory consumption of the CELF algorithm.
-
-        This method provides an estimate of the memory requirements for running the algorithm
-        on a given graph, helping with capacity planning and resource allocation.
+        Estimate the memory consumption of an algorithm run.
 
         Parameters
         ----------

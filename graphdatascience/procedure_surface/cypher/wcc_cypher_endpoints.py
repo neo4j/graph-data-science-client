@@ -173,5 +173,26 @@ class WccCypherEndpoints(WccEndpoints):
 
         return WccWriteResult(**result.to_dict())
 
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
-        return estimate_algorithm(endpoint="gds.wcc.stats.estimate", query_runner=self._query_runner, G=G)
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        threshold: Optional[float] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+        seed_property: Optional[str] = None,
+        consecutive_ids: Optional[bool] = None,
+        relationship_weight_property: Optional[str] = None,
+    ) -> EstimationResult:
+        algo_config = ConfigConverter.convert_to_gds_config(
+            threshold=threshold,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+            seed_property=seed_property,
+            consecutive_ids=consecutive_ids,
+            relationship_weight_property=relationship_weight_property,
+        )
+        return estimate_algorithm(
+            endpoint="gds.wcc.stats.estimate", query_runner=self._query_runner, G=G, algo_config=algo_config
+        )

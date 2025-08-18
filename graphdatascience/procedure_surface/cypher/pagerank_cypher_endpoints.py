@@ -189,5 +189,30 @@ class PageRankCypherEndpoints(PageRankEndpoints):
 
         return PageRankWriteResult(**result.to_dict())
 
-    def estimate(self, G: Union[Graph, dict[str, Any]]) -> EstimationResult:
-        return estimate_algorithm(endpoint="gds.pageRank.stats.estimate", query_runner=self._query_runner, G=G)
+    def estimate(
+        self,
+        G: Union[Graph, dict[str, Any]],
+        damping_factor: Optional[float] = None,
+        tolerance: Optional[float] = None,
+        max_iterations: Optional[int] = None,
+        scaler: Optional[Any] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        concurrency: Optional[Any] = None,
+        relationship_weight_property: Optional[str] = None,
+        source_nodes: Optional[Any] = None,
+    ) -> EstimationResult:
+        algo_config = ConfigConverter.convert_to_gds_config(
+            damping_factor=damping_factor,
+            tolerance=tolerance,
+            max_iterations=max_iterations,
+            scaler=scaler,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+            relationship_weight_property=relationship_weight_property,
+            source_nodes=source_nodes,
+        )
+        return estimate_algorithm(
+            endpoint="gds.pageRank.stats.estimate", query_runner=self._query_runner, G=G, algo_config=algo_config
+        )
