@@ -1,11 +1,12 @@
 from typing import Any
 
 from pandas import Series
+from pydantic import BaseModel
+from pydantic.alias_generators import to_camel
 
-from ...call_parameters import CallParameters
 from ...graph.graph_object import Graph
 from ...graph.graph_type_check import graph_type_check
-from ..model import Model
+from .model import Model
 
 
 class GraphSageModelV2(Model):
@@ -30,13 +31,7 @@ class GraphSageModelV2(Model):
             The result of the write operation.
 
         """
-        endpoint = self._endpoint_prefix() + "write"
-        config["modelName"] = self.name()
-        params = CallParameters(graph_name=G.name(), config=config)
-
-        return self._query_runner.call_procedure(  # type: ignore
-            endpoint=endpoint, params=params, logging=True
-        ).squeeze()
+        raise ValueError
 
     @graph_type_check
     def predict_write_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
@@ -51,4 +46,28 @@ class GraphSageModelV2(Model):
             The memory needed to generate embeddings for the given graph and write the results to the database.
 
         """
-        return self._estimate_predict("write", G.name(), config)
+        raise ValueError
+
+
+class GraphSageMutateResult(BaseModel, alias_generator=to_camel):
+    node_count: int
+    node_properties_written: int
+    pre_processing_millis: int
+    compute_millis: int
+    mutate_millis: int
+    configuration: dict[str, Any]
+
+    def __getitem__(self, item: str) -> Any:
+        return self.__dict__[item]
+
+
+class GraphSageWriteResult(BaseModel, alias_generator=to_camel):
+    node_count: int
+    node_properties_written: int
+    pre_processing_millis: int
+    compute_millis: int
+    write_millis: int
+    configuration: dict[str, Any]
+
+    def __getitem__(self, item: str) -> Any:
+        return self.__dict__[item]

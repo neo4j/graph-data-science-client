@@ -3,11 +3,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 
-from pandas import DataFrame
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
-
-from graphdatascience.model.v2.graphsage_model import GraphSageModel
+from graphdatascience.model.v2.graphsage_model import GraphSageModelV2
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 from ...graph.graph_object import Graph
 
@@ -47,7 +44,7 @@ class GraphSageEndpoints(ABC):
         batch_size: Optional[int] = None,
         relationship_weight_property: Optional[str] = None,
         random_seed: Optional[Any] = None,
-    ) -> GraphSageModel:
+    ) -> tuple[GraphSageModelV2, GraphSageTrainResult]:
         """
         Trains a GraphSage model on the given graph.
 
@@ -110,192 +107,12 @@ class GraphSageEndpoints(ABC):
 
         Returns
         -------
-        GraphSageTrainResult
-            Training metrics and model information
-        """
-
-    @abstractmethod
-    def mutate(
-        self,
-        G: Graph,
-        model_name: str,
-        mutate_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
-        sudo: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        batch_size: Optional[int] = None,
-    ) -> GraphSageMutateResult:
-        """
-        Executes the GraphSage algorithm using a trained model and writes the results back to the graph as a node property.
-
-        Parameters
-        ----------
-        G : Graph
-            The graph to run the algorithm on
-        model_name : str
-            Name of the trained GraphSage model to use
-        mutate_property : str
-            The name of the node property to store the embeddings
-        relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
-        username : Optional[str] = None
-            The username to attribute the procedure run to
-        log_progress : Optional[bool], default=None
-            Whether to log progress
-        sudo : Optional[bool], default=None
-            Override memory estimation limits
-        concurrency : Optional[Any], default=None
-            The number of concurrent threads
-        job_id : Optional[Any], default=None
-            An identifier for the job
-        batch_size : Optional[int], default=None
-            Batch size for inference
-
-        Returns
-        -------
-        GraphSageMutateResult
-            Algorithm metrics and statistics
-        """
-
-    @abstractmethod
-    def stream(
-        self,
-        G: Graph,
-        model_name: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
-        sudo: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        batch_size: Optional[int] = None,
-    ) -> DataFrame:
-        """
-        Executes the GraphSage algorithm using a trained model and returns the results as a stream.
-
-        Parameters
-        ----------
-        G : Graph
-            The graph to run the algorithm on
-        model_name : str
-            Name of the trained GraphSage model to use
-        relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
-        username : Optional[str] = None
-            The username to attribute the procedure run to
-        log_progress : Optional[bool], default=None
-            Whether to log progress
-        sudo : Optional[bool], default=None
-            Override memory estimation limits
-        concurrency : Optional[Any], default=None
-            The number of concurrent threads
-        job_id : Optional[Any], default=None
-            An identifier for the job
-        batch_size : Optional[int], default=None
-            Batch size for inference
-
-        Returns
-        -------
-        DataFrame
-            Embeddings as a stream with columns nodeId and embedding
-        """
-
-    @abstractmethod
-    def write(
-        self,
-        G: Graph,
-        model_name: str,
-        write_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
-        sudo: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        batch_size: Optional[int] = None,
-        write_concurrency: Optional[Any] = None,
-    ) -> GraphSageWriteResult:
-        """
-        Executes the GraphSage algorithm using a trained model and writes the results back to the database.
-
-        Parameters
-        ----------
-        G : Graph
-            The graph to run the algorithm on
-        model_name : str
-            Name of the trained GraphSage model to use
-        write_property : str
-            The name of the node property to write the embeddings to
-        relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
-        username : Optional[str] = None
-            The username to attribute the procedure run to
-        log_progress : Optional[bool], default=None
-            Whether to log progress
-        sudo : Optional[bool], default=None
-            Override memory estimation limits
-        concurrency : Optional[Any], default=None
-            The number of concurrent threads
-        job_id : Optional[Any], default=None
-            An identifier for the job
-        batch_size : Optional[int], default=None
-            Batch size for inference
-        write_concurrency : Optional[Any], default=None
-            The number of concurrent threads used for writing result
-
-        Returns
-        -------
-        GraphSageWriteResult
-            Algorithm metrics and statistics
+        GraphSageModelV2
+            Trained model
         """
 
 
-class GraphSageTrainResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class GraphSageTrainResult(BaseResult):
     model_info: dict[str, Any]
     configuration: dict[str, Any]
     train_millis: int
-
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]
-
-
-class GraphSageMutateResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
-    node_count: int
-    node_properties_written: int
-    pre_processing_millis: int
-    compute_millis: int
-    mutate_millis: int
-    configuration: dict[str, Any]
-
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]
-
-
-class GraphSageWriteResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
-    node_count: int
-    node_properties_written: int
-    pre_processing_millis: int
-    compute_millis: int
-    write_millis: int
-    configuration: dict[str, Any]
-
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]
