@@ -212,7 +212,7 @@ sessions.delete(session_name="my-new-session")
 === Estimating session memory
 
 In order to help determine a good session size for a given workload, there is the `estimate()` function.
-By providing expected node and relationship counts as well as https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/algorithm_category[algorithm categories] that should be used, it will return an estimated size of the session.
+By providing expected sizing of the graph and intended algorithm categories to be used, it will return an estimated size of the session.
 
 .Estimating the size of a GDS Session via the GdsSessions object:
 [source, python, role=no-test]
@@ -228,6 +228,8 @@ memory = sessions.estimate(
     relationship_property_count=1
 )
 ----
+
+For a detailed description of the allowed parameters, see the https://neo4j.com/{docs-version}/graph-data-science-client/current/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.estimate[API] reference.
 
 
 == Projecting graphs into a GDS Session
