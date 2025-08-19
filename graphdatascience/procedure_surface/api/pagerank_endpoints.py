@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
+
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 from ...graph.graph_object import Graph
 from .estimation_result import EstimationResult
@@ -309,9 +309,7 @@ class PageRankEndpoints(ABC):
         pass
 
 
-class PageRankMutateResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class PageRankMutateResult(BaseResult):
     ran_iterations: int
     did_converge: bool
     centrality_distribution: dict[str, Any]
@@ -322,13 +320,8 @@ class PageRankMutateResult(BaseModel):
     node_properties_written: int
     configuration: dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]
 
-
-class PageRankStatsResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class PageRankStatsResult(BaseResult):
     ran_iterations: int
     did_converge: bool
     centrality_distribution: dict[str, Any]
@@ -337,13 +330,8 @@ class PageRankStatsResult(BaseModel):
     post_processing_millis: int
     configuration: dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]
 
-
-class PageRankWriteResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class PageRankWriteResult(BaseResult):
     ran_iterations: int
     did_converge: bool
     centrality_distribution: dict[str, Any]
@@ -353,6 +341,3 @@ class PageRankWriteResult(BaseModel):
     write_millis: int
     node_properties_written: int
     configuration: dict[str, Any]
-
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]

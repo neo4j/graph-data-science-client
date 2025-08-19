@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
+
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 from ...graph.graph_object import Graph
 from .estimation_result import EstimationResult
@@ -366,9 +366,7 @@ class Node2VecEndpoints(ABC):
         """
 
 
-class Node2VecMutateResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class Node2VecMutateResult(BaseResult):
     node_count: int
     node_properties_written: int
     pre_processing_millis: int
@@ -377,13 +375,8 @@ class Node2VecMutateResult(BaseModel):
     configuration: dict[str, Any]
     loss_per_iteration: List[float]
 
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]
 
-
-class Node2VecWriteResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class Node2VecWriteResult(BaseResult):
     node_count: int
     node_properties_written: int
     pre_processing_millis: int
@@ -391,6 +384,3 @@ class Node2VecWriteResult(BaseModel):
     write_millis: int
     configuration: dict[str, Any]
     loss_per_iteration: List[float]
-
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]

@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Union
 
 from pandas import DataFrame
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
+
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 from ...graph.graph_object import Graph
 from .estimation_result import EstimationResult
@@ -245,12 +245,10 @@ class HashGNNEndpoints(ABC):
         """
 
 
-class HashGNNMutateResult(BaseModel):
+class HashGNNMutateResult(BaseResult):
     """
     Result object representing the results of running a HashGNN algorithm in mutate mode.
     """
-
-    model_config = ConfigDict(alias_generator=to_camel)
 
     node_count: int
     node_properties_written: int
@@ -259,16 +257,11 @@ class HashGNNMutateResult(BaseModel):
     mutate_millis: int
     configuration: Dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]
 
-
-class HashGNNWriteResult(BaseModel):
+class HashGNNWriteResult(BaseResult):
     """
     Result object representing the results of running a HashGNN algorithm in write mode.
     """
-
-    model_config = ConfigDict(alias_generator=to_camel)
 
     node_count: int
     node_properties_written: int
@@ -276,6 +269,3 @@ class HashGNNWriteResult(BaseModel):
     compute_millis: int
     write_millis: int
     configuration: Dict[str, Any]
-
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]

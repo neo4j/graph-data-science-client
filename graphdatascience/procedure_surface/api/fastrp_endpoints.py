@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
+
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 from ...graph.graph_object import Graph
 from .estimation_result import EstimationResult
@@ -337,38 +337,23 @@ class FastRPEndpoints(ABC):
         """
 
 
-class FastRPMutateResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class FastRPMutateResult(BaseResult):
     pre_processing_millis: int
     compute_millis: int
     mutate_millis: int
     node_properties_written: int
     configuration: dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]
 
-
-class FastRPStatsResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class FastRPStatsResult(BaseResult):
     pre_processing_millis: int
     compute_millis: int
     configuration: dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]
 
-
-class FastRPWriteResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class FastRPWriteResult(BaseResult):
     pre_processing_millis: int
     compute_millis: int
     write_millis: int
     node_properties_written: int
     configuration: dict[str, Any]
-
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]
