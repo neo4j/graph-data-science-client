@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
+
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 from ...graph.graph_object import Graph
 from .estimation_result import EstimationResult
@@ -255,9 +255,7 @@ class K1ColoringEndpoints(ABC):
         pass
 
 
-class K1ColoringMutateResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class K1ColoringMutateResult(BaseResult):
     node_count: int
     color_count: int
     ran_iterations: int
@@ -267,13 +265,8 @@ class K1ColoringMutateResult(BaseModel):
     mutate_millis: int
     configuration: dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return getattr(self, item)
 
-
-class K1ColoringStatsResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class K1ColoringStatsResult(BaseResult):
     node_count: int
     color_count: int
     ran_iterations: int
@@ -282,13 +275,8 @@ class K1ColoringStatsResult(BaseModel):
     compute_millis: int
     configuration: dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return getattr(self, item)
 
-
-class K1ColoringWriteResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class K1ColoringWriteResult(BaseResult):
     node_count: int
     color_count: int
     ran_iterations: int
@@ -297,6 +285,3 @@ class K1ColoringWriteResult(BaseModel):
     compute_millis: int
     write_millis: int
     configuration: dict[str, Any]
-
-    def __getitem__(self, item: str) -> Any:
-        return getattr(self, item)

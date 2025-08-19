@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
+
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 from ...graph.graph_object import Graph
 from .estimation_result import EstimationResult
@@ -215,10 +215,8 @@ class ArticulationPointsEndpoints(ABC):
         pass
 
 
-class ArticulationPointsMutateResult(BaseModel):
+class ArticulationPointsMutateResult(BaseResult):
     """Result of running ArticulationPoints algorithm with mutate mode."""
-
-    model_config = ConfigDict(alias_generator=to_camel)
 
     articulation_point_count: int
     node_properties_written: int
@@ -226,33 +224,20 @@ class ArticulationPointsMutateResult(BaseModel):
     compute_millis: int
     configuration: dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]
 
-
-class ArticulationPointsStatsResult(BaseModel):
+class ArticulationPointsStatsResult(BaseResult):
     """Result of running ArticulationPoints algorithm with stats mode."""
-
-    model_config = ConfigDict(alias_generator=to_camel)
 
     articulation_point_count: int
     compute_millis: int
     configuration: dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]
 
-
-class ArticulationPointsWriteResult(BaseModel):
+class ArticulationPointsWriteResult(BaseResult):
     """Result of running ArticulationPoints algorithm with write mode."""
-
-    model_config = ConfigDict(alias_generator=to_camel)
 
     articulation_point_count: int
     node_properties_written: int
     write_millis: int
     compute_millis: int
     configuration: dict[str, Any]
-
-    def __getitem__(self, item: str) -> Any:
-        return self.__dict__[item]

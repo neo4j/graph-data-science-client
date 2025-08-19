@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
+
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 from ...graph.graph_object import Graph
 from .estimation_result import EstimationResult
@@ -330,9 +330,7 @@ class LouvainEndpoints(ABC):
         pass
 
 
-class LouvainMutateResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class LouvainMutateResult(BaseResult):
     modularity: float
     modularities: List[Any]
     ran_levels: int
@@ -345,13 +343,8 @@ class LouvainMutateResult(BaseModel):
     node_properties_written: int
     configuration: dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return getattr(self, item)
 
-
-class LouvainStatsResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class LouvainStatsResult(BaseResult):
     modularity: float
     modularities: List[Any]
     ran_levels: int
@@ -362,13 +355,8 @@ class LouvainStatsResult(BaseModel):
     post_processing_millis: int
     configuration: dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return getattr(self, item)
 
-
-class LouvainWriteResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class LouvainWriteResult(BaseResult):
     modularity: float
     modularities: List[Any]
     ran_levels: int
@@ -380,6 +368,3 @@ class LouvainWriteResult(BaseModel):
     write_millis: int
     node_properties_written: int
     configuration: dict[str, Any]
-
-    def __getitem__(self, item: str) -> Any:
-        return getattr(self, item)

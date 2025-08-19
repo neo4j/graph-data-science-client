@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
+
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 from ...graph.graph_object import Graph
 from .estimation_result import EstimationResult
@@ -234,9 +234,7 @@ class SccEndpoints(ABC):
         pass
 
 
-class SccMutateResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class SccMutateResult(BaseResult):
     component_count: int
     component_distribution: dict[str, Any]
     pre_processing_millis: int
@@ -246,13 +244,8 @@ class SccMutateResult(BaseModel):
     node_properties_written: int
     configuration: dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return getattr(self, item)
 
-
-class SccStatsResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class SccStatsResult(BaseResult):
     component_count: int
     component_distribution: dict[str, Any]
     pre_processing_millis: int
@@ -260,13 +253,8 @@ class SccStatsResult(BaseModel):
     post_processing_millis: int
     configuration: dict[str, Any]
 
-    def __getitem__(self, item: str) -> Any:
-        return getattr(self, item)
 
-
-class SccWriteResult(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class SccWriteResult(BaseResult):
     component_count: int
     component_distribution: dict[str, Any]
     pre_processing_millis: int
@@ -275,6 +263,3 @@ class SccWriteResult(BaseModel):
     post_processing_millis: int
     node_properties_written: int
     configuration: dict[str, Any]
-
-    def __getitem__(self, item: str) -> Any:
-        return getattr(self, item)
