@@ -6,7 +6,7 @@ from typing import Any, Optional
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
 from graphdatascience.model.v2.model_api import ModelApi
-from graphdatascience.model.v2.model_info import ModelDetails
+from graphdatascience.model.v2.model_details import ModelDetails
 
 
 class ModelApiArrow(ModelApi):

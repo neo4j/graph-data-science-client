@@ -4,7 +4,7 @@ import neo4j
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.model.v2.model_api import ModelApi
-from graphdatascience.model.v2.model_info import ModelDetails
+from graphdatascience.model.v2.model_details import ModelDetails
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 

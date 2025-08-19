@@ -3,13 +3,13 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 
-from graphdatascience.model.v2.graphsage_model import GraphSageModelV2
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
 
 from ...graph.graph_object import Graph
 
 
-class GraphSageEndpoints(ABC):
+class GraphSageTrainEndpoints(ABC):
     """
     Abstract base class defining the API for the GraphSage algorithm.
     """

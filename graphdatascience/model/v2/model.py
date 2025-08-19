@@ -4,7 +4,7 @@ from abc import ABC
 from typing import Optional
 
 from graphdatascience.model.v2.model_api import ModelApi
-from graphdatascience.model.v2.model_info import ModelDetails
+from graphdatascience.model.v2.model_details import ModelDetails
 
 
 # Compared to v1 Model offering typed parameters for predict endpoints

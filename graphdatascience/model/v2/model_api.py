@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from graphdatascience.model.v2.model_info import ModelDetails
+from graphdatascience.model.v2.model_details import ModelDetails
 
 
 class ModelApi(ABC):

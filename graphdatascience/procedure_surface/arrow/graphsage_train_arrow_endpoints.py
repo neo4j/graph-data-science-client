@@ -1,21 +1,23 @@
 from typing import Any, List, Optional
 
-from graphdatascience.model.v2.graphsage_model import GraphSageModelV2
-from graphdatascience.procedure_surface.cypher.model_api_cypher import ModelApiCypher
+from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
+from graphdatascience.procedure_surface.arrow.graphsage_predict_arrow_endpoints import GraphSagePredictArrowEndpoints
 
-from ...call_parameters import CallParameters
+from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...graph.graph_object import Graph
-from ...query_runner.query_runner import QueryRunner
-from ..api.graphsage_endpoints import (
-    GraphSageEndpoints,
+from ..api.graphsage_train_endpoints import (
+    GraphSageTrainEndpoints,
     GraphSageTrainResult,
 )
-from ..utils.config_converter import ConfigConverter
+from .model_api_arrow import ModelApiArrow
+from .node_property_endpoints import NodePropertyEndpoints
 
 
-class GraphSageCypherEndpoints(GraphSageEndpoints):
-    def __init__(self, query_runner: QueryRunner):
-        self._query_runner = query_runner
+class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
+    def __init__(self, arrow_client: AuthenticatedArrowClient):
+        self._arrow_client = arrow_client
+        self._node_property_endpoints = NodePropertyEndpoints(arrow_client)
+        self._model_api = ModelApiArrow(arrow_client)
 
     def train(
         self,
@@ -47,7 +49,8 @@ class GraphSageCypherEndpoints(GraphSageEndpoints):
         relationship_weight_property: Optional[str] = None,
         random_seed: Optional[Any] = None,
     ) -> tuple[GraphSageModelV2, GraphSageTrainResult]:
-        config = ConfigConverter.convert_to_gds_config(
+        config = self._node_property_endpoints.create_base_config(
+            G,
             model_name=model_name,
             feature_properties=feature_properties,
             activation_function=activation_function,
@@ -76,11 +79,11 @@ class GraphSageCypherEndpoints(GraphSageEndpoints):
             random_seed=random_seed,
         )
 
-        params = CallParameters(graph_name=G.name(), config=config)
-        params.ensure_job_id_in_config()
+        result = self._node_property_endpoints.run_job_and_get_summary("v2/embeddings.graphSage.train", G, config)
 
-        result = self._query_runner.call_procedure(endpoint="gds.beta.graphSage.train", params=params).iloc[0]
-
-        return GraphSageModelV2(name=model_name, model_api=ModelApiCypher(self._query_runner)), GraphSageTrainResult(
-            **result.to_dict()
+        model = GraphSageModelV2(
+            model_name, self._model_api, predict_endpoints=GraphSagePredictArrowEndpoints(self._arrow_client)
         )
+        train_result = GraphSageTrainResult(**result)
+
+        return model, train_result

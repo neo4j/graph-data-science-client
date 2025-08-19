@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience import Graph, QueryRunner
-from graphdatascience.procedure_surface.cypher.graphsage_cypher_endpoints import GraphSageCypherEndpoints
+from graphdatascience.procedure_surface.cypher.graphsage_train_cypher_endpoints import GraphSageTrainCypherEndpoints
 
 
 @pytest.fixture
@@ -22,7 +22,7 @@ def sample_graph_with_features(query_runner: QueryRunner) -> Generator[Graph, No
     query_runner.run_cypher("""
         MATCH (n)
         OPTIONAL MATCH (n)-[r]->(m)
-        WITH gds.graph.project('g', n, m, {nodeProperties: 'feature'}) AS G
+        WITH gds.graph.project('g', n, m, {sourceNodeProperties: properties(n), targetNodeProperties: properties(m)}) AS G
         RETURN G
     """)
 
@@ -33,17 +33,19 @@ def sample_graph_with_features(query_runner: QueryRunner) -> Generator[Graph, No
 
 
 @pytest.fixture
-def graphsage_endpoints(query_runner: QueryRunner) -> Generator[GraphSageCypherEndpoints, None, None]:
-    yield GraphSageCypherEndpoints(query_runner)
+def graphsage_endpoints(query_runner: QueryRunner) -> Generator[GraphSageTrainCypherEndpoints, None, None]:
+    yield GraphSageTrainCypherEndpoints(query_runner)
 
 
-def test_graphsage_train(graphsage_endpoints: GraphSageCypherEndpoints, sample_graph_with_features: Graph) -> None:
+def test_graphsage_train(graphsage_endpoints: GraphSageTrainCypherEndpoints, sample_graph_with_features: Graph) -> None:
     """Test GraphSage train operation."""
     model, train_result = graphsage_endpoints.train(
         G=sample_graph_with_features,
         model_name="testModel",
         feature_properties=["feature"],
-        embedding_dimension=64,
+        embedding_dimension=1,
+        epochs=1,  # Use minimal epochs for faster testing
+        max_iterations=1,  # Use minimal iterations for faster testing
     )
 
     assert train_result.train_millis >= 0

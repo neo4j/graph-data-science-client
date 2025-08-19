@@ -5,7 +5,7 @@ import pytest
 
 from graphdatascience import Graph
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.arrow.graphsage_arrow_endpoints import GraphSageArrowEndpoints
+from graphdatascience.procedure_surface.arrow.graphsage_train_arrow_endpoints import GraphSageTrainArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
@@ -28,11 +28,11 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
 
 
 @pytest.fixture
-def graphsage_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[GraphSageArrowEndpoints, None, None]:
-    yield GraphSageArrowEndpoints(arrow_client)
+def graphsage_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[GraphSageTrainArrowEndpoints, None, None]:
+    yield GraphSageTrainArrowEndpoints(arrow_client)
 
 
-def test_graphsage_train(graphsage_endpoints: GraphSageArrowEndpoints, sample_graph: Graph) -> None:
+def test_graphsage_train(graphsage_endpoints: GraphSageTrainArrowEndpoints, sample_graph: Graph) -> None:
     """Test GraphSage train operation."""
     model, result = graphsage_endpoints.train(
         G=sample_graph,

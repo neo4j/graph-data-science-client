@@ -6,7 +6,7 @@ from pyarrow.flight import FlightServerError
 
 from graphdatascience import Graph
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.arrow.graphsage_arrow_endpoints import GraphSageArrowEndpoints
+from graphdatascience.procedure_surface.arrow.graphsage_train_arrow_endpoints import GraphSageTrainArrowEndpoints
 from graphdatascience.procedure_surface.arrow.model_api_arrow import ModelApiArrow
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
@@ -34,7 +34,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
 
 @pytest.fixture
 def gs_model(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> Generator[str, None, None]:
-    model, _ = GraphSageArrowEndpoints(arrow_client).train(
+    model, _ = GraphSageTrainArrowEndpoints(arrow_client).train(
         G=sample_graph,
         model_name="gs-model",
         feature_properties=["age"],
