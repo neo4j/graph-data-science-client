@@ -1083,7 +1083,7 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
 def test_estimate_size(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
     requests_mock.post(
-        "https://api.neo4j.io/v1/instances/sizing",
+        "https://api.neo4j.io/v1/sessions/sizing",
         json={"data": {"estimated_memory": "3070GB", "recommended_size": "512GB"}},
     )
 
