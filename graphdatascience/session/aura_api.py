@@ -320,7 +320,9 @@ class AuraApi:
             "algorithm_categories": [i.value for i in algorithm_categories],
         }
 
-        response = self._request_session.post(f"{self._base_uri}/graph-analytics/sessions/sizing", json=data)
+        response = self._request_session.post(
+            f"{self._base_uri}/{AuraApi.API_VERSION}/graph-analytics/sessions/sizing", json=data
+        )
         self._check_resp(response)
 
         return EstimationDetails.from_json(response.json()["data"])
