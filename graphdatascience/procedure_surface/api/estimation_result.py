@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from graphdatascience.procedure_surface.utils.GdsBaseModel import GdsBaseModel
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 
-class EstimationResult(GdsBaseModel):
+class EstimationResult(BaseResult):
     node_count: int
     relationship_count: int
     required_memory: str

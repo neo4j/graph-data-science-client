@@ -7,13 +7,13 @@ from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
 from graphdatascience.arrow_client.v2.job_client import JobClient
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog_endpoints import (
     CatalogEndpoints,
     GraphFilterResult,
     GraphListResult,
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
-from graphdatascience.procedure_surface.utils.GdsBaseModel import GdsBaseModel
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
@@ -131,7 +131,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         }
 
 
-class ProjectionResult(GdsBaseModel):
+class ProjectionResult(BaseResult):
     graph_name: str
     node_count: int
     relationship_count: int

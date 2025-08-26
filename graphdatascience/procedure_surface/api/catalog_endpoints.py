@@ -8,7 +8,7 @@ from typing import Any, List, Optional, Union
 from pydantic import Field, field_validator
 
 from graphdatascience import Graph
-from graphdatascience.procedure_surface.utils.GdsBaseModel import GdsBaseModel
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 
 class CatalogEndpoints(ABC):
@@ -66,7 +66,7 @@ class CatalogEndpoints(ABC):
         pass
 
 
-class GraphListResult(GdsBaseModel):
+class GraphListResult(BaseResult):
     graph_name: str
     database: str
     database_location: str
@@ -89,7 +89,7 @@ class GraphListResult(GdsBaseModel):
         return value
 
 
-class GraphFilterResult(GdsBaseModel):
+class GraphFilterResult(BaseResult):
     graph_name: str
     from_graph_name: str
     node_filter: str

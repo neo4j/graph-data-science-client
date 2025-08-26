@@ -6,7 +6,7 @@ from typing import Any, List, Optional, Union
 from pandas import DataFrame
 
 from ...graph.graph_object import Graph
-from ..utils.GdsBaseModel import GdsBaseModel
+from .base_result import BaseResult
 from .estimation_result import EstimationResult
 
 
@@ -254,7 +254,7 @@ class K1ColoringEndpoints(ABC):
         pass
 
 
-class K1ColoringMutateResult(GdsBaseModel):
+class K1ColoringMutateResult(BaseResult):
     node_count: int
     color_count: int
     ran_iterations: int
@@ -265,7 +265,7 @@ class K1ColoringMutateResult(GdsBaseModel):
     configuration: dict[str, Any]
 
 
-class K1ColoringStatsResult(GdsBaseModel):
+class K1ColoringStatsResult(BaseResult):
     node_count: int
     color_count: int
     ran_iterations: int
@@ -275,7 +275,7 @@ class K1ColoringStatsResult(GdsBaseModel):
     configuration: dict[str, Any]
 
 
-class K1ColoringWriteResult(GdsBaseModel):
+class K1ColoringWriteResult(BaseResult):
     node_count: int
     color_count: int
     ran_iterations: int

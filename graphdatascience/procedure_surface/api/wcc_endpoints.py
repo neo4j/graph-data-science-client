@@ -6,7 +6,7 @@ from typing import Any, List, Optional, Union
 from pandas import DataFrame
 
 from ...graph.graph_object import Graph
-from ..utils.GdsBaseModel import GdsBaseModel
+from .base_result import BaseResult
 from .estimation_result import EstimationResult
 
 
@@ -284,7 +284,7 @@ class WccEndpoints(ABC):
         pass
 
 
-class WccMutateResult(GdsBaseModel):
+class WccMutateResult(BaseResult):
     component_count: int
     component_distribution: dict[str, Any]
     pre_processing_millis: int
@@ -295,7 +295,7 @@ class WccMutateResult(GdsBaseModel):
     configuration: dict[str, Any]
 
 
-class WccStatsResult(GdsBaseModel):
+class WccStatsResult(BaseResult):
     component_count: int
     component_distribution: dict[str, Any]
     pre_processing_millis: int
@@ -304,7 +304,7 @@ class WccStatsResult(GdsBaseModel):
     configuration: dict[str, Any]
 
 
-class WccWriteResult(GdsBaseModel):
+class WccWriteResult(BaseResult):
     component_count: int
     component_distribution: dict[str, Any]
     pre_processing_millis: int
