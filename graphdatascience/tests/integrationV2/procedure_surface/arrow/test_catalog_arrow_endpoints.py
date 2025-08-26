@@ -74,7 +74,7 @@ def test_drop_nonexistent(catalog_endpoints: CatalogArrowEndpoints) -> None:
     with pytest.raises(ArrowKeyError, match="does not exist on database"):
         catalog_endpoints.drop("nonexistent", fail_if_missing=True)
 
-
+@pytest.mark.db_integration
 def test_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> None:
     try:
         endpoints = CatalogArrowEndpoints(arrow_client, query_runner)
