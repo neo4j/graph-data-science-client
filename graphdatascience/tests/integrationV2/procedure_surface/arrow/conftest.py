@@ -56,10 +56,11 @@ def session_container(
         .with_env("DNS_NAME", "gds-session")
         .with_env("PAGE_CACHE_SIZE", "100M")
         .with_exposed_ports(8491)
-        .with_network(network)
-        .with_network_aliases("gds-session")
         .with_volume_mapping(password_dir, "/passwords")
     )
+
+    if not inside_ci:
+        session_container = session_container.with_network(network).with_network_aliases("gds-session")
 
     with session_container as session_container:
         wait_for_logs(session_container, "Running GDS tasks: 0")
