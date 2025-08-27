@@ -9,6 +9,7 @@ from pydantic import Field, field_validator
 
 from graphdatascience import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.graph_sampling_endpoints import GraphSamplingEndpoints
 
 
 class CatalogEndpoints(ABC):
@@ -63,6 +64,11 @@ class CatalogEndpoints(ABC):
             GraphFilterResult: Filter result containing information like
                                 graph name, node count, relationship count, etc.
         """
+        pass
+
+    @property
+    @abstractmethod
+    def sample(self) -> GraphSamplingEndpoints:
         pass
 
 
