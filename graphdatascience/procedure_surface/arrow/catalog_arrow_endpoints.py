@@ -137,7 +137,6 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         }
 
 
-
 class ProjectionResult(BaseResult):
     graph_name: str
     node_count: int

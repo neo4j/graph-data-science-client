@@ -46,7 +46,7 @@ def graph_sampling_endpoints(query_runner: QueryRunner) -> Generator[GraphSampli
 def test_rwr_basic(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: Graph) -> None:
     """Test RWR sampling with basic configuration."""
     result = graph_sampling_endpoints.rwr(
-        G=sample_graph, graph_name="rwr_sampled", start_nodes=[0, 1], restart_probability=0.15, sampling_ratio=0.8
+        G=sample_graph, graph_name="rwr_sampled", restart_probability=0.15, sampling_ratio=0.8
     )
 
     assert result.graph_name == "rwr_sampled"
