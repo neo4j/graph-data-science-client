@@ -1,5 +1,3 @@
-import json
-
 from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.v2.mutation_client import MutationClient
@@ -22,4 +20,4 @@ def test_mutate_node_property_success(mocker: MockerFixture) -> None:
     args, _ = mock_client.do_action_with_retry.call_args
 
     assert args[0] == MutationClient.MUTATE_ENDPOINT
-    assert json.loads(args[1]) == {"jobId": "test-job-123", "mutateProperty": "propertyName"}
+    assert args[1] == {"jobId": "test-job-123", "mutateProperty": "propertyName"}

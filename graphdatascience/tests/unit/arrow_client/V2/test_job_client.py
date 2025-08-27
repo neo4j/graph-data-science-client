@@ -1,5 +1,3 @@
-import json
-
 from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.v2.api_types import JobIdConfig, JobStatus
@@ -17,8 +15,7 @@ def test_run_job(mocker: MockerFixture) -> None:
 
     result = JobClient.run_job(mock_client, endpoint, config)
 
-    expected_config = json.dumps(config).encode("utf-8")
-    mock_client.do_action_with_retry.assert_called_once_with(endpoint, expected_config)
+    mock_client.do_action_with_retry.assert_called_once_with(endpoint, config)
     assert result == job_id
 
 
@@ -46,7 +43,7 @@ def test_run_job_and_wait(mocker: MockerFixture) -> None:
 
     result = JobClient.run_job_and_wait(mock_client, endpoint, config)
 
-    do_action_with_retry.assert_called_with("v2/jobs.status", job_id_config.dump_json().encode("utf-8"))
+    do_action_with_retry.assert_called_with("v2/jobs.status", job_id_config.dump_camel())
     assert result == job_id
 
 
@@ -64,9 +61,7 @@ def test_wait_for_job_completes_immediately(mocker: MockerFixture) -> None:
 
     JobClient.wait_for_job(mock_client, job_id)
 
-    mock_client.do_action_with_retry.assert_called_once_with(
-        "v2/jobs.status", JobIdConfig(jobId=job_id).dump_json().encode("utf-8")
-    )
+    mock_client.do_action_with_retry.assert_called_once_with("v2/jobs.status", JobIdConfig(jobId=job_id).dump_camel())
 
 
 def test_wait_for_job_waits_for_completion(mocker: MockerFixture) -> None:
@@ -107,6 +102,6 @@ def test_get_summary(mocker: MockerFixture) -> None:
     result = JobClient.get_summary(mock_client, job_id)
 
     mock_client.do_action_with_retry.assert_called_once_with(
-        "v2/results.summary", JobIdConfig(jobId=job_id).dump_json().encode("utf-8")
+        "v2/results.summary", JobIdConfig(jobId=job_id).dump_camel()
     )
     assert result == expected_summary

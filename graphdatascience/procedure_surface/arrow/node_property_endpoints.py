@@ -1,4 +1,3 @@
-import json
 from typing import Any, Dict, Optional, Union
 
 from pandas import DataFrame
@@ -102,6 +101,6 @@ class NodePropertyEndpoints:
 
         payload.update(algo_config or {})
 
-        res = self._arrow_client.do_action_with_retry(estimate_endpoint, json.dumps(payload).encode("utf-8"))
+        res = self._arrow_client.do_action_with_retry(estimate_endpoint, payload)
 
         return EstimationResult(**deserialize_single(res))

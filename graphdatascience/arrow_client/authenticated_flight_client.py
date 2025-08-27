@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import json
 import logging
 from dataclasses import dataclass
-from typing import Any, Iterator, Optional
+from typing import Any, Iterator, Optional, Tuple, Union
 
 from pyarrow import __version__ as arrow_version
 from pyarrow import flight
@@ -36,6 +37,7 @@ class AuthenticatedArrowClient:
         arrow_client_options: Optional[dict[str, Any]] = None,
         connection_string_override: Optional[str] = None,
         retry_config: Optional[RetryConfig] = None,
+        advertised_listen_address: Optional[Tuple[str, int]] = None,
     ) -> AuthenticatedArrowClient:
         connection_string: str
         if connection_string_override is not None:
@@ -63,6 +65,7 @@ class AuthenticatedArrowClient:
             auth=auth,
             encrypted=encrypted,
             arrow_client_options=arrow_client_options,
+            advertised_listen_address=advertised_listen_address,
         )
 
     def __init__(
@@ -74,6 +77,7 @@ class AuthenticatedArrowClient:
         encrypted: bool = False,
         arrow_client_options: Optional[dict[str, Any]] = None,
         user_agent: Optional[str] = None,
+        advertised_listen_address: Optional[Tuple[str, int]] = None,
     ):
         """Creates a new GdsArrowClient instance.
 
@@ -93,6 +97,8 @@ class AuthenticatedArrowClient:
             The user agent string to use for the connection. (default is `neo4j-graphdatascience-v[VERSION] pyarrow-v[PYARROW_VERSION])
         retry_config: Optional[RetryConfig]
             The retry configuration to use for the Arrow requests send by the client.
+        advertised_listen_address: Optional[Tuple[str, int]]
+            The advertised listen address of the GDS Arrow server. This will be used by remote projection and writeback operations.
         """
         self._host = host
         self._port = port
@@ -106,6 +112,7 @@ class AuthenticatedArrowClient:
         if auth:
             self._auth = auth
             self._auth_middleware = AuthMiddleware(auth)
+        self.advertised_listen_address = advertised_listen_address
 
         self._flight_client = self._instantiate_flight_client()
 
@@ -119,6 +126,21 @@ class AuthenticatedArrowClient:
             the host and port of the GDS Arrow server
         """
         return ConnectionInfo(self._host, self._port, self._encrypted)
+
+    def advertised_connection_info(self) -> ConnectionInfo:
+        """
+        Returns the advertised host and port of the GDS Arrow server.
+
+        Returns
+        -------
+        ConnectionInfo
+            the host and port of the GDS Arrow server
+        """
+        if self.advertised_listen_address is None:
+            return self.connection_info()
+
+        h, p = self.advertised_listen_address
+        return ConnectionInfo(h, p, self._encrypted)
 
     def request_token(self) -> Optional[str]:
         """
@@ -152,10 +174,12 @@ class AuthenticatedArrowClient:
     def get_stream(self, ticket: Ticket) -> FlightStreamReader:
         return self._flight_client.do_get(ticket)
 
-    def do_action(self, endpoint: str, payload: bytes) -> Iterator[Result]:
-        return self._flight_client.do_action(Action(endpoint, payload))  # type: ignore
+    def do_action(self, endpoint: str, payload: Union[bytes, dict[str, Any]]) -> Iterator[Result]:
+        payload_bytes = payload if isinstance(payload, bytes) else json.dumps(payload).encode("utf-8")
 
-    def do_action_with_retry(self, endpoint: str, payload: bytes) -> Iterator[Result]:
+        return self._flight_client.do_action(Action(endpoint, payload_bytes))  # type: ignore
+
+    def do_action_with_retry(self, endpoint: str, payload: Union[bytes, dict[str, Any]]) -> Iterator[Result]:
         @retry(
             reraise=True,
             before=before_log("Send action", self._logger, logging.DEBUG),

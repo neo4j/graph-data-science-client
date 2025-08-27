@@ -13,6 +13,12 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
             if "integrationV2" in str(item.fspath):
                 item.add_marker(skip_v2)
 
+    if os.environ.get("BUILD_NUMBER") is not None:
+        skip_ci = pytest.mark.skip(reason="Skipping db_integration tests in CI")
+        for item in items:
+            if "db_integration" in item.keywords:
+                item.add_marker(skip_ci)
+
 
 # best used with pytest --basetemp=tmp/pytest for easy access to logs
 @pytest.fixture(scope="session")

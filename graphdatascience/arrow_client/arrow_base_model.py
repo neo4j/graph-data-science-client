@@ -1,12 +1,10 @@
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 from pydantic.alias_generators import to_camel
 
 
-class ArrowBaseModel(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
+class ArrowBaseModel(BaseModel, alias_generator=to_camel):
     def dump_camel(self) -> dict[str, Any]:
         return self.model_dump(by_alias=True)
 
