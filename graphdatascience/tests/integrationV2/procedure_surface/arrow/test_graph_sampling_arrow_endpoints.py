@@ -39,7 +39,7 @@ def graph_sampling_endpoints(
 
 def test_rwr_basic(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: Graph) -> None:
     result = graph_sampling_endpoints.rwr(
-        G=sample_graph, graph_name="sampled", startNodes=[0, 1], restartProbability=0.15, samplingRatio=0.8
+        G=sample_graph, graph_name="sampled", start_nodes=[0, 1], restart_probability=0.15, sampling_ratio=0.8
     )
 
     assert result.graph_name == "sampled"
@@ -54,10 +54,10 @@ def test_rwr_with_weights(graph_sampling_endpoints: GraphSamplingArrowEndpoints,
     result = graph_sampling_endpoints.rwr(
         G=sample_graph,
         graph_name="sampled",
-        startNodes=[0],
-        restartProbability=0.2,
-        samplingRatio=0.6,
-        relationshipWeightProperty="weight",
+        start_nodes=[0],
+        restart_probability=0.2,
+        sampling_ratio=0.6,
+        relationship_weight_property="weight",
     )
 
     assert result.graph_name == "sampled"
@@ -78,7 +78,7 @@ def test_rwr_minimal_config(graph_sampling_endpoints: GraphSamplingArrowEndpoint
 
 def test_cnarw_basic(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: Graph) -> None:
     result = graph_sampling_endpoints.cnarw(
-        G=sample_graph, graph_name="sampled", startNodes=[0, 1], restartProbability=0.15, samplingRatio=0.8
+        G=sample_graph, graph_name="sampled", start_nodes=[0, 1], restart_probability=0.15, sampling_ratio=0.8
     )
 
     assert result.graph_name == "sampled"

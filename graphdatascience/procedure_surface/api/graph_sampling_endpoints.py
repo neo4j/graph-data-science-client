@@ -17,11 +17,11 @@ class GraphSamplingEndpoints(ABC):
         self,
         G: Graph,
         graph_name: str,
-        startNodes: Optional[List[int]] = None,
-        restartProbability: Optional[float] = None,
-        samplingRatio: Optional[float] = None,
-        nodeLabelStratification: Optional[bool] = None,
-        relationshipWeightProperty: Optional[str] = None,
+        start_nodes: Optional[List[int]] = None,
+        restart_probability: Optional[float] = None,
+        sampling_ratio: Optional[float] = None,
+        node_label_stratification: Optional[bool] = None,
+        relationship_weight_property: Optional[str] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -44,18 +44,18 @@ class GraphSamplingEndpoints(ABC):
             performed.
         graph_name : str
             The name of the new graph in the catalog.
-        startNodes : list of int, optional
+        start_nodes : list of int, optional
             A list of node IDs to start the random walk from. If not provided, all
             nodes are used as potential starting points.
-        restartProbability : float, optional
+        restart_probability : float, optional
             The probability of restarting back to the original node at each step.
             Should be a value between 0 and 1. If not specified, a default value is used.
-        samplingRatio : float, optional
+        sampling_ratio : float, optional
             The ratio of nodes to sample during the computation. This value should
             be between 0 and 1. If not specified, no sampling is performed.
-        nodeLabelStratification : bool, optional
+        node_label_stratification : bool, optional
             If True, the algorithm tries to preserve the label distribution of the original graph in the sampled graph.
-        relationshipWeightProperty : str, optional
+        relationship_weight_property : str, optional
             The name of the property on relationships to use as weights during
             the random walk. If not specified, the relationships are treated as
             unweighted.
@@ -88,11 +88,11 @@ class GraphSamplingEndpoints(ABC):
         self,
         G: Graph,
         graph_name: str,
-        startNodes: Optional[List[int]] = None,
-        restartProbability: Optional[float] = None,
-        samplingRatio: Optional[float] = None,
-        nodeLabelStratification: Optional[bool] = None,
-        relationshipWeightProperty: Optional[str] = None,
+        start_nodes: Optional[List[int]] = None,
+        restart_probability: Optional[float] = None,
+        sampling_ratio: Optional[float] = None,
+        node_label_stratification: Optional[bool] = None,
+        relationship_weight_property: Optional[str] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -115,18 +115,18 @@ class GraphSamplingEndpoints(ABC):
             performed.
         graph_name : str
             The name of the new graph in the catalog.
-        startNodes : list of int, optional
+        start_nodes : list of int, optional
             A list of node IDs to start the random walk from. If not provided, all
             nodes are used as potential starting points.
-        restartProbability : float, optional
+        restart_probability : float, optional
             The probability of restarting back to the original node at each step.
             Should be a value between 0 and 1. If not specified, a default value is used.
-        samplingRatio : float, optional
+        sampling_ratio : float, optional
             The ratio of nodes to sample during the computation. This value should
             be between 0 and 1. If not specified, no sampling is performed.
-        nodeLabelStratification : bool, optional
+        node_label_stratification : bool, optional
             If True, the algorithm tries to preserve the label distribution of the original graph in the sampled graph.
-        relationshipWeightProperty : str, optional
+        relationship_weight_property : str, optional
             The name of the property on relationships to use as weights during
             the random walk. If not specified, the relationships are treated as
             unweighted.
