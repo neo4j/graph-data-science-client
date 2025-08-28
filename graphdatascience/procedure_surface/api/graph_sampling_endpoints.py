@@ -41,8 +41,7 @@ class GraphSamplingEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The input graph on which the Random Walk with Restart (RWR) will be
-            performed.
+            The input graph to be sampled.
         graph_name : str
             The name of the new graph that is stored in the graph catalog.
         start_nodes : list of int, optional
@@ -106,55 +105,59 @@ class GraphSamplingEndpoints(ABC):
         job_id: Optional[str] = None,
     ) -> GraphWithSamplingResult:
         """
-        Computes a set of Random Walks with Restart (RWR) for the given graph and stores the result as a new graph in the catalog.
+        Common Neighbour Aware Random Walk (CNARW) samples the graph by taking random walks from a set of start nodes
 
-        This method performs a random walk, beginning from a set of nodes (if provided),
-        where at each step there is a probability to restart back at the original nodes.
-        The result is turned into a new graph induced by the random walks and stored in the catalog.
+        CNARW is a graph sampling technique that involves optimizing the selection of the next-hop node. It takes into
+        account the number of common neighbours between the current node and the next-hop candidates. On each step of a
+        random walk, there is a probability that the walk stops, and a new walk from one of the start nodes starts
+        instead (i.e. the walk restarts). Each node visited on these walks will be part of the sampled subgraph. The
+        resulting subgraph is stored as a new graph in the Graph Catalog.
 
         Parameters
         ----------
         G : GraphV2
-            The input graph on which the Random Walk with Restart (RWR) will be
-            performed.
+            The input graph to be sampled.
         graph_name : str
-            The name of the new graph in the catalog.
+            The name of the new graph that is stored in the graph catalog.
         start_nodes : list of int, optional
-            A list of node IDs to start the random walk from. If not provided, all
-            nodes are used as potential starting points.
+            IDs of the initial set of nodes in the original graph from which the sampling random walks will start.
+	        By default, a single node is chosen uniformly at random.
         restart_probability : float, optional
-            The probability of restarting back to the original node at each step.
-            Should be a value between 0 and 1. If not specified, a default value is used.
+            The probability that a sampling random walk restarts from one of the start nodes.
+            Default is 0.1.
         sampling_ratio : float, optional
-            The ratio of nodes to sample during the computation. This value should
-            be between 0 and 1. If not specified, no sampling is performed.
+            The fraction of nodes in the original graph to be sampled.
+            Default is 0.15.
         node_label_stratification : bool, optional
-            If True, the algorithm tries to preserve the label distribution of the original graph in the sampled graph.
+            If true, preserves the node label distribution of the original graph.
+            Default is False.
         relationship_weight_property : str, optional
-            The name of the property on relationships to use as weights during
-            the random walk. If not specified, the relationships are treated as
-            unweighted.
+            Name of the relationship property to use as weights. If unspecified, the algorithm runs unweighted.
         relationship_types : list of str, optional
-            The relationship types used to select relationships for this algorithm run.
+            Filter the named graph using the given relationship types. Relationships with any of the given types will be
+            included.
         node_labels : list of str, optional
-            The node labels used to select nodes for this algorithm run.
+            Filter the named graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : bool, optional
-             Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+            Bypass heap control. Use with caution.
+            Default is False.
         log_progress : bool, optional
-            If True, logs the progress of the computation.
+            Turn `on/off` percentage logging while running procedure.
+            Default is True.
         username : str, optional
-            The username to attribute the procedure run to
+            Use Administrator access to run an algorithm on a graph owned by another user.
+            Default is None.
         concurrency : int, optional
-            The number of concurrent threads used for the algorithm execution.
+            The number of concurrent threads used for running the algorithm.
+            Default is 4.
         job_id : str, optional
-            An identifier for the job that can be used for monitoring and cancellation
+            An ID that can be provided to more easily track the algorithm’s progress.
+            By default, a random job id is generated.
 
         Returns
         -------
         GraphSamplingResult
-            Tuple of the graph object and the result of the Random Walk with Restart (RWR), including the sampled
-            nodes and their scores.
+            Tuple of the graph object and the result of the Common Neighbour Aware Random Walk (CNARW), including the dimensions of the sampled graph.
         """
         pass
 
