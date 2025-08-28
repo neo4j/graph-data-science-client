@@ -20,6 +20,7 @@ class GraphSageTrainEndpoints(ABC):
         G: Graph,
         model_name: str,
         feature_properties: List[str],
+        *,
         activation_function: Optional[Any] = None,
         negative_sample_weight: Optional[int] = None,
         embedding_dimension: Optional[int] = None,
