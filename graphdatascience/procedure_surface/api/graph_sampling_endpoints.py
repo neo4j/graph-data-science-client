@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from graphdatascience import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
@@ -27,8 +27,8 @@ class GraphSamplingEndpoints(ABC):
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        concurrency: Optional[int] = None,
+        job_id: Optional[str] = None,
     ) -> GraphSamplingResult:
         """
         Computes a set of Random Walks with Restart (RWR) for the given graph and stores the result as a new graph in the catalog.
@@ -59,9 +59,9 @@ class GraphSamplingEndpoints(ABC):
             The name of the property on relationships to use as weights during
             the random walk. If not specified, the relationships are treated as
             unweighted.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list of str, optional
             The relationship types used to select relationships for this algorithm run.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list of str, optional
             The node labels used to select nodes for this algorithm run.
         sudo : bool, optional
              Override memory estimation limits. Use with caution as this can lead to
@@ -70,9 +70,9 @@ class GraphSamplingEndpoints(ABC):
             If True, logs the progress of the computation.
         username : str, optional
             The username to attribute the procedure run to
-        concurrency : Any, optional
+        concurrency : int, optional
             The number of concurrent threads used for the algorithm execution.
-        job_id : Any, optional
+        job_id : str, optional
             An identifier for the job that can be used for monitoring and cancellation
 
         Returns
@@ -98,8 +98,8 @@ class GraphSamplingEndpoints(ABC):
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        concurrency: Optional[int] = None,
+        job_id: Optional[str] = None,
     ) -> GraphSamplingResult:
         """
         Computes a set of Random Walks with Restart (RWR) for the given graph and stores the result as a new graph in the catalog.
@@ -130,9 +130,9 @@ class GraphSamplingEndpoints(ABC):
             The name of the property on relationships to use as weights during
             the random walk. If not specified, the relationships are treated as
             unweighted.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list of str, optional
             The relationship types used to select relationships for this algorithm run.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list of str, optional
             The node labels used to select nodes for this algorithm run.
         sudo : bool, optional
              Override memory estimation limits. Use with caution as this can lead to
@@ -141,9 +141,9 @@ class GraphSamplingEndpoints(ABC):
             If True, logs the progress of the computation.
         username : str, optional
             The username to attribute the procedure run to
-        concurrency : Any, optional
+        concurrency : int, optional
             The number of concurrent threads used for the algorithm execution.
-        job_id : Any, optional
+        job_id : str, optional
             An identifier for the job that can be used for monitoring and cancellation
 
         Returns

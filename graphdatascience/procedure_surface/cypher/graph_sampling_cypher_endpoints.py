@@ -31,18 +31,18 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         job_id: Optional[Any] = None,
     ) -> GraphSamplingResult:
         config = ConfigConverter.convert_to_gds_config(
-            startNodes=start_nodes,
-            restartProbability=restart_probability,
-            samplingRatio=sampling_ratio,
-            nodeLabelStratification=node_label_stratification,
-            relationshipWeightProperty=relationship_weight_property,
-            relationshipTypes=relationship_types,
-            nodeLabels=node_labels,
+            start_nodes=start_nodes,
+            restart_probability=restart_probability,
+            sampling_ratio=sampling_ratio,
+            node_label_stratification=node_label_stratification,
+            relationship_weight_property=relationship_weight_property,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
             sudo=sudo,
-            logProgress=log_progress,
+            log_progress=log_progress,
             username=username,
             concurrency=concurrency,
-            jobId=job_id,
+            job_id=job_id,
         )
 
         params = CallParameters(
@@ -73,18 +73,18 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         job_id: Optional[Any] = None,
     ) -> GraphSamplingResult:
         config = ConfigConverter.convert_to_gds_config(
-            startNodes=start_nodes,
-            restartProbability=restart_probability,
-            samplingRatio=sampling_ratio,
-            nodeLabelStratification=node_label_stratification,
-            relationshipWeightProperty=relationship_weight_property,
-            relationshipTypes=relationship_types,
-            nodeLabels=node_labels,
+            start_nodes=start_nodes,
+            restart_probability=restart_probability,
+            sampling_ratio=sampling_ratio,
+            node_label_stratification=node_label_stratification,
+            relationship_weight_property=relationship_weight_property,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
             sudo=sudo,
-            logProgress=log_progress,
+            log_progress=log_progress,
             username=username,
             concurrency=concurrency,
-            jobId=job_id,
+            job_id=job_id,
         )
 
         params = CallParameters(
