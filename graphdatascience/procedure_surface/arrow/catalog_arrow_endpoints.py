@@ -13,6 +13,8 @@ from graphdatascience.procedure_surface.api.catalog_endpoints import (
     GraphFilterResult,
     GraphListResult,
 )
+from graphdatascience.procedure_surface.api.graph_sampling_endpoints import GraphSamplingEndpoints
+from graphdatascience.procedure_surface.arrow.graph_sampling_arrow_endpoints import GraphSamplingArrowEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
 from graphdatascience.query_runner.termination_flag import TerminationFlag
@@ -115,6 +117,10 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.project.filter", config)
 
         return GraphFilterResult(**JobClient.get_summary(self._arrow_client, job_id))
+
+    @property
+    def sample(self) -> GraphSamplingEndpoints:
+        return GraphSamplingArrowEndpoints(self._arrow_client)
 
     def _arrow_config(self) -> dict[str, Any]:
         connection_info = self._arrow_client.advertised_connection_info()
