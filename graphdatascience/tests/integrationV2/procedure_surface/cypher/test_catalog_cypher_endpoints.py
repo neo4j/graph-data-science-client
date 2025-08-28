@@ -145,3 +145,13 @@ def test_sample_property(catalog_endpoints: CatalogCypherEndpoints) -> None:
     from graphdatascience.procedure_surface.cypher.graph_sampling_cypher_endpoints import GraphSamplingCypherEndpoints
 
     assert isinstance(sample_endpoints, GraphSamplingCypherEndpoints)
+
+
+def test_projection(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
+    G, result = catalog_endpoints.project("g2", ["A", "B"], "REL", node_properties=["id"], read_concurrency=2)
+
+    assert result.node_count == 3
+    assert result.relationship_count == 1
+    assert result.graph_name == "g2"
+
+    assert catalog_endpoints.list(G)[0].graph_name == "g2"
