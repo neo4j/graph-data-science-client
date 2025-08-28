@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Tuple, Union
 
 from ...call_parameters import CallParameters
 from ...graph.graph_object import Graph
 from ...query_runner.query_runner import QueryRunner
+from ..api.base_result import BaseResult
 from ..api.catalog_endpoints import CatalogEndpoints, GraphFilterResult, GraphListResult
 from ..api.graph_sampling_endpoints import GraphSamplingEndpoints
 from ..utils.config_converter import ConfigConverter
@@ -36,6 +37,39 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             return GraphListResult(**result.iloc[0].to_dict())
         else:
             return None
+
+    def project(
+        self,
+        graph_name: str,
+        node_projection: Optional[Union[str, List[str], dict[str, Any]]] = None,
+        relationship_projection: Optional[Union[str, List[str], dict[str, Any]]] = None,
+        node_properties: Optional[Union[str, List[str], dict[str, Any]]] = None,
+        relationship_properties: Optional[Union[str, List[str], dict[str, Any]]] = None,
+        read_concurrency: Optional[int] = None,
+        job_id: Optional[str] = None,
+        sudo: Optional[bool] = None,
+        username: Optional[str] = None,
+    ) -> Tuple[Graph, GraphProjectResult]:
+        config = ConfigConverter.convert_to_gds_config(
+            nodeProperties=node_properties,
+            relationshipProperties=relationship_properties,
+            jobId=job_id,
+            sudo=sudo,
+            username=username,
+            readConcurrency=read_concurrency,
+        )
+
+        params = CallParameters(
+            graphName=graph_name,
+            nodeProjection=node_projection,
+            relationshipProjection=relationship_projection,
+            config=config,
+        )
+        params.ensure_job_id_in_config()
+
+        result = self._query_runner.call_procedure(endpoint="gds.graph.project", params=params).squeeze()
+        list_result = GraphProjectResult(**result.to_dict())
+        return Graph(list_result.graph_name, self._query_runner), list_result
 
     def filter(
         self,
@@ -71,3 +105,12 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             GraphSamplingEndpoints: Graph sampling endpoints for cypher implementation.
         """
         return GraphSamplingCypherEndpoints(self._query_runner)
+
+
+class GraphProjectResult(BaseResult):
+    graph_name: str
+    node_count: int
+    relationship_count: int
+    project_millis: int
+    node_projection: dict[str, Any]
+    relationship_projection: dict[str, Any]
