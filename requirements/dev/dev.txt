@@ -2,7 +2,7 @@ ruff == 0.11.7
 mypy == 1.13.0
 nbconvert == 7.16.4
 pandas-stubs == 2.2.3.241009
-tox == 4.11.3
+tox == 4.29.0
 types-setuptools == 75.8.0.20250110
 sphinx == 7.3.7
 enum-tools[sphinx] == 0.12.0
