@@ -112,6 +112,7 @@ def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Gr
             # There is currently a bug in GDS that throws when deleting a GDL graph
             pass
 
+
 def test_graph_generate(catalog_endpoints: CatalogArrowEndpoints) -> None:
     try:
         result = catalog_endpoints.generate(
@@ -142,5 +143,3 @@ def test_graph_generate(catalog_endpoints: CatalogArrowEndpoints) -> None:
         except FlightServerError:
             # There is currently a bug in GDS that throws when deleting a GDL graph
             pass
-
-

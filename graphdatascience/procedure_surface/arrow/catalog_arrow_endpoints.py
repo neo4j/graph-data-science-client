@@ -132,7 +132,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         relationship_distribution: Optional[str] = None,
         relationship_seed: Optional[int] = None,
         relationship_property: Optional[dict[str, Any]] = None,
-        orientation: str = None,
+        orientation: Optional[str] = None,
         allow_self_loops: Optional[bool] = None,
         read_concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
