@@ -53,13 +53,20 @@ class CatalogEndpoints(ABC):
     ) -> GraphFilterResult:
         """Create a subgraph of a graph based on a filter expression.
 
-        Args:
-            G (Graph): Graph object to filter on
-            graph_name (str): Name of subgraph to create
-            node_filter (str): Filter expression for nodes
-            relationship_filter (str): Filter expression for relationships
-            concurrency (Optional[int], optional): Number of concurrent threads to use. Defaults to None.
-            job_id (Optional[str], optional): Unique identifier for the filtering job. Defaults to None.
+        Parameters
+        ----------
+        G (Graph):
+            Graph object to filter on
+        graph_name (str):
+            Name of subgraph to create
+        node_filter (str):
+            Filter expression for nodes
+        relationship_filter (str):
+            Filter expression for relationships
+        concurrency (int, optional):
+            Number of concurrent threads to use. Defaults to None.
+        job_id (str, optional):
+            Unique identifier for the filtering job. Defaults to None.
 
         Returns:
             GraphFilterResult: Filter result containing information like
@@ -70,7 +77,64 @@ class CatalogEndpoints(ABC):
     @property
     @abstractmethod
     def sample(self) -> GraphSamplingEndpoints:
+        """Endpoints for graph sampling."""
         pass
+
+    @abstractmethod
+    def generate(
+        self,
+        graph_name: str,
+        node_count: int,
+        average_degree: float,
+        *,
+        relationship_distribution: Optional[str] = None,
+        relationship_seed: Optional[int] = None,
+        relationship_property: Optional[dict[str, Any]] = None,
+        orientation: Optional[List[str]] = None,
+        allow_self_loops: Optional[bool] = None,
+        concurrency: Optional[int] = None,
+        job_id: Optional[str] = None,
+        sudo: Optional[bool] = None,
+        log_progress: Optional[bool] = None,
+        username: Optional[str] = None,
+    ) -> GraphGenerationStats:
+        """
+        Generates a random graph and store it in the graph catalog.
+
+        Parameters
+        ----------
+        graph_name : str
+            Name of the generated graph.
+        node_count : int
+            The number of nodes in the generated graph
+        average_degree : float
+            The average out-degree of the generated nodes
+        relationship_distribution : Optional[str], default=None
+            Determines the relationship distribution strategy.
+        relationship_seed : Optional[int], default=None
+            Seed value for generating deterministic relationships.
+        relationship_property : Optional[dict[str, Any]], default=None
+            Configure generated relationship properties.
+        orientation : Optional[List[str]], default=None
+            Specifies the orientation of the generated relationships.
+        allow_self_loops : Optional[bool], default=None
+            Whether nodes in the graph can have relationships where start and end nodes are the same.
+        concurrency : Optional[int], default=None
+            Number of concurrent threads/processes to use during graph generation.
+        job_id : Optional[str], default=None
+            Unique identifier for the job associated with the graph generation.
+        sudo : Optional[bool], default=None
+            Override memory estimation limits
+        log_progress : Optional[bool], default=None
+            Whether to log progress during graph generation.
+        username : Optional[str], default=None
+            Username of the individual requesting the graph generation.
+
+        Returns
+        -------
+        GraphGenerationStats:
+            A result object containing information about the generated graph.
+        """
 
 
 class GraphListResult(BaseResult):
@@ -106,3 +170,14 @@ class GraphFilterResult(BaseResult):
     node_count: int
     relationship_count: int
     project_millis: int
+
+
+class GraphGenerationStats(BaseResult):
+    name: str
+    nodes: int
+    relationships: int
+    generate_millis: int
+    relationship_seed: Optional[int]
+    average_degree: float
+    relationship_distribution: str
+    relationship_property: dict[str, Any]
