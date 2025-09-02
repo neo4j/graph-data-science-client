@@ -90,9 +90,9 @@ class CatalogEndpoints(ABC):
         relationship_distribution: Optional[str] = None,
         relationship_seed: Optional[int] = None,
         relationship_property: Optional[dict[str, Any]] = None,
-        orientation: Optional[List[str]] = None,
+        orientation: Optional[str] = None,
         allow_self_loops: Optional[bool] = None,
-        concurrency: Optional[int] = None,
+        read_concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
@@ -115,11 +115,11 @@ class CatalogEndpoints(ABC):
             Seed value for generating deterministic relationships.
         relationship_property : Optional[dict[str, Any]], default=None
             Configure generated relationship properties.
-        orientation : Optional[List[str]], default=None
+        orientation : Optional[str], default=None
             Specifies the orientation of the generated relationships.
         allow_self_loops : Optional[bool], default=None
             Whether nodes in the graph can have relationships where start and end nodes are the same.
-        concurrency : Optional[int], default=None
+        read_concurrency : Optional[int], default=None
             Number of concurrent threads/processes to use during graph generation.
         job_id : Optional[str], default=None
             Unique identifier for the job associated with the graph generation.
