@@ -6,7 +6,13 @@ from ...call_parameters import CallParameters
 from ...graph.graph_object import Graph
 from ...query_runner.query_runner import QueryRunner
 from ..api.base_result import BaseResult
-from ..api.catalog_endpoints import CatalogEndpoints, GraphFilterResult, GraphGenerationStats, GraphListResult
+from ..api.catalog_endpoints import (
+    CatalogEndpoints,
+    GraphFilterResult,
+    GraphGenerationStats,
+    GraphListResult,
+    RelationshipPropertySpec,
+)
 from ..api.graph_sampling_endpoints import GraphSamplingEndpoints
 from ..utils.config_converter import ConfigConverter
 from .graph_sampling_cypher_endpoints import GraphSamplingCypherEndpoints
@@ -109,7 +115,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         *,
         relationship_distribution: Optional[str] = None,
         relationship_seed: Optional[int] = None,
-        relationship_property: Optional[dict[str, Any]] = None,
+        relationship_property: Optional[RelationshipPropertySpec] = None,
         orientation: Optional[str] = None,
         allow_self_loops: Optional[bool] = None,
         read_concurrency: Optional[int] = None,
@@ -121,7 +127,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         config = ConfigConverter.convert_to_gds_config(
             relationship_distribution=relationship_distribution,
             relationship_seed=relationship_seed,
-            relationship_property=relationship_property,
+            relationship_property=relationship_property.model_dump(by_alias=True) if relationship_property else None,
             orientation=orientation,
             allow_self_loops=allow_self_loops,
             read_concurrency=read_concurrency,

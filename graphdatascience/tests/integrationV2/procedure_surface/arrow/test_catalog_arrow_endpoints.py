@@ -7,6 +7,7 @@ from pyarrow._flight import FlightServerError
 
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.procedure_surface.api.catalog_endpoints import RelationshipPropertySpec
 from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
@@ -121,6 +122,7 @@ def test_graph_generate(catalog_endpoints: CatalogArrowEndpoints) -> None:
             average_degree=5,
             relationship_distribution="UNIFORM",
             relationship_seed=42,
+            relationship_property=RelationshipPropertySpec.fixed("weight", 42),
             orientation="UNDIRECTED",
             allow_self_loops=False,
             read_concurrency=1,
@@ -134,6 +136,7 @@ def test_graph_generate(catalog_endpoints: CatalogArrowEndpoints) -> None:
         assert result.relationships > 5
         assert result.generate_millis >= 0
         assert result.relationship_distribution == "UNIFORM"
+        assert result.relationship_property == RelationshipPropertySpec.fixed("weight", 42)
 
         assert catalog_endpoints.list("generated") is not None
 

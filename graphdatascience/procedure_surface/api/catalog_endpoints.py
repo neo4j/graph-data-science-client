@@ -89,7 +89,7 @@ class CatalogEndpoints(ABC):
         *,
         relationship_distribution: Optional[str] = None,
         relationship_seed: Optional[int] = None,
-        relationship_property: Optional[dict[str, Any]] = None,
+        relationship_property: Optional[RelationshipPropertySpec] = None,
         orientation: Optional[str] = None,
         allow_self_loops: Optional[bool] = None,
         read_concurrency: Optional[int] = None,
@@ -113,7 +113,7 @@ class CatalogEndpoints(ABC):
             Determines the relationship distribution strategy.
         relationship_seed : Optional[int], default=None
             Seed value for generating deterministic relationships.
-        relationship_property : Optional[dict[str, Any]], default=None
+        relationship_property : Optional[RelationshipPropertySpec], default=None
             Configure generated relationship properties.
         orientation : Optional[str], default=None
             Specifies the orientation of the generated relationships.
@@ -180,4 +180,20 @@ class GraphGenerationStats(BaseResult):
     relationship_seed: Optional[int]
     average_degree: float
     relationship_distribution: str
-    relationship_property: dict[str, Any]
+    relationship_property: RelationshipPropertySpec
+
+
+class RelationshipPropertySpec(BaseResult):
+    name: str
+    type: str
+    min: Optional[float] = None
+    max: Optional[float] = None
+    value: Optional[float] = None
+
+    @staticmethod
+    def fixed(name: str, value: float) -> RelationshipPropertySpec:
+        return RelationshipPropertySpec(name=name, type="FIXED", value=value)
+
+    @staticmethod
+    def random(name: str, min: float, max: float) -> RelationshipPropertySpec:
+        return RelationshipPropertySpec(name=name, type="RANDOM", min=min, max=max)

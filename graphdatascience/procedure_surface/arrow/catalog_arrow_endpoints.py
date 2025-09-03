@@ -13,6 +13,7 @@ from graphdatascience.procedure_surface.api.catalog_endpoints import (
     GraphFilterResult,
     GraphGenerationStats,
     GraphListResult,
+    RelationshipPropertySpec,
 )
 from graphdatascience.procedure_surface.api.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.arrow.graph_sampling_arrow_endpoints import GraphSamplingArrowEndpoints
@@ -131,7 +132,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         *,
         relationship_distribution: Optional[str] = None,
         relationship_seed: Optional[int] = None,
-        relationship_property: Optional[dict[str, Any]] = None,
+        relationship_property: Optional[RelationshipPropertySpec] = None,
         orientation: Optional[str] = None,
         allow_self_loops: Optional[bool] = None,
         read_concurrency: Optional[int] = None,
@@ -146,7 +147,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             average_degree=average_degree,
             relationship_distribution=relationship_distribution,
             relationship_seed=relationship_seed,
-            relationship_property=relationship_property,
+            relationship_property=relationship_property.model_dump(by_alias=True) if relationship_property else None,
             orientation=orientation,
             allow_self_loops=allow_self_loops,
             read_concurrency=read_concurrency,

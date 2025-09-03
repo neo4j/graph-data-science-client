@@ -4,6 +4,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience import Graph, QueryRunner
+from graphdatascience.procedure_surface.api.catalog_endpoints import RelationshipPropertySpec
 from graphdatascience.procedure_surface.cypher.catalog_cypher_endpoints import CatalogCypherEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import delete_all_graphs
 
@@ -154,6 +155,7 @@ def test_graph_generate(catalog_endpoints: CatalogCypherEndpoints) -> None:
         average_degree=5,
         relationship_distribution="UNIFORM",
         relationship_seed=42,
+        relationship_property=RelationshipPropertySpec.fixed("weight", 42),
         orientation="UNDIRECTED",
         allow_self_loops=False,
         read_concurrency=1,
@@ -167,5 +169,6 @@ def test_graph_generate(catalog_endpoints: CatalogCypherEndpoints) -> None:
     assert result.relationships > 5
     assert result.generate_millis >= 0
     assert result.relationship_distribution == "UNIFORM"
+    assert result.relationship_property == RelationshipPropertySpec.fixed("weight", 42)
 
     assert catalog_endpoints.list("generated") is not None
