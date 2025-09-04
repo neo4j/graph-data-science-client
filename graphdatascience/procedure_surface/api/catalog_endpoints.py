@@ -10,6 +10,7 @@ from pydantic import Field, field_validator
 
 from graphdatascience import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import NodeLabelEndpoints
 from graphdatascience.procedure_surface.api.graph_sampling_endpoints import GraphSamplingEndpoints
 
 
@@ -74,12 +75,6 @@ class CatalogEndpoints(ABC):
         """
         pass
 
-    @property
-    @abstractmethod
-    def sample(self) -> GraphSamplingEndpoints:
-        """Endpoints for graph sampling."""
-        pass
-
     @abstractmethod
     def generate(
         self,
@@ -136,6 +131,17 @@ class CatalogEndpoints(ABC):
             A result object containing information about the generated graph.
         """
 
+    @property
+    @abstractmethod
+    def sample(self) -> GraphSamplingEndpoints:
+        """Endpoints for graph sampling."""
+        pass
+
+    @property
+    @abstractmethod
+    def node_labels(self) -> NodeLabelEndpoints:
+        """Endpoints for node label operations."""
+        pass
 
 class GraphListResult(BaseResult):
     graph_name: str

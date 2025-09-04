@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, List, Optional, Tuple, Union
 
+from .catalog.node_label_cypher_endpoints import NodeLabelCypherEndpoints
 from ...call_parameters import CallParameters
 from ...graph.graph_object import Graph
 from ...query_runner.query_runner import QueryRunner
@@ -103,10 +104,6 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         result = self._query_runner.call_procedure(endpoint="gds.graph.filter", params=params).squeeze()
         return GraphFilterResult(**result.to_dict())
 
-    @property
-    def sample(self) -> GraphSamplingEndpoints:
-        return GraphSamplingCypherEndpoints(self._query_runner)
-
     def generate(
         self,
         graph_name: str,
@@ -148,6 +145,14 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.generate", params=params).squeeze()
         return GraphGenerationStats(**result.to_dict())
+
+    @property
+    def sample(self) -> GraphSamplingEndpoints:
+        return GraphSamplingCypherEndpoints(self._query_runner)
+
+    @property
+    def node_labels(self) -> NodeLabelCypherEndpoints:
+        return NodeLabelCypherEndpoints(self._query_runner)
 
 
 class GraphProjectResult(BaseResult):
