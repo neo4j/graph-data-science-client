@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Any, List, Optional, Union
 
+import neo4j
 from pydantic import Field, field_validator
 
 from graphdatascience import Graph
@@ -92,6 +93,8 @@ class GraphListResult(BaseResult):
     def strip_timezone(cls, value: Any) -> Any:
         if isinstance(value, str):
             return re.sub(r"\[.*\]$", "", value)
+        if isinstance(value, neo4j.time.DateTime):
+            return value.to_native()
         return value
 
 
