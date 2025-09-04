@@ -7,13 +7,17 @@ from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
 from graphdatascience.arrow_client.v2.job_client import JobClient
+from graphdatascience.arrow_client.v2.write_back_client import WriteBackClient
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog_endpoints import (
     CatalogEndpoints,
     GraphFilterResult,
+    GraphGenerationStats,
     GraphListResult,
+    RelationshipPropertySpec,
 )
 from graphdatascience.procedure_surface.api.graph_sampling_endpoints import GraphSamplingEndpoints
+from graphdatascience.procedure_surface.arrow.catalog.node_label_arrow_endpoints import NodeLabelArrowEndpoints
 from graphdatascience.procedure_surface.arrow.graph_sampling_arrow_endpoints import GraphSamplingArrowEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
@@ -118,9 +122,50 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         return GraphFilterResult(**JobClient.get_summary(self._arrow_client, job_id))
 
+    def generate(
+        self,
+        graph_name: str,
+        node_count: int,
+        average_degree: float,
+        *,
+        relationship_distribution: Optional[str] = None,
+        relationship_seed: Optional[int] = None,
+        relationship_property: Optional[RelationshipPropertySpec] = None,
+        orientation: Optional[str] = None,
+        allow_self_loops: Optional[bool] = None,
+        read_concurrency: Optional[int] = None,
+        job_id: Optional[str] = None,
+        sudo: Optional[bool] = None,
+        log_progress: Optional[bool] = None,
+        username: Optional[str] = None,
+    ) -> GraphGenerationStats:
+        config = ConfigConverter.convert_to_gds_config(
+            graph_name=graph_name,
+            node_count=node_count,
+            average_degree=average_degree,
+            relationship_distribution=relationship_distribution,
+            relationship_seed=relationship_seed,
+            relationship_property=relationship_property.model_dump(by_alias=True) if relationship_property else None,
+            orientation=orientation,
+            allow_self_loops=allow_self_loops,
+            read_concurrency=read_concurrency,
+            job_id=job_id,
+            sudo=sudo,
+            log_progress=log_progress,
+            username=username,
+        )
+
+        job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.generate", config)
+
+        return GraphGenerationStats(**JobClient.get_summary(self._arrow_client, job_id))
+
     @property
     def sample(self) -> GraphSamplingEndpoints:
         return GraphSamplingArrowEndpoints(self._arrow_client)
+
+    @property
+    def node_labels(self) -> NodeLabelArrowEndpoints:
+        return NodeLabelArrowEndpoints(self._arrow_client, WriteBackClient(self._arrow_client, self._query_runner))
 
     def _arrow_config(self) -> dict[str, Any]:
         connection_info = self._arrow_client.advertised_connection_info()

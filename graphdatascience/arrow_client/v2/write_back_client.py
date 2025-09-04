@@ -40,7 +40,7 @@ class WriteBackClient:
         return int((time.time() - start_time) * 1000)
 
     def _arrow_configuration(self) -> dict[str, Any]:
-        connection_info = self._arrow_client.connection_info()
+        connection_info = self._arrow_client.advertised_connection_info()
         token = self._arrow_client.request_token()
         if token is None:
             token = "IGNORED"
