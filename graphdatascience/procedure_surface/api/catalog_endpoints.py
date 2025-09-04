@@ -143,6 +143,7 @@ class CatalogEndpoints(ABC):
         """Endpoints for node label operations."""
         pass
 
+
 class GraphListResult(BaseResult):
     graph_name: str
     database: str

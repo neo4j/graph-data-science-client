@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any, List, Optional, Tuple, Union
 
-from .catalog.node_label_cypher_endpoints import NodeLabelCypherEndpoints
 from ...call_parameters import CallParameters
 from ...graph.graph_object import Graph
 from ...query_runner.query_runner import QueryRunner
@@ -16,6 +15,7 @@ from ..api.catalog_endpoints import (
 )
 from ..api.graph_sampling_endpoints import GraphSamplingEndpoints
 from ..utils.config_converter import ConfigConverter
+from .catalog.node_label_cypher_endpoints import NodeLabelCypherEndpoints
 from .graph_sampling_cypher_endpoints import GraphSamplingCypherEndpoints
 
 
