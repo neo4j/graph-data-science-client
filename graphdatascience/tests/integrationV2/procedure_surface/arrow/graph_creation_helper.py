@@ -1,9 +1,10 @@
 from typing import Optional, Tuple
 
-from graphdatascience import Graph
+from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
+from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 
 
 class MockGraph(Graph):
@@ -32,5 +33,19 @@ def create_graph(
             {"graphName": graph_name, "relationshipType": undirected[0]},
         )
         deserialize_single(raw_res)
+
+    return MockGraph(graph_name)
+
+
+def create_graph_from_db(
+    arrow_client: AuthenticatedArrowClient,
+    query_runner: QueryRunner,
+    graph_name: str,
+    query: str,
+) -> Graph:
+    CatalogArrowEndpoints(arrow_client, query_runner).project(
+        graph_name=graph_name,
+        query=query,
+    )
 
     return MockGraph(graph_name)

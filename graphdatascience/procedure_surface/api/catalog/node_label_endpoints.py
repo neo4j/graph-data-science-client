@@ -52,56 +52,62 @@ class NodeLabelEndpoints(ABC):
         """
         pass
 
+    @abstractmethod
+    def write(
+        self,
+        G: Graph,
+        node_label: str,
+        *,
+        node_filter: str,
+        sudo: Optional[bool] = None,
+        log_progress: Optional[bool] = None,
+        username: Optional[str] = None,
+        concurrency: Optional[Any] = None,
+        write_concurrency: Optional[Any] = None,
+        job_id: Optional[Any] = None,
+    ) -> NodeLabelWriteResult:
+        """
+        Writes the specified node label to the filtered nodes in the database.
 
-#  @abstractmethod
-# def mutate(
-#      self,
-#      G: Graph,
-#      node_label: str,
-#      *,
-#      node_filter: str,
-#      sudo: Optional[bool] = None,
-#      log_progress: Optional[bool] = None,
-#      username: Optional[str] = None,
-#      concurrency: Optional[Any] = None,
-#      write_concurrency: Optional[Any] = None,
-#      job_id: Optional[Any] = None,
-# ) -> MutateLabelResult:
-#      """
-#      Attaches the specified node label to the filtered nodes in the graph.
-#
-#      Parameters
-#      ----------
-#      G : Graph
-#          The graph to run the algorithm on
-#      node_label : str
-#          The node label to write back.
-#      node_filter : str
-#          A Cypher predicate for filtering nodes in the input graph.
-#      sudo : Optional[bool], default=None
-#          Override memory estimation limits
-#      log_progress : Optional[bool], default=None
-#          Whether to log progress
-#      username : Optional[str], default=None
-#          The username to attribute the procedure run to
-#      concurrency : Optional[Any], default=None
-#          The number of concurrent threads
-#      write_concurrency : Optional[Any], default=None
-#          The number of concurrent threads used for the mutation
-#      job_id : Optional[Any], default=None
-#          An identifier for the job
-#      Returns
-#      -------
-#      MutateLabelResult
-#          Execution metrics and statistics
-#      """
-#      pass
+        Parameters
+        ----------
+        G : Graph
+            The graph to run the algorithm on
+        node_label : str
+            The node label to write back.
+        node_filter : str
+            A Cypher predicate for filtering nodes in the input graph.
+        sudo : Optional[bool], default=None
+            Override memory estimation limits
+        log_progress : Optional[bool], default=None
+            Whether to log progress
+        username : Optional[str], default=None
+            The username to attribute the procedure run to
+        concurrency : Optional[Any], default=None
+            The number of concurrent threads
+        write_concurrency : Optional[Any], default=None
+            The number of concurrent threads used for the mutation
+        job_id : Optional[Any], default=None
+            An identifier for the job
+        Returns
+        -------
+        NodeLabelWriteResult
+            Execution metrics and statistics
+        """
+        pass
 
 
-class NodeLabelMutateResult(BaseResult):
-    mutate_millis: int
+class NodeLabelPersistenceResult(ABC, BaseResult):
     graph_name: str
     node_label: str
-    node_labels_written: int
     node_count: int
+    node_labels_written: int
     configuration: dict[str, object]
+
+
+class NodeLabelMutateResult(NodeLabelPersistenceResult):
+    mutate_millis: int
+
+
+class NodeLabelWriteResult(NodeLabelPersistenceResult):
+    write_millis: int
