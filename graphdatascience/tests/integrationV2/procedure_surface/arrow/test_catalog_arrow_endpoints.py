@@ -21,8 +21,8 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
     (a)-[:REL]->(c)
     """
 
-    yield create_graph(arrow_client, "g", gdl)
-    CatalogArrowEndpoints(arrow_client).drop("g", fail_if_missing=False)
+    with create_graph(arrow_client, "g", gdl) as G:
+        yield G
 
 
 @pytest.fixture
@@ -53,11 +53,8 @@ def test_list_with_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph:
 def test_list_without_graph(
     catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph, arrow_client: AuthenticatedArrowClient
 ) -> None:
-    try:
-        g2 = create_graph(arrow_client, "second_graph", "()")
+    with create_graph(arrow_client, "second_graph", "()") as g2:
         result = catalog_endpoints.list()
-    finally:
-        CatalogArrowEndpoints(arrow_client).drop("second_graph")
 
     assert len(result) == 2
     assert set(g.graph_name for g in result) == {sample_graph.name(), g2.name()}

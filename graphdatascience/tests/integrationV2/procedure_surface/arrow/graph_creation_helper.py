@@ -1,4 +1,6 @@
-from typing import Optional, Tuple
+from contextlib import contextmanager
+from types import TracebackType
+from typing import Optional, Tuple, Type, Any, Generator
 
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -7,45 +9,54 @@ from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 
 
-class MockGraph(Graph):
+class TestArrowGraph(Graph):
     def __init__(self, name: str):
         self._name = name
 
     def name(self) -> str:
         return self._name
 
-
+@contextmanager
 def create_graph(
     arrow_client: AuthenticatedArrowClient, graph_name: str, gdl: str, undirected: Optional[Tuple[str, str]] = None
-) -> Graph:
-    raw_res = arrow_client.do_action("v2/graph.fromGDL", {"graphName": graph_name, "gdlGraph": gdl})
-    deserialize_single(raw_res)
-
-    if undirected is not None:
-        JobClient.run_job_and_wait(
-            arrow_client,
-            "v2/graph.relationships.toUndirected",
-            {"graphName": graph_name, "relationshipType": undirected[0], "mutateRelationshipType": undirected[1]},
-        )
-
-        raw_res = arrow_client.do_action(
-            "v2/graph.relationships.drop",
-            {"graphName": graph_name, "relationshipType": undirected[0]},
-        )
+) -> Generator[TestArrowGraph, Any, None]:
+    try:
+        raw_res = arrow_client.do_action("v2/graph.fromGDL", {"graphName": graph_name, "gdlGraph": gdl})
         deserialize_single(raw_res)
 
-    return MockGraph(graph_name)
+        if undirected is not None:
+            JobClient.run_job_and_wait(
+                arrow_client,
+                "v2/graph.relationships.toUndirected",
+                {"graphName": graph_name, "relationshipType": undirected[0], "mutateRelationshipType": undirected[1]},
+            )
 
+            raw_res = arrow_client.do_action(
+                "v2/graph.relationships.drop",
+                {"graphName": graph_name, "relationshipType": undirected[0]},
+            )
+            deserialize_single(raw_res)
 
+        yield TestArrowGraph(graph_name)
+    finally:
+        CatalogArrowEndpoints(arrow_client).drop(graph_name, fail_if_missing=False)
+
+@contextmanager
 def create_graph_from_db(
     arrow_client: AuthenticatedArrowClient,
     query_runner: QueryRunner,
     graph_name: str,
+    graph_data: str,
     query: str,
-) -> Graph:
-    CatalogArrowEndpoints(arrow_client, query_runner).project(
-        graph_name=graph_name,
-        query=query,
-    )
+) -> Generator[TestArrowGraph, Any, None]:
+    try:
+        query_runner.run_cypher(graph_data);
+        CatalogArrowEndpoints(arrow_client, query_runner).project(
+            graph_name=graph_name,
+            query=query,
+        )
 
-    return MockGraph(graph_name)
+        yield TestArrowGraph(graph_name)
+    finally:
+        CatalogArrowEndpoints(arrow_client).drop(graph_name, fail_if_missing=False)
+        query_runner.run_cypher("MATCH (n) DETACH DELETE n")
