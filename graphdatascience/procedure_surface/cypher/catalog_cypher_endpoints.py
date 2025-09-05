@@ -6,7 +6,13 @@ from ...call_parameters import CallParameters
 from ...graph.graph_object import Graph
 from ...query_runner.query_runner import QueryRunner
 from ..api.base_result import BaseResult
-from ..api.catalog_endpoints import CatalogEndpoints, GraphFilterResult, GraphListResult
+from ..api.catalog_endpoints import (
+    CatalogEndpoints,
+    GraphFilterResult,
+    GraphGenerationStats,
+    GraphListResult,
+    RelationshipPropertySpec,
+)
 from ..api.graph_sampling_endpoints import GraphSamplingEndpoints
 from ..utils.config_converter import ConfigConverter
 from .graph_sampling_cypher_endpoints import GraphSamplingCypherEndpoints
@@ -99,12 +105,49 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
     @property
     def sample(self) -> GraphSamplingEndpoints:
-        """Get graph sampling endpoints.
-
-        Returns:
-            GraphSamplingEndpoints: Graph sampling endpoints for cypher implementation.
-        """
         return GraphSamplingCypherEndpoints(self._query_runner)
+
+    def generate(
+        self,
+        graph_name: str,
+        node_count: int,
+        average_degree: float,
+        *,
+        relationship_distribution: Optional[str] = None,
+        relationship_seed: Optional[int] = None,
+        relationship_property: Optional[RelationshipPropertySpec] = None,
+        orientation: Optional[str] = None,
+        allow_self_loops: Optional[bool] = None,
+        read_concurrency: Optional[int] = None,
+        job_id: Optional[str] = None,
+        sudo: Optional[bool] = None,
+        log_progress: Optional[bool] = None,
+        username: Optional[str] = None,
+    ) -> GraphGenerationStats:
+        config = ConfigConverter.convert_to_gds_config(
+            relationship_distribution=relationship_distribution,
+            relationship_seed=relationship_seed,
+            relationship_property=relationship_property.model_dump(by_alias=True) if relationship_property else None,
+            orientation=orientation,
+            allow_self_loops=allow_self_loops,
+            read_concurrency=read_concurrency,
+            job_id=job_id,
+            sudo=sudo,
+            log_progress=log_progress,
+            username=username,
+        )
+
+        params = CallParameters(
+            graph_name=graph_name,
+            node_count=node_count,
+            average_degree=average_degree,
+            config=config,
+        )
+
+        params.ensure_job_id_in_config()
+
+        result = self._query_runner.call_procedure(endpoint="gds.graph.generate", params=params).squeeze()
+        return GraphGenerationStats(**result.to_dict())
 
 
 class GraphProjectResult(BaseResult):

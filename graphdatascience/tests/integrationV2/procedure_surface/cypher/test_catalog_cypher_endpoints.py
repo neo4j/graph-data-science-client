@@ -4,6 +4,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience import Graph, QueryRunner
+from graphdatascience.procedure_surface.api.catalog_endpoints import RelationshipPropertySpec
 from graphdatascience.procedure_surface.cypher.catalog_cypher_endpoints import CatalogCypherEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import delete_all_graphs
 
@@ -70,24 +71,20 @@ def test_list_with_graph_name_string(catalog_endpoints: CatalogCypherEndpoints, 
 def test_list_without_graph(
     catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
-    query_runner.run_cypher("CREATE (x:Test)")
-    query_runner.run_cypher("""
-        MATCH (n:Test)
-        WITH gds.graph.project('second_graph', n, null) AS G
-        RETURN G
-    """)
-
     try:
+        query_runner.run_cypher("CREATE (x:Test)")
+        query_runner.run_cypher("""
+            MATCH (n:Test)
+            WITH gds.graph.project('second_graph', n, null) AS G
+            RETURN G
+        """)
+
         g2 = Graph("second_graph", query_runner)
         result = catalog_endpoints.list()
 
         assert len(result) == 2
         assert set(g.graph_name for g in result) == {sample_graph.name(), g2.name()}
     finally:
-        try:
-            catalog_endpoints.drop("second_graph", fail_if_missing=False)
-        except Exception:
-            pass
         query_runner.run_cypher("MATCH (n:Test) DELETE n")
 
 
@@ -118,23 +115,17 @@ def test_drop_nonexistent_fail_if_missing_false(catalog_endpoints: CatalogCypher
 
 
 def test_graph_filter(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
-    try:
-        result = catalog_endpoints.filter(
-            sample_graph, graph_name="filtered", node_filter="n:A", relationship_filter="FALSE"
-        )
+    result = catalog_endpoints.filter(
+        sample_graph, graph_name="filtered", node_filter="n:A", relationship_filter="FALSE"
+    )
 
-        assert result.node_count == 2
-        assert result.relationship_count == 0
-        assert result.from_graph_name == sample_graph.name()
-        assert result.graph_name == "filtered"
-        assert result.node_filter == "n:A"
-        assert result.relationship_filter == "FALSE"
-        assert result.project_millis >= 0
-    finally:
-        try:
-            catalog_endpoints.drop("filtered", fail_if_missing=False)
-        except Exception:
-            pass
+    assert result.node_count == 2
+    assert result.relationship_count == 0
+    assert result.from_graph_name == sample_graph.name()
+    assert result.graph_name == "filtered"
+    assert result.node_filter == "n:A"
+    assert result.relationship_filter == "FALSE"
+    assert result.project_millis >= 0
 
 
 def test_sample_property(catalog_endpoints: CatalogCypherEndpoints) -> None:
@@ -155,3 +146,29 @@ def test_projection(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Gra
     assert result.graph_name == "g2"
 
     assert catalog_endpoints.list(G)[0].graph_name == "g2"
+
+
+def test_graph_generate(catalog_endpoints: CatalogCypherEndpoints) -> None:
+    result = catalog_endpoints.generate(
+        "generated",
+        node_count=10,
+        average_degree=5,
+        relationship_distribution="UNIFORM",
+        relationship_seed=42,
+        relationship_property=RelationshipPropertySpec.fixed("weight", 42),
+        orientation="UNDIRECTED",
+        allow_self_loops=False,
+        read_concurrency=1,
+        sudo=True,
+        log_progress=False,
+        username="neo4j",
+    )
+
+    assert result.name == "generated"
+    assert result.nodes == 10
+    assert result.relationships > 5
+    assert result.generate_millis >= 0
+    assert result.relationship_distribution == "UNIFORM"
+    assert result.relationship_property == RelationshipPropertySpec.fixed("weight", 42)
+
+    assert catalog_endpoints.list("generated") is not None
