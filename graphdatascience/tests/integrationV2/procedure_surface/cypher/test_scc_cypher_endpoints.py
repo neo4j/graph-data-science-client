@@ -6,6 +6,7 @@ from graphdatascience import QueryRunner
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.procedure_surface.api.scc_endpoints import SccMutateResult, SccStatsResult, SccWriteResult
 from graphdatascience.procedure_surface.cypher.scc_cypher_endpoints import SccCypherEndpoints
+from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
@@ -33,19 +34,20 @@ def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
             , (i)-[:TYPE {cost: 3}]->(g)
     """
 
-    query_runner.run_cypher(create_statement)
-
-    query_runner.run_cypher("""
+    projection_query = """
         MATCH (n)
         OPTIONAL MATCH (n)-[r]->(m)
         WITH gds.graph.project('g', n, m, {}) AS G
         RETURN G
-    """)
+    """
 
-    yield Graph("g", query_runner)
-
-    query_runner.run_cypher("CALL gds.graph.drop('g')")
-    query_runner.run_cypher("MATCH (n) DETACH DELETE n")
+    with create_graph(
+            query_runner,
+            'g',
+            create_statement,
+            projection_query,
+    ) as g:
+        yield g
 
 
 @pytest.fixture

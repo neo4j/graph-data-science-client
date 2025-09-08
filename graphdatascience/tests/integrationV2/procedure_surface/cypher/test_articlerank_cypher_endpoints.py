@@ -4,32 +4,34 @@ import pytest
 
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.procedure_surface.cypher.articlerank_cypher_endpoints import ArticleRankCypherEndpoints
+from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
 def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
-    create_statement = """
-    CREATE
-    (a: Node),
-    (b: Node),
-    (c: Node),
-    (a)-[:REL]->(c),
-    (b)-[:REL]->(c)
+    create_query = """
+        CREATE
+        (a: Node),
+        (b: Node),
+        (c: Node),
+        (a)-[:REL]->(c),
+        (b)-[:REL]->(c)
     """
 
-    query_runner.run_cypher(create_statement)
-
-    query_runner.run_cypher("""
+    projection_query = """ 
         MATCH (n)
         OPTIONAL MATCH (n)-[r]->(m)
         WITH gds.graph.project('g', n, m, {}) AS G
         RETURN G
-    """)
+    """
 
-    yield Graph("g", query_runner)
-
-    query_runner.run_cypher("CALL gds.graph.drop('g')")
-    query_runner.run_cypher("MATCH (n) DETACH DELETE n")
+    with create_graph(
+            query_runner,
+            'g',
+            create_query,
+            projection_query,
+    ) as g:
+        yield g
 
 
 @pytest.fixture
