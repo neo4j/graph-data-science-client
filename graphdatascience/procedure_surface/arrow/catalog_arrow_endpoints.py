@@ -165,7 +165,9 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
     @property
     def node_labels(self) -> NodeLabelArrowEndpoints:
-        return NodeLabelArrowEndpoints(self._arrow_client, WriteBackClient(self._arrow_client, self._query_runner))
+        write_client = WriteBackClient(self._arrow_client, self._query_runner) if self._query_runner else None
+
+        return NodeLabelArrowEndpoints(self._arrow_client, write_client)
 
     def _arrow_config(self) -> dict[str, Any]:
         connection_info = self._arrow_client.advertised_connection_info()

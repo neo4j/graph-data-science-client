@@ -63,6 +63,7 @@ def test_mutate_node_label(node_label_endpoints: NodeLabelArrowEndpoints, sample
     assert result.node_labels_written == 2
 
 
+@pytest.mark.db_integration
 def test_write_node_label(
     node_label_endpoints: NodeLabelArrowEndpoints, db_graph: Graph, query_runner: QueryRunner
 ) -> None:
