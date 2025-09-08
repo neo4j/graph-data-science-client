@@ -47,7 +47,12 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
 
 
 @pytest.fixture
-def node_label_endpoints(
+def node_label_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[NodeLabelArrowEndpoints, None, None]:
+    yield NodeLabelArrowEndpoints(arrow_client)
+
+
+@pytest.fixture
+def node_label_endpoints_with_db(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner
 ) -> Generator[NodeLabelArrowEndpoints, None, None]:
     yield NodeLabelArrowEndpoints(arrow_client, WriteBackClient(arrow_client, query_runner))
@@ -65,9 +70,9 @@ def test_mutate_node_label(node_label_endpoints: NodeLabelArrowEndpoints, sample
 
 @pytest.mark.db_integration
 def test_write_node_label(
-    node_label_endpoints: NodeLabelArrowEndpoints, db_graph: Graph, query_runner: QueryRunner
+    node_label_endpoints_with_db: NodeLabelArrowEndpoints, db_graph: Graph, query_runner: QueryRunner
 ) -> None:
-    result = node_label_endpoints.write(G=db_graph, node_label="WRITTEN", node_filter="n:Foo")
+    result = node_label_endpoints_with_db.write(G=db_graph, node_label="WRITTEN", node_filter="n:Foo")
 
     assert result.node_label == "WRITTEN"
     assert result.node_count == 3
