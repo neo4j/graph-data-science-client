@@ -15,6 +15,7 @@ from ..api.catalog_endpoints import (
 )
 from ..api.graph_sampling_endpoints import GraphSamplingEndpoints
 from ..utils.config_converter import ConfigConverter
+from .catalog.node_label_cypher_endpoints import NodeLabelCypherEndpoints
 from .graph_sampling_cypher_endpoints import GraphSamplingCypherEndpoints
 
 
@@ -103,10 +104,6 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         result = self._query_runner.call_procedure(endpoint="gds.graph.filter", params=params).squeeze()
         return GraphFilterResult(**result.to_dict())
 
-    @property
-    def sample(self) -> GraphSamplingEndpoints:
-        return GraphSamplingCypherEndpoints(self._query_runner)
-
     def generate(
         self,
         graph_name: str,
@@ -148,6 +145,14 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.generate", params=params).squeeze()
         return GraphGenerationStats(**result.to_dict())
+
+    @property
+    def sample(self) -> GraphSamplingEndpoints:
+        return GraphSamplingCypherEndpoints(self._query_runner)
+
+    @property
+    def node_labels(self) -> NodeLabelCypherEndpoints:
+        return NodeLabelCypherEndpoints(self._query_runner)
 
 
 class GraphProjectResult(BaseResult):

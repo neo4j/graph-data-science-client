@@ -1,0 +1,69 @@
+from typing import Generator
+
+import pytest
+
+from graphdatascience import Graph, QueryRunner
+from graphdatascience.procedure_surface.cypher.catalog.node_label_cypher_endpoints import NodeLabelCypherEndpoints
+from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import delete_all_graphs
+
+
+@pytest.fixture
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
+    create_statement = """
+    CREATE
+    (a: Node:Foo),
+    (b: Node),
+    (c: Node:Foo)
+    """
+
+    query_runner.run_cypher(create_statement)
+
+    query_runner.run_cypher("""
+        MATCH (n)
+        WITH gds.graph.project('g', n, null, {sourceNodeLabels: labels(n), targetNodeLabels: null}) AS G
+        RETURN G
+    """)
+
+    yield Graph("g", query_runner)
+
+    delete_all_graphs(query_runner)
+    query_runner.run_cypher("MATCH (n) DETACH DELETE n")
+
+
+@pytest.fixture
+def node_label_endpoints(query_runner: QueryRunner) -> Generator[NodeLabelCypherEndpoints, None, None]:
+    yield NodeLabelCypherEndpoints(query_runner)
+
+
+def test_mutate_node_label(node_label_endpoints: NodeLabelCypherEndpoints, sample_graph: Graph) -> None:
+    result = node_label_endpoints.mutate(G=sample_graph, node_label="MUTATED", node_filter="n:Foo")
+
+    assert result.node_label == "MUTATED"
+    assert result.node_count == 3
+    assert result.graph_name == sample_graph.name()
+    assert result.mutate_millis >= 0
+    assert result.node_labels_written == 2
+
+    assert "MUTATED" in sample_graph.node_labels()
+
+
+def test_write_node_label(
+    node_label_endpoints: NodeLabelCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
+) -> None:
+    result = node_label_endpoints.write(G=sample_graph, node_label="WRITTEN", node_filter="n:Foo")
+
+    assert result.node_label == "WRITTEN"
+    assert result.node_count == 3
+    assert result.graph_name == sample_graph.name()
+    assert result.write_millis >= 0
+    assert result.node_labels_written == 2
+
+    assert "MUTATED" not in sample_graph.node_labels()
+
+    assert (
+        query_runner.run_cypher("""
+        MATCH (n:WRITTEN)
+        RETURN COUNT(n) as written
+    """).squeeze()
+        == 2
+    )

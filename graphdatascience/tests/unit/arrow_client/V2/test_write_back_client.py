@@ -13,6 +13,7 @@ from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, Collect
 def mock_arrow_client(mocker: MockerFixture) -> AuthenticatedArrowClient:
     client = mocker.Mock(spec=AuthenticatedArrowClient)
     client.connection_info.return_value = mocker.Mock(host="localhost", port=8080, encrypted=False)
+    client.advertised_connection_info.return_value = mocker.Mock(host="remote", port=8080, encrypted=False)
     client.request_token.return_value = "test_token"
     return client  # type: ignore
 
@@ -34,7 +35,7 @@ def test_write_back_client_initialization(write_back_client: WriteBackClient) ->
 
 def test_arrow_configuration(write_back_client: WriteBackClient, mock_arrow_client: AuthenticatedArrowClient) -> None:
     expected_config = {
-        "host": "localhost",
+        "host": "remote",
         "port": 8080,
         "token": "test_token",
         "encrypted": False,

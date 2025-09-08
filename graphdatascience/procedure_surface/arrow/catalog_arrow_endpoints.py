@@ -7,6 +7,7 @@ from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
 from graphdatascience.arrow_client.v2.job_client import JobClient
+from graphdatascience.arrow_client.v2.write_back_client import WriteBackClient
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog_endpoints import (
     CatalogEndpoints,
@@ -16,6 +17,7 @@ from graphdatascience.procedure_surface.api.catalog_endpoints import (
     RelationshipPropertySpec,
 )
 from graphdatascience.procedure_surface.api.graph_sampling_endpoints import GraphSamplingEndpoints
+from graphdatascience.procedure_surface.arrow.catalog.node_label_arrow_endpoints import NodeLabelArrowEndpoints
 from graphdatascience.procedure_surface.arrow.graph_sampling_arrow_endpoints import GraphSamplingArrowEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
@@ -120,10 +122,6 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         return GraphFilterResult(**JobClient.get_summary(self._arrow_client, job_id))
 
-    @property
-    def sample(self) -> GraphSamplingEndpoints:
-        return GraphSamplingArrowEndpoints(self._arrow_client)
-
     def generate(
         self,
         graph_name: str,
@@ -160,6 +158,16 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.generate", config)
 
         return GraphGenerationStats(**JobClient.get_summary(self._arrow_client, job_id))
+
+    @property
+    def sample(self) -> GraphSamplingEndpoints:
+        return GraphSamplingArrowEndpoints(self._arrow_client)
+
+    @property
+    def node_labels(self) -> NodeLabelArrowEndpoints:
+        write_client = WriteBackClient(self._arrow_client, self._query_runner) if self._query_runner else None
+
+        return NodeLabelArrowEndpoints(self._arrow_client, write_client)
 
     def _arrow_config(self) -> dict[str, Any]:
         connection_info = self._arrow_client.advertised_connection_info()
