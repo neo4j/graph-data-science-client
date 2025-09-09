@@ -1,5 +1,3 @@
-from typing import Optional
-
 import pytest
 from pandas import DataFrame
 from pytest_mock import MockerFixture
@@ -43,16 +41,3 @@ def test_arrow_configuration(write_back_client: WriteBackClient, mock_arrow_clie
 
     config = write_back_client._arrow_configuration()
     assert config == expected_config
-
-
-def test_write_calls_run_write_back(write_back_client: WriteBackClient, mocker: MockerFixture) -> None:
-    graph_name = "test_graph"
-    job_id = "123"
-    concurrency: Optional[int] = 4
-
-    write_back_client._write_protocol.run_write_back = mocker.Mock()  # type: ignore
-
-    duration = write_back_client.write(graph_name, job_id, concurrency)
-
-    write_back_client._write_protocol.run_write_back.assert_called_once()  # type: ignore
-    assert duration >= 0

@@ -60,6 +60,7 @@ class NodePropertyEndpoints:
         config: Dict[str, Any],
         write_concurrency: Optional[int] = None,
         concurrency: Optional[int] = None,
+        property_overwrites: Optional[dict[str, str]] = None,
     ) -> Dict[str, Any]:
         """Run a job, write results, and return summary with write time."""
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config)
@@ -68,12 +69,15 @@ class NodePropertyEndpoints:
         if self._write_back_client is None:
             raise Exception("Write back client is not initialized")
 
-        write_millis = self._write_back_client.write(
-            G.name(), job_id, write_concurrency if write_concurrency is not None else concurrency
+        write_result = self._write_back_client.write(
+            G.name(),
+            job_id,
+            concurrency=write_concurrency if write_concurrency is not None else concurrency,
+            property_overwrites=property_overwrites,
         )
 
         # modify computation result to include write details
-        computation_result["writeMillis"] = write_millis
+        computation_result["writeMillis"] = write_result.write_millis
 
         return computation_result
 
