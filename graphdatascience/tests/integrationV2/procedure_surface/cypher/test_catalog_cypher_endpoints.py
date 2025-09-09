@@ -6,8 +6,9 @@ import pytest
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.procedure_surface.api.catalog_endpoints import RelationshipPropertySpec
 from graphdatascience.procedure_surface.cypher.catalog_cypher_endpoints import CatalogCypherEndpoints
-from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import delete_all_graphs, \
-    create_graph
+from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
+    create_graph,
+)
 
 
 @pytest.fixture
@@ -28,10 +29,10 @@ def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     """
 
     with create_graph(
-            query_runner,
-            'g',
-            create_statement,
-            projection_query,
+        query_runner,
+        "g",
+        create_statement,
+        projection_query,
     ) as g:
         yield g
 

@@ -34,10 +34,10 @@ def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     """
 
     with create_graph(
-            query_runner,
-            'kcore_g',
-            create_statement,
-            projection_query,
+        query_runner,
+        "kcore_g",
+        create_statement,
+        projection_query,
     ) as g:
         yield g
 

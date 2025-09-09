@@ -1,6 +1,5 @@
 from contextlib import contextmanager
-from types import TracebackType
-from typing import Optional, Tuple, Type, Any, Generator
+from typing import Any, Generator, Optional, Tuple
 
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -15,6 +14,7 @@ class TestArrowGraph(Graph):
 
     def name(self) -> str:
         return self._name
+
 
 @contextmanager
 def create_graph(
@@ -41,6 +41,7 @@ def create_graph(
     finally:
         CatalogArrowEndpoints(arrow_client).drop(graph_name, fail_if_missing=False)
 
+
 @contextmanager
 def create_graph_from_db(
     arrow_client: AuthenticatedArrowClient,
@@ -50,7 +51,7 @@ def create_graph_from_db(
     query: str,
 ) -> Generator[TestArrowGraph, Any, None]:
     try:
-        query_runner.run_cypher(graph_data);
+        query_runner.run_cypher(graph_data)
         CatalogArrowEndpoints(arrow_client, query_runner).project(
             graph_name=graph_name,
             query=query,

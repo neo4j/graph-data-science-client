@@ -26,10 +26,10 @@ def sample_graph_with_features(query_runner: QueryRunner) -> Generator[Graph, No
     """
 
     with create_graph(
-            query_runner,
-            'g',
-            create_statement,
-            projection_query,
+        query_runner,
+        "g",
+        create_statement,
+        projection_query,
     ) as g:
         yield g
 

@@ -23,7 +23,6 @@ def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     (d)-[:REL]->(e)
     """
 
-
     projection_query = """
         MATCH (n)
         OPTIONAL MATCH (n)-[r]->(m)
@@ -32,12 +31,13 @@ def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     """
 
     with create_graph(
-            query_runner,
-            'g',
-            create_statement,
-            projection_query,
+        query_runner,
+        "g",
+        create_statement,
+        projection_query,
     ) as g:
         yield g
+
 
 @pytest.fixture
 def celf_endpoints(query_runner: QueryRunner) -> Generator[CelfCypherEndpoints, None, None]:

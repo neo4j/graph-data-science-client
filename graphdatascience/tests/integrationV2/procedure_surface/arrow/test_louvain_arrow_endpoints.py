@@ -4,7 +4,6 @@ import pytest
 
 from graphdatascience import Graph
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.louvain_arrow_endpoints import LouvainArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 

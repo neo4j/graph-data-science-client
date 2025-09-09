@@ -4,8 +4,9 @@ import pytest
 
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.procedure_surface.cypher.catalog.node_label_cypher_endpoints import NodeLabelCypherEndpoints
-from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import delete_all_graphs, \
-    create_graph
+from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
+    create_graph,
+)
 
 
 @pytest.fixture
@@ -25,15 +26,17 @@ def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
 
     with create_graph(
         query_runner,
-        'g',
+        "g",
         create_query,
         projection_query,
     ) as g:
         yield g
 
+
 @pytest.fixture
 def node_label_endpoints(query_runner: QueryRunner) -> Generator[NodeLabelCypherEndpoints, None, None]:
     yield NodeLabelCypherEndpoints(query_runner)
+
 
 def test_mutate_node_label(node_label_endpoints: NodeLabelCypherEndpoints, sample_graph: Graph) -> None:
     result = node_label_endpoints.mutate(G=sample_graph, node_label="MUTATED", node_filter="n:Foo")
