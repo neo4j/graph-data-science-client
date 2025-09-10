@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Optional, Union
+from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
@@ -14,10 +14,10 @@ class NodePropertiesEndpoints(ABC):
     def stream(
         self,
         G: Graph,
-        node_properties: list[Union[str, NodePropertySpec]],
+        node_properties: Union[str, List[str]],
         *,
         list_node_labels: Optional[bool] = None,
-        node_labels: Optional[list[str]] = None,
+        node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
@@ -31,11 +31,11 @@ class NodePropertiesEndpoints(ABC):
         ----------
         G : Graph
             The graph to stream node properties from
-        node_properties : list[Union[str, NodePropertySpec]]
+        node_properties : Union[str, List[str]]
             The node properties to stream
         list_node_labels : Optional[boolean], default=None
             Whether to include node labels in the stream
-        node_labels : Optional[list[str]], default=None
+        node_labels : Optional[List[str]], default=None
             Filter by node labels
         concurrency : Optional[Any], default=None
             The number of concurrent threads
@@ -58,9 +58,9 @@ class NodePropertiesEndpoints(ABC):
     def write(
         self,
         G: Graph,
-        node_properties: list[Union[str, NodePropertySpec]],
+        node_properties: NodePropertySpec,
         *,
-        node_labels: Optional[list[str]] = None,
+        node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
@@ -75,9 +75,9 @@ class NodePropertiesEndpoints(ABC):
         ----------
         G : Graph
             The graph to write node properties from
-        node_properties : list[Union[str, NodePropertySpec]]
+        node_properties : NodePropertySpec
             The node properties to stream
-        node_labels : Optional[list[str]], default=None
+        node_labels : Optional[List[str]], default=None
             Filter by node labels
         concurrency : Optional[Any], default=None
             The number of concurrent threads
@@ -102,7 +102,7 @@ class NodePropertiesEndpoints(ABC):
     def drop(
         self,
         G: Graph,
-        node_properties: list[str],
+        node_properties: List[str],
         *,
         fail_if_missing: Optional[bool] = None,
         concurrency: Optional[Any] = None,
@@ -118,7 +118,7 @@ class NodePropertiesEndpoints(ABC):
         ----------
         G : Graph
             The graph to drop node properties from
-        node_properties : list[str]
+        node_properties : List[str]
             The node properties to drop
         fail_if_missing: Optional[bool] = None,
             Whether to fail if any of the node properties are missing
@@ -140,17 +140,24 @@ class NodePropertiesEndpoints(ABC):
         pass
 
 
-class NodePropertySpec(BaseResult):
-    name: str
-    alias: Optional[str] = None
+class NodePropertySpec:
+    def __init__(self, *args: str, **kwargs: Any) -> None:
+        self._mappings: dict[str, str] = {}
+        for arg in args:
+            self._mappings[arg] = arg
+        for key, value in kwargs.items():
+            self._mappings[key] = value
 
-    def effective_name(self) -> str:
-        return self.alias if self.alias is not None else self.name
+    def property_names(self) -> List[str]:
+        return list(self._mappings.keys())
+
+    def to_dict(self) -> dict[str, str]:
+        return self._mappings.copy()
 
 
 class NodePropertiesWriteResult(BaseResult):
     graph_name: str
-    node_properties: list[str]
+    node_properties: List[str]
     properties_written: int
     write_millis: int
     configuration: dict[str, Any]
@@ -158,5 +165,5 @@ class NodePropertiesWriteResult(BaseResult):
 
 class NodePropertiesDropResult(BaseResult):
     graph_name: str
-    node_properties: list[str]
+    node_properties: List[str]
     properties_removed: int
