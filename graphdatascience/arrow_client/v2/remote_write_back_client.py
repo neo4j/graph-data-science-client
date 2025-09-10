@@ -12,7 +12,7 @@ from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
 from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
 
 
-class WriteBackClient:
+class RemoteWriteBackClient:
     def __init__(self, arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
