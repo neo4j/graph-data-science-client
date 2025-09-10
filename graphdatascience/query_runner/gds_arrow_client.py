@@ -8,7 +8,7 @@ import time
 import warnings
 from dataclasses import dataclass
 from types import TracebackType
-from typing import Any, Callable, Dict, Iterable, Optional, Type, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Type, Union
 
 import pandas
 import pyarrow
@@ -231,8 +231,8 @@ class GdsArrowClient:
         self,
         graph_name: str,
         database: str,
-        node_properties: Union[str, list[str]],
-        node_labels: Optional[list[str]] = None,
+        node_properties: Union[str, List[str]],
+        node_labels: Optional[List[str]] = None,
         list_node_labels: bool = False,
         concurrency: Optional[int] = None,
     ) -> pandas.DataFrame:

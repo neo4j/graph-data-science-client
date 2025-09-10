@@ -47,5 +47,8 @@ def query_runner(gds_plugin_container: DockerContainer) -> Generator[QueryRunner
         f"bolt://{host}:{port}",
         ("neo4j", "password"),
     )
+
+    query_runner.set_database("neo4j")
+
     yield query_runner
     query_runner.close()
