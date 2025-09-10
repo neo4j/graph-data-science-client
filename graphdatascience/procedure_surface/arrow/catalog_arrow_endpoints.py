@@ -7,7 +7,7 @@ from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.arrow_client.v2.write_back_client import WriteBackClient
+from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog_endpoints import (
     CatalogEndpoints,
@@ -165,7 +165,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
     @property
     def node_labels(self) -> NodeLabelArrowEndpoints:
-        write_client = WriteBackClient(self._arrow_client, self._query_runner) if self._query_runner else None
+        write_client = RemoteWriteBackClient(self._arrow_client, self._query_runner) if self._query_runner else None
 
         return NodeLabelArrowEndpoints(self._arrow_client, write_client)
 

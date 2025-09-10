@@ -6,7 +6,7 @@ from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.data_mapper_utils import deserialize_single
 from ...arrow_client.v2.job_client import JobClient
 from ...arrow_client.v2.mutation_client import MutationClient
-from ...arrow_client.v2.write_back_client import WriteBackClient
+from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from ...graph.graph_object import Graph
 from ..api.estimation_result import EstimationResult
 from ..utils.config_converter import ConfigConverter
@@ -18,7 +18,9 @@ class NodePropertyEndpoints:
     Provides common functionality for job execution, mutation, streaming, and writing.
     """
 
-    def __init__(self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[WriteBackClient] = None):
+    def __init__(
+        self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient] = None
+    ):
         self._arrow_client = arrow_client
         self._write_back_client = write_back_client
 

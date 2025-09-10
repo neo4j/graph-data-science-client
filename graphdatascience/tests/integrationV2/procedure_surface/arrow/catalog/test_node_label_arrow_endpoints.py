@@ -4,7 +4,7 @@ import pytest
 
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.write_back_client import WriteBackClient
+from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.arrow.catalog.node_label_arrow_endpoints import NodeLabelArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
@@ -53,7 +53,7 @@ def node_label_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[No
 def node_label_endpoints_with_db(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner
 ) -> Generator[NodeLabelArrowEndpoints, None, None]:
-    yield NodeLabelArrowEndpoints(arrow_client, WriteBackClient(arrow_client, query_runner))
+    yield NodeLabelArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
 
 
 def test_mutate_node_label(node_label_endpoints: NodeLabelArrowEndpoints, sample_graph: Graph) -> None:

@@ -4,7 +4,7 @@ import pytest
 
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.write_back_client import WriteBackClient
+from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.arrow.catalog.node_properties_arrow_endpoints import (
     NodePropertiesArrowEndpoints,
 )
@@ -57,7 +57,7 @@ def node_properties_endpoints(
 def node_properties_endpoints_with_db(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner
 ) -> Generator[NodePropertiesArrowEndpoints, None, None]:
-    yield NodePropertiesArrowEndpoints(arrow_client, WriteBackClient(arrow_client, query_runner))
+    yield NodePropertiesArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
 
 
 def test_stream_node_properties(node_properties_endpoints: NodePropertiesArrowEndpoints, sample_graph: Graph) -> None:
