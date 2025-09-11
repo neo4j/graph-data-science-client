@@ -7,6 +7,7 @@ from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints im
 from graphdatascience.procedure_surface.cypher.catalog.node_properties_cypher_endpoints import (
     NodePropertiesCypherEndpoints,
 )
+from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
@@ -43,6 +44,18 @@ def node_properties_endpoints(
 
 def test_stream_node_properties(node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph) -> None:
     result = node_properties_endpoints.stream(G=sample_graph, node_properties=["prop1", "prop2"])
+
+    assert len(result) == 3
+    assert "nodeId" in result.columns
+    assert "prop1" in result.columns
+    assert "prop2" in result.columns
+    assert set(result["prop1"].tolist()) == {1, 2, 3}
+    assert set(result["prop2"].tolist()) == {42.0, 43.0, 44.0}
+
+def test_stream_node_properties_with_arrow(query_runner: QueryRunner, gds_arrow_client: GdsArrowClient, sample_graph: Graph) -> None:
+    endpoints = NodePropertiesCypherEndpoints(query_runner, gds_arrow_client)
+
+    result = endpoints.stream(G=sample_graph, node_properties=["prop1", "prop2"])
 
     assert len(result) == 3
     assert "nodeId" in result.columns

@@ -8,6 +8,7 @@ from testcontainers.core.waiting_utils import wait_for_logs
 from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience import QueryRunner
+from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
@@ -21,6 +22,8 @@ def gds_plugin_container(logs_dir: Path, inside_ci: bool) -> Generator[Neo4jCont
         )
         .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
         .with_env("NEO4J_PLUGINS", '["graph-data-science"]')
+        .with_env("NEO4J_gds_arrow_enabled", "true")
+        .with_exposed_ports(8491)
     )
 
     with neo4j_container as neo4j_db:
@@ -52,3 +55,14 @@ def query_runner(gds_plugin_container: DockerContainer) -> Generator[QueryRunner
 
     yield query_runner
     query_runner.close()
+
+@pytest.fixture(scope="package")
+def gds_arrow_client(gds_plugin_container: DockerContainer, query_runner: QueryRunner) -> Generator[GdsArrowClient, None, None]:
+    arrow_port = int(gds_plugin_container.get_exposed_port(8491))
+    with GdsArrowClient(
+        "localhost",
+            arrow_port,
+        ("neo4j", "password"),
+        disable_server_verification=True,
+    ) as client:
+        yield client
