@@ -1,4 +1,20 @@
-from graphdatascience import QueryRunner
+from contextlib import contextmanager
+from typing import Any, Generator
+
+from graphdatascience import Graph, QueryRunner
+
+
+@contextmanager
+def create_graph(
+    query_runner: QueryRunner, graph_name: str, data_query: str, projection_query: str
+) -> Generator[Graph, Any, None]:
+    try:
+        query_runner.run_cypher(data_query)
+        query_runner.run_cypher(projection_query)
+        yield Graph(graph_name, query_runner)
+    finally:
+        delete_all_graphs(query_runner)
+        query_runner.run_cypher("MATCH (n) DETACH DELETE n")
 
 
 def delete_all_graphs(query_runner: QueryRunner) -> None:

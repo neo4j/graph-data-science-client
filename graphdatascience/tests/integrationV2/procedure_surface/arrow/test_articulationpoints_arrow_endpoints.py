@@ -1,4 +1,3 @@
-import json
 from typing import Generator
 
 import pytest
@@ -25,8 +24,8 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
     (b)-[:REL]->(c)
     """
 
-    yield create_graph(arrow_client, "g", gdl, undirected=("REL", "UNDIRECTED_REL"))
-    arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "g"}).encode("utf-8"))
+    with create_graph(arrow_client, "g", gdl, undirected=("REL", "UNDIRECTED_REL")) as G:
+        yield G
 
 
 @pytest.fixture

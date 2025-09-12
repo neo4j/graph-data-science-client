@@ -28,8 +28,8 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
     (f)-[:REL]->(d)
     """
 
-    yield create_graph(arrow_client, "model_api_g", gdl)
-    arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "model_api_g"}).encode("utf-8"))
+    with create_graph(arrow_client, "model_api_g", gdl) as G:
+        yield G
 
 
 @pytest.fixture

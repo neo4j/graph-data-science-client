@@ -4,30 +4,33 @@ import pytest
 
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.procedure_surface.cypher.catalog.node_label_cypher_endpoints import NodeLabelCypherEndpoints
-from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import delete_all_graphs
+from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
+    create_graph,
+)
 
 
 @pytest.fixture
 def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
-    create_statement = """
-    CREATE
-    (a: Node:Foo),
-    (b: Node),
-    (c: Node:Foo)
+    create_query = """
+        CREATE
+        (a: Node:Foo),
+        (b: Node),
+        (c: Node:Foo)
     """
 
-    query_runner.run_cypher(create_statement)
-
-    query_runner.run_cypher("""
+    projection_query = """
         MATCH (n)
         WITH gds.graph.project('g', n, null, {sourceNodeLabels: labels(n), targetNodeLabels: null}) AS G
         RETURN G
-    """)
+    """
 
-    yield Graph("g", query_runner)
-
-    delete_all_graphs(query_runner)
-    query_runner.run_cypher("MATCH (n) DETACH DELETE n")
+    with create_graph(
+        query_runner,
+        "g",
+        create_query,
+        projection_query,
+    ) as g:
+        yield g
 
 
 @pytest.fixture

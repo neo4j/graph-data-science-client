@@ -5,7 +5,6 @@ import pytest
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.procedure_surface.api.scc_endpoints import SccMutateResult, SccStatsResult
-from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.scc_arrow_endpoints import SccArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
@@ -35,8 +34,8 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
             , (i)-[:TYPE {cost: 3}]->(g)
     """
 
-    yield create_graph(arrow_client, "g", gdl)
-    CatalogArrowEndpoints(arrow_client).drop("g")
+    with create_graph(arrow_client, "g", gdl) as G:
+        yield G
 
 
 @pytest.fixture

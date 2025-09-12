@@ -1,4 +1,3 @@
-import json
 from typing import Generator
 
 import pytest
@@ -16,34 +15,33 @@ from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation
 @pytest.fixture
 def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     gdl = """
-    CREATE
-    (a: Node:Foo),
-    (b: Node),
-    (c: Node:Foo)
+        CREATE
+        (a: Node:Foo),
+        (b: Node),
+        (c: Node:Foo)
     """
 
-    yield create_graph(arrow_client, "g", gdl)
-    arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "g"}).encode("utf-8"))
+    with create_graph(arrow_client, "g", gdl) as G:
+        yield G
 
 
 @pytest.fixture
 def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
-    query_runner.run_cypher("""
-    CREATE
-    (a: Node:Foo),
-    (b: Node),
-    (c: Node:Foo)
-    """)
+    graph_data = """
+        CREATE
+        (a: Node:Foo),
+        (b: Node),
+        (c: Node:Foo)
+    """
 
-    yield create_graph_from_db(
+    with create_graph_from_db(
         arrow_client,
         query_runner,
         "g",
+        graph_data,
         "MATCH (n) WITH gds.graph.project.remote(n, null, {sourceNodeLabels: labels(n), targetNodeLabels: null}) as g RETURN g",
-    )
-
-    arrow_client.do_action("v2/graph.drop", json.dumps({"graphName": "g"}).encode("utf-8"))
-    query_runner.run_cypher("MATCH (n) DETACH DELETE n")
+    ) as G:
+        yield G
 
 
 @pytest.fixture

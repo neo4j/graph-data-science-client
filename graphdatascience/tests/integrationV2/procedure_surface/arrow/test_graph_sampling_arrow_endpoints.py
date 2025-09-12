@@ -25,8 +25,8 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
     (e)-[:REL {weight: 1.2}]->(a)
     """
 
-    yield create_graph(arrow_client, "sample_graph", gdl)
-    arrow_client.do_action("v2/graph.drop", {"graphName": "sample_graph"})
+    with create_graph(arrow_client, "sampleGraph", gdl) as G:
+        yield G
     arrow_client.do_action("v2/graph.drop", {"graphName": "sampled"})
 
 
