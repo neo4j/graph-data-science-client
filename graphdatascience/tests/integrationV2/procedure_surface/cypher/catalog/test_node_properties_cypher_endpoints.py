@@ -52,7 +52,10 @@ def test_stream_node_properties(node_properties_endpoints: NodePropertiesCypherE
     assert set(result["prop1"].tolist()) == {1, 2, 3}
     assert set(result["prop2"].tolist()) == {42.0, 43.0, 44.0}
 
-def test_stream_node_properties_with_arrow(query_runner: QueryRunner, gds_arrow_client: GdsArrowClient, sample_graph: Graph) -> None:
+
+def test_stream_node_properties_with_arrow(
+    query_runner: QueryRunner, gds_arrow_client: GdsArrowClient, sample_graph: Graph
+) -> None:
     endpoints = NodePropertiesCypherEndpoints(query_runner, gds_arrow_client)
 
     result = endpoints.stream(G=sample_graph, node_properties=["prop1", "prop2"])
