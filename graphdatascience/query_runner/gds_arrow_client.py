@@ -69,7 +69,6 @@ class GdsArrowClient:
 
         return GdsArrowClient(
             host=host,
-
             port=int(port),
             auth=auth,
             encrypted=encrypted,
