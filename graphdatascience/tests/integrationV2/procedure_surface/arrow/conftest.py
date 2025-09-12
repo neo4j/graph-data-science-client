@@ -94,7 +94,7 @@ def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient
 
 @pytest.fixture(scope="package")
 def neo4j_container(network: Network) -> Generator[DockerContainer, None, None]:
-    neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE")
+    neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", "neo4j:enterprise")
 
     if neo4j_image is None:
         raise ValueError("NEO4J_DATABASE_IMAGE environment variable is not set")

@@ -3,7 +3,7 @@ from typing import Any, List, Optional, Union
 from pandas import DataFrame
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from ...arrow_client.v2.write_back_client import WriteBackClient
+from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from ...graph.graph_object import Graph
 from ..api.estimation_result import EstimationResult
 from ..api.pagerank_endpoints import PageRankEndpoints, PageRankMutateResult, PageRankStatsResult, PageRankWriteResult
@@ -11,7 +11,9 @@ from .node_property_endpoints import NodePropertyEndpoints
 
 
 class PageRankArrowEndpoints(PageRankEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[WriteBackClient] = None):
+    def __init__(
+        self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient] = None
+    ):
         self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client)
 
     def mutate(

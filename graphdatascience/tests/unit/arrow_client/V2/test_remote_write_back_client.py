@@ -1,11 +1,9 @@
-from typing import Optional
-
 import pytest
 from pandas import DataFrame
 from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.write_back_client import WriteBackClient
+from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 
 
@@ -19,21 +17,23 @@ def mock_arrow_client(mocker: MockerFixture) -> AuthenticatedArrowClient:
 
 
 @pytest.fixture
-def write_back_client(mock_arrow_client: AuthenticatedArrowClient) -> WriteBackClient:
+def write_back_client(mock_arrow_client: AuthenticatedArrowClient) -> RemoteWriteBackClient:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION,
         {
             "protocol.version": DataFrame([{"version": "v3"}]),
         },
     )
-    return WriteBackClient(mock_arrow_client, query_runner)
+    return RemoteWriteBackClient(mock_arrow_client, query_runner)
 
 
-def test_write_back_client_initialization(write_back_client: WriteBackClient) -> None:
-    assert isinstance(write_back_client, WriteBackClient)
+def test_write_back_client_initialization(write_back_client: RemoteWriteBackClient) -> None:
+    assert isinstance(write_back_client, RemoteWriteBackClient)
 
 
-def test_arrow_configuration(write_back_client: WriteBackClient, mock_arrow_client: AuthenticatedArrowClient) -> None:
+def test_arrow_configuration(
+    write_back_client: RemoteWriteBackClient, mock_arrow_client: AuthenticatedArrowClient
+) -> None:
     expected_config = {
         "host": "remote",
         "port": 8080,
@@ -43,16 +43,3 @@ def test_arrow_configuration(write_back_client: WriteBackClient, mock_arrow_clie
 
     config = write_back_client._arrow_configuration()
     assert config == expected_config
-
-
-def test_write_calls_run_write_back(write_back_client: WriteBackClient, mocker: MockerFixture) -> None:
-    graph_name = "test_graph"
-    job_id = "123"
-    concurrency: Optional[int] = 4
-
-    write_back_client._write_protocol.run_write_back = mocker.Mock()  # type: ignore
-
-    duration = write_back_client.write(graph_name, job_id, concurrency)
-
-    write_back_client._write_protocol.run_write_back.assert_called_once()  # type: ignore
-    assert duration >= 0

@@ -8,7 +8,7 @@ import time
 import warnings
 from dataclasses import dataclass
 from types import TracebackType
-from typing import Any, Callable, Dict, Iterable, Optional, Type, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Type, Union
 
 import pandas
 import pyarrow
@@ -67,33 +67,21 @@ class GdsArrowClient:
 
         arrow_endpoint_version = ArrowEndpointVersion.from_arrow_info(arrow_info.versions)
 
-        if retry_config is None:
-            retry_config = RetryConfig(
-                retry=retry_any(
-                    retry_if_exception_type(FlightTimedOutError),
-                    retry_if_exception_type(FlightUnavailableError),
-                    retry_if_exception_type(FlightInternalError),
-                ),
-                stop=(stop_after_delay(10) | stop_after_attempt(5)),
-                wait=wait_exponential(multiplier=1, min=1, max=10),
-            )
-
         return GdsArrowClient(
             host=host,
-            retry_config=retry_config,
             port=int(port),
             auth=auth,
             encrypted=encrypted,
             disable_server_verification=disable_server_verification,
             tls_root_certs=tls_root_certs,
             arrow_endpoint_version=arrow_endpoint_version,
+            retry_config=retry_config,
             arrow_client_options=arrow_client_options,
         )
 
     def __init__(
         self,
         host: str,
-        retry_config: RetryConfig,
         port: int = 8491,
         auth: Optional[Union[ArrowAuthentication, tuple[str, str]]] = None,
         encrypted: bool = False,
@@ -101,6 +89,7 @@ class GdsArrowClient:
         tls_root_certs: Optional[bytes] = None,
         arrow_endpoint_version: ArrowEndpointVersion = ArrowEndpointVersion.V1,
         user_agent: Optional[str] = None,
+        retry_config: Optional[RetryConfig] = None,
         arrow_client_options: Optional[dict[str, Any]] = None,
     ):
         """Creates a new GdsArrowClient instance.
@@ -139,8 +128,20 @@ class GdsArrowClient:
         self._auth = None
         self._encrypted = encrypted
         self._user_agent = user_agent
-        self._retry_config = retry_config
+
         self._logger = logging.getLogger("gds_arrow_client")
+
+        if retry_config is None:
+            retry_config = RetryConfig(
+                retry=retry_any(
+                    retry_if_exception_type(FlightTimedOutError),
+                    retry_if_exception_type(FlightUnavailableError),
+                    retry_if_exception_type(FlightInternalError),
+                ),
+                stop=(stop_after_delay(10) | stop_after_attempt(5)),
+                wait=wait_exponential(multiplier=1, min=1, max=10),
+            )
+        self._retry_config = retry_config
 
         self._arrow_client_options = arrow_client_options if arrow_client_options is not None else {}
 
@@ -231,8 +232,8 @@ class GdsArrowClient:
         self,
         graph_name: str,
         database: str,
-        node_properties: Union[str, list[str]],
-        node_labels: Optional[list[str]] = None,
+        node_properties: Union[str, List[str]],
+        node_labels: Optional[List[str]] = None,
         list_node_labels: bool = False,
         concurrency: Optional[int] = None,
     ) -> pandas.DataFrame:
