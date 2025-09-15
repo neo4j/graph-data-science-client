@@ -5,7 +5,6 @@ import pytest
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import NodePropertySpec
 from graphdatascience.procedure_surface.arrow.catalog.node_properties_arrow_endpoints import (
     NodePropertiesArrowEndpoints,
 )
@@ -88,7 +87,7 @@ def test_stream_node_properties_with_labels(
 def test_write_node_properties(
     node_properties_endpoints_with_db: NodePropertiesArrowEndpoints, db_graph: Graph, query_runner: QueryRunner
 ) -> None:
-    result = node_properties_endpoints_with_db.write(G=db_graph, node_properties=NodePropertySpec("prop1", "prop2"))
+    result = node_properties_endpoints_with_db.write(G=db_graph, node_properties=["prop1", "prop2"])
 
     assert result.graph_name == db_graph.name()
     assert result.node_properties == ["prop1", "prop2"]

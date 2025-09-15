@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
@@ -58,7 +59,7 @@ class NodePropertiesEndpoints(ABC):
     def write(
         self,
         G: Graph,
-        node_properties: NodePropertySpec,
+        node_properties: Union[str, List[str], dict[str, str]],
         *,
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
@@ -75,8 +76,9 @@ class NodePropertiesEndpoints(ABC):
         ----------
         G : Graph
             The graph to write node properties from
-        node_properties : NodePropertySpec
-            The node properties to stream
+        node_properties : Union[str, List[str], dict[str, str]]
+            The node properties to write.
+            If a dictionary is provided, the keys are the property names and the values are the aliases that will be used as the property name in the database.
         node_labels : Optional[List[str]], default=None
             Filter by node labels
         concurrency : Optional[Any], default=None
@@ -140,13 +142,15 @@ class NodePropertiesEndpoints(ABC):
         pass
 
 
+@dataclass
 class NodePropertySpec:
-    def __init__(self, *args: str, **kwargs: Any) -> None:
-        self._mappings: dict[str, str] = {}
-        for arg in args:
-            self._mappings[arg] = arg
-        for key, value in kwargs.items():
-            self._mappings[key] = value
+    def __init__(self, node_properties: Union[str, List[str], dict[str, str]]) -> None:
+        if isinstance(node_properties, str):
+            self._mappings = {node_properties: node_properties}
+        elif isinstance(node_properties, list):
+            self._mappings = {prop: prop for prop in node_properties}
+        elif isinstance(node_properties, dict):
+            self._mappings = node_properties
 
     def property_names(self) -> List[str]:
         return list(self._mappings.keys())

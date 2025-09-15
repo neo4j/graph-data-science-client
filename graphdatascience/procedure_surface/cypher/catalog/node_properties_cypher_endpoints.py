@@ -31,7 +31,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
-        job_id: Optional[Any] = None,  # setting the node id is not supported by the Cypher procedure
+        job_id: Optional[Any] = None,  # setting the job id is not supported by the Cypher procedure
     ) -> DataFrame:
         if self._gds_arrow_client is not None:
             database = self._query_runner.database()
@@ -64,7 +64,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
     def write(
         self,
         G: Graph,
-        node_properties: NodePropertySpec,
+        node_properties: Union[str, List[str], dict[str, str]],
         *,
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
@@ -74,6 +74,8 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> NodePropertiesWriteResult:
+        node_property_spec = NodePropertySpec(node_properties)
+
         config = ConfigConverter.convert_to_gds_config(
             node_labels=node_labels,
             concurrency=concurrency,
@@ -85,7 +87,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
 
         params = CallParameters(
             graph_name=G.name(),
-            node_properties=node_properties.to_dict(),
+            node_properties=node_property_spec.to_dict(),
             node_labels=node_labels if node_labels is not None else ["*"],
             config=config,
         )

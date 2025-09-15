@@ -1,9 +1,11 @@
 import logging
 import os
+from datetime import datetime
 from pathlib import Path
 from typing import Generator
 
 import pytest
+from dateutil.relativedelta import relativedelta
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.network import Network
 from testcontainers.core.waiting_utils import wait_for_logs
@@ -94,20 +96,23 @@ def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient
 
 @pytest.fixture(scope="package")
 def neo4j_container(network: Network, logs_dir: Path, inside_ci: bool) -> Generator[DockerContainer, None, None]:
-    neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", "neo4j:enterprise")
+    default_neo4j_image = (
+        f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura/neo4j-enterprise:{latest_neo4j_version()}"
+    )
+    neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", default_neo4j_image)
 
     if neo4j_image is None:
         raise ValueError("NEO4J_DATABASE_IMAGE environment variable is not set")
 
     db_logs_dir = logs_dir / "arrow_surface" / "db_logs"
     db_logs_dir.mkdir(parents=True)
-    db_logs_dir.chmod(0o755)
+    db_logs_dir.chmod(0o777)
 
     db_container = (
         DockerContainer(image=neo4j_image)
         .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
         .with_env("NEO4J_AUTH", "neo4j/password")
-        # .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
+        .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
         .with_env("NEO4J_server_bolt_advertised__address", "localhost:7687")
         .with_network_aliases("neo4j-db")
         .with_network(network)
@@ -142,3 +147,9 @@ def query_runner(neo4j_container: DockerContainer) -> Generator[QueryRunner, Non
     )
     yield query_runner
     query_runner.close()
+
+
+def latest_neo4j_version() -> str:
+    today = datetime.now()
+    previous_month = today - relativedelta(months=1)
+    return previous_month.strftime("%Y.%m.0")

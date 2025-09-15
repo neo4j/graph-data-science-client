@@ -58,7 +58,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
     def write(
         self,
         G: Graph,
-        node_properties: NodePropertySpec,
+        node_properties: Union[str, List[str], dict[str, str]],
         *,
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
@@ -68,9 +68,14 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> NodePropertiesWriteResult:
+        if self._write_back_client is None:
+            raise ValueError("Write back is only available if a database connection is provided.")
+
+        node_property_spec = NodePropertySpec(node_properties)
+
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
-            node_properties=node_properties.property_names(),
+            node_properties=node_property_spec.property_names(),
             node_labels=node_labels,
             concurrency=concurrency,
             sudo=sudo,
@@ -81,19 +86,16 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
 
         job_id = JobClient.run_job(self._arrow_client, "v2/graph.nodeProperties.stream", config)
 
-        if self._write_back_client is None:
-            raise ValueError("Write back is only available if a database connection is provided.")
-
         write_result = self._write_back_client.write(
             G.name(),
             job_id,
             concurrency=write_concurrency if write_concurrency is not None else concurrency,
-            property_overwrites=node_properties.to_dict(),
+            property_overwrites=node_property_spec.to_dict(),
         )
 
         return NodePropertiesWriteResult(
             graphName=G.name(),
-            nodeProperties=node_properties.property_names(),
+            nodeProperties=node_property_spec.property_names(),
             propertiesWritten=write_result.written_node_properties,
             writeMillis=write_result.write_millis,
             configuration=config,

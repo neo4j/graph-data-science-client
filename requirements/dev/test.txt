@@ -3,3 +3,4 @@ requests_mock == 1.11.0
 pytest_mock == 3.12.0
 testcontainers >= 4.0, < 4.13.0
 python-dotenv==1.1.0
+python-dateutil >= 2.9

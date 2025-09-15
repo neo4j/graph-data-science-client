@@ -3,7 +3,6 @@ from typing import Generator
 import pytest
 
 from graphdatascience import Graph, QueryRunner
-from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import NodePropertySpec
 from graphdatascience.procedure_surface.cypher.catalog.node_properties_cypher_endpoints import (
     NodePropertiesCypherEndpoints,
 )
@@ -83,7 +82,7 @@ def test_stream_node_properties_with_labels(
 def test_write_node_properties(
     node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
-    result = node_properties_endpoints.write(G=sample_graph, node_properties=NodePropertySpec("prop1", "prop2"))
+    result = node_properties_endpoints.write(G=sample_graph, node_properties=["prop1", "prop2"])
 
     assert result.graph_name == sample_graph.name()
     assert result.node_properties == ["prop1", "prop2"]
@@ -91,13 +90,13 @@ def test_write_node_properties(
     assert result.properties_written == 6  # 3 nodes * 2 properties
 
     # Verify properties were written to database
-    props_written = query_runner.run_cypher("""
+    node_written = query_runner.run_cypher("""
         MATCH (n:Node)
         WHERE n.prop1 IS NOT NULL AND n.prop2 IS NOT NULL
         RETURN COUNT(n) as written
     """).squeeze()
 
-    assert props_written == 3
+    assert node_written == 3
 
 
 def test_drop_node_properties(node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph) -> None:
