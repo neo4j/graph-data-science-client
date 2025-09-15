@@ -1,0 +1,166 @@
+from typing import Any, List, Optional, Union
+
+from pandas import DataFrame
+
+from graphdatascience import Graph, QueryRunner
+from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
+from graphdatascience.arrow_client.v2.job_client import JobClient
+from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
+from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
+    Aggregation,
+    RelationshipsDropResult,
+    RelationshipsEndpoints,
+    RelationshipsInverseIndexResult,
+    RelationshipsToUndirectedResult,
+    RelationshipsWriteResult,
+)
+from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+
+
+class RelationshipArrowEndpoints(RelationshipsEndpoints):
+    def __init__(self, arrow_client: AuthenticatedArrowClient, query_runner: Optional[QueryRunner] = None):
+        self._arrow_client = arrow_client
+        self._query_runner = query_runner
+        self._write_back_client: Optional[RemoteWriteBackClient] = (
+            RemoteWriteBackClient(arrow_client, query_runner) if query_runner is not None else None
+        )
+
+    def stream(
+        self,
+        G: Graph,
+        relationship_types: Optional[List[str]] = None,
+        *,
+        concurrency: Optional[Any] = None,
+        sudo: Optional[bool] = None,
+        log_progress: Optional[bool] = None,
+        username: Optional[str] = None,
+        job_id: Optional[Any] = None,
+    ) -> DataFrame:
+        config = ConfigConverter.convert_to_gds_config(
+            graph_name=G.name(),
+            relationship_types=relationship_types or ["*"],
+            concurrency=concurrency,
+            sudo=sudo,
+            log_progress=log_progress,
+            username=username,
+            job_id=job_id,
+        )
+
+        job_id = JobClient.run_job(self._arrow_client, "v2/graph.relationships.stream", config)
+        result = JobClient.stream_results(self._arrow_client, G.name(), job_id)
+
+        return result
+
+    def write(
+        self,
+        G: Graph,
+        relationship_type: str,
+        *,
+        concurrency: Optional[Any] = None,
+        write_concurrency: Optional[Any] = None,
+        sudo: Optional[bool] = None,
+        log_progress: Optional[bool] = None,
+        username: Optional[str] = None,
+        job_id: Optional[Any] = None,
+    ) -> RelationshipsWriteResult:
+        if self._write_back_client is None:
+            raise ValueError("Write back is only available if a database connection is provided.")
+
+        config = ConfigConverter.convert_to_gds_config(
+            graph_name=G.name(),
+            relationship_types=[relationship_type],
+            concurrency=concurrency,
+            sudo=sudo,
+            log_progress=log_progress,
+            username=username,
+            job_id=job_id,
+        )
+
+        job_id = JobClient.run_job(self._arrow_client, "v2/graph.relationships.stream", config)
+
+        write_result = self._write_back_client.write(
+            G.name(),
+            job_id,
+            concurrency=write_concurrency if write_concurrency is not None else concurrency,
+            relationship_type_overwrite=relationship_type,
+        )
+
+        return RelationshipsWriteResult(
+            graphName=G.name(),
+            relationshipType=relationship_type,
+            relationshipsWritten=write_result.written_relationships
+            if hasattr(write_result, "written_relationships")
+            else 0,
+            propertiesWritten=write_result.written_properties if hasattr(write_result, "written_properties") else 0,
+            writeMillis=write_result.write_millis,
+            configuration=config,
+        )
+
+    def drop(
+        self,
+        G: Graph,
+        relationship_type: str,
+    ) -> RelationshipsDropResult:
+        config = ConfigConverter.convert_to_gds_config(
+            graph_name=G.name(),
+            relationship_type=relationship_type,
+        )
+        result = self._arrow_client.do_action_with_retry("v2/graph.relationships.drop", config)
+        deserialized_result = deserialize_single(result)
+
+        return RelationshipsDropResult(**deserialized_result)
+
+    def index_inverse(
+        self,
+        G: Graph,
+        relationship_types: list[str],
+        *,
+        concurrency: Optional[Any] = None,
+        sudo: Optional[bool] = None,
+        log_progress: Optional[bool] = None,
+        username: Optional[str] = None,
+        job_id: Optional[Any] = None,
+    ) -> RelationshipsInverseIndexResult:
+        config = ConfigConverter.convert_to_gds_config(
+            graph_name=G.name(),
+            relationship_types=relationship_types,
+            concurrency=concurrency,
+            sudo=sudo,
+            log_progress=log_progress,
+            username=username,
+            job_id=job_id,
+        )
+
+        job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.relationships.indexInverse", config)
+        result = JobClient.get_summary(self._arrow_client, job_id)
+        return RelationshipsInverseIndexResult(**result)
+
+    def to_undirected(
+        self,
+        G: Graph,
+        relationship_type: str,
+        mutate_relationship_type: str,
+        aggregation: Optional[Union[Aggregation, dict[str, Aggregation]]] = None,
+        *,
+        concurrency: Optional[Any] = None,
+        sudo: Optional[bool] = None,
+        log_progress: Optional[bool] = None,
+        username: Optional[str] = None,
+        job_id: Optional[Any] = None,
+    ) -> RelationshipsToUndirectedResult:
+        config = ConfigConverter.convert_to_gds_config(
+            graph_name=G.name(),
+            relationship_type=relationship_type,
+            mutate_relationship_type=mutate_relationship_type,
+            aggregation=aggregation,
+            concurrency=concurrency,
+            sudo=sudo,
+            log_progress=log_progress,
+            username=username,
+            job_id=job_id,
+        )
+
+        job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.relationships.toUndirected", config)
+        result = JobClient.get_summary(self._arrow_client, job_id)
+        return RelationshipsToUndirectedResult(**result)
