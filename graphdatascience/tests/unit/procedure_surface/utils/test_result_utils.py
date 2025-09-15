@@ -6,19 +6,21 @@ import pytest
 from pandas import DataFrame
 
 from graphdatascience import QueryRunner, ServerVersion
-from graphdatascience.procedure_surface.utils.result_utils import transpose_property_columns, join_db_node_properties
+from graphdatascience.procedure_surface.utils.result_utils import join_db_node_properties, transpose_property_columns
 from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 
 
 @pytest.fixture
 def mock_query_runner() -> Generator[CollectingQueryRunner, None, None]:
-    yield CollectingQueryRunner(ServerVersion.from_string("1.2.3"), {
-        "n.`property1` AS `property1`, n.`property2` AS `property2`": pd.DataFrame({
-            "nodeId": [1, 2],
-            "property1": ["value1", "value2"],
-            "property2": ["valueA", "valueB"]
-        })
-    })
+    yield CollectingQueryRunner(
+        ServerVersion.from_string("1.2.3"),
+        {
+            "n.`property1` AS `property1`, n.`property2` AS `property2`": pd.DataFrame(
+                {"nodeId": [1, 2], "property1": ["value1", "value2"], "property2": ["valueA", "valueB"]}
+            )
+        },
+    )
+
 
 def test_transpose_property_columns_basic() -> None:
     data = {
@@ -69,22 +71,21 @@ def test_transpose_property_columns_empty() -> None:
 
     assert transposed_result.empty
 
-def test_join_db_node_properties_basic(mock_query_runner: QueryRunner):
+
+def test_join_db_node_properties_basic(mock_query_runner: QueryRunner) -> None:
     input = pd.DataFrame({"nodeId": [1, 2]})
     db_node_properties = ["property1", "property2"]
 
     output = join_db_node_properties(input, db_node_properties, mock_query_runner)
 
-    expected_output = pd.DataFrame({
-        "nodeId": [1, 2],
-        "property1": ["value1", "value2"],
-        "property2": ["valueA", "valueB"]
-    })
+    expected_output = pd.DataFrame(
+        {"nodeId": [1, 2], "property1": ["value1", "value2"], "property2": ["valueA", "valueB"]}
+    )
 
     pd.testing.assert_frame_equal(expected_output, output)
 
 
-def test_join_db_node_properties_empty_input(mock_query_runner: QueryRunner):
+def test_join_db_node_properties_empty_input(mock_query_runner: QueryRunner) -> None:
     input = pd.DataFrame({"nodeId": []})
     db_node_properties = ["property1", "property2"]
 
@@ -93,7 +94,8 @@ def test_join_db_node_properties_empty_input(mock_query_runner: QueryRunner):
     assert output.columns.tolist() == ["nodeId", "property1", "property2"]
     assert output.empty
 
-def test_join_db_node_properties_non_matching_ids(mock_query_runner: QueryRunner):
+
+def test_join_db_node_properties_non_matching_ids(mock_query_runner: QueryRunner) -> None:
     input = pd.DataFrame({"nodeId": [3, 4]})
     db_node_properties = ["property1", "property2"]
 
@@ -105,16 +107,12 @@ def test_join_db_node_properties_non_matching_ids(mock_query_runner: QueryRunner
     assert output["property2"].isna().all()
 
 
-def test_join_db_node_properties_partial_match(mock_query_runner: QueryRunner):
+def test_join_db_node_properties_partial_match(mock_query_runner: QueryRunner) -> None:
     input = pd.DataFrame({"nodeId": [1, 3]})
     db_node_properties = ["property1", "property2"]
 
     output = join_db_node_properties(input, db_node_properties, mock_query_runner)
 
-    expected_output = pd.DataFrame({
-        "nodeId": [1, 3],
-        "property1": ["value1", np.nan],
-        "property2": ["valueA", np.nan]
-    })
+    expected_output = pd.DataFrame({"nodeId": [1, 3], "property1": ["value1", np.nan], "property2": ["valueA", np.nan]})
 
     pd.testing.assert_frame_equal(expected_output, output)

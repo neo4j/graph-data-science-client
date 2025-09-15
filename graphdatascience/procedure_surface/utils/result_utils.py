@@ -20,6 +20,7 @@ def transpose_property_columns(result: DataFrame, list_node_labels: bool) -> Dat
 
     return wide_result
 
+
 def join_db_node_properties(result: DataFrame, db_node_properties: list[str], query_runner: QueryRunner) -> DataFrame:
     query = _build_query(db_node_properties)
     db_properties_df = query_runner.run_retryable_cypher(
@@ -28,7 +29,8 @@ def join_db_node_properties(result: DataFrame, db_node_properties: list[str], qu
         mode=QueryMode.READ,
     )
 
-    return result.merge(db_properties_df.set_index("nodeId"), on="nodeId", how='left')
+    return result.merge(db_properties_df.set_index("nodeId"), on="nodeId", how="left")
+
 
 def _build_query(db_node_properties: list[str]) -> str:
     query_prefix = "MATCH (n) WHERE id(n) IN $ids RETURN id(n) AS nodeId"

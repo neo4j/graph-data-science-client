@@ -11,7 +11,7 @@ from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints im
     NodePropertySpec,
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
-from graphdatascience.procedure_surface.utils.result_utils import transpose_property_columns
+from graphdatascience.procedure_surface.utils.result_utils import join_db_node_properties, transpose_property_columns
 from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 
 
@@ -32,13 +32,14 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,  # setting the job id is not supported by the Cypher procedure
+        db_node_properties: Optional[List[str]] = None,
     ) -> DataFrame:
         if self._gds_arrow_client is not None:
             database = self._query_runner.database()
             if database is None:
                 raise ValueError("The database is not set")
 
-            return self._gds_arrow_client.get_node_properties(
+            result = self._gds_arrow_client.get_node_properties(
                 G.name(), database, node_properties, node_labels, list_node_labels or False, concurrency
             )
         else:
@@ -57,9 +58,13 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
                 config=config,
             )
 
-            result = self._query_runner.call_procedure(endpoint="gds.graph.nodeProperties.stream", params=params)
+            raw_result = self._query_runner.call_procedure(endpoint="gds.graph.nodeProperties.stream", params=params)
+            result = transpose_property_columns(raw_result, list_node_labels or False)
 
-            return transpose_property_columns(result, list_node_labels or False)
+        if (db_node_properties is not None) and (len(db_node_properties) > 0):
+            return join_db_node_properties(result, db_node_properties, self._query_runner)
+        else:
+            return result
 
     def write(
         self,
