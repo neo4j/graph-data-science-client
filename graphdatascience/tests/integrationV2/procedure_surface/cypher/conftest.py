@@ -19,8 +19,12 @@ def gds_plugin_container(
 ) -> Generator[Neo4jContainer, None, None]:
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", "neo4j:enterprise")
 
-    dotenv.load_dotenv("graphdatascience/tests/test.env")
+    dotenv.load_dotenv("graphdatascience/tests/test.env", override=True)
     GDS_LICENSE_KEY = os.getenv("GDS_LICENSE_KEY")
+
+    db_logs_dir = logs_dir / "cypher_surface" / "db_logs"
+    db_logs_dir.mkdir(parents=True)
+    db_logs_dir.chmod(0o755)
 
     neo4j_container = (
         Neo4jContainer(
@@ -31,6 +35,7 @@ def gds_plugin_container(
         .with_env("NEO4J_gds_arrow_enabled", "true")
         .with_env("NEO4J_gds_arrow_listen__address", "0.0.0.0:8491")
         .with_exposed_ports(8491)
+        .with_volume_mapping(db_logs_dir, "/logs", mode="rw")
     )
 
     if GDS_LICENSE_KEY is not None:
@@ -56,7 +61,7 @@ def gds_plugin_container(
         if inside_ci:
             print(f"Neo4j container logs:\n{stdout}")
 
-        out_file = logs_dir / "neo4j_container.log"
+        out_file = db_logs_dir / "stdout.log"
         with open(out_file, "w") as f:
             f.write(stdout.decode("utf-8"))
 

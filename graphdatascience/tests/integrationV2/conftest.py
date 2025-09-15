@@ -22,9 +22,9 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
 
 # best used with pytest --basetemp=tmp/pytest for easy access to logs
 @pytest.fixture(scope="session")
-def logs_dir(tmpdir_factory: pytest.TempdirFactory) -> Generator[Path, None, None]:
+def logs_dir(tmp_path_factory: pytest.TempPathFactory) -> Generator[Path, None, None]:
     """Create a temporary file and return its path."""
-    tmp_dir = tmpdir_factory.mktemp("logs")
+    tmp_dir = tmp_path_factory.mktemp("logs")
 
     yield tmp_dir
 

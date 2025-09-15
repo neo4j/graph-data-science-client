@@ -18,9 +18,9 @@ LOGGER = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="package")
-def password_dir(tmpdir_factory: pytest.TempdirFactory) -> Generator[Path, None, None]:
+def password_dir(tmp_path_factory: pytest.TempPathFactory) -> Generator[Path, None, None]:
     """Create a temporary file and return its path."""
-    tmp_dir = tmpdir_factory.mktemp("passwords")
+    tmp_dir = tmp_path_factory.mktemp("passwords")
     temp_file_path = os.path.join(tmp_dir, "password")
 
     with open(temp_file_path, "w") as f:
@@ -93,28 +93,42 @@ def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient
 
 
 @pytest.fixture(scope="package")
-def neo4j_container(network: Network) -> Generator[DockerContainer, None, None]:
+def neo4j_container(network: Network, logs_dir: Path, inside_ci: bool) -> Generator[DockerContainer, None, None]:
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", "neo4j:enterprise")
 
     if neo4j_image is None:
         raise ValueError("NEO4J_DATABASE_IMAGE environment variable is not set")
 
+    db_logs_dir = logs_dir / "arrow_surface" / "db_logs"
+    db_logs_dir.mkdir(parents=True)
+    db_logs_dir.chmod(0o755)
+
     db_container = (
         DockerContainer(image=neo4j_image)
         .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
         .with_env("NEO4J_AUTH", "neo4j/password")
-        .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
+        # .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
         .with_env("NEO4J_server_bolt_advertised__address", "localhost:7687")
         .with_network_aliases("neo4j-db")
         .with_network(network)
         .with_bind_ports(7687, 7687)
+        .with_volume_mapping(db_logs_dir, "/logs", mode="rw")
     )
 
     with db_container as db_container:
         wait_for_logs(db_container, "Started.")
         yield db_container
-        # stdout, stderr = db_container.get_logs()
-        # print(stdout)
+        stdout, stderr = db_container.get_logs()
+
+        if stderr:
+            print(f"Error logs from database container:\n{stderr}")
+
+        if inside_ci:
+            print(f"Database container logs:\n{stdout}")
+
+        out_file = db_logs_dir / "stdout.log"
+        with open(out_file, "w") as f:
+            f.write(stdout.decode("utf-8"))
 
 
 @pytest.fixture(scope="package")
