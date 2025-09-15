@@ -18,6 +18,9 @@ from graphdatascience.procedure_surface.api.catalog_endpoints import (
 )
 from graphdatascience.procedure_surface.api.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.node_label_arrow_endpoints import NodeLabelArrowEndpoints
+from graphdatascience.procedure_surface.arrow.catalog.node_properties_arrow_endpoints import (
+    NodePropertiesArrowEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.graph_sampling_arrow_endpoints import GraphSamplingArrowEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
@@ -168,6 +171,10 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         write_client = RemoteWriteBackClient(self._arrow_client, self._query_runner) if self._query_runner else None
 
         return NodeLabelArrowEndpoints(self._arrow_client, write_client)
+
+    @property
+    def node_properties(self) -> NodePropertiesArrowEndpoints:
+        return NodePropertiesArrowEndpoints(self._arrow_client, self._query_runner)
 
     def _arrow_config(self) -> dict[str, Any]:
         connection_info = self._arrow_client.advertised_connection_info()
