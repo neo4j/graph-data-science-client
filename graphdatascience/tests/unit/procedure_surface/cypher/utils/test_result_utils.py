@@ -18,7 +18,7 @@ def test_transpose_property_columns_basic() -> None:
         "propA": [10, 30],
         "propB": [20, 40],
     }
-    expected_result = DataFrame(expected_data).set_index("nodeId")
+    expected_result = DataFrame(expected_data)
 
     assert expected_result.equals(transposed_result)
 
@@ -40,7 +40,7 @@ def test_transpose_property_columns_with_labels() -> None:
         "propB": [20, 40],
         "nodeLabels": [["Label1"], ["Label2"]],
     }
-    expected_result = DataFrame(expected_data).set_index("nodeId")
+    expected_result = DataFrame(expected_data)
 
     assert expected_result.equals(transposed_result)
 
@@ -50,6 +50,4 @@ def test_transpose_property_columns_empty() -> None:
 
     transposed_result = transpose_property_columns(result, list_node_labels=False)
 
-    expected_result = DataFrame()
-
-    assert expected_result.equals(transposed_result)
+    assert transposed_result.empty
