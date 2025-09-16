@@ -24,6 +24,7 @@ class NodePropertiesEndpoints(ABC):
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
+        db_node_properties: Optional[List[str]] = None,
     ) -> DataFrame:
         """
         Streams the specified node properties from the graph.
@@ -48,6 +49,8 @@ class NodePropertiesEndpoints(ABC):
             The username to attribute the procedure run to
         job_id : Optional[Any], default=None
             An identifier for the job
+        db_node_properties : Optional[List[str]], default=None
+            Retrieves additional node properties from the database and attaches them to the stream.
         Returns
         -------
         DataFrame

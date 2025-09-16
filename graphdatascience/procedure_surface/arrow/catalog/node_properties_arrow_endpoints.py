@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience import Graph
+from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
@@ -15,15 +15,17 @@ from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints im
 )
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.procedure_surface.utils.result_utils import join_db_node_properties
 
 
 class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
-    def __init__(
-        self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient] = None
-    ):
+    def __init__(self, arrow_client: AuthenticatedArrowClient, query_runner: Optional[QueryRunner] = None):
         self._arrow_client = arrow_client
-        self._write_back_client = write_back_client
-        self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client)
+        self._query_runner = query_runner
+        self._write_back_client: Optional[RemoteWriteBackClient] = (
+            RemoteWriteBackClient(arrow_client, query_runner) if query_runner is not None else None
+        )
+        self._node_property_endpoints = NodePropertyEndpoints(arrow_client, self._write_back_client)
 
     def stream(
         self,
@@ -37,7 +39,13 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
+        db_node_properties: Optional[List[str]] = None,
     ) -> DataFrame:
+        has_db_properties = (db_node_properties is not None) and (len(db_node_properties) > 0)
+
+        if has_db_properties and self._query_runner is None:
+            raise ValueError("The option `db_node_properties` is only available if a database connection is provided.")
+
         normalized_properties = node_properties if isinstance(node_properties, list) else [node_properties]
 
         config = ConfigConverter.convert_to_gds_config(
@@ -53,7 +61,12 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         )
 
         job_id = JobClient.run_job(self._arrow_client, "v2/graph.nodeProperties.stream", config)
-        return JobClient.stream_results(self._arrow_client, G.name(), job_id)
+        result = JobClient.stream_results(self._arrow_client, G.name(), job_id)
+
+        if has_db_properties:
+            return join_db_node_properties(result, db_node_properties, self._query_runner)  # type: ignore
+
+        return result
 
     def write(
         self,

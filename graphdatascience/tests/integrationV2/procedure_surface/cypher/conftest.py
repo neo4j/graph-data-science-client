@@ -24,7 +24,7 @@ def gds_plugin_container(
 
     db_logs_dir = logs_dir / "cypher_surface" / "db_logs"
     db_logs_dir.mkdir(parents=True)
-    db_logs_dir.chmod(0o755)
+    db_logs_dir.chmod(0o777)
 
     neo4j_container = (
         Neo4jContainer(

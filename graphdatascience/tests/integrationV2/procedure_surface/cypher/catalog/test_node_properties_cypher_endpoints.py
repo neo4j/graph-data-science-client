@@ -79,6 +79,20 @@ def test_stream_node_properties_with_labels(
     assert set(result["prop1"].tolist()) == {1, 2, 3}
 
 
+@pytest.mark.db_integration
+def test_stream_node_properties_with_db_properties(
+    node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph
+) -> None:
+    result = node_properties_endpoints.stream(G=sample_graph, node_properties=["prop1"], db_node_properties=["prop2"])
+
+    assert len(result) == 3
+    assert "nodeId" in result.columns
+    assert "prop1" in result.columns
+    assert "prop2" in result.columns
+    assert set(result["prop1"].tolist()) == {1, 2, 3}
+    assert set(result["prop2"].tolist()) == {42.0, 43.0, 44.0}
+
+
 def test_write_node_properties(
     node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:

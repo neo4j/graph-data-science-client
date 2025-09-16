@@ -11,6 +11,7 @@ from pydantic import Field, field_validator
 from graphdatascience import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import NodeLabelEndpoints
+from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import NodePropertiesEndpoints
 from graphdatascience.procedure_surface.api.graph_sampling_endpoints import GraphSamplingEndpoints
 
 
@@ -140,6 +141,12 @@ class CatalogEndpoints(ABC):
     @property
     @abstractmethod
     def node_labels(self) -> NodeLabelEndpoints:
+        """Endpoints for node label operations."""
+        pass
+
+    @property
+    @abstractmethod
+    def node_properties(self) -> NodePropertiesEndpoints:
         """Endpoints for node label operations."""
         pass
 
