@@ -35,9 +35,9 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
 def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     graph_data = """
         CREATE
-        (a: Node {prop1: 1}),
-        (b: Node {prop1: 2}),
-        (c: Node {prop1: 3}),
+        (a: Node),
+        (b: Node),
+        (c: Node),
         (a)-[:REL {weight: 1.0}]->(b),
         (b)-[:REL {weight: 2.0}]->(c),
         (c)-[:REL {weight: 3.0}]->(a)
@@ -112,6 +112,20 @@ def test_stream_all_relationships(relationship_endpoints: RelationshipArrowEndpo
     assert set(result["relationshipType"].unique()) == {"REL", "OTHER"}
 
 
+def test_stream_with_properties(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: Graph) -> None:
+    result = relationship_endpoints.stream(
+        G=sample_graph, relationship_types=["REL"], relationship_properties=["weight"]
+    )
+
+    assert len(result) == 3  # All relationships
+    assert "sourceNodeId" in result.columns
+    assert "targetNodeId" in result.columns
+    assert "relationshipType" in result.columns
+    assert "weight" in result.columns
+    assert set(result["relationshipType"].unique()) == {"REL"}
+    assert set(result["weight"].unique()) == {1.0, 2.0, 3.0}
+
+
 @pytest.mark.db_integration
 def test_write_relationships(
     relationship_endpoints_with_db: RelationshipArrowEndpoints, db_graph: Graph, query_runner: QueryRunner
@@ -122,6 +136,30 @@ def test_write_relationships(
     assert result.relationship_type == "REL"
     assert result.write_millis >= 0
     assert result.relationships_written == 3
+
+
+@pytest.mark.db_integration
+def test_write_relationships_with_properties(
+    relationship_endpoints_with_db: RelationshipArrowEndpoints, db_graph: Graph, query_runner: QueryRunner
+) -> None:
+    result = relationship_endpoints_with_db.write(
+        G=db_graph, relationship_type="REL", relationship_properties=["weight"]
+    )
+
+    assert result.graph_name == db_graph.name()
+    assert result.relationship_type == "REL"
+    assert result.relationship_properties == ["weight"]
+    assert result.write_millis >= 0
+    assert result.relationships_written == 3
+    assert result.properties_written == 3
+
+    props_written = query_runner.run_cypher("""
+        MATCH (n)-[r]->(m) 
+        WHERE type(r) = "REL" AND r.weight IS NOT NULL
+        RETURN COUNT(r) as written
+        """).squeeze()
+
+    assert props_written == 6  # Old and new relationships
 
 
 def test_drop_relationships(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: Graph) -> None:

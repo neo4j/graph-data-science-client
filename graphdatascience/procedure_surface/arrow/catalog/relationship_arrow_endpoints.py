@@ -30,24 +30,30 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         self,
         G: Graph,
         relationship_types: Optional[List[str]] = None,
+        relationship_properties: Optional[list[str]] = None,
         *,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
-        job_id: Optional[Any] = None,
     ) -> DataFrame:
-        config = ConfigConverter.convert_to_gds_config(
-            graph_name=G.name(),
-            relationship_types=relationship_types or ["*"],
-            concurrency=concurrency,
-            sudo=sudo,
-            log_progress=log_progress,
-            username=username,
-            job_id=job_id,
-        )
+        config_input = {
+            "graph_name": G.name(),
+            "relationship_types": relationship_types or ["*"],
+            "concurrency": concurrency,
+            "sudo": sudo,
+            "log_progress": log_progress,
+            "username": username,
+        }
 
-        job_id = JobClient.run_job(self._arrow_client, "v2/graph.relationships.stream", config)
+        endpoint = "v2/graph.relationships.stream"
+        if relationship_properties and relationship_properties != []:
+            config_input["relationship_properties"] = relationship_properties
+            endpoint = "v2/graph.relationshipProperties.stream"
+
+        config = ConfigConverter.convert_to_gds_config(**config_input)
+
+        job_id = JobClient.run_job(self._arrow_client, endpoint, config)
         result = JobClient.stream_results(self._arrow_client, G.name(), job_id)
 
         return result
@@ -56,6 +62,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         self,
         G: Graph,
         relationship_type: str,
+        relationship_properties: Optional[list[str]] = None,
         *,
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
@@ -67,17 +74,24 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         if self._write_back_client is None:
             raise ValueError("Write back is only available if a database connection is provided.")
 
-        config = ConfigConverter.convert_to_gds_config(
-            graph_name=G.name(),
-            relationship_types=[relationship_type],
-            concurrency=concurrency,
-            sudo=sudo,
-            log_progress=log_progress,
-            username=username,
-            job_id=job_id,
-        )
+        config_input = {
+            "graph_name": G.name(),
+            "relationship_types": [relationship_type],
+            "concurrency": concurrency,
+            "sudo": sudo,
+            "log_progress": log_progress,
+            "username": username,
+            "job_id": job_id,
+        }
 
-        job_id = JobClient.run_job(self._arrow_client, "v2/graph.relationships.stream", config)
+        endpoint = "v2/graph.relationships.stream"
+        if relationship_properties and relationship_properties != []:
+            config_input["relationship_properties"] = relationship_properties
+            endpoint = "v2/graph.relationshipProperties.stream"
+
+        config = ConfigConverter.convert_to_gds_config(**config_input)
+
+        job_id = JobClient.run_job(self._arrow_client, endpoint, config)
 
         write_result = self._write_back_client.write(
             G.name(),
@@ -86,13 +100,18 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             relationship_type_overwrite=relationship_type,
         )
 
+        written_relationships = (
+            write_result.written_relationships if hasattr(write_result, "written_relationships") else 0
+        )
+        written_properties = (
+            written_relationships * len(relationship_properties) if relationship_properties is not None else 0
+        )
         return RelationshipsWriteResult(
             graphName=G.name(),
             relationshipType=relationship_type,
-            relationshipsWritten=write_result.written_relationships
-            if hasattr(write_result, "written_relationships")
-            else 0,
-            propertiesWritten=write_result.written_properties if hasattr(write_result, "written_properties") else 0,
+            relationshipProperties=relationship_properties if relationship_properties is not None else [],
+            relationshipsWritten=written_relationships,
+            propertiesWritten=written_properties,
             writeMillis=write_result.write_millis,
             configuration=config,
         )
@@ -101,7 +120,13 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         self,
         G: Graph,
         relationship_type: str,
+        *,
+        fail_if_missing: Optional[bool] = None,
     ) -> RelationshipsDropResult:
+        # TODO enable once we have a propper graph implementation for arrow endpoints
+        # if not relationship_type in G.relationship_types():
+        #     raise ValueError(f"Relationship type '{relationship_type}' does not exist in graph '{G.name()}'")
+
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
             relationship_type=relationship_type,

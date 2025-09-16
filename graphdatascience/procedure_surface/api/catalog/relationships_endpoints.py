@@ -255,7 +255,7 @@ class RelationshipsToUndirectedResult(RelationshipsInverseIndexResult):
     relationships_written: int
 
 
-class Aggregation(Enum):
+class Aggregation(str, Enum):
     NONE = "none"
     SINGLE = "single"
     SUM = "sum"
