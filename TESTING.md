@@ -26,6 +26,25 @@ pytest graphdatascience/tests/unit
 In order to run the integration tests one must have a [Neo4j DBMS](https://neo4j.com/docs/getting-started/current/) with the Neo4j Graph Data Science library installed running.
 
 
+### V2 endpoints
+
+The integration tests for the V2 endpoints are located in `graphdatascience/tests/integration/v2`.
+In order to run the tests, you need to have Docker running.
+You also need to either bring two Docker images, or configure authenticated access to the GCP repository where the production Docker images are stored.
+
+
+### Bringing your own Docker images
+
+Set the environment variables `NEO4J_DATABASE_IMAGE` and `GDS_SESSION_IMAGE` to the names of the Docker images you want to use.
+
+
+### Configuring authenticated access to the GCP repository
+
+1. `gcloud init`
+2. `gcloud auth login`
+3. `gcloud auth configure-docker europe-west1-docker.pkg.dev`
+
+
 ### Configuring
 
 The tests will through the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) connect to a Neo4j database based on the environment variables:
