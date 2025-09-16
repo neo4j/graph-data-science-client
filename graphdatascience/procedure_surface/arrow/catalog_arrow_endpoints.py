@@ -58,6 +58,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         self,
         graph_name: str,
         query: str,
+        *,
         job_id: Optional[str] = None,
         concurrency: int = 4,
         undirected_relationship_types: Optional[List[str]] = None,
@@ -65,6 +66,33 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         batch_size: Optional[int] = None,
         logging: bool = True,
     ) -> GraphWithProjectResult:
+        """
+        Projects a graph from the Neo4j database into the GDS graph catalog.
+
+        Parameters
+        ----------
+        graph_name : str
+            Name of the graph to be created in the catalog.
+        query : str
+            Cypher query to select nodes and relationships for the graph projection.
+            Must contain `gds.graph.project.remote`. Example: `MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)`
+        job_id : Optional[str], default=None
+            Unique identifier for the projection job.
+        concurrency : int, default=4
+            Number of concurrent threads/processes to use during graph projection.
+        undirected_relationship_types : Optional[List[str]], default=None
+            List of relationship types to treat as undirected.
+        inverse_indexed_relationship_types : Optional[List[str]], default=None
+            List of relationship types to index in both directions.
+        batch_size : Optional[int], default=None
+            Number of rows to process in each batch when projecting the graph.
+        logging : bool, default=True
+            Whether to log progress during graph projection.
+        Returns
+        -------
+        ProjectionResult:
+            A result object containing information about the projected graph.
+        """
         if self._query_runner is None:
             raise ValueError("Remote projection is only supported for attached Sessions.")
 
@@ -100,6 +128,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         job_result = ProjectionResult(**JobClient.get_summary(self._arrow_client, job_id))
 
         return GraphWithProjectResult(get_graph(graph_name, self._arrow_client), job_result)
+
 
     def drop(self, G: Union[GraphV2, str], fail_if_missing: bool = True) -> Optional[GraphInfo]:
         graph_name = G.name() if isinstance(G, GraphV2) else G
