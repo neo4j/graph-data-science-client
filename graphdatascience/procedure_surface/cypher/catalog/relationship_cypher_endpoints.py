@@ -25,21 +25,30 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         self,
         G: Graph,
         relationship_types: Optional[List[str]] = None,
+        relationship_properties: Optional[list[str]] = None,
         *,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
-        job_id: Optional[Any] = None,  # setting the job id is not supported by the Cypher procedure
     ) -> DataFrame:
+        effective_rel_types = relationship_types if relationship_types is not None else ["*"]
+
         if self._gds_arrow_client is not None:
             database = self._query_runner.database()
             if database is None:
                 raise ValueError("The database is not set")
 
-            return self._gds_arrow_client.get_relationships(
-                G.name(), database, relationship_types or ["*"], concurrency
-            )
+            if relationship_properties:
+                return self._gds_arrow_client.get_relationship_properties(
+                    G.name(),
+                    database,
+                    relationship_properties,
+                    effective_rel_types,
+                    concurrency,
+                )
+            else:
+                return self._gds_arrow_client.get_relationships(G.name(), database, effective_rel_types, concurrency)
         else:
             config = ConfigConverter.convert_to_gds_config(
                 concurrency=concurrency,
@@ -48,18 +57,42 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
                 username=username,
             )
 
-            params = CallParameters(
-                graph_name=G.name(),
-                relationship_types=relationship_types if relationship_types is not None else ["*"],
-                config=config,
-            )
+            if not relationship_properties:
+                endpoint = "gds.graph.relationships.stream"
+                params = CallParameters(
+                    graph_name=G.name(),
+                    relationship_types=effective_rel_types,
+                    config=config,
+                )
+            elif len(relationship_properties) == 1:
+                endpoint = "gds.graph.relationshipProperty.stream"
+                params = CallParameters(
+                    graph_name=G.name(),
+                    relationship_property=relationship_properties[0],
+                    relationship_types=effective_rel_types,
+                    config=config,
+                )
+            else:
+                endpoint = "gds.graph.relationshipProperties.stream"
+                params = CallParameters(
+                    graph_name=G.name(),
+                    relationship_properties=relationship_properties,
+                    relationship_types=effective_rel_types,
+                    config=config,
+                )
 
-            return self._query_runner.call_procedure(endpoint="gds.graph.relationships.stream", params=params)
+            result = self._query_runner.call_procedure(endpoint=endpoint, params=params)
+
+            if relationship_properties and len(relationship_properties) == 1:
+                result = result.rename(columns={"propertyValue": relationship_properties[0]})
+
+            return result
 
     def write(
         self,
         G: Graph,
         relationship_type: str,
+        relationship_properties: Optional[list[str]] = None,
         *,
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
@@ -76,15 +109,26 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
             job_id=job_id,
         )
 
-        params = CallParameters(
-            graph_name=G.name(),
-            relationship_type=relationship_type,
-            relationship_property=None,
-            config=config,
-        )
+        if relationship_properties and len(relationship_properties) > 1:
+            endpoint = "gds.graph.relationshipProperties.write"
+            params = CallParameters(
+                graph_name=G.name(),
+                relationship_type=relationship_type,
+                relationship_properties=relationship_properties,
+                config=config,
+            )
+        else:
+            endpoint = "gds.graph.relationship.write"
+            params = CallParameters(
+                graph_name=G.name(),
+                relationship_type=relationship_type,
+                relationship_property=relationship_properties[0] if relationship_properties else None,
+                config=config,
+            )
+
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.graph.relationship.write", params=params).squeeze()
+        result = self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()
 
         return RelationshipsWriteResult(**result.to_dict())
 
@@ -92,7 +136,12 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         self,
         G: Graph,
         relationship_type: str,
+        *,
+        fail_if_missing: bool = True,
     ) -> RelationshipsDropResult:
+        if relationship_type not in G.relationship_types() and fail_if_missing:
+            raise ValueError(f"Relationship type '{relationship_type}' does not exist in the graph")
+
         params = CallParameters(
             graph_name=G.name(),
             relationship_type=relationship_type,

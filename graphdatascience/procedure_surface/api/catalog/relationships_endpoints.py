@@ -6,6 +6,7 @@ from enum import Enum
 from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
+from pydantic import AliasChoices, Field, field_validator
 
 from graphdatascience import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
@@ -228,11 +229,22 @@ class NodePropertySpec:
 class RelationshipsWriteResult(BaseResult):
     graph_name: str
     relationship_type: str
-    relationship_properties: list[str]
+    relationship_properties: list[str] = Field(
+        default=[], validation_alias=AliasChoices("relationshipProperty", "relationshipProperties")
+    )
     relationships_written: int
-    properties_written: int
+    properties_written: int = 0
     write_millis: int
     configuration: dict[str, Any]
+
+    @field_validator("relationship_properties", mode="before")
+    @classmethod
+    def check_alphanumeric(cls, v: str) -> list[str]:
+        if v is None:
+            return []
+        elif isinstance(v, str):
+            return [v]
+        return v
 
 
 class RelationshipsDropResult(BaseResult):

@@ -18,9 +18,9 @@ def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
         (a:Node),
         (b:Node),
         (c:Node),
-        (a)-[:REL {weight: 1.0}]->(b),
-        (b)-[:REL {weight: 2.0}]->(c),
-        (c)-[:REL {weight: 3.0}]->(a),
+        (a)-[:REL {weight: 1.0, weight2: 42.0}]->(b),
+        (b)-[:REL {weight: 2.0, weight2: 43.0}]->(c),
+        (c)-[:REL {weight: 3.0, weight2: 44.0}]->(a),
         (a)-[:OTHER {value: 10}]->(c)
     """
 
@@ -81,6 +81,34 @@ def test_stream_all_relationships(relationship_endpoints: RelationshipCypherEndp
     assert set(result["relationshipType"].unique()) == {"REL", "OTHER"}
 
 
+def test_stream_single_property(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph) -> None:
+    result = relationship_endpoints.stream(
+        G=sample_graph, relationship_types=["REL"], relationship_properties=["weight"]
+    )
+
+    assert len(result) == 3  # All relationships
+    assert "sourceNodeId" in result.columns
+    assert "targetNodeId" in result.columns
+    assert "relationshipType" in result.columns
+    assert "weight" in result.columns
+    assert set(result["relationshipType"].unique()) == {"REL"}
+    assert set(result["weight"].unique()) == {1.0, 2.0, 3.0}
+
+
+def test_stream_multiple_properties(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph) -> None:
+    result = relationship_endpoints.stream(
+        G=sample_graph, relationship_types=["REL"], relationship_properties=["weight", "weight2"]
+    )
+
+    assert len(result) == 6  # All relationships
+    assert "sourceNodeId" in result.columns
+    assert "targetNodeId" in result.columns
+    assert "relationshipType" in result.columns
+    assert "propertyValue" in result.columns
+    assert "relationshipProperty" in result.columns
+    assert set(result["relationshipProperty"].unique()) == {"weight", "weight2"}
+
+
 def test_stream_relationships_with_arrow(
     query_runner: QueryRunner, gds_arrow_client: GdsArrowClient, sample_graph: Graph
 ) -> None:
@@ -95,6 +123,22 @@ def test_stream_relationships_with_arrow(
     assert set(result["relationshipType"].unique()) == {"REL"}
 
 
+def test_stream_relationship_properties_with_arrow(
+    query_runner: QueryRunner, gds_arrow_client: GdsArrowClient, sample_graph: Graph
+) -> None:
+    endpoints = RelationshipCypherEndpoints(query_runner, gds_arrow_client)
+
+    result = endpoints.stream(G=sample_graph, relationship_types=["REL"], relationship_properties=["weight"])
+
+    assert len(result) == 3
+    assert "sourceNodeId" in result.columns
+    assert "targetNodeId" in result.columns
+    assert "relationshipType" in result.columns
+    assert "weight" in result.columns
+    assert set(result["relationshipType"].unique()) == {"REL"}
+    assert set(result["weight"].unique()) == {1.0, 2.0, 3.0}
+
+
 @pytest.mark.db_integration
 def test_write_relationships(
     relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
@@ -103,7 +147,39 @@ def test_write_relationships(
 
     assert result.graph_name == sample_graph.name()
     assert result.relationship_type == "REL"
+    assert result.relationship_properties == []
     assert result.relationships_written == 3
+    assert result.properties_written == 0
+    assert result.write_millis >= 0
+
+
+@pytest.mark.db_integration
+def test_write_relationships_with_single_property(
+    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
+) -> None:
+    result = relationship_endpoints.write(G=sample_graph, relationship_type="REL", relationship_properties=["weight"])
+
+    assert result.graph_name == sample_graph.name()
+    assert result.relationship_type == "REL"
+    assert result.relationship_properties == ["weight"]
+    assert result.relationships_written == 3
+    assert result.properties_written == 3
+    assert result.write_millis >= 0
+
+
+@pytest.mark.db_integration
+def test_write_relationships_with_multiple_properties(
+    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
+) -> None:
+    result = relationship_endpoints.write(
+        G=sample_graph, relationship_type="REL", relationship_properties=["weight", "weight2"]
+    )
+
+    assert result.graph_name == sample_graph.name()
+    assert result.relationship_type == "REL"
+    assert result.relationship_properties == ["weight", "weight2"]
+    assert result.relationships_written == 3
+    assert result.properties_written == 6
     assert result.write_millis >= 0
 
 
@@ -114,7 +190,7 @@ def test_drop_relationships(relationship_endpoints: RelationshipCypherEndpoints,
     assert drop_result.graph_name == sample_graph.name()
     assert drop_result.relationship_type == "REL"
     assert drop_result.deleted_relationships == 3
-    assert drop_result.deleted_properties == {"weight": 3}
+    assert drop_result.deleted_properties == {"weight": 3, "weight2": 3}
 
 
 def test_index_inverse(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph) -> None:
@@ -166,7 +242,7 @@ def test_to_undirected_with_property_aggregation(
         G=sample_graph,
         relationship_type="REL",
         mutate_relationship_type="REL_UNDIRECTED_DICT",
-        aggregation={"weight": Aggregation.MAX},
+        aggregation={"weight": Aggregation.MAX, "weight2": Aggregation.MIN},
     )
 
     assert result.pre_processing_millis >= 0
