@@ -17,15 +17,15 @@ class RelationshipsEndpoints(ABC):
         self,
         G: Graph,
         relationship_types: Optional[List[str]] = None,
+        relationship_properties: Optional[list[str]] = None,
         *,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
-        job_id: Optional[Any] = None,
     ) -> DataFrame:
         """
-        Streams the specified relationships from the graph.
+        Streams all relationships of the specified types with the specified properties.
 
         Parameters
         ----------
@@ -33,6 +33,9 @@ class RelationshipsEndpoints(ABC):
             The graph to stream relationships from
         relationship_types: Optional[List[str]], default = None
             The relationship types to stream
+            If not specified, all relationships in the graph will be streamed.
+        relationship_properties: Optional[List[str]], default = None
+            The relationship properties to stream. If not specified, no properties will be streamed.
         concurrency : Optional[Any], default=None
             The number of concurrent threads
         sudo : Optional[bool], default=None
@@ -41,12 +44,10 @@ class RelationshipsEndpoints(ABC):
             Whether to log progress
         username : Optional[str], default=None
             The username to attribute the procedure run to
-        job_id : Optional[Any], default=None
-            An identifier for the job
         Returns
         -------
         DataFrame
-            The streamed relationships
+            The streamed relationships [sourceId, targetId, relationshipType] with a column for each property
         """
         pass
 
@@ -55,6 +56,7 @@ class RelationshipsEndpoints(ABC):
         self,
         G: Graph,
         relationship_type: str,
+        relationship_properties: Optional[list[str]] = None,
         *,
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
@@ -64,7 +66,7 @@ class RelationshipsEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> RelationshipsWriteResult:
         """
-        Writes the specified relationships from the graph to the database.
+        Writes all relationships of the specified relationship type with the specified properties from the graph to the database.
 
         Parameters
         ----------
@@ -72,6 +74,8 @@ class RelationshipsEndpoints(ABC):
             The graph to write relationships from
         relationship_type : str
             The relationship type to write to the database
+        relationship_properties: Optional[List[str]], default = None
+            The relationship properties to write. If not specified, no properties will be written.
         concurrency : Optional[Any], default=None
             The number of concurrent threads
         write_concurrency : Optional[Any], default=None
@@ -96,9 +100,11 @@ class RelationshipsEndpoints(ABC):
         self,
         G: Graph,
         relationship_type: str,
+        *,
+        fail_if_missing: bool = True,
     ) -> RelationshipsDropResult:
         """
-        Drops the specified relationships from the graph.
+        Drops all relationships of the specified relationship type, including all their properties, from the graph.
 
         Parameters
         ----------
@@ -106,6 +112,8 @@ class RelationshipsEndpoints(ABC):
             The graph to drop relationships from
         relationship_type: str
             The relationship type to drop
+        fail_if_missing: bool, default=True
+            If set to true, the procedure will fail if the relationship type does not exist in the graph.
         Returns
         -------
         RelationshipsDropResult
@@ -220,7 +228,9 @@ class NodePropertySpec:
 class RelationshipsWriteResult(BaseResult):
     graph_name: str
     relationship_type: str
+    relationship_properties: list[str]
     relationships_written: int
+    properties_written: int
     write_millis: int
     configuration: dict[str, Any]
 
