@@ -36,7 +36,7 @@ class K1ColoringEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the color for each node
@@ -85,7 +85,7 @@ class K1ColoringEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         batch_size : Optional[int], default=None
             The batch size for processing
@@ -133,7 +133,7 @@ class K1ColoringEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         batch_size : Optional[int], default=None
             The batch size for processing
@@ -185,7 +185,7 @@ class K1ColoringEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         write_property : str
             The property name to write colors to
@@ -234,7 +234,7 @@ class K1ColoringEndpoints(ABC):
 
         Parameters
         ----------
-        G : Union[Graph, dict[str, Any]]
+        G : Union[GraphV2, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
         batch_size : Optional[int], default=None
             The batch size for processing

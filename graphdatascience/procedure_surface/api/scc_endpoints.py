@@ -35,7 +35,7 @@ class SccEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the component ID for each node
@@ -81,7 +81,7 @@ class SccEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         relationship_types : Optional[List[str]], default=None
             The relationships types used to select relationships for this algorithm run
@@ -125,7 +125,7 @@ class SccEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         relationship_types : Optional[List[str]], default=None
             The relationships types considered in this algorithm run
@@ -171,7 +171,7 @@ class SccEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         write_property : str
             The property name to write component IDs to
@@ -215,7 +215,7 @@ class SccEndpoints(ABC):
 
         Parameters
         ----------
-        G : Union[Graph, dict[str, Any]]
+        G : Union[GraphV2, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run

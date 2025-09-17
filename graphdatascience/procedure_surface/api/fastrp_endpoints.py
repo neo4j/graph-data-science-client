@@ -45,7 +45,7 @@ class FastRPEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the FastRP embeddings for each node
@@ -111,7 +111,7 @@ class FastRPEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         embedding_dimension : int
             The dimension of the generated embeddings
@@ -175,7 +175,7 @@ class FastRPEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         embedding_dimension : int
             The dimension of the generated embeddings
@@ -241,7 +241,7 @@ class FastRPEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         write_property : str
             The property name to write the FastRP embeddings for each node
@@ -305,7 +305,7 @@ class FastRPEndpoints(ABC):
 
         Parameters
         ----------
-        G : Union[Graph, dict[str, Any]]
+        G : Union[GraphV2, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
         embedding_dimension : int
             The dimension of the generated embeddings

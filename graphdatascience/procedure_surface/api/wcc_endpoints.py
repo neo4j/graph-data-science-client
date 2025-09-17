@@ -38,7 +38,7 @@ class WccEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the component ID for each node
@@ -93,7 +93,7 @@ class WccEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         threshold : Optional[float], default=None
             The minimum required weight to consider a relationship during traversal
@@ -147,7 +147,7 @@ class WccEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         min_component_size : Optional[int], default=None
             Don't stream components with fewer nodes than this
@@ -205,7 +205,7 @@ class WccEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         write_property : str
             The property name to write component IDs to
@@ -260,7 +260,7 @@ class WccEndpoints(ABC):
 
         Parameters
         ----------
-        G : Union[Graph, dict[str, Any]]
+        G : Union[GraphV2, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
         threshold : Optional[float], default=None
             The minimum required weight to consider a relationship during traversal

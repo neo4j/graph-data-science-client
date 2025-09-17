@@ -46,7 +46,7 @@ class GraphSageModelV2(Model):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to generate embeddings for.
         write_property : str
             The property to write the embeddings to.
@@ -109,7 +109,7 @@ class GraphSageModelV2(Model):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to generate embeddings for.
         relationship_types : Optional[list[str]], default=None
             The relationship types to consider.
@@ -167,7 +167,7 @@ class GraphSageModelV2(Model):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to generate embeddings for.
         mutate_property : str
             The property to mutate with the embeddings.
@@ -227,7 +227,7 @@ class GraphSageModelV2(Model):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to generate embeddings for.
         relationship_types : Optional[list[str]], default=None
             The relationship types to consider.

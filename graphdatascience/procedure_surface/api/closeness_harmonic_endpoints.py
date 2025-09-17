@@ -38,7 +38,7 @@ class ClosenessHarmonicEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the harmonic closeness centrality score for each node
@@ -82,7 +82,7 @@ class ClosenessHarmonicEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
@@ -124,7 +124,7 @@ class ClosenessHarmonicEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
@@ -168,7 +168,7 @@ class ClosenessHarmonicEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         write_property : str
             The property name to write the harmonic closeness centrality scores to
@@ -210,7 +210,7 @@ class ClosenessHarmonicEndpoints(ABC):
 
         Parameters
         ----------
-        G : Union[Graph, dict[str, Any]]
+        G : Union[GraphV2, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.

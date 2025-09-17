@@ -37,7 +37,7 @@ class BetweennessEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the betweenness centrality score for each node
@@ -88,7 +88,7 @@ class BetweennessEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         sampling_size : Optional[int], default=None
             The number of nodes to use for sampling.
@@ -137,7 +137,7 @@ class BetweennessEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         sampling_size : Optional[int], default=None
             The number of nodes to use for sampling.
@@ -188,7 +188,7 @@ class BetweennessEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         write_property : str
             The property name to store the betweenness centrality score for each node
@@ -237,7 +237,7 @@ class BetweennessEndpoints(ABC):
 
         Parameters
         ----------
-        G : Union[Graph, dict[str, Any]]
+        G : Union[GraphV2, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
         sampling_size : Optional[int], default=None
             The number of nodes to use for sampling.

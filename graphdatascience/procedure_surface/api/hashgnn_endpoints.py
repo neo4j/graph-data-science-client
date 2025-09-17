@@ -13,7 +13,7 @@ from .estimation_result import EstimationResult
 
 class HashGNNEndpoints(ABC):
     """
-    Abstract base class for HashGNN (Heterogeneous Graph Neural Network) endpoints.
+    Abstract base class for HashGNN (Heterogeneous GraphV2 Neural Network) endpoints.
     """
 
     @abstractmethod
@@ -43,7 +43,7 @@ class HashGNNEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         iterations : int
             The number of iterations to run the algorithm
@@ -98,7 +98,7 @@ class HashGNNEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         iterations : int
             The number of iterations to run the algorithm
@@ -153,7 +153,7 @@ class HashGNNEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         iterations : int
             The number of iterations to run the algorithm
@@ -217,7 +217,7 @@ class HashGNNEndpoints(ABC):
 
         Parameters
         ----------
-        G : Union[Graph, dict[str, Any]]
+        G : Union[GraphV2, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
         iterations : int
             The number of iterations to run the algorithm

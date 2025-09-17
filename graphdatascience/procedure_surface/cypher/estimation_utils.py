@@ -25,7 +25,7 @@ def estimate_algorithm(
         The query runner to use for the estimation call
     endpoint : str
         The full endpoint name for the estimation procedure (e.g., "gds.kcore.stats.estimate")
-    G : Optional[Graph], optional
+    G : Optional[GraphV2], optional
         The graph to be used in the estimation
     projection_config : Optional[dict[str, Any]], optional
         Configuration dictionary for the projection
@@ -49,7 +49,7 @@ def estimate_algorithm(
     elif isinstance(G, dict):
         config["graphNameOrConfiguration"] = G
     else:
-        raise ValueError(f"G must be either a Graph instance or a configuration dictionary. But was {type(G)}.")
+        raise ValueError(f"G must be either a GraphV2 instance or a configuration dictionary. But was {type(G)}.")
 
     config["algoConfig"] = algo_config or {}
 

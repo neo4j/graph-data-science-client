@@ -35,7 +35,7 @@ class GraphSagePredictEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         model_name : str
             Name under which the model will is stored
@@ -84,7 +84,7 @@ class GraphSagePredictEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         model_name : str
             Name under which the model will is stored
@@ -135,7 +135,7 @@ class GraphSagePredictEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         model_name : str
             Name under which the model will is stored
@@ -183,7 +183,7 @@ class GraphSagePredictEndpoints(ABC):
 
         Parameters
         ----------
-        G : Union[Graph, dict[str, Any]]
+        G : Union[GraphV2, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
         model_name : str
             Name under which the model will is stored

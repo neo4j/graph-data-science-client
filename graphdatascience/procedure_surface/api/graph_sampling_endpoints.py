@@ -40,7 +40,7 @@ class GraphSamplingEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The input graph on which the Random Walk with Restart (RWR) will be
             performed.
         graph_name : str
@@ -111,7 +111,7 @@ class GraphSamplingEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The input graph on which the Random Walk with Restart (RWR) will be
             performed.
         graph_name : str

@@ -19,7 +19,7 @@ class CatalogEndpoints(ABC):
         """List graphs in the graph catalog.
 
         Args:
-            G (Optional[Union[GraphV2, str]], optional): Graph object or name to filter results.
+            G (Optional[Union[GraphV2, str]], optional): GraphV2 object or name to filter results.
                If None, list all graphs. Defaults to None.
 
         Returns:
@@ -33,11 +33,11 @@ class CatalogEndpoints(ABC):
         """Drop a graph from the graph catalog.
 
         Args:
-            G (Union[GraphV2, str]): Graph object or name to drop.
+            G (Union[GraphV2, str]): GraphV2 object or name to drop.
             fail_if_missing (bool): Whether to fail if the graph is missing. Defaults to True.
 
         Returns:
-              GraphListResult: Graph metadata object containing information like
+              GraphListResult: GraphV2 metadata object containing information like
                                graph name, node count, relationship count, etc.
         """
 
@@ -55,8 +55,8 @@ class CatalogEndpoints(ABC):
 
         Parameters
         ----------
-        G (Graph):
-            Graph object to filter on
+        G (GraphV2):
+            GraphV2 object to filter on
         graph_name (str):
             Name of subgraph to create
         node_filter (str):
