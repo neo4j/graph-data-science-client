@@ -7,7 +7,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
+from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.catalog_endpoints import (
     CatalogEndpoints,
     GraphFilterResult,
@@ -43,7 +43,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             protocol_version = ProtocolVersionResolver(query_runner).resolve()
             self._project_protocol = ProjectProtocol.select(protocol_version)
 
-    def list(self, G: Optional[Union[GraphV2, str]] = None) -> List[GraphInfo]:
+    def list(self, G: Optional[Union[GraphV2, str]] = None) -> List[GraphInfoWithDegrees]:
         graph_name: Optional[str] = None
         if isinstance(G, GraphV2):
             graph_name = G.name()

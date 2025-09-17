@@ -2,37 +2,50 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
-
-GRAPH_NAME = "g"
+from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def G(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
-    gdl = """
-        CREATE
+def G(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+    create_query = """
+    CREATE
         (a: Node {x: 1}),
         (b: Node {x: 2}),
         (c: Node {x: 3}),
         (d: Node2 {s: 4}),
-        (a)-[:REL {y: 42.0}]->(b),
-        (a)-[:REL {y: 13.37}]->(c),
-        (b)-[:REL {z: 7.9}]->(c),
+        (a)-[:REL {y: 42.0, z: 1}]->(b),
+        (a)-[:REL {y: 13.37, z: 2}]->(c),
+        (b)-[:REL {z: 7.9, z: 3}]->(c),
         (b)-[:REL2 {q: 7.9}]->(d)
-        """
+    """
 
-    with create_graph(arrow_client, "g", gdl) as G:
-        yield G
+    projection_query = """
+        MATCH (n)
+        OPTIONAL MATCH (n)-[r]->(m)
+        WITH gds.graph.project('g', n, m, {
+            sourceNodeLabels: labels(n),
+            sourceNodeProperties: properties(n),
+            targetNodeProperties: properties(m),
+            targetNodeLabels: labels(m),
+            relationshipType: type(r),
+            relationshipProperties: properties(r)
+        }) AS G
+        RETURN G
+    """
 
-
-# def test_graph_database(G: Graph) -> None:
-#     assert G.database() == "foo"
+    with create_graph(
+        query_runner,
+        "g",
+        create_query,
+        projection_query,
+    ) as g:
+        yield g
 
 
 def test_graph_configuration(G: GraphV2) -> None:
-    assert G.configuration() == {}  # GDL based graph has an empty config
+    assert "jobId" in G.configuration().keys()
 
 
 def test_graph_node_count(G: GraphV2) -> None:
@@ -53,13 +66,14 @@ def test_graph_relationship_types(G: GraphV2) -> None:
 
 def test_graph_node_properties(G: GraphV2) -> None:
     node_properties = G.node_properties()
+    assert isinstance(node_properties, dict)
     assert node_properties == {"Node": ["x"], "Node2": ["s"]}
 
 
 def test_graph_relationship_properties(G: GraphV2) -> None:
     rel_properties = G.relationship_properties()
     assert isinstance(rel_properties, dict)
-    assert rel_properties.keys() == {"REL", "REL2"}
+    assert len(rel_properties.keys()) == 2
     assert set(rel_properties["REL"]) == {"y", "z"}
     assert rel_properties["REL2"] == ["q"]
 
@@ -92,8 +106,7 @@ def test_graph_drop(G: GraphV2) -> None:
     assert G.exists()
 
     result = G.drop()
-    assert result is not None
-    assert result.graph_name == G.name()
+    assert result and result.graph_name == G.name()
 
     assert not G.exists()
 

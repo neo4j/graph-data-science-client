@@ -2,14 +2,15 @@ from __future__ import annotations
 
 import re
 from datetime import datetime
-from typing import Any, Optional, Union
+from typing import Any
 
 import neo4j
-from pydantic import BaseModel, Field, field_validator
-from pydantic.alias_generators import to_camel
+from pydantic import Field, field_validator
+
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 
-class GraphInfo(BaseModel, alias_generator=to_camel):
+class GraphInfo(BaseResult):
     graph_name: str
     database: str
     database_location: str
@@ -20,9 +21,7 @@ class GraphInfo(BaseModel, alias_generator=to_camel):
     relationship_count: int
     creation_time: datetime
     modification_time: datetime
-    graph_schema: dict[str, Any] = Field(alias="schema")
-    schema_with_orientation: dict[str, Any]
-    degree_distribution: Optional[dict[str, Union[int, float]]] = None
+    graph_schema: dict[str, Any] = Field(alias="schemaWithOrientation")
     density: float
 
     @field_validator("creation_time", "modification_time", mode="before")
@@ -33,3 +32,7 @@ class GraphInfo(BaseModel, alias_generator=to_camel):
         if isinstance(value, neo4j.time.DateTime):
             return value.to_native()
         return value
+
+
+class GraphInfoWithDegrees(GraphInfo):
+    degree_distribution: dict[str, float | int]

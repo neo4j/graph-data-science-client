@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, List, Optional, Tuple, Union
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
+from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
 
@@ -28,12 +28,12 @@ class CatalogCypherEndpoints(CatalogEndpoints):
     def __init__(self, query_runner: QueryRunner):
         self._query_runner = query_runner
 
-    def list(self, G: Optional[Union[GraphV2, str]] = None) -> List[GraphInfo]:
+    def list(self, G: Optional[Union[GraphV2, str]] = None) -> List[GraphInfoWithDegrees]:
         graph_name = G if isinstance(G, str) else G.name() if G is not None else None
         params = CallParameters(graphName=graph_name) if graph_name else CallParameters()
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.list", params=params)
-        return [GraphInfo(**row.to_dict()) for _, row in result.iterrows()]
+        return [GraphInfoWithDegrees(**row.to_dict()) for _, row in result.iterrows()]
 
     def drop(self, G: Union[GraphV2, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphInfo]:
         graph_name = G if isinstance(G, str) else G.name()

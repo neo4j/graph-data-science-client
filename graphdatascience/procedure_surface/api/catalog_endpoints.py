@@ -5,7 +5,7 @@ from typing import Any, List, Optional, Union
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
+from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import NodeLabelEndpoints
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import NodePropertiesEndpoints
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import RelationshipsEndpoints
@@ -15,7 +15,7 @@ from graphdatascience.procedure_surface.api.graph_with_result import GraphWithRe
 
 class CatalogEndpoints(ABC):
     @abstractmethod
-    def list(self, G: Optional[Union[GraphV2, str]] = None) -> List[GraphInfo]:
+    def list(self, G: Optional[Union[GraphV2, str]] = None) -> List[GraphInfoWithDegrees]:
         """List graphs in the graph catalog.
 
         Args:

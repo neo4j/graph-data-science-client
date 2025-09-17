@@ -98,8 +98,7 @@ class GraphV2(ABC):
         Returns:
             the degree distribution of the graph
         """
-        distribution = self._backend.graph_info().degree_distribution
-        return distribution if distribution is not None else {}
+        return self._backend.graph_info().degree_distribution
 
     def density(self) -> float:
         """
