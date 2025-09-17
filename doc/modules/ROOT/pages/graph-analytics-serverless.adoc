@@ -223,9 +223,6 @@ memory = sessions.estimate(
     node_count=20,
     relationship_count=50,
     algorithm_categories=[AlgorithmCategory.CENTRALITY, AlgorithmCategory.NODE_EMBEDDING],
-    node_label_count=1,
-    node_property_count=1,
-    relationship_property_count=1
 )
 ----
 
