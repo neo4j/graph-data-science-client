@@ -128,7 +128,7 @@ class GraphV2(ABC):
         """
         return self._backend.exists()
 
-    def drop(self, failIfMissing: bool = False) -> Optional[GraphInfo]:
+    def drop(self, failIfMissing: bool = True) -> Optional[GraphInfo]:
         """
         Args:
             failIfMissing: whether to fail if the graph does not exist

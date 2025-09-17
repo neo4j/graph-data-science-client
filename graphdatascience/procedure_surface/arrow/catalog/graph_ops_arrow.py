@@ -15,7 +15,7 @@ class GraphOpsArrow:
 
         result = self._arrow_client.do_action_with_retry("v2/graph.list", payload)
 
-        return [GraphInfoWithDegrees(**x) for x in deserialize(result)]
+        return [GraphInfoWithDegrees(**row) for row in deserialize(result)]
 
     def drop(self, graph_name: str, fail_if_missing: Optional[bool] = None) -> Optional[GraphInfo]:
         config = ConfigConverter.convert_to_gds_config(graph_name=graph_name, fail_if_missing=fail_if_missing)

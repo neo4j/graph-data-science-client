@@ -35,7 +35,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         result = self._query_runner.call_procedure(endpoint="gds.graph.list", params=params)
         return [GraphInfoWithDegrees(**row.to_dict()) for _, row in result.iterrows()]
 
-    def drop(self, G: Union[GraphV2, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphInfo]:
+    def drop(self, G: Union[GraphV2, str], fail_if_missing: bool = True) -> Optional[GraphInfo]:
         graph_name = G if isinstance(G, str) else G.name()
 
         params = (
