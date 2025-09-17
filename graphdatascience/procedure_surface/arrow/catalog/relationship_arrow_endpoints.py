@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import Graph
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
@@ -19,12 +19,9 @@ from graphdatascience.procedure_surface.utils.config_converter import ConfigConv
 
 
 class RelationshipArrowEndpoints(RelationshipsEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient, query_runner: Optional[QueryRunner] = None):
+    def __init__(self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient]):
         self._arrow_client = arrow_client
-        self._query_runner = query_runner
-        self._write_back_client: Optional[RemoteWriteBackClient] = (
-            RemoteWriteBackClient(arrow_client, query_runner) if query_runner is not None else None
-        )
+        self._write_back_client = write_back_client
 
     def stream(
         self,
@@ -166,8 +163,8 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         G: Graph,
         relationship_type: str,
         mutate_relationship_type: str,
-        aggregation: Optional[Union[Aggregation, dict[str, Aggregation]]] = None,
         *,
+        aggregation: Optional[Union[Aggregation, dict[str, Aggregation]]] = None,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,

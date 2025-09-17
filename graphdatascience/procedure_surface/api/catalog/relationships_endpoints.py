@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from enum import Enum
 from typing import Any, List, Optional, Union
 
@@ -166,8 +165,8 @@ class RelationshipsEndpoints(ABC):
         G: Graph,
         relationship_type: str,
         mutate_relationship_type: str,
-        aggregation: Optional[Union[Aggregation, dict[str, Aggregation]]] = None,
         *,
+        aggregation: Optional[Union[Aggregation, dict[str, Aggregation]]] = None,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
@@ -209,23 +208,6 @@ class RelationshipsEndpoints(ABC):
     pass
 
 
-@dataclass
-class NodePropertySpec:
-    def __init__(self, node_properties: Union[str, List[str], dict[str, str]]) -> None:
-        if isinstance(node_properties, str):
-            self._mappings = {node_properties: node_properties}
-        elif isinstance(node_properties, list):
-            self._mappings = {prop: prop for prop in node_properties}
-        elif isinstance(node_properties, dict):
-            self._mappings = node_properties
-
-    def property_names(self) -> List[str]:
-        return list(self._mappings.keys())
-
-    def to_dict(self) -> dict[str, str]:
-        return self._mappings.copy()
-
-
 class RelationshipsWriteResult(BaseResult):
     graph_name: str
     relationship_type: str
@@ -239,12 +221,13 @@ class RelationshipsWriteResult(BaseResult):
 
     @field_validator("relationship_properties", mode="before")
     @classmethod
-    def check_alphanumeric(cls, v: str) -> list[str]:
+    def coerce_relationship_properties(cls, v: Any) -> list[str]:
         if v is None:
             return []
         elif isinstance(v, str):
             return [v]
-        return v
+        else:
+            return v  # type: ignore
 
 
 class RelationshipsDropResult(BaseResult):
@@ -268,9 +251,9 @@ class RelationshipsToUndirectedResult(RelationshipsInverseIndexResult):
 
 
 class Aggregation(str, Enum):
-    NONE = "none"
-    SINGLE = "single"
-    SUM = "sum"
-    MIN = "min"
-    MAX = "max"
-    COUNT = "count"
+    NONE = "NONE"
+    SINGLE = "SINGLE"
+    SUM = "SUM"
+    MIN = "MIN"
+    MAX = "MAX"
+    COUNT = "COUNT"

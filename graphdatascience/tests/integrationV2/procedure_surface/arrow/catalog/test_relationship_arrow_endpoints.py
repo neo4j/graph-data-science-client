@@ -4,6 +4,7 @@ import pytest
 
 from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import Aggregation
 from graphdatascience.procedure_surface.arrow.catalog.relationship_arrow_endpoints import (
     RelationshipArrowEndpoints,
@@ -70,14 +71,14 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
 def relationship_endpoints(
     arrow_client: AuthenticatedArrowClient,
 ) -> Generator[RelationshipArrowEndpoints, None, None]:
-    yield RelationshipArrowEndpoints(arrow_client)
+    yield RelationshipArrowEndpoints(arrow_client, None)
 
 
 @pytest.fixture
 def relationship_endpoints_with_db(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner
 ) -> Generator[RelationshipArrowEndpoints, None, None]:
-    yield RelationshipArrowEndpoints(arrow_client, query_runner)
+    yield RelationshipArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
 
 
 def test_stream_relationships(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: Graph) -> None:
@@ -163,7 +164,6 @@ def test_write_relationships_with_properties(
 
 
 def test_drop_relationships(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: Graph) -> None:
-    # Drop REL relationship type
     drop_result = relationship_endpoints.drop(G=sample_graph, relationship_type="REL")
 
     assert drop_result.graph_name == sample_graph.name()

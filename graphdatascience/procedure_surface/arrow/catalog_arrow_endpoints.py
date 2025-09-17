@@ -179,7 +179,10 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
     @property
     def relationships(self) -> RelationshipArrowEndpoints:
-        return RelationshipArrowEndpoints(self._arrow_client, self._query_runner)
+        return RelationshipArrowEndpoints(
+            self._arrow_client,
+            RemoteWriteBackClient(self._arrow_client, self._query_runner) if self._query_runner else None,
+        )
 
     def _arrow_config(self) -> dict[str, Any]:
         connection_info = self._arrow_client.advertised_connection_info()
