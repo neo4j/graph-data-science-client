@@ -5,7 +5,7 @@ from typing import Any, List, Optional, Tuple, Union
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
-from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
+from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
@@ -81,7 +81,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.project", params=params).squeeze()
         list_result = GraphProjectResult(**result.to_dict())
-        return wrap_graph(list_result.graph_name, self._query_runner), list_result
+        return get_graph(list_result.graph_name, self._query_runner), list_result
 
     def filter(
         self,
@@ -107,7 +107,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.filter", params=params).squeeze()
-        return GraphWithResult(wrap_graph(graph_name, self._query_runner), GraphFilterResult(**result.to_dict()))
+        return GraphWithResult(get_graph(graph_name, self._query_runner), GraphFilterResult(**result.to_dict()))
 
     def generate(
         self,
@@ -149,7 +149,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.generate", params=params).squeeze()
-        return GraphWithResult(wrap_graph(graph_name, self._query_runner), GraphGenerationStats(**result.to_dict()))
+        return GraphWithResult(get_graph(graph_name, self._query_runner), GraphGenerationStats(**result.to_dict()))
 
     @property
     def sample(self) -> GraphSamplingEndpoints:

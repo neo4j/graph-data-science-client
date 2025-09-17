@@ -10,7 +10,7 @@ from graphdatascience.procedure_surface.api.graph_sampling_endpoints import (
     GraphSamplingResult,
 )
 from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
-from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import wrap_graph
+from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 
 
@@ -55,7 +55,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.sample.rwr", config)
 
         return GraphWithResult(
-            wrap_graph(graph_name, self._arrow_client),
+            get_graph(graph_name, self._arrow_client),
             GraphSamplingResult(**JobClient.get_summary(self._arrow_client, job_id)),
         )
 
@@ -96,6 +96,6 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.sample.cnarw", config)
 
         return GraphWithResult(
-            wrap_graph(graph_name, self._arrow_client),
+            get_graph(graph_name, self._arrow_client),
             GraphSamplingResult(**JobClient.get_summary(self._arrow_client, job_id)),
         )
