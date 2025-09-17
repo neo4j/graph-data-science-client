@@ -172,7 +172,7 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/centrality.articleRank", G, config, write_concurrency, concurrency
+            "v2/centrality.articleRank", G, config, write_concurrency, concurrency, write_property
         )
 
         return ArticleRankWriteResult(**result)

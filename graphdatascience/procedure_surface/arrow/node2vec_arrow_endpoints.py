@@ -191,7 +191,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/embeddings.node2vec", G, config, write_concurrency, concurrency
+            "v2/embeddings.node2vec", G, config, write_concurrency, concurrency, write_property
         )
 
         return Node2VecWriteResult(**result)

@@ -84,6 +84,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
             config,
             write_concurrency,
             concurrency,
+            write_property
         )
 
         return GraphSageWriteResult(**raw_result)

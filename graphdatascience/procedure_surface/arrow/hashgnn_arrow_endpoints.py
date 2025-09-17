@@ -169,7 +169,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/embeddings.hashgnn", G, config, write_concurrency, concurrency
+            "v2/embeddings.hashgnn", G, config, write_concurrency, concurrency, write_property
         )
 
         return HashGNNWriteResult(**result)

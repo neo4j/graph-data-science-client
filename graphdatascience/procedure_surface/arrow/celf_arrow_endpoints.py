@@ -147,7 +147,7 @@ class CelfArrowEndpoints(CelfEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/centrality.celf", G, config, write_concurrency=write_concurrency, concurrency=concurrency
+            "v2/centrality.celf", G, config, write_concurrency=write_concurrency, concurrency=concurrency, property_overwrites=write_property
         )
 
         return CelfWriteResult(**result)
