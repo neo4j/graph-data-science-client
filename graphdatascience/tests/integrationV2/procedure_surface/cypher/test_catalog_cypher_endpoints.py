@@ -127,6 +127,7 @@ def test_graph_filter(catalog_endpoints: CatalogCypherEndpoints, sample_graph: G
         sample_graph, graph_name="filtered", node_filter="n:A", relationship_filter="FALSE"
     )
 
+    assert G.name() == "filtered"
     assert result.node_count == 2
     assert result.relationship_count == 0
     assert result.from_graph_name == sample_graph.name()
@@ -149,6 +150,7 @@ def test_sample_property(catalog_endpoints: CatalogCypherEndpoints) -> None:
 def test_projection(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
     G, result = catalog_endpoints.project("g2", ["A", "B"], "REL", node_properties=["id"], read_concurrency=2)
 
+    assert G.name() == "g2"
     assert result.node_count == 3
     assert result.relationship_count == 1
     assert result.graph_name == "g2"
@@ -172,6 +174,7 @@ def test_graph_generate(catalog_endpoints: CatalogCypherEndpoints) -> None:
         username="neo4j",
     )
 
+    assert G.name() == "generated"
     assert result.name == "generated"
     assert result.nodes == 10
     assert result.relationships > 5

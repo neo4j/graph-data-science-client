@@ -87,6 +87,7 @@ def test_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryR
             query="UNWIND range(1, 10) AS x WITH gds.graph.project.remote(x, null) as g RETURN g",
         )
 
+        assert G.name() == "g"
         assert result.graph_name == "g"
         assert result.node_count == 10
         assert result.relationship_count == 0
@@ -103,6 +104,7 @@ def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Gr
             sample_graph, graph_name="filtered", node_filter="n:A", relationship_filter="*"
         )
 
+        assert G.name() == "filtered"
         assert result.node_count == 2
         assert result.relationship_count == 0
         assert result.from_graph_name == sample_graph.name()
@@ -133,6 +135,7 @@ def test_graph_generate(catalog_endpoints: CatalogArrowEndpoints) -> None:
             username="neo4j",
         )
 
+        assert G.name() == "generated"
         assert result.name == "generated"
         assert result.nodes == 10
         assert result.relationships > 5

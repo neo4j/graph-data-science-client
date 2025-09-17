@@ -116,7 +116,7 @@ def test_graph_drop(G: GraphV2) -> None:
     # Should not raise error
     G.drop(failIfMissing=False)
 
-    with pytest.raises(Exception):
+    with pytest.raises(Exception, match="Graph with name `g` does not exist on database `neo4j`."):
         G.drop(failIfMissing=True)
 
 
