@@ -7,7 +7,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo,
 from graphdatascience.procedure_surface.arrow.catalog.graph_ops_arrow import GraphOpsArrow
 
 
-def wrap_graph(name: str, arrow_client: AuthenticatedArrowClient) -> GraphV2:
+def get_graph(name: str, arrow_client: AuthenticatedArrowClient) -> GraphV2:
     backend = ArrowGraphBackend(name, arrow_client)
 
     return GraphV2(name, backend)

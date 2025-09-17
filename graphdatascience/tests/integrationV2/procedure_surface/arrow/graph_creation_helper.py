@@ -6,7 +6,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import wrap_graph
+from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
 from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 
 
@@ -31,7 +31,7 @@ def create_graph(
             )
             deserialize_single(raw_res)
 
-        yield wrap_graph(graph_name, arrow_client)
+        yield get_graph(graph_name, arrow_client)
     finally:
         CatalogArrowEndpoints(arrow_client).drop(graph_name, fail_if_missing=False)
 

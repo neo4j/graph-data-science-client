@@ -17,7 +17,7 @@ from graphdatascience.procedure_surface.api.catalog_endpoints import (
 )
 from graphdatascience.procedure_surface.api.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
-from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import wrap_graph
+from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
 from graphdatascience.procedure_surface.arrow.catalog.graph_ops_arrow import GraphOpsArrow
 from graphdatascience.procedure_surface.arrow.catalog.node_label_arrow_endpoints import NodeLabelArrowEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.node_properties_arrow_endpoints import (
@@ -97,7 +97,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         job_result = ProjectionResult(**JobClient.get_summary(self._arrow_client, job_id))
 
-        return GraphWithResult(wrap_graph(graph_name, self._arrow_client), job_result)
+        return GraphWithResult(get_graph(graph_name, self._arrow_client), job_result)
 
     def drop(self, G: Union[GraphV2, str], fail_if_missing: bool = True) -> Optional[GraphInfo]:
         graph_name = G.name() if isinstance(G, GraphV2) else G
@@ -125,7 +125,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.project.filter", config)
 
         return GraphWithResult(
-            wrap_graph(graph_name, self._arrow_client),
+            get_graph(graph_name, self._arrow_client),
             GraphFilterResult(**JobClient.get_summary(self._arrow_client, job_id)),
         )
 
@@ -165,7 +165,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.generate", config)
 
         return GraphWithResult(
-            wrap_graph(graph_name, self._arrow_client),
+            get_graph(graph_name, self._arrow_client),
             GraphGenerationStats(**JobClient.get_summary(self._arrow_client, job_id)),
         )
 

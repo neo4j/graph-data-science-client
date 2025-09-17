@@ -6,7 +6,7 @@ import pytest
 from graphdatascience import QueryRunner
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog_endpoints import RelationshipPropertySpec
-from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
+from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.cypher.catalog_cypher_endpoints import CatalogCypherEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
     create_graph,
@@ -87,7 +87,7 @@ def test_list_without_graph(
             RETURN G
         """)
 
-        g2 = wrap_graph("second_graph", query_runner)
+        g2 = get_graph("second_graph", query_runner)
         result = catalog_endpoints.list()
 
         assert len(result) == 2

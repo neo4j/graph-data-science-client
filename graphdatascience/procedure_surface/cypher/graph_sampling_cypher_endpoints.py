@@ -4,7 +4,7 @@ from typing import Any, List, Optional
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
-from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
+from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
@@ -57,7 +57,7 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.sample.rwr", params=params).squeeze()
         return GraphWithResult(
-            wrap_graph(graph_name, self._query_runner),
+            get_graph(graph_name, self._query_runner),
             GraphSamplingResult(**result.to_dict()),
         )
 
@@ -102,6 +102,6 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.sample.cnarw", params=params).squeeze()
         return GraphWithResult(
-            wrap_graph(graph_name, self._query_runner),
+            get_graph(graph_name, self._query_runner),
             GraphSamplingResult(**result.to_dict()),
         )
