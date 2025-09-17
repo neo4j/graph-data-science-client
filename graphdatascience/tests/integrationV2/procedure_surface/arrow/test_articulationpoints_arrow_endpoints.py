@@ -2,12 +2,12 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.api.articulationpoints_endpoints import (
     ArticulationPointsMutateResult,
     ArticulationPointsStatsResult,
 )
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.articulationpoints_arrow_endpoints import (
     ArticulationPointsArrowEndpoints,
 )

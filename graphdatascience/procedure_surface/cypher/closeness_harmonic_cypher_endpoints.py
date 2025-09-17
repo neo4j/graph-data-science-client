@@ -2,10 +2,10 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 
 from ...call_parameters import CallParameters
-from ...graph.graph_object import Graph
 from ...query_runner.query_runner import QueryRunner
 from ..api.closeness_harmonic_endpoints import (
     ClosenessHarmonicEndpoints,

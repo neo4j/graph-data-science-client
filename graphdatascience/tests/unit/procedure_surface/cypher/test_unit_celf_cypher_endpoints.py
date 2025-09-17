@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.graph.graph_object import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.celf_endpoints import (
     CelfMutateResult,
     CelfStatsResult,
@@ -13,18 +13,8 @@ from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estim
 
 
 @pytest.fixture
-def query_runner() -> CollectingQueryRunner:
-    return CollectingQueryRunner(DEFAULT_SERVER_VERSION, {})
-
-
-@pytest.fixture
 def celf_endpoints(query_runner: CollectingQueryRunner) -> CelfCypherEndpoints:
     return CelfCypherEndpoints(query_runner)
-
-
-@pytest.fixture
-def graph(query_runner: CollectingQueryRunner) -> Graph:
-    return Graph("test_graph", query_runner)
 
 
 def test_mutate_basic(graph: Graph) -> None:

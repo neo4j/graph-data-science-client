@@ -1,8 +1,9 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.graph.graph_object import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.wcc_endpoints import WccMutateResult, WccStatsResult, WccWriteResult
+from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
 from graphdatascience.procedure_surface.cypher.wcc_cypher_endpoints import WccCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
@@ -20,7 +21,7 @@ def wcc_endpoints(query_runner: CollectingQueryRunner) -> WccCypherEndpoints:
 
 @pytest.fixture
 def graph(query_runner: CollectingQueryRunner) -> Graph:
-    return Graph("test_graph", query_runner)
+    return wrap_graph("test_graph", query_runner)
 
 
 def test_mutate_basic(graph: Graph) -> None:

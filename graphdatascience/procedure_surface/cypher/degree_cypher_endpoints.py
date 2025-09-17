@@ -2,8 +2,9 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+
 from ...call_parameters import CallParameters
-from ...graph.graph_object import Graph
 from ...query_runner.query_runner import QueryRunner
 from ..api.degree_endpoints import DegreeEndpoints, DegreeMutateResult, DegreeStatsResult, DegreeWriteResult
 from ..api.estimation_result import EstimationResult

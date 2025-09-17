@@ -3,8 +3,10 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import QueryRunner
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog_endpoints import RelationshipPropertySpec
+from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
 from graphdatascience.procedure_surface.cypher.catalog_cypher_endpoints import CatalogCypherEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
     create_graph,
@@ -82,7 +84,7 @@ def test_list_without_graph(
             RETURN G
         """)
 
-        g2 = Graph("second_graph", query_runner)
+        g2 = wrap_graph("second_graph", query_runner)
         result = catalog_endpoints.list()
 
         assert len(result) == 2
@@ -118,7 +120,7 @@ def test_drop_nonexistent_fail_if_missing_false(catalog_endpoints: CatalogCypher
 
 
 def test_graph_filter(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
-    result = catalog_endpoints.filter(
+    G, result = catalog_endpoints.filter(
         sample_graph, graph_name="filtered", node_filter="n:A", relationship_filter="FALSE"
     )
 
@@ -152,7 +154,7 @@ def test_projection(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Gra
 
 
 def test_graph_generate(catalog_endpoints: CatalogCypherEndpoints) -> None:
-    result = catalog_endpoints.generate(
+    G, result = catalog_endpoints.generate(
         "generated",
         node_count=10,
         average_degree=5,

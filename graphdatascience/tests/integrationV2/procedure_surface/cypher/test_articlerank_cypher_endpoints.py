@@ -2,7 +2,8 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import QueryRunner
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.articlerank_cypher_endpoints import ArticleRankCypherEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
@@ -18,7 +19,7 @@ def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
         (b)-[:REL]->(c)
     """
 
-    projection_query = """ 
+    projection_query = """
         MATCH (n)
         OPTIONAL MATCH (n)-[r]->(m)
         WITH gds.graph.project('g', n, m, {}) AS G

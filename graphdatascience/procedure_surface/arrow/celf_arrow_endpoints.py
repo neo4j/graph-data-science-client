@@ -2,9 +2,10 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from ...graph.graph_object import Graph
 from ..api.celf_endpoints import CelfEndpoints, CelfMutateResult, CelfStatsResult, CelfWriteResult
 from ..api.estimation_result import EstimationResult
 from .node_property_endpoints import NodePropertyEndpoints

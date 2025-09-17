@@ -2,8 +2,8 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience import Graph, QueryRunner
 from graphdatascience.call_parameters import CallParameters
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import (
     NodePropertiesDropResult,
     NodePropertiesEndpoints,
@@ -13,6 +13,7 @@ from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints im
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.procedure_surface.utils.result_utils import join_db_node_properties, transpose_property_columns
 from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
+from graphdatascience.query_runner.query_runner import QueryRunner
 
 
 class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):

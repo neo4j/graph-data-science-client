@@ -2,9 +2,10 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import Aggregation
 from graphdatascience.procedure_surface.arrow.catalog.relationship_arrow_endpoints import (
     RelationshipArrowEndpoints,
@@ -45,10 +46,10 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
     """
 
     projection_query = """
-    MATCH (n)-[r]->(m) 
+    MATCH (n)-[r]->(m)
     WITH gds.graph.project.remote(
-        n, 
-        m, 
+        n,
+        m,
         {
             relationshipType: type(r),
             relationshipProperties: {weight: r.weight}
@@ -155,7 +156,7 @@ def test_write_relationships_with_properties(
     assert result.properties_written == 3
 
     props_written = query_runner.run_cypher("""
-        MATCH (n)-[r]->(m) 
+        MATCH (n)-[r]->(m)
         WHERE type(r) = "REL" AND r.weight IS NOT NULL
         RETURN COUNT(r) as written
         """).squeeze()

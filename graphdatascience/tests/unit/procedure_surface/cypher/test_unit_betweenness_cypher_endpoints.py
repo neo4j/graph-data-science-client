@@ -1,30 +1,20 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.graph.graph_object import Graph
 from graphdatascience.procedure_surface.api.betweenness_endpoints import (
     BetweennessMutateResult,
     BetweennessStatsResult,
     BetweennessWriteResult,
 )
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.betweenness_cypher_endpoints import BetweennessCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
 
 
 @pytest.fixture
-def query_runner() -> CollectingQueryRunner:
-    return CollectingQueryRunner(DEFAULT_SERVER_VERSION)
-
-
-@pytest.fixture
 def betweenness_endpoints(query_runner: CollectingQueryRunner) -> BetweennessCypherEndpoints:
     return BetweennessCypherEndpoints(query_runner)
-
-
-@pytest.fixture
-def graph(query_runner: CollectingQueryRunner) -> Graph:
-    return Graph("test_graph", query_runner)
 
 
 def test_mutate_basic(graph: Graph) -> None:

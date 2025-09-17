@@ -2,15 +2,18 @@ from __future__ import annotations
 
 from typing import Any, List, Optional, Tuple, Union
 
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
+from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
+from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
+
 from ...call_parameters import CallParameters
-from ...graph.graph_object import Graph
 from ...query_runner.query_runner import QueryRunner
 from ..api.base_result import BaseResult
 from ..api.catalog_endpoints import (
     CatalogEndpoints,
     GraphFilterResult,
     GraphGenerationStats,
-    GraphListResult,
     RelationshipPropertySpec,
 )
 from ..api.graph_sampling_endpoints import GraphSamplingEndpoints
@@ -25,14 +28,14 @@ class CatalogCypherEndpoints(CatalogEndpoints):
     def __init__(self, query_runner: QueryRunner):
         self._query_runner = query_runner
 
-    def list(self, G: Optional[Union[Graph, str]] = None) -> List[GraphListResult]:
+    def list(self, G: Optional[Union[Graph, str]] = None) -> List[GraphInfo]:
         graph_name = G if isinstance(G, str) else G.name() if G is not None else None
         params = CallParameters(graphName=graph_name) if graph_name else CallParameters()
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.list", params=params)
-        return [GraphListResult(**row.to_dict()) for _, row in result.iterrows()]
+        return [GraphInfo(**row.to_dict()) for _, row in result.iterrows()]
 
-    def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphListResult]:
+    def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphInfo]:
         graph_name = G if isinstance(G, str) else G.name()
 
         params = (
@@ -43,7 +46,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.drop", params=params)
         if len(result) > 0:
-            return GraphListResult(**result.iloc[0].to_dict())
+            return GraphInfo(**result.iloc[0].to_dict())
         else:
             return None
 
@@ -78,7 +81,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.project", params=params).squeeze()
         list_result = GraphProjectResult(**result.to_dict())
-        return Graph(list_result.graph_name, self._query_runner), list_result
+        return wrap_graph(list_result.graph_name, self._query_runner), list_result
 
     def filter(
         self,
@@ -88,7 +91,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         relationship_filter: str,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-    ) -> GraphFilterResult:
+    ) -> GraphWithResult[GraphFilterResult]:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
             jobId=job_id,
@@ -104,7 +107,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.filter", params=params).squeeze()
-        return GraphFilterResult(**result.to_dict())
+        return GraphWithResult(wrap_graph(graph_name, self._query_runner), GraphFilterResult(**result.to_dict()))
 
     def generate(
         self,
@@ -122,7 +125,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
-    ) -> GraphGenerationStats:
+    ) -> GraphWithResult[GraphGenerationStats]:
         config = ConfigConverter.convert_to_gds_config(
             relationship_distribution=relationship_distribution,
             relationship_seed=relationship_seed,
@@ -146,7 +149,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.generate", params=params).squeeze()
-        return GraphGenerationStats(**result.to_dict())
+        return GraphWithResult(wrap_graph(graph_name, self._query_runner), GraphGenerationStats(**result.to_dict()))
 
     @property
     def sample(self) -> GraphSamplingEndpoints:

@@ -1,24 +1,21 @@
 from __future__ import annotations
 
-import re
 from abc import ABC, abstractmethod
-from datetime import datetime
 from typing import Any, List, Optional, Union
 
-import neo4j
-from pydantic import Field, field_validator
-
-from graphdatascience import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import NodeLabelEndpoints
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import NodePropertiesEndpoints
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import RelationshipsEndpoints
 from graphdatascience.procedure_surface.api.graph_sampling_endpoints import GraphSamplingEndpoints
+from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
 
 
 class CatalogEndpoints(ABC):
     @abstractmethod
-    def list(self, G: Optional[Union[Graph, str]] = None) -> List[GraphListResult]:
+    def list(self, G: Optional[Union[Graph, str]] = None) -> List[GraphInfo]:
         """List graphs in the graph catalog.
 
         Args:
@@ -32,7 +29,7 @@ class CatalogEndpoints(ABC):
         pass
 
     @abstractmethod
-    def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphListResult]:
+    def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphInfo]:
         """Drop a graph from the graph catalog.
 
         Args:
@@ -53,7 +50,7 @@ class CatalogEndpoints(ABC):
         relationship_filter: str,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-    ) -> GraphFilterResult:
+    ) -> GraphWithResult[GraphFilterResult]:
         """Create a subgraph of a graph based on a filter expression.
 
         Parameters
@@ -94,7 +91,7 @@ class CatalogEndpoints(ABC):
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
-    ) -> GraphGenerationStats:
+    ) -> GraphWithResult[GraphGenerationStats]:
         """
         Generates a random graph and store it in the graph catalog.
 
@@ -158,31 +155,6 @@ class CatalogEndpoints(ABC):
         pass
 
 
-class GraphListResult(BaseResult):
-    graph_name: str
-    database: str
-    database_location: str
-    configuration: dict[str, Any]
-    memory_usage: str
-    size_in_bytes: int
-    node_count: int
-    relationship_count: int
-    creation_time: datetime
-    modification_time: datetime
-    graph_schema: dict[str, Any] = Field(alias="schema")
-    schema_with_orientation: dict[str, Any]
-    degree_distribution: Optional[dict[str, Any]] = None
-
-    @field_validator("creation_time", "modification_time", mode="before")
-    @classmethod
-    def strip_timezone(cls, value: Any) -> Any:
-        if isinstance(value, str):
-            return re.sub(r"\[.*\]$", "", value)
-        if isinstance(value, neo4j.time.DateTime):
-            return value.to_native()
-        return value
-
-
 class GraphFilterResult(BaseResult):
     graph_name: str
     from_graph_name: str
@@ -202,6 +174,15 @@ class GraphGenerationStats(BaseResult):
     average_degree: float
     relationship_distribution: str
     relationship_property: RelationshipPropertySpec
+
+
+class ProjectionResult(BaseResult):
+    graph_name: str
+    node_count: int
+    relationship_count: int
+    project_millis: int
+    configuration: dict[str, Any]
+    query: str
 
 
 class RelationshipPropertySpec(BaseResult):

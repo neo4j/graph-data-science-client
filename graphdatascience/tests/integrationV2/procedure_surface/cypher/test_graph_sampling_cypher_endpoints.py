@@ -2,7 +2,8 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import QueryRunner
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.graph_sampling_cypher_endpoints import GraphSamplingCypherEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
     create_graph,
@@ -48,7 +49,7 @@ def graph_sampling_endpoints(query_runner: QueryRunner) -> Generator[GraphSampli
 
 def test_rwr_basic(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: Graph) -> None:
     """Test RWR sampling with basic configuration."""
-    result = graph_sampling_endpoints.rwr(
+    G, result = graph_sampling_endpoints.rwr(
         G=sample_graph, graph_name="rwr_sampled", restart_probability=0.15, sampling_ratio=0.8
     )
 
@@ -62,7 +63,7 @@ def test_rwr_basic(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sampl
 
 def test_rwr_with_weights(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: Graph) -> None:
     """Test RWR sampling with weighted relationships."""
-    result = graph_sampling_endpoints.rwr(
+    G, result = graph_sampling_endpoints.rwr(
         G=sample_graph,
         graph_name="rwr_weighted",
         restart_probability=0.2,
@@ -79,7 +80,7 @@ def test_rwr_with_weights(graph_sampling_endpoints: GraphSamplingCypherEndpoints
 
 def test_rwr_minimal_config(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: Graph) -> None:
     """Test RWR sampling with minimal configuration."""
-    result = graph_sampling_endpoints.rwr(G=sample_graph, graph_name="rwr_minimal")
+    G, result = graph_sampling_endpoints.rwr(G=sample_graph, graph_name="rwr_minimal")
 
     assert result.graph_name == "rwr_minimal"
     assert result.from_graph_name == sample_graph.name()
@@ -89,7 +90,7 @@ def test_rwr_minimal_config(graph_sampling_endpoints: GraphSamplingCypherEndpoin
 
 def test_cnarw_basic(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: Graph) -> None:
     """Test CNARW sampling with basic configuration."""
-    result = graph_sampling_endpoints.cnarw(
+    G, result = graph_sampling_endpoints.cnarw(
         G=sample_graph, graph_name="cnarw_sampled", restart_probability=0.15, sampling_ratio=0.8
     )
 
@@ -103,7 +104,7 @@ def test_cnarw_basic(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sam
 
 def test_cnarw_with_stratification(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: Graph) -> None:
     """Test CNARW sampling with node label stratification."""
-    result = graph_sampling_endpoints.cnarw(
+    G, result = graph_sampling_endpoints.cnarw(
         G=sample_graph,
         graph_name="cnarw_stratified",
         restart_probability=0.1,
@@ -120,7 +121,7 @@ def test_cnarw_with_stratification(graph_sampling_endpoints: GraphSamplingCypher
 
 def test_cnarw_minimal_config(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: Graph) -> None:
     """Test CNARW sampling with minimal configuration."""
-    result = graph_sampling_endpoints.cnarw(G=sample_graph, graph_name="cnarw_minimal")
+    G, result = graph_sampling_endpoints.cnarw(G=sample_graph, graph_name="cnarw_minimal")
 
     assert result.graph_name == "cnarw_minimal"
     assert result.from_graph_name == sample_graph.name()

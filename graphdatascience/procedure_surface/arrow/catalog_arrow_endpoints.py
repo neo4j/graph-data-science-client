@@ -3,20 +3,22 @@ from __future__ import annotations
 from typing import Any, List, Optional, Union
 from uuid import uuid4
 
-from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
 from graphdatascience.procedure_surface.api.catalog_endpoints import (
     CatalogEndpoints,
     GraphFilterResult,
     GraphGenerationStats,
-    GraphListResult,
+    ProjectionResult,
     RelationshipPropertySpec,
 )
 from graphdatascience.procedure_surface.api.graph_sampling_endpoints import GraphSamplingEndpoints
+from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
+from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import wrap_graph
+from graphdatascience.procedure_surface.arrow.catalog.graph_ops_arrow import GraphOpsArrow
 from graphdatascience.procedure_surface.arrow.catalog.node_label_arrow_endpoints import NodeLabelArrowEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.node_properties_arrow_endpoints import (
     NodePropertiesArrowEndpoints,
@@ -25,6 +27,7 @@ from graphdatascience.procedure_surface.arrow.catalog.relationship_arrow_endpoin
 from graphdatascience.procedure_surface.arrow.graph_sampling_arrow_endpoints import GraphSamplingArrowEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
+from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
 
@@ -35,18 +38,19 @@ class CatalogArrowEndpoints(CatalogEndpoints):
     def __init__(self, arrow_client: AuthenticatedArrowClient, query_runner: Optional[QueryRunner] = None):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
+        self._graph_backend = GraphOpsArrow(arrow_client)
         if query_runner is not None:
             protocol_version = ProtocolVersionResolver(query_runner).resolve()
             self._project_protocol = ProjectProtocol.select(protocol_version)
 
-    def list(self, G: Optional[Union[Graph, str]] = None) -> List[GraphListResult]:
-        name = G if isinstance(G, str) else G.name() if G is not None else None
+    def list(self, G: Optional[Union[Graph, str]] = None) -> List[GraphInfo]:
+        graph_name: Optional[str] = None
+        if isinstance(G, Graph):
+            graph_name = G.name()
+        elif isinstance(G, str):
+            graph_name = G
 
-        payload = {"graphName": name} if G else {}
-
-        result = self._arrow_client.do_action_with_retry("v2/graph.list", payload)
-
-        return [GraphListResult(**x) for x in deserialize(result)]
+        return self._graph_backend.list(graph_name)
 
     def project(
         self,
@@ -58,7 +62,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         inverse_indexed_relationship_types: Optional[List[str]] = None,
         batch_size: Optional[int] = None,
         logging: bool = True,
-    ) -> ProjectionResult:
+    ) -> GraphWithResult[ProjectionResult]:
         if self._query_runner is None:
             raise ValueError("Remote projection is only supported for attached Sessions.")
 
@@ -91,18 +95,14 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             logging,
         )
 
-        return ProjectionResult(**JobClient.get_summary(self._arrow_client, job_id))
+        job_result = ProjectionResult(**JobClient.get_summary(self._arrow_client, job_id))
 
-    def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphListResult]:
-        graph_name = G if isinstance(G, str) else G.name()
-        config = ConfigConverter.convert_to_gds_config(graph_name=graph_name, fail_if_missing=fail_if_missing)
-        result = self._arrow_client.do_action_with_retry("v2/graph.drop", config)
-        deserialized_results = deserialize(result)
+        return GraphWithResult(wrap_graph(graph_name, self._arrow_client), job_result)
 
-        if len(deserialized_results) == 1:
-            return GraphListResult(**deserialized_results[0])
-        else:
-            return None
+    def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphInfo]:
+        graph_name = G.name() if isinstance(G, Graph) else G
+
+        return self._graph_backend.drop(graph_name, fail_if_missing)
 
     def filter(
         self,
@@ -112,7 +112,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         relationship_filter: str,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-    ) -> GraphFilterResult:
+    ) -> GraphWithResult[GraphFilterResult]:
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
             graph_name=graph_name,
@@ -124,7 +124,10 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.project.filter", config)
 
-        return GraphFilterResult(**JobClient.get_summary(self._arrow_client, job_id))
+        return GraphWithResult(
+            wrap_graph(graph_name, self._arrow_client),
+            GraphFilterResult(**JobClient.get_summary(self._arrow_client, job_id)),
+        )
 
     def generate(
         self,
@@ -142,7 +145,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
-    ) -> GraphGenerationStats:
+    ) -> GraphWithResult[GraphGenerationStats]:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=graph_name,
             node_count=node_count,
@@ -161,7 +164,10 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.generate", config)
 
-        return GraphGenerationStats(**JobClient.get_summary(self._arrow_client, job_id))
+        return GraphWithResult(
+            wrap_graph(graph_name, self._arrow_client),
+            GraphGenerationStats(**JobClient.get_summary(self._arrow_client, job_id)),
+        )
 
     @property
     def sample(self) -> GraphSamplingEndpoints:
@@ -197,12 +203,3 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             "token": token,
             "encrypted": connection_info.encrypted,
         }
-
-
-class ProjectionResult(BaseResult):
-    graph_name: str
-    node_count: int
-    relationship_count: int
-    project_millis: int
-    configuration: dict[str, Any]
-    query: str

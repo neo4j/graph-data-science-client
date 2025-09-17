@@ -3,6 +3,7 @@ from typing import Any, List, Optional, Union
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.graphsage_predict_endpoints import (
     GraphSageMutateResult,
@@ -11,7 +12,6 @@ from graphdatascience.procedure_surface.api.graphsage_predict_endpoints import (
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 
-from ...graph.graph_object import Graph
 from ...query_runner.query_runner import QueryRunner
 from .estimation_utils import estimate_algorithm
 

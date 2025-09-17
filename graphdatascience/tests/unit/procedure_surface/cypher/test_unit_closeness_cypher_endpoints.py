@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.graph.graph_object import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.closeness_endpoints import (
     ClosenessStatsResult,
     ClosenessWriteResult,
@@ -12,18 +12,8 @@ from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estim
 
 
 @pytest.fixture
-def query_runner() -> CollectingQueryRunner:
-    return CollectingQueryRunner(DEFAULT_SERVER_VERSION, {})
-
-
-@pytest.fixture
 def closeness_endpoints(query_runner: CollectingQueryRunner) -> ClosenessCypherEndpoints:
     return ClosenessCypherEndpoints(query_runner)
-
-
-@pytest.fixture
-def graph(query_runner: CollectingQueryRunner) -> Graph:
-    return Graph("test_graph", query_runner)
 
 
 def test_mutate(graph: Graph) -> None:
