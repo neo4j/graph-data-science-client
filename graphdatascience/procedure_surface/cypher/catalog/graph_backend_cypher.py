@@ -5,7 +5,7 @@ from typing import Optional
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_backend import GraphBackend
-from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
+from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
@@ -21,7 +21,7 @@ class CypherGraphBackend(GraphBackend):
         self._query_runner = query_runner
         self._db = self._query_runner.database()
 
-    def graph_info(self) -> GraphInfo:
+    def graph_info(self) -> GraphInfoWithDegrees:
         info = self._query_runner.call_procedure(
             endpoint="gds.graph.list",
             params=CallParameters(graph_name=self._name),
@@ -34,7 +34,7 @@ class CypherGraphBackend(GraphBackend):
             # for multiple dbs we can have the same graph name. But db + graph name is unique
             info = info[info["database"] == self._db]
 
-        return GraphInfo(**info.squeeze())
+        return GraphInfoWithDegrees(**info.squeeze())
 
     def exists(self) -> bool:
         result = self._query_runner.call_procedure(
