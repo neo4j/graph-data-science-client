@@ -32,7 +32,7 @@ class ArticulationPointsEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the articulation point flag for each node
@@ -74,7 +74,7 @@ class ArticulationPointsEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run
@@ -114,7 +114,7 @@ class ArticulationPointsEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run
@@ -158,7 +158,7 @@ class ArticulationPointsEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         write_property : str
             The property name to store the articulation point flag for each node
@@ -198,8 +198,8 @@ class ArticulationPointsEndpoints(ABC):
 
         Parameters
         ----------
-        G : Union[Graph, dict[str, Any]]
-            The graph to be used in the estimation. Provided either as a Graph object or a configuration dictionary for the projection.
+        G : Union[GraphV2, dict[str, Any]]
+            The graph to be used in the estimation. Provided either as a GraphV2 object or a configuration dictionary for the projection.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None

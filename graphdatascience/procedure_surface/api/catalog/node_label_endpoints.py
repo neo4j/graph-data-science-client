@@ -27,7 +27,7 @@ class NodeLabelEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         node_label : str
             The node label to write back.
@@ -71,7 +71,7 @@ class NodeLabelEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         node_label : str
             The node label to write back.

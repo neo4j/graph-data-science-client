@@ -50,7 +50,7 @@ class GraphSageTrainEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         model_name : str
             Name under which the model will be stored

@@ -9,7 +9,7 @@ RESULT = TypeVar("RESULT", bound=BaseResult)
 
 class GraphWithResult(NamedTuple, Generic[RESULT]):
     """
-    A result object wrapping a Graph object and a result.
+    A result object wrapping a GraphV2 object and a result.
 
     Can be used as a context manager to ensure the graph is dropped after use.
     """

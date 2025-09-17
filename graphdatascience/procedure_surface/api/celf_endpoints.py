@@ -41,7 +41,7 @@ class CelfEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization
@@ -97,7 +97,7 @@ class CelfEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization
@@ -151,7 +151,7 @@ class CelfEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization
@@ -208,7 +208,7 @@ class CelfEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to run the algorithm on
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization
@@ -262,8 +262,8 @@ class CelfEndpoints(ABC):
 
         Parameters
         ----------
-        G : Union[Graph, dict[str, Any]]
-            The graph to be used in the estimation. Provided either as a Graph object or a configuration dictionary for the projection.
+        G : Union[GraphV2, dict[str, Any]]
+            The graph to be used in the estimation. Provided either as a GraphV2 object or a configuration dictionary for the projection.
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization.
         propagation_probability : Optional[float], default=None

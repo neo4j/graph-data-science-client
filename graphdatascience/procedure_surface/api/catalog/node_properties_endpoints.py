@@ -31,7 +31,7 @@ class NodePropertiesEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to stream node properties from
         node_properties : Union[str, List[str]]
             The node properties to stream
@@ -77,7 +77,7 @@ class NodePropertiesEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to write node properties from
         node_properties : Union[str, List[str], dict[str, str]]
             The node properties to write.
@@ -121,7 +121,7 @@ class NodePropertiesEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
+        G : GraphV2
             The graph to drop node properties from
         node_properties : List[str]
             The node properties to drop
