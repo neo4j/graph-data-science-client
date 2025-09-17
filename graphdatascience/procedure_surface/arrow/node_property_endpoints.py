@@ -63,7 +63,7 @@ class NodePropertyEndpoints:
         config: Dict[str, Any],
         write_concurrency: Optional[int] = None,
         concurrency: Optional[int] = None,
-        property_overwrites: Optional[dict[str, str]] = None,
+        property_overwrites: Optional[Union[str, dict[str, str]]] = None,
     ) -> Dict[str, Any]:
         """Run a job, write results, and return summary with write time."""
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config)
@@ -71,6 +71,10 @@ class NodePropertyEndpoints:
 
         if self._write_back_client is None:
             raise Exception("Write back client is not initialized")
+
+        if isinstance(property_overwrites, str):
+            # The remote write back procedure allows specifying a single overwrite. The key is ignored.
+            property_overwrites = {property_overwrites: property_overwrites}
 
         write_result = self._write_back_client.write(
             G.name(),
