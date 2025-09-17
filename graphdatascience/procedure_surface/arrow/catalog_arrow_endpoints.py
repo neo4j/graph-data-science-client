@@ -99,7 +99,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         return GraphWithResult(wrap_graph(graph_name, self._arrow_client), job_result)
 
-    def drop(self, G: Union[GraphV2, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphInfo]:
+    def drop(self, G: Union[GraphV2, str], fail_if_missing: bool = True) -> Optional[GraphInfo]:
         graph_name = G.name() if isinstance(G, GraphV2) else G
 
         return self._graph_backend.drop(graph_name, fail_if_missing)

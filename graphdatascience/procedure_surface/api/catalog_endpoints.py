@@ -19,7 +19,7 @@ class CatalogEndpoints(ABC):
         """List graphs in the graph catalog.
 
         Args:
-            G (Optional[Union[Graph, str]], optional): Graph object or name to filter results.
+            G (Optional[Union[GraphV2, str]], optional): Graph object or name to filter results.
                If None, list all graphs. Defaults to None.
 
         Returns:
@@ -29,12 +29,12 @@ class CatalogEndpoints(ABC):
         pass
 
     @abstractmethod
-    def drop(self, G: Union[GraphV2, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphInfo]:
+    def drop(self, G: Union[GraphV2, str], fail_if_missing: bool = True) -> Optional[GraphInfo]:
         """Drop a graph from the graph catalog.
 
         Args:
-            G (Union[Graph, str]): Graph object or name to drop.
-            fail_if_missing (Optional[bool], optional): Whether to fail if the graph is missing. Defaults to None.
+            G (Union[GraphV2, str]): Graph object or name to drop.
+            fail_if_missing (bool): Whether to fail if the graph is missing. Defaults to True.
 
         Returns:
               GraphListResult: Graph metadata object containing information like
