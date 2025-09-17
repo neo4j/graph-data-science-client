@@ -2,14 +2,14 @@ from contextlib import contextmanager
 from typing import Any, Generator
 
 from graphdatascience import QueryRunner
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
 
 
 @contextmanager
 def create_graph(
     query_runner: QueryRunner, graph_name: str, data_query: str, projection_query: str
-) -> Generator[Graph, Any, None]:
+) -> Generator[GraphV2, Any, None]:
     try:
         query_runner.run_cypher(data_query)
         query_runner.run_cypher(projection_query)

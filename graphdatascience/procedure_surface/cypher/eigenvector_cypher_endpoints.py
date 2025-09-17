@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 
 from ...call_parameters import CallParameters
@@ -25,7 +25,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         max_iterations: Optional[int] = None,
         tolerance: Optional[float] = None,
@@ -67,7 +67,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
 
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         max_iterations: Optional[int] = None,
         tolerance: Optional[float] = None,
         source_nodes: Optional[Any] = None,
@@ -107,7 +107,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         max_iterations: Optional[int] = None,
         tolerance: Optional[float] = None,
         source_nodes: Optional[Any] = None,
@@ -146,7 +146,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         max_iterations: Optional[int] = None,
         tolerance: Optional[float] = None,
@@ -190,7 +190,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         max_iterations: Optional[int] = None,
         tolerance: Optional[float] = None,
         source_nodes: Optional[Any] = None,

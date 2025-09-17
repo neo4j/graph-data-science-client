@@ -3,13 +3,13 @@ from typing import Generator
 import pytest
 
 from graphdatascience import QueryRunner
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.kcore_cypher_endpoints import KCoreCypherEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -48,7 +48,7 @@ def kcore_endpoints(query_runner: QueryRunner) -> Generator[KCoreCypherEndpoints
     yield KCoreCypherEndpoints(query_runner)
 
 
-def test_kcore_stats(kcore_endpoints: KCoreCypherEndpoints, sample_graph: Graph) -> None:
+def test_kcore_stats(kcore_endpoints: KCoreCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core stats operation."""
     result = kcore_endpoints.stats(G=sample_graph)
 
@@ -58,7 +58,7 @@ def test_kcore_stats(kcore_endpoints: KCoreCypherEndpoints, sample_graph: Graph)
     assert result.post_processing_millis >= 0
 
 
-def test_kcore_stream(kcore_endpoints: KCoreCypherEndpoints, sample_graph: Graph) -> None:
+def test_kcore_stream(kcore_endpoints: KCoreCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core stream operation."""
     result_df = kcore_endpoints.stream(G=sample_graph)
 
@@ -68,7 +68,7 @@ def test_kcore_stream(kcore_endpoints: KCoreCypherEndpoints, sample_graph: Graph
     assert len(result_df) == 6
 
 
-def test_kcore_mutate(kcore_endpoints: KCoreCypherEndpoints, sample_graph: Graph) -> None:
+def test_kcore_mutate(kcore_endpoints: KCoreCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core mutate operation."""
     result = kcore_endpoints.mutate(G=sample_graph, mutate_property="coreValue")
 
@@ -80,7 +80,7 @@ def test_kcore_mutate(kcore_endpoints: KCoreCypherEndpoints, sample_graph: Graph
     assert result.node_properties_written == 6
 
 
-def test_kcore_write(kcore_endpoints: KCoreCypherEndpoints, sample_graph: Graph) -> None:
+def test_kcore_write(kcore_endpoints: KCoreCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core write operation."""
     result = kcore_endpoints.write(
         G=sample_graph,
@@ -95,7 +95,7 @@ def test_kcore_write(kcore_endpoints: KCoreCypherEndpoints, sample_graph: Graph)
     assert result.node_properties_written == 6
 
 
-def test_kcore_estimate(kcore_endpoints: KCoreCypherEndpoints, sample_graph: Graph) -> None:
+def test_kcore_estimate(kcore_endpoints: KCoreCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core estimate operation."""
     result = kcore_endpoints.estimate(sample_graph)
 
@@ -108,7 +108,7 @@ def test_kcore_estimate(kcore_endpoints: KCoreCypherEndpoints, sample_graph: Gra
     assert result.heap_percentage_max > 0
 
 
-def test_kcore_stats_with_parameters(kcore_endpoints: KCoreCypherEndpoints, sample_graph: Graph) -> None:
+def test_kcore_stats_with_parameters(kcore_endpoints: KCoreCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core stats operation with various parameters."""
     result = kcore_endpoints.stats(G=sample_graph, relationship_types=["REL"], concurrency=2)
 
@@ -118,7 +118,7 @@ def test_kcore_stats_with_parameters(kcore_endpoints: KCoreCypherEndpoints, samp
     assert result.post_processing_millis >= 0
 
 
-def test_kcore_stream_with_parameters(kcore_endpoints: KCoreCypherEndpoints, sample_graph: Graph) -> None:
+def test_kcore_stream_with_parameters(kcore_endpoints: KCoreCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core stream operation with various parameters."""
     result_df = kcore_endpoints.stream(G=sample_graph, relationship_types=["REL"], concurrency=2)
 
@@ -128,7 +128,7 @@ def test_kcore_stream_with_parameters(kcore_endpoints: KCoreCypherEndpoints, sam
     assert len(result_df) == 6
 
 
-def test_kcore_mutate_with_parameters(kcore_endpoints: KCoreCypherEndpoints, sample_graph: Graph) -> None:
+def test_kcore_mutate_with_parameters(kcore_endpoints: KCoreCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core mutate operation with various parameters."""
     result = kcore_endpoints.mutate(
         G=sample_graph, mutate_property="kcoreValue", relationship_types=["REL"], concurrency=2
@@ -142,7 +142,7 @@ def test_kcore_mutate_with_parameters(kcore_endpoints: KCoreCypherEndpoints, sam
     assert result.node_properties_written == 6
 
 
-def test_kcore_write_with_parameters(kcore_endpoints: KCoreCypherEndpoints, sample_graph: Graph) -> None:
+def test_kcore_write_with_parameters(kcore_endpoints: KCoreCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core write operation with various parameters."""
     result = kcore_endpoints.write(
         G=sample_graph,

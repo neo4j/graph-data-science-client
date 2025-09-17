@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
@@ -24,7 +24,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         embedding_dimension: int,
         iteration_weights: Optional[List[float]] = None,
@@ -66,7 +66,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
 
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         embedding_dimension: int,
         iteration_weights: Optional[List[float]] = None,
         normalization_strength: Optional[float] = None,
@@ -107,7 +107,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         embedding_dimension: int,
         iteration_weights: Optional[List[float]] = None,
         normalization_strength: Optional[float] = None,
@@ -146,7 +146,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         embedding_dimension: int,
         iteration_weights: Optional[List[float]] = None,
@@ -191,7 +191,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         embedding_dimension: int,
         iteration_weights: Optional[List[float]] = None,
         normalization_strength: Optional[float] = None,

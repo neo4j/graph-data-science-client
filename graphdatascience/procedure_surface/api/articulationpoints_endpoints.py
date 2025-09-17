@@ -4,7 +4,7 @@ from typing import Any, List, Optional, Union
 from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from .estimation_result import EstimationResult
 
@@ -17,7 +17,7 @@ class ArticulationPointsEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
@@ -60,7 +60,7 @@ class ArticulationPointsEndpoints(ABC):
     @abstractmethod
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -100,7 +100,7 @@ class ArticulationPointsEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -142,7 +142,7 @@ class ArticulationPointsEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
@@ -188,7 +188,7 @@ class ArticulationPointsEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,

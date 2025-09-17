@@ -4,7 +4,7 @@ from typing import Any, List, Optional
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.graph_sampling_endpoints import (
     GraphSamplingEndpoints,
     GraphSamplingResult,
@@ -20,7 +20,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
 
     def rwr(
         self,
-        G: Graph,
+        G: GraphV2,
         graph_name: str,
         start_nodes: Optional[List[int]] = None,
         restart_probability: Optional[float] = None,
@@ -61,7 +61,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
 
     def cnarw(
         self,
-        G: Graph,
+        G: GraphV2,
         graph_name: str,
         start_nodes: Optional[List[int]] = None,
         restart_probability: Optional[float] = None,

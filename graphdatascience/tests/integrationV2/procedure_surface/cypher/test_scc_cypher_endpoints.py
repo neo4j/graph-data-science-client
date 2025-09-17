@@ -3,14 +3,14 @@ from typing import Generator
 import pytest
 
 from graphdatascience import QueryRunner
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.scc_endpoints import SccMutateResult, SccStatsResult, SccWriteResult
 from graphdatascience.procedure_surface.cypher.scc_cypher_endpoints import SccCypherEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     create_statement = """
         CREATE
               (a:Node)
@@ -55,7 +55,7 @@ def scc_endpoints(query_runner: QueryRunner) -> SccCypherEndpoints:
     return SccCypherEndpoints(query_runner)
 
 
-def test_scc_stats(scc_endpoints: SccCypherEndpoints, sample_graph: Graph) -> None:
+def test_scc_stats(scc_endpoints: SccCypherEndpoints, sample_graph: GraphV2) -> None:
     result = scc_endpoints.stats(sample_graph)
 
     assert isinstance(result, SccStatsResult)
@@ -66,7 +66,7 @@ def test_scc_stats(scc_endpoints: SccCypherEndpoints, sample_graph: Graph) -> No
     assert "p10" in result.component_distribution
 
 
-def test_scc_stream(scc_endpoints: SccCypherEndpoints, sample_graph: Graph) -> None:
+def test_scc_stream(scc_endpoints: SccCypherEndpoints, sample_graph: GraphV2) -> None:
     result = scc_endpoints.stream(sample_graph)
 
     assert len(result) == 9
@@ -74,7 +74,7 @@ def test_scc_stream(scc_endpoints: SccCypherEndpoints, sample_graph: Graph) -> N
     assert "componentId" in result.columns
 
 
-def test_scc_mutate(scc_endpoints: SccCypherEndpoints, sample_graph: Graph) -> None:
+def test_scc_mutate(scc_endpoints: SccCypherEndpoints, sample_graph: GraphV2) -> None:
     result = scc_endpoints.mutate(sample_graph, "componentId")
 
     assert isinstance(result, SccMutateResult)
@@ -87,7 +87,7 @@ def test_scc_mutate(scc_endpoints: SccCypherEndpoints, sample_graph: Graph) -> N
     assert "p10" in result.component_distribution
 
 
-def test_scc_estimate(scc_endpoints: SccCypherEndpoints, sample_graph: Graph) -> None:
+def test_scc_estimate(scc_endpoints: SccCypherEndpoints, sample_graph: GraphV2) -> None:
     result = scc_endpoints.estimate(G=sample_graph)
 
     assert result.node_count == 9
@@ -101,7 +101,7 @@ def test_scc_estimate(scc_endpoints: SccCypherEndpoints, sample_graph: Graph) ->
     assert result.heap_percentage_max >= 0
 
 
-def test_scc_write(scc_endpoints: SccCypherEndpoints, sample_graph: Graph) -> None:
+def test_scc_write(scc_endpoints: SccCypherEndpoints, sample_graph: GraphV2) -> None:
     result = scc_endpoints.write(sample_graph, "componentId")
 
     assert isinstance(result, SccWriteResult)

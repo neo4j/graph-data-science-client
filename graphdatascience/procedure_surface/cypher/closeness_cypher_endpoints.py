@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 
 from ...call_parameters import CallParameters
@@ -25,7 +25,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         use_wasserman_faust: Optional[bool] = None,
         relationship_types: Optional[List[str]] = None,
@@ -59,7 +59,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
 
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         use_wasserman_faust: Optional[bool] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
@@ -91,7 +91,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         use_wasserman_faust: Optional[bool] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
@@ -122,7 +122,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         use_wasserman_faust: Optional[bool] = None,
         relationship_types: Optional[List[str]] = None,
@@ -158,7 +158,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         use_wasserman_faust: Optional[bool] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,

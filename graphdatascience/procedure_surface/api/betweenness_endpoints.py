@@ -6,7 +6,7 @@ from typing import Any, List, Optional, Union
 from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from .estimation_result import EstimationResult
 
@@ -19,7 +19,7 @@ class BetweennessEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         sampling_size: Optional[int] = None,
         sampling_seed: Optional[int] = None,
@@ -71,7 +71,7 @@ class BetweennessEndpoints(ABC):
     @abstractmethod
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         sampling_size: Optional[int] = None,
         sampling_seed: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
@@ -120,7 +120,7 @@ class BetweennessEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         sampling_size: Optional[int] = None,
         sampling_seed: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
@@ -169,7 +169,7 @@ class BetweennessEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         sampling_size: Optional[int] = None,
         sampling_seed: Optional[int] = None,
@@ -224,7 +224,7 @@ class BetweennessEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         sampling_size: Optional[int] = None,
         sampling_seed: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,

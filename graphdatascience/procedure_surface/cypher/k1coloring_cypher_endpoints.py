@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 
 from ...call_parameters import CallParameters
@@ -28,7 +28,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         batch_size: Optional[int] = None,
         max_iterations: Optional[int] = None,
@@ -62,7 +62,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
 
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         batch_size: Optional[int] = None,
         max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
@@ -94,7 +94,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         batch_size: Optional[int] = None,
         max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
@@ -126,7 +126,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         batch_size: Optional[int] = None,
         max_iterations: Optional[int] = None,
@@ -164,7 +164,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         batch_size: Optional[int] = None,
         max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,

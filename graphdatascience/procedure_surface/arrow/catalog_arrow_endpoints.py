@@ -6,7 +6,7 @@ from uuid import uuid4
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
 from graphdatascience.procedure_surface.api.catalog_endpoints import (
     CatalogEndpoints,
@@ -43,9 +43,9 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             protocol_version = ProtocolVersionResolver(query_runner).resolve()
             self._project_protocol = ProjectProtocol.select(protocol_version)
 
-    def list(self, G: Optional[Union[Graph, str]] = None) -> List[GraphInfo]:
+    def list(self, G: Optional[Union[GraphV2, str]] = None) -> List[GraphInfo]:
         graph_name: Optional[str] = None
-        if isinstance(G, Graph):
+        if isinstance(G, GraphV2):
             graph_name = G.name()
         elif isinstance(G, str):
             graph_name = G
@@ -99,14 +99,14 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         return GraphWithResult(wrap_graph(graph_name, self._arrow_client), job_result)
 
-    def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphInfo]:
-        graph_name = G.name() if isinstance(G, Graph) else G
+    def drop(self, G: Union[GraphV2, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphInfo]:
+        graph_name = G.name() if isinstance(G, GraphV2) else G
 
         return self._graph_backend.drop(graph_name, fail_if_missing)
 
     def filter(
         self,
-        G: Graph,
+        G: GraphV2,
         graph_name: str,
         node_filter: str,
         relationship_filter: str,

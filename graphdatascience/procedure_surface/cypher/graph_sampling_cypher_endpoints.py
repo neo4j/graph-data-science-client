@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, List, Optional
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
 
@@ -18,7 +18,7 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
 
     def rwr(
         self,
-        G: Graph,
+        G: GraphV2,
         graph_name: str,
         start_nodes: Optional[List[int]] = None,
         restart_probability: Optional[float] = None,
@@ -63,7 +63,7 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
 
     def cnarw(
         self,
-        G: Graph,
+        G: GraphV2,
         graph_name: str,
         start_nodes: Optional[List[int]] = None,
         restart_probability: Optional[float] = None,

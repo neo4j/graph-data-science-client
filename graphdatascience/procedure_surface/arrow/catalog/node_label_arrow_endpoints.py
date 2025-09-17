@@ -3,7 +3,7 @@ from typing import Any, Optional
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import (
     NodeLabelEndpoints,
     NodeLabelMutateResult,
@@ -22,7 +22,7 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         node_label: str,
         *,
         node_filter: str,
@@ -50,7 +50,7 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         node_label: str,
         *,
         node_filter: str,

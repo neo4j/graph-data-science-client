@@ -3,13 +3,13 @@ from typing import Generator
 import pytest
 
 from graphdatascience import QueryRunner
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.eigenvector_cypher_endpoints import EigenvectorCypherEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     create_statement = """
     CREATE
     (a: Node {name: 'a'}),
@@ -43,7 +43,7 @@ def eigenvector_endpoints(query_runner: QueryRunner) -> Generator[EigenvectorCyp
     yield EigenvectorCypherEndpoints(query_runner)
 
 
-def test_eigenvector_stats(eigenvector_endpoints: EigenvectorCypherEndpoints, sample_graph: Graph) -> None:
+def test_eigenvector_stats(eigenvector_endpoints: EigenvectorCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test Eigenvector stats operation."""
     result = eigenvector_endpoints.stats(G=sample_graph)
 
@@ -55,7 +55,7 @@ def test_eigenvector_stats(eigenvector_endpoints: EigenvectorCypherEndpoints, sa
     assert "p50" in result.centrality_distribution
 
 
-def test_eigenvector_stream(eigenvector_endpoints: EigenvectorCypherEndpoints, sample_graph: Graph) -> None:
+def test_eigenvector_stream(eigenvector_endpoints: EigenvectorCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test Eigenvector stream operation."""
     result_df = eigenvector_endpoints.stream(
         G=sample_graph,
@@ -66,7 +66,7 @@ def test_eigenvector_stream(eigenvector_endpoints: EigenvectorCypherEndpoints, s
     assert len(result_df.columns) == 2
 
 
-def test_eigenvector_mutate(eigenvector_endpoints: EigenvectorCypherEndpoints, sample_graph: Graph) -> None:
+def test_eigenvector_mutate(eigenvector_endpoints: EigenvectorCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test Eigenvector mutate operation."""
     result = eigenvector_endpoints.mutate(
         G=sample_graph,
@@ -83,7 +83,7 @@ def test_eigenvector_mutate(eigenvector_endpoints: EigenvectorCypherEndpoints, s
     assert "p50" in result.centrality_distribution
 
 
-def test_eigenvector_estimate(eigenvector_endpoints: EigenvectorCypherEndpoints, sample_graph: Graph) -> None:
+def test_eigenvector_estimate(eigenvector_endpoints: EigenvectorCypherEndpoints, sample_graph: GraphV2) -> None:
     result = eigenvector_endpoints.estimate(sample_graph)
 
     assert result.node_count == 4

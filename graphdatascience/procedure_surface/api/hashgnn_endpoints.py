@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Union
 from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from .estimation_result import EstimationResult
 
@@ -19,7 +19,7 @@ class HashGNNEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         iterations: int,
         embedding_density: int,
         mutate_property: str,
@@ -75,7 +75,7 @@ class HashGNNEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         iterations: int,
         embedding_density: int,
         output_dimension: Optional[int] = None,
@@ -128,7 +128,7 @@ class HashGNNEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         iterations: int,
         embedding_density: int,
         write_property: str,
@@ -201,7 +201,7 @@ class HashGNNEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         iterations: int,
         embedding_density: int,
         output_dimension: Optional[int] = None,

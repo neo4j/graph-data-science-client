@@ -3,13 +3,13 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.degree_arrow_endpoints import DegreeArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
     gdl = """
     (a: Node {id: 0})
     (b: Node {id: 1})
@@ -27,7 +27,7 @@ def degree_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[Degree
     yield DegreeArrowEndpoints(arrow_client)
 
 
-def test_degree_stats(degree_endpoints: DegreeArrowEndpoints, sample_graph: Graph) -> None:
+def test_degree_stats(degree_endpoints: DegreeArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Degree stats operation."""
     result = degree_endpoints.stats(G=sample_graph)
 
@@ -38,7 +38,7 @@ def test_degree_stats(degree_endpoints: DegreeArrowEndpoints, sample_graph: Grap
     assert isinstance(result.configuration, dict)
 
 
-def test_degree_stream(degree_endpoints: DegreeArrowEndpoints, sample_graph: Graph) -> None:
+def test_degree_stream(degree_endpoints: DegreeArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Degree stream operation."""
     result_df = degree_endpoints.stream(G=sample_graph)
 
@@ -48,7 +48,7 @@ def test_degree_stream(degree_endpoints: DegreeArrowEndpoints, sample_graph: Gra
     assert all(result_df["score"] >= 0)  # Degree scores should be non-negative
 
 
-def test_degree_mutate(degree_endpoints: DegreeArrowEndpoints, sample_graph: Graph) -> None:
+def test_degree_mutate(degree_endpoints: DegreeArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Degree mutate operation."""
     result = degree_endpoints.mutate(G=sample_graph, mutate_property="degree")
 
@@ -61,7 +61,7 @@ def test_degree_mutate(degree_endpoints: DegreeArrowEndpoints, sample_graph: Gra
     assert isinstance(result.configuration, dict)
 
 
-def test_degree_estimate(degree_endpoints: DegreeArrowEndpoints, sample_graph: Graph) -> None:
+def test_degree_estimate(degree_endpoints: DegreeArrowEndpoints, sample_graph: GraphV2) -> None:
     result = degree_endpoints.estimate(sample_graph)
 
     assert result.node_count == 3

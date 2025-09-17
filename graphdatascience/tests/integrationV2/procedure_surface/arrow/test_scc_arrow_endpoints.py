@@ -3,14 +3,14 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.scc_endpoints import SccMutateResult, SccStatsResult
 from graphdatascience.procedure_surface.arrow.scc_arrow_endpoints import SccArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
     gdl = """
         CREATE
               (a:Node)
@@ -43,7 +43,7 @@ def scc_endpoints(arrow_client: AuthenticatedArrowClient) -> SccArrowEndpoints:
     return SccArrowEndpoints(arrow_client)
 
 
-def test_scc_stats(scc_endpoints: SccArrowEndpoints, sample_graph: Graph) -> None:
+def test_scc_stats(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> None:
     result = scc_endpoints.stats(sample_graph)
 
     assert isinstance(result, SccStatsResult)
@@ -54,7 +54,7 @@ def test_scc_stats(scc_endpoints: SccArrowEndpoints, sample_graph: Graph) -> Non
     assert "p10" in result.component_distribution
 
 
-def test_scc_stream(scc_endpoints: SccArrowEndpoints, sample_graph: Graph) -> None:
+def test_scc_stream(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> None:
     result = scc_endpoints.stream(sample_graph)
 
     assert len(result) == 9
@@ -62,7 +62,7 @@ def test_scc_stream(scc_endpoints: SccArrowEndpoints, sample_graph: Graph) -> No
     assert "componentId" in result.columns
 
 
-def test_scc_mutate(scc_endpoints: SccArrowEndpoints, sample_graph: Graph) -> None:
+def test_scc_mutate(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> None:
     result = scc_endpoints.mutate(sample_graph, "componentId")
 
     assert isinstance(result, SccMutateResult)
@@ -75,7 +75,7 @@ def test_scc_mutate(scc_endpoints: SccArrowEndpoints, sample_graph: Graph) -> No
     assert "p10" in result.component_distribution
 
 
-def test_scc_estimate(scc_endpoints: SccArrowEndpoints, sample_graph: Graph) -> None:
+def test_scc_estimate(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> None:
     result = scc_endpoints.estimate(G=sample_graph)
 
     assert result.node_count >= 0

@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import (
     NodeLabelEndpoints,
     NodeLabelMutateResult,
@@ -17,7 +17,7 @@ class NodeLabelCypherEndpoints(NodeLabelEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         node_label: str,
         *,
         node_filter: str,
@@ -49,7 +49,7 @@ class NodeLabelCypherEndpoints(NodeLabelEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         node_label: str,
         *,
         node_filter: str,

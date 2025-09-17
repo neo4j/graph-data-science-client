@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience import QueryRunner
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.catalog.node_properties_cypher_endpoints import (
     NodePropertiesCypherEndpoints,
 )
@@ -12,7 +12,7 @@ from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     create_query = """
         CREATE
         (a: Node {prop1: 1, prop2: 42.0}),
@@ -42,7 +42,9 @@ def node_properties_endpoints(
     yield NodePropertiesCypherEndpoints(query_runner)
 
 
-def test_stream_node_properties(node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph) -> None:
+def test_stream_node_properties(
+    node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: GraphV2
+) -> None:
     result = node_properties_endpoints.stream(G=sample_graph, node_properties=["prop1", "prop2"])
 
     assert len(result) == 3
@@ -54,7 +56,7 @@ def test_stream_node_properties(node_properties_endpoints: NodePropertiesCypherE
 
 
 def test_stream_node_properties_with_arrow(
-    query_runner: QueryRunner, gds_arrow_client: GdsArrowClient, sample_graph: Graph
+    query_runner: QueryRunner, gds_arrow_client: GdsArrowClient, sample_graph: GraphV2
 ) -> None:
     endpoints = NodePropertiesCypherEndpoints(query_runner, gds_arrow_client)
 
@@ -69,7 +71,7 @@ def test_stream_node_properties_with_arrow(
 
 
 def test_stream_node_properties_with_labels(
-    node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph
+    node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: GraphV2
 ) -> None:
     result = node_properties_endpoints.stream(G=sample_graph, node_properties=["prop1"], list_node_labels=True)
 
@@ -94,7 +96,7 @@ def test_stream_node_properties_with_db_properties(
 
 
 def test_write_node_properties(
-    node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
+    node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
 ) -> None:
     result = node_properties_endpoints.write(G=sample_graph, node_properties=["prop1", "prop2"])
 
@@ -113,7 +115,7 @@ def test_write_node_properties(
     assert node_written == 3
 
 
-def test_drop_node_properties(node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph) -> None:
+def test_drop_node_properties(node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: GraphV2) -> None:
     # Drop one property
     drop_result = node_properties_endpoints.drop(G=sample_graph, node_properties=["prop1"])
 
@@ -123,7 +125,7 @@ def test_drop_node_properties(node_properties_endpoints: NodePropertiesCypherEnd
 
 
 def test_drop_multiple_node_properties(
-    node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph
+    node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: GraphV2
 ) -> None:
     # Drop both properties
     drop_result = node_properties_endpoints.drop(G=sample_graph, node_properties=["prop1", "prop2"])

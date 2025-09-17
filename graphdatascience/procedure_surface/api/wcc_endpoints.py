@@ -5,7 +5,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from .base_result import BaseResult
 from .estimation_result import EstimationResult
@@ -19,7 +19,7 @@ class WccEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         threshold: Optional[float] = None,
         relationship_types: Optional[List[str]] = None,
@@ -75,7 +75,7 @@ class WccEndpoints(ABC):
     @abstractmethod
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         threshold: Optional[float] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
@@ -128,7 +128,7 @@ class WccEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         min_component_size: Optional[int] = None,
         threshold: Optional[float] = None,
         relationship_types: Optional[List[str]] = None,
@@ -184,7 +184,7 @@ class WccEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         min_component_size: Optional[int] = None,
         threshold: Optional[float] = None,
@@ -246,7 +246,7 @@ class WccEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         threshold: Optional[float] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,

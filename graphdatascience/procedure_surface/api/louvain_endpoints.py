@@ -5,7 +5,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from .base_result import BaseResult
 from .estimation_result import EstimationResult
@@ -19,7 +19,7 @@ class LouvainEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
@@ -84,7 +84,7 @@ class LouvainEndpoints(ABC):
     @abstractmethod
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
         include_intermediate_communities: Optional[bool] = None,
@@ -146,7 +146,7 @@ class LouvainEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
         include_intermediate_communities: Optional[bool] = None,
@@ -211,7 +211,7 @@ class LouvainEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
@@ -282,7 +282,7 @@ class LouvainEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
         include_intermediate_communities: Optional[bool] = None,

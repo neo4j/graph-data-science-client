@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
@@ -24,7 +24,7 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
@@ -64,7 +64,7 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
 
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
         max_iterations: Optional[int] = None,
@@ -103,7 +103,7 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
         max_iterations: Optional[int] = None,
@@ -138,7 +138,7 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
@@ -179,7 +179,7 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
         max_iterations: Optional[int] = None,

@@ -3,13 +3,13 @@ from typing import Generator
 import pytest
 
 from graphdatascience import QueryRunner
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.closeness_cypher_endpoints import ClosenessCypherEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -42,7 +42,7 @@ def closeness_endpoints(query_runner: QueryRunner) -> Generator[ClosenessCypherE
     yield ClosenessCypherEndpoints(query_runner)
 
 
-def test_closeness_stats(closeness_endpoints: ClosenessCypherEndpoints, sample_graph: Graph) -> None:
+def test_closeness_stats(closeness_endpoints: ClosenessCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test Closeness stats operation."""
     result = closeness_endpoints.stats(G=sample_graph)
 
@@ -52,7 +52,7 @@ def test_closeness_stats(closeness_endpoints: ClosenessCypherEndpoints, sample_g
     assert "p50" in result.centrality_distribution or "mean" in result.centrality_distribution
 
 
-def test_closeness_stream(closeness_endpoints: ClosenessCypherEndpoints, sample_graph: Graph) -> None:
+def test_closeness_stream(closeness_endpoints: ClosenessCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test Closeness stream operation."""
     result_df = closeness_endpoints.stream(
         G=sample_graph,
@@ -62,7 +62,7 @@ def test_closeness_stream(closeness_endpoints: ClosenessCypherEndpoints, sample_
     assert len(result_df) == 4
 
 
-def test_closeness_mutate(closeness_endpoints: ClosenessCypherEndpoints, sample_graph: Graph) -> None:
+def test_closeness_mutate(closeness_endpoints: ClosenessCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test Closeness mutate operation."""
     result = closeness_endpoints.mutate(
         G=sample_graph,
@@ -77,7 +77,7 @@ def test_closeness_mutate(closeness_endpoints: ClosenessCypherEndpoints, sample_
     assert "p50" in result.centrality_distribution
 
 
-def test_closeness_write(closeness_endpoints: ClosenessCypherEndpoints, sample_graph: Graph) -> None:
+def test_closeness_write(closeness_endpoints: ClosenessCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test Closeness write operation."""
     result = closeness_endpoints.write(
         G=sample_graph,
@@ -92,7 +92,7 @@ def test_closeness_write(closeness_endpoints: ClosenessCypherEndpoints, sample_g
     assert "p50" in result.centrality_distribution
 
 
-def test_closeness_estimate(closeness_endpoints: ClosenessCypherEndpoints, sample_graph: Graph) -> None:
+def test_closeness_estimate(closeness_endpoints: ClosenessCypherEndpoints, sample_graph: GraphV2) -> None:
     result = closeness_endpoints.estimate(sample_graph)
 
     assert result.node_count == 4
@@ -104,7 +104,7 @@ def test_closeness_estimate(closeness_endpoints: ClosenessCypherEndpoints, sampl
     assert result.heap_percentage_max > 0
 
 
-def test_closeness_with_wasserman_faust(closeness_endpoints: ClosenessCypherEndpoints, sample_graph: Graph) -> None:
+def test_closeness_with_wasserman_faust(closeness_endpoints: ClosenessCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test Closeness with Wasserman-Faust normalization."""
     result = closeness_endpoints.stats(
         G=sample_graph,

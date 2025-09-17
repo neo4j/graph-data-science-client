@@ -8,7 +8,7 @@ from graphdatascience.procedure_surface.api.articulationpoints_endpoints import 
     ArticulationPointsStatsResult,
     ArticulationPointsWriteResult,
 )
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.articulationpoints_cypher_endpoints import (
     ArticulationPointsCypherEndpoints,
 )
@@ -17,7 +17,7 @@ from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -49,7 +49,7 @@ def articulationpoints_endpoints(query_runner: QueryRunner) -> Generator[Articul
 
 
 def test_articulationpoints_mutate(
-    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: Graph
+    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: GraphV2
 ) -> None:
     """Test ArticulationPoints mutate operation."""
     result = articulationpoints_endpoints.mutate(
@@ -65,7 +65,7 @@ def test_articulationpoints_mutate(
 
 
 def test_articulationpoints_stats(
-    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: Graph
+    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: GraphV2
 ) -> None:
     """Test ArticulationPoints stats operation."""
     result = articulationpoints_endpoints.stats(sample_graph)
@@ -76,7 +76,7 @@ def test_articulationpoints_stats(
 
 
 def test_articulationpoints_stream(
-    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: Graph
+    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: GraphV2
 ) -> None:
     """Test ArticulationPoints stream operation."""
     result = articulationpoints_endpoints.stream(sample_graph)
@@ -88,7 +88,7 @@ def test_articulationpoints_stream(
 
 
 def test_articulationpoints_write(
-    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: Graph
+    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: GraphV2
 ) -> None:
     """Test ArticulationPoints write operation."""
     result = articulationpoints_endpoints.write(

@@ -7,7 +7,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import (
     NodePropertiesDropResult,
     NodePropertiesEndpoints,
@@ -30,7 +30,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         node_properties: Union[str, List[str]],
         *,
         list_node_labels: Optional[bool] = None,
@@ -71,7 +71,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         node_properties: Union[str, List[str], dict[str, str]],
         *,
         node_labels: Optional[List[str]] = None,
@@ -117,7 +117,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
 
     def drop(
         self,
-        G: Graph,
+        G: GraphV2,
         node_properties: List[str],
         *,
         fail_if_missing: Optional[bool] = None,

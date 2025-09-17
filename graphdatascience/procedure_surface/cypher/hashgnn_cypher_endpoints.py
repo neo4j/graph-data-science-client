@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
@@ -27,7 +27,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         iterations: int,
         embedding_density: int,
         mutate_property: str,
@@ -80,7 +80,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         iterations: int,
         embedding_density: int,
         output_dimension: Optional[int] = None,
@@ -129,7 +129,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         iterations: int,
         embedding_density: int,
         write_property: str,
@@ -184,7 +184,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         iterations: int,
         embedding_density: int,
         output_dimension: Optional[int] = None,

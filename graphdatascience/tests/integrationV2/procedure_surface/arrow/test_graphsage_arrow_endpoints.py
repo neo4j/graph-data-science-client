@@ -3,13 +3,13 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.graphsage_train_arrow_endpoints import GraphSageTrainArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
     gdl = """
     CREATE
     (a: Node {feature: 1.0}),
@@ -31,7 +31,7 @@ def graphsage_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[Gra
     yield GraphSageTrainArrowEndpoints(arrow_client)
 
 
-def test_graphsage_train(graphsage_endpoints: GraphSageTrainArrowEndpoints, sample_graph: Graph) -> None:
+def test_graphsage_train(graphsage_endpoints: GraphSageTrainArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test GraphSage train operation."""
     model, result = graphsage_endpoints.train(
         G=sample_graph,

@@ -6,7 +6,7 @@ from typing import Any, List, Optional, Union
 from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
@@ -18,7 +18,7 @@ class GraphSagePredictEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         model_name: str,
         *,
         relationship_types: Optional[List[str]] = None,
@@ -65,7 +65,7 @@ class GraphSagePredictEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         model_name: str,
         write_property: str,
         *,
@@ -118,7 +118,7 @@ class GraphSagePredictEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         model_name: str,
         mutate_property: str,
         relationship_types: Optional[List[str]] = None,
@@ -167,7 +167,7 @@ class GraphSagePredictEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         model_name: str,
         relationship_types: Optional[list[str]] = None,
         node_labels: Optional[list[str]] = None,

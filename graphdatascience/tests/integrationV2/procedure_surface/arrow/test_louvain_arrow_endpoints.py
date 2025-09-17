@@ -3,13 +3,13 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.louvain_arrow_endpoints import LouvainArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
     gdl = """
     (a: Node)
     (b: Node)
@@ -34,7 +34,7 @@ def louvain_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[Louva
     yield LouvainArrowEndpoints(arrow_client)
 
 
-def test_louvain_stats(louvain_endpoints: LouvainArrowEndpoints, sample_graph: Graph) -> None:
+def test_louvain_stats(louvain_endpoints: LouvainArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Louvain stats operation."""
     result = louvain_endpoints.stats(G=sample_graph)
 
@@ -48,7 +48,7 @@ def test_louvain_stats(louvain_endpoints: LouvainArrowEndpoints, sample_graph: G
     assert "p10" in result.community_distribution
 
 
-def test_louvain_stream(louvain_endpoints: LouvainArrowEndpoints, sample_graph: Graph) -> None:
+def test_louvain_stream(louvain_endpoints: LouvainArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Louvain stream operation."""
     result_df = louvain_endpoints.stream(
         G=sample_graph,
@@ -59,7 +59,7 @@ def test_louvain_stream(louvain_endpoints: LouvainArrowEndpoints, sample_graph: 
     assert len(result_df.columns) == 2
 
 
-def test_louvain_mutate(louvain_endpoints: LouvainArrowEndpoints, sample_graph: Graph) -> None:
+def test_louvain_mutate(louvain_endpoints: LouvainArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Louvain mutate operation."""
     result = louvain_endpoints.mutate(
         G=sample_graph,
@@ -78,7 +78,7 @@ def test_louvain_mutate(louvain_endpoints: LouvainArrowEndpoints, sample_graph: 
     assert result.node_properties_written == 6
 
 
-def test_louvain_estimate(louvain_endpoints: LouvainArrowEndpoints, sample_graph: Graph) -> None:
+def test_louvain_estimate(louvain_endpoints: LouvainArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Louvain estimate operation."""
     result = louvain_endpoints.estimate(sample_graph)
 
@@ -91,7 +91,7 @@ def test_louvain_estimate(louvain_endpoints: LouvainArrowEndpoints, sample_graph
     assert result.heap_percentage_max > 0
 
 
-def test_louvain_stats_with_parameters(louvain_endpoints: LouvainArrowEndpoints, sample_graph: Graph) -> None:
+def test_louvain_stats_with_parameters(louvain_endpoints: LouvainArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Louvain stats operation with various parameters."""
     result = louvain_endpoints.stats(
         G=sample_graph,
@@ -111,7 +111,7 @@ def test_louvain_stats_with_parameters(louvain_endpoints: LouvainArrowEndpoints,
     assert "p10" in result.community_distribution
 
 
-def test_louvain_stream_with_parameters(louvain_endpoints: LouvainArrowEndpoints, sample_graph: Graph) -> None:
+def test_louvain_stream_with_parameters(louvain_endpoints: LouvainArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Louvain stream operation with various parameters."""
     result_df = louvain_endpoints.stream(
         G=sample_graph,
@@ -127,7 +127,7 @@ def test_louvain_stream_with_parameters(louvain_endpoints: LouvainArrowEndpoints
     assert len(result_df.columns) == 2
 
 
-def test_louvain_mutate_with_parameters(louvain_endpoints: LouvainArrowEndpoints, sample_graph: Graph) -> None:
+def test_louvain_mutate_with_parameters(louvain_endpoints: LouvainArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Louvain mutate operation with various parameters."""
     result = louvain_endpoints.mutate(
         G=sample_graph,

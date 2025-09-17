@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.graphsage_predict_endpoints import (
     GraphSageMutateResult,
@@ -23,7 +23,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         model_name: str,
         *,
         relationship_types: Optional[List[str]] = None,
@@ -51,7 +51,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         model_name: str,
         write_property: str,
         *,
@@ -90,7 +90,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         model_name: str,
         mutate_property: str,
         relationship_types: Optional[List[str]] = None,
@@ -126,7 +126,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         model_name: str,
         relationship_types: Optional[list[str]] = None,
         node_labels: Optional[list[str]] = None,

@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 
 from ...call_parameters import CallParameters
@@ -23,7 +23,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
@@ -67,7 +67,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
 
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
         include_intermediate_communities: Optional[bool] = None,
@@ -109,7 +109,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
         include_intermediate_communities: Optional[bool] = None,
@@ -151,7 +151,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
@@ -199,7 +199,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
         include_intermediate_communities: Optional[bool] = None,

@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 
 from ...call_parameters import CallParameters
@@ -28,7 +28,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
@@ -71,7 +71,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
 
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
         max_iterations: Optional[int] = None,
@@ -112,7 +112,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
         max_iterations: Optional[int] = None,
@@ -151,7 +151,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
@@ -196,7 +196,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
         max_iterations: Optional[int] = None,

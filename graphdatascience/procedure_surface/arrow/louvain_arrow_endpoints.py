@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
@@ -19,7 +19,7 @@ class LouvainArrowEndpoints(LouvainEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
@@ -59,7 +59,7 @@ class LouvainArrowEndpoints(LouvainEndpoints):
 
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
         include_intermediate_communities: Optional[bool] = None,
@@ -98,7 +98,7 @@ class LouvainArrowEndpoints(LouvainEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
         include_intermediate_communities: Optional[bool] = None,
@@ -137,7 +137,7 @@ class LouvainArrowEndpoints(LouvainEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
@@ -183,7 +183,7 @@ class LouvainArrowEndpoints(LouvainEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         tolerance: Optional[float] = None,
         max_levels: Optional[int] = None,
         include_intermediate_communities: Optional[bool] = None,

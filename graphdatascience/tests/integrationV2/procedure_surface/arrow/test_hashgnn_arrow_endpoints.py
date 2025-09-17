@@ -3,13 +3,13 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.hashgnn_arrow_endpoints import HashGNNArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
     gdl = """
     CREATE
     (a: Node {feature: [1L, 0L, 1L, 0L]}),
@@ -31,7 +31,7 @@ def hashgnn_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[HashG
     yield HashGNNArrowEndpoints(arrow_client)
 
 
-def test_hashgnn_mutate(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: Graph) -> None:
+def test_hashgnn_mutate(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test HashGNN mutate operation."""
     result = hashgnn_endpoints.mutate(
         G=sample_graph,
@@ -48,7 +48,7 @@ def test_hashgnn_mutate(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: 
     assert result.configuration is not None
 
 
-def test_hashgnn_stream(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: Graph) -> None:
+def test_hashgnn_stream(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test HashGNN stream operation."""
     result = hashgnn_endpoints.stream(
         G=sample_graph,
@@ -61,7 +61,7 @@ def test_hashgnn_stream(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: 
     assert set(result.columns) == {"nodeId", "embedding"}
 
 
-def test_hashgnn_write(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: Graph) -> None:
+def test_hashgnn_write(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test HashGNN write operation."""
     with pytest.raises(Exception, match="Write back client is not initialized"):
         hashgnn_endpoints.write(
@@ -73,7 +73,7 @@ def test_hashgnn_write(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: G
         )
 
 
-def test_hashgnn_estimate(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: Graph) -> None:
+def test_hashgnn_estimate(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test HashGNN estimate operation."""
     result = hashgnn_endpoints.estimate(
         G=sample_graph,

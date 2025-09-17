@@ -2,7 +2,7 @@ from typing import Any, Dict, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.data_mapper_utils import deserialize_single
@@ -25,13 +25,13 @@ class NodePropertyEndpoints:
         self._arrow_client = arrow_client
         self._write_back_client = write_back_client
 
-    def run_job_and_get_summary(self, endpoint: str, G: Graph, config: Dict[str, Any]) -> Dict[str, Any]:
+    def run_job_and_get_summary(self, endpoint: str, G: GraphV2, config: Dict[str, Any]) -> Dict[str, Any]:
         """Run a job and return the computation summary."""
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config)
         return JobClient.get_summary(self._arrow_client, job_id)
 
     def run_job_and_mutate(
-        self, endpoint: str, G: Graph, config: Dict[str, Any], mutate_property: str
+        self, endpoint: str, G: GraphV2, config: Dict[str, Any], mutate_property: str
     ) -> Dict[str, Any]:
         """Run a job, mutate node properties, and return summary with mutation result."""
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config)
@@ -51,7 +51,7 @@ class NodePropertyEndpoints:
 
         return computation_result
 
-    def run_job_and_stream(self, endpoint: str, G: Graph, config: Dict[str, Any]) -> DataFrame:
+    def run_job_and_stream(self, endpoint: str, G: GraphV2, config: Dict[str, Any]) -> DataFrame:
         """Run a job and return streamed results."""
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config)
         return JobClient.stream_results(self._arrow_client, G.name(), job_id)
@@ -59,7 +59,7 @@ class NodePropertyEndpoints:
     def run_job_and_write(
         self,
         endpoint: str,
-        G: Graph,
+        G: GraphV2,
         config: Dict[str, Any],
         write_concurrency: Optional[int] = None,
         concurrency: Optional[int] = None,
@@ -84,7 +84,7 @@ class NodePropertyEndpoints:
 
         return computation_result
 
-    def create_base_config(self, G: Graph, **kwargs: Any) -> Dict[str, Any]:
+    def create_base_config(self, G: GraphV2, **kwargs: Any) -> Dict[str, Any]:
         """Create base configuration with common parameters."""
         return ConfigConverter.convert_to_gds_config(graph_name=G.name(), **kwargs)
 
@@ -95,11 +95,11 @@ class NodePropertyEndpoints:
     def estimate(
         self,
         estimate_endpoint: str,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         algo_config: Optional[dict[str, Any]] = None,
     ) -> EstimationResult:
         """Estimate memory requirements for the algorithm."""
-        if isinstance(G, Graph):
+        if isinstance(G, GraphV2):
             payload = {"graphName": G.name()}
         elif isinstance(G, dict):
             payload = G

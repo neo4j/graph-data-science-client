@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.wcc_endpoints import WccMutateResult, WccStatsResult, WccWriteResult
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
 from graphdatascience.procedure_surface.cypher.wcc_cypher_endpoints import WccCypherEndpoints
@@ -20,11 +20,11 @@ def wcc_endpoints(query_runner: CollectingQueryRunner) -> WccCypherEndpoints:
 
 
 @pytest.fixture
-def graph(query_runner: CollectingQueryRunner) -> Graph:
+def graph(query_runner: CollectingQueryRunner) -> GraphV2:
     return wrap_graph("test_graph", query_runner)
 
 
-def test_mutate_basic(graph: Graph) -> None:
+def test_mutate_basic(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "mutateMillis": 42,
@@ -59,7 +59,7 @@ def test_mutate_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_mutate_with_optional_params(graph: Graph) -> None:
+def test_mutate_with_optional_params(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "mutateMillis": 42,
@@ -109,7 +109,7 @@ def test_mutate_with_optional_params(graph: Graph) -> None:
     }
 
 
-def test_stats_basic(graph: Graph) -> None:
+def test_stats_basic(graph: GraphV2) -> None:
     result = {
         "componentCount": 3,
         "preProcessingMillis": 10,
@@ -139,7 +139,7 @@ def test_stats_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_stats_with_optional_params(graph: Graph) -> None:
+def test_stats_with_optional_params(graph: GraphV2) -> None:
     result = {
         "componentCount": 3,
         "preProcessingMillis": 10,
@@ -185,7 +185,7 @@ def test_stats_with_optional_params(graph: Graph) -> None:
     }
 
 
-def test_stream_basic(wcc_endpoints: WccCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner) -> None:
+def test_stream_basic(wcc_endpoints: WccCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner) -> None:
     wcc_endpoints.stream(graph)
 
     assert len(query_runner.queries) == 1
@@ -197,7 +197,7 @@ def test_stream_basic(wcc_endpoints: WccCypherEndpoints, graph: Graph, query_run
 
 
 def test_stream_with_optional_params(
-    wcc_endpoints: WccCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
+    wcc_endpoints: WccCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
 ) -> None:
     wcc_endpoints.stream(
         graph,
@@ -235,7 +235,7 @@ def test_stream_with_optional_params(
     }
 
 
-def test_write_basic(graph: Graph) -> None:
+def test_write_basic(graph: GraphV2) -> None:
     result = {
         "componentCount": 3,
         "preProcessingMillis": 10,
@@ -270,7 +270,7 @@ def test_write_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_write_with_optional_params(graph: Graph) -> None:
+def test_write_with_optional_params(graph: GraphV2) -> None:
     result = {
         "componentCount": 3,
         "preProcessingMillis": 10,
@@ -324,7 +324,7 @@ def test_write_with_optional_params(graph: Graph) -> None:
     }
 
 
-def test_estimate_with_graph_name(graph: Graph) -> None:
+def test_estimate_with_graph_name(graph: GraphV2) -> None:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION, {"wcc.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )

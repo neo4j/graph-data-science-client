@@ -6,7 +6,7 @@ from pyarrow import ArrowKeyError
 from pyarrow._flight import FlightServerError
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog_endpoints import RelationshipPropertySpec
 from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.query_runner.query_runner import QueryRunner
@@ -14,7 +14,7 @@ from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
     gdl = """
     (a :Node:A)
     (b :Node:A)
@@ -31,7 +31,7 @@ def catalog_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[Catal
     yield CatalogArrowEndpoints(arrow_client)
 
 
-def test_list_with_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
+def test_list_with_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph: GraphV2) -> None:
     results = catalog_endpoints.list(G=sample_graph)
 
     assert len(results) == 1
@@ -52,7 +52,7 @@ def test_list_with_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph:
 
 
 def test_list_without_graph(
-    catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph, arrow_client: AuthenticatedArrowClient
+    catalog_endpoints: CatalogArrowEndpoints, sample_graph: GraphV2, arrow_client: AuthenticatedArrowClient
 ) -> None:
     with create_graph(arrow_client, "second_graph", "()") as g2:
         result = catalog_endpoints.list()
@@ -61,7 +61,7 @@ def test_list_without_graph(
     assert set(g.graph_name for g in result) == {sample_graph.name(), g2.name()}
 
 
-def test_drop(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
+def test_drop(catalog_endpoints: CatalogArrowEndpoints, sample_graph: GraphV2) -> None:
     res = catalog_endpoints.drop(sample_graph)
 
     assert res is not None
@@ -93,7 +93,7 @@ def test_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryR
         endpoints.drop("g", fail_if_missing=False)
 
 
-def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
+def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: GraphV2) -> None:
     try:
         G, result = catalog_endpoints.filter(
             sample_graph, graph_name="filtered", node_filter="n:A", relationship_filter="*"

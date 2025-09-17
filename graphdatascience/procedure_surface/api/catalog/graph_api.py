@@ -9,7 +9,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_backend import GraphBa
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
 
 
-class Graph(ABC):
+class GraphV2(ABC):
     """
     A graph object that represents a graph in the graph catalog.
     It can be passed into algorithm endpoints to compute over the corresponding graph.
@@ -20,7 +20,7 @@ class Graph(ABC):
         self._name = name
         self._backend = backend
 
-    def __enter__(self: Graph) -> Graph:
+    def __enter__(self: GraphV2) -> GraphV2:
         return self
 
     def __exit__(

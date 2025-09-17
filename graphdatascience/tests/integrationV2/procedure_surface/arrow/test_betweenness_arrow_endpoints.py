@@ -7,13 +7,13 @@ from graphdatascience.procedure_surface.api.betweenness_endpoints import (
     BetweennessMutateResult,
     BetweennessStatsResult,
 )
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.betweenness_arrow_endpoints import BetweennessArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
     gdl = """
     (a: Node)
     (b: Node)
@@ -31,7 +31,7 @@ def betweenness_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[B
     yield BetweennessArrowEndpoints(arrow_client)
 
 
-def test_betweenness_stats(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: Graph) -> None:
+def test_betweenness_stats(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Betweenness Centrality stats operation."""
     result = betweenness_endpoints.stats(
         G=sample_graph,
@@ -44,7 +44,7 @@ def test_betweenness_stats(betweenness_endpoints: BetweennessArrowEndpoints, sam
     assert result.post_processing_millis >= 0
 
 
-def test_betweenness_stream(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: Graph) -> None:
+def test_betweenness_stream(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Betweenness Centrality stream operation."""
     result = betweenness_endpoints.stream(
         G=sample_graph,
@@ -54,7 +54,7 @@ def test_betweenness_stream(betweenness_endpoints: BetweennessArrowEndpoints, sa
     assert {"nodeId", "score"} == set(result.columns.to_list())
 
 
-def test_betweenness_mutate(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: Graph) -> None:
+def test_betweenness_mutate(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Betweenness Centrality mutate operation."""
     result = betweenness_endpoints.mutate(
         G=sample_graph,
@@ -71,7 +71,7 @@ def test_betweenness_mutate(betweenness_endpoints: BetweennessArrowEndpoints, sa
 
 
 def test_betweenness_write_without_write_back_client(
-    betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: Graph
+    betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: GraphV2
 ) -> None:
     """Test Betweenness Centrality write operation raises exception when write_back_client is None."""
     with pytest.raises(Exception, match="Write back client is not initialized"):
@@ -81,7 +81,7 @@ def test_betweenness_write_without_write_back_client(
         )
 
 
-def test_betweenness_estimate(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: Graph) -> None:
+def test_betweenness_estimate(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: GraphV2) -> None:
     result = betweenness_endpoints.estimate(sample_graph)
 
     assert result.node_count == 3

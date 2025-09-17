@@ -6,7 +6,7 @@ from typing import Any, List, Optional, Union
 from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from .estimation_result import EstimationResult
 
@@ -19,7 +19,7 @@ class Node2VecEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         iterations: Optional[int] = None,
         negative_sampling_rate: Optional[int] = None,
@@ -110,7 +110,7 @@ class Node2VecEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         iterations: Optional[int] = None,
         negative_sampling_rate: Optional[int] = None,
         positive_sampling_factor: Optional[float] = None,
@@ -198,7 +198,7 @@ class Node2VecEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         iterations: Optional[int] = None,
         negative_sampling_rate: Optional[int] = None,
@@ -292,7 +292,7 @@ class Node2VecEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         iterations: Optional[int] = None,
         negative_sampling_rate: Optional[int] = None,
         positive_sampling_factor: Optional[float] = None,

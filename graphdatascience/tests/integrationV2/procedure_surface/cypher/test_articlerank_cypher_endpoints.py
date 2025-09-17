@@ -3,13 +3,13 @@ from typing import Generator
 import pytest
 
 from graphdatascience import QueryRunner
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.articlerank_cypher_endpoints import ArticleRankCypherEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     create_query = """
         CREATE
         (a: Node),
@@ -40,7 +40,7 @@ def articlerank_endpoints(query_runner: QueryRunner) -> Generator[ArticleRankCyp
     yield ArticleRankCypherEndpoints(query_runner)
 
 
-def test_articlerank_stats(articlerank_endpoints: ArticleRankCypherEndpoints, sample_graph: Graph) -> None:
+def test_articlerank_stats(articlerank_endpoints: ArticleRankCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test ArticleRank stats operation."""
     result = articlerank_endpoints.stats(G=sample_graph)
 
@@ -52,7 +52,7 @@ def test_articlerank_stats(articlerank_endpoints: ArticleRankCypherEndpoints, sa
     assert "p50" in result.centrality_distribution or "p10" in result.centrality_distribution
 
 
-def test_articlerank_stream(articlerank_endpoints: ArticleRankCypherEndpoints, sample_graph: Graph) -> None:
+def test_articlerank_stream(articlerank_endpoints: ArticleRankCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test ArticleRank stream operation."""
     result_df = articlerank_endpoints.stream(
         G=sample_graph,
@@ -64,7 +64,7 @@ def test_articlerank_stream(articlerank_endpoints: ArticleRankCypherEndpoints, s
     assert len(result_df) == 3  # We have 3 nodes
 
 
-def test_articlerank_mutate(articlerank_endpoints: ArticleRankCypherEndpoints, sample_graph: Graph) -> None:
+def test_articlerank_mutate(articlerank_endpoints: ArticleRankCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test ArticleRank mutate operation."""
     result = articlerank_endpoints.mutate(
         G=sample_graph,
@@ -81,7 +81,7 @@ def test_articlerank_mutate(articlerank_endpoints: ArticleRankCypherEndpoints, s
     assert result.node_properties_written == 3
 
 
-def test_articlerank_estimate(articlerank_endpoints: ArticleRankCypherEndpoints, sample_graph: Graph) -> None:
+def test_articlerank_estimate(articlerank_endpoints: ArticleRankCypherEndpoints, sample_graph: GraphV2) -> None:
     result = articlerank_endpoints.estimate(sample_graph)
 
     assert result.node_count == 3

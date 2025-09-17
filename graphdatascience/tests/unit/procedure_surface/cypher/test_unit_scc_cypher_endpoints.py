@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.scc_endpoints import SccMutateResult, SccStatsResult, SccWriteResult
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
 from graphdatascience.procedure_surface.cypher.scc_cypher_endpoints import SccCypherEndpoints
@@ -20,11 +20,11 @@ def scc_endpoints(query_runner: CollectingQueryRunner) -> SccCypherEndpoints:
 
 
 @pytest.fixture
-def graph() -> Graph:
+def graph() -> GraphV2:
     return wrap_graph("test_graph", CollectingQueryRunner(DEFAULT_SERVER_VERSION))
 
 
-def test_mutate_basic(scc_endpoints: SccCypherEndpoints, graph: Graph) -> None:
+def test_mutate_basic(scc_endpoints: SccCypherEndpoints, graph: GraphV2) -> None:
     result = {
         "componentCount": 3,
         "preProcessingMillis": 10,
@@ -45,7 +45,7 @@ def test_mutate_basic(scc_endpoints: SccCypherEndpoints, graph: Graph) -> None:
     assert result_obj.node_properties_written == 5
 
 
-def test_mutate_with_optional_params(graph: Graph) -> None:
+def test_mutate_with_optional_params(graph: GraphV2) -> None:
     result = {
         "componentCount": 3,
         "preProcessingMillis": 10,
@@ -89,7 +89,7 @@ def test_mutate_with_optional_params(graph: Graph) -> None:
     }
 
 
-def test_stats_basic(scc_endpoints: SccCypherEndpoints, graph: Graph) -> None:
+def test_stats_basic(scc_endpoints: SccCypherEndpoints, graph: GraphV2) -> None:
     result = {
         "componentCount": 3,
         "preProcessingMillis": 10,
@@ -107,7 +107,7 @@ def test_stats_basic(scc_endpoints: SccCypherEndpoints, graph: Graph) -> None:
     assert result_obj.component_count == 3
 
 
-def test_stats_with_optional_params(graph: Graph) -> None:
+def test_stats_with_optional_params(graph: GraphV2) -> None:
     result = {
         "componentCount": 3,
         "preProcessingMillis": 10,
@@ -147,7 +147,7 @@ def test_stats_with_optional_params(graph: Graph) -> None:
     }
 
 
-def test_stream_basic(scc_endpoints: SccCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner) -> None:
+def test_stream_basic(scc_endpoints: SccCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner) -> None:
     result_data = pd.DataFrame({"nodeId": [1, 2, 3], "componentId": [1, 1, 2]})
     query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"scc.stream": result_data})
 
@@ -160,7 +160,7 @@ def test_stream_basic(scc_endpoints: SccCypherEndpoints, graph: Graph, query_run
 
 
 def test_stream_with_optional_params(
-    scc_endpoints: SccCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
+    scc_endpoints: SccCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
 ) -> None:
     result_data = pd.DataFrame({"nodeId": [1, 2, 3], "componentId": [1, 1, 2]})
     query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"scc.stream": result_data})
@@ -193,7 +193,7 @@ def test_stream_with_optional_params(
     }
 
 
-def test_write_basic(scc_endpoints: SccCypherEndpoints, graph: Graph) -> None:
+def test_write_basic(scc_endpoints: SccCypherEndpoints, graph: GraphV2) -> None:
     result = {
         "componentCount": 3,
         "preProcessingMillis": 10,
@@ -214,7 +214,7 @@ def test_write_basic(scc_endpoints: SccCypherEndpoints, graph: Graph) -> None:
     assert result_obj.node_properties_written == 5
 
 
-def test_write_with_optional_params(graph: Graph) -> None:
+def test_write_with_optional_params(graph: GraphV2) -> None:
     result = {
         "componentCount": 3,
         "preProcessingMillis": 10,
@@ -260,7 +260,7 @@ def test_write_with_optional_params(graph: Graph) -> None:
     }
 
 
-def test_estimate_with_graph(graph: Graph) -> None:
+def test_estimate_with_graph(graph: GraphV2) -> None:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION, {"scc.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )

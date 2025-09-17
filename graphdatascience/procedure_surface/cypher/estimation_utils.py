@@ -2,7 +2,7 @@ from collections import OrderedDict
 from typing import Any, Optional, Union
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.query_runner.query_runner import QueryRunner
 
@@ -10,7 +10,7 @@ from graphdatascience.query_runner.query_runner import QueryRunner
 def estimate_algorithm(
     endpoint: str,
     query_runner: QueryRunner,
-    G: Union[Graph, dict[str, Any]],
+    G: Union[GraphV2, dict[str, Any]],
     algo_config: Optional[dict[str, Any]] = None,
 ) -> EstimationResult:
     """
@@ -44,7 +44,7 @@ def estimate_algorithm(
     """
     config: Union[dict[str, Any]] = OrderedDict()
 
-    if isinstance(G, Graph):
+    if isinstance(G, GraphV2):
         config["graphNameOrConfiguration"] = G.name()
     elif isinstance(G, dict):
         config["graphNameOrConfiguration"] = G

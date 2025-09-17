@@ -3,7 +3,7 @@ from typing import Any, List, Optional, Union
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import (
     NodePropertiesDropResult,
     NodePropertiesEndpoints,
@@ -23,7 +23,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         node_properties: Union[str, List[str]],
         *,
         list_node_labels: Optional[bool] = None,
@@ -69,7 +69,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         node_properties: Union[str, List[str], dict[str, str]],
         *,
         node_labels: Optional[List[str]] = None,
@@ -105,7 +105,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
 
     def drop(
         self,
-        G: Graph,
+        G: GraphV2,
         node_properties: List[str],
         *,
         fail_if_missing: Optional[bool] = None,

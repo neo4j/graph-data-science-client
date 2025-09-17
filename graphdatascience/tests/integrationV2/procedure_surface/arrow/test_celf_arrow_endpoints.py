@@ -3,13 +3,13 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.celf_arrow_endpoints import CelfArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
     gdl = """
     (a: Node {id: 0})
     (b: Node {id: 1})
@@ -32,7 +32,7 @@ def celf_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[CelfArro
     yield CelfArrowEndpoints(arrow_client)
 
 
-def test_celf_stats(celf_endpoints: CelfArrowEndpoints, sample_graph: Graph) -> None:
+def test_celf_stats(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test CELF stats operation."""
     result = celf_endpoints.stats(G=sample_graph, seed_set_size=2)
 
@@ -42,7 +42,7 @@ def test_celf_stats(celf_endpoints: CelfArrowEndpoints, sample_graph: Graph) -> 
     assert isinstance(result.configuration, dict)
 
 
-def test_celf_stream(celf_endpoints: CelfArrowEndpoints, sample_graph: Graph) -> None:
+def test_celf_stream(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test CELF stream operation."""
     result_df = celf_endpoints.stream(G=sample_graph, seed_set_size=2)
 
@@ -51,7 +51,7 @@ def test_celf_stream(celf_endpoints: CelfArrowEndpoints, sample_graph: Graph) ->
     assert all(result_df["spread"] >= 0)
 
 
-def test_celf_mutate(celf_endpoints: CelfArrowEndpoints, sample_graph: Graph) -> None:
+def test_celf_mutate(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test CELF mutate operation."""
     result = celf_endpoints.mutate(G=sample_graph, seed_set_size=2, mutate_property="celf_spread")
 
@@ -63,7 +63,7 @@ def test_celf_mutate(celf_endpoints: CelfArrowEndpoints, sample_graph: Graph) ->
     assert isinstance(result.configuration, dict)
 
 
-def test_celf_write_without_write_back_client(celf_endpoints: CelfArrowEndpoints, sample_graph: Graph) -> None:
+def test_celf_write_without_write_back_client(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test CELF write operation raises exception when write_back_client is None."""
     with pytest.raises(Exception, match="Write back client is not initialized"):
         celf_endpoints.write(
@@ -73,7 +73,7 @@ def test_celf_write_without_write_back_client(celf_endpoints: CelfArrowEndpoints
         )
 
 
-def test_celf_estimate(celf_endpoints: CelfArrowEndpoints, sample_graph: Graph) -> None:
+def test_celf_estimate(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test CELF memory estimation."""
     result = celf_endpoints.estimate(G=sample_graph, seed_set_size=2)
 

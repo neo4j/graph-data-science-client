@@ -1,6 +1,6 @@
 from typing import Any, List, Optional
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
 from graphdatascience.procedure_surface.arrow.graphsage_predict_arrow_endpoints import GraphSagePredictArrowEndpoints
 
@@ -21,7 +21,7 @@ class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
 
     def train(
         self,
-        G: Graph,
+        G: GraphV2,
         model_name: str,
         feature_properties: List[str],
         *,
