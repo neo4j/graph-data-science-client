@@ -2,25 +2,48 @@ from typing import Generator
 
 import pytest
 
+from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
+from graphdatascience.procedure_surface.api.k1coloring_endpoints import K1ColoringWriteResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.k1coloring_arrow_endpoints import K1ColoringArrowEndpoints
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
+from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
+    create_graph,
+    create_graph_from_db,
+)
+
+graph = """
+        CREATE
+            (a: Node),
+            (b: Node),
+            (c: Node),
+            (a)-[:REL]->(b),
+            (a)-[:REL]->(c),
+            (b)-[:REL]->(c)
+        """
 
 
 @pytest.fixture
 def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
-    gdl = """
-    (a: Node)
-    (b: Node)
-    (c: Node)
-    (a)-[:REL]->(b)
-    (a)-[:REL]->(c)
-    (b)-[:REL]->(c)
-    """
-
-    with create_graph(arrow_client, "g", gdl) as G:
+    with create_graph(arrow_client, "g", graph) as G:
         yield G
+
+
+@pytest.fixture
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
+    with create_graph_from_db(
+        arrow_client,
+        query_runner,
+        "g",
+        graph,
+        """
+                    MATCH (n)-->(m)
+                    WITH gds.graph.project.remote(n, m) as g
+                    RETURN g
+                """,
+    ) as g:
+        yield g
 
 
 @pytest.fixture
@@ -67,6 +90,22 @@ def test_k1coloring_mutate(k1coloring_endpoints: K1ColoringArrowEndpoints, sampl
     assert result.ran_iterations >= 1
     assert result.did_converge
     assert isinstance(result.did_converge, bool)
+
+
+def test_k1coloring_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
+    endpoints = K1ColoringArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    result = endpoints.write(G=db_graph, write_property="color")
+
+    assert isinstance(result, K1ColoringWriteResult)
+    assert result.color_count == 3
+    assert result.pre_processing_millis >= 0
+    assert result.compute_millis >= 0
+    assert result.write_millis >= 0
+    assert result.ran_iterations >= 1
+    assert result.did_converge
+    assert isinstance(result.did_converge, bool)
+
+    assert query_runner.run_cypher("MATCH (n) WHERE n.color IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 3
 
 
 def test_k1coloring_estimate(k1coloring_endpoints: K1ColoringArrowEndpoints, sample_graph: GraphV2) -> None:

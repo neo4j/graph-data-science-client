@@ -68,11 +68,11 @@ class SessionV2Endpoints:
 
     @property
     def graphsage_predict(self) -> GraphSagePredictArrowEndpoints:
-        return GraphSagePredictArrowEndpoints(self._arrow_client)
+        return GraphSagePredictArrowEndpoints(self._arrow_client, self._write_back_client)
 
     @property
     def graphsage_train(self) -> GraphSageTrainArrowEndpoints:
-        return GraphSageTrainArrowEndpoints(self._arrow_client)
+        return GraphSageTrainArrowEndpoints(self._arrow_client, self._write_back_client)
 
     @property
     def harmonic_centrality(self) -> ClosenessHarmonicArrowEndpoints:
