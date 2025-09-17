@@ -2,8 +2,9 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.catalog.node_properties_arrow_endpoints import (
     NodePropertiesArrowEndpoints,
 )

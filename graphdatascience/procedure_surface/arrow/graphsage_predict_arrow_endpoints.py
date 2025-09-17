@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.graph.graph_object import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.graphsage_predict_endpoints import (
     GraphSageMutateResult,

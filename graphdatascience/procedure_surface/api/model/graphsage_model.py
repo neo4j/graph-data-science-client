@@ -5,6 +5,7 @@ from typing import Optional
 from pandas import DataFrame
 
 from graphdatascience.model.v2.model_api import ModelApi
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.graphsage_predict_endpoints import (
     GraphSageMutateResult,
@@ -12,22 +13,19 @@ from graphdatascience.procedure_surface.api.graphsage_predict_endpoints import (
     GraphSageWriteResult,
 )
 
-from ....graph.graph_object import Graph
-from ....graph.graph_type_check import graph_type_check
 from ....model.v2.model import Model
 
 
 class GraphSageModelV2(Model):
     """
     Represents a GraphSAGE model in the model catalog.
-    Construct this using :func:`gds.graphSage.train()`.
+    Construct this using :func:`gds.v2.graphSage.train()`.
     """
 
     def __init__(self, name: str, model_api: ModelApi, predict_endpoints: GraphSagePredictEndpoints) -> None:
         super().__init__(name, model_api)
         self._predict_endpoints = predict_endpoints
 
-    @graph_type_check
     def predict_write(
         self,
         G: Graph,
@@ -211,7 +209,6 @@ class GraphSageModelV2(Model):
             job_id=job_id,
         )
 
-    @graph_type_check
     def predict_estimate(
         self,
         G: Graph,

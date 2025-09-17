@@ -5,10 +5,11 @@ import pytest
 from pyarrow import ArrowKeyError
 from pyarrow._flight import FlightServerError
 
-from graphdatascience import Graph, QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog_endpoints import RelationshipPropertySpec
 from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
+from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
@@ -77,7 +78,7 @@ def test_drop_nonexistent(catalog_endpoints: CatalogArrowEndpoints) -> None:
 def test_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> None:
     try:
         endpoints = CatalogArrowEndpoints(arrow_client, query_runner)
-        result = endpoints.project(
+        G, result = endpoints.project(
             graph_name="g",
             query="UNWIND range(1, 10) AS x WITH gds.graph.project.remote(x, null) as g RETURN g",
         )
@@ -94,7 +95,7 @@ def test_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryR
 
 def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
     try:
-        result = catalog_endpoints.filter(
+        G, result = catalog_endpoints.filter(
             sample_graph, graph_name="filtered", node_filter="n:A", relationship_filter="*"
         )
 
@@ -113,7 +114,7 @@ def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Gr
 
 def test_graph_generate(catalog_endpoints: CatalogArrowEndpoints) -> None:
     try:
-        result = catalog_endpoints.generate(
+        G, result = catalog_endpoints.generate(
             "generated",
             node_count=10,
             average_degree=5,

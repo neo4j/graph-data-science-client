@@ -2,13 +2,15 @@ from __future__ import annotations
 
 from typing import Any, List, Optional
 
-from graphdatascience import Graph
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.graph_sampling_endpoints import (
     GraphSamplingEndpoints,
     GraphSamplingResult,
 )
+from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
+from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import wrap_graph
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 
 
@@ -32,7 +34,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> GraphSamplingResult:
+    ) -> GraphWithResult[GraphSamplingResult]:
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
             graph_name=graph_name,
@@ -52,7 +54,10 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.sample.rwr", config)
 
-        return GraphSamplingResult(**JobClient.get_summary(self._arrow_client, job_id))
+        return GraphWithResult(
+            wrap_graph(graph_name, self._arrow_client),
+            GraphSamplingResult(**JobClient.get_summary(self._arrow_client, job_id)),
+        )
 
     def cnarw(
         self,
@@ -70,7 +75,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> GraphSamplingResult:
+    ) -> GraphWithResult[GraphSamplingResult]:
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
             graph_name=graph_name,
@@ -90,4 +95,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.sample.cnarw", config)
 
-        return GraphSamplingResult(**JobClient.get_summary(self._arrow_client, job_id))
+        return GraphWithResult(
+            wrap_graph(graph_name, self._arrow_client),
+            GraphSamplingResult(**JobClient.get_summary(self._arrow_client, job_id)),
+        )

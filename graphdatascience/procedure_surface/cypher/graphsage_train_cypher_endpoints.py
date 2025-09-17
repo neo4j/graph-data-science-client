@@ -1,11 +1,11 @@
 from typing import Any, List, Optional
 
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
 from graphdatascience.procedure_surface.cypher.graphsage_predict_cypher_endpoints import GraphSagePredictCypherEndpoints
 from graphdatascience.procedure_surface.cypher.model_api_cypher import ModelApiCypher
 
 from ...call_parameters import CallParameters
-from ...graph.graph_object import Graph
 from ...query_runner.query_runner import QueryRunner
 from ..api.graphsage_train_endpoints import (
     GraphSageTrainEndpoints,

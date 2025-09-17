@@ -6,8 +6,8 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 
 
 class NodePropertiesEndpoints(ABC):

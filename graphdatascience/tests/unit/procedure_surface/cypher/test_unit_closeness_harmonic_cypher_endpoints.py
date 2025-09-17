@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.graph.graph_object import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.closeness_harmonic_endpoints import (
     ClosenessHarmonicStatsResult,
     ClosenessHarmonicWriteResult,
@@ -14,21 +14,11 @@ from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estim
 
 
 @pytest.fixture
-def query_runner() -> CollectingQueryRunner:
-    return CollectingQueryRunner(DEFAULT_SERVER_VERSION, {})
-
-
-@pytest.fixture
 def closeness_harmonic_endpoints(query_runner: CollectingQueryRunner) -> ClosenessHarmonicCypherEndpoints:
     return ClosenessHarmonicCypherEndpoints(query_runner)
 
 
-@pytest.fixture
-def graph(query_runner: CollectingQueryRunner) -> Graph:
-    return Graph("test_graph", query_runner)
-
-
-def test_mutate(graph: Graph) -> None:
+def test_mutate(graph: Graph, query_runner: CollectingQueryRunner) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "mutateMillis": 42,
@@ -38,8 +28,7 @@ def test_mutate(graph: Graph) -> None:
         "centralityDistribution": {"foo": 42},
         "configuration": {"bar": 1337},
     }
-
-    query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"closeness.harmonic.mutate": pd.DataFrame([result])})
+    query_runner.add__mock_result("closeness.harmonic.mutate", pd.DataFrame([result]))
 
     ClosenessHarmonicCypherEndpoints(query_runner).mutate(
         graph,

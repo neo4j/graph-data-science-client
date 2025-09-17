@@ -3,8 +3,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, Optional
 
-from graphdatascience import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 
 
 class NodeLabelEndpoints(ABC):

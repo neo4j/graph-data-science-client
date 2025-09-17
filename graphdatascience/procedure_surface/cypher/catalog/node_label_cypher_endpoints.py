@@ -1,13 +1,14 @@
 from typing import Any, Optional
 
-from graphdatascience import Graph, QueryRunner
 from graphdatascience.call_parameters import CallParameters
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import (
     NodeLabelEndpoints,
     NodeLabelMutateResult,
     NodeLabelWriteResult,
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.query_runner.query_runner import QueryRunner
 
 
 class NodeLabelCypherEndpoints(NodeLabelEndpoints):

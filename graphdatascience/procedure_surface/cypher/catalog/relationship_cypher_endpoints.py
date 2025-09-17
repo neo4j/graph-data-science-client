@@ -2,8 +2,9 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import QueryRunner
 from graphdatascience.call_parameters import CallParameters
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
     Aggregation,
     RelationshipsDropResult,

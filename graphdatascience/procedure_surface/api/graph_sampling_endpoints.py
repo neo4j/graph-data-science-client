@@ -3,8 +3,9 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from graphdatascience import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
 
 
 class GraphSamplingEndpoints(ABC):
@@ -29,7 +30,7 @@ class GraphSamplingEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-    ) -> GraphSamplingResult:
+    ) -> GraphWithResult[GraphSamplingResult]:
         """
         Computes a set of Random Walks with Restart (RWR) for the given graph and stores the result as a new graph in the catalog.
 
@@ -100,7 +101,7 @@ class GraphSamplingEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-    ) -> GraphSamplingResult:
+    ) -> GraphWithResult[GraphSamplingResult]:
         """
         Computes a set of Random Walks with Restart (RWR) for the given graph and stores the result as a new graph in the catalog.
 

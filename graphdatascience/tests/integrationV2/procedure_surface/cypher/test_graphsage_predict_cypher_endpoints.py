@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
 from graphdatascience.procedure_surface.cypher.graphsage_train_cypher_endpoints import GraphSageTrainCypherEndpoints
 from graphdatascience.query_runner.query_runner import QueryRunner

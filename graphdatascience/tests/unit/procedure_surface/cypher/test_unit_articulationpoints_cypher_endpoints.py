@@ -1,12 +1,12 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.graph.graph_object import Graph
 from graphdatascience.procedure_surface.api.articulationpoints_endpoints import (
     ArticulationPointsMutateResult,
     ArticulationPointsStatsResult,
     ArticulationPointsWriteResult,
 )
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.articulationpoints_cypher_endpoints import (
     ArticulationPointsCypherEndpoints,
 )
@@ -15,18 +15,8 @@ from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estim
 
 
 @pytest.fixture
-def query_runner() -> CollectingQueryRunner:
-    return CollectingQueryRunner(DEFAULT_SERVER_VERSION)
-
-
-@pytest.fixture
 def articulationpoints_endpoints(query_runner: CollectingQueryRunner) -> ArticulationPointsCypherEndpoints:
     return ArticulationPointsCypherEndpoints(query_runner)
-
-
-@pytest.fixture
-def graph(query_runner: CollectingQueryRunner) -> Graph:
-    return Graph("test_graph", query_runner)
 
 
 def test_mutate_basic(articulationpoints_endpoints: ArticulationPointsCypherEndpoints, graph: Graph) -> None:

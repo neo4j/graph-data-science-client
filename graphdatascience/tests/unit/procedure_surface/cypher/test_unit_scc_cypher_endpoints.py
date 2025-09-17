@@ -1,8 +1,9 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.graph.graph_object import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.api.scc_endpoints import SccMutateResult, SccStatsResult, SccWriteResult
+from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
 from graphdatascience.procedure_surface.cypher.scc_cypher_endpoints import SccCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
@@ -20,7 +21,7 @@ def scc_endpoints(query_runner: CollectingQueryRunner) -> SccCypherEndpoints:
 
 @pytest.fixture
 def graph() -> Graph:
-    return Graph("test_graph", CollectingQueryRunner(DEFAULT_SERVER_VERSION))
+    return wrap_graph("test_graph", CollectingQueryRunner(DEFAULT_SERVER_VERSION))
 
 
 def test_mutate_basic(scc_endpoints: SccCypherEndpoints, graph: Graph) -> None:

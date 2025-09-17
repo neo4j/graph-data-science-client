@@ -2,7 +2,8 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import QueryRunner
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.closeness_harmonic_cypher_endpoints import (
     ClosenessHarmonicCypherEndpoints,
 )

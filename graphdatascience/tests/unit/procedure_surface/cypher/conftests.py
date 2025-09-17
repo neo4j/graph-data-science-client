@@ -1,5 +1,21 @@
 from typing import Any
 
+import pytest
+
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
+from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+
+
+@pytest.fixture
+def query_runner() -> CollectingQueryRunner:
+    return CollectingQueryRunner(DEFAULT_SERVER_VERSION)
+
+
+@pytest.fixture
+def graph(query_runner: CollectingQueryRunner) -> Graph:
+    return wrap_graph("test_graph", query_runner)
+
 
 def estimate_mock_result() -> dict[str, Any]:
     return {

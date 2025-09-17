@@ -2,12 +2,13 @@ from typing import Any, Dict, Optional, Union
 
 from pandas import DataFrame
 
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.data_mapper_utils import deserialize_single
 from ...arrow_client.v2.job_client import JobClient
 from ...arrow_client.v2.mutation_client import MutationClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from ...graph.graph_object import Graph
 from ..api.estimation_result import EstimationResult
 from ..utils.config_converter import ConfigConverter
 

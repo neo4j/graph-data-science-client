@@ -2,7 +2,8 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import QueryRunner
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.hashgnn_cypher_endpoints import HashGNNCypherEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 

@@ -5,7 +5,8 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from ...graph.graph_object import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+
 from .base_result import BaseResult
 from .estimation_result import EstimationResult
 

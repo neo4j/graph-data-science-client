@@ -1,25 +1,19 @@
 from contextlib import contextmanager
 from typing import Any, Generator, Optional, Tuple
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
+from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import wrap_graph
 from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
-
-
-class ArrowGraphForTests(Graph):
-    def __init__(self, name: str):
-        self._name = name
-
-    def name(self) -> str:
-        return self._name
 
 
 @contextmanager
 def create_graph(
     arrow_client: AuthenticatedArrowClient, graph_name: str, gdl: str, undirected: Optional[Tuple[str, str]] = None
-) -> Generator[ArrowGraphForTests, Any, None]:
+) -> Generator[Graph, Any, None]:
     try:
         raw_res = arrow_client.do_action("v2/graph.fromGDL", {"graphName": graph_name, "gdlGraph": gdl})
         deserialize_single(raw_res)
@@ -37,7 +31,7 @@ def create_graph(
             )
             deserialize_single(raw_res)
 
-        yield ArrowGraphForTests(graph_name)
+        yield wrap_graph(graph_name, arrow_client)
     finally:
         CatalogArrowEndpoints(arrow_client).drop(graph_name, fail_if_missing=False)
 
@@ -49,15 +43,15 @@ def create_graph_from_db(
     graph_name: str,
     graph_data: str,
     query: str,
-) -> Generator[ArrowGraphForTests, Any, None]:
+) -> Generator[Graph, Any, None]:
     try:
         query_runner.run_cypher(graph_data)
-        CatalogArrowEndpoints(arrow_client, query_runner).project(
+        result = CatalogArrowEndpoints(arrow_client, query_runner).project(
             graph_name=graph_name,
             query=query,
         )
 
-        yield ArrowGraphForTests(graph_name)
+        yield result.graph
     finally:
         CatalogArrowEndpoints(arrow_client).drop(graph_name, fail_if_missing=False)
         query_runner.run_cypher("MATCH (n) DETACH DELETE n")
