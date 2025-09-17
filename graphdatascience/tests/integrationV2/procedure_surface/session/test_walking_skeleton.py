@@ -1,3 +1,5 @@
+from typing import Generator
+
 import pytest
 
 from graphdatascience import QueryRunner, ServerVersion
@@ -17,11 +19,35 @@ def gds(arrow_client: AuthenticatedArrowClient, db_query_runner: QueryRunner) ->
     )
 
 
+@pytest.fixture(autouse=True, scope="class")
+def setup_db(db_query_runner: QueryRunner) -> Generator[None, None, None]:
+    db_query_runner.run_cypher("""
+        CREATE (n)-[:REL]->(m)
+    """)
+
+    yield
+
+    db_query_runner.run_cypher("""
+        MATCH (n) DETACH DELETE n
+    """)
+
+
 @pytest.mark.db_integration
 def test_walking_skeleton(gds: AuraGraphDataScience) -> None:
-    project_result = gds.v2.graph.project("g", "RETURN gds.graph.project.remote(0, 1)")
+    project_result = gds.v2.graph.project("g", "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
     G = TestArrowGraph(project_result.graph_name)
 
     wcc_mutate_result = gds.v2.wcc.mutate(G, mutate_property="wcc")
 
     assert wcc_mutate_result.component_count == 1
+
+    pr_result = gds.v2.page_rank.stream(G, damping_factor=0.5)
+    assert len(pr_result) == 2
+    assert {"nodeId", "score"} == set(pr_result.columns.to_list())
+
+    fastrp_result = gds.v2.fast_rp.write(G, write_property="fastRP", embedding_dimension=2)
+    assert fastrp_result.node_properties_written == 2
+    assert gds.run_cypher("MATCH (n) WHERE n.fastRP IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 2
+
+    drop_result = gds.v2.graph.node_properties.drop(G, node_properties=["wcc"])
+    assert drop_result.properties_removed == 2

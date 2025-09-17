@@ -184,7 +184,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/embeddings.fastrp", G, config, write_concurrency, concurrency
+            "v2/embeddings.fastrp", G, config, write_concurrency, concurrency, write_property
         )
 
         return FastRPWriteResult(**result)
