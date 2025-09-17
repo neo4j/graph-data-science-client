@@ -8,11 +8,15 @@ from testcontainers.core.network import Network
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.tests.integrationV2.procedure_surface.conftest import start_session, \
-    create_arrow_client, start_database
+from graphdatascience.tests.integrationV2.procedure_surface.conftest import (
+    create_arrow_client,
+    create_db_query_runner,
+    start_database,
+    start_session,
+)
 
 LOGGER = logging.getLogger(__name__)
+
 
 @pytest.fixture(scope="package")
 def session_container(
@@ -30,16 +34,7 @@ def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient
 def neo4j_container(network: Network, logs_dir: Path, inside_ci: bool) -> Generator[DockerContainer, None, None]:
     yield from start_database(inside_ci, logs_dir, network)
 
+
 @pytest.fixture(scope="package")
 def query_runner(neo4j_container: DockerContainer) -> Generator[QueryRunner, None, None]:
-    host = neo4j_container.get_container_host_ip()
-    port = 7687
-
-    query_runner = Neo4jQueryRunner.create_for_db(
-        f"bolt://{host}:{port}",
-        ("neo4j", "password"),
-    )
-    yield query_runner
-    query_runner.close()
-
-
+    yield from create_db_query_runner(neo4j_container)

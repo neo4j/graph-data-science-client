@@ -2,12 +2,17 @@ from pathlib import Path
 from typing import Generator
 
 import pytest
-from docker.models.networks import Network
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.network import Network
 
+from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.tests.integrationV2.procedure_surface.conftest import start_session, create_arrow_client, \
-    start_database
+from graphdatascience.tests.integrationV2.procedure_surface.conftest import (
+    create_arrow_client,
+    create_db_query_runner,
+    start_database,
+    start_session,
+)
 
 
 @pytest.fixture(scope="package")
@@ -21,7 +26,12 @@ def session_container(
 def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient:
     return create_arrow_client(session_container)
 
+
 @pytest.fixture(scope="package")
 def neo4j_container(network: Network, logs_dir: Path, inside_ci: bool) -> Generator[DockerContainer, None, None]:
     yield from start_database(inside_ci, logs_dir, network)
 
+
+@pytest.fixture(scope="package")
+def db_query_runner(neo4j_container: DockerContainer) -> Generator[QueryRunner, None, None]:
+    yield from create_db_query_runner(neo4j_container)

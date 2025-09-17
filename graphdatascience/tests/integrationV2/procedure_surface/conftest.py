@@ -6,7 +6,6 @@ from typing import Generator
 
 import pytest
 from dateutil.relativedelta import relativedelta
-from docker.models.networks import Network
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.network import Network
 from testcontainers.core.waiting_utils import wait_for_logs
@@ -14,8 +13,10 @@ from testcontainers.core.waiting_utils import wait_for_logs
 from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 LOGGER = logging.getLogger(__name__)
+
 
 @pytest.fixture(scope="package")
 def password_dir(tmp_path_factory: pytest.TempPathFactory) -> Generator[Path, None, None]:
@@ -44,7 +45,9 @@ def latest_neo4j_version() -> str:
     return previous_month.strftime("%Y.%m.0")
 
 
-def start_session(inside_ci, logs_dir, network, password_dir):
+def start_session(
+    inside_ci: bool, logs_dir: Path, network: Network, password_dir: Path
+) -> Generator[DockerContainer, None, None]:
     session_image = os.getenv(
         "GDS_SESSION_IMAGE", "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest"
     )
@@ -76,7 +79,8 @@ def start_session(inside_ci, logs_dir, network, password_dir):
         with open(out_file, "w") as f:
             f.write(stdout.decode("utf-8"))
 
-def create_arrow_client(session_container):
+
+def create_arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient:
     """Create an authenticated Arrow client connected to the session container."""
     host = session_container.get_container_host_ip()
     port = session_container.get_exposed_port(8491)
@@ -87,7 +91,8 @@ def create_arrow_client(session_container):
         advertised_listen_address=("gds-session", 8491),
     )
 
-def start_database(inside_ci, logs_dir, network):
+
+def start_database(inside_ci: bool, logs_dir: Path, network: Network) -> Generator[DockerContainer, None, None]:
     default_neo4j_image = (
         f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura/neo4j-enterprise:{latest_neo4j_version()}"
     )
@@ -122,3 +127,14 @@ def start_database(inside_ci, logs_dir, network):
         out_file = db_logs_dir / "stdout.log"
         with open(out_file, "w") as f:
             f.write(stdout.decode("utf-8"))
+
+
+def create_db_query_runner(neo4j_container: DockerContainer) -> Generator[Neo4jQueryRunner, None, None]:
+    host = neo4j_container.get_container_host_ip()
+    port = 7687
+    query_runner = Neo4jQueryRunner.create_for_db(
+        f"bolt://{host}:{port}",
+        ("neo4j", "password"),
+    )
+    yield query_runner
+    query_runner.close()
