@@ -5,7 +5,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from .base_result import BaseResult
 from .estimation_result import EstimationResult
@@ -23,7 +23,7 @@ class DegreeEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
@@ -79,7 +79,7 @@ class DegreeEndpoints(ABC):
     @abstractmethod
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
@@ -132,7 +132,7 @@ class DegreeEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
@@ -186,7 +186,7 @@ class DegreeEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
@@ -245,7 +245,7 @@ class DegreeEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,

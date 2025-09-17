@@ -1,6 +1,6 @@
 from typing import Any, List, Optional
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
 from graphdatascience.procedure_surface.cypher.graphsage_predict_cypher_endpoints import GraphSagePredictCypherEndpoints
 from graphdatascience.procedure_surface.cypher.model_api_cypher import ModelApiCypher
@@ -20,7 +20,7 @@ class GraphSageTrainCypherEndpoints(GraphSageTrainEndpoints):
 
     def train(
         self,
-        G: Graph,
+        G: GraphV2,
         model_name: str,
         feature_properties: List[str],
         *,

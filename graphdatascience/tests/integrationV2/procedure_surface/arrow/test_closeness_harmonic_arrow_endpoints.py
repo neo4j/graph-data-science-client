@@ -3,13 +3,13 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.closeness_harmonic_arrow_endpoints import ClosenessHarmonicArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
     gdl = """
     (a: Node)
     (b: Node)
@@ -32,7 +32,7 @@ def closeness_harmonic_endpoints(
 
 
 def test_closeness_harmonic_stats(
-    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: Graph
+    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: GraphV2
 ) -> None:
     """Test Harmonic Closeness stats operation."""
     result = closeness_harmonic_endpoints.stats(G=sample_graph)
@@ -44,7 +44,7 @@ def test_closeness_harmonic_stats(
 
 
 def test_closeness_harmonic_stream(
-    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: Graph
+    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: GraphV2
 ) -> None:
     """Test Harmonic Closeness stream operation."""
     result_df = closeness_harmonic_endpoints.stream(
@@ -57,7 +57,7 @@ def test_closeness_harmonic_stream(
 
 
 def test_closeness_harmonic_mutate(
-    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: Graph
+    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: GraphV2
 ) -> None:
     """Test Harmonic Closeness mutate operation."""
     result = closeness_harmonic_endpoints.mutate(
@@ -74,7 +74,7 @@ def test_closeness_harmonic_mutate(
 
 
 def test_closeness_harmonic_estimate(
-    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: Graph
+    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: GraphV2
 ) -> None:
     result = closeness_harmonic_endpoints.estimate(sample_graph)
 

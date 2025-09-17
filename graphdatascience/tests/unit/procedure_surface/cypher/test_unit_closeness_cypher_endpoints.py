@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.closeness_endpoints import (
     ClosenessStatsResult,
     ClosenessWriteResult,
@@ -16,7 +16,7 @@ def closeness_endpoints(query_runner: CollectingQueryRunner) -> ClosenessCypherE
     return ClosenessCypherEndpoints(query_runner)
 
 
-def test_mutate(graph: Graph) -> None:
+def test_mutate(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "mutateMillis": 42,
@@ -59,7 +59,7 @@ def test_mutate(graph: Graph) -> None:
     }
 
 
-def test_stats(graph: Graph) -> None:
+def test_stats(graph: GraphV2) -> None:
     result = {
         "preProcessingMillis": 10,
         "computeMillis": 20,
@@ -87,7 +87,7 @@ def test_stats(graph: Graph) -> None:
 
 
 def test_stream(
-    closeness_endpoints: ClosenessCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
+    closeness_endpoints: ClosenessCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
 ) -> None:
     closeness_endpoints.stream(graph)
 
@@ -99,7 +99,7 @@ def test_stream(
     assert "jobId" in config
 
 
-def test_write(graph: Graph) -> None:
+def test_write(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "writeMillis": 42,
@@ -127,7 +127,7 @@ def test_write(graph: Graph) -> None:
     assert result_obj.write_millis == 42
 
 
-def test_estimate_with_graph_name(graph: Graph) -> None:
+def test_estimate_with_graph_name(graph: GraphV2) -> None:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION, {"closeness.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )

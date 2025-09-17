@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.degree_endpoints import (
     DegreeMutateResult,
     DegreeStatsResult,
@@ -17,7 +17,7 @@ def degree_endpoints(query_runner: CollectingQueryRunner) -> DegreeCypherEndpoin
     return DegreeCypherEndpoints(query_runner)
 
 
-def test_mutate_basic(graph: Graph) -> None:
+def test_mutate_basic(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "mutateMillis": 42,
@@ -45,7 +45,7 @@ def test_mutate_basic(graph: Graph) -> None:
     assert result_obj.mutate_millis == 42
 
 
-def test_mutate_with_optional_params(graph: Graph) -> None:
+def test_mutate_with_optional_params(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 3,
         "mutateMillis": 25,
@@ -84,7 +84,7 @@ def test_mutate_with_optional_params(graph: Graph) -> None:
     assert result_obj.mutate_millis == 25
 
 
-def test_stats_basic(graph: Graph) -> None:
+def test_stats_basic(graph: GraphV2) -> None:
     result = {
         "centralityDistribution": {"min": 1.0, "max": 5.0, "mean": 2.5},
         "preProcessingMillis": 10,
@@ -109,7 +109,7 @@ def test_stats_basic(graph: Graph) -> None:
     assert result_obj.post_processing_millis == 12
 
 
-def test_stream_basic(graph: Graph) -> None:
+def test_stream_basic(graph: GraphV2) -> None:
     result_df = pd.DataFrame({"nodeId": [0, 1, 2], "score": [2.0, 3.0, 1.0]})
 
     query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"degree.stream": result_df})
@@ -122,7 +122,7 @@ def test_stream_basic(graph: Graph) -> None:
     assert result.equals(result_df)
 
 
-def test_stream_with_optional_params(graph: Graph) -> None:
+def test_stream_with_optional_params(graph: GraphV2) -> None:
     result_df = pd.DataFrame({"nodeId": [0, 1], "score": [4.0, 2.0]})
 
     query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"degree.stream": result_df})
@@ -147,7 +147,7 @@ def test_stream_with_optional_params(graph: Graph) -> None:
     assert len(result) == 2
 
 
-def test_write_basic(graph: Graph) -> None:
+def test_write_basic(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "writeMillis": 42,
@@ -174,7 +174,7 @@ def test_write_basic(graph: Graph) -> None:
     assert result_obj.write_millis == 42
 
 
-def test_write_with_optional_params(graph: Graph) -> None:
+def test_write_with_optional_params(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 3,
         "writeMillis": 25,
@@ -209,7 +209,7 @@ def test_write_with_optional_params(graph: Graph) -> None:
     assert result_obj.write_millis == 25
 
 
-def test_estimate(graph: Graph) -> None:
+def test_estimate(graph: GraphV2) -> None:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION, {"gds.degree.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )

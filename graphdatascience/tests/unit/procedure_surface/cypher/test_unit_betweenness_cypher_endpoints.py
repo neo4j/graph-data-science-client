@@ -6,7 +6,7 @@ from graphdatascience.procedure_surface.api.betweenness_endpoints import (
     BetweennessStatsResult,
     BetweennessWriteResult,
 )
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.betweenness_cypher_endpoints import BetweennessCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
@@ -17,7 +17,7 @@ def betweenness_endpoints(query_runner: CollectingQueryRunner) -> BetweennessCyp
     return BetweennessCypherEndpoints(query_runner)
 
 
-def test_mutate_basic(graph: Graph) -> None:
+def test_mutate_basic(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "mutateMillis": 42,
@@ -50,7 +50,7 @@ def test_mutate_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_mutate_with_optional_params(graph: Graph) -> None:
+def test_mutate_with_optional_params(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "mutateMillis": 42,
@@ -97,7 +97,7 @@ def test_mutate_with_optional_params(graph: Graph) -> None:
     }
 
 
-def test_stats_basic(graph: Graph) -> None:
+def test_stats_basic(graph: GraphV2) -> None:
     result = {
         "centralityDistribution": {"p50": 0.5, "p90": 0.9, "p99": 0.99},
         "preProcessingMillis": 10,
@@ -125,7 +125,7 @@ def test_stats_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_stats_with_optional_params(graph: Graph) -> None:
+def test_stats_with_optional_params(graph: GraphV2) -> None:
     result = {
         "centralityDistribution": {"p50": 0.5, "p90": 0.9, "p99": 0.99},
         "preProcessingMillis": 10,
@@ -169,7 +169,7 @@ def test_stats_with_optional_params(graph: Graph) -> None:
 
 
 def test_stream_basic(
-    betweenness_endpoints: BetweennessCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
+    betweenness_endpoints: BetweennessCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
 ) -> None:
     result_data = pd.DataFrame({"nodeId": [1, 2, 3], "score": [0.1, 0.8, 0.3]})
     query_runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"betweenness.stream": result_data})
@@ -190,7 +190,7 @@ def test_stream_basic(
 
 
 def test_stream_with_optional_params(
-    betweenness_endpoints: BetweennessCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
+    betweenness_endpoints: BetweennessCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
 ) -> None:
     BetweennessCypherEndpoints(query_runner).stream(
         graph,
@@ -224,7 +224,7 @@ def test_stream_with_optional_params(
     }
 
 
-def test_write_basic(graph: Graph) -> None:
+def test_write_basic(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "writeMillis": 15,
@@ -257,7 +257,7 @@ def test_write_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_write_with_optional_params(graph: Graph) -> None:
+def test_write_with_optional_params(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "writeMillis": 15,
@@ -306,7 +306,7 @@ def test_write_with_optional_params(graph: Graph) -> None:
     }
 
 
-def test_estimate_with_graph_name(graph: Graph) -> None:
+def test_estimate_with_graph_name(graph: GraphV2) -> None:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION, {"betweenness.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )

@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.celf_endpoints import (
     CelfMutateResult,
     CelfStatsResult,
@@ -17,7 +17,7 @@ def celf_endpoints(query_runner: CollectingQueryRunner) -> CelfCypherEndpoints:
     return CelfCypherEndpoints(query_runner)
 
 
-def test_mutate_basic(graph: Graph) -> None:
+def test_mutate_basic(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "mutateMillis": 42,
@@ -51,7 +51,7 @@ def test_mutate_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_mutate_with_optional_params(graph: Graph) -> None:
+def test_mutate_with_optional_params(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 3,
         "mutateMillis": 35,
@@ -101,7 +101,7 @@ def test_mutate_with_optional_params(graph: Graph) -> None:
     }
 
 
-def test_stats_basic(graph: Graph) -> None:
+def test_stats_basic(graph: GraphV2) -> None:
     result = {
         "computeMillis": 20,
         "totalSpread": 15.5,
@@ -130,7 +130,7 @@ def test_stats_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_stream_basic(celf_endpoints: CelfCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner) -> None:
+def test_stream_basic(celf_endpoints: CelfCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner) -> None:
     celf_endpoints.stream(graph, 3)
 
     assert len(query_runner.queries) == 1
@@ -142,7 +142,7 @@ def test_stream_basic(celf_endpoints: CelfCypherEndpoints, graph: Graph, query_r
     assert "jobId" in config
 
 
-def test_write_basic(graph: Graph) -> None:
+def test_write_basic(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "writeMillis": 42,
@@ -176,7 +176,7 @@ def test_write_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_estimate_with_graph_name(graph: Graph) -> None:
+def test_estimate_with_graph_name(graph: GraphV2) -> None:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION, {"influenceMaximization.celf.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )

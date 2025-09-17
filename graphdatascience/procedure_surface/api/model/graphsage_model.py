@@ -5,7 +5,7 @@ from typing import Optional
 from pandas import DataFrame
 
 from graphdatascience.model.v2.model_api import ModelApi
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.graphsage_predict_endpoints import (
     GraphSageMutateResult,
@@ -28,7 +28,7 @@ class GraphSageModelV2(Model):
 
     def predict_write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         *,
         relationship_types: Optional[list[str]] = None,
@@ -93,7 +93,7 @@ class GraphSageModelV2(Model):
 
     def predict_stream(
         self,
-        G: Graph,
+        G: GraphV2,
         *,
         relationship_types: Optional[list[str]] = None,
         node_labels: Optional[list[str]] = None,
@@ -150,7 +150,7 @@ class GraphSageModelV2(Model):
 
     def predict_mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         *,
         relationship_types: Optional[list[str]] = None,
@@ -211,7 +211,7 @@ class GraphSageModelV2(Model):
 
     def predict_estimate(
         self,
-        G: Graph,
+        G: GraphV2,
         *,
         relationship_types: Optional[list[str]] = None,
         node_labels: Optional[list[str]] = None,

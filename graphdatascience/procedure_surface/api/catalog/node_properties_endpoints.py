@@ -7,14 +7,14 @@ from typing import Any, List, Optional, Union
 from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 
 class NodePropertiesEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         node_properties: Union[str, List[str]],
         *,
         list_node_labels: Optional[bool] = None,
@@ -61,7 +61,7 @@ class NodePropertiesEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         node_properties: Union[str, List[str], dict[str, str]],
         *,
         node_labels: Optional[List[str]] = None,
@@ -106,7 +106,7 @@ class NodePropertiesEndpoints(ABC):
     @abstractmethod
     def drop(
         self,
-        G: Graph,
+        G: GraphV2,
         node_properties: List[str],
         *,
         fail_if_missing: Optional[bool] = None,

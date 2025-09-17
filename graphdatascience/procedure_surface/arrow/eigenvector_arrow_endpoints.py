@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
@@ -24,7 +24,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         max_iterations: Optional[int] = None,
         tolerance: Optional[float] = None,
@@ -63,7 +63,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
 
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         max_iterations: Optional[int] = None,
         tolerance: Optional[float] = None,
         source_nodes: Optional[Any] = None,
@@ -101,7 +101,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         max_iterations: Optional[int] = None,
         tolerance: Optional[float] = None,
         source_nodes: Optional[Any] = None,
@@ -135,7 +135,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         max_iterations: Optional[int] = None,
         tolerance: Optional[float] = None,
@@ -175,7 +175,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         max_iterations: Optional[int] = None,
         tolerance: Optional[float] = None,
         source_nodes: Optional[Any] = None,

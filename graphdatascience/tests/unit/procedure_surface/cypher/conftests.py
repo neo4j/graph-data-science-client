@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 
@@ -13,7 +13,7 @@ def query_runner() -> CollectingQueryRunner:
 
 
 @pytest.fixture
-def graph(query_runner: CollectingQueryRunner) -> Graph:
+def graph(query_runner: CollectingQueryRunner) -> GraphV2:
     return wrap_graph("test_graph", query_runner)
 
 

@@ -4,13 +4,13 @@ import pytest
 from neo4j.exceptions import Neo4jError
 
 from graphdatascience import QueryRunner
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.model_api_cypher import ModelApiCypher
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     create_statement = """
     CREATE
     (a: Node {age: 1}),
@@ -37,7 +37,7 @@ def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
 
 
 @pytest.fixture
-def gs_model(query_runner: QueryRunner, sample_graph: Graph) -> Generator[str, None, None]:
+def gs_model(query_runner: QueryRunner, sample_graph: GraphV2) -> Generator[str, None, None]:
     train_result = query_runner.run_cypher(
         "CALL gds.beta.graphSage.train($graph, {modelName: 'gs-model', featureProperties:['age'], embeddingDimension: 1, sampleSizes: [1], maxIterations: 1, searchDepth: 1})",
         {"graph": sample_graph.name()},

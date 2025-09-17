@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 
 from ...call_parameters import CallParameters
@@ -28,7 +28,7 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         sampling_size: Optional[int] = None,
         sampling_seed: Optional[int] = None,
@@ -64,7 +64,7 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
 
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         sampling_size: Optional[int] = None,
         sampling_seed: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
@@ -98,7 +98,7 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         sampling_size: Optional[int] = None,
         sampling_seed: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
@@ -130,7 +130,7 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         sampling_size: Optional[int] = None,
         sampling_seed: Optional[int] = None,
@@ -168,7 +168,7 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         sampling_size: Optional[int] = None,
         sampling_seed: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,

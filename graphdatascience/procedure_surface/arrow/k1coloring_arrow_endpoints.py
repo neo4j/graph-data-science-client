@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
@@ -24,7 +24,7 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         batch_size: Optional[int] = None,
         max_iterations: Optional[int] = None,
@@ -55,7 +55,7 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
 
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         batch_size: Optional[int] = None,
         max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
@@ -85,7 +85,7 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         batch_size: Optional[int] = None,
         max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
@@ -115,7 +115,7 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         batch_size: Optional[int] = None,
         max_iterations: Optional[int] = None,
@@ -151,7 +151,7 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         batch_size: Optional[int] = None,
         max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,

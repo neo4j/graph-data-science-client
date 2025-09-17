@@ -5,7 +5,7 @@ from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import wrap_graph
 from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 
@@ -13,7 +13,7 @@ from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import Cat
 @contextmanager
 def create_graph(
     arrow_client: AuthenticatedArrowClient, graph_name: str, gdl: str, undirected: Optional[Tuple[str, str]] = None
-) -> Generator[Graph, Any, None]:
+) -> Generator[GraphV2, Any, None]:
     try:
         raw_res = arrow_client.do_action("v2/graph.fromGDL", {"graphName": graph_name, "gdlGraph": gdl})
         deserialize_single(raw_res)
@@ -43,7 +43,7 @@ def create_graph_from_db(
     graph_name: str,
     graph_data: str,
     query: str,
-) -> Generator[Graph, Any, None]:
+) -> Generator[GraphV2, Any, None]:
     try:
         query_runner.run_cypher(graph_data)
         result = CatalogArrowEndpoints(arrow_client, query_runner).project(

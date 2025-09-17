@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.graph_sampling_arrow_endpoints import GraphSamplingArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
@@ -11,7 +11,7 @@ from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
     gdl = """
     (a :Node {id: 0})
     (b :Node {id: 1})
@@ -37,7 +37,7 @@ def graph_sampling_endpoints(
     yield GraphSamplingArrowEndpoints(arrow_client)
 
 
-def test_rwr_basic(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: Graph) -> None:
+def test_rwr_basic(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: GraphV2) -> None:
     G, result = graph_sampling_endpoints.rwr(
         G=sample_graph, graph_name="sampled", restart_probability=0.15, sampling_ratio=0.8
     )
@@ -50,7 +50,7 @@ def test_rwr_basic(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample
     assert result.project_millis >= 0
 
 
-def test_rwr_with_weights(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: Graph) -> None:
+def test_rwr_with_weights(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: GraphV2) -> None:
     G, result = graph_sampling_endpoints.rwr(
         G=sample_graph,
         graph_name="sampled",
@@ -66,7 +66,7 @@ def test_rwr_with_weights(graph_sampling_endpoints: GraphSamplingArrowEndpoints,
     assert result.project_millis >= 0
 
 
-def test_rwr_minimal_config(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: Graph) -> None:
+def test_rwr_minimal_config(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: GraphV2) -> None:
     G, result = graph_sampling_endpoints.rwr(G=sample_graph, graph_name="sampled")
 
     assert result.graph_name == "sampled"
@@ -75,7 +75,7 @@ def test_rwr_minimal_config(graph_sampling_endpoints: GraphSamplingArrowEndpoint
     assert result.project_millis >= 0
 
 
-def test_cnarw_basic(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: Graph) -> None:
+def test_cnarw_basic(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: GraphV2) -> None:
     G, result = graph_sampling_endpoints.cnarw(
         G=sample_graph, graph_name="sampled", restart_probability=0.15, sampling_ratio=0.8
     )
@@ -88,7 +88,7 @@ def test_cnarw_basic(graph_sampling_endpoints: GraphSamplingArrowEndpoints, samp
     assert result.project_millis >= 0
 
 
-def test_cnarw_minimal_config(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: Graph) -> None:
+def test_cnarw_minimal_config(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: GraphV2) -> None:
     G, result = graph_sampling_endpoints.cnarw(G=sample_graph, graph_name="sampled")
 
     assert result.graph_name == "sampled"

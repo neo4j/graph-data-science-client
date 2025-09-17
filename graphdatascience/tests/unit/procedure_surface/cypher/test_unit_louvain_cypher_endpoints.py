@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.louvain_endpoints import (
     LouvainMutateResult,
     LouvainStatsResult,
@@ -17,7 +17,7 @@ def louvain_endpoints(query_runner: CollectingQueryRunner) -> LouvainCypherEndpo
     return LouvainCypherEndpoints(query_runner)
 
 
-def test_mutate_basic(graph: Graph) -> None:
+def test_mutate_basic(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 6,
         "modularity": 0.5,
@@ -58,7 +58,7 @@ def test_mutate_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_stats_basic(graph: Graph) -> None:
+def test_stats_basic(graph: GraphV2) -> None:
     result = {
         "communityCount": 2,
         "preProcessingMillis": 15,
@@ -92,7 +92,7 @@ def test_stats_basic(graph: Graph) -> None:
 
 
 def test_stream_basic(
-    louvain_endpoints: LouvainCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
+    louvain_endpoints: LouvainCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
 ) -> None:
     louvain_endpoints.stream(graph)
 
@@ -104,7 +104,7 @@ def test_stream_basic(
     assert "jobId" in config
 
 
-def test_write_basic(graph: Graph) -> None:
+def test_write_basic(graph: GraphV2) -> None:
     result = {
         "communityCount": 2,
         "preProcessingMillis": 15,
@@ -145,7 +145,7 @@ def test_write_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_estimate_with_graph_name(graph: Graph) -> None:
+def test_estimate_with_graph_name(graph: GraphV2) -> None:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION, {"louvain.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )

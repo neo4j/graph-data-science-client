@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
@@ -28,7 +28,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         iterations: int,
         embedding_density: int,
         mutate_property: str,
@@ -77,7 +77,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         iterations: int,
         embedding_density: int,
         output_dimension: Optional[int] = None,
@@ -123,7 +123,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         iterations: int,
         embedding_density: int,
         write_property: str,
@@ -176,7 +176,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         iterations: int,
         embedding_density: int,
         output_dimension: Optional[int] = None,

@@ -4,7 +4,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience import QueryRunner
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog_endpoints import RelationshipPropertySpec
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import wrap_graph
 from graphdatascience.procedure_surface.cypher.catalog_cypher_endpoints import CatalogCypherEndpoints
@@ -14,7 +14,7 @@ from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     create_statement = """
     CREATE
     (a: Node:A {id: 0}),
@@ -44,7 +44,7 @@ def catalog_endpoints(query_runner: QueryRunner) -> Generator[CatalogCypherEndpo
     yield CatalogCypherEndpoints(query_runner)
 
 
-def test_list_with_graph(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
+def test_list_with_graph(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
     results = catalog_endpoints.list(G=sample_graph)
 
     assert len(results) == 1
@@ -63,7 +63,7 @@ def test_list_with_graph(catalog_endpoints: CatalogCypherEndpoints, sample_graph
     assert result.modification_time < datetime.datetime.now(datetime.timezone.utc)
 
 
-def test_list_with_graph_name_string(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
+def test_list_with_graph_name_string(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
     results = catalog_endpoints.list(G="g")
 
     assert len(results) == 1
@@ -74,7 +74,7 @@ def test_list_with_graph_name_string(catalog_endpoints: CatalogCypherEndpoints, 
 
 
 def test_list_without_graph(
-    catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
+    catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
 ) -> None:
     try:
         query_runner.run_cypher("CREATE (x:Test)")
@@ -93,7 +93,7 @@ def test_list_without_graph(
         query_runner.run_cypher("MATCH (n:Test) DELETE n")
 
 
-def test_drop_with_graph_object(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
+def test_drop_with_graph_object(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
     res = catalog_endpoints.drop(sample_graph)
 
     assert res is not None
@@ -101,7 +101,7 @@ def test_drop_with_graph_object(catalog_endpoints: CatalogCypherEndpoints, sampl
     assert len(catalog_endpoints.list()) == 0
 
 
-def test_drop_with_graph_name_string(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
+def test_drop_with_graph_name_string(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
     res = catalog_endpoints.drop("g")
 
     assert res is not None
@@ -119,7 +119,7 @@ def test_drop_nonexistent_fail_if_missing_false(catalog_endpoints: CatalogCypher
     assert res is None
 
 
-def test_graph_filter(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
+def test_graph_filter(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
     G, result = catalog_endpoints.filter(
         sample_graph, graph_name="filtered", node_filter="n:A", relationship_filter="FALSE"
     )
@@ -143,7 +143,7 @@ def test_sample_property(catalog_endpoints: CatalogCypherEndpoints) -> None:
     assert isinstance(sample_endpoints, GraphSamplingCypherEndpoints)
 
 
-def test_projection(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
+def test_projection(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
     G, result = catalog_endpoints.project("g2", ["A", "B"], "REL", node_properties=["id"], read_concurrency=2)
 
     assert result.node_count == 3

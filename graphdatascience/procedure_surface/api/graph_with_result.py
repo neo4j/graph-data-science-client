@@ -2,7 +2,7 @@ from types import TracebackType
 from typing import Generic, NamedTuple, Optional, Type, TypeVar
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 RESULT = TypeVar("RESULT", bound=BaseResult)
 
@@ -14,10 +14,10 @@ class GraphWithResult(NamedTuple, Generic[RESULT]):
     Can be used as a context manager to ensure the graph is dropped after use.
     """
 
-    graph: Graph
+    graph: GraphV2
     result: RESULT
 
-    def __enter__(self) -> Graph:
+    def __enter__(self) -> GraphV2:
         return self.graph
 
     def __exit__(

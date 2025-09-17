@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Any, List, Optional, Union
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import NodeLabelEndpoints
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import NodePropertiesEndpoints
@@ -15,7 +15,7 @@ from graphdatascience.procedure_surface.api.graph_with_result import GraphWithRe
 
 class CatalogEndpoints(ABC):
     @abstractmethod
-    def list(self, G: Optional[Union[Graph, str]] = None) -> List[GraphInfo]:
+    def list(self, G: Optional[Union[GraphV2, str]] = None) -> List[GraphInfo]:
         """List graphs in the graph catalog.
 
         Args:
@@ -29,7 +29,7 @@ class CatalogEndpoints(ABC):
         pass
 
     @abstractmethod
-    def drop(self, G: Union[Graph, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphInfo]:
+    def drop(self, G: Union[GraphV2, str], fail_if_missing: Optional[bool] = None) -> Optional[GraphInfo]:
         """Drop a graph from the graph catalog.
 
         Args:
@@ -44,7 +44,7 @@ class CatalogEndpoints(ABC):
     @abstractmethod
     def filter(
         self,
-        G: Graph,
+        G: GraphV2,
         graph_name: str,
         node_filter: str,
         relationship_filter: str,

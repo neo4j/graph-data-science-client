@@ -3,16 +3,16 @@ from __future__ import annotations
 from typing import Optional
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_backend import GraphBackend
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
-def wrap_graph(name: str, query_runner: QueryRunner) -> Graph:
+def wrap_graph(name: str, query_runner: QueryRunner) -> GraphV2:
     backend = CypherGraphBackend(name, query_runner)
 
-    return Graph(name, backend)
+    return GraphV2(name, backend)
 
 
 class CypherGraphBackend(GraphBackend):

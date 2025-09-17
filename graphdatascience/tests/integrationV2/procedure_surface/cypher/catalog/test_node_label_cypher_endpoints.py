@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience import QueryRunner
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.catalog.node_label_cypher_endpoints import NodeLabelCypherEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
     create_graph,
@@ -11,7 +11,7 @@ from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     create_query = """
         CREATE
         (a: Node:Foo),
@@ -39,7 +39,7 @@ def node_label_endpoints(query_runner: QueryRunner) -> Generator[NodeLabelCypher
     yield NodeLabelCypherEndpoints(query_runner)
 
 
-def test_mutate_node_label(node_label_endpoints: NodeLabelCypherEndpoints, sample_graph: Graph) -> None:
+def test_mutate_node_label(node_label_endpoints: NodeLabelCypherEndpoints, sample_graph: GraphV2) -> None:
     result = node_label_endpoints.mutate(G=sample_graph, node_label="MUTATED", node_filter="n:Foo")
 
     assert result.node_label == "MUTATED"
@@ -52,7 +52,7 @@ def test_mutate_node_label(node_label_endpoints: NodeLabelCypherEndpoints, sampl
 
 
 def test_write_node_label(
-    node_label_endpoints: NodeLabelCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
+    node_label_endpoints: NodeLabelCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
 ) -> None:
     result = node_label_endpoints.write(G=sample_graph, node_label="WRITTEN", node_filter="n:Foo")
 

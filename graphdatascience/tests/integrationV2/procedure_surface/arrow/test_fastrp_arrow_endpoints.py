@@ -3,13 +3,13 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.fastrp_arrow_endpoints import FastRPArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
     gdl = """
     CREATE
     (a: Node),
@@ -31,7 +31,7 @@ def fastrp_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[FastRP
     yield FastRPArrowEndpoints(arrow_client)
 
 
-def test_fastrp_stats(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: Graph) -> None:
+def test_fastrp_stats(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test FastRP stats operation."""
     result = fastrp_endpoints.stats(G=sample_graph, embedding_dimension=128)
 
@@ -40,7 +40,7 @@ def test_fastrp_stats(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: Grap
     assert result.configuration is not None
 
 
-def test_fastrp_stream(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: Graph) -> None:
+def test_fastrp_stream(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test FastRP stream operation."""
     result_df = fastrp_endpoints.stream(
         G=sample_graph,
@@ -56,7 +56,7 @@ def test_fastrp_stream(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: Gra
     assert len(embedding_sample) == 64
 
 
-def test_fastrp_mutate(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: Graph) -> None:
+def test_fastrp_mutate(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test FastRP mutate operation."""
     result = fastrp_endpoints.mutate(
         G=sample_graph,
@@ -71,7 +71,7 @@ def test_fastrp_mutate(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: Gra
     assert result.configuration is not None
 
 
-def test_fastrp_write(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: Graph) -> None:
+def test_fastrp_write(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: GraphV2) -> None:
     with pytest.raises(Exception, match="Write back client is not initialized"):
         fastrp_endpoints.write(
             G=sample_graph,
@@ -80,7 +80,7 @@ def test_fastrp_write(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: Grap
         )
 
 
-def test_fastrp_estimate(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: Graph) -> None:
+def test_fastrp_estimate(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test FastRP estimate operation."""
     result = fastrp_endpoints.estimate(sample_graph, embedding_dimension=128)
 

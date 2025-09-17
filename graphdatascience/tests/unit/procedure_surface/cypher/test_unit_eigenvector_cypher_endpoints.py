@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.eigenvector_endpoints import (
     EigenvectorMutateResult,
     EigenvectorStatsResult,
@@ -17,7 +17,7 @@ def eigenvector_endpoints(query_runner: CollectingQueryRunner) -> EigenvectorCyp
     return EigenvectorCypherEndpoints(query_runner)
 
 
-def test_mutate(graph: Graph) -> None:
+def test_mutate(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "ranIterations": 10,
@@ -81,7 +81,7 @@ def test_mutate(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_stats(graph: Graph) -> None:
+def test_stats(graph: GraphV2) -> None:
     result = {
         "ranIterations": 10,
         "didConverge": True,
@@ -113,7 +113,7 @@ def test_stats(graph: Graph) -> None:
 
 
 def test_stream(
-    eigenvector_endpoints: EigenvectorCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
+    eigenvector_endpoints: EigenvectorCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
 ) -> None:
     eigenvector_endpoints.stream(graph)
 
@@ -125,7 +125,7 @@ def test_stream(
     assert "jobId" in config
 
 
-def test_write(graph: Graph) -> None:
+def test_write(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "ranIterations": 10,
@@ -157,7 +157,7 @@ def test_write(graph: Graph) -> None:
     assert result_obj.write_millis == 42
 
 
-def test_estimate_with_graph_name(graph: Graph) -> None:
+def test_estimate_with_graph_name(graph: GraphV2) -> None:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION, {"eigenvector.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )

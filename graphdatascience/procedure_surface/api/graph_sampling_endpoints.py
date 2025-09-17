@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
 
 
@@ -16,7 +16,7 @@ class GraphSamplingEndpoints(ABC):
     @abstractmethod
     def rwr(
         self,
-        G: Graph,
+        G: GraphV2,
         graph_name: str,
         start_nodes: Optional[List[int]] = None,
         restart_probability: Optional[float] = None,
@@ -87,7 +87,7 @@ class GraphSamplingEndpoints(ABC):
     @abstractmethod
     def cnarw(
         self,
-        G: Graph,
+        G: GraphV2,
         graph_name: str,
         start_nodes: Optional[List[int]] = None,
         restart_probability: Optional[float] = None,

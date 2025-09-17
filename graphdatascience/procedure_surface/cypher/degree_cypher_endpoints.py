@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
@@ -18,7 +18,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         mutate_property: str,
         orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
@@ -54,7 +54,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
 
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
@@ -88,7 +88,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
@@ -121,7 +121,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         write_property: str,
         orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
@@ -158,7 +158,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,

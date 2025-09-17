@@ -3,13 +3,13 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.kcore_arrow_endpoints import KCoreArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
     gdl = """
     (a: Node)
     (b: Node)
@@ -35,7 +35,7 @@ def kcore_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[KCoreAr
     yield KCoreArrowEndpoints(arrow_client)
 
 
-def test_kcore_stats(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
+def test_kcore_stats(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core stats operation."""
     result = kcore_endpoints.stats(G=sample_graph)
 
@@ -45,7 +45,7 @@ def test_kcore_stats(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) 
     assert result.pre_processing_millis >= 0
 
 
-def test_kcore_stream(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
+def test_kcore_stream(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core stream operation."""
     result_df = kcore_endpoints.stream(G=sample_graph)
 
@@ -55,7 +55,7 @@ def test_kcore_stream(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph)
     assert len(result_df) == 6
 
 
-def test_kcore_mutate(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
+def test_kcore_mutate(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core mutate operation."""
     result = kcore_endpoints.mutate(G=sample_graph, mutate_property="coreValue")
 
@@ -67,7 +67,7 @@ def test_kcore_mutate(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph)
     assert result.node_properties_written == 6
 
 
-def test_kcore_estimate(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
+def test_kcore_estimate(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core estimate operation."""
     result = kcore_endpoints.estimate(sample_graph)
 
@@ -80,7 +80,7 @@ def test_kcore_estimate(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Grap
     assert result.heap_percentage_max > 0
 
 
-def test_kcore_stats_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
+def test_kcore_stats_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core stats operation with various parameters."""
     result = kcore_endpoints.stats(G=sample_graph, relationship_types=["REL2"], concurrency=2)
 
@@ -90,7 +90,7 @@ def test_kcore_stats_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sampl
     assert result.post_processing_millis >= 0
 
 
-def test_kcore_stream_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
+def test_kcore_stream_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core stream operation with various parameters."""
     result_df = kcore_endpoints.stream(G=sample_graph, relationship_types=["REL2"], concurrency=2)
 
@@ -100,7 +100,7 @@ def test_kcore_stream_with_parameters(kcore_endpoints: KCoreArrowEndpoints, samp
     assert len(result_df) == 6
 
 
-def test_kcore_mutate_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
+def test_kcore_mutate_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core mutate operation with various parameters."""
     result = kcore_endpoints.mutate(
         G=sample_graph, mutate_property="kcoreValue", relationship_types=["REL2"], concurrency=2
@@ -114,7 +114,7 @@ def test_kcore_mutate_with_parameters(kcore_endpoints: KCoreArrowEndpoints, samp
     assert result.node_properties_written == 6
 
 
-def test_kcore_write_without_write_back_client(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
+def test_kcore_write_without_write_back_client(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test K-Core write operation raises exception when write_back_client is None."""
     with pytest.raises(Exception, match="Write back client is not initialized"):
         kcore_endpoints.write(

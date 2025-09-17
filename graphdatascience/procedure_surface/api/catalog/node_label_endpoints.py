@@ -4,14 +4,14 @@ from abc import ABC, abstractmethod
 from typing import Any, Optional
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 
 class NodeLabelEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         node_label: str,
         *,
         node_filter: str,
@@ -55,7 +55,7 @@ class NodeLabelEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         node_label: str,
         *,
         node_filter: str,

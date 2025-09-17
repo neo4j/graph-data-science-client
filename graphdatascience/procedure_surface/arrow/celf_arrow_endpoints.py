@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
@@ -19,7 +19,7 @@ class CelfArrowEndpoints(CelfEndpoints):
 
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         seed_set_size: int,
         mutate_property: str,
         propagation_probability: Optional[float] = None,
@@ -53,7 +53,7 @@ class CelfArrowEndpoints(CelfEndpoints):
 
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         seed_set_size: int,
         propagation_probability: Optional[float] = None,
         monte_carlo_simulations: Optional[int] = None,
@@ -86,7 +86,7 @@ class CelfArrowEndpoints(CelfEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         seed_set_size: int,
         propagation_probability: Optional[float] = None,
         monte_carlo_simulations: Optional[int] = None,
@@ -117,7 +117,7 @@ class CelfArrowEndpoints(CelfEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         seed_set_size: int,
         write_property: str,
         propagation_probability: Optional[float] = None,
@@ -154,7 +154,7 @@ class CelfArrowEndpoints(CelfEndpoints):
 
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         seed_set_size: int,
         propagation_probability: Optional[float] = None,
         monte_carlo_simulations: Optional[int] = None,

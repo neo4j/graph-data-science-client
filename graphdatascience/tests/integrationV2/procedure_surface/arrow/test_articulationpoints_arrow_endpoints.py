@@ -7,7 +7,7 @@ from graphdatascience.procedure_surface.api.articulationpoints_endpoints import 
     ArticulationPointsMutateResult,
     ArticulationPointsStatsResult,
 )
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.articulationpoints_arrow_endpoints import (
     ArticulationPointsArrowEndpoints,
 )
@@ -15,7 +15,7 @@ from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
     gdl = """
     (a: Node)
     (b: Node)
@@ -34,7 +34,7 @@ def articulationpoints_endpoints(arrow_client: AuthenticatedArrowClient) -> Arti
 
 
 def test_articulationpoints_mutate(
-    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: Graph
+    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: GraphV2
 ) -> None:
     """Test ArticulationPoints mutate operation."""
     result = articulationpoints_endpoints.mutate(
@@ -51,7 +51,7 @@ def test_articulationpoints_mutate(
 
 
 def test_articulationpoints_stats(
-    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: Graph
+    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: GraphV2
 ) -> None:
     """Test ArticulationPoints stats operation."""
     result = articulationpoints_endpoints.stats(sample_graph)
@@ -62,7 +62,7 @@ def test_articulationpoints_stats(
 
 
 def test_articulationpoints_stream_not_implemented(
-    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: Graph
+    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: GraphV2
 ) -> None:
     """Test that ArticulationPoints stream raises NotImplementedError."""
     with pytest.raises(
@@ -72,7 +72,7 @@ def test_articulationpoints_stream_not_implemented(
 
 
 def test_articulationpoints_estimate(
-    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: Graph
+    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: GraphV2
 ) -> None:
     """Test ArticulationPoints memory estimation."""
     result = articulationpoints_endpoints.estimate(sample_graph)

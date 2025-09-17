@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.pagerank_endpoints import (
     PageRankMutateResult,
     PageRankStatsResult,
@@ -17,7 +17,7 @@ def pagerank_endpoints(query_runner: CollectingQueryRunner) -> PageRankCypherEnd
     return PageRankCypherEndpoints(query_runner)
 
 
-def test_mutate_basic(graph: Graph) -> None:
+def test_mutate_basic(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "mutateMillis": 42,
@@ -54,7 +54,7 @@ def test_mutate_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_mutate_with_optional_params(graph: Graph) -> None:
+def test_mutate_with_optional_params(graph: GraphV2) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "mutateMillis": 42,
@@ -109,7 +109,7 @@ def test_mutate_with_optional_params(graph: Graph) -> None:
     }
 
 
-def test_stats_basic(graph: Graph) -> None:
+def test_stats_basic(graph: GraphV2) -> None:
     result = {
         "ranIterations": 20,
         "didConverge": True,
@@ -141,7 +141,7 @@ def test_stats_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_stats_with_optional_params(graph: Graph) -> None:
+def test_stats_with_optional_params(graph: GraphV2) -> None:
     result = {
         "ranIterations": 20,
         "didConverge": True,
@@ -193,7 +193,7 @@ def test_stats_with_optional_params(graph: Graph) -> None:
 
 
 def test_stream_basic(
-    pagerank_endpoints: PageRankCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
+    pagerank_endpoints: PageRankCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
 ) -> None:
     pagerank_endpoints.stream(graph)
 
@@ -206,7 +206,7 @@ def test_stream_basic(
 
 
 def test_stream_with_optional_params(
-    pagerank_endpoints: PageRankCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
+    pagerank_endpoints: PageRankCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
 ) -> None:
     pagerank_endpoints.stream(
         graph,
@@ -246,7 +246,7 @@ def test_stream_with_optional_params(
     }
 
 
-def test_write_basic(graph: Graph) -> None:
+def test_write_basic(graph: GraphV2) -> None:
     result = {
         "ranIterations": 20,
         "didConverge": True,
@@ -283,7 +283,7 @@ def test_write_basic(graph: Graph) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_write_with_optional_params(graph: Graph) -> None:
+def test_write_with_optional_params(graph: GraphV2) -> None:
     result = {
         "ranIterations": 20,
         "didConverge": True,
@@ -340,7 +340,7 @@ def test_write_with_optional_params(graph: Graph) -> None:
     }
 
 
-def test_estimate_with_graph_name(graph: Graph) -> None:
+def test_estimate_with_graph_name(graph: GraphV2) -> None:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION, {"pageRank.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )

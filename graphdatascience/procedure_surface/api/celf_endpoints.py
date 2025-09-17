@@ -5,7 +5,7 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from .base_result import BaseResult
 from .estimation_result import EstimationResult
@@ -22,7 +22,7 @@ class CelfEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: Graph,
+        G: GraphV2,
         seed_set_size: int,
         mutate_property: str,
         propagation_probability: Optional[float] = None,
@@ -79,7 +79,7 @@ class CelfEndpoints(ABC):
     @abstractmethod
     def stats(
         self,
-        G: Graph,
+        G: GraphV2,
         seed_set_size: int,
         propagation_probability: Optional[float] = None,
         monte_carlo_simulations: Optional[int] = None,
@@ -133,7 +133,7 @@ class CelfEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         seed_set_size: int,
         propagation_probability: Optional[float] = None,
         monte_carlo_simulations: Optional[int] = None,
@@ -188,7 +188,7 @@ class CelfEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         seed_set_size: int,
         write_property: str,
         propagation_probability: Optional[float] = None,
@@ -248,7 +248,7 @@ class CelfEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[Graph, dict[str, Any]],
+        G: Union[GraphV2, dict[str, Any]],
         seed_set_size: int,
         propagation_probability: Optional[float] = None,
         monte_carlo_simulations: Optional[int] = None,
