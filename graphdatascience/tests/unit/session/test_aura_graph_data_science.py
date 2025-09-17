@@ -1,16 +1,19 @@
+from pytest_mock import MockerFixture
+
 from graphdatascience import ServerVersion
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 
 
-def test_remote_projection_configuration() -> None:
+def test_remote_projection_configuration(mocker: MockerFixture) -> None:
     v = ServerVersion(9, 9, 9)
     query_runner = CollectingQueryRunner(v)
     gds = AuraGraphDataScience(
         query_runner=query_runner,
         delete_fn=lambda: True,
         gds_version=v,
+        v2_endpoints=mocker.Mock(),
     )
 
     g = gds.graph.project(
@@ -39,13 +42,14 @@ def test_remote_projection_configuration() -> None:
     }
 
 
-def test_remote_projection_defaults() -> None:
+def test_remote_projection_defaults(mocker: MockerFixture) -> None:
     v = ServerVersion(9, 9, 9)
     query_runner = CollectingQueryRunner(v)
     gds = AuraGraphDataScience(
         query_runner=query_runner,
         delete_fn=lambda: True,
         gds_version=v,
+        v2_endpoints=mocker.Mock(),
     )
 
     g = gds.graph.project("foo", "RETURN gds.graph.project(0, 1)")
@@ -66,13 +70,14 @@ def test_remote_projection_defaults() -> None:
     }
 
 
-def test_remote_algo_write() -> None:
+def test_remote_algo_write(mocker: MockerFixture) -> None:
     v = ServerVersion(9, 9, 9)
     query_runner = CollectingQueryRunner(v)
     gds = AuraGraphDataScience(
         query_runner=query_runner,
         delete_fn=lambda: True,
         gds_version=v,
+        v2_endpoints=mocker.Mock(),
     )
 
     G, _ = gds.graph.project("foo", "RETURN gds.graph.project(0, 1)")
@@ -86,13 +91,14 @@ def test_remote_algo_write() -> None:
     }
 
 
-def test_remote_algo_write_configuration() -> None:
+def test_remote_algo_write_configuration(mocker: MockerFixture) -> None:
     v = ServerVersion(9, 9, 9)
     query_runner = CollectingQueryRunner(v)
     gds = AuraGraphDataScience(
         query_runner=query_runner,
         delete_fn=lambda: True,
         gds_version=v,
+        v2_endpoints=mocker.Mock(),
     )
 
     G, _ = gds.graph.project("foo", "RETURN gds.graph.project(0, 1)")
@@ -111,13 +117,14 @@ def test_remote_algo_write_configuration() -> None:
     }
 
 
-def test_remote_graph_write() -> None:
+def test_remote_graph_write(mocker: MockerFixture) -> None:
     v = ServerVersion(9, 9, 9)
     query_runner = CollectingQueryRunner(v)
     gds = AuraGraphDataScience(
         query_runner=query_runner,
         delete_fn=lambda: True,
         gds_version=v,
+        v2_endpoints=mocker.Mock(),
     )
 
     G, _ = gds.graph.project("foo", "RETURN gds.graph.project(0, 1)")
@@ -134,13 +141,14 @@ def test_remote_graph_write() -> None:
     }
 
 
-def test_remote_graph_write_configuration() -> None:
+def test_remote_graph_write_configuration(mocker: MockerFixture) -> None:
     v = ServerVersion(9, 9, 9)
     query_runner = CollectingQueryRunner(v)
     gds = AuraGraphDataScience(
         query_runner=query_runner,
         delete_fn=lambda: True,
         gds_version=v,
+        v2_endpoints=mocker.Mock(),
     )
 
     G, _ = gds.graph.project("foo", "RETURN gds.graph.project(0, 1)")
@@ -160,13 +168,14 @@ def test_remote_graph_write_configuration() -> None:
     }
 
 
-def test_run_cypher_write() -> None:
+def test_run_cypher_write(mocker: MockerFixture) -> None:
     v = ServerVersion(9, 9, 9)
     query_runner = CollectingQueryRunner(v)
     gds = AuraGraphDataScience(
         query_runner=query_runner,
         delete_fn=lambda: True,
         gds_version=v,
+        v2_endpoints=mocker.Mock(),
     )
 
     gds.run_cypher("RETURN 1", params={"foo": 1}, mode=QueryMode.WRITE, database="bar", retryable=True)
@@ -176,13 +185,14 @@ def test_run_cypher_write() -> None:
     assert query_runner.run_args[-1] == {"custom_error": False, "db": "bar", "mode": QueryMode.WRITE, "retryable": True}
 
 
-def test_run_cypher_read() -> None:
+def test_run_cypher_read(mocker: MockerFixture) -> None:
     v = ServerVersion(9, 9, 9)
     query_runner = CollectingQueryRunner(v)
     gds = AuraGraphDataScience(
         query_runner=query_runner,
         delete_fn=lambda: True,
         gds_version=v,
+        v2_endpoints=mocker.Mock(),
     )
 
     gds.run_cypher("RETURN 1", params={"foo": 1}, mode=QueryMode.READ, retryable=False)
