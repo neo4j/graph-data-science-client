@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from typing import Optional
+from urllib.parse import urlparse
 
 from neo4j import Auth, basic_auth
 
@@ -38,6 +39,14 @@ class DbmsConnectionInfo:
         if self.username and self.password:
             auth = basic_auth(self.username, self.password)
         return auth
+
+    def hosted_in_aura(self) -> bool:
+        """
+        Returns:
+            True if the DBMS is hosted in Aura, False otherwise.
+        """
+        host = urlparse(self.uri).hostname
+        return host is not None and host.endswith("databases.neo4j.io")
 
     @staticmethod
     def from_env() -> DbmsConnectionInfo:
