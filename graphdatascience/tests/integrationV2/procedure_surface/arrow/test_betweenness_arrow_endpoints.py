@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.betweenness_endpoints import (
@@ -34,7 +34,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -90,7 +90,9 @@ def test_betweenness_mutate(betweenness_endpoints: BetweennessArrowEndpoints, sa
     assert result.node_properties_written == 3
 
 
-def test_betweenness_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
+def test_betweenness_write(
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
+) -> None:
     endpoints = BetweennessArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="betweenness")
 

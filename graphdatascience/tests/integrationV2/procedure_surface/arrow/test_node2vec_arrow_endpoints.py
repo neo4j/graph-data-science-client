@@ -2,11 +2,11 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.node2vec_endpoints import Node2VecWriteResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.node2vec_endpoints import Node2VecWriteResult
 from graphdatascience.procedure_surface.arrow.node2vec_arrow_endpoints import Node2VecArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
@@ -109,7 +109,7 @@ def test_node2vec_write(arrow_client: AuthenticatedArrowClient, query_runner: Qu
 
 
 def test_node2vec_write_without_write_back_client(
-    node2vec_endpoints: Node2VecArrowEndpoints, sample_graph: Graph
+    node2vec_endpoints: Node2VecArrowEndpoints, sample_graph: GraphV2
 ) -> None:
     """Test Node2Vec write operation without write back client."""
     with pytest.raises(Exception, match="Write back client is not initialized"):

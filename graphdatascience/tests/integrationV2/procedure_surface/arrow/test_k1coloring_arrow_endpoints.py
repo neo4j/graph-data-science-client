@@ -2,11 +2,11 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.k1coloring_endpoints import K1ColoringWriteResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.k1coloring_endpoints import K1ColoringWriteResult
 from graphdatascience.procedure_surface.arrow.k1coloring_arrow_endpoints import K1ColoringArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
@@ -31,7 +31,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -92,7 +92,7 @@ def test_k1coloring_mutate(k1coloring_endpoints: K1ColoringArrowEndpoints, sampl
     assert isinstance(result.did_converge, bool)
 
 
-def test_k1coloring_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
+def test_k1coloring_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     endpoints = K1ColoringArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="color")
 

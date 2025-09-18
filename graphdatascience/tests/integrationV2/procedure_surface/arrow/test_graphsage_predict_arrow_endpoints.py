@@ -3,7 +3,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
@@ -83,7 +83,7 @@ def test_mutate(gs_model: GraphSageModelV2, sample_graph: GraphV2) -> None:
     assert result.node_properties_written == 4
 
 
-def test_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
+def test_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     model, _ = GraphSageTrainArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner)).train(
         G=db_graph,
         model_name="gs-model-write",

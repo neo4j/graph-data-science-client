@@ -2,11 +2,11 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import Graph, QueryRunner
+from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.hashgnn_endpoints import HashGNNWriteResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.hashgnn_endpoints import HashGNNWriteResult
 from graphdatascience.procedure_surface.arrow.hashgnn_arrow_endpoints import HashGNNArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
@@ -33,7 +33,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     graph = """
         CREATE
             (a: Node {feature: [1, 0, 1, 0]}),
@@ -123,7 +123,9 @@ def test_hashgnn_write(arrow_client: AuthenticatedArrowClient, query_runner: Que
     )
 
 
-def test_hashgnn_write_without_write_back_client(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: Graph) -> None:
+def test_hashgnn_write_without_write_back_client(
+    hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: GraphV2
+) -> None:
     """Test HashGNN write operation without write back client."""
     with pytest.raises(Exception, match="Write back client is not initialized"):
         hashgnn_endpoints.write(

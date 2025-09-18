@@ -5,10 +5,8 @@ import pytest
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.graph.graph_object import Graph
-from graphdatascience.procedure_surface.api.scc_endpoints import SccMutateResult, SccStatsResult, SccWriteResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.scc_endpoints import SccMutateResult, SccStatsResult
+from graphdatascience.procedure_surface.api.scc_endpoints import SccMutateResult, SccStatsResult, SccWriteResult
 from graphdatascience.procedure_surface.arrow.scc_arrow_endpoints import SccArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
@@ -46,7 +44,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -98,7 +96,7 @@ def test_scc_mutate(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> 
     assert "p10" in result.component_distribution
 
 
-def test_scc_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
+def test_scc_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     """Test SCC write operation."""
     endpoints = SccArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="componentId")
