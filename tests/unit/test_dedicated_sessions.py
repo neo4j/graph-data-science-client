@@ -614,6 +614,26 @@ def test_get_or_create_for_without_cloud_location(mocker: MockerFixture, aura_ap
         )
 
 
+def test_get_or_create_for_non_derivable_aura_instance_id(mocker: MockerFixture, aura_api: AuraApi) -> None:
+    sessions = DedicatedSessions(aura_api)
+    patch_neo4j_query_runner(mocker)
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "Could not derive Aura instance id from the URI `neo4j+s://06cba79f.databases.neo4j.io`. Please provide the instance id via the `aura_instance_id` argument, or specify a cloud location if the DBMS is self-managed."
+        ),
+    ):
+        sessions.get_or_create(
+            "my-session",
+            SessionMemory.m_8GB,
+            DbmsConnectionInfo(
+                "neo4j+s://06cba79f.databases.neo4j.io", "dbuser", "db_pw"
+            ),  # not part of list instances result
+            cloud_location=None,
+        )
+
+
 def test_get_or_create_failed_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
 

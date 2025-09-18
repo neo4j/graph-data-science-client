@@ -85,6 +85,7 @@ sessions.get_or_create(
     db_connection: Optional[DbmsConnectionInfo] = None,
     ttl: Optional[timedelta] = None,
     cloud_location: Optional[CloudLocation] = None,
+    aura_instance_id: Optional[str] = None,
     timeout: Optional[int] = None,
     neo4j_driver_options: Optional[dict[str, Any]] = None,
     arrow_client_options: Optional[dict[str, Any]] = None,
@@ -100,6 +101,7 @@ sessions.get_or_create(
 | db_connection               |  https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/dbms_connection_info[DbmsConnectionInfo] | yes      | None    | Bolt server URL, username, and password to a Neo4j DBMS. Required for the Attached and Self-managed types. Alternatively to username and password, you can provide a `neo4j.Auth` https://neo4j.com/docs/python-manual/current/connect-advanced/#authentication-methods[object].
 | ttl                         | datetime.timedelta | yes      | 1h      | Time-to-live for the session.
 | cloud_location              | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/cloud_location[CloudLocation]      | yes      | None    | Aura-supported cloud provider and region where the GDS Session will run. Required for the Self-managed and Standalone types.
+| aura_instance_id            | str                | yes      | None    | Aura instance ID for the session. Required for the Attached type, if the id could not be derived from the DB connection.
 | timeout                     | int                | yes      | None    | Seconds to wait for the session to enter Ready state. If the time is exceeded, an error will be returned.
 | neo4j_driver_options        | dict[str, any]     | yes      | None    | Additional options passed to the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified.
 | arrow_client_options        | dict[str, any]     | yes      | None    | Additional options passed to the Arrow Flight Client used to connect to the Session.

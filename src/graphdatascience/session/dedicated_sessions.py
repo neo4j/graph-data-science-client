@@ -61,6 +61,7 @@ class DedicatedSessions:
         db_connection: DbmsConnectionInfo | None = None,
         ttl: timedelta | None = None,
         cloud_location: CloudLocation | None = None,
+        aura_instance_id: str | None = None,
         timeout: int | None = None,
         neo4j_driver_options: dict[str, Any] | None = None,
         arrow_client_options: dict[str, Any] | None = None,
@@ -74,12 +75,17 @@ class DedicatedSessions:
         else:
             db_runner = self._create_db_runner(db_connection, neo4j_driver_options)
 
-            dbid = AuraApi.extract_id(db_connection.uri)
-            aura_db_instance = self._aura_api.list_instance(dbid)
+            aura_instance_id = AuraApi.extract_id(db_connection.uri) if not aura_instance_id else aura_instance_id
+            aura_db_instance = self._aura_api.list_instance(aura_instance_id)
 
             if aura_db_instance is None:
                 if not cloud_location:
-                    raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")
+                    if db_connection.hosted_in_aura():
+                        raise ValueError(
+                            f"Could not derive Aura instance id from the URI `{db_connection.uri}`. Please provide the instance id via the `aura_instance_id` argument, or specify a cloud location if the DBMS is self-managed."
+                        )
+                    else:
+                        raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")
 
                 session_details = self._get_or_create_self_managed_session(
                     session_name, memory.value, cloud_location, ttl
@@ -88,7 +94,9 @@ class DedicatedSessions:
                 if cloud_location is not None:
                     raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
 
-                session_details = self._get_or_create_attached_session(session_name, memory.value, dbid, ttl)
+                session_details = self._get_or_create_attached_session(
+                    session_name, memory.value, aura_instance_id, ttl
+                )
 
         self._await_session_running(session_details, timeout)
 
