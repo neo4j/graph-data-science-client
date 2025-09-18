@@ -4,7 +4,6 @@ import pytest
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.catalog.node_properties_arrow_endpoints import (
     NodePropertiesArrowEndpoints,
@@ -74,7 +73,7 @@ def test_stream_node_properties(node_properties_endpoints: NodePropertiesArrowEn
 
 @pytest.mark.db_integration
 def test_stream_node_properties_with_db_properties(
-    node_properties_endpoints_with_db: NodePropertiesArrowEndpoints, db_graph: Graph
+    node_properties_endpoints_with_db: NodePropertiesArrowEndpoints, db_graph: GraphV2
 ) -> None:
     result = node_properties_endpoints_with_db.stream(
         G=db_graph, node_properties=["prop1"], db_node_properties=["prop2"]
