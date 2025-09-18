@@ -6,7 +6,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
-from ..api.degree_endpoints import DegreeEndpoints, DegreeMutateResult, DegreeStatsResult, DegreeWriteResult
+from graphdatascience.procedure_surface.api.centrality.degree_endpoints import DegreeEndpoints, DegreeMutateResult, DegreeStatsResult, DegreeWriteResult
 from ..api.estimation_result import EstimationResult
 from ..utils.config_converter import ConfigConverter
 from .estimation_utils import estimate_algorithm

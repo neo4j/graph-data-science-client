@@ -7,7 +7,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
 from ..api.estimation_result import EstimationResult
-from ..api.pagerank_endpoints import PageRankEndpoints, PageRankMutateResult, PageRankStatsResult, PageRankWriteResult
+from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import PageRankEndpoints, PageRankMutateResult, PageRankStatsResult, PageRankWriteResult
 from ..utils.config_converter import ConfigConverter
 from .estimation_utils import estimate_algorithm
 

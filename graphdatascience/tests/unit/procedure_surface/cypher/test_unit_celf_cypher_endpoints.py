@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.celf_endpoints import (
+from graphdatascience.procedure_surface.api.centrality.celf_endpoints import (
     CelfMutateResult,
     CelfStatsResult,
     CelfWriteResult,

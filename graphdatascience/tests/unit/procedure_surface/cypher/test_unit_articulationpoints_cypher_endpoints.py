@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.procedure_surface.api.articulationpoints_endpoints import (
+from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import (
     ArticulationPointsMutateResult,
     ArticulationPointsStatsResult,
     ArticulationPointsWriteResult,

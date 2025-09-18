@@ -7,13 +7,13 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
-from .base_result import BaseResult
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
-class LouvainEndpoints(ABC):
+class SccEndpoints(ABC):
     """
-    Abstract base class defining the API for the Louvain algorithm.
+    Abstract base class defining the API for the Strongly Connected Components (SCC) algorithm.
     """
 
     @abstractmethod
@@ -21,10 +21,6 @@ class LouvainEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        tolerance: Optional[float] = None,
-        max_levels: Optional[int] = None,
-        include_intermediate_communities: Optional[bool] = None,
-        max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -32,27 +28,17 @@ class LouvainEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        seed_property: Optional[str] = None,
         consecutive_ids: Optional[bool] = None,
-        relationship_weight_property: Optional[str] = None,
-    ) -> LouvainMutateResult:
+    ) -> SccMutateResult:
         """
-        Executes the Louvain algorithm and writes the results to the in-memory graph as node properties.
+        Executes the SCC algorithm and writes the results to the in-memory graph as node properties.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the community ID for each node
-        tolerance : Optional[float], default=None
-            The tolerance value for the algorithm convergence
-        max_levels : Optional[int], default=None
-            The maximum number of levels in the hierarchy
-        include_intermediate_communities : Optional[bool], default=None
-            Whether to include intermediate community assignments
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations per level
+            The property name to store the component ID for each node
         relationship_types : Optional[List[str]], default=None
             The relationships types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
@@ -67,16 +53,12 @@ class LouvainEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        seed_property : Optional[str], default=None
-            Defines node properties that are used as initial community identifiers
         consecutive_ids : Optional[bool], default=None
-            Flag to decide whether community identifiers are mapped into a consecutive id space
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
+            Flag to decide whether component identifiers are mapped into a consecutive id space
 
         Returns
         -------
-        LouvainMutateResult
+        SccMutateResult
             Algorithm metrics and statistics
         """
         pass
@@ -85,10 +67,6 @@ class LouvainEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        tolerance: Optional[float] = None,
-        max_levels: Optional[int] = None,
-        include_intermediate_communities: Optional[bool] = None,
-        max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -96,25 +74,15 @@ class LouvainEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        seed_property: Optional[str] = None,
         consecutive_ids: Optional[bool] = None,
-        relationship_weight_property: Optional[str] = None,
-    ) -> LouvainStatsResult:
+    ) -> SccStatsResult:
         """
-        Executes the Louvain algorithm and returns statistics.
+        Executes the SCC algorithm and returns statistics.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        tolerance : Optional[float], default=None
-            The tolerance value for the algorithm convergence
-        max_levels : Optional[int], default=None
-            The maximum number of levels in the hierarchy
-        include_intermediate_communities : Optional[bool], default=None
-            Whether to include intermediate community assignments
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations per level
         relationship_types : Optional[List[str]], default=None
             The relationships types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
@@ -129,16 +97,12 @@ class LouvainEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        seed_property : Optional[str], default=None
-            Defines node properties that are used as initial community identifiers
         consecutive_ids : Optional[bool], default=None
-            Flag to decide whether community identifiers are mapped into a consecutive id space
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
+            Flag to decide whether component identifiers are mapped into a consecutive id space
 
         Returns
         -------
-        LouvainStatsResult
+        SccStatsResult
             Algorithm metrics and statistics
         """
         pass
@@ -147,10 +111,6 @@ class LouvainEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        tolerance: Optional[float] = None,
-        max_levels: Optional[int] = None,
-        include_intermediate_communities: Optional[bool] = None,
-        max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -158,26 +118,15 @@ class LouvainEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        seed_property: Optional[str] = None,
         consecutive_ids: Optional[bool] = None,
-        relationship_weight_property: Optional[str] = None,
-        min_community_size: Optional[int] = None,
     ) -> DataFrame:
         """
-        Executes the Louvain algorithm and returns a stream of results.
+        Executes the SCC algorithm and returns a stream of results.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        tolerance : Optional[float], default=None
-            The tolerance value for the algorithm convergence
-        max_levels : Optional[int], default=None
-            The maximum number of levels in the hierarchy
-        include_intermediate_communities : Optional[bool], default=None
-            Whether to include intermediate community assignments
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations per level
         relationship_types : Optional[List[str]], default=None
             The relationships types considered in this algorithm run
         node_labels : Optional[List[str]], default=None
@@ -192,14 +141,8 @@ class LouvainEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        seed_property : Optional[str], default=None
-            Defines node properties that are used as initial community identifiers
         consecutive_ids : Optional[bool], default=None
-            Flag to decide whether community identifiers are mapped into a consecutive id space
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
-        min_community_size : Optional[int], default=None
-            Don't stream communities with fewer nodes than this
+            Flag to decide whether component identifiers are mapped into a consecutive id space
 
         Returns
         -------
@@ -213,10 +156,6 @@ class LouvainEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        tolerance: Optional[float] = None,
-        max_levels: Optional[int] = None,
-        include_intermediate_communities: Optional[bool] = None,
-        max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -224,29 +163,18 @@ class LouvainEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        seed_property: Optional[str] = None,
         consecutive_ids: Optional[bool] = None,
-        relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
-        min_community_size: Optional[int] = None,
-    ) -> LouvainWriteResult:
+    ) -> SccWriteResult:
         """
-        Executes the Louvain algorithm and writes the results to the Neo4j database.
+        Executes the SCC algorithm and writes the results to the Neo4j database.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         write_property : str
-            The property name to write community IDs to
-        tolerance : Optional[float], default=None
-            The tolerance value for the algorithm convergence
-        max_levels : Optional[int], default=None
-            The maximum number of levels in the hierarchy
-        include_intermediate_communities : Optional[bool], default=None
-            Whether to include intermediate community assignments
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations per level
+            The property name to write component IDs to
         relationship_types : Optional[List[str]], default=None
             The relationships types considered in this algorithm run
         node_labels : Optional[List[str]], default=None
@@ -261,20 +189,14 @@ class LouvainEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        seed_property : Optional[str], default=None
-            Defines node properties that are used as initial community identifiers
         consecutive_ids : Optional[bool], default=None
-            Flag to decide whether community identifiers are mapped into a consecutive id space
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
+            Flag to decide whether component identifiers are mapped into a consecutive id space
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads during the write phase
-        min_community_size : Optional[int], default=None
-            Don't write communities with fewer nodes than this
 
         Returns
         -------
-        LouvainWriteResult
+        SccWriteResult
             Algorithm metrics and statistics
         """
         pass
@@ -283,16 +205,10 @@ class LouvainEndpoints(ABC):
     def estimate(
         self,
         G: Union[GraphV2, dict[str, Any]],
-        tolerance: Optional[float] = None,
-        max_levels: Optional[int] = None,
-        include_intermediate_communities: Optional[bool] = None,
-        max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
-        seed_property: Optional[str] = None,
         consecutive_ids: Optional[bool] = None,
-        relationship_weight_property: Optional[str] = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
@@ -301,41 +217,26 @@ class LouvainEndpoints(ABC):
         ----------
         G : Union[GraphV2, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
-        tolerance : Optional[float], default=None
-            The tolerance value for the algorithm convergence
-        max_levels : Optional[int], default=None
-            The maximum number of levels in the hierarchy
-        include_intermediate_communities : Optional[bool], default=None
-            Whether to include intermediate community assignments
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations per level
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         concurrency : Optional[Any], default=None
             The number of concurrent threads
-        seed_property : Optional[str], default=None
-            A property to use as the starting community id for a node
         consecutive_ids : Optional[bool], default=None
             Flag to decide if the component identifiers should be returned consecutively or not
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
 
         Returns
         -------
         EstimationResult
-            An object containing the result of the estimation
+            Memory estimation details
         """
         pass
 
 
-class LouvainMutateResult(BaseResult):
-    modularity: float
-    modularities: List[Any]
-    ran_levels: int
-    community_count: int
-    community_distribution: dict[str, Any]
+class SccMutateResult(BaseResult):
+    component_count: int
+    component_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
@@ -344,27 +245,21 @@ class LouvainMutateResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class LouvainStatsResult(BaseResult):
-    modularity: float
-    modularities: List[Any]
-    ran_levels: int
-    community_count: int
-    community_distribution: dict[str, Any]
+class SccStatsResult(BaseResult):
+    component_count: int
+    component_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
     configuration: dict[str, Any]
 
 
-class LouvainWriteResult(BaseResult):
-    modularity: float
-    modularities: List[Any]
-    ran_levels: int
-    community_count: int
-    community_distribution: dict[str, Any]
+class SccWriteResult(BaseResult):
+    component_count: int
+    component_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
-    post_processing_millis: int
     write_millis: int
+    post_processing_millis: int
     node_properties_written: int
     configuration: dict[str, Any]

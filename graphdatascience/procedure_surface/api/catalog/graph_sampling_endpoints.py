@@ -34,9 +34,9 @@ class GraphSamplingEndpoints(ABC):
         """
         Random walk with restarts (RWR) samples the graph by taking random walks from a set of start nodes.
 
-	    On each step of a random walk, there is a probability that the walk stops, and a new walk from one of the start
-	    nodes starts instead (i.e. the walk restarts). Each node visited on these walks will be part of the sampled
-	    subgraph. The resulting subgraph is stored as a new graph in the Graph Catalog.
+        On each step of a random walk, there is a probability that the walk stops, and a new walk from one of the start
+        nodes starts instead (i.e. the walk restarts). Each node visited on these walks will be part of the sampled
+        subgraph. The resulting subgraph is stored as a new graph in the Graph Catalog.
 
         Parameters
         ----------
@@ -46,7 +46,7 @@ class GraphSamplingEndpoints(ABC):
             The name of the new graph that is stored in the graph catalog.
         start_nodes : list of int, optional
             IDs of the initial set of nodes in the original graph from which the sampling random walks will start.
-	        By default, a single node is chosen uniformly at random.
+            By default, a single node is chosen uniformly at random.
         restart_probability : float, optional
             The probability that a sampling random walk restarts from one of the start nodes.
             Default is 0.1.

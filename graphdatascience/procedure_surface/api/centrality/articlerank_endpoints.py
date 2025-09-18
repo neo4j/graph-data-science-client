@@ -5,15 +5,15 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
-from .base_result import BaseResult
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
-class WccEndpoints(ABC):
+class ArticleRankEndpoints(ABC):
     """
-    Abstract base class defining the API for the Weakly Connected Components (WCC) algorithm.
+    Abstract base class defining the API for the ArticleRank algorithm.
     """
 
     @abstractmethod
@@ -21,7 +21,10 @@ class WccEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        threshold: Optional[float] = None,
+        damping_factor: Optional[float] = None,
+        tolerance: Optional[float] = None,
+        max_iterations: Optional[int] = None,
+        scaler: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -29,21 +32,26 @@ class WccEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        seed_property: Optional[str] = None,
-        consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
-    ) -> WccMutateResult:
+        source_nodes: Optional[Any] = None,
+    ) -> ArticleRankMutateResult:
         """
-        Executes the WCC algorithm and writes the results to the in-memory graph as node properties.
+        Executes the ArticleRank algorithm and writes the results back to the graph as a node property.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the component ID for each node
-        threshold : Optional[float], default=None
-            The minimum required weight to consider a relationship during traversal
+            The property name to store the ArticleRank score for each node
+        damping_factor : Optional[float], default=None
+            The damping factor controls the probability of a random jump to a random node
+        tolerance : Optional[float], default=None
+            Minimum change in scores between iterations
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations to run
+        scaler : Optional[Any], default=None
+            Configuration for scaling the scores
         relationship_types : Optional[List[str]], default=None
             The relationships types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
@@ -58,25 +66,25 @@ class WccEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        seed_property : Optional[str], default=None
-            Defines node properties that are used as initial component identifiers
-        consecutive_ids : Optional[bool], default=None
-            Flag to decide whether component identifiers are mapped into a consecutive id space
         relationship_weight_property : Optional[str], default=None
             The property name that contains weight
+        source_nodes : Optional[Any], default=None
+            The source nodes for personalized ArticleRank
 
         Returns
         -------
-        WccMutateResult
+        ArticleRankMutateResult
             Algorithm metrics and statistics
         """
-        pass
 
     @abstractmethod
     def stats(
         self,
         G: GraphV2,
-        threshold: Optional[float] = None,
+        damping_factor: Optional[float] = None,
+        tolerance: Optional[float] = None,
+        max_iterations: Optional[int] = None,
+        scaler: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -84,19 +92,24 @@ class WccEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        seed_property: Optional[str] = None,
-        consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
-    ) -> WccStatsResult:
+        source_nodes: Optional[Any] = None,
+    ) -> ArticleRankStatsResult:
         """
-        Executes the WCC algorithm and returns statistics.
+        Executes the ArticleRank algorithm and returns result statistics without writing the result to Neo4j.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        threshold : Optional[float], default=None
-            The minimum required weight to consider a relationship during traversal
+        damping_factor : Optional[float], default=None
+            The damping factor controls the probability of a random jump to a random node
+        tolerance : Optional[float], default=None
+            Minimum change in scores between iterations
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations to run
+        scaler : Optional[Any], default=None
+            Configuration for scaling the scores
         relationship_types : Optional[List[str]], default=None
             The relationships types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
@@ -111,26 +124,25 @@ class WccEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        seed_property : Optional[str], default=None
-            Defines node properties that are used as initial component identifiers
-        consecutive_ids : Optional[bool], default=None
-            Flag to decide whether component identifiers are mapped into a consecutive id space
         relationship_weight_property : Optional[str], default=None
             The property name that contains weight
+        source_nodes : Optional[Any], default=None
+            The source nodes for personalized ArticleRank
 
         Returns
         -------
-        WccStatsResult
-            Algorithm metrics and statistics
+        ArticleRankStatsResult
+            Algorithm statistics
         """
-        pass
 
     @abstractmethod
     def stream(
         self,
         G: GraphV2,
-        min_component_size: Optional[int] = None,
-        threshold: Optional[float] = None,
+        damping_factor: Optional[float] = None,
+        tolerance: Optional[float] = None,
+        max_iterations: Optional[int] = None,
+        scaler: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -138,23 +150,26 @@ class WccEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        seed_property: Optional[str] = None,
-        consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
+        source_nodes: Optional[Any] = None,
     ) -> DataFrame:
         """
-        Executes the WCC algorithm and returns a stream of results.
+        Executes the ArticleRank algorithm and returns the results as a stream.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        min_component_size : Optional[int], default=None
-            Don't stream components with fewer nodes than this
-        threshold : Optional[float], default=None
-            The minimum required weight to consider a relationship during traversal
+        damping_factor : Optional[float], default=None
+            The damping factor controls the probability of a random jump to a random node
+        tolerance : Optional[float], default=None
+            Minimum change in scores between iterations
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations to run
+        scaler : Optional[Any], default=None
+            Configuration for scaling the scores
         relationship_types : Optional[List[str]], default=None
-            The relationships types considered in this algorithm run
+            The relationships types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         sudo : Optional[bool], default=None
@@ -167,27 +182,26 @@ class WccEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        seed_property : Optional[str], default=None
-            Defines node properties that are used as initial component identifiers
-        consecutive_ids : Optional[bool], default=None
-            Flag to decide whether component identifiers are mapped into a consecutive id space
         relationship_weight_property : Optional[str], default=None
             The property name that contains weight
+        source_nodes : Optional[Any], default=None
+            The source nodes for personalized ArticleRank
 
         Returns
         -------
         DataFrame
-            DataFrame with the algorithm results
+            DataFrame with node IDs and their ArticleRank scores
         """
-        pass
 
     @abstractmethod
     def write(
         self,
         G: GraphV2,
         write_property: str,
-        min_component_size: Optional[int] = None,
-        threshold: Optional[float] = None,
+        damping_factor: Optional[float] = None,
+        tolerance: Optional[float] = None,
+        max_iterations: Optional[int] = None,
+        scaler: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -195,26 +209,29 @@ class WccEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        seed_property: Optional[str] = None,
-        consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
-        write_concurrency: Optional[Any] = None,
-    ) -> WccWriteResult:
+        source_nodes: Optional[Any] = None,
+        write_concurrency: Optional[int] = None,
+    ) -> ArticleRankWriteResult:
         """
-        Executes the WCC algorithm and writes the results to the Neo4j database.
+        Executes the ArticleRank algorithm and writes the results to Neo4j.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         write_property : str
-            The property name to write component IDs to
-        min_component_size : Optional[int], default=None
-            Don't write components with fewer nodes than this
-        threshold : Optional[float], default=None
-            The minimum required weight to consider a relationship during traversal
+            The property name to write the ArticleRank score for each node
+        damping_factor : Optional[float], default=None
+            The damping factor controls the probability of a random jump to a random node
+        tolerance : Optional[float], default=None
+            Minimum change in scores between iterations
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations to run
+        scaler : Optional[Any], default=None
+            Configuration for scaling the scores
         relationship_types : Optional[List[str]], default=None
-            The relationships types considered in this algorithm run
+            The relationships types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         sudo : Optional[bool], default=None
@@ -227,33 +244,32 @@ class WccEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        seed_property : Optional[str], default=None
-            Defines node properties that are used as initial component identifiers
-        consecutive_ids : Optional[bool], default=None
-            Flag to decide whether component identifiers are mapped into a consecutive id space
         relationship_weight_property : Optional[str], default=None
             The property name that contains weight
-        write_concurrency : Optional[Any], default=None
-            The number of concurrent threads during the write phase
+        source_nodes : Optional[Any], default=None
+            The source nodes for personalized ArticleRank
+        write_concurrency : Optional[int], default=None
+            The number of concurrent threads used for writing
 
         Returns
         -------
-        WccWriteResult
+        ArticleRankWriteResult
             Algorithm metrics and statistics
         """
-        pass
 
     @abstractmethod
     def estimate(
         self,
         G: Union[GraphV2, dict[str, Any]],
-        threshold: Optional[float] = None,
+        damping_factor: Optional[float] = None,
+        tolerance: Optional[float] = None,
+        max_iterations: Optional[int] = None,
+        scaler: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
-        seed_property: Optional[str] = None,
-        consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
+        source_nodes: Optional[Any] = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
@@ -262,32 +278,36 @@ class WccEndpoints(ABC):
         ----------
         G : Union[GraphV2, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
-        threshold : Optional[float], default=None
-            The minimum required weight to consider a relationship during traversal
+        damping_factor : Optional[float], default=None
+            The damping factor controls the probability of a random jump to a random node
+        tolerance : Optional[float], default=None
+            Minimum change in scores between iterations
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations to run
+        scaler : Optional[Any], default=None
+            Configuration for scaling the scores
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
+            The relationships types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         concurrency : Optional[Any], default=None
             The number of concurrent threads
-        seed_property : Optional[str], default=None
-            A property to use as the starting component id for a node
-        consecutive_ids : Optional[bool], default=None
-            Flag to decide if the component identifiers should be returned consecutively or not
         relationship_weight_property : Optional[str], default=None
             The property name that contains weight
+        source_nodes : Optional[Any], default=None
+            The source nodes for personalized ArticleRank
 
         Returns
         -------
         EstimationResult
             Memory estimation details
         """
-        pass
 
 
-class WccMutateResult(BaseResult):
-    component_count: int
-    component_distribution: dict[str, Any]
+class ArticleRankMutateResult(BaseResult):
+    ran_iterations: int
+    did_converge: bool
+    centrality_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
@@ -296,21 +316,23 @@ class WccMutateResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class WccStatsResult(BaseResult):
-    component_count: int
-    component_distribution: dict[str, Any]
+class ArticleRankStatsResult(BaseResult):
+    ran_iterations: int
+    did_converge: bool
+    centrality_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
     configuration: dict[str, Any]
 
 
-class WccWriteResult(BaseResult):
-    component_count: int
-    component_distribution: dict[str, Any]
+class ArticleRankWriteResult(BaseResult):
+    ran_iterations: int
+    did_converge: bool
+    centrality_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
-    write_millis: int
     post_processing_millis: int
+    write_millis: int
     node_properties_written: int
     configuration: dict[str, Any]

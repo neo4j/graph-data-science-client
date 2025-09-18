@@ -7,18 +7,17 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
-from .base_result import BaseResult
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
-class EigenvectorEndpoints(ABC):
+class DegreeEndpoints(ABC):
     """
-    Abstract base class defining the API for the Eigenvector Centrality algorithm.
+    Abstract base class defining the API for the Degree Centrality algorithm.
 
-    Eigenvector centrality measures the influence of a node in a network based on the
-    concept that connections to high-scoring nodes contribute more to the score than
-    equal connections to low-scoring nodes. It's computed as the principal eigenvector
-    of the adjacency matrix.
+    Degree centrality measures the number of incoming and outgoing relationships from a node.
+    It's one of the simplest centrality measures, where a node's importance is determined by
+    the number of direct connections it has.
     """
 
     @abstractmethod
@@ -26,11 +25,7 @@ class EigenvectorEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        max_iterations: Optional[int] = None,
-        tolerance: Optional[float] = None,
-        source_nodes: Optional[Any] = None,
-        scaler: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
+        orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -38,26 +33,22 @@ class EigenvectorEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> EigenvectorMutateResult:
+        relationship_weight_property: Optional[str] = None,
+    ) -> DegreeMutateResult:
         """
-        Executes the Eigenvector Centrality algorithm and writes the results to the in-memory graph as node properties.
+        Executes the Degree Centrality algorithm and writes the results to the in-memory graph as node properties.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the eigenvector centrality score for each node
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations to run the algorithm
-        tolerance : Optional[float], default=None
-            The tolerance for convergence detection
-        source_nodes : Optional[Any], default=None
-            The source nodes to start the computation from
-        scaler : Optional[Any], default=None
-            Scaling configuration for the algorithm
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains weight values for relationships
+            The property name to store the degree centrality score for each node
+        orientation : Optional[Any], default=None
+            The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
+            'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
+            'REVERSE' treats each relationship as if it were directed in the opposite direction.
+            'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
@@ -73,10 +64,14 @@ class EigenvectorEndpoints(ABC):
             The number of concurrent threads used for the algorithm execution.
         job_id : Optional[Any], default=None
             An identifier for the job that can be used for monitoring and cancellation
+        relationship_weight_property : Optional[str], default=None
+            The property name that contains relationship weights. If specified,
+            weighted degree centrality is computed where each relationship contributes
+            its weight to the total degree.
 
         Returns
         -------
-        EigenvectorMutateResult
+        DegreeMutateResult
             Algorithm metrics and statistics including the centrality distribution
         """
         pass
@@ -85,11 +80,7 @@ class EigenvectorEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        max_iterations: Optional[int] = None,
-        tolerance: Optional[float] = None,
-        source_nodes: Optional[Any] = None,
-        scaler: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
+        orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -97,24 +88,20 @@ class EigenvectorEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> EigenvectorStatsResult:
+        relationship_weight_property: Optional[str] = None,
+    ) -> DegreeStatsResult:
         """
-        Executes the Eigenvector Centrality algorithm and returns statistics without writing the result to Neo4j.
+        Executes the Degree Centrality algorithm and returns statistics without writing the result to Neo4j.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations to run the algorithm
-        tolerance : Optional[float], default=None
-            The tolerance for convergence detection
-        source_nodes : Optional[Any], default=None
-            The source nodes to start the computation from
-        scaler : Optional[Any], default=None
-            Scaling configuration for the algorithm
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains weight values for relationships
+        orientation : Optional[Any], default=None
+            The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
+            'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
+            'REVERSE' treats each relationship as if it were directed in the opposite direction.
+            'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
@@ -130,10 +117,14 @@ class EigenvectorEndpoints(ABC):
             The number of concurrent threads used for the algorithm execution.
         job_id : Optional[Any], default=None
             An identifier for the job that can be used for monitoring and cancellation
+        relationship_weight_property : Optional[str], default=None
+            The property name that contains relationship weights. If specified,
+            weighted degree centrality is computed where each relationship contributes
+            its weight to the total degree.
 
         Returns
         -------
-        EigenvectorStatsResult
+        DegreeStatsResult
             Algorithm statistics including the centrality distribution
         """
         pass
@@ -142,11 +133,7 @@ class EigenvectorEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        max_iterations: Optional[int] = None,
-        tolerance: Optional[float] = None,
-        source_nodes: Optional[Any] = None,
-        scaler: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
+        orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -154,24 +141,20 @@ class EigenvectorEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
+        relationship_weight_property: Optional[str] = None,
     ) -> DataFrame:
         """
-        Executes the Eigenvector Centrality algorithm and returns a stream of results.
+        Executes the Degree Centrality algorithm and returns a stream of results.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations to run the algorithm
-        tolerance : Optional[float], default=None
-            The tolerance for convergence detection
-        source_nodes : Optional[Any], default=None
-            The source nodes to start the computation from
-        scaler : Optional[Any], default=None
-            Scaling configuration for the algorithm
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains weight values for relationships
+        orientation : Optional[Any], default=None
+            The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
+            'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
+            'REVERSE' treats each relationship as if it were directed in the opposite direction.
+            'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
@@ -187,11 +170,16 @@ class EigenvectorEndpoints(ABC):
             The number of concurrent threads used for the algorithm execution.
         job_id : Optional[Any], default=None
             An identifier for the job that can be used for monitoring and cancellation
+        relationship_weight_property : Optional[str], default=None
+            The property name that contains relationship weights. If specified,
+            weighted degree centrality is computed where each relationship contributes
+            its weight to the total degree.
 
         Returns
         -------
         DataFrame
-            DataFrame with the algorithm results containing nodeId and score columns
+            DataFrame with nodeId and score columns containing degree centrality results.
+            Each row represents a node with its corresponding degree centrality score.
         """
         pass
 
@@ -200,11 +188,7 @@ class EigenvectorEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        max_iterations: Optional[int] = None,
-        tolerance: Optional[float] = None,
-        source_nodes: Optional[Any] = None,
-        scaler: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
+        orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -212,27 +196,23 @@ class EigenvectorEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
+        relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
-    ) -> EigenvectorWriteResult:
+    ) -> DegreeWriteResult:
         """
-        Executes the Eigenvector Centrality algorithm and writes the results to the Neo4j database.
+        Executes the Degree Centrality algorithm and writes the results to the Neo4j database.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         write_property : str
-            The property name to write the eigenvector centrality scores to
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations to run the algorithm
-        tolerance : Optional[float], default=None
-            The tolerance for convergence detection
-        source_nodes : Optional[Any], default=None
-            The source nodes to start the computation from
-        scaler : Optional[Any], default=None
-            Scaling configuration for the algorithm
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains weight values for relationships
+            The property name to store the degree centrality score for each node in the database
+        orientation : Optional[Any], default=None
+            The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
+            'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
+            'REVERSE' treats each relationship as if it were directed in the opposite direction.
+            'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
@@ -248,13 +228,17 @@ class EigenvectorEndpoints(ABC):
             The number of concurrent threads used for the algorithm execution.
         job_id : Optional[Any], default=None
             An identifier for the job that can be used for monitoring and cancellation
+        relationship_weight_property : Optional[str], default=None
+            The property name that contains relationship weights. If specified,
+            weighted degree centrality is computed where each relationship contributes
+            its weight to the total degree.
         write_concurrency : Optional[Any], default=None
-            The number of concurrent threads during the write phase
+            The number of concurrent threads used during the write phase.
 
         Returns
         -------
-        EigenvectorWriteResult
-            Algorithm metrics and statistics including the centrality distribution
+        DegreeWriteResult
+            Algorithm metrics and statistics including the centrality distribution and write timing
         """
         pass
 
@@ -262,14 +246,11 @@ class EigenvectorEndpoints(ABC):
     def estimate(
         self,
         G: Union[GraphV2, dict[str, Any]],
-        max_iterations: Optional[int] = None,
-        tolerance: Optional[float] = None,
-        source_nodes: Optional[Any] = None,
-        scaler: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
+        orientation: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
+        relationship_weight_property: Optional[str] = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
@@ -277,51 +258,40 @@ class EigenvectorEndpoints(ABC):
         Parameters
         ----------
         G : Union[GraphV2, dict[str, Any]]
-            The graph to run the algorithm on or a dictionary representing the graph configuration.
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations to run the algorithm
-        tolerance : Optional[float], default=None
-            The tolerance for convergence detection
-        source_nodes : Optional[Any], default=None
-            The source nodes to start the computation from
-        scaler : Optional[Any], default=None
-            Scaling configuration for the algorithm
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains weight values for relationships
+            The graph to run the algorithm on or a dictionary representing the graph.
+        orientation : Optional[Any], default=None
+            The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run.
+            The relationship types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run.
+            The node labels used to select nodes for this algorithm run
         concurrency : Optional[Any], default=None
-            The number of concurrent threads used for the algorithm execution.
+            The number of concurrent threads
+        relationship_weight_property : Optional[str], default=None
+            The property name that contains weight
 
         Returns
         -------
         EstimationResult
-            An object containing the result of the estimation
+            Memory estimation details
         """
-        pass
 
 
-class EigenvectorMutateResult(BaseResult):
-    """Result of running Eigenvector Centrality algorithm with mutate mode."""
+class DegreeMutateResult(BaseResult):
+    """Result of running Degree Centrality algorithm with mutate mode."""
 
     node_properties_written: int
-    ran_iterations: int
-    did_converge: bool
-    centrality_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
     mutate_millis: int
+    centrality_distribution: dict[str, Any]
     configuration: dict[str, Any]
 
 
-class EigenvectorStatsResult(BaseResult):
-    """Result of running Eigenvector Centrality algorithm with stats mode."""
+class DegreeStatsResult(BaseResult):
+    """Result of running Degree Centrality algorithm with stats mode."""
 
-    ran_iterations: int
-    did_converge: bool
     centrality_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
@@ -329,15 +299,13 @@ class EigenvectorStatsResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class EigenvectorWriteResult(BaseResult):
-    """Result of running Eigenvector Centrality algorithm with write mode."""
+class DegreeWriteResult(BaseResult):
+    """Result of running Degree Centrality algorithm with write mode."""
 
     node_properties_written: int
-    ran_iterations: int
-    did_converge: bool
-    centrality_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
     write_millis: int
+    centrality_distribution: dict[str, Any]
     configuration: dict[str, Any]

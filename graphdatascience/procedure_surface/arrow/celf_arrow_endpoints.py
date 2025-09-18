@@ -6,7 +6,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from ..api.celf_endpoints import CelfEndpoints, CelfMutateResult, CelfStatsResult, CelfWriteResult
+from graphdatascience.procedure_surface.api.centrality.celf_endpoints import CelfEndpoints, CelfMutateResult, CelfStatsResult, CelfWriteResult
 from ..api.estimation_result import EstimationResult
 from .node_property_endpoints import NodePropertyEndpoints
 

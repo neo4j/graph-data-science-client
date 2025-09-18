@@ -4,7 +4,7 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.scc_endpoints import SccMutateResult, SccStatsResult
+from graphdatascience.procedure_surface.api.community.scc_endpoints import SccMutateResult, SccStatsResult
 from graphdatascience.procedure_surface.arrow.scc_arrow_endpoints import SccArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 

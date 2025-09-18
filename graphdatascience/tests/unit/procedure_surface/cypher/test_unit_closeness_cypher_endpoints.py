@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.closeness_endpoints import (
+from graphdatascience.procedure_surface.api.centrality.closeness_endpoints import (
     ClosenessStatsResult,
     ClosenessWriteResult,
 )
