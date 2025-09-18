@@ -6,7 +6,7 @@ from graphdatascience.procedure_surface.api.wcc_endpoints import WccMutateResult
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.cypher.wcc_cypher_endpoints import WccCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
-from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
+from graphdatascience.tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
 
 
 @pytest.fixture

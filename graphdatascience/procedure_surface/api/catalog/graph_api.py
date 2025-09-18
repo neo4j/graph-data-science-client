@@ -89,9 +89,9 @@ class GraphV2(ABC):
         Returns:
             the relationship properties per relationship type
         """
-        types_to_props = self._backend.graph_info().graph_schema["relationships"]
+        rel_schema = self._backend.graph_info().graph_schema["relationships"]
 
-        return {key: list(val.keys()) for key, val in types_to_props.items()}
+        return {rel_type: list(val.get("properties", {}).keys()) for rel_type, val in rel_schema.items()}
 
     def degree_distribution(self) -> dict[str, float | int]:
         """

@@ -10,7 +10,7 @@ from graphdatascience.procedure_surface.cypher.closeness_harmonic_cypher_endpoin
     ClosenessHarmonicCypherEndpoints,
 )
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
-from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
+from graphdatascience.tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
 
 
 @pytest.fixture
