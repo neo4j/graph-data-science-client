@@ -95,7 +95,9 @@ class CelfEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> CelfStatsResult:
         """
-        Executes the CELF algorithm and returns statistics without writing the result to Neo4j.
+        Runs the CELF algorithm and returns result statistics without storing the results.
+
+        The influence maximization problem asks for a set of k nodes that maximize the expected spread of influence in the network.
 
         Parameters
         ----------
@@ -206,7 +208,9 @@ class CelfEndpoints(ABC):
         write_concurrency: Optional[Any] = None,
     ) -> CelfWriteResult:
         """
-        Executes the CELF algorithm and writes the results to the Neo4j database.
+        Runs the CELF algorithm and stores the result in the Neo4j database as a new node property.
+
+        The influence maximization problem asks for a set of k nodes that maximize the expected spread of influence in the network.
 
         Parameters
         ----------

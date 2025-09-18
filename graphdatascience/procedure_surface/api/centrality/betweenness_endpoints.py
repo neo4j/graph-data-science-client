@@ -89,7 +89,12 @@ class BetweennessEndpoints(ABC):
         relationship_weight_property: Optional[str] = None,
     ) -> BetweennessStatsResult:
         """
-        Executes the Betweenness Centrality algorithm and returns result statistics without writing the result to Neo4j.
+        Runs the Betweenness Centrality algorithm and returns result statistics without storing the results.
+
+        Betweenness centrality is a way of detecting the amount of influence a node has over the flow of information in a graph.
+        It is often used to find nodes that serve as a bridge from one part of a graph to another.
+        The algorithm calculates shortest paths between all pairs of nodes in a graph.
+        Each node receives a score, based on the number of shortest paths that pass through the node.
 
         Parameters
         ----------
@@ -189,7 +194,12 @@ class BetweennessEndpoints(ABC):
         write_concurrency: Optional[Any] = None,
     ) -> BetweennessWriteResult:
         """
-        Executes the Betweenness Centrality algorithm and writes the results to the Neo4j database.
+        Runs the Betweenness Centrality algorithm and stores the result in the Neo4j database as a new node property.
+
+        Betweenness centrality is a way of detecting the amount of influence a node has over the flow of information in a graph.
+        It is often used to find nodes that serve as a bridge from one part of a graph to another.
+        The algorithm calculates shortest paths between all pairs of nodes in a graph.
+        Each node receives a score, based on the number of shortest paths that pass through the node.
 
         Parameters
         ----------
