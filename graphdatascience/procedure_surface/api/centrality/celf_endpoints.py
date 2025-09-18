@@ -42,28 +42,27 @@ class CelfEndpoints(ABC):
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization
         mutate_property : str
-            The property name to store the influence spread value for each selected node
+            Name of the node property to store the results in.
         propagation_probability : Optional[float], default=None
-            The probability that influence spreads from one node to another.
+            Probability of a node being activated by an active neighbour node.
         monte_carlo_simulations : Optional[int], default=None
-            The number of Monte-Carlo simulations.
+            Number of Monte-Carlo simulations.
         random_seed : Optional[Any], default=None
             Random seed for reproducible results.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run.
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress of the algorithm execution
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads used for the algorithm execution.
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job that can be used for monitoring and cancellation
+            Identifier for the job.
 
         Returns
         -------
@@ -100,26 +99,25 @@ class CelfEndpoints(ABC):
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization
         propagation_probability : Optional[float], default=None
-            The probability that influence spreads from one node to another.
+            Probability of a node being activated by an active neighbour node.
         monte_carlo_simulations : Optional[int], default=None
-            The number of Monte-Carlo simulations.
+            Number of Monte-Carlo simulations.
         random_seed : Optional[Any], default=None
             Random seed for reproducible results.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run.
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress of the algorithm execution
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads used for the algorithm execution.
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job that can be used for monitoring and cancellation
+            Identifier for the job.
 
         Returns
         -------
@@ -213,28 +211,27 @@ class CelfEndpoints(ABC):
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization
         write_property : str
-            The property name to store the influence spread value for each selected node in the database
+            Name of the node property to store the results in.
         propagation_probability : Optional[float], default=None
-            The probability that influence spreads from one node to another.
+            Probability of a node being activated by an active neighbour node.
         monte_carlo_simulations : Optional[int], default=None
-            The number of Monte-Carlo simulations.
+            Number of Monte-Carlo simulations.
         random_seed : Optional[Any], default=None
             Random seed for reproducible results.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run.
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress of the algorithm execution
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads used for the algorithm execution.
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job that can be used for monitoring and cancellation
+            Identifier for the job.
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads used during the write phase.
 

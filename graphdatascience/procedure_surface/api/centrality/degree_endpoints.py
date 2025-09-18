@@ -41,31 +41,25 @@ class DegreeEndpoints(ABC):
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the degree centrality score for each node
+            Name of the node property to store the results in.
         orientation : Optional[Any], default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-            'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
-            'REVERSE' treats each relationship as if it were directed in the opposite direction.
-            'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run.
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress of the algorithm execution
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads used for the algorithm execution.
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job that can be used for monitoring and cancellation
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights. If specified,
-            weighted degree centrality is computed where each relationship contributes
-            its weight to the total degree.
+            Name of the property to be used as weights.
 
         Returns
         -------
@@ -102,28 +96,22 @@ class DegreeEndpoints(ABC):
             The graph to run the algorithm on
         orientation : Optional[Any], default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-            'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
-            'REVERSE' treats each relationship as if it were directed in the opposite direction.
-            'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run.
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress of the algorithm execution
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads used for the algorithm execution.
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job that can be used for monitoring and cancellation
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights. If specified,
-            weighted degree centrality is computed where each relationship contributes
-            its weight to the total degree.
+            Name of the property to be used as weights.
 
         Returns
         -------
@@ -218,28 +206,22 @@ class DegreeEndpoints(ABC):
             The property name to store the degree centrality score for each node in the database
         orientation : Optional[Any], default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-            'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
-            'REVERSE' treats each relationship as if it were directed in the opposite direction.
-            'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run.
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress of the algorithm execution
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads used for the algorithm execution.
+            The number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job that can be used for monitoring and cancellation
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights. If specified,
-            weighted degree centrality is computed where each relationship contributes
-            its weight to the total degree.
+            Name of the property to be used as weights.
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads used during the write phase.
 
