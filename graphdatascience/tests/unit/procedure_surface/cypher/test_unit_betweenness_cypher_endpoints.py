@@ -9,7 +9,7 @@ from graphdatascience.procedure_surface.api.betweenness_endpoints import (
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.betweenness_cypher_endpoints import BetweennessCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
-from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
+from graphdatascience.tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
 
 
 @pytest.fixture

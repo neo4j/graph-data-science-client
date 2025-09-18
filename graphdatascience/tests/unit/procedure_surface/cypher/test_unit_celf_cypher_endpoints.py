@@ -9,7 +9,7 @@ from graphdatascience.procedure_surface.api.celf_endpoints import (
 )
 from graphdatascience.procedure_surface.cypher.celf_cypher_endpoints import CelfCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
-from graphdatascience.tests.unit.procedure_surface.cypher.conftests import estimate_mock_result
+from graphdatascience.tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
 
 
 @pytest.fixture
