@@ -11,6 +11,7 @@
 
 - Fix reporting error based on http responses from the Aura-API with an invalid JSON body. Earlier the client would report JSONDecodeError instead of showing the actual issue.
 - Fixed a bug where retryable queries wouldnt work with bookmarks.
+- Fixed a bug where `GdsSession.get_or_create` could not verify the connection to the database if the `neo4j` database would not present.
 
 ## Improvements
 

@@ -48,7 +48,7 @@ class Neo4jQueryRunner(QueryRunner):
             if aura_ds:
                 Neo4jQueryRunner._configure_aura(config)
 
-            driver = neo4j.GraphDatabase.driver(endpoint, auth=auth, **config)
+            driver = neo4j.GraphDatabase.driver(endpoint, auth=auth, database=database, **config)
 
             query_runner = Neo4jQueryRunner(
                 driver,
