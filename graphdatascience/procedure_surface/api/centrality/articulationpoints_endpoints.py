@@ -28,7 +28,10 @@ class ArticulationPointsEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> "ArticulationPointsMutateResult":
         """
-        Executes the ArticulationPoints algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Articulation Points algorithm and stores the results in the graph catalog as a new node property.
+
+        Given a graph, an articulation point is a node whose removal increases the number of connected components in the graph.
+        The Neo4j GDS Library provides an efficient linear time sequential algorithm to compute all articulation points in a graph.
 
         Parameters
         ----------

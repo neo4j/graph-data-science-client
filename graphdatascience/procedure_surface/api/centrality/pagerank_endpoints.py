@@ -36,7 +36,10 @@ class PageRankEndpoints(ABC):
         source_nodes: Optional[Any] = None,
     ) -> PageRankMutateResult:
         """
-        Executes the PageRank algorithm and writes the results to the in-memory graph as node properties.
+        Runs the PageRank algorithm and stores the results in the graph catalog as a new node property.
+
+        The PageRank algorithm measures the importance of each node within the graph, based on the number of incoming relationships and the importance of the corresponding source nodes.
+        The underlying assumption roughly speaking is that a page is only as important as the pages that link to it.
 
         Parameters
         ----------

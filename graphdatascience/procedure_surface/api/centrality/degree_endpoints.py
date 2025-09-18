@@ -36,7 +36,12 @@ class DegreeEndpoints(ABC):
         relationship_weight_property: Optional[str] = None,
     ) -> DegreeMutateResult:
         """
-        Executes the Degree Centrality algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Degree Centrality algorithm and stores the results in the graph catalog as a new node property.
+
+        The Degree Centrality algorithm can be used to find popular nodes within a graph.
+        The degree centrality measures the number of incoming or outgoing (or both) relationships from a node, which can be defined by the orientation of a relationship projection.
+        It can be applied to either weighted or unweighted graphs.
+        In the weighted case the algorithm computes the sum of all positive weights of adjacent relationships of a node, for each node in the graph.
 
         Parameters
         ----------

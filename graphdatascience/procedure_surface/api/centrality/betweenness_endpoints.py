@@ -33,7 +33,12 @@ class BetweennessEndpoints(ABC):
         relationship_weight_property: Optional[str] = None,
     ) -> BetweennessMutateResult:
         """
-        Executes the Betweenness Centrality algorithm and returns result statistics without persisting the results
+        Runs the Betweenness Centrality algorithm and stores the results in the graph catalog as a new node property.
+
+        Betweenness centrality is a way of detecting the amount of influence a node has over the flow of information in a graph.
+        It is often used to find nodes that serve as a bridge from one part of a graph to another.
+        The algorithm calculates shortest paths between all pairs of nodes in a graph.
+        Each node receives a score, based on the number of shortest paths that pass through the node.
 
         Parameters
         ----------

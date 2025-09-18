@@ -34,7 +34,10 @@ class ClosenessHarmonicEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> ClosenessHarmonicMutateResult:
         """
-        Executes the Harmonic Closeness Centrality algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Harmonic Centrality algorithm and stores the results in the graph catalog as a new node property.
+
+        Harmonic centrality (also known as valued centrality) is a variant of closeness centrality, that was invented to
+        solve the problem the original formula had when dealing with unconnected graphs.
 
         Parameters
         ----------
