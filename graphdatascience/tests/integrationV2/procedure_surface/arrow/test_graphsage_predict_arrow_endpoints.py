@@ -83,6 +83,7 @@ def test_mutate(gs_model: GraphSageModelV2, sample_graph: GraphV2) -> None:
     assert result.node_properties_written == 4
 
 
+@pytest.mark.db_integration
 def test_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     model, _ = GraphSageTrainArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner)).train(
         G=db_graph,

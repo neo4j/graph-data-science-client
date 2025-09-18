@@ -90,6 +90,7 @@ def test_betweenness_mutate(betweenness_endpoints: BetweennessArrowEndpoints, sa
     assert result.node_properties_written == 3
 
 
+@pytest.mark.db_integration
 def test_betweenness_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:

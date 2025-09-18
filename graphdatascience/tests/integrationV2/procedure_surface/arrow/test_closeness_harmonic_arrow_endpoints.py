@@ -93,6 +93,7 @@ def test_closeness_harmonic_mutate(
     assert "p50" in result.centrality_distribution
 
 
+@pytest.mark.db_integration
 def test_closeness_harmonic_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:

@@ -131,6 +131,7 @@ def test_kcore_mutate_with_parameters(kcore_endpoints: KCoreArrowEndpoints, samp
     assert result.node_properties_written == 6
 
 
+@pytest.mark.db_integration
 def test_kcore_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     endpoints = KCoreArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="coreValue")

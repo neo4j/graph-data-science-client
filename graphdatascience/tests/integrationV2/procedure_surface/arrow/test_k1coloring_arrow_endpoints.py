@@ -92,6 +92,7 @@ def test_k1coloring_mutate(k1coloring_endpoints: K1ColoringArrowEndpoints, sampl
     assert isinstance(result.did_converge, bool)
 
 
+@pytest.mark.db_integration
 def test_k1coloring_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     endpoints = K1ColoringArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="color")

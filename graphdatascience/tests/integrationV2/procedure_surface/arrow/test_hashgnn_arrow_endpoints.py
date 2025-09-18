@@ -99,6 +99,7 @@ def test_hashgnn_stream(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: 
     assert set(result.columns) == {"nodeId", "embedding"}
 
 
+@pytest.mark.db_integration
 def test_hashgnn_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     """Test HashGNN write operation."""
     endpoints = HashGNNArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))

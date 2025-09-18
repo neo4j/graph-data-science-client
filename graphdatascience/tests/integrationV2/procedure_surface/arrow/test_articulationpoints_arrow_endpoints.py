@@ -92,6 +92,7 @@ def test_articulationpoints_stream_not_implemented(
         articulationpoints_endpoints.stream(sample_graph)
 
 
+@pytest.mark.db_integration
 def test_articulationpoints_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:

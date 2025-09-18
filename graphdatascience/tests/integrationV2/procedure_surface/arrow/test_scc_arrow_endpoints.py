@@ -96,6 +96,7 @@ def test_scc_mutate(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> 
     assert "p10" in result.component_distribution
 
 
+@pytest.mark.db_integration
 def test_scc_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     """Test SCC write operation."""
     endpoints = SccArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))

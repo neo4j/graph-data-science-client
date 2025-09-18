@@ -93,6 +93,7 @@ def test_eigenvector_mutate(eigenvector_endpoints: EigenvectorArrowEndpoints, sa
     assert "p50" in result.centrality_distribution
 
 
+@pytest.mark.db_integration
 def test_eigenvector_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:

@@ -91,6 +91,7 @@ def test_pagerank_mutate(pagerank_endpoints: PageRankArrowEndpoints, sample_grap
     assert result.node_properties_written == 3
 
 
+@pytest.mark.db_integration
 def test_pagerank_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     """Test PageRank write operation."""
     endpoints = PageRankArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))

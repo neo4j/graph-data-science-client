@@ -90,6 +90,7 @@ def test_articlerank_mutate(articlerank_endpoints: ArticleRankArrowEndpoints, sa
     assert result.node_properties_written == 3
 
 
+@pytest.mark.db_integration
 def test_articlerank_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:

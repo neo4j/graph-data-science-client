@@ -81,6 +81,7 @@ def test_degree_mutate(degree_endpoints: DegreeArrowEndpoints, sample_graph: Gra
     assert isinstance(result.configuration, dict)
 
 
+@pytest.mark.db_integration
 def test_degree_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     endpoints = DegreeArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="degree")

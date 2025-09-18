@@ -150,6 +150,7 @@ def test_louvain_stream_with_parameters(louvain_endpoints: LouvainArrowEndpoints
     assert len(result_df.columns) == 2
 
 
+@pytest.mark.db_integration
 def test_louvain_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     """Test Louvain write operation."""
     endpoints = LouvainArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
