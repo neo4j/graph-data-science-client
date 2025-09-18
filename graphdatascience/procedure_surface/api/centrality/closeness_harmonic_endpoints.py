@@ -12,13 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class ClosenessHarmonicEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Harmonic Centrality algorithm.
-
-    Harmonic centrality is a variant of closeness centrality that uses the
-    harmonic mean of shortest path distances. It handles disconnected graphs better
-    than standard closeness centrality.
-    """
 
     @abstractmethod
     def mutate(

@@ -12,9 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class ArticleRankEndpoints(ABC):
-    """
-    Abstract base class defining the API for the ArticleRank algorithm.
-    """
 
     @abstractmethod
     def mutate(

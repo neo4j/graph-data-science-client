@@ -12,13 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class DegreeEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Degree Centrality algorithm.
-
-    Degree centrality measures the number of incoming and outgoing relationships from a node.
-    It's one of the simplest centrality measures, where a node's importance is determined by
-    the number of direct connections it has.
-    """
 
     @abstractmethod
     def mutate(

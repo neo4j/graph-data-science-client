@@ -12,9 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class BetweennessEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Betweenness Centrality algorithm.
-    """
 
     @abstractmethod
     def mutate(

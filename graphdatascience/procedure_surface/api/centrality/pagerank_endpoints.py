@@ -12,9 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class PageRankEndpoints(ABC):
-    """
-    Abstract base class defining the API for the PageRank algorithm.
-    """
 
     @abstractmethod
     def mutate(

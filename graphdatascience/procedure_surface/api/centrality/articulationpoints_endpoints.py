@@ -10,9 +10,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class ArticulationPointsEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Articulation Points algorithm.
-    """
 
     @abstractmethod
     def mutate(
