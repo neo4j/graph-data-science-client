@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC
 from datetime import datetime
 from types import TracebackType
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Union
 
 from graphdatascience.procedure_surface.api.catalog.graph_backend import GraphBackend
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
@@ -93,7 +93,7 @@ class GraphV2(ABC):
 
         return {rel_type: list(val.get("properties", {}).keys()) for rel_type, val in rel_schema.items()}
 
-    def degree_distribution(self) -> dict[str, float | int]:
+    def degree_distribution(self) -> dict[str, Union[float, int]]:
         """
         Returns:
             the degree distribution of the graph
