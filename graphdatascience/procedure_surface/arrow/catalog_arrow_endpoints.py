@@ -1,22 +1,24 @@
 from __future__ import annotations
 
-from typing import Any, List, Optional, Union
+from types import TracebackType
+from typing import Any, List, NamedTuple, Optional, Type, Union
 from uuid import uuid4
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.catalog_endpoints import (
     CatalogEndpoints,
     GraphFilterResult,
     GraphGenerationStats,
-    ProjectionResult,
+    GraphWithFilterResult,
+    GraphWithGenerationStats,
     RelationshipPropertySpec,
 )
 from graphdatascience.procedure_surface.api.graph_sampling_endpoints import GraphSamplingEndpoints
-from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
 from graphdatascience.procedure_surface.arrow.catalog.graph_ops_arrow import GraphOpsArrow
 from graphdatascience.procedure_surface.arrow.catalog.node_label_arrow_endpoints import NodeLabelArrowEndpoints
@@ -62,7 +64,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         inverse_indexed_relationship_types: Optional[List[str]] = None,
         batch_size: Optional[int] = None,
         logging: bool = True,
-    ) -> GraphWithResult[ProjectionResult]:
+    ) -> GraphWithProjectResult:
         if self._query_runner is None:
             raise ValueError("Remote projection is only supported for attached Sessions.")
 
@@ -97,7 +99,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         job_result = ProjectionResult(**JobClient.get_summary(self._arrow_client, job_id))
 
-        return GraphWithResult(get_graph(graph_name, self._arrow_client), job_result)
+        return GraphWithProjectResult(get_graph(graph_name, self._arrow_client), job_result)
 
     def drop(self, G: Union[GraphV2, str], fail_if_missing: bool = True) -> Optional[GraphInfo]:
         graph_name = G.name() if isinstance(G, GraphV2) else G
@@ -112,7 +114,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         relationship_filter: str,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-    ) -> GraphWithResult[GraphFilterResult]:
+    ) -> GraphWithFilterResult:
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
             graph_name=graph_name,
@@ -124,7 +126,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.project.filter", config)
 
-        return GraphWithResult(
+        return GraphWithFilterResult(
             get_graph(graph_name, self._arrow_client),
             GraphFilterResult(**JobClient.get_summary(self._arrow_client, job_id)),
         )
@@ -145,7 +147,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
-    ) -> GraphWithResult[GraphGenerationStats]:
+    ) -> GraphWithGenerationStats:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=graph_name,
             node_count=node_count,
@@ -164,7 +166,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.generate", config)
 
-        return GraphWithResult(
+        return GraphWithGenerationStats(
             get_graph(graph_name, self._arrow_client),
             GraphGenerationStats(**JobClient.get_summary(self._arrow_client, job_id)),
         )
@@ -203,3 +205,28 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             "token": token,
             "encrypted": connection_info.encrypted,
         }
+
+
+class ProjectionResult(BaseResult):
+    graph_name: str
+    node_count: int
+    relationship_count: int
+    project_millis: int
+    configuration: dict[str, Any]
+    query: str
+
+
+class GraphWithProjectResult(NamedTuple):
+    graph: GraphV2
+    result: ProjectionResult
+
+    def __enter__(self) -> GraphV2:
+        return self.graph
+
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
+        self.graph.drop()

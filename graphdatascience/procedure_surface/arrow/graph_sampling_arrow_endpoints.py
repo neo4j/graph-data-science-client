@@ -8,8 +8,8 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.graph_sampling_endpoints import (
     GraphSamplingEndpoints,
     GraphSamplingResult,
+    GraphWithSamplingResult,
 )
-from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 
@@ -34,7 +34,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> GraphWithResult[GraphSamplingResult]:
+    ) -> GraphWithSamplingResult:
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
             graph_name=graph_name,
@@ -54,7 +54,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.sample.rwr", config)
 
-        return GraphWithResult(
+        return GraphWithSamplingResult(
             get_graph(graph_name, self._arrow_client),
             GraphSamplingResult(**JobClient.get_summary(self._arrow_client, job_id)),
         )
@@ -75,7 +75,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> GraphWithResult[GraphSamplingResult]:
+    ) -> GraphWithSamplingResult:
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
             graph_name=graph_name,
@@ -95,7 +95,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.sample.cnarw", config)
 
-        return GraphWithResult(
+        return GraphWithSamplingResult(
             get_graph(graph_name, self._arrow_client),
             GraphSamplingResult(**JobClient.get_summary(self._arrow_client, job_id)),
         )

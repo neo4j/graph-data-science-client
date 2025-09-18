@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import Any, List, Optional, Tuple, Union
+from types import TracebackType
+from typing import Any, List, NamedTuple, Optional, Type, Union
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
-from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 
 from ...call_parameters import CallParameters
@@ -14,6 +14,8 @@ from ..api.catalog_endpoints import (
     CatalogEndpoints,
     GraphFilterResult,
     GraphGenerationStats,
+    GraphWithFilterResult,
+    GraphWithGenerationStats,
     RelationshipPropertySpec,
 )
 from ..api.graph_sampling_endpoints import GraphSamplingEndpoints
@@ -61,7 +63,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         job_id: Optional[str] = None,
         sudo: Optional[bool] = None,
         username: Optional[str] = None,
-    ) -> Tuple[GraphV2, GraphProjectResult]:
+    ) -> GraphWithProjectResult:
         config = ConfigConverter.convert_to_gds_config(
             nodeProperties=node_properties,
             relationshipProperties=relationship_properties,
@@ -80,8 +82,8 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.project", params=params).squeeze()
-        list_result = GraphProjectResult(**result.to_dict())
-        return get_graph(list_result.graph_name, self._query_runner), list_result
+        project_result = GraphProjectResult(**result.to_dict())
+        return GraphWithProjectResult(get_graph(project_result.graph_name, self._query_runner), project_result)
 
     def filter(
         self,
@@ -91,7 +93,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         relationship_filter: str,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-    ) -> GraphWithResult[GraphFilterResult]:
+    ) -> GraphWithFilterResult:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
             jobId=job_id,
@@ -107,7 +109,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.filter", params=params).squeeze()
-        return GraphWithResult(get_graph(graph_name, self._query_runner), GraphFilterResult(**result.to_dict()))
+        return GraphWithFilterResult(get_graph(graph_name, self._query_runner), GraphFilterResult(**result.to_dict()))
 
     def generate(
         self,
@@ -125,7 +127,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
-    ) -> GraphWithResult[GraphGenerationStats]:
+    ) -> GraphWithGenerationStats:
         config = ConfigConverter.convert_to_gds_config(
             relationship_distribution=relationship_distribution,
             relationship_seed=relationship_seed,
@@ -149,7 +151,9 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.generate", params=params).squeeze()
-        return GraphWithResult(get_graph(graph_name, self._query_runner), GraphGenerationStats(**result.to_dict()))
+        return GraphWithGenerationStats(
+            get_graph(graph_name, self._query_runner), GraphGenerationStats(**result.to_dict())
+        )
 
     @property
     def sample(self) -> GraphSamplingEndpoints:
@@ -175,3 +179,19 @@ class GraphProjectResult(BaseResult):
     project_millis: int
     node_projection: dict[str, Any]
     relationship_projection: dict[str, Any]
+
+
+class GraphWithProjectResult(NamedTuple):
+    graph: GraphV2
+    result: GraphProjectResult
+
+    def __enter__(self) -> GraphV2:
+        return self.graph
+
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
+        self.graph.drop()
