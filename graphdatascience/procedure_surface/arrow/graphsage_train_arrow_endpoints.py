@@ -5,6 +5,7 @@ from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSa
 from graphdatascience.procedure_surface.arrow.graphsage_predict_arrow_endpoints import GraphSagePredictArrowEndpoints
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from ..api.graphsage_train_endpoints import (
     GraphSageTrainEndpoints,
     GraphSageTrainResult,
@@ -14,9 +15,10 @@ from .node_property_endpoints import NodePropertyEndpoints
 
 
 class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient):
+    def __init__(self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient]):
         self._arrow_client = arrow_client
-        self._node_property_endpoints = NodePropertyEndpoints(arrow_client)
+        self._write_back_client = write_back_client
+        self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client=write_back_client)
         self._model_api = ModelApiArrow(arrow_client)
 
     def train(
@@ -83,7 +85,9 @@ class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
         result = self._node_property_endpoints.run_job_and_get_summary("v2/embeddings.graphSage.train", G, config)
 
         model = GraphSageModelV2(
-            model_name, self._model_api, predict_endpoints=GraphSagePredictArrowEndpoints(self._arrow_client)
+            model_name,
+            self._model_api,
+            predict_endpoints=GraphSagePredictArrowEndpoints(self._arrow_client, self._write_back_client),
         )
         train_result = GraphSageTrainResult(**result)
 

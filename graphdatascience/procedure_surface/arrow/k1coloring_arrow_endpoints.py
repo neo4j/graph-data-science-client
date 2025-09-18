@@ -144,7 +144,7 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/community.k1coloring", G, config, write_concurrency, concurrency
+            "v2/community.k1coloring", G, config, write_concurrency, concurrency, write_property
         )
 
         return K1ColoringWriteResult(**result)

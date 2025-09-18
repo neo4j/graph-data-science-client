@@ -11,14 +11,15 @@ from graphdatascience.procedure_surface.api.graphsage_predict_endpoints import (
 )
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from .model_api_arrow import ModelApiArrow
 from .node_property_endpoints import NodePropertyEndpoints
 
 
 class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient):
+    def __init__(self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient]):
         self._arrow_client = arrow_client
-        self._node_property_endpoints = NodePropertyEndpoints(arrow_client)
+        self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client)
         self._model_api = ModelApiArrow(arrow_client)
 
     def stream(
@@ -79,11 +80,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         )
 
         raw_result = self._node_property_endpoints.run_job_and_write(
-            "v2/embeddings.graphSage",
-            G,
-            config,
-            write_concurrency,
-            concurrency,
+            "v2/embeddings.graphSage", G, config, write_concurrency, concurrency, write_property
         )
 
         return GraphSageWriteResult(**raw_result)

@@ -176,7 +176,7 @@ class LouvainArrowEndpoints(LouvainEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/community.louvain", G, config, write_concurrency, concurrency
+            "v2/community.louvain", G, config, write_concurrency, concurrency, write_property
         )
 
         return LouvainWriteResult(**result)

@@ -123,7 +123,7 @@ class SccArrowEndpoints(SccEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/community.scc", G, config, write_concurrency, concurrency
+            "v2/community.scc", G, config, write_concurrency, concurrency, write_property
         )
 
         return SccWriteResult(**result)

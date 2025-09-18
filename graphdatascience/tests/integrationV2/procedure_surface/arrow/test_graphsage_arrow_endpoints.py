@@ -28,7 +28,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 @pytest.fixture
 def graphsage_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[GraphSageTrainArrowEndpoints, None, None]:
-    yield GraphSageTrainArrowEndpoints(arrow_client)
+    yield GraphSageTrainArrowEndpoints(arrow_client, None)
 
 
 def test_graphsage_train(graphsage_endpoints: GraphSageTrainArrowEndpoints, sample_graph: GraphV2) -> None:

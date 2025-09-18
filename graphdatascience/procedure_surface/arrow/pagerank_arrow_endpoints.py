@@ -163,7 +163,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/centrality.pageRank", G, config, write_concurrency, concurrency
+            "v2/centrality.pageRank", G, config, write_concurrency, concurrency, write_property
         )
         return PageRankWriteResult(**result)
 

@@ -34,7 +34,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 @pytest.fixture
 def gs_model(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> Generator[str, None, None]:
-    model, _ = GraphSageTrainArrowEndpoints(arrow_client).train(
+    model, _ = GraphSageTrainArrowEndpoints(arrow_client, None).train(
         G=sample_graph,
         model_name="gs-model",
         feature_properties=["age"],

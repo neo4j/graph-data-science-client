@@ -2,26 +2,49 @@ from typing import Generator
 
 import pytest
 
+from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.closeness_harmonic_endpoints import ClosenessHarmonicWriteResult
 from graphdatascience.procedure_surface.arrow.closeness_harmonic_arrow_endpoints import ClosenessHarmonicArrowEndpoints
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
+from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
+    create_graph,
+    create_graph_from_db,
+)
+
+graph = """
+        CREATE
+            (a: Node),
+            (b: Node),
+            (c: Node),
+            (d: Node),
+            (a)-[:REL]->(b),
+            (b)-[:REL]->(c),
+            (c)-[:REL]->(d)
+        """
 
 
 @pytest.fixture
 def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
-    gdl = """
-    (a: Node)
-    (b: Node)
-    (c: Node)
-    (d: Node)
-    (a)-[:REL]->(b)
-    (b)-[:REL]->(c)
-    (c)-[:REL]->(d)
-    """
-
-    with create_graph(arrow_client, "g", gdl) as G:
+    with create_graph(arrow_client, "g", graph) as G:
         yield G
+
+
+@pytest.fixture
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+    with create_graph_from_db(
+        arrow_client,
+        query_runner,
+        "g",
+        graph,
+        """
+                    MATCH (n)-->(m)
+                    WITH gds.graph.project.remote(n, m) as g
+                    RETURN g
+                """,
+    ) as g:
+        yield g
 
 
 @pytest.fixture
@@ -34,7 +57,6 @@ def closeness_harmonic_endpoints(
 def test_closeness_harmonic_stats(
     closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: GraphV2
 ) -> None:
-    """Test Harmonic Closeness stats operation."""
     result = closeness_harmonic_endpoints.stats(G=sample_graph)
 
     assert result.compute_millis >= 0
@@ -46,7 +68,6 @@ def test_closeness_harmonic_stats(
 def test_closeness_harmonic_stream(
     closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: GraphV2
 ) -> None:
-    """Test Harmonic Closeness stream operation."""
     result_df = closeness_harmonic_endpoints.stream(
         G=sample_graph,
     )
@@ -59,7 +80,6 @@ def test_closeness_harmonic_stream(
 def test_closeness_harmonic_mutate(
     closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: GraphV2
 ) -> None:
-    """Test Harmonic Closeness mutate operation."""
     result = closeness_harmonic_endpoints.mutate(
         G=sample_graph,
         mutate_property="harmonic_closeness",
@@ -71,6 +91,27 @@ def test_closeness_harmonic_mutate(
     assert result.mutate_millis >= 0
     assert result.node_properties_written == 4
     assert "p50" in result.centrality_distribution
+
+
+@pytest.mark.db_integration
+def test_closeness_harmonic_write(
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
+) -> None:
+    endpoints = ClosenessHarmonicArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    result = endpoints.write(G=db_graph, write_property="harmonic_closeness")
+
+    assert isinstance(result, ClosenessHarmonicWriteResult)
+    assert result.pre_processing_millis >= 0
+    assert result.compute_millis >= 0
+    assert result.post_processing_millis >= 0
+    assert result.write_millis >= 0
+    assert result.node_properties_written == 4
+    assert "p50" in result.centrality_distribution
+
+    assert (
+        query_runner.run_cypher("MATCH (n) WHERE n.harmonic_closeness IS NOT NULL RETURN COUNT(*) AS count").squeeze()
+        == 4
+    )
 
 
 def test_closeness_harmonic_estimate(

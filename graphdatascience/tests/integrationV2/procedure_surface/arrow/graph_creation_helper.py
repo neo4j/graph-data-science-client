@@ -43,12 +43,14 @@ def create_graph_from_db(
     graph_name: str,
     graph_data: str,
     query: str,
+    undirected_relationship_types: Optional[list[str]] = None,
 ) -> Generator[GraphV2, Any, None]:
     try:
         query_runner.run_cypher(graph_data)
         result = CatalogArrowEndpoints(arrow_client, query_runner).project(
             graph_name=graph_name,
             query=query,
+            undirected_relationship_types=undirected_relationship_types,
         )
 
         yield result.graph
