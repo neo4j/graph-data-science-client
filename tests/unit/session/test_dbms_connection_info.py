@@ -39,3 +39,10 @@ def test_dbms_connection_info_fail_on_auth_and_username() -> None:
         )
     else:
         assert False, "Expected ValueError was not raised"
+
+
+def test_dbms_connection_info_hosted_in_aura() -> None:
+    assert DbmsConnectionInfo(uri="bolt://something.databases.neo4j.io").hosted_in_aura()
+    assert DbmsConnectionInfo(uri="bolt://something.databases.neo4j.io:7474").hosted_in_aura()
+
+    assert not DbmsConnectionInfo(uri="bolt://something.neo4j.com").hosted_in_aura()
