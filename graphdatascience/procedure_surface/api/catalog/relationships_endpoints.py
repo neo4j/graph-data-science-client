@@ -8,14 +8,14 @@ from pandas import DataFrame
 from pydantic import AliasChoices, Field, field_validator
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
 
 class RelationshipsEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_types: Optional[List[str]] = None,
         relationship_properties: Optional[list[str]] = None,
         *,
@@ -54,7 +54,7 @@ class RelationshipsEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_type: str,
         relationship_properties: Optional[list[str]] = None,
         *,
@@ -98,7 +98,7 @@ class RelationshipsEndpoints(ABC):
     @abstractmethod
     def drop(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_type: str,
         *,
         fail_if_missing: bool = True,
@@ -124,7 +124,7 @@ class RelationshipsEndpoints(ABC):
     @abstractmethod
     def index_inverse(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_types: list[str],
         *,
         concurrency: Optional[Any] = None,
@@ -162,7 +162,7 @@ class RelationshipsEndpoints(ABC):
     @abstractmethod
     def to_undirected(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_type: str,
         mutate_relationship_type: str,
         *,

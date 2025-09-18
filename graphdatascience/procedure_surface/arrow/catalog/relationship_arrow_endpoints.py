@@ -6,7 +6,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
     Aggregation,
     RelationshipsDropResult,
@@ -25,7 +25,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_types: Optional[List[str]] = None,
         relationship_properties: Optional[list[str]] = None,
         *,
@@ -57,7 +57,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_type: str,
         relationship_properties: Optional[list[str]] = None,
         *,
@@ -115,7 +115,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
 
     def drop(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_type: str,
         *,
         fail_if_missing: Optional[bool] = None,
@@ -135,7 +135,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
 
     def index_inverse(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_types: list[str],
         *,
         concurrency: Optional[Any] = None,
@@ -160,7 +160,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
 
     def to_undirected(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_type: str,
         mutate_relationship_type: str,
         *,

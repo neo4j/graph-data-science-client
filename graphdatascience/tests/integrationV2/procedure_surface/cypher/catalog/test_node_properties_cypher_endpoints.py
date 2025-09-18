@@ -83,7 +83,7 @@ def test_stream_node_properties_with_labels(
 
 
 def test_stream_node_properties_with_db_properties(
-    node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph
+    node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: GraphV2
 ) -> None:
     result = node_properties_endpoints.stream(G=sample_graph, node_properties=["prop1"], db_node_properties=["prop2"])
 

@@ -4,7 +4,7 @@ from pandas import DataFrame
 
 from graphdatascience import QueryRunner
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
     Aggregation,
     RelationshipsDropResult,
@@ -24,7 +24,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
     def stream(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_types: Optional[List[str]] = None,
         relationship_properties: Optional[list[str]] = None,
         *,
@@ -91,7 +91,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
     def write(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_type: str,
         relationship_properties: Optional[list[str]] = None,
         *,
@@ -135,7 +135,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
     def drop(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_type: str,
         *,
         fail_if_missing: bool = True,
@@ -154,7 +154,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
     def index_inverse(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_types: list[str],
         *,
         concurrency: Optional[Any] = None,
@@ -186,7 +186,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
     def to_undirected(
         self,
-        G: Graph,
+        G: GraphV2,
         relationship_type: str,
         mutate_relationship_type: str,
         *,

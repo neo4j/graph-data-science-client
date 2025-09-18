@@ -5,7 +5,7 @@ import pytest
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import Aggregation
 from graphdatascience.procedure_surface.arrow.catalog.relationship_arrow_endpoints import (
     RelationshipArrowEndpoints,
@@ -17,7 +17,7 @@ from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
     gdl = """
         CREATE
         (a:Node),
@@ -34,7 +34,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, Non
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     graph_data = """
         CREATE
         (a: Node),
@@ -82,7 +82,7 @@ def relationship_endpoints_with_db(
     yield RelationshipArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
 
 
-def test_stream_relationships(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: Graph) -> None:
+def test_stream_relationships(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: GraphV2) -> None:
     result = relationship_endpoints.stream(G=sample_graph, relationship_types=["REL"])
 
     assert len(result) == 3
@@ -93,7 +93,7 @@ def test_stream_relationships(relationship_endpoints: RelationshipArrowEndpoints
 
 
 def test_stream_multiple_relationship_types(
-    relationship_endpoints: RelationshipArrowEndpoints, sample_graph: Graph
+    relationship_endpoints: RelationshipArrowEndpoints, sample_graph: GraphV2
 ) -> None:
     result = relationship_endpoints.stream(G=sample_graph, relationship_types=["REL", "OTHER"])
 
@@ -104,7 +104,7 @@ def test_stream_multiple_relationship_types(
     assert set(result["relationshipType"].unique()) == {"REL", "OTHER"}
 
 
-def test_stream_all_relationships(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: Graph) -> None:
+def test_stream_all_relationships(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: GraphV2) -> None:
     result = relationship_endpoints.stream(G=sample_graph)
 
     assert len(result) == 4  # All relationships
@@ -114,7 +114,7 @@ def test_stream_all_relationships(relationship_endpoints: RelationshipArrowEndpo
     assert set(result["relationshipType"].unique()) == {"REL", "OTHER"}
 
 
-def test_stream_with_properties(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: Graph) -> None:
+def test_stream_with_properties(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: GraphV2) -> None:
     result = relationship_endpoints.stream(
         G=sample_graph, relationship_types=["REL"], relationship_properties=["weight"]
     )
@@ -130,7 +130,7 @@ def test_stream_with_properties(relationship_endpoints: RelationshipArrowEndpoin
 
 @pytest.mark.db_integration
 def test_write_relationships(
-    relationship_endpoints_with_db: RelationshipArrowEndpoints, db_graph: Graph, query_runner: QueryRunner
+    relationship_endpoints_with_db: RelationshipArrowEndpoints, db_graph: GraphV2, query_runner: QueryRunner
 ) -> None:
     result = relationship_endpoints_with_db.write(G=db_graph, relationship_type="REL")
 
@@ -142,7 +142,7 @@ def test_write_relationships(
 
 @pytest.mark.db_integration
 def test_write_relationships_with_properties(
-    relationship_endpoints_with_db: RelationshipArrowEndpoints, db_graph: Graph, query_runner: QueryRunner
+    relationship_endpoints_with_db: RelationshipArrowEndpoints, db_graph: GraphV2, query_runner: QueryRunner
 ) -> None:
     result = relationship_endpoints_with_db.write(
         G=db_graph, relationship_type="REL", relationship_properties=["weight"]
@@ -164,7 +164,7 @@ def test_write_relationships_with_properties(
     assert props_written == 6  # Old and new relationships
 
 
-def test_drop_relationships(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: Graph) -> None:
+def test_drop_relationships(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: GraphV2) -> None:
     drop_result = relationship_endpoints.drop(G=sample_graph, relationship_type="REL")
 
     assert drop_result.graph_name == sample_graph.name()
@@ -173,7 +173,7 @@ def test_drop_relationships(relationship_endpoints: RelationshipArrowEndpoints, 
     assert drop_result.deleted_properties == {"weight": 3}
 
 
-def test_index_inverse(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: Graph) -> None:
+def test_index_inverse(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: GraphV2) -> None:
     result = relationship_endpoints.index_inverse(G=sample_graph, relationship_types=["REL"])
 
     assert result.pre_processing_millis >= 0
@@ -184,7 +184,7 @@ def test_index_inverse(relationship_endpoints: RelationshipArrowEndpoints, sampl
     assert "configuration" in result.__dict__
 
 
-def test_to_undirected(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: Graph) -> None:
+def test_to_undirected(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: GraphV2) -> None:
     result = relationship_endpoints.to_undirected(
         G=sample_graph, relationship_type="REL", mutate_relationship_type="REL_UNDIRECTED"
     )
@@ -198,7 +198,7 @@ def test_to_undirected(relationship_endpoints: RelationshipArrowEndpoints, sampl
 
 
 def test_to_undirected_with_aggregation(
-    relationship_endpoints: RelationshipArrowEndpoints, sample_graph: Graph
+    relationship_endpoints: RelationshipArrowEndpoints, sample_graph: GraphV2
 ) -> None:
     result = relationship_endpoints.to_undirected(
         G=sample_graph,
@@ -216,7 +216,7 @@ def test_to_undirected_with_aggregation(
 
 
 def test_to_undirected_with_property_aggregation(
-    relationship_endpoints: RelationshipArrowEndpoints, sample_graph: Graph
+    relationship_endpoints: RelationshipArrowEndpoints, sample_graph: GraphV2
 ) -> None:
     result = relationship_endpoints.to_undirected(
         G=sample_graph,
