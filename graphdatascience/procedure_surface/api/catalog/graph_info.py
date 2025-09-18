@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from datetime import datetime
-from typing import Any
+from typing import Any, Union
 
 import neo4j
 from pydantic import Field, field_validator
@@ -35,4 +35,4 @@ class GraphInfo(BaseResult):
 
 
 class GraphInfoWithDegrees(GraphInfo):
-    degree_distribution: dict[str, float | int]
+    degree_distribution: dict[str, Union[float, int]]
