@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Union
+from types import TracebackType
+from typing import List, NamedTuple, Optional, Type, Union
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
@@ -10,7 +11,6 @@ from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import 
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import NodePropertiesEndpoints
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import RelationshipsEndpoints
 from graphdatascience.procedure_surface.api.graph_sampling_endpoints import GraphSamplingEndpoints
-from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
 
 
 class CatalogEndpoints(ABC):
@@ -50,7 +50,7 @@ class CatalogEndpoints(ABC):
         relationship_filter: str,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-    ) -> GraphWithResult[GraphFilterResult]:
+    ) -> GraphWithFilterResult:
         """Create a subgraph of a graph based on a filter expression.
 
         Parameters
@@ -69,7 +69,7 @@ class CatalogEndpoints(ABC):
             Unique identifier for the filtering job. Defaults to None.
 
         Returns:
-            GraphFilterResult: Filter result containing information like
+            GraphWithFilterResult: Tuple of the filtered graph object and the information like
                                 graph name, node count, relationship count, etc.
         """
         pass
@@ -91,7 +91,7 @@ class CatalogEndpoints(ABC):
         sudo: Optional[bool] = None,
         log_progress: Optional[bool] = None,
         username: Optional[str] = None,
-    ) -> GraphWithResult[GraphGenerationStats]:
+    ) -> GraphWithGenerationStats:
         """
         Generates a random graph and store it in the graph catalog.
 
@@ -127,7 +127,7 @@ class CatalogEndpoints(ABC):
         Returns
         -------
         GraphGenerationStats:
-            A result object containing information about the generated graph.
+            Tuple of the generated graph object and the result object containing stats about the generation.
         """
 
     @property
@@ -176,15 +176,6 @@ class GraphGenerationStats(BaseResult):
     relationship_property: RelationshipPropertySpec
 
 
-class ProjectionResult(BaseResult):
-    graph_name: str
-    node_count: int
-    relationship_count: int
-    project_millis: int
-    configuration: dict[str, Any]
-    query: str
-
-
 class RelationshipPropertySpec(BaseResult):
     name: str
     type: str
@@ -199,3 +190,36 @@ class RelationshipPropertySpec(BaseResult):
     @staticmethod
     def random(name: str, min: float, max: float) -> RelationshipPropertySpec:
         return RelationshipPropertySpec(name=name, type="RANDOM", min=min, max=max)
+
+
+# cannot use namedtuple + generic result as for python < 3.11 Multiple inheritance with NamedTuple is not supported
+class GraphWithFilterResult(NamedTuple):
+    graph: GraphV2
+    result: GraphFilterResult
+
+    def __enter__(self) -> GraphV2:
+        return self.graph
+
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
+        self.graph.drop()
+
+
+class GraphWithGenerationStats(NamedTuple):
+    graph: GraphV2
+    result: GraphGenerationStats
+
+    def __enter__(self) -> GraphV2:
+        return self.graph
+
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
+        self.graph.drop()

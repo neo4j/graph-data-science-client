@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from types import TracebackType
+from typing import List, NamedTuple, Optional, Type
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.graph_with_result import GraphWithResult
 
 
 class GraphSamplingEndpoints(ABC):
@@ -30,7 +30,7 @@ class GraphSamplingEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-    ) -> GraphWithResult[GraphSamplingResult]:
+    ) -> GraphWithSamplingResult:
         """
         Computes a set of Random Walks with Restart (RWR) for the given graph and stores the result as a new graph in the catalog.
 
@@ -78,8 +78,8 @@ class GraphSamplingEndpoints(ABC):
 
         Returns
         -------
-        GraphSamplingResult
-            The result of the Random Walk with Restart (RWR), including the sampled
+        GraphWithSamplingResult
+            Tuple of the graph object and the result of the Random Walk with Restart (RWR), including the sampled
             nodes and their scores.
         """
         pass
@@ -101,7 +101,7 @@ class GraphSamplingEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
-    ) -> GraphWithResult[GraphSamplingResult]:
+    ) -> GraphWithSamplingResult:
         """
         Computes a set of Random Walks with Restart (RWR) for the given graph and stores the result as a new graph in the catalog.
 
@@ -150,7 +150,7 @@ class GraphSamplingEndpoints(ABC):
         Returns
         -------
         GraphSamplingResult
-            The result of the Random Walk with Restart (RWR), including the sampled
+            Tuple of the graph object and the result of the Random Walk with Restart (RWR), including the sampled
             nodes and their scores.
         """
         pass
@@ -163,3 +163,19 @@ class GraphSamplingResult(BaseResult):
     relationship_count: int
     start_node_count: int
     project_millis: int
+
+
+class GraphWithSamplingResult(NamedTuple):
+    graph: GraphV2
+    result: GraphSamplingResult
+
+    def __enter__(self) -> GraphV2:
+        return self.graph
+
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
+        self.graph.drop()
