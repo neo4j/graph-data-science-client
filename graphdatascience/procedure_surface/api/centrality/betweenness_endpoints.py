@@ -42,27 +42,27 @@ class BetweennessEndpoints(ABC):
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the betweenness centrality score for each node
+            Name of the node property to store the results in.
         sampling_size : Optional[int], default=None
-            The number of nodes to use for sampling.
+            Number of source nodes to consider for computing centrality scores.
         sampling_seed : Optional[int], default=None
-            The seed value for sampling randomization
+            Seed value for the random number generator that selects source nodes.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights
+            Name of the property to be used as weights.
 
         Returns
         -------
@@ -98,25 +98,25 @@ class BetweennessEndpoints(ABC):
         G : GraphV2
             The graph to run the algorithm on
         sampling_size : Optional[int], default=None
-            The number of nodes to use for sampling.
+            Number of source nodes to consider for computing centrality scores.
         sampling_seed : Optional[int], default=None
-            The seed value for sampling randomization
+            Seed value for the random number generator that selects source nodes.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights
+            Name of the property to be used as weights.
 
         Returns
         -------
@@ -203,27 +203,27 @@ class BetweennessEndpoints(ABC):
         G : GraphV2
             The graph to run the algorithm on
         write_property : str
-            The property name to store the betweenness centrality score for each node
+            Name of the node property to store the results in.
         sampling_size : Optional[int], default=None
-            The number of nodes to use for sampling.
+            Number of source nodes to consider for computing centrality scores.
         sampling_seed : Optional[int], default=None
-            The seed value for sampling randomization
+            Seed value for the random number generator that selects source nodes.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights
+            Name of the property to be used as weights.
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads during the write phase
 

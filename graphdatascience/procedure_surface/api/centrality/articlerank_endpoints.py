@@ -44,33 +44,33 @@ class ArticleRankEndpoints(ABC):
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the ArticleRank score for each node
+            Name of the node property to store the results in.
         damping_factor : Optional[float], default=None
-            The damping factor controls the probability of a random jump to a random node
+            Probability of a jump to a random node.
         tolerance : Optional[float], default=None
-            Minimum change in scores between iterations
+            Minimum change in scores between iterations.
         max_iterations : Optional[int], default=None
-            The maximum number of iterations to run
+            Maximum number of iterations to run.
         scaler : Optional[Any], default=None
-            Configuration for scaling the scores
+            Name of the scaler applied on the resulting scores.
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
+            Name of the property to be used as weights.
         source_nodes : Optional[Any], default=None
-            The source nodes for personalized ArticleRank
+            List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.
 
         Returns
         -------
@@ -108,31 +108,31 @@ class ArticleRankEndpoints(ABC):
         G : GraphV2
             The graph to run the algorithm on
         damping_factor : Optional[float], default=None
-            The damping factor controls the probability of a random jump to a random node
+            Probability of a jump to a random node.
         tolerance : Optional[float], default=None
-            Minimum change in scores between iterations
+            Minimum change in scores between iterations.
         max_iterations : Optional[int], default=None
-            The maximum number of iterations to run
+            Maximum number of iterations to run.
         scaler : Optional[Any], default=None
-            Configuration for scaling the scores
+            Name of the scaler applied on the resulting scores.
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
+            Name of the property to be used as weights.
         source_nodes : Optional[Any], default=None
-            The source nodes for personalized ArticleRank
+            List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.
 
         Returns
         -------
@@ -232,31 +232,31 @@ class ArticleRankEndpoints(ABC):
         write_property : str
             The property name to write the ArticleRank score for each node
         damping_factor : Optional[float], default=None
-            The damping factor controls the probability of a random jump to a random node
+            Probability of a jump to a random node.
         tolerance : Optional[float], default=None
-            Minimum change in scores between iterations
+            Minimum change in scores between iterations.
         max_iterations : Optional[int], default=None
-            The maximum number of iterations to run
+            Maximum number of iterations to run.
         scaler : Optional[Any], default=None
-            Configuration for scaling the scores
+            Name of the scaler applied on the resulting scores.
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
+            Name of the property to be used as weights.
         source_nodes : Optional[Any], default=None
-            The source nodes for personalized ArticleRank
+            List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.
         write_concurrency : Optional[int], default=None
             The number of concurrent threads used for writing
 
