@@ -8,7 +8,7 @@ from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
 from ..api.estimation_result import EstimationResult
-from ..api.kcore_endpoints import KCoreEndpoints, KCoreMutateResult, KCoreStatsResult, KCoreWriteResult
+from graphdatascience.procedure_surface.api.community.kcore_endpoints import KCoreEndpoints, KCoreMutateResult, KCoreStatsResult, KCoreWriteResult
 from ..utils.config_converter import ConfigConverter
 
 

@@ -8,7 +8,7 @@ from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
 from ..api.estimation_result import EstimationResult
-from ..api.k1coloring_endpoints import (
+from graphdatascience.procedure_surface.api.community.k1coloring_endpoints import (
     K1ColoringEndpoints,
     K1ColoringMutateResult,
     K1ColoringStatsResult,

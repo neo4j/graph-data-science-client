@@ -10,7 +10,7 @@ from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher impo
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
 from ..api.base_result import BaseResult
-from ..api.catalog_endpoints import (
+from graphdatascience.procedure_surface.api.catalog_endpoints import (
     CatalogEndpoints,
     GraphFilterResult,
     GraphGenerationStats,
@@ -18,7 +18,7 @@ from ..api.catalog_endpoints import (
     GraphWithGenerationStats,
     RelationshipPropertySpec,
 )
-from ..api.graph_sampling_endpoints import GraphSamplingEndpoints
+from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
 from ..utils.config_converter import ConfigConverter
 from .catalog.node_label_cypher_endpoints import NodeLabelCypherEndpoints
 from .catalog.node_properties_cypher_endpoints import NodePropertiesCypherEndpoints

@@ -7,7 +7,7 @@ from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_
 
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
-from ..api.eigenvector_endpoints import (
+from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import (
     EigenvectorEndpoints,
     EigenvectorMutateResult,
     EigenvectorStatsResult,

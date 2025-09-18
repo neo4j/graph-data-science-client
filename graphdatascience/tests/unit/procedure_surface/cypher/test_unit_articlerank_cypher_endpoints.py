@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.procedure_surface.api.articlerank_endpoints import (
+from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import (
     ArticleRankMutateResult,
     ArticleRankStatsResult,
     ArticleRankWriteResult,

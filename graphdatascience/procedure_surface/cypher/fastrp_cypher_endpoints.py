@@ -7,7 +7,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
 from ..api.estimation_result import EstimationResult
-from ..api.fastrp_endpoints import (
+from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import (
     FastRPEndpoints,
     FastRPMutateResult,
     FastRPStatsResult,

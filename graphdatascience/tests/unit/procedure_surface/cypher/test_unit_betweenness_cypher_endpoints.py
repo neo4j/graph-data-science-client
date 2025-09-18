@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.procedure_surface.api.betweenness_endpoints import (
+from graphdatascience.procedure_surface.api.centrality.betweenness_endpoints import (
     BetweennessMutateResult,
     BetweennessStatsResult,
     BetweennessWriteResult,

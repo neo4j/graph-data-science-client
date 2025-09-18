@@ -6,7 +6,7 @@ from graphdatascience.procedure_surface.arrow.graphsage_predict_arrow_endpoints 
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from ..api.graphsage_train_endpoints import (
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpoints import (
     GraphSageTrainEndpoints,
     GraphSageTrainResult,
 )

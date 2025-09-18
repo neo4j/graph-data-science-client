@@ -7,7 +7,7 @@ from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher impo
 
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
-from ..api.graph_sampling_endpoints import GraphSamplingEndpoints, GraphSamplingResult, GraphWithSamplingResult
+from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints, GraphSamplingResult, GraphWithSamplingResult
 from ..utils.config_converter import ConfigConverter
 
 

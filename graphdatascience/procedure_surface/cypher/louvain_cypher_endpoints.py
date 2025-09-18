@@ -8,7 +8,7 @@ from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
 from ..api.estimation_result import EstimationResult
-from ..api.louvain_endpoints import LouvainEndpoints, LouvainMutateResult, LouvainStatsResult, LouvainWriteResult
+from graphdatascience.procedure_surface.api.community.louvain_endpoints import LouvainEndpoints, LouvainMutateResult, LouvainStatsResult, LouvainWriteResult
 from ..utils.config_converter import ConfigConverter
 
 

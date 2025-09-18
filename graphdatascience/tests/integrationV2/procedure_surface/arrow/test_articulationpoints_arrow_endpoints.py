@@ -5,7 +5,7 @@ import pytest
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.articulationpoints_endpoints import (
+from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import (
     ArticulationPointsMutateResult,
     ArticulationPointsStatsResult,
     ArticulationPointsWriteResult,

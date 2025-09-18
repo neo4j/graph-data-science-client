@@ -5,15 +5,15 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
-class PageRankEndpoints(ABC):
+class LouvainEndpoints(ABC):
     """
-    Abstract base class defining the API for the PageRank algorithm.
+    Abstract base class defining the API for the Louvain algorithm.
     """
 
     @abstractmethod
@@ -21,10 +21,10 @@ class PageRankEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
+        max_levels: Optional[int] = None,
+        include_intermediate_communities: Optional[bool] = None,
         max_iterations: Optional[int] = None,
-        scaler: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -32,26 +32,27 @@ class PageRankEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
+        seed_property: Optional[str] = None,
+        consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
-        source_nodes: Optional[Any] = None,
-    ) -> PageRankMutateResult:
+    ) -> LouvainMutateResult:
         """
-        Executes the PageRank algorithm and writes the results to the in-memory graph as node properties.
+        Executes the Louvain algorithm and writes the results to the in-memory graph as node properties.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the PageRank score for each node
-        damping_factor : Optional[float], default=None
-            The damping factor controls the probability of a random jump to a random node
+            The property name to store the community ID for each node
         tolerance : Optional[float], default=None
-            Minimum change in scores between iterations
+            The tolerance value for the algorithm convergence
+        max_levels : Optional[int], default=None
+            The maximum number of levels in the hierarchy
+        include_intermediate_communities : Optional[bool], default=None
+            Whether to include intermediate community assignments
         max_iterations : Optional[int], default=None
-            The maximum number of iterations to run
-        scaler : Optional[Any], default=None
-            Configuration for scaling the scores
+            The maximum number of iterations per level
         relationship_types : Optional[List[str]], default=None
             The relationships types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
@@ -66,14 +67,16 @@ class PageRankEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
+        seed_property : Optional[str], default=None
+            Defines node properties that are used as initial community identifiers
+        consecutive_ids : Optional[bool], default=None
+            Flag to decide whether community identifiers are mapped into a consecutive id space
         relationship_weight_property : Optional[str], default=None
             The property name that contains weight
-        source_nodes : Optional[Any], default=None
-            The source nodes for personalized PageRank
 
         Returns
         -------
-        PageRankMutateResult
+        LouvainMutateResult
             Algorithm metrics and statistics
         """
         pass
@@ -82,10 +85,10 @@ class PageRankEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
+        max_levels: Optional[int] = None,
+        include_intermediate_communities: Optional[bool] = None,
         max_iterations: Optional[int] = None,
-        scaler: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -93,24 +96,25 @@ class PageRankEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
+        seed_property: Optional[str] = None,
+        consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
-        source_nodes: Optional[Any] = None,
-    ) -> PageRankStatsResult:
+    ) -> LouvainStatsResult:
         """
-        Executes the PageRank algorithm and returns statistics.
+        Executes the Louvain algorithm and returns statistics.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        damping_factor : Optional[float], default=None
-            The damping factor controls the probability of a random jump to a random node
         tolerance : Optional[float], default=None
-            Minimum change in scores between iterations
+            The tolerance value for the algorithm convergence
+        max_levels : Optional[int], default=None
+            The maximum number of levels in the hierarchy
+        include_intermediate_communities : Optional[bool], default=None
+            Whether to include intermediate community assignments
         max_iterations : Optional[int], default=None
-            The maximum number of iterations to run
-        scaler : Optional[Any], default=None
-            Configuration for scaling the scores
+            The maximum number of iterations per level
         relationship_types : Optional[List[str]], default=None
             The relationships types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
@@ -125,15 +129,17 @@ class PageRankEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
+        seed_property : Optional[str], default=None
+            Defines node properties that are used as initial community identifiers
+        consecutive_ids : Optional[bool], default=None
+            Flag to decide whether community identifiers are mapped into a consecutive id space
         relationship_weight_property : Optional[str], default=None
             The property name that contains weight
-        source_nodes : Optional[Any], default=None
-            The source nodes for personalized PageRank
 
         Returns
         -------
-        PageRankStatsResult
-            Algorithm statistics
+        LouvainStatsResult
+            Algorithm metrics and statistics
         """
         pass
 
@@ -141,10 +147,10 @@ class PageRankEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
+        max_levels: Optional[int] = None,
+        include_intermediate_communities: Optional[bool] = None,
         max_iterations: Optional[int] = None,
-        scaler: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -152,26 +158,28 @@ class PageRankEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
+        seed_property: Optional[str] = None,
+        consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
-        source_nodes: Optional[Any] = None,
+        min_community_size: Optional[int] = None,
     ) -> DataFrame:
         """
-        Executes the PageRank algorithm and returns a stream of results.
+        Executes the Louvain algorithm and returns a stream of results.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        damping_factor : Optional[float], default=None
-            The damping factor controls the probability of a random jump to a random node
         tolerance : Optional[float], default=None
-            Minimum change in scores between iterations
+            The tolerance value for the algorithm convergence
+        max_levels : Optional[int], default=None
+            The maximum number of levels in the hierarchy
+        include_intermediate_communities : Optional[bool], default=None
+            Whether to include intermediate community assignments
         max_iterations : Optional[int], default=None
-            The maximum number of iterations to run
-        scaler : Optional[Any], default=None
-            Configuration for scaling the scores
+            The maximum number of iterations per level
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            The relationships types considered in this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         sudo : Optional[bool], default=None
@@ -184,15 +192,19 @@ class PageRankEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
+        seed_property : Optional[str], default=None
+            Defines node properties that are used as initial community identifiers
+        consecutive_ids : Optional[bool], default=None
+            Flag to decide whether community identifiers are mapped into a consecutive id space
         relationship_weight_property : Optional[str], default=None
             The property name that contains weight
-        source_nodes : Optional[Any], default=None
-            The source nodes for personalized PageRank
+        min_community_size : Optional[int], default=None
+            Don't stream communities with fewer nodes than this
 
         Returns
         -------
         DataFrame
-            DataFrame with node IDs and their PageRank scores
+            DataFrame with the algorithm results
         """
         pass
 
@@ -201,10 +213,10 @@ class PageRankEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
+        max_levels: Optional[int] = None,
+        include_intermediate_communities: Optional[bool] = None,
         max_iterations: Optional[int] = None,
-        scaler: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -212,29 +224,31 @@ class PageRankEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
+        seed_property: Optional[str] = None,
+        consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
-        source_nodes: Optional[Any] = None,
-        write_concurrency: Optional[int] = None,
-    ) -> PageRankWriteResult:
+        write_concurrency: Optional[Any] = None,
+        min_community_size: Optional[int] = None,
+    ) -> LouvainWriteResult:
         """
-        Executes the PageRank algorithm and writes the results back to the database.
+        Executes the Louvain algorithm and writes the results to the Neo4j database.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         write_property : str
-            The property name to write the PageRank score for each node
-        damping_factor : Optional[float], default=None
-            The damping factor controls the probability of a random jump to a random node
+            The property name to write community IDs to
         tolerance : Optional[float], default=None
-            Minimum change in scores between iterations
+            The tolerance value for the algorithm convergence
+        max_levels : Optional[int], default=None
+            The maximum number of levels in the hierarchy
+        include_intermediate_communities : Optional[bool], default=None
+            Whether to include intermediate community assignments
         max_iterations : Optional[int], default=None
-            The maximum number of iterations to run
-        scaler : Optional[Any], default=None
-            Configuration for scaling the scores
+            The maximum number of iterations per level
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            The relationships types considered in this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         sudo : Optional[bool], default=None
@@ -247,16 +261,20 @@ class PageRankEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
+        seed_property : Optional[str], default=None
+            Defines node properties that are used as initial community identifiers
+        consecutive_ids : Optional[bool], default=None
+            Flag to decide whether community identifiers are mapped into a consecutive id space
         relationship_weight_property : Optional[str], default=None
             The property name that contains weight
-        source_nodes : Optional[Any], default=None
-            The source nodes for personalized PageRank
-        write_concurrency : Optional[int], default=None
-            The number of concurrent threads used for writing
+        write_concurrency : Optional[Any], default=None
+            The number of concurrent threads during the write phase
+        min_community_size : Optional[int], default=None
+            Don't write communities with fewer nodes than this
 
         Returns
         -------
-        PageRankWriteResult
+        LouvainWriteResult
             Algorithm metrics and statistics
         """
         pass
@@ -265,15 +283,16 @@ class PageRankEndpoints(ABC):
     def estimate(
         self,
         G: Union[GraphV2, dict[str, Any]],
-        damping_factor: Optional[float] = None,
         tolerance: Optional[float] = None,
+        max_levels: Optional[int] = None,
+        include_intermediate_communities: Optional[bool] = None,
         max_iterations: Optional[int] = None,
-        scaler: Optional[Any] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
+        seed_property: Optional[str] = None,
+        consecutive_ids: Optional[bool] = None,
         relationship_weight_property: Optional[str] = None,
-        source_nodes: Optional[Any] = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
@@ -282,37 +301,41 @@ class PageRankEndpoints(ABC):
         ----------
         G : Union[GraphV2, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
-        damping_factor : Optional[float], default=None
-            The damping factor controls the probability of a random jump to a random node
         tolerance : Optional[float], default=None
-            Minimum change in scores between iterations
+            The tolerance value for the algorithm convergence
+        max_levels : Optional[int], default=None
+            The maximum number of levels in the hierarchy
+        include_intermediate_communities : Optional[bool], default=None
+            Whether to include intermediate community assignments
         max_iterations : Optional[int], default=None
-            The maximum number of iterations to run
-        scaler : Optional[Any], default=None
-            Configuration for scaling the scores
+            The maximum number of iterations per level
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            The relationship types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         concurrency : Optional[Any], default=None
             The number of concurrent threads
+        seed_property : Optional[str], default=None
+            A property to use as the starting community id for a node
+        consecutive_ids : Optional[bool], default=None
+            Flag to decide if the component identifiers should be returned consecutively or not
         relationship_weight_property : Optional[str], default=None
             The property name that contains weight
-        source_nodes : Optional[Any], default=None
-            The source nodes for personalized PageRank
 
         Returns
         -------
         EstimationResult
-            Memory estimation details
+            An object containing the result of the estimation
         """
         pass
 
 
-class PageRankMutateResult(BaseResult):
-    ran_iterations: int
-    did_converge: bool
-    centrality_distribution: dict[str, Any]
+class LouvainMutateResult(BaseResult):
+    modularity: float
+    modularities: List[Any]
+    ran_levels: int
+    community_count: int
+    community_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
@@ -321,20 +344,24 @@ class PageRankMutateResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class PageRankStatsResult(BaseResult):
-    ran_iterations: int
-    did_converge: bool
-    centrality_distribution: dict[str, Any]
+class LouvainStatsResult(BaseResult):
+    modularity: float
+    modularities: List[Any]
+    ran_levels: int
+    community_count: int
+    community_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
     configuration: dict[str, Any]
 
 
-class PageRankWriteResult(BaseResult):
-    ran_iterations: int
-    did_converge: bool
-    centrality_distribution: dict[str, Any]
+class LouvainWriteResult(BaseResult):
+    modularity: float
+    modularities: List[Any]
+    ran_levels: int
+    community_count: int
+    community_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int

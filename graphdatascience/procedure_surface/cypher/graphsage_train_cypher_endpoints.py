@@ -7,7 +7,7 @@ from graphdatascience.procedure_surface.cypher.model_api_cypher import ModelApiC
 
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
-from ..api.graphsage_train_endpoints import (
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpoints import (
     GraphSageTrainEndpoints,
     GraphSageTrainResult,
 )

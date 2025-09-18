@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.k1coloring_endpoints import (
+from graphdatascience.procedure_surface.api.community.k1coloring_endpoints import (
     K1ColoringMutateResult,
     K1ColoringStatsResult,
     K1ColoringWriteResult,

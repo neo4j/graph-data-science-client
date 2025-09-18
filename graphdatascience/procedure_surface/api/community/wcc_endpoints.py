@@ -7,13 +7,13 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
-from .base_result import BaseResult
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
-class K1ColoringEndpoints(ABC):
+class WccEndpoints(ABC):
     """
-    Abstract base class defining the API for the K-1 Coloring algorithm.
+    Abstract base class defining the API for the Weakly Connected Components (WCC) algorithm.
     """
 
     @abstractmethod
@@ -21,8 +21,7 @@ class K1ColoringEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
+        threshold: Optional[float] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -30,20 +29,21 @@ class K1ColoringEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> K1ColoringMutateResult:
+        seed_property: Optional[str] = None,
+        consecutive_ids: Optional[bool] = None,
+        relationship_weight_property: Optional[str] = None,
+    ) -> WccMutateResult:
         """
-        Executes the K-1 Coloring algorithm and writes the results to the in-memory graph as node properties.
+        Executes the WCC algorithm and writes the results to the in-memory graph as node properties.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the color for each node
-        batch_size : Optional[int], default=None
-            The batch size for processing
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations of K-1 Coloring to run
+            The property name to store the component ID for each node
+        threshold : Optional[float], default=None
+            The minimum required weight to consider a relationship during traversal
         relationship_types : Optional[List[str]], default=None
             The relationships types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
@@ -58,10 +58,16 @@ class K1ColoringEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
+        seed_property : Optional[str], default=None
+            Defines node properties that are used as initial component identifiers
+        consecutive_ids : Optional[bool], default=None
+            Flag to decide whether component identifiers are mapped into a consecutive id space
+        relationship_weight_property : Optional[str], default=None
+            The property name that contains weight
 
         Returns
         -------
-        K1ColoringMutateResult
+        WccMutateResult
             Algorithm metrics and statistics
         """
         pass
@@ -70,8 +76,7 @@ class K1ColoringEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
+        threshold: Optional[float] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -79,18 +84,19 @@ class K1ColoringEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> K1ColoringStatsResult:
+        seed_property: Optional[str] = None,
+        consecutive_ids: Optional[bool] = None,
+        relationship_weight_property: Optional[str] = None,
+    ) -> WccStatsResult:
         """
-        Executes the K-1 Coloring algorithm and returns statistics.
+        Executes the WCC algorithm and returns statistics.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        batch_size : Optional[int], default=None
-            The batch size for processing
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations of K-1 Coloring to run
+        threshold : Optional[float], default=None
+            The minimum required weight to consider a relationship during traversal
         relationship_types : Optional[List[str]], default=None
             The relationships types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
@@ -105,10 +111,16 @@ class K1ColoringEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
+        seed_property : Optional[str], default=None
+            Defines node properties that are used as initial component identifiers
+        consecutive_ids : Optional[bool], default=None
+            Flag to decide whether component identifiers are mapped into a consecutive id space
+        relationship_weight_property : Optional[str], default=None
+            The property name that contains weight
 
         Returns
         -------
-        K1ColoringStatsResult
+        WccStatsResult
             Algorithm metrics and statistics
         """
         pass
@@ -117,8 +129,8 @@ class K1ColoringEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
+        min_component_size: Optional[int] = None,
+        threshold: Optional[float] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -126,19 +138,21 @@ class K1ColoringEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        min_community_size: Optional[int] = None,
+        seed_property: Optional[str] = None,
+        consecutive_ids: Optional[bool] = None,
+        relationship_weight_property: Optional[str] = None,
     ) -> DataFrame:
         """
-        Executes the K-1 Coloring algorithm and returns a stream of results.
+        Executes the WCC algorithm and returns a stream of results.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        batch_size : Optional[int], default=None
-            The batch size for processing
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations of K-1 Coloring to run
+        min_component_size : Optional[int], default=None
+            Don't stream components with fewer nodes than this
+        threshold : Optional[float], default=None
+            The minimum required weight to consider a relationship during traversal
         relationship_types : Optional[List[str]], default=None
             The relationships types considered in this algorithm run
         node_labels : Optional[List[str]], default=None
@@ -153,8 +167,12 @@ class K1ColoringEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        min_community_size : Optional[int], default=None
-            Only community ids of communities with a size greater than or equal to the given value are returned
+        seed_property : Optional[str], default=None
+            Defines node properties that are used as initial component identifiers
+        consecutive_ids : Optional[bool], default=None
+            Flag to decide whether component identifiers are mapped into a consecutive id space
+        relationship_weight_property : Optional[str], default=None
+            The property name that contains weight
 
         Returns
         -------
@@ -168,8 +186,8 @@ class K1ColoringEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
+        min_component_size: Optional[int] = None,
+        threshold: Optional[float] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -177,22 +195,24 @@ class K1ColoringEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
+        seed_property: Optional[str] = None,
+        consecutive_ids: Optional[bool] = None,
+        relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
-        min_community_size: Optional[int] = None,
-    ) -> K1ColoringWriteResult:
+    ) -> WccWriteResult:
         """
-        Executes the K-1 Coloring algorithm and writes the results to the Neo4j database.
+        Executes the WCC algorithm and writes the results to the Neo4j database.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         write_property : str
-            The property name to write colors to
-        batch_size : Optional[int], default=None
-            The batch size for processing
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations of K-1 Coloring to run
+            The property name to write component IDs to
+        min_component_size : Optional[int], default=None
+            Don't write components with fewer nodes than this
+        threshold : Optional[float], default=None
+            The minimum required weight to consider a relationship during traversal
         relationship_types : Optional[List[str]], default=None
             The relationships types considered in this algorithm run
         node_labels : Optional[List[str]], default=None
@@ -207,14 +227,18 @@ class K1ColoringEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
+        seed_property : Optional[str], default=None
+            Defines node properties that are used as initial component identifiers
+        consecutive_ids : Optional[bool], default=None
+            Flag to decide whether component identifiers are mapped into a consecutive id space
+        relationship_weight_property : Optional[str], default=None
+            The property name that contains weight
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads during the write phase
-        min_community_size : Optional[int], default=None
-            Only community ids of communities with a size greater than or equal to the given value are written to Neo4j
 
         Returns
         -------
-        K1ColoringWriteResult
+        WccWriteResult
             Algorithm metrics and statistics
         """
         pass
@@ -223,11 +247,13 @@ class K1ColoringEndpoints(ABC):
     def estimate(
         self,
         G: Union[GraphV2, dict[str, Any]],
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
+        threshold: Optional[float] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
+        seed_property: Optional[str] = None,
+        consecutive_ids: Optional[bool] = None,
+        relationship_weight_property: Optional[str] = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
@@ -236,16 +262,20 @@ class K1ColoringEndpoints(ABC):
         ----------
         G : Union[GraphV2, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
-        batch_size : Optional[int], default=None
-            The batch size for processing
-        max_iterations : Optional[int], default=None
-            The maximum number of iterations of K-1 Coloring to run
+        threshold : Optional[float], default=None
+            The minimum required weight to consider a relationship during traversal
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         concurrency : Optional[Any], default=None
             The number of concurrent threads
+        seed_property : Optional[str], default=None
+            A property to use as the starting component id for a node
+        consecutive_ids : Optional[bool], default=None
+            Flag to decide if the component identifiers should be returned consecutively or not
+        relationship_weight_property : Optional[str], default=None
+            The property name that contains weight
 
         Returns
         -------
@@ -255,33 +285,32 @@ class K1ColoringEndpoints(ABC):
         pass
 
 
-class K1ColoringMutateResult(BaseResult):
-    node_count: int
-    color_count: int
-    ran_iterations: int
-    did_converge: bool
+class WccMutateResult(BaseResult):
+    component_count: int
+    component_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
+    post_processing_millis: int
     mutate_millis: int
+    node_properties_written: int
     configuration: dict[str, Any]
 
 
-class K1ColoringStatsResult(BaseResult):
-    node_count: int
-    color_count: int
-    ran_iterations: int
-    did_converge: bool
+class WccStatsResult(BaseResult):
+    component_count: int
+    component_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
+    post_processing_millis: int
     configuration: dict[str, Any]
 
 
-class K1ColoringWriteResult(BaseResult):
-    node_count: int
-    color_count: int
-    ran_iterations: int
-    did_converge: bool
+class WccWriteResult(BaseResult):
+    component_count: int
+    component_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
     write_millis: int
+    post_processing_millis: int
+    node_properties_written: int
     configuration: dict[str, Any]

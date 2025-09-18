@@ -1,19 +1,17 @@
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
-from .base_result import BaseResult
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
-class SccEndpoints(ABC):
+class ArticulationPointsEndpoints(ABC):
     """
-    Abstract base class defining the API for the Strongly Connected Components (SCC) algorithm.
+    Abstract base class defining the API for the Articulation Points algorithm.
     """
 
     @abstractmethod
@@ -28,19 +26,18 @@ class SccEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        consecutive_ids: Optional[bool] = None,
-    ) -> SccMutateResult:
+    ) -> "ArticulationPointsMutateResult":
         """
-        Executes the SCC algorithm and writes the results to the in-memory graph as node properties.
+        Executes the ArticulationPoints algorithm and writes the results to the in-memory graph as node properties.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the component ID for each node
+            The property name to store the articulation point flag for each node
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            The relationship types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         sudo : Optional[bool], default=None
@@ -53,15 +50,12 @@ class SccEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        consecutive_ids : Optional[bool], default=None
-            Flag to decide whether component identifiers are mapped into a consecutive id space
 
         Returns
         -------
-        SccMutateResult
-            Algorithm metrics and statistics
+        ArticulationPointsMutateResult
+            Algorithm metrics and statistics including the count of articulation points found
         """
-        pass
 
     @abstractmethod
     def stats(
@@ -74,17 +68,16 @@ class SccEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        consecutive_ids: Optional[bool] = None,
-    ) -> SccStatsResult:
+    ) -> "ArticulationPointsStatsResult":
         """
-        Executes the SCC algorithm and returns statistics.
+        Executes the ArticulationPoints algorithm and returns result statistics without writing the result to Neo4j.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            The relationship types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         sudo : Optional[bool], default=None
@@ -97,15 +90,12 @@ class SccEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        consecutive_ids : Optional[bool], default=None
-            Flag to decide whether component identifiers are mapped into a consecutive id space
 
         Returns
         -------
-        SccStatsResult
-            Algorithm metrics and statistics
+        ArticulationPointsStatsResult
+            Algorithm statistics including the count of articulation points found
         """
-        pass
 
     @abstractmethod
     def stream(
@@ -118,17 +108,16 @@ class SccEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        consecutive_ids: Optional[bool] = None,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         """
-        Executes the SCC algorithm and returns a stream of results.
+        Executes the ArticulationPoints algorithm and returns results as a stream.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         relationship_types : Optional[List[str]], default=None
-            The relationships types considered in this algorithm run
+            The relationship types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         sudo : Optional[bool], default=None
@@ -141,15 +130,14 @@ class SccEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        consecutive_ids : Optional[bool], default=None
-            Flag to decide whether component identifiers are mapped into a consecutive id space
 
         Returns
         -------
         DataFrame
-            DataFrame with the algorithm results
+            A DataFrame containing articulation points with columns:
+            - nodeId: The ID of the articulation point
+            - resultingComponents: Information about resulting components
         """
-        pass
 
     @abstractmethod
     def write(
@@ -163,20 +151,19 @@ class SccEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        consecutive_ids: Optional[bool] = None,
         write_concurrency: Optional[Any] = None,
-    ) -> SccWriteResult:
+    ) -> "ArticulationPointsWriteResult":
         """
-        Executes the SCC algorithm and writes the results to the Neo4j database.
+        Executes the ArticulationPoints algorithm and writes the results back to the Neo4j database.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         write_property : str
-            The property name to write component IDs to
+            The property name to store the articulation point flag for each node
         relationship_types : Optional[List[str]], default=None
-            The relationships types considered in this algorithm run
+            The relationship types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         sudo : Optional[bool], default=None
@@ -189,17 +176,14 @@ class SccEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
-        consecutive_ids : Optional[bool], default=None
-            Flag to decide whether component identifiers are mapped into a consecutive id space
         write_concurrency : Optional[Any], default=None
-            The number of concurrent threads during the write phase
+            The number of concurrent threads for writing
 
         Returns
         -------
-        SccWriteResult
-            Algorithm metrics and statistics
+        ArticulationPointsWriteResult
+            Algorithm metrics and statistics including the count of articulation points found
         """
-        pass
 
     @abstractmethod
     def estimate(
@@ -208,7 +192,6 @@ class SccEndpoints(ABC):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
-        consecutive_ids: Optional[bool] = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
@@ -216,50 +199,45 @@ class SccEndpoints(ABC):
         Parameters
         ----------
         G : Union[GraphV2, dict[str, Any]]
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to be used in the estimation. Provided either as a GraphV2 object or a configuration dictionary for the projection.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
+            The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            The node labels used to select nodes for this algorithm run.
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
-        consecutive_ids : Optional[bool], default=None
-            Flag to decide if the component identifiers should be returned consecutively or not
+            The number of concurrent threads used for the estimation.
 
         Returns
         -------
         EstimationResult
-            Memory estimation details
+            An object containing the result of the estimation including memory requirements
         """
         pass
 
 
-class SccMutateResult(BaseResult):
-    component_count: int
-    component_distribution: dict[str, Any]
-    pre_processing_millis: int
-    compute_millis: int
-    post_processing_millis: int
+class ArticulationPointsMutateResult(BaseResult):
+    """Result of running ArticulationPoints algorithm with mutate mode."""
+
+    articulation_point_count: int
+    node_properties_written: int
     mutate_millis: int
+    compute_millis: int
+    configuration: dict[str, Any]
+
+
+class ArticulationPointsStatsResult(BaseResult):
+    """Result of running ArticulationPoints algorithm with stats mode."""
+
+    articulation_point_count: int
+    compute_millis: int
+    configuration: dict[str, Any]
+
+
+class ArticulationPointsWriteResult(BaseResult):
+    """Result of running ArticulationPoints algorithm with write mode."""
+
+    articulation_point_count: int
     node_properties_written: int
-    configuration: dict[str, Any]
-
-
-class SccStatsResult(BaseResult):
-    component_count: int
-    component_distribution: dict[str, Any]
-    pre_processing_millis: int
-    compute_millis: int
-    post_processing_millis: int
-    configuration: dict[str, Any]
-
-
-class SccWriteResult(BaseResult):
-    component_count: int
-    component_distribution: dict[str, Any]
-    pre_processing_millis: int
-    compute_millis: int
     write_millis: int
-    post_processing_millis: int
-    node_properties_written: int
+    compute_millis: int
     configuration: dict[str, Any]

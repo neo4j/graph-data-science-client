@@ -7,7 +7,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from ..api.estimation_result import EstimationResult
-from ..api.louvain_endpoints import LouvainEndpoints, LouvainMutateResult, LouvainStatsResult, LouvainWriteResult
+from graphdatascience.procedure_surface.api.community.louvain_endpoints import LouvainEndpoints, LouvainMutateResult, LouvainStatsResult, LouvainWriteResult
 from .node_property_endpoints import NodePropertyEndpoints
 
 

@@ -1,17 +1,19 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
-class ArticulationPointsEndpoints(ABC):
+class K1ColoringEndpoints(ABC):
     """
-    Abstract base class defining the API for the Articulation Points algorithm.
+    Abstract base class defining the API for the K-1 Coloring algorithm.
     """
 
     @abstractmethod
@@ -19,6 +21,8 @@ class ArticulationPointsEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
+        batch_size: Optional[int] = None,
+        max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -26,18 +30,22 @@ class ArticulationPointsEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> "ArticulationPointsMutateResult":
+    ) -> K1ColoringMutateResult:
         """
-        Executes the ArticulationPoints algorithm and writes the results to the in-memory graph as node properties.
+        Executes the K-1 Coloring algorithm and writes the results to the in-memory graph as node properties.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the articulation point flag for each node
+            The property name to store the color for each node
+        batch_size : Optional[int], default=None
+            The batch size for processing
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations of K-1 Coloring to run
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
+            The relationships types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         sudo : Optional[bool], default=None
@@ -53,14 +61,17 @@ class ArticulationPointsEndpoints(ABC):
 
         Returns
         -------
-        ArticulationPointsMutateResult
-            Algorithm metrics and statistics including the count of articulation points found
+        K1ColoringMutateResult
+            Algorithm metrics and statistics
         """
+        pass
 
     @abstractmethod
     def stats(
         self,
         G: GraphV2,
+        batch_size: Optional[int] = None,
+        max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -68,16 +79,20 @@ class ArticulationPointsEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> "ArticulationPointsStatsResult":
+    ) -> K1ColoringStatsResult:
         """
-        Executes the ArticulationPoints algorithm and returns result statistics without writing the result to Neo4j.
+        Executes the K-1 Coloring algorithm and returns statistics.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
+        batch_size : Optional[int], default=None
+            The batch size for processing
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations of K-1 Coloring to run
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
+            The relationships types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         sudo : Optional[bool], default=None
@@ -93,14 +108,17 @@ class ArticulationPointsEndpoints(ABC):
 
         Returns
         -------
-        ArticulationPointsStatsResult
-            Algorithm statistics including the count of articulation points found
+        K1ColoringStatsResult
+            Algorithm metrics and statistics
         """
+        pass
 
     @abstractmethod
     def stream(
         self,
         G: GraphV2,
+        batch_size: Optional[int] = None,
+        max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -108,16 +126,21 @@ class ArticulationPointsEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> "DataFrame":
+        min_community_size: Optional[int] = None,
+    ) -> DataFrame:
         """
-        Executes the ArticulationPoints algorithm and returns results as a stream.
+        Executes the K-1 Coloring algorithm and returns a stream of results.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
+        batch_size : Optional[int], default=None
+            The batch size for processing
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations of K-1 Coloring to run
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
+            The relationships types considered in this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         sudo : Optional[bool], default=None
@@ -130,20 +153,23 @@ class ArticulationPointsEndpoints(ABC):
             The number of concurrent threads
         job_id : Optional[Any], default=None
             An identifier for the job
+        min_community_size : Optional[int], default=None
+            Only community ids of communities with a size greater than or equal to the given value are returned
 
         Returns
         -------
         DataFrame
-            A DataFrame containing articulation points with columns:
-            - nodeId: The ID of the articulation point
-            - resultingComponents: Information about resulting components
+            DataFrame with the algorithm results
         """
+        pass
 
     @abstractmethod
     def write(
         self,
         G: GraphV2,
         write_property: str,
+        batch_size: Optional[int] = None,
+        max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -152,18 +178,23 @@ class ArticulationPointsEndpoints(ABC):
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
-    ) -> "ArticulationPointsWriteResult":
+        min_community_size: Optional[int] = None,
+    ) -> K1ColoringWriteResult:
         """
-        Executes the ArticulationPoints algorithm and writes the results back to the Neo4j database.
+        Executes the K-1 Coloring algorithm and writes the results to the Neo4j database.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         write_property : str
-            The property name to store the articulation point flag for each node
+            The property name to write colors to
+        batch_size : Optional[int], default=None
+            The batch size for processing
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations of K-1 Coloring to run
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
+            The relationships types considered in this algorithm run
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         sudo : Optional[bool], default=None
@@ -177,18 +208,23 @@ class ArticulationPointsEndpoints(ABC):
         job_id : Optional[Any], default=None
             An identifier for the job
         write_concurrency : Optional[Any], default=None
-            The number of concurrent threads for writing
+            The number of concurrent threads during the write phase
+        min_community_size : Optional[int], default=None
+            Only community ids of communities with a size greater than or equal to the given value are written to Neo4j
 
         Returns
         -------
-        ArticulationPointsWriteResult
-            Algorithm metrics and statistics including the count of articulation points found
+        K1ColoringWriteResult
+            Algorithm metrics and statistics
         """
+        pass
 
     @abstractmethod
     def estimate(
         self,
         G: Union[GraphV2, dict[str, Any]],
+        batch_size: Optional[int] = None,
+        max_iterations: Optional[int] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
@@ -199,45 +235,53 @@ class ArticulationPointsEndpoints(ABC):
         Parameters
         ----------
         G : Union[GraphV2, dict[str, Any]]
-            The graph to be used in the estimation. Provided either as a GraphV2 object or a configuration dictionary for the projection.
+            The graph to run the algorithm on or a dictionary representing the graph.
+        batch_size : Optional[int], default=None
+            The batch size for processing
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations of K-1 Coloring to run
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run.
+            The relationship types used to select relationships for this algorithm run
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run.
+            The node labels used to select nodes for this algorithm run
         concurrency : Optional[Any], default=None
-            The number of concurrent threads used for the estimation.
+            The number of concurrent threads
 
         Returns
         -------
         EstimationResult
-            An object containing the result of the estimation including memory requirements
+            Memory estimation details
         """
         pass
 
 
-class ArticulationPointsMutateResult(BaseResult):
-    """Result of running ArticulationPoints algorithm with mutate mode."""
-
-    articulation_point_count: int
-    node_properties_written: int
+class K1ColoringMutateResult(BaseResult):
+    node_count: int
+    color_count: int
+    ran_iterations: int
+    did_converge: bool
+    pre_processing_millis: int
+    compute_millis: int
     mutate_millis: int
+    configuration: dict[str, Any]
+
+
+class K1ColoringStatsResult(BaseResult):
+    node_count: int
+    color_count: int
+    ran_iterations: int
+    did_converge: bool
+    pre_processing_millis: int
     compute_millis: int
     configuration: dict[str, Any]
 
 
-class ArticulationPointsStatsResult(BaseResult):
-    """Result of running ArticulationPoints algorithm with stats mode."""
-
-    articulation_point_count: int
+class K1ColoringWriteResult(BaseResult):
+    node_count: int
+    color_count: int
+    ran_iterations: int
+    did_converge: bool
+    pre_processing_millis: int
     compute_millis: int
-    configuration: dict[str, Any]
-
-
-class ArticulationPointsWriteResult(BaseResult):
-    """Result of running ArticulationPoints algorithm with write mode."""
-
-    articulation_point_count: int
-    node_properties_written: int
     write_millis: int
-    compute_millis: int
     configuration: dict[str, Any]
