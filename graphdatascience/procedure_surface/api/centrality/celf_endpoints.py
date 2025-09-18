@@ -37,7 +37,9 @@ class CelfEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> CelfMutateResult:
         """
-        Executes the CELF algorithm and writes the results to the in-memory graph as node properties.
+        Runs the CELF algorithm and stores the results in the graph catalog as a new node property.
+
+        The influence maximization problem asks for a set of k nodes that maximize the expected spread of influence in the network.
 
         Parameters
         ----------

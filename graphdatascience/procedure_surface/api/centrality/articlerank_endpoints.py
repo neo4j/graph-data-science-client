@@ -36,7 +36,11 @@ class ArticleRankEndpoints(ABC):
         source_nodes: Optional[Any] = None,
     ) -> ArticleRankMutateResult:
         """
-        Executes the ArticleRank algorithm and writes the results back to the graph as a node property.
+        Runs the Article Rank algorithm and stores the results in the graph catalog as a new node property.
+
+        ArticleRank is a variant of the Page Rank algorithm, which measures the transitive influence of nodes.
+        Page Rank follows the assumption that relationships originating from low-degree nodes have a higher influence than relationships from high-degree nodes.
+        Article Rank lowers the influence of low-degree nodes by lowering the scores being sent to their neighbors in each iteration.
 
         Parameters
         ----------

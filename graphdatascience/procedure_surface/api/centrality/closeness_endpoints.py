@@ -35,7 +35,11 @@ class ClosenessEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> ClosenessMutateResult:
         """
-        Executes the Closeness Centrality algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Closeness Centrality algorithm and stores the results in the graph catalog as a new node property.
+
+        Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+        The closeness centrality of a node measures its average farness (inverse distance) to all other nodes.
+        Nodes with a high closeness score have the shortest distances to all other nodes.
 
         Parameters
         ----------

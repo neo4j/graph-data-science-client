@@ -40,7 +40,12 @@ class EigenvectorEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> EigenvectorMutateResult:
         """
-        Executes the Eigenvector Centrality algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Eigenvector Centrality algorithm and stores the results in the graph catalog as a new node property.
+
+        Eigenvector Centrality is an algorithm that measures the transitive influence of nodes.
+        Relationships originating from high-scoring nodes contribute more to the score of a node than connections from low-scoring nodes.
+        A high eigenvector score means that a node is connected to many nodes who themselves have high scores.
+        The algorithm computes the eigenvector associated with the largest absolute eigenvalue.
 
         Parameters
         ----------
