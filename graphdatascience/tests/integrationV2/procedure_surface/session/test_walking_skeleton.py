@@ -53,3 +53,5 @@ def test_walking_skeleton(gds: AuraGraphDataScience) -> None:
 
     drop_result = gds.v2.graph.node_properties.drop(G, node_properties=["wcc"])
     assert drop_result.properties_removed == 2
+
+    gds.v2.graph.sample.rwr()

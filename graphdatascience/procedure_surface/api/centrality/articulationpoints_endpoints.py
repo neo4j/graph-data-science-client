@@ -6,13 +6,10 @@ from pandas import DataFrame
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
 class ArticulationPointsEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Articulation Points algorithm.
-    """
 
     @abstractmethod
     def mutate(
@@ -28,7 +25,10 @@ class ArticulationPointsEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> "ArticulationPointsMutateResult":
         """
-        Executes the ArticulationPoints algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Articulation Points algorithm and stores the results in the graph catalog as a new node property.
+
+        Given a graph, an articulation point is a node whose removal increases the number of connected components in the graph.
+        The Neo4j GDS Library provides an efficient linear time sequential algorithm to compute all articulation points in a graph.
 
         Parameters
         ----------
@@ -70,7 +70,10 @@ class ArticulationPointsEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> "ArticulationPointsStatsResult":
         """
-        Executes the ArticulationPoints algorithm and returns result statistics without writing the result to Neo4j.
+        Runs the Articulation Points algorithm and returns result statistics without storing the results.
+
+        Given a graph, an articulation point is a node whose removal increases the number of connected components in the graph.
+        The Neo4j GDS Library provides an efficient linear time sequential algorithm to compute all articulation points in a graph.
 
         Parameters
         ----------
@@ -154,7 +157,10 @@ class ArticulationPointsEndpoints(ABC):
         write_concurrency: Optional[Any] = None,
     ) -> "ArticulationPointsWriteResult":
         """
-        Executes the ArticulationPoints algorithm and writes the results back to the Neo4j database.
+        Runs the Articulation Points algorithm and stores the result in the Neo4j database as a new node property.
+
+        Given a graph, an articulation point is a node whose removal increases the number of connected components in the graph.
+        The Neo4j GDS Library provides an efficient linear time sequential algorithm to compute all articulation points in a graph.
 
         Parameters
         ----------

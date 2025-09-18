@@ -7,18 +7,11 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
-from .base_result import BaseResult
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
 class ClosenessEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Closeness Centrality algorithm.
-
-    Closeness centrality measures how close a node is to all other nodes in the network.
-    It's calculated as the reciprocal of the sum of the shortest path distances from
-    the node to all other nodes in the graph.
-    """
 
     @abstractmethod
     def mutate(
@@ -35,7 +28,11 @@ class ClosenessEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> ClosenessMutateResult:
         """
-        Executes the Closeness Centrality algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Closeness Centrality algorithm and stores the results in the graph catalog as a new node property.
+
+        Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+        The closeness centrality of a node measures its average farness (inverse distance) to all other nodes.
+        Nodes with a high closeness score have the shortest distances to all other nodes.
 
         Parameters
         ----------
@@ -82,7 +79,11 @@ class ClosenessEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> ClosenessStatsResult:
         """
-        Executes the Closeness Centrality algorithm and returns statistics without writing the result to Neo4j.
+        Runs the Closeness Centrality algorithm and returns result statistics without storing the results.
+
+        Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+        The closeness centrality of a node measures its average farness (inverse distance) to all other nodes.
+        Nodes with a high closeness score have the shortest distances to all other nodes.
 
         Parameters
         ----------
@@ -175,7 +176,11 @@ class ClosenessEndpoints(ABC):
         write_concurrency: Optional[Any] = None,
     ) -> ClosenessWriteResult:
         """
-        Executes the Closeness Centrality algorithm and writes the results to the Neo4j database.
+        Runs the Closeness Centrality algorithm and stores the result in the Neo4j database as a new node property.
+
+        Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+        The closeness centrality of a node measures its average farness (inverse distance) to all other nodes.
+        Nodes with a high closeness score have the shortest distances to all other nodes.
 
         Parameters
         ----------

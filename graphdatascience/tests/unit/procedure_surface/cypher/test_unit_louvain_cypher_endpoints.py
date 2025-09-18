@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.louvain_endpoints import (
+from graphdatascience.procedure_surface.api.community.louvain_endpoints import (
     LouvainMutateResult,
     LouvainStatsResult,
     LouvainWriteResult,

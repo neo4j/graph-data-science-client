@@ -8,7 +8,7 @@ from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
 from ..api.estimation_result import EstimationResult
-from ..api.scc_endpoints import SccEndpoints, SccMutateResult, SccStatsResult, SccWriteResult
+from graphdatascience.procedure_surface.api.community.scc_endpoints import SccEndpoints, SccMutateResult, SccStatsResult, SccWriteResult
 from ..utils.config_converter import ConfigConverter
 
 

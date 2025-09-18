@@ -8,13 +8,10 @@ from pandas import DataFrame
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
 class ArticleRankEndpoints(ABC):
-    """
-    Abstract base class defining the API for the ArticleRank algorithm.
-    """
 
     @abstractmethod
     def mutate(
@@ -36,40 +33,44 @@ class ArticleRankEndpoints(ABC):
         source_nodes: Optional[Any] = None,
     ) -> ArticleRankMutateResult:
         """
-        Executes the ArticleRank algorithm and writes the results back to the graph as a node property.
+        Runs the Article Rank algorithm and stores the results in the graph catalog as a new node property.
+
+        ArticleRank is a variant of the Page Rank algorithm, which measures the transitive influence of nodes.
+        Page Rank follows the assumption that relationships originating from low-degree nodes have a higher influence than relationships from high-degree nodes.
+        Article Rank lowers the influence of low-degree nodes by lowering the scores being sent to their neighbors in each iteration.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the ArticleRank score for each node
+            Name of the node property to store the results in.
         damping_factor : Optional[float], default=None
-            The damping factor controls the probability of a random jump to a random node
+            Probability of a jump to a random node.
         tolerance : Optional[float], default=None
-            Minimum change in scores between iterations
+            Minimum change in scores between iterations.
         max_iterations : Optional[int], default=None
-            The maximum number of iterations to run
+            Maximum number of iterations to run.
         scaler : Optional[Any], default=None
-            Configuration for scaling the scores
+            Name of the scaler applied on the resulting scores.
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
+            Name of the property to be used as weights.
         source_nodes : Optional[Any], default=None
-            The source nodes for personalized ArticleRank
+            List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.
 
         Returns
         -------
@@ -96,38 +97,42 @@ class ArticleRankEndpoints(ABC):
         source_nodes: Optional[Any] = None,
     ) -> ArticleRankStatsResult:
         """
-        Executes the ArticleRank algorithm and returns result statistics without writing the result to Neo4j.
+        Runs the Article Rank algorithm and returns result statistics without storing the results.
+
+        ArticleRank is a variant of the Page Rank algorithm, which measures the transitive influence of nodes.
+        Page Rank follows the assumption that relationships originating from low-degree nodes have a higher influence than relationships from high-degree nodes.
+        Article Rank lowers the influence of low-degree nodes by lowering the scores being sent to their neighbors in each iteration.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         damping_factor : Optional[float], default=None
-            The damping factor controls the probability of a random jump to a random node
+            Probability of a jump to a random node.
         tolerance : Optional[float], default=None
-            Minimum change in scores between iterations
+            Minimum change in scores between iterations.
         max_iterations : Optional[int], default=None
-            The maximum number of iterations to run
+            Maximum number of iterations to run.
         scaler : Optional[Any], default=None
-            Configuration for scaling the scores
+            Name of the scaler applied on the resulting scores.
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
+            Name of the property to be used as weights.
         source_nodes : Optional[Any], default=None
-            The source nodes for personalized ArticleRank
+            List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.
 
         Returns
         -------
@@ -214,7 +219,11 @@ class ArticleRankEndpoints(ABC):
         write_concurrency: Optional[int] = None,
     ) -> ArticleRankWriteResult:
         """
-        Executes the ArticleRank algorithm and writes the results to Neo4j.
+        Runs the Article Rank algorithm and stores the result in the Neo4j database as a new node property.
+
+        ArticleRank is a variant of the Page Rank algorithm, which measures the transitive influence of nodes.
+        Page Rank follows the assumption that relationships originating from low-degree nodes have a higher influence than relationships from high-degree nodes.
+        Article Rank lowers the influence of low-degree nodes by lowering the scores being sent to their neighbors in each iteration.
 
         Parameters
         ----------
@@ -223,31 +232,31 @@ class ArticleRankEndpoints(ABC):
         write_property : str
             The property name to write the ArticleRank score for each node
         damping_factor : Optional[float], default=None
-            The damping factor controls the probability of a random jump to a random node
+            Probability of a jump to a random node.
         tolerance : Optional[float], default=None
-            Minimum change in scores between iterations
+            Minimum change in scores between iterations.
         max_iterations : Optional[int], default=None
-            The maximum number of iterations to run
+            Maximum number of iterations to run.
         scaler : Optional[Any], default=None
-            Configuration for scaling the scores
+            Name of the scaler applied on the resulting scores.
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
+            Name of the property to be used as weights.
         source_nodes : Optional[Any], default=None
-            The source nodes for personalized ArticleRank
+            List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.
         write_concurrency : Optional[int], default=None
             The number of concurrent threads used for writing
 

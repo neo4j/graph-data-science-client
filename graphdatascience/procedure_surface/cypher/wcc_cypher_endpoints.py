@@ -8,7 +8,7 @@ from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
 from ..api.estimation_result import EstimationResult
-from ..api.wcc_endpoints import WccEndpoints, WccMutateResult, WccStatsResult, WccWriteResult
+from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints, WccMutateResult, WccStatsResult, WccWriteResult
 from ..utils.config_converter import ConfigConverter
 
 

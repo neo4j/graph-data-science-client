@@ -7,14 +7,11 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 
-from .base_result import BaseResult
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
-class KCoreEndpoints(ABC):
-    """
-    Abstract base class defining the API for the K-Core decomposition algorithm.
-    """
+class ClosenessHarmonicEndpoints(ABC):
 
     @abstractmethod
     def mutate(
@@ -28,35 +25,39 @@ class KCoreEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> KCoreMutateResult:
+    ) -> ClosenessHarmonicMutateResult:
         """
-        Executes the K-Core algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Harmonic Centrality algorithm and stores the results in the graph catalog as a new node property.
+
+        Harmonic centrality (also known as valued centrality) is a variant of closeness centrality, that was invented to
+        solve the problem the original formula had when dealing with unconnected graphs.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the core value for each node
+            The property name to store the harmonic closeness centrality score for each node
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            The node labels used to select nodes for this algorithm run.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Override memory estimation limits. Use with caution as this can lead to
+            memory issues if the estimation is significantly wrong.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Whether to log progress of the algorithm execution
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            The number of concurrent threads used for the algorithm execution.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            An identifier for the job that can be used for monitoring and cancellation
 
         Returns
         -------
-        KCoreMutateResult
-            Algorithm metrics and statistics
+        ClosenessHarmonicMutateResult
+            Algorithm metrics and statistics including the centrality distribution
         """
         pass
 
@@ -71,33 +72,39 @@ class KCoreEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> KCoreStatsResult:
+    ) -> ClosenessHarmonicStatsResult:
         """
-        Executes the K-Core algorithm and returns statistics.
+        Runs the Harmonic Centrality algorithm and returns result statistics without storing the results.
+
+        Harmonic centrality was proposed by Marchiori and Latora while trying to come up with a sensible notion of "average shortest path".
+        They suggested a different way of calculating the average distance to that used in the Closeness Centrality algorithm.
+        Rather than summing the distances of a node to all other nodes, the harmonic centrality algorithm sums the inverse of those distances.
+        This enables it deal with infinite values.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            The node labels used to select nodes for this algorithm run.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Override memory estimation limits. Use with caution as this can lead to
+            memory issues if the estimation is significantly wrong.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Whether to log progress of the algorithm execution
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            The number of concurrent threads used for the algorithm execution.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            An identifier for the job that can be used for monitoring and cancellation
 
         Returns
         -------
-        KCoreStatsResult
-            Algorithm metrics and statistics
+        ClosenessHarmonicStatsResult
+            Algorithm statistics including the centrality distribution
         """
         pass
 
@@ -114,31 +121,32 @@ class KCoreEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> DataFrame:
         """
-        Executes the K-Core algorithm and returns a stream of results.
+        Executes the Harmonic Closeness Centrality algorithm and returns a stream of results.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         relationship_types : Optional[List[str]], default=None
-            The relationships types considered in this algorithm run
+            The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            The node labels used to select nodes for this algorithm run.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Override memory estimation limits. Use with caution as this can lead to
+            memory issues if the estimation is significantly wrong.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Whether to log progress of the algorithm execution
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            The number of concurrent threads used for the algorithm execution.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            An identifier for the job that can be used for monitoring and cancellation
 
         Returns
         -------
         DataFrame
-            DataFrame with the algorithm results containing nodeId and coreValue
+            DataFrame with the algorithm results containing nodeId and score columns
         """
         pass
 
@@ -154,44 +162,44 @@ class KCoreEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-        target_nodes: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
-    ) -> KCoreWriteResult:
+    ) -> ClosenessHarmonicWriteResult:
         """
-        Executes the K-Core algorithm and writes the results to the Neo4j database.
+        Runs the Harmonic Centrality algorithm and stores the result in the Neo4j database as a new node property.
+
+        Harmonic centrality was proposed by Marchiori and Latora while trying to come up with a sensible notion of "average shortest path".
+        They suggested a different way of calculating the average distance to that used in the Closeness Centrality algorithm.
+        Rather than summing the distances of a node to all other nodes, the harmonic centrality algorithm sums the inverse of those distances.
+        This enables it deal with infinite values.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         write_property : str
-            The property name to write core values to
+            The property name to write the harmonic closeness centrality scores to
         relationship_types : Optional[List[str]], default=None
-            The relationships types considered in this algorithm run
+            The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            The node labels used to select nodes for this algorithm run.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Override memory estimation limits. Use with caution as this can lead to
+            memory issues if the estimation is significantly wrong.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Whether to log progress of the algorithm execution
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            The number of concurrent threads used for the algorithm execution.
         job_id : Optional[Any], default=None
-            An identifier for the job
-        target_nodes : Optional[Any], default=None
-            Subset of nodes to compute the algorithm for
-        relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
+            An identifier for the job that can be used for monitoring and cancellation
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads during the write phase
 
         Returns
         -------
-        KCoreWriteResult
-            Algorithm metrics and statistics
+        ClosenessHarmonicWriteResult
+            Algorithm metrics and statistics including the centrality distribution
         """
         pass
 
@@ -204,50 +212,56 @@ class KCoreEndpoints(ABC):
         concurrency: Optional[Any] = None,
     ) -> EstimationResult:
         """
-        Estimate the memory consumption of an algorithm run.
+        Estimate the memory consumption of a Harmonic Closeness Centrality algorithm run.
 
         Parameters
         ----------
         G : Union[GraphV2, dict[str, Any]]
             The graph to run the algorithm on or a dictionary representing the graph.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
+            The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            The node labels used to select nodes for this algorithm run.
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            The number of concurrent threads used for the algorithm execution.
 
         Returns
         -------
         EstimationResult
-            Memory estimation details
+            An object containing the result of the estimation
         """
         pass
 
 
-class KCoreMutateResult(BaseResult):
+class ClosenessHarmonicMutateResult(BaseResult):
+    """Result of running Harmonic Closeness Centrality algorithm with mutate mode."""
+
     node_properties_written: int
-    degeneracy: int
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
     mutate_millis: int
+    centrality_distribution: dict[str, Any]
     configuration: dict[str, Any]
 
 
-class KCoreStatsResult(BaseResult):
-    degeneracy: int
+class ClosenessHarmonicStatsResult(BaseResult):
+    """Result of running Harmonic Closeness Centrality algorithm with stats mode."""
+
+    centrality_distribution: dict[str, Any]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
     configuration: dict[str, Any]
 
 
-class KCoreWriteResult(BaseResult):
+class ClosenessHarmonicWriteResult(BaseResult):
+    """Result of running Harmonic Closeness Centrality algorithm with write mode."""
+
     node_properties_written: int
-    degeneracy: int
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
     write_millis: int
+    centrality_distribution: dict[str, Any]
     configuration: dict[str, Any]

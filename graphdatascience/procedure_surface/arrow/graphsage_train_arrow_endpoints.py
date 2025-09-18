@@ -5,7 +5,7 @@ from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSa
 from graphdatascience.procedure_surface.arrow.graphsage_predict_arrow_endpoints import GraphSagePredictArrowEndpoints
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from ..api.graphsage_train_endpoints import (
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpoints import (
     GraphSageTrainEndpoints,
     GraphSageTrainResult,
 )

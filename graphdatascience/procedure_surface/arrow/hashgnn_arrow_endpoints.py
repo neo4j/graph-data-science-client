@@ -7,7 +7,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from ..api.estimation_result import EstimationResult
-from ..api.hashgnn_endpoints import (
+from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import (
     HashGNNEndpoints,
     HashGNNMutateResult,
     HashGNNWriteResult,
