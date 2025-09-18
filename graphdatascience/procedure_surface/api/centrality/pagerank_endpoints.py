@@ -100,7 +100,10 @@ class PageRankEndpoints(ABC):
         source_nodes: Optional[Any] = None,
     ) -> PageRankStatsResult:
         """
-        Executes the PageRank algorithm and returns statistics.
+        Runs the PageRank algorithm and returns result statistics without storing the results.
+
+        The PageRank algorithm measures the importance of each node within the graph, based on the number of incoming relationships and the importance of the corresponding source nodes.
+        The underlying assumption roughly speaking is that a page is only as important as the pages that link to it.
 
         Parameters
         ----------
@@ -220,7 +223,10 @@ class PageRankEndpoints(ABC):
         write_concurrency: Optional[int] = None,
     ) -> PageRankWriteResult:
         """
-        Executes the PageRank algorithm and writes the results back to the database.
+        Runs the PageRank algorithm and stores the result in the Neo4j database as a new node property.
+
+        The PageRank algorithm measures the importance of each node within the graph, based on the number of incoming relationships and the importance of the corresponding source nodes.
+        The underlying assumption roughly speaking is that a page is only as important as the pages that link to it.
 
         Parameters
         ----------

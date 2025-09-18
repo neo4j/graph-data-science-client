@@ -100,7 +100,11 @@ class ArticleRankEndpoints(ABC):
         source_nodes: Optional[Any] = None,
     ) -> ArticleRankStatsResult:
         """
-        Executes the ArticleRank algorithm and returns result statistics without writing the result to Neo4j.
+        Runs the Article Rank algorithm and returns result statistics without storing the results.
+
+        ArticleRank is a variant of the Page Rank algorithm, which measures the transitive influence of nodes.
+        Page Rank follows the assumption that relationships originating from low-degree nodes have a higher influence than relationships from high-degree nodes.
+        Article Rank lowers the influence of low-degree nodes by lowering the scores being sent to their neighbors in each iteration.
 
         Parameters
         ----------
@@ -218,7 +222,11 @@ class ArticleRankEndpoints(ABC):
         write_concurrency: Optional[int] = None,
     ) -> ArticleRankWriteResult:
         """
-        Executes the ArticleRank algorithm and writes the results to Neo4j.
+        Runs the Article Rank algorithm and stores the result in the Neo4j database as a new node property.
+
+        ArticleRank is a variant of the Page Rank algorithm, which measures the transitive influence of nodes.
+        Page Rank follows the assumption that relationships originating from low-degree nodes have a higher influence than relationships from high-degree nodes.
+        Article Rank lowers the influence of low-degree nodes by lowering the scores being sent to their neighbors in each iteration.
 
         Parameters
         ----------

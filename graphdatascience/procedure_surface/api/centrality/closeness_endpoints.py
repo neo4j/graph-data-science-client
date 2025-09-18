@@ -86,7 +86,11 @@ class ClosenessEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> ClosenessStatsResult:
         """
-        Executes the Closeness Centrality algorithm and returns statistics without writing the result to Neo4j.
+        Runs the Closeness Centrality algorithm and returns result statistics without storing the results.
+
+        Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+        The closeness centrality of a node measures its average farness (inverse distance) to all other nodes.
+        Nodes with a high closeness score have the shortest distances to all other nodes.
 
         Parameters
         ----------
@@ -179,7 +183,11 @@ class ClosenessEndpoints(ABC):
         write_concurrency: Optional[Any] = None,
     ) -> ClosenessWriteResult:
         """
-        Executes the Closeness Centrality algorithm and writes the results to the Neo4j database.
+        Runs the Closeness Centrality algorithm and stores the result in the Neo4j database as a new node property.
+
+        Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+        The closeness centrality of a node measures its average farness (inverse distance) to all other nodes.
+        Nodes with a high closeness score have the shortest distances to all other nodes.
 
         Parameters
         ----------

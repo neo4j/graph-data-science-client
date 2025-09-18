@@ -81,7 +81,12 @@ class ClosenessHarmonicEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> ClosenessHarmonicStatsResult:
         """
-        Executes the Harmonic Closeness Centrality algorithm and returns statistics without writing the result to Neo4j.
+        Runs the Harmonic Centrality algorithm and returns result statistics without storing the results.
+
+        Harmonic centrality was proposed by Marchiori and Latora while trying to come up with a sensible notion of "average shortest path".
+        They suggested a different way of calculating the average distance to that used in the Closeness Centrality algorithm.
+        Rather than summing the distances of a node to all other nodes, the harmonic centrality algorithm sums the inverse of those distances.
+        This enables it deal with infinite values.
 
         Parameters
         ----------
@@ -167,7 +172,12 @@ class ClosenessHarmonicEndpoints(ABC):
         write_concurrency: Optional[Any] = None,
     ) -> ClosenessHarmonicWriteResult:
         """
-        Executes the Harmonic Closeness Centrality algorithm and writes the results to the Neo4j database.
+        Runs the Harmonic Centrality algorithm and stores the result in the Neo4j database as a new node property.
+
+        Harmonic centrality was proposed by Marchiori and Latora while trying to come up with a sensible notion of "average shortest path".
+        They suggested a different way of calculating the average distance to that used in the Closeness Centrality algorithm.
+        Rather than summing the distances of a node to all other nodes, the harmonic centrality algorithm sums the inverse of those distances.
+        This enables it deal with infinite values.
 
         Parameters
         ----------
