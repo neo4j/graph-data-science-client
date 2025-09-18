@@ -8,7 +8,7 @@ from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 
 
-class TestArrowGraph(Graph):
+class ArrowGraphForTests(Graph):
     def __init__(self, name: str):
         self._name = name
 
@@ -19,7 +19,7 @@ class TestArrowGraph(Graph):
 @contextmanager
 def create_graph(
     arrow_client: AuthenticatedArrowClient, graph_name: str, gdl: str, undirected: Optional[Tuple[str, str]] = None
-) -> Generator[TestArrowGraph, Any, None]:
+) -> Generator[ArrowGraphForTests, Any, None]:
     try:
         raw_res = arrow_client.do_action("v2/graph.fromGDL", {"graphName": graph_name, "gdlGraph": gdl})
         deserialize_single(raw_res)
@@ -37,7 +37,7 @@ def create_graph(
             )
             deserialize_single(raw_res)
 
-        yield TestArrowGraph(graph_name)
+        yield ArrowGraphForTests(graph_name)
     finally:
         CatalogArrowEndpoints(arrow_client).drop(graph_name, fail_if_missing=False)
 
@@ -49,7 +49,7 @@ def create_graph_from_db(
     graph_name: str,
     graph_data: str,
     query: str,
-) -> Generator[TestArrowGraph, Any, None]:
+) -> Generator[ArrowGraphForTests, Any, None]:
     try:
         query_runner.run_cypher(graph_data)
         CatalogArrowEndpoints(arrow_client, query_runner).project(
@@ -57,7 +57,7 @@ def create_graph_from_db(
             query=query,
         )
 
-        yield TestArrowGraph(graph_name)
+        yield ArrowGraphForTests(graph_name)
     finally:
         CatalogArrowEndpoints(arrow_client).drop(graph_name, fail_if_missing=False)
         query_runner.run_cypher("MATCH (n) DETACH DELETE n")

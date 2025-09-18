@@ -17,6 +17,7 @@ from ..api.graph_sampling_endpoints import GraphSamplingEndpoints
 from ..utils.config_converter import ConfigConverter
 from .catalog.node_label_cypher_endpoints import NodeLabelCypherEndpoints
 from .catalog.node_properties_cypher_endpoints import NodePropertiesCypherEndpoints
+from .catalog.relationship_cypher_endpoints import RelationshipCypherEndpoints
 from .graph_sampling_cypher_endpoints import GraphSamplingCypherEndpoints
 
 
@@ -158,6 +159,10 @@ class CatalogCypherEndpoints(CatalogEndpoints):
     @property
     def node_properties(self) -> NodePropertiesCypherEndpoints:
         return NodePropertiesCypherEndpoints(self._query_runner)
+
+    @property
+    def relationships(self) -> RelationshipCypherEndpoints:
+        return RelationshipCypherEndpoints(self._query_runner)
 
 
 class GraphProjectResult(BaseResult):

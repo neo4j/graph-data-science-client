@@ -79,7 +79,6 @@ def test_stream_node_properties_with_labels(
     assert set(result["prop1"].tolist()) == {1, 2, 3}
 
 
-@pytest.mark.db_integration
 def test_stream_node_properties_with_db_properties(
     node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph
 ) -> None:

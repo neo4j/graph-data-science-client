@@ -27,7 +27,7 @@ class RemoteWriteBackClient:
         job_id: str,
         concurrency: Optional[int] = None,
         property_overwrites: Optional[dict[str, str]] = None,
-        relationship_type_overwrites: Optional[dict[str, str]] = None,
+        relationship_type_overwrite: Optional[str] = None,
     ) -> WriteBackResult:
         arrow_config = self._arrow_configuration()
 
@@ -36,8 +36,8 @@ class RemoteWriteBackClient:
             configuration["concurrency"] = concurrency
         if property_overwrites is not None:
             configuration["writeProperties"] = property_overwrites
-        if relationship_type_overwrites is not None:
-            configuration["relationshipTypes"] = relationship_type_overwrites
+        if relationship_type_overwrite is not None:
+            configuration["writeRelationshipType"] = relationship_type_overwrite
 
         write_back_params = CallParameters(
             graphName=graph_name,
