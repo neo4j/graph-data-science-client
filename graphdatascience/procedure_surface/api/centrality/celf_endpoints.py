@@ -12,12 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class CelfEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Cost Effective Lazy Forward (CELF) algorithm.
-
-    The CELF algorithm aims to find k nodes that maximize the expected spread of influence
-    in the network.
-    """
 
     @abstractmethod
     def mutate(

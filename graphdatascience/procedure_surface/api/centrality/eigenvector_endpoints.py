@@ -12,14 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class EigenvectorEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Eigenvector Centrality algorithm.
-
-    Eigenvector centrality measures the influence of a node in a network based on the
-    concept that connections to high-scoring nodes contribute more to the score than
-    equal connections to low-scoring nodes. It's computed as the principal eigenvector
-    of the adjacency matrix.
-    """
 
     @abstractmethod
     def mutate(

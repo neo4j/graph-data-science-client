@@ -12,13 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class ClosenessEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Closeness Centrality algorithm.
-
-    Closeness centrality measures how close a node is to all other nodes in the network.
-    It's calculated as the reciprocal of the sum of the shortest path distances from
-    the node to all other nodes in the graph.
-    """
 
     @abstractmethod
     def mutate(
