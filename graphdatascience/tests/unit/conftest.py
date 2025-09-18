@@ -221,7 +221,9 @@ def aura_gds(runner: CollectingQueryRunner, mocker: MockerFixture) -> Generator[
     mocker.patch("graphdatascience.query_runner.session_query_runner.SessionQueryRunner.create", return_value=runner)
     mocker.patch("graphdatascience.query_runner.arrow_query_runner.ArrowQueryRunner.create", return_value=runner)
     mocker.patch("graphdatascience.query_runner.gds_arrow_client.GdsArrowClient.create", return_value=None)
-    mocker.patch("graphdatascience.arrow_client.authenticated_flight_client.AuthenticatedArrowClient.create", return_value=None)
+    mocker.patch(
+        "graphdatascience.arrow_client.authenticated_flight_client.AuthenticatedArrowClient.create", return_value=None
+    )
     mocker.patch("graphdatascience.session.session_v2_endpoints.SessionV2Endpoints.__init__", return_value=None)
 
     aura_gds = AuraGraphDataScience.create(
