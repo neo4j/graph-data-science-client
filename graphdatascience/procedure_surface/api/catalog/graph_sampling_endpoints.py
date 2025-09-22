@@ -121,7 +121,7 @@ class GraphSamplingEndpoints(ABC):
             The name of the new graph that is stored in the graph catalog.
         start_nodes : list of int, optional
             IDs of the initial set of nodes in the original graph from which the sampling random walks will start.
-	        By default, a single node is chosen uniformly at random.
+                By default, a single node is chosen uniformly at random.
         restart_probability : float, optional
             The probability that a sampling random walk restarts from one of the start nodes.
             Default is 0.1.

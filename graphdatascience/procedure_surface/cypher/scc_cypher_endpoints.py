@@ -3,12 +3,17 @@ from typing import Any, List, Optional, Union
 from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.community.scc_endpoints import (
+    SccEndpoints,
+    SccMutateResult,
+    SccStatsResult,
+    SccWriteResult,
+)
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
 from ..api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.community.scc_endpoints import SccEndpoints, SccMutateResult, SccStatsResult, SccWriteResult
 from ..utils.config_converter import ConfigConverter
 
 

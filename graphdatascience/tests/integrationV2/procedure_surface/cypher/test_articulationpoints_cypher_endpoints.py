@@ -3,12 +3,12 @@ from typing import Generator
 import pytest
 from pandas import DataFrame
 
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import (
     ArticulationPointsMutateResult,
     ArticulationPointsStatsResult,
     ArticulationPointsWriteResult,
 )
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.articulationpoints_cypher_endpoints import (
     ArticulationPointsCypherEndpoints,
 )

@@ -1,12 +1,12 @@
 import pandas as pd
 import pytest
 
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import (
     ArticleRankMutateResult,
     ArticleRankStatsResult,
     ArticleRankWriteResult,
 )
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.articlerank_cypher_endpoints import ArticleRankCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 from graphdatascience.tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
