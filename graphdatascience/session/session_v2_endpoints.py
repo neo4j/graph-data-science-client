@@ -38,6 +38,9 @@ class SessionV2Endpoints:
 
         self._write_back_client = RemoteWriteBackClient(arrow_client, db_client) if db_client is not None else None
 
+    def set_show_progress(self, show_progress: bool) -> None:
+        self._show_progress = show_progress
+
     @property
     def graph(self) -> CatalogArrowEndpoints:
         return CatalogArrowEndpoints(self._arrow_client, self._db_client, show_progress=self._show_progress)
@@ -46,67 +49,75 @@ class SessionV2Endpoints:
 
     @property
     def article_rank(self) -> ArticleRankArrowEndpoints:
-        return ArticleRankArrowEndpoints(self._arrow_client, self._write_back_client)
+        return ArticleRankArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def articulation_points(self) -> ArticulationPointsArrowEndpoints:
-        return ArticulationPointsArrowEndpoints(self._arrow_client, self._write_back_client)
+        return ArticulationPointsArrowEndpoints(
+            self._arrow_client, self._write_back_client, show_progress=self._show_progress
+        )
 
     @property
     def betweenness_centrality(self) -> BetweennessArrowEndpoints:
-        return BetweennessArrowEndpoints(self._arrow_client, self._write_back_client)
+        return BetweennessArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def closeness_centrality(self) -> ClosenessArrowEndpoints:
-        return ClosenessArrowEndpoints(self._arrow_client, self._write_back_client)
+        return ClosenessArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def degree_centrality(self) -> DegreeArrowEndpoints:
-        return DegreeArrowEndpoints(self._arrow_client, self._write_back_client)
+        return DegreeArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def eigenvector_centrality(self) -> EigenvectorArrowEndpoints:
-        return EigenvectorArrowEndpoints(self._arrow_client, self._write_back_client)
+        return EigenvectorArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def fast_rp(self) -> FastRPArrowEndpoints:
-        return FastRPArrowEndpoints(self._arrow_client, self._write_back_client)
+        return FastRPArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def graphsage_predict(self) -> GraphSagePredictArrowEndpoints:
-        return GraphSagePredictArrowEndpoints(self._arrow_client, self._write_back_client)
+        return GraphSagePredictArrowEndpoints(
+            self._arrow_client, self._write_back_client, show_progress=self._show_progress
+        )
 
     @property
     def graphsage_train(self) -> GraphSageTrainArrowEndpoints:
-        return GraphSageTrainArrowEndpoints(self._arrow_client, self._write_back_client)
+        return GraphSageTrainArrowEndpoints(
+            self._arrow_client, self._write_back_client, show_progress=self._show_progress
+        )
 
     @property
     def harmonic_centrality(self) -> ClosenessHarmonicArrowEndpoints:
-        return ClosenessHarmonicArrowEndpoints(self._arrow_client, self._write_back_client)
+        return ClosenessHarmonicArrowEndpoints(
+            self._arrow_client, self._write_back_client, show_progress=self._show_progress
+        )
 
     @property
     def hash_gnn(self) -> HashGNNArrowEndpoints:
-        return HashGNNArrowEndpoints(self._arrow_client, self._write_back_client)
+        return HashGNNArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def influence_maximization_celf(self) -> CelfArrowEndpoints:
-        return CelfArrowEndpoints(self._arrow_client, self._write_back_client)
+        return CelfArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def k1_coloring(self) -> K1ColoringArrowEndpoints:
-        return K1ColoringArrowEndpoints(self._arrow_client, self._write_back_client)
+        return K1ColoringArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def k_core_decomposition(self) -> KCoreArrowEndpoints:
-        return KCoreArrowEndpoints(self._arrow_client, self._write_back_client)
+        return KCoreArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def louvain(self) -> LouvainArrowEndpoints:
-        return LouvainArrowEndpoints(self._arrow_client, self._write_back_client)
+        return LouvainArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def node2vec(self) -> Node2VecArrowEndpoints:
-        return Node2VecArrowEndpoints(self._arrow_client, self._write_back_client)
+        return Node2VecArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def page_rank(self) -> PageRankArrowEndpoints:
@@ -114,8 +125,8 @@ class SessionV2Endpoints:
 
     @property
     def scc(self) -> SccArrowEndpoints:
-        return SccArrowEndpoints(self._arrow_client, self._write_back_client)
+        return SccArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def wcc(self) -> WccArrowEndpoints:
-        return WccArrowEndpoints(self._arrow_client, self._write_back_client)
+        return WccArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)

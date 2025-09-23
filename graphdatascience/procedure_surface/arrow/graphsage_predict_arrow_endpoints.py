@@ -17,9 +17,16 @@ from .node_property_endpoints import NodePropertyEndpoints
 
 
 class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient]):
+    def __init__(
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        write_back_client: Optional[RemoteWriteBackClient],
+        show_progress: bool = True,
+    ):
         self._arrow_client = arrow_client
-        self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client)
+        self._node_property_endpoints = NodePropertyEndpoints(
+            arrow_client, write_back_client, show_progress=show_progress
+        )
         self._model_api = ModelApiArrow(arrow_client)
 
     def stream(

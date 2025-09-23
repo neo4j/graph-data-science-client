@@ -15,11 +15,17 @@ from graphdatascience.procedure_surface.utils.config_converter import ConfigConv
 
 class NodeLabelArrowEndpoints(NodeLabelEndpoints):
     def __init__(
-        self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient] = None
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        write_back_client: Optional[RemoteWriteBackClient] = None,
+        show_progress: bool = True,
     ):
+        self._node_property_endpoints = NodePropertyEndpoints(
+            arrow_client, write_back_client, show_progress=show_progress
+        )
         self._arrow_client = arrow_client
         self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client)
-        self._show_progress = False  # TODO add option to show progress
+        self._show_progress = show_progress
 
     def mutate(
         self,
@@ -46,7 +52,7 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
             job_id=job_id,
         )
 
-        show_progress = self._show_progress and log_progress if log_progress is not None else self._show_progress
+        show_progress = self._show_progress if log_progress is None else self._show_progress and log_progress
         job_id = JobClient.run_job_and_wait(
             self._arrow_client, "v2/graph.nodeLabel.mutate", config, show_progress=show_progress
         )

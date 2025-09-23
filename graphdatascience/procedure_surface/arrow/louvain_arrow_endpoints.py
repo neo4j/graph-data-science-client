@@ -18,9 +18,14 @@ from .node_property_endpoints import NodePropertyEndpoints
 
 class LouvainArrowEndpoints(LouvainEndpoints):
     def __init__(
-        self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient] = None
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        write_back_client: Optional[RemoteWriteBackClient] = None,
+        show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client)
+        self._node_property_endpoints = NodePropertyEndpoints(
+            arrow_client, write_back_client, show_progress=show_progress
+        )
 
     def mutate(
         self,

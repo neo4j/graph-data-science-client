@@ -210,6 +210,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             Whether to show progress for procedures.
         """
         self._query_runner.set_show_progress(show_progress)
+        self._v2_endpoints.set_show_progress(show_progress)
 
     def database(self) -> Optional[str]:
         """
