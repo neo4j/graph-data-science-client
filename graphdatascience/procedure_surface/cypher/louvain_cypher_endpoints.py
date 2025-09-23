@@ -37,7 +37,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -66,7 +66,9 @@ class LouvainCypherEndpoints(LouvainEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.louvain.mutate", params=params).squeeze()
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.louvain.mutate", params=params, logging=log_progress
+        ).squeeze()
 
         return LouvainMutateResult(**cypher_result.to_dict())
 
@@ -80,7 +82,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -108,7 +110,9 @@ class LouvainCypherEndpoints(LouvainEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.louvain.stats", params=params).squeeze()
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.louvain.stats", params=params, logging=log_progress
+        ).squeeze()
 
         return LouvainStatsResult(**cypher_result.to_dict())
 
@@ -122,7 +126,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -152,7 +156,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.louvain.stream", params=params)
+        return self._query_runner.call_procedure(endpoint="gds.louvain.stream", params=params, logging=log_progress)
 
     def write(
         self,
@@ -165,7 +169,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -198,7 +202,9 @@ class LouvainCypherEndpoints(LouvainEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.louvain.write", params=params).squeeze()  # type: ignore
+        result = self._query_runner.call_procedure(
+            endpoint="gds.louvain.write", params=params, logging=log_progress
+        ).squeeze()  # type: ignore
 
         return LouvainWriteResult(**result.to_dict())
 

@@ -35,7 +35,7 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -58,7 +58,9 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.betweenness.mutate", params=params).squeeze()
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.betweenness.mutate", params=params, logging=log_progress
+        ).squeeze()
 
         return BetweennessMutateResult(**cypher_result.to_dict())
 
@@ -70,7 +72,7 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -92,7 +94,9 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.betweenness.stats", params=params).squeeze()
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.betweenness.stats", params=params, logging=log_progress
+        ).squeeze()
 
         return BetweennessStatsResult(**cypher_result.to_dict())
 
@@ -104,7 +108,7 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -126,7 +130,7 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.betweenness.stream", params=params)
+        return self._query_runner.call_procedure(endpoint="gds.betweenness.stream", params=params, logging=log_progress)
 
     def write(
         self,
@@ -137,7 +141,7 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -162,7 +166,9 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.betweenness.write", params=params).squeeze()  # type: ignore
+        result = self._query_runner.call_procedure(
+            endpoint="gds.betweenness.write", params=params, logging=log_progress
+        ).squeeze()  # type: ignore
 
         return BetweennessWriteResult(**result.to_dict())
 

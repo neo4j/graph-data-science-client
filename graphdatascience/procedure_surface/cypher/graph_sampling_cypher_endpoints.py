@@ -31,7 +31,7 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -58,7 +58,9 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.graph.sample.rwr", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.graph.sample.rwr", params=params, logging=log_progress
+        ).squeeze()
         return GraphWithSamplingResult(
             get_graph(graph_name, self._query_runner),
             GraphSamplingResult(**result.to_dict()),
@@ -76,7 +78,7 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -103,7 +105,9 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.graph.sample.cnarw", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.graph.sample.cnarw", params=params, logging=log_progress
+        ).squeeze()
         return GraphWithSamplingResult(
             get_graph(graph_name, self._query_runner),
             GraphSamplingResult(**result.to_dict()),

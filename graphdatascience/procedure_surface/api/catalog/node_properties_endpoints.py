@@ -21,7 +21,7 @@ class NodePropertiesEndpoints(ABC):
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
         db_node_properties: Optional[List[str]] = None,
@@ -68,7 +68,7 @@ class NodePropertiesEndpoints(ABC):
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> NodePropertiesWriteResult:
@@ -112,7 +112,7 @@ class NodePropertiesEndpoints(ABC):
         fail_if_missing: Optional[bool] = None,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> NodePropertiesDropResult:

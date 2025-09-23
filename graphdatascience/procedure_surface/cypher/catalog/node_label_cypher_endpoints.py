@@ -22,7 +22,7 @@ class NodeLabelCypherEndpoints(NodeLabelEndpoints):
         *,
         node_filter: str,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
@@ -54,7 +54,7 @@ class NodeLabelCypherEndpoints(NodeLabelEndpoints):
         *,
         node_filter: str,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
@@ -73,6 +73,8 @@ class NodeLabelCypherEndpoints(NodeLabelEndpoints):
         params = CallParameters(graph_name=G.name(), node_label=node_label, config=config)
         params.ensure_job_id_in_config()
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.graph.nodeLabel.write", params=params).squeeze()
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.graph.nodeLabel.write", params=params, logging=log_progress
+        ).squeeze()
 
         return NodeLabelWriteResult(**cypher_result.to_dict())

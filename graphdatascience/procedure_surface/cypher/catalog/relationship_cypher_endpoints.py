@@ -30,7 +30,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         *,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
     ) -> DataFrame:
         effective_rel_types = relationship_types if relationship_types is not None else ["*"]
@@ -98,7 +98,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> RelationshipsWriteResult:
@@ -129,7 +129,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()
+        result = self._query_runner.call_procedure(endpoint=endpoint, params=params, logging=log_progress).squeeze()
 
         return RelationshipsWriteResult(**result.to_dict())
 
@@ -159,7 +159,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         *,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> RelationshipsInverseIndexResult:
@@ -179,7 +179,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(
-            endpoint="gds.graph.relationships.indexInverse", params=params
+            endpoint="gds.graph.relationships.indexInverse", params=params, logging=log_progress
         ).squeeze()
 
         return RelationshipsInverseIndexResult(**result.to_dict())
@@ -193,7 +193,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         aggregation: Optional[Union[Aggregation, dict[str, Aggregation]]] = None,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> RelationshipsToUndirectedResult:
@@ -221,7 +221,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(
-            endpoint="gds.graph.relationships.toUndirected", params=params
+            endpoint="gds.graph.relationships.toUndirected", params=params, logging=log_progress
         ).squeeze()
 
         return RelationshipsToUndirectedResult(**result.to_dict())

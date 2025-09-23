@@ -34,7 +34,7 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
         *,
         node_filter: str,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
@@ -52,7 +52,7 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
             job_id=job_id,
         )
 
-        show_progress = self._show_progress if log_progress is None else self._show_progress and log_progress
+        show_progress = self._show_progress and log_progress
         job_id = JobClient.run_job_and_wait(
             self._arrow_client, "v2/graph.nodeLabel.mutate", config, show_progress=show_progress
         )
@@ -65,7 +65,7 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
         *,
         node_filter: str,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,

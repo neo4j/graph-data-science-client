@@ -37,7 +37,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         *,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
     ) -> DataFrame:
         config_input = {
@@ -70,7 +70,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> RelationshipsWriteResult:
@@ -145,7 +145,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         *,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> RelationshipsInverseIndexResult:
@@ -159,7 +159,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             job_id=job_id,
         )
 
-        show_progress = self._show_progress if log_progress is None else self._show_progress and log_progress
+        show_progress = self._show_progress and log_progress
         job_id = JobClient.run_job_and_wait(
             self._arrow_client, "v2/graph.relationships.indexInverse", config, show_progress=show_progress
         )
@@ -175,7 +175,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         aggregation: Optional[Union[Aggregation, dict[str, Aggregation]]] = None,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> RelationshipsToUndirectedResult:
@@ -190,7 +190,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             username=username,
             job_id=job_id,
         )
-        show_progress = self._show_progress if log_progress is None else self._show_progress and log_progress
+        show_progress = self._show_progress and log_progress
 
         job_id = JobClient.run_job_and_wait(
             self._arrow_client, "v2/graph.relationships.toUndirected", config, show_progress=show_progress

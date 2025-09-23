@@ -31,7 +31,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -53,7 +53,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
             job_id=job_id,
         )
 
-        show_progress = self._show_progress if log_progress is None else self._show_progress and log_progress
+        show_progress = self._show_progress and log_progress
         job_id = JobClient.run_job_and_wait(
             self._arrow_client, "v2/graph.sample.rwr", config, show_progress=show_progress
         )
@@ -75,7 +75,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -97,7 +97,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
             job_id=job_id,
         )
 
-        show_progress = self._show_progress if log_progress is None else self._show_progress and log_progress
+        show_progress = self._show_progress and log_progress
         job_id = JobClient.run_job_and_wait(
             self._arrow_client, "v2/graph.sample.cnarw", config, show_progress=show_progress
         )

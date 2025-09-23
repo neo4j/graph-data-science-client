@@ -29,7 +29,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -54,7 +54,9 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.degree.mutate", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.degree.mutate", params=params, logging=log_progress
+        ).squeeze()
         return DegreeMutateResult(**result.to_dict())
 
     def stats(
@@ -64,7 +66,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -88,7 +90,9 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.degree.stats", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.degree.stats", params=params, logging=log_progress
+        ).squeeze()
         return DegreeStatsResult(**result.to_dict())
 
     def stream(
@@ -98,7 +102,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -122,7 +126,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.degree.stream", params=params)
+        return self._query_runner.call_procedure(endpoint="gds.degree.stream", params=params, logging=log_progress)
 
     def write(
         self,
@@ -132,7 +136,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -158,7 +162,9 @@ class DegreeCypherEndpoints(DegreeEndpoints):
             config=config,
         )
 
-        result = self._query_runner.call_procedure(endpoint="gds.degree.write", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.degree.write", params=params, logging=log_progress
+        ).squeeze()
         return DegreeWriteResult(**result.to_dict())
 
     def estimate(

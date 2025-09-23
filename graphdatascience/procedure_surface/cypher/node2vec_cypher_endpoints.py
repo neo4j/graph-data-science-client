@@ -35,7 +35,7 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         sudo: Optional[bool] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -77,7 +77,9 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.node2vec.mutate", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.node2vec.mutate", params=params, logging=log_progress
+        ).squeeze()
 
         return Node2VecMutateResult(**result.to_dict())
 
@@ -96,7 +98,7 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         sudo: Optional[bool] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -137,7 +139,7 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.node2vec.stream", params=params)
+        return self._query_runner.call_procedure(endpoint="gds.node2vec.stream", params=params, logging=log_progress)
 
     def write(
         self,
@@ -155,7 +157,7 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         sudo: Optional[bool] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -199,7 +201,9 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.node2vec.write", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.node2vec.write", params=params, logging=log_progress
+        ).squeeze()
 
         return Node2VecWriteResult(**result.to_dict())
 
