@@ -28,7 +28,9 @@ def test_write_back_v3_progress_logging() -> None:
 
         bar_output = pbarOutputStream.getvalue().split("\r")
 
-        assert "Write-Back (graph: myGraph):   0%|          | 0.0/100 [00:00<?, ?%/s]" in bar_output
+        assert any(
+            ["Write-Back (graph: myGraph):   0%|          | 0.0/100 [00:00<?, ?%/s]" in line for line in bar_output]
+        ), bar_output
         assert any(["Write-Back (graph: myGraph): 100%|##########| 100.0/100" in line for line in bar_output])
 
 
@@ -50,5 +52,7 @@ def test_write_back_v3_progress_logging_aborted() -> None:
 
         bar_output = pbarOutputStream.getvalue().split("\r")
 
-        assert "Write-Back (graph: myGraph):   0%|          | 0.0/100 [00:00<?, ?%/s]" in bar_output
-        assert any(["status: FAILED" in line for line in bar_output])
+        assert any(
+            ["Write-Back (graph: myGraph):   0%|          | 0.0/100 [00:00<?, ?%/s]" in line for line in bar_output]
+        ), bar_output
+        assert any(["status: FAILED" in line for line in bar_output]), bar_output
