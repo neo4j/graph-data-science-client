@@ -149,7 +149,7 @@ class RemoteWriteBackV3(WriteProtocol):
         terminationFlag: TerminationFlag,
     ) -> DataFrame:
         def is_not_completed(result: DataFrame) -> bool:
-            status: str = result.squeeze()["status"]
+            status: str = result.iloc[0]["status"]
             return status != Status.COMPLETED.name
 
         logger = logging.getLogger()
@@ -175,9 +175,12 @@ class RemoteWriteBackV3(WriteProtocol):
                 mode=QueryMode.WRITE,
                 custom_error=False,
             )
+            result_row = result.iloc[0].to_dict()
+            # for self-managed dbs the endpoint doesn't return the progress yet
+            progress = result_row.get("progress", 0.0) * 100
 
             if progress_bar:
-                progress_bar.update(status=result.squeeze()["status"], progress=result.squeeze()["progress"] * 100)
+                progress_bar.update(status=result_row["status"], progress=progress)
 
             return result
 
