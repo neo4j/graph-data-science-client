@@ -3,11 +3,15 @@ from __future__ import annotations
 from typing import Any, List, Optional
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import (
+    GraphSamplingEndpoints,
+    GraphSamplingResult,
+    GraphWithSamplingResult,
+)
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 
 from ...call_parameters import CallParameters
 from ...query_runner.query_runner import QueryRunner
-from ..api.graph_sampling_endpoints import GraphSamplingEndpoints, GraphSamplingResult, GraphWithSamplingResult
 from ..utils.config_converter import ConfigConverter
 
 

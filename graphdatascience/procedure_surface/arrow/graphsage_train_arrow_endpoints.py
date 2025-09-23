@@ -2,14 +2,14 @@ from typing import Any, List, Optional
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpoints import (
+    GraphSageTrainEndpoints,
+    GraphSageTrainResult,
+)
 from graphdatascience.procedure_surface.arrow.graphsage_predict_arrow_endpoints import GraphSagePredictArrowEndpoints
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from ..api.graphsage_train_endpoints import (
-    GraphSageTrainEndpoints,
-    GraphSageTrainResult,
-)
 from .model_api_arrow import ModelApiArrow
 from .node_property_endpoints import NodePropertyEndpoints
 

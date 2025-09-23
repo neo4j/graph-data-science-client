@@ -5,26 +5,18 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-
-from .base_result import BaseResult
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
-class ClosenessHarmonicEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Harmonic Centrality algorithm.
-
-    Harmonic centrality is a variant of closeness centrality that uses the
-    harmonic mean of shortest path distances. It handles disconnected graphs better
-    than standard closeness centrality.
-    """
-
+class ClosenessEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
         G: GraphV2,
         mutate_property: str,
+        use_wasserman_faust: Optional[bool] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -32,16 +24,22 @@ class ClosenessHarmonicEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> ClosenessHarmonicMutateResult:
+    ) -> ClosenessMutateResult:
         """
-        Executes the Harmonic Closeness Centrality algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Closeness Centrality algorithm and stores the results in the graph catalog as a new node property.
+
+        Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+        The closeness centrality of a node measures its average farness (inverse distance) to all other nodes.
+        Nodes with a high closeness score have the shortest distances to all other nodes.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the harmonic closeness centrality score for each node
+            The property name to store the closeness centrality score for each node
+        use_wasserman_faust : Optional[bool], default=None
+            Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
@@ -60,7 +58,7 @@ class ClosenessHarmonicEndpoints(ABC):
 
         Returns
         -------
-        ClosenessHarmonicMutateResult
+        ClosenessMutateResult
             Algorithm metrics and statistics including the centrality distribution
         """
         pass
@@ -69,6 +67,7 @@ class ClosenessHarmonicEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
+        use_wasserman_faust: Optional[bool] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -76,14 +75,20 @@ class ClosenessHarmonicEndpoints(ABC):
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
-    ) -> ClosenessHarmonicStatsResult:
+    ) -> ClosenessStatsResult:
         """
-        Executes the Harmonic Closeness Centrality algorithm and returns statistics without writing the result to Neo4j.
+        Runs the Closeness Centrality algorithm and returns result statistics without storing the results.
+
+        Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+        The closeness centrality of a node measures its average farness (inverse distance) to all other nodes.
+        Nodes with a high closeness score have the shortest distances to all other nodes.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
+        use_wasserman_faust : Optional[bool], default=None
+            Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
@@ -102,7 +107,7 @@ class ClosenessHarmonicEndpoints(ABC):
 
         Returns
         -------
-        ClosenessHarmonicStatsResult
+        ClosenessStatsResult
             Algorithm statistics including the centrality distribution
         """
         pass
@@ -111,6 +116,7 @@ class ClosenessHarmonicEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
+        use_wasserman_faust: Optional[bool] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -120,12 +126,14 @@ class ClosenessHarmonicEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> DataFrame:
         """
-        Executes the Harmonic Closeness Centrality algorithm and returns a stream of results.
+        Executes the Closeness Centrality algorithm and returns a stream of results.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
+        use_wasserman_faust : Optional[bool], default=None
+            Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
@@ -145,7 +153,8 @@ class ClosenessHarmonicEndpoints(ABC):
         Returns
         -------
         DataFrame
-            DataFrame with the algorithm results containing nodeId and score columns
+            DataFrame with nodeId and score columns containing closeness centrality results.
+            Each row represents a node with its corresponding closeness centrality score.
         """
         pass
 
@@ -154,6 +163,7 @@ class ClosenessHarmonicEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
+        use_wasserman_faust: Optional[bool] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
@@ -162,16 +172,22 @@ class ClosenessHarmonicEndpoints(ABC):
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
-    ) -> ClosenessHarmonicWriteResult:
+    ) -> ClosenessWriteResult:
         """
-        Executes the Harmonic Closeness Centrality algorithm and writes the results to the Neo4j database.
+        Runs the Closeness Centrality algorithm and stores the result in the Neo4j database as a new node property.
+
+        Closeness centrality is a way of detecting nodes that are able to spread information very efficiently through a graph.
+        The closeness centrality of a node measures its average farness (inverse distance) to all other nodes.
+        Nodes with a high closeness score have the shortest distances to all other nodes.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         write_property : str
-            The property name to write the harmonic closeness centrality scores to
+            The property name to write closeness centrality scores to in the Neo4j database
+        use_wasserman_faust : Optional[bool], default=None
+            Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
@@ -188,12 +204,12 @@ class ClosenessHarmonicEndpoints(ABC):
         job_id : Optional[Any], default=None
             An identifier for the job that can be used for monitoring and cancellation
         write_concurrency : Optional[Any], default=None
-            The number of concurrent threads during the write phase
+            The number of concurrent threads used during the write phase.
 
         Returns
         -------
-        ClosenessHarmonicWriteResult
-            Algorithm metrics and statistics including the centrality distribution
+        ClosenessWriteResult
+            Algorithm metrics and statistics including the number of properties written
         """
         pass
 
@@ -201,17 +217,20 @@ class ClosenessHarmonicEndpoints(ABC):
     def estimate(
         self,
         G: Union[GraphV2, dict[str, Any]],
+        use_wasserman_faust: Optional[bool] = None,
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
     ) -> EstimationResult:
         """
-        Estimate the memory consumption of a Harmonic Closeness Centrality algorithm run.
+        Estimate the memory consumption of an algorithm run.
 
         Parameters
         ----------
         G : Union[GraphV2, dict[str, Any]]
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to run the algorithm on or a dictionary representing the graph configuration.
+        use_wasserman_faust : Optional[bool], default=None
+            Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : Optional[List[str]], default=None
             The relationship types used to select relationships for this algorithm run.
         node_labels : Optional[List[str]], default=None
@@ -227,8 +246,8 @@ class ClosenessHarmonicEndpoints(ABC):
         pass
 
 
-class ClosenessHarmonicMutateResult(BaseResult):
-    """Result of running Harmonic Closeness Centrality algorithm with mutate mode."""
+class ClosenessMutateResult(BaseResult):
+    """Result of running Closeness Centrality algorithm with mutate mode."""
 
     node_properties_written: int
     pre_processing_millis: int
@@ -239,8 +258,8 @@ class ClosenessHarmonicMutateResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class ClosenessHarmonicStatsResult(BaseResult):
-    """Result of running Harmonic Closeness Centrality algorithm with stats mode."""
+class ClosenessStatsResult(BaseResult):
+    """Result of running Closeness Centrality algorithm with stats mode."""
 
     centrality_distribution: dict[str, Any]
     pre_processing_millis: int
@@ -249,8 +268,8 @@ class ClosenessHarmonicStatsResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class ClosenessHarmonicWriteResult(BaseResult):
-    """Result of running Harmonic Closeness Centrality algorithm with write mode."""
+class ClosenessWriteResult(BaseResult):
+    """Result of running Closeness Centrality algorithm with write mode."""
 
     node_properties_written: int
     pre_processing_millis: int

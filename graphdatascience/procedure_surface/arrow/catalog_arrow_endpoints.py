@@ -10,6 +10,7 @@ from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWrit
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
+from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.api.catalog_endpoints import (
     CatalogEndpoints,
     GraphFilterResult,
@@ -18,7 +19,6 @@ from graphdatascience.procedure_surface.api.catalog_endpoints import (
     GraphWithGenerationStats,
     RelationshipPropertySpec,
 )
-from graphdatascience.procedure_surface.api.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
 from graphdatascience.procedure_surface.arrow.catalog.graph_ops_arrow import GraphOpsArrow
 from graphdatascience.procedure_surface.arrow.catalog.node_label_arrow_endpoints import NodeLabelArrowEndpoints

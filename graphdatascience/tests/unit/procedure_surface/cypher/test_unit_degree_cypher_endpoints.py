@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.degree_endpoints import (
+from graphdatascience.procedure_surface.api.centrality.degree_endpoints import (
     DegreeMutateResult,
     DegreeStatsResult,
     DegreeWriteResult,

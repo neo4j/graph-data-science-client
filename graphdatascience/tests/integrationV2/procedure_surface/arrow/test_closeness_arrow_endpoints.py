@@ -6,7 +6,7 @@ from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.closeness_endpoints import ClosenessWriteResult
+from graphdatascience.procedure_surface.api.centrality.closeness_endpoints import ClosenessWriteResult
 from graphdatascience.procedure_surface.arrow.closeness_arrow_endpoints import ClosenessArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,

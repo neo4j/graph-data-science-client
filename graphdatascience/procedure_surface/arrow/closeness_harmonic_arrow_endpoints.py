@@ -3,15 +3,15 @@ from typing import Any, List, Optional, Union
 from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-
-from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from ..api.closeness_harmonic_endpoints import (
+from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoints import (
     ClosenessHarmonicEndpoints,
     ClosenessHarmonicMutateResult,
     ClosenessHarmonicStatsResult,
     ClosenessHarmonicWriteResult,
 )
+
+from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from ..api.estimation_result import EstimationResult
 from .node_property_endpoints import NodePropertyEndpoints
 

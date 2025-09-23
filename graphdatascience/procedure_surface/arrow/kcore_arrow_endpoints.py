@@ -3,11 +3,16 @@ from typing import Any, List, Optional, Union
 from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.community.kcore_endpoints import (
+    KCoreEndpoints,
+    KCoreMutateResult,
+    KCoreStatsResult,
+    KCoreWriteResult,
+)
 
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from ..api.estimation_result import EstimationResult
-from ..api.kcore_endpoints import KCoreEndpoints, KCoreMutateResult, KCoreStatsResult, KCoreWriteResult
 from .node_property_endpoints import NodePropertyEndpoints
 
 

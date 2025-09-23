@@ -5,21 +5,12 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-
-from .base_result import BaseResult
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
 class DegreeEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Degree Centrality algorithm.
-
-    Degree centrality measures the number of incoming and outgoing relationships from a node.
-    It's one of the simplest centrality measures, where a node's importance is determined by
-    the number of direct connections it has.
-    """
-
     @abstractmethod
     def mutate(
         self,
@@ -36,38 +27,37 @@ class DegreeEndpoints(ABC):
         relationship_weight_property: Optional[str] = None,
     ) -> DegreeMutateResult:
         """
-        Executes the Degree Centrality algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Degree Centrality algorithm and stores the results in the graph catalog as a new node property.
+
+        The Degree Centrality algorithm can be used to find popular nodes within a graph.
+        The degree centrality measures the number of incoming or outgoing (or both) relationships from a node, which can be defined by the orientation of a relationship projection.
+        It can be applied to either weighted or unweighted graphs.
+        In the weighted case the algorithm computes the sum of all positive weights of adjacent relationships of a node, for each node in the graph.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the degree centrality score for each node
+            Name of the node property to store the results in.
         orientation : Optional[Any], default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-            'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
-            'REVERSE' treats each relationship as if it were directed in the opposite direction.
-            'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run.
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress of the algorithm execution
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads used for the algorithm execution.
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job that can be used for monitoring and cancellation
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights. If specified,
-            weighted degree centrality is computed where each relationship contributes
-            its weight to the total degree.
+            Name of the property to be used as weights.
 
         Returns
         -------
@@ -91,7 +81,12 @@ class DegreeEndpoints(ABC):
         relationship_weight_property: Optional[str] = None,
     ) -> DegreeStatsResult:
         """
-        Executes the Degree Centrality algorithm and returns statistics without writing the result to Neo4j.
+        Runs the Degree Centrality algorithm and returns result statistics without storing the results.
+
+        The Degree Centrality algorithm can be used to find popular nodes within a graph.
+        The degree centrality measures the number of incoming or outgoing (or both) relationships from a node, which can be defined by the orientation of a relationship projection.
+        It can be applied to either weighted or unweighted graphs.
+        In the weighted case the algorithm computes the sum of all positive weights of adjacent relationships of a node, for each node in the graph.
 
         Parameters
         ----------
@@ -99,28 +94,22 @@ class DegreeEndpoints(ABC):
             The graph to run the algorithm on
         orientation : Optional[Any], default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-            'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
-            'REVERSE' treats each relationship as if it were directed in the opposite direction.
-            'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run.
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress of the algorithm execution
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads used for the algorithm execution.
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job that can be used for monitoring and cancellation
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights. If specified,
-            weighted degree centrality is computed where each relationship contributes
-            its weight to the total degree.
+            Name of the property to be used as weights.
 
         Returns
         -------
@@ -200,7 +189,12 @@ class DegreeEndpoints(ABC):
         write_concurrency: Optional[Any] = None,
     ) -> DegreeWriteResult:
         """
-        Executes the Degree Centrality algorithm and writes the results to the Neo4j database.
+        Runs the Degree Centrality algorithm and stores the result in the Neo4j database as a new node property.
+
+        The Degree Centrality algorithm can be used to find popular nodes within a graph.
+        The degree centrality measures the number of incoming or outgoing (or both) relationships from a node, which can be defined by the orientation of a relationship projection.
+        It can be applied to either weighted or unweighted graphs.
+        In the weighted case the algorithm computes the sum of all positive weights of adjacent relationships of a node, for each node in the graph.
 
         Parameters
         ----------
@@ -210,28 +204,22 @@ class DegreeEndpoints(ABC):
             The property name to store the degree centrality score for each node in the database
         orientation : Optional[Any], default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-            'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
-            'REVERSE' treats each relationship as if it were directed in the opposite direction.
-            'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run.
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress of the algorithm execution
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads used for the algorithm execution.
+            The number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job that can be used for monitoring and cancellation
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights. If specified,
-            weighted degree centrality is computed where each relationship contributes
-            its weight to the total degree.
+            Name of the property to be used as weights.
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads used during the write phase.
 

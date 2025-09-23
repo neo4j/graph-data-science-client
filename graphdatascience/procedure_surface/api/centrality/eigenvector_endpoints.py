@@ -5,22 +5,12 @@ from typing import Any, List, Optional, Union
 
 from pandas import DataFrame
 
+from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-
-from .base_result import BaseResult
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
 class EigenvectorEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Eigenvector Centrality algorithm.
-
-    Eigenvector centrality measures the influence of a node in a network based on the
-    concept that connections to high-scoring nodes contribute more to the score than
-    equal connections to low-scoring nodes. It's computed as the principal eigenvector
-    of the adjacency matrix.
-    """
-
     @abstractmethod
     def mutate(
         self,
@@ -40,7 +30,12 @@ class EigenvectorEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> EigenvectorMutateResult:
         """
-        Executes the Eigenvector Centrality algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Eigenvector Centrality algorithm and stores the results in the graph catalog as a new node property.
+
+        Eigenvector Centrality is an algorithm that measures the transitive influence of nodes.
+        Relationships originating from high-scoring nodes contribute more to the score of a node than connections from low-scoring nodes.
+        A high eigenvector score means that a node is connected to many nodes who themselves have high scores.
+        The algorithm computes the eigenvector associated with the largest absolute eigenvalue.
 
         Parameters
         ----------
@@ -99,7 +94,12 @@ class EigenvectorEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> EigenvectorStatsResult:
         """
-        Executes the Eigenvector Centrality algorithm and returns statistics without writing the result to Neo4j.
+        Runs the Eigenvector Centrality algorithm and returns result statistics without storing the results.
+
+        Eigenvector Centrality is an algorithm that measures the transitive influence of nodes.
+        Relationships originating from high-scoring nodes contribute more to the score of a node than connections from low-scoring nodes.
+        A high eigenvector score means that a node is connected to many nodes who themselves have high scores.
+        The algorithm computes the eigenvector associated with the largest absolute eigenvalue.
 
         Parameters
         ----------
@@ -215,7 +215,12 @@ class EigenvectorEndpoints(ABC):
         write_concurrency: Optional[Any] = None,
     ) -> EigenvectorWriteResult:
         """
-        Executes the Eigenvector Centrality algorithm and writes the results to the Neo4j database.
+        Runs the Eigenvector Centrality algorithm and stores the result in the Neo4j database as a new node property.
+
+        Eigenvector Centrality is an algorithm that measures the transitive influence of nodes.
+        Relationships originating from high-scoring nodes contribute more to the score of a node than connections from low-scoring nodes.
+        A high eigenvector score means that a node is connected to many nodes who themselves have high scores.
+        The algorithm computes the eigenvector associated with the largest absolute eigenvalue.
 
         Parameters
         ----------

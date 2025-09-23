@@ -4,7 +4,7 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.graphsage_predict_endpoints import (
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_endpoints import (
     GraphSageMutateResult,
     GraphSagePredictEndpoints,
     GraphSageWriteResult,

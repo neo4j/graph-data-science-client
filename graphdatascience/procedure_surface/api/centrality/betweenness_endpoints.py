@@ -7,15 +7,10 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-
-from .estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
 class BetweennessEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Betweenness Centrality algorithm.
-    """
-
     @abstractmethod
     def mutate(
         self,
@@ -33,34 +28,39 @@ class BetweennessEndpoints(ABC):
         relationship_weight_property: Optional[str] = None,
     ) -> BetweennessMutateResult:
         """
-        Executes the Betweenness Centrality algorithm and returns result statistics without persisting the results
+        Runs the Betweenness Centrality algorithm and stores the results in the graph catalog as a new node property.
+
+        Betweenness centrality is a way of detecting the amount of influence a node has over the flow of information in a graph.
+        It is often used to find nodes that serve as a bridge from one part of a graph to another.
+        The algorithm calculates shortest paths between all pairs of nodes in a graph.
+        Each node receives a score, based on the number of shortest paths that pass through the node.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the betweenness centrality score for each node
+            Name of the node property to store the results in.
         sampling_size : Optional[int], default=None
-            The number of nodes to use for sampling.
+            Number of source nodes to consider for computing centrality scores.
         sampling_seed : Optional[int], default=None
-            The seed value for sampling randomization
+            Seed value for the random number generator that selects source nodes.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights
+            Name of the property to be used as weights.
 
         Returns
         -------
@@ -84,32 +84,37 @@ class BetweennessEndpoints(ABC):
         relationship_weight_property: Optional[str] = None,
     ) -> BetweennessStatsResult:
         """
-        Executes the Betweenness Centrality algorithm and returns result statistics without writing the result to Neo4j.
+        Runs the Betweenness Centrality algorithm and returns result statistics without storing the results.
+
+        Betweenness centrality is a way of detecting the amount of influence a node has over the flow of information in a graph.
+        It is often used to find nodes that serve as a bridge from one part of a graph to another.
+        The algorithm calculates shortest paths between all pairs of nodes in a graph.
+        Each node receives a score, based on the number of shortest paths that pass through the node.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         sampling_size : Optional[int], default=None
-            The number of nodes to use for sampling.
+            Number of source nodes to consider for computing centrality scores.
         sampling_seed : Optional[int], default=None
-            The seed value for sampling randomization
+            Seed value for the random number generator that selects source nodes.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights
+            Name of the property to be used as weights.
 
         Returns
         -------
@@ -184,34 +189,39 @@ class BetweennessEndpoints(ABC):
         write_concurrency: Optional[Any] = None,
     ) -> BetweennessWriteResult:
         """
-        Executes the Betweenness Centrality algorithm and writes the results to the Neo4j database.
+        Runs the Betweenness Centrality algorithm and stores the result in the Neo4j database as a new node property.
+
+        Betweenness centrality is a way of detecting the amount of influence a node has over the flow of information in a graph.
+        It is often used to find nodes that serve as a bridge from one part of a graph to another.
+        The algorithm calculates shortest paths between all pairs of nodes in a graph.
+        Each node receives a score, based on the number of shortest paths that pass through the node.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         write_property : str
-            The property name to store the betweenness centrality score for each node
+            Name of the node property to store the results in.
         sampling_size : Optional[int], default=None
-            The number of nodes to use for sampling.
+            Number of source nodes to consider for computing centrality scores.
         sampling_seed : Optional[int], default=None
-            The seed value for sampling randomization
+            Seed value for the random number generator that selects source nodes.
         relationship_types : Optional[List[str]], default=None
-            The relationship types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
             The username to attribute the procedure run to
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            Number of threads to use for running the algorithm.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            Identifier for the job.
         relationship_weight_property : Optional[str], default=None
-            The property name that contains relationship weights
+            Name of the property to be used as weights.
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads during the write phase
 
