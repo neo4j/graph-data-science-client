@@ -128,7 +128,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             TerminationFlag.create(),
             None,
             None,
-            logging,
+            self._show_progress and logging,
         )
 
         job_result = ProjectionResult(**JobClient.get_summary(self._arrow_client, job_id))

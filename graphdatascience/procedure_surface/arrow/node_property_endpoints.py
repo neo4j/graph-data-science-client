@@ -90,6 +90,7 @@ class NodePropertyEndpoints:
             job_id,
             concurrency=write_concurrency if write_concurrency is not None else concurrency,
             property_overwrites=property_overwrites,
+            log_progress=show_progress,
         )
 
         # modify computation result to include write details

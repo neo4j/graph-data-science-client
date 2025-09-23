@@ -6,6 +6,7 @@ from pandas import DataFrame
 from tenacity import retry, retry_if_result, wait_incrementing
 
 from graphdatascience.call_parameters import CallParameters
+from graphdatascience.query_runner.progress.progress_bar import TqdmProgressBar
 from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
@@ -33,6 +34,7 @@ class WriteProtocol(ABC):
         query_runner: QueryRunner,
         parameters: CallParameters,
         yields: Optional[list[str]],
+        log_progress: bool,
         terminationFlag: TerminationFlag,
     ) -> DataFrame:
         """Executes the write-back procedure"""
@@ -68,6 +70,7 @@ class RemoteWriteBackV1(WriteProtocol):
         query_runner: QueryRunner,
         parameters: CallParameters,
         yields: Optional[list[str]],
+        log_progress: bool,
         terminationFlag: TerminationFlag,
     ) -> DataFrame:
         return query_runner.call_procedure(
@@ -108,6 +111,7 @@ class RemoteWriteBackV2(WriteProtocol):
         query_runner: QueryRunner,
         parameters: CallParameters,
         yields: Optional[list[str]],
+        log_progress: bool,
         terminationFlag: TerminationFlag,
     ) -> DataFrame:
         return query_runner.call_procedure(
@@ -123,6 +127,9 @@ class RemoteWriteBackV2(WriteProtocol):
 
 
 class RemoteWriteBackV3(WriteProtocol):
+    def __init__(self, progress_bar_options: dict[str, Any] | None = None):
+        self._progress_bar_options = progress_bar_options or {}
+
     def write_back_params(
         self,
         graph_name: str,
@@ -138,6 +145,7 @@ class RemoteWriteBackV3(WriteProtocol):
         query_runner: QueryRunner,
         parameters: CallParameters,
         yields: Optional[list[str]],
+        log_progress: bool,
         terminationFlag: TerminationFlag,
     ) -> DataFrame:
         def is_not_completed(result: DataFrame) -> bool:
@@ -156,9 +164,9 @@ class RemoteWriteBackV3(WriteProtocol):
                 logging.DEBUG,
             ),
         )
-        def write_fn() -> DataFrame:
+        def write_fn(progress_bar: Optional[TqdmProgressBar]) -> DataFrame:
             terminationFlag.assert_running()
-            return query_runner.call_procedure(
+            result = query_runner.call_procedure(
                 ProtocolVersion.V3.versioned_procedure_name("gds.arrow.write"),
                 parameters,
                 yields,
@@ -168,4 +176,17 @@ class RemoteWriteBackV3(WriteProtocol):
                 custom_error=False,
             )
 
-        return write_fn()
+            if progress_bar:
+                progress_bar.update(status=result.squeeze()["status"], progress=result.squeeze()["progress"] * 100)
+
+            return result
+
+        if log_progress:
+            with TqdmProgressBar(
+                task_name=f"Write-Back (graph: {parameters['graphName']})",
+                relative_progress=0.0,
+                bar_options=self._progress_bar_options,
+            ) as progress_bar:
+                return write_fn(progress_bar)
+        else:
+            return write_fn(None)

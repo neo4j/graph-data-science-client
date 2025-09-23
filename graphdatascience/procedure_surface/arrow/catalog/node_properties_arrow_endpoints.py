@@ -34,6 +34,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         self._node_property_endpoints = NodePropertyEndpoints(
             arrow_client, self._write_back_client, show_progress=show_progress
         )
+        self._show_progress = show_progress
 
     def stream(
         self,
@@ -112,6 +113,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
             job_id,
             concurrency=write_concurrency if write_concurrency is not None else concurrency,
             property_overwrites=node_property_spec.to_dict(),
+            log_progress=self._show_progress and log_progress,
         )
 
         return NodePropertiesWriteResult(
