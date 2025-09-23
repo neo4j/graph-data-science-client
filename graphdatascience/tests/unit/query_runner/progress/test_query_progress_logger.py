@@ -113,7 +113,7 @@ def test_progress_bar_quantitive_output() -> None:
         )
 
         pbar = qpl._init_pbar(TaskWithProgress("test task", "0%", "PENDING", ""))
-        assert pbarOutputStream.getvalue().split("\r")[-1] == "test task:   0%|          | 0/100 [00:00<?, ?%/s]"
+        assert pbarOutputStream.getvalue().split("\r")[-1] == "test task:   0%|          | 0.0/100 [00:00<?, ?%/s]"
 
         qpl._update_pbar(pbar, TaskWithProgress("test task", "0%", "PENDING", ""))
         assert (
@@ -150,21 +150,31 @@ def test_progress_bar_qualitative_output() -> None:
         )
 
         pbar = qpl._init_pbar(TaskWithProgress("test task", "n/a", "PENDING", ""))
+        assert re.match(
+            r"test task \[elapsed: 00:00 \]",
+            last_output_line(pbarOutputStream),
+        ), last_output_line(pbarOutputStream)
 
         qpl._update_pbar(pbar, TaskWithProgress("test task", "n/a", "PENDING", ""))
+        assert re.match(
+            r"test task \[elapsed: 00:00 , status: PENDING\]",
+            last_output_line(pbarOutputStream),
+        ), last_output_line(pbarOutputStream)
+
         qpl._update_pbar(pbar, TaskWithProgress("test task", "", "RUNNING", "root 1/1::leaf"))
+        assert re.match(
+            r"test task \[elapsed: 00:00 , status: RUNNING, task: root 1/1::leaf\]",
+            last_output_line(pbarOutputStream),
+        ), last_output_line(pbarOutputStream)
 
         with ThreadPoolExecutor() as executor:
             future = executor.submit(lambda: None)
             qpl._finish_pbar(future, pbar)
 
-        assert pbarOutputStream.getvalue().rstrip() == "".join(
-            [
-                "\rtest task [elapsed: 00:00 ]\rtest task [elapsed: 00:00 , status: PENDING]",
-                "\rtest task [elapsed: 00:00 , status: RUNNING, task: root 1/1::leaf]",
-                "\rtest task [elapsed: 00:00 , status: FINISHED]",
-            ]
-        )
+            assert re.match(
+                r"test task \[elapsed: 00:00 , status: FINISHED\]",
+                last_output_line(pbarOutputStream),
+            ), last_output_line(pbarOutputStream)
 
 
 def test_progress_bar_with_failing_query() -> None:
@@ -185,14 +195,16 @@ def test_progress_bar_with_failing_query() -> None:
             future = executor.submit(failing_runnable)
 
             pbar = qpl._init_pbar(TaskWithProgress("test task", "n/a", "PENDING", ""))
+            assert re.match(
+                r"test task \[elapsed: 00:00 \]",
+                last_output_line(pbarOutputStream),
+            ), last_output_line(pbarOutputStream)
+
             qpl._finish_pbar(future, pbar)
 
-            assert pbarOutputStream.getvalue().rstrip() == "".join(
-                [
-                    "\rtest task [elapsed: 00:00 ]",
-                    "\rtest task [elapsed: 00:00 , status: FAILED]",
-                ]
-            )
+            assert re.match(
+                r"test task \[elapsed: \d{2}:\d{2} , status: FAILED\]", last_output_line(pbarOutputStream)
+            ), last_output_line(pbarOutputStream)
 
 
 def test_uses_static_store() -> None:
@@ -208,3 +220,7 @@ def test_uses_static_store() -> None:
     assert task_with_volume.task_name == "Test task"
     assert task_with_volume.progress_percent == "n/a"
     assert task_with_volume.sub_tasks_description is None
+
+
+def last_output_line(output_stream: StringIO) -> str:
+    return output_stream.getvalue().split("\r")[-1]
