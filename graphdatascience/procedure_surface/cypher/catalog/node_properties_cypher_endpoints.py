@@ -30,7 +30,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,  # setting the job id is not supported by the Cypher procedure
         db_node_properties: Optional[List[str]] = None,
@@ -76,7 +76,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> NodePropertiesWriteResult:
@@ -99,7 +99,9 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.graph.nodeProperties.write", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.graph.nodeProperties.write", params=params, logging=log_progress
+        ).squeeze()
 
         return NodePropertiesWriteResult(**result.to_dict())
 
@@ -111,7 +113,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         fail_if_missing: Optional[bool] = None,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> NodePropertiesDropResult:

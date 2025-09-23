@@ -30,7 +30,7 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -51,7 +51,7 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         params.ensure_job_id_in_config()
 
         cypher_result = self._query_runner.call_procedure(
-            endpoint="gds.articulationPoints.mutate", params=params
+            endpoint="gds.articulationPoints.mutate", params=params, logging=log_progress
         ).squeeze()
 
         return ArticulationPointsMutateResult(**cypher_result.to_dict())
@@ -62,7 +62,7 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -82,7 +82,7 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         params.ensure_job_id_in_config()
 
         cypher_result = self._query_runner.call_procedure(
-            endpoint="gds.articulationPoints.stats", params=params
+            endpoint="gds.articulationPoints.stats", params=params, logging=log_progress
         ).squeeze()
 
         return ArticulationPointsStatsResult(**cypher_result.to_dict())
@@ -93,7 +93,7 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -112,7 +112,9 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.articulationPoints.stream", params=params)
+        return self._query_runner.call_procedure(
+            endpoint="gds.articulationPoints.stream", params=params, logging=log_progress
+        )
 
     def write(
         self,
@@ -121,7 +123,7 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -144,7 +146,7 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         params.ensure_job_id_in_config()
 
         cypher_result = self._query_runner.call_procedure(
-            endpoint="gds.articulationPoints.write", params=params
+            endpoint="gds.articulationPoints.write", params=params, logging=log_progress
         ).squeeze()
 
         return ArticulationPointsWriteResult(**cypher_result.to_dict())

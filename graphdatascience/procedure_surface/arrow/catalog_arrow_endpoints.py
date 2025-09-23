@@ -181,7 +181,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         read_concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
     ) -> GraphWithGenerationStats:
         config = ConfigConverter.convert_to_gds_config(
@@ -200,7 +200,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             username=username,
         )
 
-        show_progress = self._show_progress and log_progress if log_progress is not None else self._show_progress
+        show_progress = self._show_progress and log_progress
         job_id = JobClient.run_job_and_wait(
             self._arrow_client, "v2/graph.generate", config, show_progress=show_progress
         )

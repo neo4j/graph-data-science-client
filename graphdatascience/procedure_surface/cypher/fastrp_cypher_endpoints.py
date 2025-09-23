@@ -39,7 +39,7 @@ class FastRPCypherEndpoints(FastRPEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -69,7 +69,9 @@ class FastRPCypherEndpoints(FastRPEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.fastRP.mutate", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.fastRP.mutate", params=params, logging=log_progress
+        ).squeeze()
 
         return FastRPMutateResult(**result.to_dict())
 
@@ -85,7 +87,7 @@ class FastRPCypherEndpoints(FastRPEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -114,7 +116,9 @@ class FastRPCypherEndpoints(FastRPEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.fastRP.stats", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.fastRP.stats", params=params, logging=log_progress
+        ).squeeze()
 
         return FastRPStatsResult(**result.to_dict())
 
@@ -130,7 +134,7 @@ class FastRPCypherEndpoints(FastRPEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -159,7 +163,7 @@ class FastRPCypherEndpoints(FastRPEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.fastRP.stream", params=params)
+        result = self._query_runner.call_procedure(endpoint="gds.fastRP.stream", params=params, logging=log_progress)
 
         return result
 
@@ -176,7 +180,7 @@ class FastRPCypherEndpoints(FastRPEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -208,7 +212,9 @@ class FastRPCypherEndpoints(FastRPEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.fastRP.write", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.fastRP.write", params=params, logging=log_progress
+        ).squeeze()
 
         return FastRPWriteResult(**result.to_dict())
 

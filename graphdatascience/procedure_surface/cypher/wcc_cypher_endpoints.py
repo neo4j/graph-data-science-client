@@ -34,7 +34,7 @@ class WccCypherEndpoints(WccEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -60,7 +60,9 @@ class WccCypherEndpoints(WccEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.wcc.mutate", params=params).squeeze()
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.wcc.mutate", params=params, logging=log_progress
+        ).squeeze()
 
         return WccMutateResult(**cypher_result.to_dict())
 
@@ -71,7 +73,7 @@ class WccCypherEndpoints(WccEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -96,7 +98,9 @@ class WccCypherEndpoints(WccEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.wcc.stats", params=params).squeeze()
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.wcc.stats", params=params, logging=log_progress
+        ).squeeze()
 
         return WccStatsResult(**cypher_result.to_dict())
 
@@ -108,7 +112,7 @@ class WccCypherEndpoints(WccEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -134,7 +138,7 @@ class WccCypherEndpoints(WccEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.wcc.stream", params=params)
+        return self._query_runner.call_procedure(endpoint="gds.wcc.stream", params=params, logging=log_progress)
 
     def write(
         self,
@@ -145,7 +149,7 @@ class WccCypherEndpoints(WccEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -174,7 +178,9 @@ class WccCypherEndpoints(WccEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.wcc.write", params=params).squeeze()  # type: ignore
+        result = self._query_runner.call_procedure(
+            endpoint="gds.wcc.write", params=params, logging=log_progress
+        ).squeeze()  # type: ignore
 
         return WccWriteResult(**result.to_dict())
 

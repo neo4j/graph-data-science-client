@@ -35,7 +35,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -62,7 +62,9 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.eigenvector.mutate", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.eigenvector.mutate", params=params, logging=log_progress
+        ).squeeze()
         return EigenvectorMutateResult(**result.to_dict())
 
     def stats(
@@ -76,7 +78,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -102,7 +104,9 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.eigenvector.stats", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.eigenvector.stats", params=params, logging=log_progress
+        ).squeeze()
         return EigenvectorStatsResult(**result.to_dict())
 
     def stream(
@@ -116,7 +120,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -142,7 +146,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.eigenvector.stream", params=params)
+        return self._query_runner.call_procedure(endpoint="gds.eigenvector.stream", params=params, logging=log_progress)
 
     def write(
         self,
@@ -156,7 +160,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -185,7 +189,9 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.eigenvector.write", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.eigenvector.write", params=params, logging=log_progress
+        ).squeeze()
         return EigenvectorWriteResult(**result.to_dict())
 
     def estimate(
