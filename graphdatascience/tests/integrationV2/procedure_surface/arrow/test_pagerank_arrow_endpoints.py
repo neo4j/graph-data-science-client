@@ -47,7 +47,7 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
 
 @pytest.fixture
 def pagerank_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[PageRankArrowEndpoints, None, None]:
-    yield PageRankArrowEndpoints(arrow_client)
+    yield PageRankArrowEndpoints(arrow_client, show_progress=False)
 
 
 def test_pagerank_stats(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: GraphV2) -> None:

@@ -19,9 +19,15 @@ from graphdatascience.procedure_surface.utils.config_converter import ConfigConv
 
 
 class RelationshipArrowEndpoints(RelationshipsEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient]):
+    def __init__(
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        write_back_client: Optional[RemoteWriteBackClient],
+        show_progress: bool = False,
+    ):
         self._arrow_client = arrow_client
         self._write_back_client = write_back_client
+        self._show_progress = show_progress
 
     def stream(
         self,
@@ -154,7 +160,10 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             job_id=job_id,
         )
 
-        job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.relationships.indexInverse", config)
+        show_progress = self._show_progress and log_progress if log_progress is not None else self._show_progress
+        job_id = JobClient.run_job_and_wait(
+            self._arrow_client, "v2/graph.relationships.indexInverse", config, show_progress=show_progress
+        )
         result = JobClient.get_summary(self._arrow_client, job_id)
         return RelationshipsInverseIndexResult(**result)
 
@@ -182,7 +191,10 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             username=username,
             job_id=job_id,
         )
+        show_progress = self._show_progress and log_progress if log_progress is not None else self._show_progress
 
-        job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.relationships.toUndirected", config)
+        job_id = JobClient.run_job_and_wait(
+            self._arrow_client, "v2/graph.relationships.toUndirected", config, show_progress=show_progress
+        )
         result = JobClient.get_summary(self._arrow_client, job_id)
         return RelationshipsToUndirectedResult(**result)

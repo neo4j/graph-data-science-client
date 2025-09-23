@@ -96,7 +96,9 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
                 query_runner=session_query_runner,
                 delete_fn=delete_fn,
                 gds_version=gds_version,
-                v2_endpoints=SessionV2Endpoints(session_auth_arrow_client, db_bolt_query_runner),
+                v2_endpoints=SessionV2Endpoints(
+                    session_auth_arrow_client, db_bolt_query_runner, show_progress=show_progress
+                ),
             )
         else:
             standalone_query_runner = StandaloneSessionQueryRunner(session_arrow_query_runner)
@@ -104,7 +106,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
                 query_runner=standalone_query_runner,
                 delete_fn=delete_fn,
                 gds_version=gds_version,
-                v2_endpoints=SessionV2Endpoints(session_auth_arrow_client, None),
+                v2_endpoints=SessionV2Endpoints(session_auth_arrow_client, None, show_progress=show_progress),
             )
 
     def __init__(

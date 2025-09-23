@@ -15,8 +15,9 @@ from graphdatascience.procedure_surface.utils.config_converter import ConfigConv
 
 
 class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient):
+    def __init__(self, arrow_client: AuthenticatedArrowClient, show_progress: bool = False):
         self._arrow_client = arrow_client
+        self._show_progress = show_progress
 
     def rwr(
         self,
@@ -52,7 +53,10 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
             job_id=job_id,
         )
 
-        job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.sample.rwr", config)
+        show_progress = self._show_progress and log_progress if log_progress is not None else self._show_progress
+        job_id = JobClient.run_job_and_wait(
+            self._arrow_client, "v2/graph.sample.rwr", config, show_progress=show_progress
+        )
 
         return GraphWithSamplingResult(
             get_graph(graph_name, self._arrow_client),
@@ -93,7 +97,10 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
             job_id=job_id,
         )
 
-        job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.sample.cnarw", config)
+        show_progress = self._show_progress and log_progress if log_progress is not None else self._show_progress
+        job_id = JobClient.run_job_and_wait(
+            self._arrow_client, "v2/graph.sample.cnarw", config, show_progress=show_progress
+        )
 
         return GraphWithSamplingResult(
             get_graph(graph_name, self._arrow_client),

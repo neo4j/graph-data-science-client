@@ -1,5 +1,5 @@
 import json
-from typing import Any
+from typing import Any, Optional
 
 from pandas import ArrowDtype, DataFrame
 from pyarrow._flight import Ticket
@@ -7,16 +7,22 @@ from pyarrow._flight import Ticket
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.api_types import JobIdConfig, JobStatus
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
+from graphdatascience.query_runner.progress.progress_bar import TqdmProgressBar
 
 JOB_STATUS_ENDPOINT = "v2/jobs.status"
 RESULTS_SUMMARY_ENDPOINT = "v2/results.summary"
 
 
 class JobClient:
+    def __init__(self, progress_bar_options: dict[str, Any] | None = None):
+        self._progress_bar_options = progress_bar_options or {}
+
     @staticmethod
-    def run_job_and_wait(client: AuthenticatedArrowClient, endpoint: str, config: dict[str, Any]) -> str:
+    def run_job_and_wait(
+        client: AuthenticatedArrowClient, endpoint: str, config: dict[str, Any], show_progress: bool
+    ) -> str:
         job_id = JobClient.run_job(client, endpoint, config)
-        JobClient.wait_for_job(client, job_id)
+        JobClient().wait_for_job(client, job_id, show_progress=show_progress)
         return job_id
 
     @staticmethod
@@ -26,13 +32,29 @@ class JobClient:
         single = deserialize_single(res)
         return JobIdConfig(**single).job_id
 
-    @staticmethod
-    def wait_for_job(client: AuthenticatedArrowClient, job_id: str) -> None:
+    def wait_for_job(self, client: AuthenticatedArrowClient, job_id: str, show_progress: bool) -> None:
+        progress_bar: Optional[TqdmProgressBar] = None
         while True:
             arrow_res = client.do_action_with_retry(JOB_STATUS_ENDPOINT, JobIdConfig(jobId=job_id).dump_camel())
             job_status = JobStatus(**deserialize_single(arrow_res))
-            if job_status.status == "Done":
+
+            if job_status.succeeded() or job_status.aborted():
+                if progress_bar:
+                    progress_bar.finish(success=job_status.succeeded())
                 break
+
+            if show_progress:
+                if progress_bar is None:
+                    base_task = job_status.base_task()
+                    if base_task:
+                        progress_bar = TqdmProgressBar(
+                            task_name=base_task,
+                            relative_progress=job_status.progress_percent(),
+                            
+                            bar_options=self._progress_bar_options,
+                        )
+                if progress_bar:
+                    progress_bar.update(job_status.status, job_status.progress_percent(), job_status.sub_tasks())
 
     @staticmethod
     def get_summary(client: AuthenticatedArrowClient, job_id: str) -> dict[str, Any]:

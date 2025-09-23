@@ -26,15 +26,21 @@ from graphdatascience.query_runner.query_runner import QueryRunner
 
 
 class SessionV2Endpoints:
-    def __init__(self, arrow_client: AuthenticatedArrowClient, db_client: Optional[QueryRunner] = None):
+    def __init__(
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        db_client: Optional[QueryRunner] = None,
+        show_progress: bool = False,
+    ):
         self._arrow_client = arrow_client
         self._db_client = db_client
+        self._show_progress = show_progress
 
         self._write_back_client = RemoteWriteBackClient(arrow_client, db_client) if db_client is not None else None
 
     @property
     def graph(self) -> CatalogArrowEndpoints:
-        return CatalogArrowEndpoints(self._arrow_client, self._db_client)
+        return CatalogArrowEndpoints(self._arrow_client, self._db_client, show_progress=self._show_progress)
 
     ## Algorithms
 
@@ -104,7 +110,7 @@ class SessionV2Endpoints:
 
     @property
     def page_rank(self) -> PageRankArrowEndpoints:
-        return PageRankArrowEndpoints(self._arrow_client, self._write_back_client)
+        return PageRankArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def scc(self) -> SccArrowEndpoints:
