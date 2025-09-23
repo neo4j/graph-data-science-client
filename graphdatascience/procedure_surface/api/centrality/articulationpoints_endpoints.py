@@ -26,7 +26,6 @@ class ArticulationPointsEndpoints(ABC):
         Runs the Articulation Points algorithm and stores the results in the graph catalog as a new node property.
 
         Given a graph, an articulation point is a node whose removal increases the number of connected components in the graph.
-        The Neo4j GDS Library provides an efficient linear time sequential algorithm to compute all articulation points in a graph.
 
         Parameters
         ----------
@@ -71,7 +70,6 @@ class ArticulationPointsEndpoints(ABC):
         Runs the Articulation Points algorithm and returns result statistics without storing the results.
 
         Given a graph, an articulation point is a node whose removal increases the number of connected components in the graph.
-        The Neo4j GDS Library provides an efficient linear time sequential algorithm to compute all articulation points in a graph.
 
         Parameters
         ----------
@@ -158,7 +156,6 @@ class ArticulationPointsEndpoints(ABC):
         Runs the Articulation Points algorithm and stores the result in the Neo4j database as a new node property.
 
         Given a graph, an articulation point is a node whose removal increases the number of connected components in the graph.
-        The Neo4j GDS Library provides an efficient linear time sequential algorithm to compute all articulation points in a graph.
 
         Parameters
         ----------
