@@ -6,6 +6,7 @@ from graphdatascience.query_runner.progress.progress_provider import TaskWithPro
 
 
 class TqdmProgressBar:
+    # TODO helper method for creating for a test with obserable progress
     def __init__(self, task_name: str, relative_progress: Optional[float], bar_options: dict[str, Any] = {}):
         root_task_name = task_name
         if relative_progress is None:  # Qualitative progress report
@@ -21,6 +22,7 @@ class TqdmProgressBar:
                 total=100,
                 unit="%",
                 desc=root_task_name,
+                initial=relative_progress,
                 **bar_options,
             )
 

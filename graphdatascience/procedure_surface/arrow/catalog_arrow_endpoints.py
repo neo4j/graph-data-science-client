@@ -37,10 +37,16 @@ from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResol
 class CatalogArrowEndpoints(CatalogEndpoints):
     GDS_REMOTE_PROJECTION_PROC_NAME = "gds.arrow.project"
 
-    def __init__(self, arrow_client: AuthenticatedArrowClient, query_runner: Optional[QueryRunner] = None):
+    def __init__(
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        query_runner: Optional[QueryRunner] = None,
+        show_progress: bool = False,
+    ):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
         self._graph_backend = GraphOpsArrow(arrow_client)
+        self._show_progress = show_progress
         if query_runner is not None:
             protocol_version = ProtocolVersionResolver(query_runner).resolve()
             self._project_protocol = ProjectProtocol.select(protocol_version)
@@ -152,7 +158,9 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             job_id=job_id,
         )
 
-        job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.project.filter", config)
+        job_id = JobClient.run_job_and_wait(
+            self._arrow_client, "v2/graph.project.filter", config, show_progress=self._show_progress
+        )
 
         return GraphWithFilterResult(
             get_graph(graph_name, self._arrow_client),
@@ -192,7 +200,10 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             username=username,
         )
 
-        job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.generate", config)
+        show_progress = self._show_progress and log_progress if log_progress is not None else self._show_progress
+        job_id = JobClient.run_job_and_wait(
+            self._arrow_client, "v2/graph.generate", config, show_progress=show_progress
+        )
 
         return GraphWithGenerationStats(
             get_graph(graph_name, self._arrow_client),
@@ -201,7 +212,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
     @property
     def sample(self) -> GraphSamplingEndpoints:
-        return GraphSamplingArrowEndpoints(self._arrow_client)
+        return GraphSamplingArrowEndpoints(self._arrow_client, show_progress=self._show_progress)
 
     @property
     def node_labels(self) -> NodeLabelArrowEndpoints:
@@ -218,6 +229,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         return RelationshipArrowEndpoints(
             self._arrow_client,
             RemoteWriteBackClient(self._arrow_client, self._query_runner) if self._query_runner else None,
+            show_progress=self._show_progress,
         )
 
     def _arrow_config(self) -> dict[str, Any]:

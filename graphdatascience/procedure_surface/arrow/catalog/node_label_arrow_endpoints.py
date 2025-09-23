@@ -19,6 +19,7 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
     ):
         self._arrow_client = arrow_client
         self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client)
+        self._show_progress = False  # TODO add option to show progress
 
     def mutate(
         self,
@@ -45,7 +46,10 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
             job_id=job_id,
         )
 
-        job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.nodeLabel.mutate", config)
+        show_progress = self._show_progress and log_progress if log_progress is not None else self._show_progress
+        job_id = JobClient.run_job_and_wait(
+            self._arrow_client, "v2/graph.nodeLabel.mutate", config, show_progress=show_progress
+        )
         return NodeLabelMutateResult(**JobClient.get_summary(self._arrow_client, job_id))
 
     def write(
