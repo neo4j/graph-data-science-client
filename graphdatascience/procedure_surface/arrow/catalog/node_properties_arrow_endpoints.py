@@ -131,20 +131,14 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         *,
         fail_if_missing: Optional[bool] = None,
         concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
-        log_progress: bool = True,
         username: Optional[str] = None,
-        job_id: Optional[Any] = None,
     ) -> NodePropertiesDropResult:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
             node_properties=node_properties,
             fail_if_missing=fail_if_missing,
             concurrency=concurrency,
-            sudo=sudo,
-            log_progress=log_progress,
             username=username,
-            job_id=job_id,
         )
         result = self._arrow_client.do_action_with_retry("v2/graph.nodeProperties.drop", config)
         deserialized_result = deserialize_single(result)

@@ -112,16 +112,11 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         *,
         fail_if_missing: Optional[bool] = None,
         concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
-        log_progress: bool = True,
         username: Optional[str] = None,
-        job_id: Optional[Any] = None,
     ) -> NodePropertiesDropResult:
         config = ConfigConverter.convert_to_gds_config(
             fail_if_missing=fail_if_missing,
             concurrency=concurrency,
-            sudo=sudo,
-            log_progress=log_progress,
             username=username,
         )
 

@@ -1,4 +1,5 @@
 from typing import Optional
+
 from graphdatascience.arrow_client.arrow_base_model import ArrowBaseModel
 
 
