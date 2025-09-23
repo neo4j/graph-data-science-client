@@ -35,7 +35,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -56,7 +56,9 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.k1coloring.mutate", params=params).squeeze()
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.k1coloring.mutate", params=params, logging=log_progress
+        ).squeeze()
 
         return K1ColoringMutateResult(**cypher_result.to_dict())
 
@@ -68,7 +70,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -88,7 +90,9 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.k1coloring.stats", params=params).squeeze()
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.k1coloring.stats", params=params, logging=log_progress
+        ).squeeze()
 
         return K1ColoringStatsResult(**cypher_result.to_dict())
 
@@ -100,7 +104,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -122,7 +126,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.k1coloring.stream", params=params)
+        return self._query_runner.call_procedure(endpoint="gds.k1coloring.stream", params=params, logging=log_progress)
 
     def write(
         self,
@@ -133,7 +137,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -158,7 +162,9 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.k1coloring.write", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.k1coloring.write", params=params, logging=log_progress
+        ).squeeze()
 
         return K1ColoringWriteResult(**result.to_dict())
 

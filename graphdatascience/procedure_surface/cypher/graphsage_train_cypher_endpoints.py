@@ -41,7 +41,7 @@ class GraphSageTrainCypherEndpoints(GraphSageTrainEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         sudo: Optional[bool] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -81,7 +81,9 @@ class GraphSageTrainCypherEndpoints(GraphSageTrainEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.beta.graphSage.train", params=params).iloc[0]
+        result = self._query_runner.call_procedure(
+            endpoint="gds.beta.graphSage.train", params=params, logging=log_progress
+        ).iloc[0]
 
         return GraphSageModelV2(
             name=model_name,

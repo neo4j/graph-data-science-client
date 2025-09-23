@@ -33,7 +33,7 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -52,7 +52,9 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.kcore.mutate", params=params).squeeze()
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.kcore.mutate", params=params, logging=log_progress
+        ).squeeze()
 
         return KCoreMutateResult(**cypher_result.to_dict())
 
@@ -62,7 +64,7 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -80,7 +82,9 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.kcore.stats", params=params).squeeze()
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.kcore.stats", params=params, logging=log_progress
+        ).squeeze()
 
         return KCoreStatsResult(**cypher_result.to_dict())
 
@@ -90,7 +94,7 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -108,7 +112,7 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.kcore.stream", params=params)
+        return self._query_runner.call_procedure(endpoint="gds.kcore.stream", params=params, logging=log_progress)
 
     def write(
         self,
@@ -117,7 +121,7 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -142,7 +146,9 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.kcore.write", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.kcore.write", params=params, logging=log_progress
+        ).squeeze()
 
         return KCoreWriteResult(**result.to_dict())
 

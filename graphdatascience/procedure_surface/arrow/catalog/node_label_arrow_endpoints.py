@@ -15,10 +15,17 @@ from graphdatascience.procedure_surface.utils.config_converter import ConfigConv
 
 class NodeLabelArrowEndpoints(NodeLabelEndpoints):
     def __init__(
-        self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient] = None
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        write_back_client: Optional[RemoteWriteBackClient] = None,
+        show_progress: bool = True,
     ):
+        self._node_property_endpoints = NodePropertyEndpoints(
+            arrow_client, write_back_client, show_progress=show_progress
+        )
         self._arrow_client = arrow_client
         self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client)
+        self._show_progress = show_progress
 
     def mutate(
         self,
@@ -27,7 +34,7 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
         *,
         node_filter: str,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
@@ -45,7 +52,10 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
             job_id=job_id,
         )
 
-        job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.nodeLabel.mutate", config)
+        show_progress = self._show_progress and log_progress
+        job_id = JobClient.run_job_and_wait(
+            self._arrow_client, "v2/graph.nodeLabel.mutate", config, show_progress=show_progress
+        )
         return NodeLabelMutateResult(**JobClient.get_summary(self._arrow_client, job_id))
 
     def write(
@@ -55,7 +65,7 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
         *,
         node_filter: str,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,

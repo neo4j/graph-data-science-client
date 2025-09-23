@@ -17,9 +17,16 @@ from .node_property_endpoints import NodePropertyEndpoints
 
 
 class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient]):
+    def __init__(
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        write_back_client: Optional[RemoteWriteBackClient],
+        show_progress: bool = True,
+    ):
         self._arrow_client = arrow_client
-        self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client)
+        self._node_property_endpoints = NodePropertyEndpoints(
+            arrow_client, write_back_client, show_progress=show_progress
+        )
         self._model_api = ModelApiArrow(arrow_client)
 
     def stream(
@@ -30,7 +37,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         sudo: Optional[bool] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -59,7 +66,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         sudo: Optional[bool] = None,
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[int] = None,
@@ -93,7 +100,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         sudo: Optional[bool] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -129,7 +136,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         node_labels: Optional[list[str]] = None,
         batch_size: Optional[int] = None,
         concurrency: Optional[int] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         sudo: Optional[bool] = None,
         job_id: Optional[str] = None,

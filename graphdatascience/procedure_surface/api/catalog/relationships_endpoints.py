@@ -21,7 +21,7 @@ class RelationshipsEndpoints(ABC):
         *,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
     ) -> DataFrame:
         """
@@ -61,7 +61,7 @@ class RelationshipsEndpoints(ABC):
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> RelationshipsWriteResult:
@@ -129,7 +129,7 @@ class RelationshipsEndpoints(ABC):
         *,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> RelationshipsInverseIndexResult:
@@ -169,7 +169,7 @@ class RelationshipsEndpoints(ABC):
         aggregation: Optional[Union[Aggregation, dict[str, Aggregation]]] = None,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> RelationshipsToUndirectedResult:

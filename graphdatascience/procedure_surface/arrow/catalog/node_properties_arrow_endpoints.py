@@ -20,13 +20,21 @@ from graphdatascience.procedure_surface.utils.result_utils import join_db_node_p
 
 
 class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient, query_runner: Optional[QueryRunner] = None):
+    def __init__(
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        query_runner: Optional[QueryRunner] = None,
+        show_progress: bool = True,
+    ):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
         self._write_back_client: Optional[RemoteWriteBackClient] = (
             RemoteWriteBackClient(arrow_client, query_runner) if query_runner is not None else None
         )
-        self._node_property_endpoints = NodePropertyEndpoints(arrow_client, self._write_back_client)
+        self._node_property_endpoints = NodePropertyEndpoints(
+            arrow_client, self._write_back_client, show_progress=show_progress
+        )
+        self._show_progress = show_progress
 
     def stream(
         self,
@@ -37,7 +45,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         node_labels: Optional[List[str]] = None,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
         db_node_properties: Optional[List[str]] = None,
@@ -78,7 +86,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> NodePropertiesWriteResult:
@@ -105,6 +113,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
             job_id,
             concurrency=write_concurrency if write_concurrency is not None else concurrency,
             property_overwrites=node_property_spec.to_dict(),
+            log_progress=self._show_progress and log_progress,
         )
 
         return NodePropertiesWriteResult(
@@ -122,20 +131,14 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         *,
         fail_if_missing: Optional[bool] = None,
         concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
         username: Optional[str] = None,
-        job_id: Optional[Any] = None,
     ) -> NodePropertiesDropResult:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
             node_properties=node_properties,
             fail_if_missing=fail_if_missing,
             concurrency=concurrency,
-            sudo=sudo,
-            log_progress=log_progress,
             username=username,
-            job_id=job_id,
         )
         result = self._arrow_client.do_action_with_retry("v2/graph.nodeProperties.drop", config)
         deserialized_result = deserialize_single(result)

@@ -23,6 +23,7 @@ def create_graph(
                 arrow_client,
                 "v2/graph.relationships.toUndirected",
                 {"graphName": graph_name, "relationshipType": undirected[0], "mutateRelationshipType": undirected[1]},
+                show_progress=False,
             )
 
             raw_res = arrow_client.do_action(

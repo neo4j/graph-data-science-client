@@ -31,7 +31,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -54,7 +54,9 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.closeness.mutate", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.closeness.mutate", params=params, logging=log_progress
+        ).squeeze()
         return ClosenessMutateResult(**result.to_dict())
 
     def stats(
@@ -64,7 +66,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -86,7 +88,9 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.closeness.stats", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.closeness.stats", params=params, logging=log_progress
+        ).squeeze()
         return ClosenessStatsResult(**result.to_dict())
 
     def stream(
@@ -96,7 +100,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -118,7 +122,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.closeness.stream", params=params)
+        return self._query_runner.call_procedure(endpoint="gds.closeness.stream", params=params, logging=log_progress)
 
     def write(
         self,
@@ -128,7 +132,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -153,7 +157,9 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.closeness.write", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.closeness.write", params=params, logging=log_progress
+        ).squeeze()
         return ClosenessWriteResult(**result.to_dict())
 
     def estimate(

@@ -19,9 +19,15 @@ from graphdatascience.procedure_surface.utils.config_converter import ConfigConv
 
 
 class RelationshipArrowEndpoints(RelationshipsEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient]):
+    def __init__(
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        write_back_client: Optional[RemoteWriteBackClient],
+        show_progress: bool = False,
+    ):
         self._arrow_client = arrow_client
         self._write_back_client = write_back_client
+        self._show_progress = show_progress
 
     def stream(
         self,
@@ -31,7 +37,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         *,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
     ) -> DataFrame:
         config_input = {
@@ -64,7 +70,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> RelationshipsWriteResult:
@@ -95,6 +101,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             job_id,
             concurrency=write_concurrency if write_concurrency is not None else concurrency,
             relationship_type_overwrite=relationship_type,
+            log_progress=log_progress and self._show_progress,
         )
 
         written_relationships = (
@@ -120,9 +127,8 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         *,
         fail_if_missing: Optional[bool] = None,
     ) -> RelationshipsDropResult:
-        # TODO enable once we have a propper graph implementation for arrow endpoints
-        # if not relationship_type in G.relationship_types():
-        #     raise ValueError(f"Relationship type '{relationship_type}' does not exist in graph '{G.name()}'")
+        if relationship_type not in G.relationship_types():
+            raise ValueError(f"Relationship type '{relationship_type}' does not exist in graph '{G.name()}'")
 
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
@@ -140,7 +146,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         *,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> RelationshipsInverseIndexResult:
@@ -154,7 +160,10 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             job_id=job_id,
         )
 
-        job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.relationships.indexInverse", config)
+        show_progress = self._show_progress and log_progress
+        job_id = JobClient.run_job_and_wait(
+            self._arrow_client, "v2/graph.relationships.indexInverse", config, show_progress=show_progress
+        )
         result = JobClient.get_summary(self._arrow_client, job_id)
         return RelationshipsInverseIndexResult(**result)
 
@@ -167,7 +176,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         aggregation: Optional[Union[Aggregation, dict[str, Aggregation]]] = None,
         concurrency: Optional[Any] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         job_id: Optional[Any] = None,
     ) -> RelationshipsToUndirectedResult:
@@ -182,7 +191,10 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             username=username,
             job_id=job_id,
         )
+        show_progress = self._show_progress and log_progress
 
-        job_id = JobClient.run_job_and_wait(self._arrow_client, "v2/graph.relationships.toUndirected", config)
+        job_id = JobClient.run_job_and_wait(
+            self._arrow_client, "v2/graph.relationships.toUndirected", config, show_progress=show_progress
+        )
         result = JobClient.get_summary(self._arrow_client, job_id)
         return RelationshipsToUndirectedResult(**result)

@@ -30,7 +30,7 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -52,7 +52,9 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.closeness.harmonic.mutate", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.closeness.harmonic.mutate", params=params, logging=log_progress
+        ).squeeze()
         return ClosenessHarmonicMutateResult(**result.to_dict())
 
     def stats(
@@ -61,7 +63,7 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -82,7 +84,9 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.closeness.harmonic.stats", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.closeness.harmonic.stats", params=params, logging=log_progress
+        ).squeeze()
         return ClosenessHarmonicStatsResult(**result.to_dict())
 
     def stream(
@@ -91,7 +95,7 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -112,7 +116,9 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.closeness.harmonic.stream", params=params)
+        return self._query_runner.call_procedure(
+            endpoint="gds.closeness.harmonic.stream", params=params, logging=log_progress
+        )
 
     def write(
         self,
@@ -121,7 +127,7 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -145,7 +151,9 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.closeness.harmonic.write", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.closeness.harmonic.write", params=params, logging=log_progress
+        ).squeeze()
         return ClosenessHarmonicWriteResult(**result.to_dict())
 
     def estimate(

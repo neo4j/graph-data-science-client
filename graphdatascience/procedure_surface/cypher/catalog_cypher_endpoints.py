@@ -125,7 +125,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         read_concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
     ) -> GraphWithGenerationStats:
         config = ConfigConverter.convert_to_gds_config(

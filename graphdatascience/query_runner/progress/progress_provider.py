@@ -10,6 +10,12 @@ class TaskWithProgress:
     status: str
     sub_tasks_description: Optional[str] = None
 
+    def relative_progress(self) -> Optional[float]:
+        try:
+            return float(self.progress_percent.removesuffix("%"))
+        except ValueError:
+            return None
+
 
 class ProgressProvider(ABC):
     @abstractmethod

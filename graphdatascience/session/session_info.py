@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, Union
 
 from graphdatascience.session.aura_api_responses import SessionDetails, SessionDetailsWithErrors, SessionErrorData
 from graphdatascience.session.cloud_location import CloudLocation
@@ -41,7 +41,7 @@ class SessionInfo:
     errors: Optional[list[SessionErrorData]] = None
 
     @classmethod
-    def from_session_details(cls, details: SessionDetailsWithErrors | SessionDetails) -> SessionInfo:
+    def from_session_details(cls, details: Union[SessionDetailsWithErrors, SessionDetails]) -> SessionInfo:
         errors: Optional[list[SessionErrorData]] = None
         if isinstance(details, SessionDetailsWithErrors):
             errors = details.errors

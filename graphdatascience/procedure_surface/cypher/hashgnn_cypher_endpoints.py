@@ -41,7 +41,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -74,7 +74,9 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.hashgnn.mutate", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.hashgnn.mutate", params=params, logging=log_progress
+        ).squeeze()
 
         return HashGNNMutateResult(**result.to_dict())
 
@@ -93,7 +95,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -125,7 +127,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.hashgnn.stream", params=params)
+        return self._query_runner.call_procedure(endpoint="gds.hashgnn.stream", params=params, logging=log_progress)
 
     def write(
         self,
@@ -142,7 +144,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -178,7 +180,9 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.hashgnn.write", params=params).squeeze()
+        result = self._query_runner.call_procedure(
+            endpoint="gds.hashgnn.write", params=params, logging=log_progress
+        ).squeeze()
 
         return HashGNNWriteResult(**result.to_dict())
 

@@ -32,7 +32,7 @@ class CelfCypherEndpoints(CelfEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -59,7 +59,7 @@ class CelfCypherEndpoints(CelfEndpoints):
         params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(
-            endpoint="gds.influenceMaximization.celf.mutate", params=params
+            endpoint="gds.influenceMaximization.celf.mutate", params=params, logging=log_progress
         ).squeeze()
         return CelfMutateResult(**result.to_dict())
 
@@ -73,7 +73,7 @@ class CelfCypherEndpoints(CelfEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -99,7 +99,7 @@ class CelfCypherEndpoints(CelfEndpoints):
         params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(
-            endpoint="gds.influenceMaximization.celf.stats", params=params
+            endpoint="gds.influenceMaximization.celf.stats", params=params, logging=log_progress
         ).squeeze()
         return CelfStatsResult(**result.to_dict())
 
@@ -113,7 +113,7 @@ class CelfCypherEndpoints(CelfEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -138,7 +138,9 @@ class CelfCypherEndpoints(CelfEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.influenceMaximization.celf.stream", params=params)
+        return self._query_runner.call_procedure(
+            endpoint="gds.influenceMaximization.celf.stream", params=params, logging=log_progress
+        )
 
     def write(
         self,
@@ -151,7 +153,7 @@ class CelfCypherEndpoints(CelfEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -180,7 +182,7 @@ class CelfCypherEndpoints(CelfEndpoints):
         params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(
-            endpoint="gds.influenceMaximization.celf.write", params=params
+            endpoint="gds.influenceMaximization.celf.write", params=params, logging=log_progress
         ).squeeze()
         return CelfWriteResult(**result.to_dict())
 

@@ -18,9 +18,14 @@ from .node_property_endpoints import NodePropertyEndpoints
 
 class KCoreArrowEndpoints(KCoreEndpoints):
     def __init__(
-        self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient] = None
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        write_back_client: Optional[RemoteWriteBackClient] = None,
+        show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client)
+        self._node_property_endpoints = NodePropertyEndpoints(
+            arrow_client, write_back_client, show_progress=show_progress
+        )
 
     def mutate(
         self,
@@ -29,7 +34,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -54,7 +59,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -79,7 +84,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
@@ -103,7 +108,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[int] = None,
         job_id: Optional[str] = None,

@@ -15,10 +15,17 @@ from .node_property_endpoints import NodePropertyEndpoints
 
 
 class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient, write_back_client: Optional[RemoteWriteBackClient]):
+    def __init__(
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        write_back_client: Optional[RemoteWriteBackClient],
+        show_progress: bool = True,
+    ):
         self._arrow_client = arrow_client
         self._write_back_client = write_back_client
-        self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client=write_back_client)
+        self._node_property_endpoints = NodePropertyEndpoints(
+            arrow_client, write_back_client=write_back_client, show_progress=show_progress
+        )
         self._model_api = ModelApiArrow(arrow_client)
 
     def train(
@@ -44,7 +51,7 @@ class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         sudo: Optional[bool] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,

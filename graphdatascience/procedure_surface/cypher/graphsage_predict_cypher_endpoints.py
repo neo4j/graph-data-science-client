@@ -28,7 +28,7 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         sudo: Optional[bool] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -49,7 +49,9 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.beta.graphSage.stream", params=params)
+        return self._query_runner.call_procedure(
+            endpoint="gds.beta.graphSage.stream", params=params, logging=log_progress
+        )
 
     def write(
         self,
@@ -60,7 +62,7 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         sudo: Optional[bool] = None,
         concurrency: Optional[Any] = None,
         write_concurrency: Optional[int] = None,
@@ -84,7 +86,9 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        raw_result = self._query_runner.call_procedure(endpoint="gds.beta.graphSage.write", params=params)
+        raw_result = self._query_runner.call_procedure(
+            endpoint="gds.beta.graphSage.write", params=params, logging=log_progress
+        )
 
         return GraphSageWriteResult(**raw_result.iloc[0].to_dict())
 
@@ -96,7 +100,7 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         sudo: Optional[bool] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -118,7 +122,9 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        raw_result = self._query_runner.call_procedure(endpoint="gds.beta.graphSage.mutate", params=params)
+        raw_result = self._query_runner.call_procedure(
+            endpoint="gds.beta.graphSage.mutate", params=params, logging=log_progress
+        )
 
         return GraphSageMutateResult(**raw_result.iloc[0].to_dict())
 
@@ -130,7 +136,7 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         node_labels: Optional[list[str]] = None,
         batch_size: Optional[int] = None,
         concurrency: Optional[int] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         sudo: Optional[bool] = None,
         job_id: Optional[str] = None,

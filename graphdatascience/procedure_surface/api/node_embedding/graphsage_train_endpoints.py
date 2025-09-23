@@ -37,7 +37,7 @@ class GraphSageTrainEndpoints(ABC):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         username: Optional[str] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         sudo: Optional[bool] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,

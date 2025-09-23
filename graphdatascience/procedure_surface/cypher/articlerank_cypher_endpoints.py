@@ -37,7 +37,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -65,7 +65,9 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.articleRank.mutate", params=params).squeeze()
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.articleRank.mutate", params=params, logging=log_progress
+        ).squeeze()
 
         return ArticleRankMutateResult(**cypher_result.to_dict())
 
@@ -79,7 +81,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -106,7 +108,9 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.articleRank.stats", params=params).squeeze()
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.articleRank.stats", params=params, logging=log_progress
+        ).squeeze()
 
         return ArticleRankStatsResult(**cypher_result.to_dict())
 
@@ -120,7 +124,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -147,7 +151,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        return self._query_runner.call_procedure(endpoint="gds.articleRank.stream", params=params)
+        return self._query_runner.call_procedure(endpoint="gds.articleRank.stream", params=params, logging=log_progress)
 
     def write(
         self,
@@ -160,7 +164,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
         relationship_types: Optional[List[str]] = None,
         node_labels: Optional[List[str]] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
         concurrency: Optional[Any] = None,
         job_id: Optional[Any] = None,
@@ -190,7 +194,9 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        cypher_result = self._query_runner.call_procedure(endpoint="gds.articleRank.write", params=params).squeeze()
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.articleRank.write", params=params, logging=log_progress
+        ).squeeze()
 
         return ArticleRankWriteResult(**cypher_result.to_dict())
 

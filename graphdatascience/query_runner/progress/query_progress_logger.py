@@ -1,9 +1,10 @@
 import warnings
 from concurrent.futures import Future, ThreadPoolExecutor, wait
-from typing import Any, Callable, NoReturn, Optional
+from typing import Any, Callable, Optional
 
 from pandas import DataFrame
-from tqdm.auto import tqdm
+
+from graphdatascience.query_runner.progress.progress_bar import TqdmProgressBar
 
 from ...server_version.server_version import ServerVersion
 from .progress_provider import ProgressProvider, TaskWithProgress
@@ -27,6 +28,8 @@ class QueryProgressLogger:
         self._query_progress_provider = QueryProgressProvider(run_cypher_func, server_version_func)
         self._polling_interval = polling_interval
         self._progress_bar_options = progress_bar_options
+
+        self._progress_bar_options.setdefault("maxinterval", self._polling_interval)
 
     def run_with_progress_logging(
         self, runnable: DataFrameProducer, job_id: str, database: Optional[str] = None
@@ -58,7 +61,7 @@ class QueryProgressLogger:
     def _log(
         self, future: Future[Any], job_id: str, progress_provider: ProgressProvider, database: Optional[str] = None
     ) -> None:
-        pbar: Optional[tqdm[NoReturn]] = None
+        pbar: Optional[TqdmProgressBar] = None
         warn_if_failure = True
 
         while wait([future], timeout=self._polling_interval).not_done:
@@ -83,53 +86,19 @@ class QueryProgressLogger:
         if pbar is not None:
             self._finish_pbar(future, pbar)
 
-    def _init_pbar(self, task_with_progress: TaskWithProgress) -> tqdm:  # type: ignore
-        root_task_name = task_with_progress.task_name
-        parsed_progress = QueryProgressLogger._relative_progress(task_with_progress)
-        if parsed_progress is None:  # Qualitative progress report
-            return tqdm(
-                total=None,
-                unit="",
-                desc=root_task_name,
-                maxinterval=self._polling_interval,
-                bar_format="{desc} [elapsed: {elapsed} {postfix}]",
-                **self._progress_bar_options,
-            )
-        else:
-            return tqdm(
-                total=100,
-                unit="%",
-                desc=root_task_name,
-                maxinterval=self._polling_interval,
-                **self._progress_bar_options,
-            )
-
-    def _update_pbar(self, pbar: tqdm, task_with_progress: TaskWithProgress) -> None:  # type: ignore
-        parsed_progress = QueryProgressLogger._relative_progress(task_with_progress)
-        postfix = (
-            f"status: {task_with_progress.status}, task: {task_with_progress.sub_tasks_description}"
-            if task_with_progress.sub_tasks_description
-            else f"status: {task_with_progress.status}"
+    def _update_pbar(self, pbar: TqdmProgressBar, task: TaskWithProgress) -> None:
+        pbar.update(
+            task.status,
+            task.relative_progress(),
+            task.sub_tasks_description,
         )
-        pbar.set_postfix_str(postfix, refresh=False)
-        if parsed_progress is not None:
-            new_progress = parsed_progress - pbar.n
-            pbar.update(new_progress)
-        else:
-            pbar.refresh()
 
-    def _finish_pbar(self, future: Future[Any], pbar: tqdm) -> None:  # type: ignore
-        if future.exception():
-            pbar.set_postfix_str("status: FAILED", refresh=True)
-            return
+    def _init_pbar(self, task: TaskWithProgress) -> TqdmProgressBar:
+        return TqdmProgressBar(
+            task.task_name,
+            task.relative_progress(),
+            bar_options=self._progress_bar_options,
+        )
 
-        if pbar.total is not None:
-            pbar.update(pbar.total - pbar.n)
-        pbar.set_postfix_str("status: FINISHED", refresh=True)
-
-    @staticmethod
-    def _relative_progress(task: TaskWithProgress) -> Optional[float]:
-        try:
-            return float(task.progress_percent.removesuffix("%"))
-        except ValueError:
-            return None
+    def _finish_pbar(self, future: Future[Any], pbar: TqdmProgressBar) -> None:
+        pbar.finish(future.exception() is None)

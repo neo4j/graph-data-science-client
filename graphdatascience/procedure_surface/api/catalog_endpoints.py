@@ -89,7 +89,7 @@ class CatalogEndpoints(ABC):
         read_concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
         sudo: Optional[bool] = None,
-        log_progress: Optional[bool] = None,
+        log_progress: bool = True,
         username: Optional[str] = None,
     ) -> GraphWithGenerationStats:
         """

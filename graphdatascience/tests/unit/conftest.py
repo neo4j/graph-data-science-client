@@ -169,11 +169,11 @@ class CollectingQueryRunner(QueryRunner):
     def cloneWithoutRouting(self, host: str, port: int) -> QueryRunner:
         return self
 
-    def set__mock_result(self, result: DataFrame) -> None:
+    def set__mock_result(self, result: QueryResult) -> None:
         self._result_map.clear()
         self._result_map[""] = result
 
-    def add__mock_result(self, query_sub_string: str, result: DataFrame) -> None:
+    def add__mock_result(self, query_sub_string: str, result: QueryResult) -> None:
         self._result_map[query_sub_string] = result
 
     def get_mock_result(self, query: str) -> QueryResult:
@@ -190,6 +190,9 @@ class CollectingQueryRunner(QueryRunner):
             )
         if len(matched_results) == 0:
             return DataFrame()
+
+        if isinstance(matched_results[0][1], Exception):
+            raise matched_results[0][1]
         return matched_results[0][1]
 
 
