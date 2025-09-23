@@ -14,7 +14,7 @@ RESULTS_SUMMARY_ENDPOINT = "v2/results.summary"
 
 
 class JobClient:
-    def __init__(self, progress_bar_options: dict[str, Any] | None = None):
+    def __init__(self, progress_bar_options: Optional[dict[str, Any]] = None):
         self._progress_bar_options = progress_bar_options or {}
 
     @staticmethod

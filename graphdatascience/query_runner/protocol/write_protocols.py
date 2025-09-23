@@ -127,7 +127,7 @@ class RemoteWriteBackV2(WriteProtocol):
 
 
 class RemoteWriteBackV3(WriteProtocol):
-    def __init__(self, progress_bar_options: dict[str, Any] | None = None):
+    def __init__(self, progress_bar_options: Optional[dict[str, Any]] = None):
         self._progress_bar_options = progress_bar_options or {}
 
     def write_back_params(

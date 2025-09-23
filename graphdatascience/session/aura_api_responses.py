@@ -32,7 +32,7 @@ class SessionDetails:
     def from_json(cls, data: dict[str, Any]) -> SessionDetails:
         id = data["id"]
         expiry_date = data.get("expiry_date")
-        ttl: Any | None = data.get("ttl")
+        ttl: Optional[Any] = data.get("ttl")
         instance_id = data.get("instance_id")
         cloud_location = CloudLocation(data["cloud_provider"], data["region"]) if data.get("cloud_provider") else None
 
@@ -65,7 +65,7 @@ class SessionDetailsWithErrors(SessionDetails):
 
         id = data["id"]
         expiry_date = data.get("expiry_date")
-        ttl: Any | None = data.get("ttl")
+        ttl: Optional[Any] = data.get("ttl")
         instance_id = data.get("instance_id")
         cloud_location = CloudLocation(data["cloud_provider"], data["region"]) if data.get("cloud_provider") else None
 
