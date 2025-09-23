@@ -111,10 +111,7 @@ class NodePropertiesEndpoints(ABC):
         *,
         fail_if_missing: Optional[bool] = None,
         concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
-        log_progress: bool = True,
         username: Optional[str] = None,
-        job_id: Optional[Any] = None,
     ) -> NodePropertiesDropResult:
         """
         Drops the specified node properties from the graph.
@@ -129,14 +126,8 @@ class NodePropertiesEndpoints(ABC):
             Whether to fail if any of the node properties are missing
         concurrency : Optional[Any], default=None
             The number of concurrent threads
-        sudo : Optional[bool], default=None
-            Override memory estimation limits
-        log_progress : Optional[bool], default=None
-            Whether to log progress
         username : Optional[str], default=None
             The username to attribute the procedure run to
-        job_id : Optional[Any], default=None
-            An identifier for the job
         Returns
         -------
         NodePropertiesDropResult
