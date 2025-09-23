@@ -20,7 +20,6 @@ class RemoteWriteBackClient:
         protocol_version = ProtocolVersionResolver(query_runner).resolve()
         self._write_protocol = WriteProtocol.select(protocol_version)
 
-    # TODO: Add progress logging
     def write(
         self,
         graph_name: str,
@@ -28,6 +27,7 @@ class RemoteWriteBackClient:
         concurrency: Optional[int] = None,
         property_overwrites: Optional[dict[str, str]] = None,
         relationship_type_overwrite: Optional[str] = None,
+        log_progress: bool = True,
     ) -> WriteBackResult:
         arrow_config = self._arrow_configuration()
 
@@ -49,7 +49,11 @@ class RemoteWriteBackClient:
         start_time = time.time()
 
         result = self._write_protocol.run_write_back(
-            self._query_runner, write_back_params, None, TerminationFlagNoop()
+            self._query_runner,
+            write_back_params,
+            None,
+            log_progress=log_progress,
+            terminationFlag=TerminationFlagNoop(),
         ).squeeze()
         write_millis = int((time.time() - start_time) * 1000)
 

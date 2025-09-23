@@ -101,6 +101,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             job_id,
             concurrency=write_concurrency if write_concurrency is not None else concurrency,
             relationship_type_overwrite=relationship_type,
+            log_progress=log_progress and self._show_progress,
         )
 
         written_relationships = (

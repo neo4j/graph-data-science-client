@@ -226,7 +226,9 @@ class SessionQueryRunner(QueryRunner):
         write_back_start = time.time()
 
         def run_write_back() -> DataFrame:
-            return write_protocol.run_write_back(self._db_query_runner, write_back_params, yields, terminationFlag)
+            return write_protocol.run_write_back(
+                self._db_query_runner, write_back_params, yields, log_progress=logging, terminationFlag=terminationFlag
+            )
 
         try:
             # Skipping progress for now as export has a different jobId
