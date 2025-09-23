@@ -126,9 +126,8 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         *,
         fail_if_missing: Optional[bool] = None,
     ) -> RelationshipsDropResult:
-        # TODO enable once we have a propper graph implementation for arrow endpoints
-        # if not relationship_type in G.relationship_types():
-        #     raise ValueError(f"Relationship type '{relationship_type}' does not exist in graph '{G.name()}'")
+        if relationship_type not in G.relationship_types():
+            raise ValueError(f"Relationship type '{relationship_type}' does not exist in graph '{G.name()}'")
 
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
@@ -160,7 +159,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             job_id=job_id,
         )
 
-        show_progress = self._show_progress and log_progress if log_progress is not None else self._show_progress
+        show_progress = self._show_progress if log_progress is None else self._show_progress and log_progress
         job_id = JobClient.run_job_and_wait(
             self._arrow_client, "v2/graph.relationships.indexInverse", config, show_progress=show_progress
         )
@@ -191,7 +190,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             username=username,
             job_id=job_id,
         )
-        show_progress = self._show_progress and log_progress if log_progress is not None else self._show_progress
+        show_progress = self._show_progress if log_progress is None else self._show_progress and log_progress
 
         job_id = JobClient.run_job_and_wait(
             self._arrow_client, "v2/graph.relationships.toUndirected", config, show_progress=show_progress

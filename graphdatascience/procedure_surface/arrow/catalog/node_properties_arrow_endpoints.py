@@ -20,13 +20,20 @@ from graphdatascience.procedure_surface.utils.result_utils import join_db_node_p
 
 
 class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient, query_runner: Optional[QueryRunner] = None):
+    def __init__(
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        query_runner: Optional[QueryRunner] = None,
+        show_progress: bool = True,
+    ):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
         self._write_back_client: Optional[RemoteWriteBackClient] = (
             RemoteWriteBackClient(arrow_client, query_runner) if query_runner is not None else None
         )
-        self._node_property_endpoints = NodePropertyEndpoints(arrow_client, self._write_back_client)
+        self._node_property_endpoints = NodePropertyEndpoints(
+            arrow_client, self._write_back_client, show_progress=show_progress
+        )
 
     def stream(
         self,

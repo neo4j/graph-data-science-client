@@ -50,7 +50,6 @@ class JobClient:
                         progress_bar = TqdmProgressBar(
                             task_name=base_task,
                             relative_progress=job_status.progress_percent(),
-                            
                             bar_options=self._progress_bar_options,
                         )
                 if progress_bar:

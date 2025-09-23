@@ -31,15 +31,17 @@ class NodePropertyEndpoints:
 
     def run_job_and_get_summary(self, endpoint: str, G: GraphV2, config: Dict[str, Any]) -> Dict[str, Any]:
         """Run a job and return the computation summary."""
-        job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, self._show_progress)
+        show_progress: bool = config.get("logProgress", True) and self._show_progress
+
+        job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress)
         return JobClient.get_summary(self._arrow_client, job_id)
 
-    # TODO expose show_progress option to endpoints
     def run_job_and_mutate(
         self, endpoint: str, G: GraphV2, config: Dict[str, Any], mutate_property: str
     ) -> Dict[str, Any]:
         """Run a job, mutate node properties, and return summary with mutation result."""
-        job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, self._show_progress)
+        show_progress = config.get("logProgress", True) and self._show_progress
+        job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress)
         mutate_result = MutationClient.mutate_node_property(self._arrow_client, job_id, mutate_property)
         computation_result = JobClient.get_summary(self._arrow_client, job_id)
 
@@ -56,13 +58,12 @@ class NodePropertyEndpoints:
 
         return computation_result
 
-    # TODO expose show_progress option to endpoints
     def run_job_and_stream(self, endpoint: str, G: GraphV2, config: Dict[str, Any]) -> DataFrame:
         """Run a job and return streamed results."""
-        job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress=self._show_progress)
+        show_progress = config.get("logProgress", True) and self._show_progress
+        job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress=show_progress)
         return JobClient.stream_results(self._arrow_client, G.name(), job_id)
 
-    # TODO expose show_progress option to endpoints
     def run_job_and_write(
         self,
         endpoint: str,
@@ -73,7 +74,8 @@ class NodePropertyEndpoints:
         property_overwrites: Optional[Union[str, dict[str, str]]] = None,
     ) -> Dict[str, Any]:
         """Run a job, write results, and return summary with write time."""
-        job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress=self._show_progress)
+        show_progress = config.get("logProgress", True) and self._show_progress
+        job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress=show_progress)
         computation_result = JobClient.get_summary(self._arrow_client, job_id)
 
         if self._write_back_client is None:
