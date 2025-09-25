@@ -29,33 +29,38 @@ class KCoreEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> KCoreMutateResult:
         """
-        Executes the K-Core algorithm and writes the results to the in-memory graph as node properties.
+        Runs the K-Core Decomposition algorithm and stores the results in the graph catalog as a new node property.
+
+        The K-core decomposition constitutes a process that separates the nodes in a graph into groups based on the degree sequence and topology of the graph.
+        The term `i-core` refers to a maximal subgraph of the original graph such that each node in this subgraph has degree at least `i`.
+        Each node is associated with a core value which denotes the largest value `i` such that the node belongs to the `i-core`.
+        Standard algorithms for K-Core Decomposition iteratively remove the node of lowest degree until the graph becomes empty.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the core value for each node
+            Name of the node property to store the results in.
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
-            The username to attribute the procedure run to
+            As an administrator, run the algorithm as a different user, to access also their graphs.
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
-        job_id : Optional[Any], default=None
-            An identifier for the job
+            Number of CPU threads to use.
+        job_id : Optional[Any] = None
+            Identifier for the computation.
 
         Returns
         -------
         KCoreMutateResult
-            Algorithm metrics and statistics
+            Algorithm metrics and statistics including core decomposition results
         """
         pass
 
