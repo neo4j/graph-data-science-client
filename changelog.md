@@ -4,6 +4,8 @@
 
 ## New features
 
+* Added the ability to upload additional node properties via the GdsArrowClient
+
 
 ## Bug fixes
 
