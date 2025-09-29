@@ -13,6 +13,7 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class PageRankEndpoints(ABC):
+
     @abstractmethod
     def mutate(
         self,
