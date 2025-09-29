@@ -42,7 +42,7 @@ class NodePropertiesEndpoints(ABC):
         concurrency : Optional[Any], default=None
             The number of concurrent threads
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
             Whether to log progress
         username : Optional[str], default=None
@@ -89,7 +89,7 @@ class NodePropertiesEndpoints(ABC):
         write_concurrency : Optional[Any], default=None
             The number of concurrent threads used for writing
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
             Whether to log progress
         username : Optional[str], default=None
@@ -130,7 +130,7 @@ class NodePropertiesEndpoints(ABC):
         concurrency : Optional[Any], default=None
             The number of concurrent threads
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
             Whether to log progress
         username : Optional[str], default=None

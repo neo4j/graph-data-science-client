@@ -34,7 +34,7 @@ class NodeLabelEndpoints(ABC):
         node_filter : str
             A Cypher predicate for filtering nodes in the input graph.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
             Whether to log progress
         username : Optional[str], default=None
@@ -78,7 +78,7 @@ class NodeLabelEndpoints(ABC):
         node_filter : str
             A Cypher predicate for filtering nodes in the input graph.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
             Whether to log progress
         username : Optional[str], default=None
