@@ -31,28 +31,32 @@ class KCoreEndpoints(ABC):
         username: str | None = None,
     ) -> KCoreMutateResult:
         """
-        Executes the K-Core algorithm and writes the results to the in-memory graph as node properties.
+        Runs the K-Core Decomposition algorithm and stores the results in the graph catalog as a new node property.
+
+        The K-core decomposition constitutes a process that separates the nodes in a graph into groups based on the degree sequence and topology of the graph.
+        The term `i-core` refers to a maximal subgraph of the original graph such that each node in this subgraph has degree at least `i`.
+        Each node is associated with a core value which denotes the largest value `i` such that the node belongs to the `i-core`.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the core value for each node
+            Name of the node property to store the results in.
         concurrency : int | None, default=None
-            The number of concurrent threads
+            Number of CPU threads to use.
         job_id : str | None, default=None
-            An identifier for the job
+            Identifier for the computation.
         log_progress : bool, default=True
-            Whether to log progress
+            Display progress logging.
         node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo : bool, default=False
-            Override memory estimation limits
+            Disable the memory guard.
         username : str | None, default=None
-            The username to attribute the procedure run to
+            As an administrator, run the algorithm as a different user, to access also their graphs.
 
         Returns
         -------

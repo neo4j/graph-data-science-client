@@ -34,36 +34,39 @@ class WccEndpoints(ABC):
         relationship_weight_property: str | None = None,
     ) -> WccMutateResult:
         """
-        Executes the WCC algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Weakly Connected Components algorithm and stores the results in the graph catalog as a new node property.
+
+        The Weakly Connected Components (WCC) algorithm finds sets of connected nodes in directed and undirected graphs where two nodes are connected if there exists a path between them.
+        In contrast to Strongly Connected Components (SCC), the direction of relationships on the path between two nodes is not considered.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the component ID for each node
+            Name of the node property to store the results in.
         threshold : float, default=0.0
             The minimum required weight to consider a relationship during traversal
         relationship_types : list[str]
-            The relationships types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : bool, default=False
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : bool, default=True
-            Whether to log progress
+            Display progress logging.
         username : str | None, default=None
-            The username to attribute the procedure run to
+            As an administrator, run the algorithm as a different user, to access also their graphs.
         concurrency : int | None, default=None
-            The number of concurrent threads
+            Number of CPU threads to use.
         job_id : str | None, default=None
-            An identifier for the job
+            Identifier for the computation.
         seed_property : str | None, default=None
-            Defines node properties that are used as initial component identifiers
+            The property name that contains seed values
         consecutive_ids : bool, default=False
-            Flag to decide whether component identifiers are mapped into a consecutive id space
+            Whether to use consecutive IDs for components
         relationship_weight_property : str | None, default=None
-            The property name that contains weight
+            Name of the property to be used as weights.
 
         Returns
         -------

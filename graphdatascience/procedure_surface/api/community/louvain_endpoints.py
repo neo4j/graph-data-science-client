@@ -37,42 +37,46 @@ class LouvainEndpoints(ABC):
         relationship_weight_property: str | None = None,
     ) -> LouvainMutateResult:
         """
-        Executes the Louvain algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Louvain algorithm and stores the results in the graph catalog as a new node property.
+
+        The Louvain method is an algorithm to detect communities in large networks.
+        It maximizes a modularity score for each community, where the modularity quantifies the quality of an assignment of nodes to communities by evaluating how much more densely connected the nodes within a community are, compared to how connected they would be in a random network.
+        The Louvain algorithm is a hierarchical clustering algorithm that recursively merges communities into a single node and runs the modularity clustering on the condensed graphs.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the community ID for each node
+            Name of the node property to store the results in.
         tolerance : float, default=0.0001
-            The tolerance value for the algorithm convergence
+            Minimum change in scores between iterations.
         max_levels : int, default=10
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool, default=False
-            Whether to include intermediate community assignments
+            Whether to include intermediate communities
         max_iterations : int, default=10
-            The maximum number of iterations per level
+            Maximum number of iterations to run.
         relationship_types : list[str]
-            The relationships types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : bool, default=False
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : bool, default=True
-            Whether to log progress
+            Display progress logging.
         username : str | None, default=None
-            The username to attribute the procedure run to
+            As an administrator, run the algorithm as a different user, to access also their graphs.
         concurrency : int | None, default=None
-            The number of concurrent threads
+            Number of CPU threads to use.
         job_id : str | None, default=None
-            An identifier for the job
+            Identifier for the computation.
         seed_property : str | None, default=None
-            Defines node properties that are used as initial community identifiers
+            The property name that contains seed values
         consecutive_ids : bool, default=False
-            Flag to decide whether community identifiers are mapped into a consecutive id space
+            Whether to use consecutive IDs
         relationship_weight_property : str | None, default=None
-            The property name that contains weight
+            Name of the property to be used as weights.
 
         Returns
         -------
