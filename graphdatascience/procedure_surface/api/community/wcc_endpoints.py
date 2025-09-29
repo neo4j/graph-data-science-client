@@ -33,36 +33,39 @@ class WccEndpoints(ABC):
         relationship_weight_property: Optional[str] = None,
     ) -> WccMutateResult:
         """
-        Executes the WCC algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Weakly Connected Components algorithm and stores the results in the graph catalog as a new node property.
+
+        The Weakly Connected Components (WCC) algorithm finds sets of connected nodes in directed and undirected graphs where two nodes are connected if there exists a path between them.
+        In contrast to Strongly Connected Components (SCC), the direction of relationships on the path between two nodes is not considered.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the component ID for each node
+            Name of the node property to store the results in.
         threshold : Optional[float], default=None
             The minimum required weight to consider a relationship during traversal
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
-            The username to attribute the procedure run to
+            As an administrator, run the algorithm as a different user, to access also their graphs.
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            Number of CPU threads to use.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            Identifier for the computation.
         seed_property : Optional[str], default=None
-            Defines node properties that are used as initial component identifiers
+            The property name that contains seed values
         consecutive_ids : Optional[bool], default=None
-            Flag to decide whether component identifiers are mapped into a consecutive id space
+            Whether to use consecutive IDs for components
         relationship_weight_property : Optional[str], default=None
-            The property name that contains weight
+            Name of the property to be used as weights.
 
         Returns
         -------
