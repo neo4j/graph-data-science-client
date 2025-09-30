@@ -350,7 +350,7 @@ gds.run_cypher(
 G, result = gds.graph.project(
     graph_name="my-graph",
     query="""
-    CALL {
+    CALL () {
         MATCH (u1:User)
         OPTIONAL MATCH (u1)-[r:KNOWS]->(u2:User)
         RETURN u1 AS source, r AS rel, u2 AS target, {} AS sourceNodeProperties, {} AS targetNodeProperties
@@ -408,7 +408,7 @@ gds.run_cypher(
 G, result = gds.graph.project(
     graph_name="my-graph",
     query="""
-    CALL {
+    CALL () {
         MATCH (u1:User)
         OPTIONAL MATCH (u1)-[r:KNOWS]->(u2:User)
         RETURN u1 AS source, r AS rel, u2 AS target, {} AS sourceNodeProperties, {} AS targetNodeProperties
