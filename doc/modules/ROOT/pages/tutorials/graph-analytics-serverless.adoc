@@ -216,7 +216,7 @@ although we do not do that in this notebook.
 G, result = gds.graph.project(
     "people-and-fruits",
     """
-    CALL {
+    CALL () {
         MATCH (p1:Person)
         OPTIONAL MATCH (p1)-[r:KNOWS]->(p2:Person)
         RETURN
