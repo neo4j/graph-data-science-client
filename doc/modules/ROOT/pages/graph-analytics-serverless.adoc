@@ -77,16 +77,6 @@ This is a hard limit and cannot be changed.
 
 ==== Syntax
 
-        self,
-        session_name: str,
-        memory: SessionMemory,
-        db_connection: Optional[DbmsConnectionInfo] = None,
-        ttl: Optional[timedelta] = None,
-        cloud_location: Optional[CloudLocation] = None,
-        timeout: Optional[int] = None,
-        neo4j_driver_options: Optional[dict[str, Any]] = None,
-        arrow_client_options: Optional[dict[str, Any]] = None,
-
 [source, role=no-test]
 ----
 sessions.get_or_create(
