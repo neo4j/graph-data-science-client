@@ -2680,6 +2680,38 @@
   },
   {
     "function": {
+      "name": "gds.maxFlow.mutate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Computes the maximum flow between two nodes or sets of nodes in a graph."
+  },
+  {
+    "function": {
+      "name": "gds.maxFlow.stats",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Computes the maximum flow between two nodes or sets of nodes in a graph."
+  },
+  {
+    "function": {
+      "name": "gds.maxFlow.stream",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "DataFrame"
+    },
+    "description": "Computes the maximum flow between two nodes or sets of nodes in a graph."
+  },
+  {
+    "function": {
+      "name": "gds.maxFlow.write",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Computes the maximum flow between two nodes or sets of nodes in a graph."
+  },
+  {
+    "function": {
       "name": "gds.maxkcut.mutate",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"

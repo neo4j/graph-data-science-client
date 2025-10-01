@@ -1444,6 +1444,22 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.maxFlow.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    Computes the maximum flow between two nodes or sets of nodes in a graph.
+
+.. py:function:: gds.maxFlow.stats(G: Graph, **config: Any) -> Series[Any]
+
+    Computes the maximum flow between two nodes or sets of nodes in a graph.
+
+.. py:function:: gds.maxFlow.stream(G: Graph, **config: Any) -> DataFrame
+
+    Computes the maximum flow between two nodes or sets of nodes in a graph.
+
+.. py:function:: gds.maxFlow.write(G: Graph, **config: Any) -> Series[Any]
+
+    Computes the maximum flow between two nodes or sets of nodes in a graph.
+
 .. py:function:: gds.maxkcut.mutate(G: Graph, **config: Any) -> Series[Any]
 
     Approximate Maximum k-cut maps each node into one of k disjoint communities
