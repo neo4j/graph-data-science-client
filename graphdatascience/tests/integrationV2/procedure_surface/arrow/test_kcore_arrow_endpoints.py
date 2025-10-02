@@ -45,10 +45,10 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
         "kcore_g",
         graph,
         """
-                    MATCH (n)-->(m)
-                    WITH gds.graph.project.remote(n, m, {relationshipType: "REL"}) as g
-                    RETURN g
-                """,
+            MATCH (n)-->(m)
+            WITH gds.graph.project.remote(n, m, {relationshipType: "REL"}) as g
+            RETURN g
+        """,
         ["REL"],
     ) as g:
         yield g
