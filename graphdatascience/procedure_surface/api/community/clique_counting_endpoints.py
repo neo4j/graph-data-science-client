@@ -16,7 +16,7 @@ class CliqueCountingEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        concurrency: Optional[int] = 4,
+        concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
         log_progress: bool = True,
         node_labels: Optional[List[str]] = None,
@@ -59,7 +59,7 @@ class CliqueCountingEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        concurrency: Optional[int] = 4,
+        concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
         log_progress: bool = True,
         node_labels: Optional[List[str]] = None,
@@ -100,7 +100,7 @@ class CliqueCountingEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        concurrency: Optional[int] = 4,
+        concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
         log_progress: bool = True,
         node_labels: Optional[List[str]] = None,
@@ -142,7 +142,7 @@ class CliqueCountingEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        concurrency: Optional[int] = 4,
+        concurrency: Optional[int] = None,
         job_id: Optional[str] = None,
         log_progress: bool = True,
         node_labels: Optional[List[str]] = None,
@@ -188,7 +188,7 @@ class CliqueCountingEndpoints(ABC):
     def estimate(
         self,
         G: Union[GraphV2, dict[str, Any]],
-        concurrency: Optional[int] = 4,
+        concurrency: Optional[int] = None,
         node_labels: Optional[List[str]] = None,
         relationship_types: Optional[List[str]] = None,
     ) -> EstimationResult:
