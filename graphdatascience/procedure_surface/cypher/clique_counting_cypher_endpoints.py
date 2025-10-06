@@ -128,7 +128,6 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
         sudo: Optional[bool] = False,
         username: Optional[str] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = False,
     ) -> CliqueCountingWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             write_property=write_property,
@@ -140,7 +139,6 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
             sudo=sudo,
             username=username,
             write_concurrency=write_concurrency,
-            write_to_result_store=write_to_result_store,
         )
 
         params = CallParameters(graph_name=G.name(), config=config)

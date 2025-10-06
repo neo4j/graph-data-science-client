@@ -150,7 +150,6 @@ class CliqueCountingEndpoints(ABC):
         sudo: Optional[bool] = False,
         username: Optional[str] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = False,
     ) -> CliqueCountingWriteResult:
         """
         Executes the clique counting algorithm and writes the results back to the database.
@@ -177,8 +176,6 @@ class CliqueCountingEndpoints(ABC):
             The username to attribute the procedure run to
         write_concurrency : Optional[int], default=None
             The number of concurrent threads for write operations
-        write_to_result_store : Optional[bool], default=False
-            Whether to write to the result store
 
         Returns
         -------
@@ -220,7 +217,7 @@ class CliqueCountingEndpoints(ABC):
 class CliqueCountingMutateResult(BaseResult):
     compute_millis: int
     configuration: dict[str, Any]
-    global_count: List[Any]
+    global_count: List[int]
     mutate_millis: int
     node_properties_written: int
     pre_processing_millis: int
@@ -229,14 +226,14 @@ class CliqueCountingMutateResult(BaseResult):
 class CliqueCountingStatsResult(BaseResult):
     compute_millis: int
     configuration: dict[str, Any]
-    global_count: List[Any]
+    global_count: List[int]
     pre_processing_millis: int
 
 
 class CliqueCountingWriteResult(BaseResult):
     compute_millis: int
     configuration: dict[str, Any]
-    global_count: List[Any]
+    global_count: List[int]
     node_properties_written: int
     pre_processing_millis: int
     write_millis: int

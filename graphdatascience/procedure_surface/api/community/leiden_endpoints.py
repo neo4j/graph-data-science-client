@@ -245,7 +245,6 @@ class LeidenEndpoints(ABC):
         tolerance: Optional[float] = 1e-4,
         username: Optional[str] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = False,
     ) -> "LeidenWriteResult":
         """
         Executes the Leiden community detection algorithm and writes the results back to the database.
@@ -292,9 +291,7 @@ class LeidenEndpoints(ABC):
             The username to attribute the procedure run to
         write_concurrency : Optional[int], default=None
             The number of concurrent threads for writing
-        write_to_result_store : Optional[bool], default=False
-            Whether to write to result store
-
+            
         Returns
         -------
         LeidenWriteResult

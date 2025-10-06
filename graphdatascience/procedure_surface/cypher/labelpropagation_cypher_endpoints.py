@@ -170,7 +170,6 @@ class LabelPropagationCypherEndpoints(LabelPropagationEndpoints):
         sudo: Optional[bool] = False,
         username: Optional[str] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = False,
     ) -> LabelPropagationWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             write_property=write_property,
@@ -188,7 +187,6 @@ class LabelPropagationCypherEndpoints(LabelPropagationEndpoints):
             sudo=sudo,
             username=username,
             write_concurrency=write_concurrency,
-            write_to_result_store=write_to_result_store,
         )
 
         params = CallParameters(graph_name=G.name(), config=config)

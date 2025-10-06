@@ -64,7 +64,7 @@ class KMeansEndpoints(ABC):
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         number_of_restarts : Optional[int], default=1
-            The number of times the algorithm should be restarted
+            The number of times the algorithm should be restarted with different initial centers
         random_seed : Optional[int], default=None
             Random seed for reproducible results
         relationship_types : Optional[List[str]], default=None
@@ -133,7 +133,7 @@ class KMeansEndpoints(ABC):
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         number_of_restarts : Optional[int], default=1
-            The number of times the algorithm should be restarted
+            The number of times the algorithm should be restarted with different initial centers
         random_seed : Optional[int], default=None
             Random seed for reproducible results
         relationship_types : Optional[List[str]], default=None
@@ -202,7 +202,7 @@ class KMeansEndpoints(ABC):
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         number_of_restarts : Optional[int], default=1
-            The number of times the algorithm should be restarted
+            The number of times the algorithm should be restarted with different initial centers
         random_seed : Optional[int], default=None
             Random seed for reproducible results
         relationship_types : Optional[List[str]], default=None
@@ -244,7 +244,6 @@ class KMeansEndpoints(ABC):
         sudo: Optional[bool] = False,
         username: Optional[str] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = False,
     ) -> KMeansWriteResult:
         """
         Executes the K-Means algorithm and writes the results back to the database.
@@ -276,7 +275,7 @@ class KMeansEndpoints(ABC):
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         number_of_restarts : Optional[int], default=1
-            The number of times the algorithm should be restarted
+            The number of times the algorithm should be restarted with different initial centers
         random_seed : Optional[int], default=None
             Random seed for reproducible results
         relationship_types : Optional[List[str]], default=None
@@ -289,8 +288,6 @@ class KMeansEndpoints(ABC):
             The username to attribute the procedure run to
         write_concurrency : Optional[int], default=None
             The number of concurrent threads for write operations
-        write_to_result_store : Optional[bool], default=False
-            Whether to write to the result store
 
         Returns
         -------
@@ -341,7 +338,7 @@ class KMeansEndpoints(ABC):
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
         number_of_restarts : Optional[int], default=1
-            The number of times the algorithm should be restarted
+            The number of times the algorithm should be restarted with different initial centers
         random_seed : Optional[int], default=None
             Random seed for reproducible results
         relationship_types : Optional[List[str]], default=None

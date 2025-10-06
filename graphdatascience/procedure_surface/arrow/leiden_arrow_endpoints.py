@@ -187,7 +187,6 @@ class LeidenArrowEndpoints(LeidenEndpoints):
         tolerance: Optional[float] = 1e-4,
         username: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = False,
     ) -> LeidenWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -208,7 +207,6 @@ class LeidenArrowEndpoints(LeidenEndpoints):
             theta=theta,
             tolerance=tolerance,
             username=username,
-            write_to_result_store=write_to_result_store,
         )
 
         result = self._node_property_endpoints.run_job_and_write(

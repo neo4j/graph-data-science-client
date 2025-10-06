@@ -183,7 +183,6 @@ class KMeansArrowEndpoints(KMeansEndpoints):
         sudo: Optional[bool] = False,
         username: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = False,
     ) -> KMeansWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -203,7 +202,6 @@ class KMeansArrowEndpoints(KMeansEndpoints):
             seed_centroids=seed_centroids,
             sudo=sudo,
             username=username,
-            write_to_result_store=write_to_result_store,
         )
 
         result = self._node_property_endpoints.run_job_and_write(
