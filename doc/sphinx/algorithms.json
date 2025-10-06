@@ -2688,11 +2688,27 @@
   },
   {
     "function": {
+      "name": "gds.maxFlow.mutate.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
       "name": "gds.maxFlow.stats",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
     "description": "Computes the maximum flow between two nodes or sets of nodes in a graph."
+  },
+  {
+    "function": {
+      "name": "gds.maxFlow.stats.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
@@ -2704,11 +2720,27 @@
   },
   {
     "function": {
+      "name": "gds.maxFlow.stream.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
       "name": "gds.maxFlow.write",
       "signature": "G: Graph, **config: Any",
       "return_type": "Series[Any]"
     },
     "description": "Computes the maximum flow between two nodes or sets of nodes in a graph."
+  },
+  {
+    "function": {
+      "name": "gds.maxFlow.write.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
   },
   {
     "function": {
