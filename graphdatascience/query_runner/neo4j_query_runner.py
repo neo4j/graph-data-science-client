@@ -344,7 +344,8 @@ class Neo4jQueryRunner(QueryRunner):
         self._bookmarks = bookmarks
 
     def close(self) -> None:
-        self._driver.close()
+        if self._auto_close:
+            self._driver.close()
 
     def database(self) -> Optional[str]:
         return self._database

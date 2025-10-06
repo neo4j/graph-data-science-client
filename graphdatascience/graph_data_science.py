@@ -337,6 +337,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def close(self) -> None:
         """
         Close the GraphDataScience object and release any resources held by it.
+
+        If the GraphDataScience object was instantiated with a Neo4j Driver, the driver will not be closed as we cannot assume sole ownership of it.
         """
         self._query_runner.close()
 
