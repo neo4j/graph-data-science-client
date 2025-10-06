@@ -17,7 +17,7 @@ class LeidenEndpoints(ABC):
         G: GraphV2,
         mutate_property: str,
         *,
-        concurrency: Optional[int] = 4,
+        concurrency: Optional[int] = None,
         consecutive_ids: Optional[bool] = False,
         gamma: Optional[float] = 1.0,
         include_intermediate_communities: Optional[bool] = False,
@@ -87,7 +87,7 @@ class LeidenEndpoints(ABC):
         self,
         G: GraphV2,
         *,
-        concurrency: Optional[int] = 4,
+        concurrency: Optional[int] = None,
         consecutive_ids: Optional[bool] = False,
         gamma: Optional[float] = 1.0,
         include_intermediate_communities: Optional[bool] = False,
@@ -155,7 +155,7 @@ class LeidenEndpoints(ABC):
         self,
         G: GraphV2,
         *,
-        concurrency: Optional[int] = 4,
+        concurrency: Optional[int] = None,
         consecutive_ids: Optional[bool] = False,
         gamma: Optional[float] = 1.0,
         include_intermediate_communities: Optional[bool] = False,
@@ -227,7 +227,7 @@ class LeidenEndpoints(ABC):
         G: GraphV2,
         write_property: str,
         *,
-        concurrency: Optional[int] = 4,
+        concurrency: Optional[int] = None,
         consecutive_ids: Optional[bool] = False,
         gamma: Optional[float] = 1.0,
         include_intermediate_communities: Optional[bool] = False,
@@ -291,7 +291,7 @@ class LeidenEndpoints(ABC):
             The username to attribute the procedure run to
         write_concurrency : Optional[int], default=None
             The number of concurrent threads for writing
-            
+
         Returns
         -------
         LeidenWriteResult
@@ -303,7 +303,7 @@ class LeidenEndpoints(ABC):
         self,
         G: Union[GraphV2, dict[str, Any]],
         *,
-        concurrency: Optional[int] = 4,
+        concurrency: Optional[int] = None,
         consecutive_ids: Optional[bool] = False,
         gamma: Optional[float] = 1.0,
         include_intermediate_communities: Optional[bool] = False,
