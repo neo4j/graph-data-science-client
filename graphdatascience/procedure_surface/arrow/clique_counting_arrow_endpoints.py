@@ -120,7 +120,6 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
         sudo: Optional[bool] = False,
         username: Optional[str] = None,
         write_concurrency: Optional[Any] = None,
-        write_to_result_store: Optional[bool] = False,
     ) -> CliqueCountingWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -131,7 +130,6 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
             relationship_types=relationship_types,
             sudo=sudo,
             username=username,
-            write_to_result_store=write_to_result_store,
         )
 
         result = self._node_property_endpoints.run_job_and_write(

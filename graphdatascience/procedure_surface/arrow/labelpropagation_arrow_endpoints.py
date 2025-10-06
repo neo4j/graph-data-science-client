@@ -162,7 +162,6 @@ class LabelPropagationArrowEndpoints(LabelPropagationEndpoints):
         sudo: Optional[bool] = False,
         username: Optional[str] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = False,
     ) -> LabelPropagationWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -179,7 +178,6 @@ class LabelPropagationArrowEndpoints(LabelPropagationEndpoints):
             seed_property=seed_property,
             sudo=sudo,
             username=username,
-            write_to_result_store=write_to_result_store,
         )
 
         result = self._node_property_endpoints.run_job_and_write(

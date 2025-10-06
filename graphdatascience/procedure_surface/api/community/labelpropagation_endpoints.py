@@ -208,7 +208,6 @@ class LabelPropagationEndpoints(ABC):
         sudo: Optional[bool] = False,
         username: Optional[str] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = False,
     ) -> LabelPropagationWriteResult:
         """
         Executes the Label Propagation algorithm and writes the results back to the database.
@@ -247,8 +246,6 @@ class LabelPropagationEndpoints(ABC):
             The username to attribute the procedure run to
         write_concurrency : Optional[int], default=None
             The number of concurrent threads for write operations
-        write_to_result_store : Optional[bool], default=False
-            Whether to write to the result store
 
         Returns
         -------

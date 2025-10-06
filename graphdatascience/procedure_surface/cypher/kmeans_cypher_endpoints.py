@@ -193,7 +193,6 @@ class KMeansCypherEndpoints(KMeansEndpoints):
         sudo: Optional[bool] = False,
         username: Optional[str] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = False,
     ) -> KMeansWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             node_property=node_property,
@@ -214,7 +213,6 @@ class KMeansCypherEndpoints(KMeansEndpoints):
             sudo=sudo,
             username=username,
             write_concurrency=write_concurrency,
-            write_to_result_store=write_to_result_store,
         )
 
         params = CallParameters(graph_name=G.name(), config=config)

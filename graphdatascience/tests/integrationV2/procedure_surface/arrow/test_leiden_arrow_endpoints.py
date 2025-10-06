@@ -141,7 +141,7 @@ def test_leiden_estimate(leiden_endpoints: LeidenArrowEndpoints, sample_graph: G
 
     assert result.node_count == 6
     assert result.relationship_count == 18
-    assert "Bytes" in result.required_memory
+    assert "KiB" in result.required_memory
     assert result.bytes_min > 0
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0

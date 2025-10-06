@@ -196,7 +196,6 @@ class LeidenCypherEndpoints(LeidenEndpoints):
         tolerance: Optional[float] = 1e-4,
         username: Optional[str] = None,
         write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = False,
     ) -> LeidenWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             write_property=write_property,
@@ -218,7 +217,6 @@ class LeidenCypherEndpoints(LeidenEndpoints):
             tolerance=tolerance,
             username=username,
             write_concurrency=write_concurrency,
-            write_to_result_store=write_to_result_store,
         )
 
         params = CallParameters(graph_name=G.name(), config=config)
