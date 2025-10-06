@@ -121,6 +121,10 @@ def test_from_neo4j_driver(neo4j_driver: Driver) -> None:
     gds = GraphDataScience.from_neo4j_driver(neo4j_driver)
     assert len(gds.list()) > 10
 
+    gds.close()
+
+    neo4j_driver.verify_connectivity()
+
 
 def test_from_neo4j_credentials() -> None:
     gds = GraphDataScience(URI, auth=AUTH)
