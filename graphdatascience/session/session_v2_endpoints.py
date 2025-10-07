@@ -6,6 +6,7 @@ from graphdatascience.procedure_surface.api.community.clique_counting_endpoints 
 from graphdatascience.procedure_surface.api.community.kmeans_endpoints import KMeansEndpoints
 from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints import LabelPropagationEndpoints
 from graphdatascience.procedure_surface.api.community.leiden_endpoints import LeidenEndpoints
+from graphdatascience.procedure_surface.api.community.maxkcut_endpoints import MaxKCutEndpoints
 from graphdatascience.procedure_surface.arrow.articlerank_arrow_endpoints import ArticleRankArrowEndpoints
 from graphdatascience.procedure_surface.arrow.articulationpoints_arrow_endpoints import ArticulationPointsArrowEndpoints
 from graphdatascience.procedure_surface.arrow.betweenness_arrow_endpoints import BetweennessArrowEndpoints
@@ -26,6 +27,7 @@ from graphdatascience.procedure_surface.arrow.kmeans_arrow_endpoints import KMea
 from graphdatascience.procedure_surface.arrow.labelpropagation_arrow_endpoints import LabelPropagationArrowEndpoints
 from graphdatascience.procedure_surface.arrow.leiden_arrow_endpoints import LeidenArrowEndpoints
 from graphdatascience.procedure_surface.arrow.louvain_arrow_endpoints import LouvainArrowEndpoints
+from graphdatascience.procedure_surface.arrow.maxkcut_arrow_endpoints import MaxKCutArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node2vec_arrow_endpoints import Node2VecArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pagerank_arrow_endpoints import PageRankArrowEndpoints
 from graphdatascience.procedure_surface.arrow.scc_arrow_endpoints import SccArrowEndpoints
@@ -141,6 +143,10 @@ class SessionV2Endpoints:
     @property
     def louvain(self) -> LouvainArrowEndpoints:
         return LouvainArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
+
+    @property
+    def max_k_cut(self) -> MaxKCutEndpoints:
+        return MaxKCutArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def node2vec(self) -> Node2VecArrowEndpoints:
