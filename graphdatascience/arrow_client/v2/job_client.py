@@ -3,12 +3,13 @@ from typing import Any, Optional
 
 from pandas import ArrowDtype, DataFrame
 from pyarrow._flight import Ticket
-from tenacity import Retrying, retry_always, wait_exponential
+from tenacity import Retrying, retry_if_result, wait_exponential
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.api_types import JobIdConfig, JobStatus
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.query_runner.progress.progress_bar import TqdmProgressBar
+from graphdatascience.query_runner.termination_flag import TerminationFlag
 
 JOB_STATUS_ENDPOINT = "v2/jobs.status"
 RESULTS_SUMMARY_ENDPOINT = "v2/results.summary"
@@ -33,11 +34,22 @@ class JobClient:
         single = deserialize_single(res)
         return JobIdConfig(**single).job_id
 
-    def wait_for_job(self, client: AuthenticatedArrowClient, job_id: str, show_progress: bool) -> None:
+    def wait_for_job(
+        self,
+        client: AuthenticatedArrowClient,
+        job_id: str,
+        show_progress: bool,
+        termination_flag: Optional[TerminationFlag] = None,
+    ) -> None:
         progress_bar: Optional[TqdmProgressBar] = None
 
-        for attempt in Retrying(retry=retry_always, wait=wait_exponential(min=0.1, max=5)):
+        if termination_flag is None:
+            termination_flag = TerminationFlag.create()
+
+        for attempt in Retrying(retry=retry_if_result(lambda _: True), wait=wait_exponential(min=0.1, max=5)):
             with attempt:
+                termination_flag.assert_running()
+
                 arrow_res = client.do_action_with_retry(JOB_STATUS_ENDPOINT, JobIdConfig(jobId=job_id).dump_camel())
                 job_status = JobStatus(**deserialize_single(arrow_res))
 
