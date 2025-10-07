@@ -1,5 +1,5 @@
 multimethod >= 1.0, < 3.0
-neo4j >= 4.4.12, < 6.0
+neo4j >= 4.4.12, < 7.0
 numpy < 2.3
 pandas >= 1.0, < 3.0
 pyarrow >= 17.0, < 21.0
