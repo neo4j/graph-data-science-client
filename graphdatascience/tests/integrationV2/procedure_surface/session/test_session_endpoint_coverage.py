@@ -9,15 +9,12 @@ from graphdatascience.session.aura_graph_data_science import AuraGraphDataScienc
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
 MISSING_ALGO_ENDPOINTS = {
-    "community.k1coloring",
-    "community.triangleCount.estimate",
     "community.sllpa",
     "community.sllpa.estimate",
     "community.modularityOptimization",
     "community.localClusteringCoefficient",
     "community.localClusteringCoefficient.estimate",
     "community.modularityOptimization.estimate",
-    "community.triangleCount",
     "embeddings.graphSage.train.estimate",  # TODO fix this by moving behind shared interface
     "embeddings.graphSage.estimate",
     "similarity.knn.filtered",
@@ -69,6 +66,8 @@ ENDPOINT_MAPPINGS = {
     "kcore.estimate": "k_core_decomposition.estimate",
     "maxkcut": "max_k_cut",
     "maxkcut.estimate": "max_k_cut.estimate",
+    "triangleCount": "triangle_count",
+    "triangleCount.estimate": "triangle_count.estimate",
     # embedding algos
     "fastrp": "fast_rp",
     "fastrp.estimate": "fast_rp.estimate",
