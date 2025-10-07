@@ -173,8 +173,8 @@ def test_wait_for_job_progress_bar_qualitative(mocker: MockerFixture) -> None:
 
         progress_output = pbarOutputStream.getvalue().split("\r")
         assert "Algo [elapsed: 00:00 ]" in progress_output
-        assert "Algo [elapsed: 00:00 , status: RUNNING, task: Halfway there]" in progress_output
-        assert any("Algo [elapsed: 00:00 , status: FINISHED]" in line for line in progress_output)
+        assert "Algo [elapsed: 00:01 , status: RUNNING, task: Halfway there]" in progress_output
+        assert any("Algo [elapsed: 00:03 , status: FINISHED]" in line for line in progress_output)
 
 
 def test_get_summary(mocker: MockerFixture) -> None:
