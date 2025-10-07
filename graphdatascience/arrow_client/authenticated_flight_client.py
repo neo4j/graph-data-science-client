@@ -9,6 +9,7 @@ from pyarrow import __version__ as arrow_version
 from pyarrow import flight
 from pyarrow._flight import (
     Action,
+    ActionType,
     FlightInternalError,
     FlightStreamReader,
     FlightTimedOutError,
@@ -191,6 +192,9 @@ class AuthenticatedArrowClient:
             return self.do_action(endpoint, payload)
 
         return run_with_retry()
+
+    def list_actions(self) -> set[ActionType]:
+        return self._flight_client.list_actions()  # type: ignore
 
     def _instantiate_flight_client(self) -> flight.FlightClient:
         location = (
