@@ -4,8 +4,8 @@ from typing import Generator
 import pytest
 
 from graphdatascience import QueryRunner
+from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import RelationshipPropertySpec
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.catalog_endpoints import RelationshipPropertySpec
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.cypher.catalog_cypher_endpoints import CatalogCypherEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
@@ -142,7 +142,9 @@ def test_sample_property(catalog_endpoints: CatalogCypherEndpoints) -> None:
     sample_endpoints = catalog_endpoints.sample
 
     # Check that it's the correct type
-    from graphdatascience.procedure_surface.cypher.graph_sampling_cypher_endpoints import GraphSamplingCypherEndpoints
+    from graphdatascience.procedure_surface.cypher.catalog.graph_sampling_cypher_endpoints import (
+        GraphSamplingCypherEndpoints,
+    )
 
     assert isinstance(sample_endpoints, GraphSamplingCypherEndpoints)
 
