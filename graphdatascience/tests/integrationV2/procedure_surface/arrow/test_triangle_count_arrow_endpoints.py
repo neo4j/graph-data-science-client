@@ -60,15 +60,6 @@ def triangle_count_endpoints(
     yield TriangleCountArrowEndpoints(arrow_client, show_progress=False)
 
 
-@pytest.fixture
-def triangle_count_endpoints_with_write_back(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner
-) -> Generator[TriangleCountArrowEndpoints, None, None]:
-    yield TriangleCountArrowEndpoints(
-        arrow_client, write_back_client=RemoteWriteBackClient(arrow_client, query_runner), show_progress=False
-    )
-
-
 def test_triangle_count_stats(triangle_count_endpoints: TriangleCountArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Triangle Count stats operation via Arrow."""
     result = triangle_count_endpoints.stats(G=sample_graph)
@@ -109,11 +100,15 @@ def test_triangle_count_mutate(triangle_count_endpoints: TriangleCountArrowEndpo
     assert result.node_count == 6
 
 
+@pytest.mark.db_integration
 def test_triangle_count_write(
-    triangle_count_endpoints_with_write_back: TriangleCountArrowEndpoints, db_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
-    """Test Triangle Count write operation via Arrow."""
-    result = triangle_count_endpoints_with_write_back.write(
+    """Test Triangle Count write operation."""
+    endpoints = TriangleCountArrowEndpoints(
+        arrow_client, RemoteWriteBackClient(arrow_client, query_runner), show_progress=True
+    )
+    result = endpoints.write(
         G=db_graph,
         write_property="triangle_count_write",
     )

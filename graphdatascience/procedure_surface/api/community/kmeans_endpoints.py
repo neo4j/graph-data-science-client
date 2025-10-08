@@ -47,7 +47,7 @@ class KMeansEndpoints(ABC):
             The property name to store the community ID for each node
         compute_silhouette : Optional[bool], default=False
             Whether to compute silhouette coefficient
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         delta_threshold : Optional[float], default=0.05
             The convergence threshold for the algorithm
@@ -116,7 +116,7 @@ class KMeansEndpoints(ABC):
             The node property to use for clustering
         compute_silhouette : Optional[bool], default=False
             Whether to compute silhouette coefficient
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         delta_threshold : Optional[float], default=0.05
             The convergence threshold for the algorithm
@@ -185,7 +185,7 @@ class KMeansEndpoints(ABC):
             The node property to use for clustering
         compute_silhouette : Optional[bool], default=False
             Whether to compute silhouette coefficient
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         delta_threshold : Optional[float], default=0.05
             The convergence threshold for the algorithm
@@ -258,7 +258,7 @@ class KMeansEndpoints(ABC):
             The property name to write the community IDs to
         compute_silhouette : Optional[bool], default=False
             Whether to compute silhouette coefficient
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         delta_threshold : Optional[float], default=0.05
             The convergence threshold for the algorithm
@@ -325,7 +325,7 @@ class KMeansEndpoints(ABC):
             The node property to use for clustering
         compute_silhouette : Optional[bool], default=False
             Whether to compute silhouette coefficient
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         delta_threshold : Optional[float], default=0.05
             The convergence threshold for the algorithm

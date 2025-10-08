@@ -35,13 +35,15 @@ class MaxKCutEndpoints(ABC):
 
         The Approximate Maximum k-cut algorithm is a community detection algorithm that partitions a graph into k communities
         such that the sum of weights of edges between different communities is maximized. It uses a
-        variable neighborhood search (VNS) approach to find high-quality cuts.        Parameters
+        variable neighborhood search (VNS) approach to find high-quality cuts.
+
+        Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the community ID for each node
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
         iterations : Optional[int], default=8
             The number of iterations the algorithm runs. More iterations may lead to better results but
@@ -105,7 +107,7 @@ class MaxKCutEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
         iterations : Optional[int], default=8
             The number of iterations the algorithm runs. More iterations may lead to better results but
@@ -168,7 +170,7 @@ class MaxKCutEndpoints(ABC):
         ----------
         G : Union[GraphV2, dict[str, Any]]
             The graph to estimate for, or a graph configuration dictionary
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
         iterations : Optional[int], default=8
             The number of iterations the algorithm runs

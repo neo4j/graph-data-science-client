@@ -39,7 +39,7 @@ class LabelPropagationEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the community ID for each node
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         consecutive_ids : Optional[bool], default=False
             Whether to use consecutive community IDs starting from 0
@@ -96,7 +96,7 @@ class LabelPropagationEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         consecutive_ids : Optional[bool], default=False
             Whether to use consecutive community IDs starting from 0
@@ -154,7 +154,7 @@ class LabelPropagationEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         consecutive_ids : Optional[bool], default=False
             Whether to use consecutive community IDs starting from 0
@@ -218,7 +218,7 @@ class LabelPropagationEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to write the community IDs to
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         consecutive_ids : Optional[bool], default=False
             Whether to use consecutive community IDs starting from 0
@@ -275,7 +275,7 @@ class LabelPropagationEndpoints(ABC):
         ----------
         G : Union[GraphV2, dict[str, Any]]
             The graph or graph configuration to estimate for
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         consecutive_ids : Optional[bool], default=False
             Whether to use consecutive community IDs starting from 0
