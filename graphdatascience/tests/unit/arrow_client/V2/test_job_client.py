@@ -1,9 +1,11 @@
 from io import StringIO
 
+import pytest
 from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.v2.api_types import UNKNOWN_PROGRESS, JobIdConfig, JobStatus
 from graphdatascience.arrow_client.v2.job_client import JobClient
+from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
 
 
@@ -126,6 +128,22 @@ def test_wait_for_job_waits_for_aborted(mocker: MockerFixture) -> None:
     assert mock_client.do_action_with_retry.call_count == 2
 
 
+def test_wait_for_job_stops_on_interrupt(mocker: MockerFixture) -> None:
+    mock_client = mocker.Mock()
+    job_id = "test-job-waiting"
+    mock_client.do_action_with_retry = mocker.Mock()
+
+    termination_flag = TerminationFlag.create()
+    termination_flag.set()
+
+    with pytest.raises(
+        RuntimeError, match="Closing client connection. Note, the query will be continued on the server-side"
+    ):
+        JobClient().wait_for_job(mock_client, job_id, show_progress=False, termination_flag=termination_flag)
+
+    assert mock_client.do_action_with_retry.call_count == 0
+
+
 def test_wait_for_job_progress_bar_quantive(mocker: MockerFixture) -> None:
     mock_client = mocker.Mock()
     job_id = "test-job-progress"
@@ -173,8 +191,8 @@ def test_wait_for_job_progress_bar_qualitative(mocker: MockerFixture) -> None:
 
         progress_output = pbarOutputStream.getvalue().split("\r")
         assert "Algo [elapsed: 00:00 ]" in progress_output
-        assert "Algo [elapsed: 00:00 , status: RUNNING, task: Halfway there]" in progress_output
-        assert any("Algo [elapsed: 00:00 , status: FINISHED]" in line for line in progress_output)
+        assert "Algo [elapsed: 00:01 , status: RUNNING, task: Halfway there]" in progress_output
+        assert any("Algo [elapsed: 00:03 , status: FINISHED]" in line for line in progress_output)
 
 
 def test_get_summary(mocker: MockerFixture) -> None:

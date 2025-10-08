@@ -8,7 +8,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
-from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
+from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
 
 
@@ -53,7 +53,7 @@ class RemoteWriteBackClient:
             write_back_params,
             None,
             log_progress=log_progress,
-            terminationFlag=TerminationFlagNoop(),
+            terminationFlag=TerminationFlag.create(),
         ).squeeze()
         write_millis = int((time.time() - start_time) * 1000)
 
