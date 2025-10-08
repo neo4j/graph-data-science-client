@@ -62,7 +62,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
 
         params = CallParameters(
             graph_name=G.name(),
-            configuration=config,
+            config=config,
         )
         params.ensure_job_id_in_config()
 
@@ -108,7 +108,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
 
         params = CallParameters(
             graph_name=G.name(),
-            configuration=config,
+            config=config,
         )
         params.ensure_job_id_in_config()
 
@@ -154,7 +154,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
 
         params = CallParameters(
             graph_name=G.name(),
-            configuration=config,
+            config=config,
         )
         params.ensure_job_id_in_config()
 
@@ -206,7 +206,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
 
         params = CallParameters(
             graph_name=G.name(),
-            configuration=config,
+            config=config,
         )
         params.ensure_job_id_in_config()
 

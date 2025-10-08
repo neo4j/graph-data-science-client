@@ -2,13 +2,13 @@ from typing import Optional
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.community.local_clustering_coefficient_endpoints import (
-    LocalClusteringCoefficientEndpoints,
-)
 from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import CliqueCountingEndpoints
 from graphdatascience.procedure_surface.api.community.kmeans_endpoints import KMeansEndpoints
 from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints import LabelPropagationEndpoints
 from graphdatascience.procedure_surface.api.community.leiden_endpoints import LeidenEndpoints
+from graphdatascience.procedure_surface.api.community.local_clustering_coefficient_endpoints import (
+    LocalClusteringCoefficientEndpoints,
+)
 from graphdatascience.procedure_surface.api.community.maxkcut_endpoints import MaxKCutEndpoints
 from graphdatascience.procedure_surface.api.community.modularity_optimization_endpoints import (
     ModularityOptimizationEndpoints,

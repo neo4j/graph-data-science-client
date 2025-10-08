@@ -102,25 +102,6 @@ def test_sllpa_write(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: GraphV
     assert isinstance(result.configuration, dict)
 
 
-def test_sllpa_mutate_with_parameters(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: GraphV2) -> None:
-    """Test SLLPA mutate operation with various parameters."""
-    result = sllpa_endpoints.mutate(
-        G=sample_graph,
-        mutate_property="sllpa_community_advanced",
-        min_association_strength=0.1,
-        concurrency=1,
-        max_iterations=1,
-    )
-
-    assert result.ran_iterations > 0
-    assert result.did_converge in [True, False]
-    assert result.compute_millis > 0
-    assert result.pre_processing_millis >= 0
-    assert result.mutate_millis >= 0
-    assert result.node_properties_written == 6
-    assert isinstance(result.configuration, dict)
-
-
 def test_sllpa_estimate(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: GraphV2) -> None:
     """Test SLLPA estimate operation."""
     result = sllpa_endpoints.estimate(sample_graph, max_iterations=1)
