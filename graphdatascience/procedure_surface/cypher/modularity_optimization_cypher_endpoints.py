@@ -64,6 +64,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
             graph_name=G.name(),
             configuration=config,
         )
+        params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(
             endpoint="gds.modularityOptimization.mutate", params=params
@@ -109,6 +110,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
             graph_name=G.name(),
             configuration=config,
         )
+        params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(endpoint="gds.modularityOptimization.stats", params=params).squeeze()
 
@@ -154,6 +156,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
             graph_name=G.name(),
             configuration=config,
         )
+        params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(endpoint="gds.modularityOptimization.stream", params=params)
 
@@ -205,6 +208,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
             graph_name=G.name(),
             configuration=config,
         )
+        params.ensure_job_id_in_config()
 
         result = self._query_runner.call_procedure(endpoint="gds.modularityOptimization.write", params=params).squeeze()
 

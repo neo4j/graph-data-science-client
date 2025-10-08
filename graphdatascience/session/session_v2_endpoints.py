@@ -2,6 +2,9 @@ from typing import Optional
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
+from graphdatascience.procedure_surface.api.community.local_clustering_coefficient_endpoints import (
+    LocalClusteringCoefficientEndpoints,
+)
 from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import CliqueCountingEndpoints
 from graphdatascience.procedure_surface.api.community.kmeans_endpoints import KMeansEndpoints
 from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints import LabelPropagationEndpoints
@@ -31,6 +34,9 @@ from graphdatascience.procedure_surface.arrow.kcore_arrow_endpoints import KCore
 from graphdatascience.procedure_surface.arrow.kmeans_arrow_endpoints import KMeansArrowEndpoints
 from graphdatascience.procedure_surface.arrow.labelpropagation_arrow_endpoints import LabelPropagationArrowEndpoints
 from graphdatascience.procedure_surface.arrow.leiden_arrow_endpoints import LeidenArrowEndpoints
+from graphdatascience.procedure_surface.arrow.local_clustering_coefficient_arrow_endpoints import (
+    LocalClusteringCoefficientArrowEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.louvain_arrow_endpoints import LouvainArrowEndpoints
 from graphdatascience.procedure_surface.arrow.maxkcut_arrow_endpoints import MaxKCutArrowEndpoints
 from graphdatascience.procedure_surface.arrow.modularity_optimization_arrow_endpoints import (
@@ -151,12 +157,24 @@ class SessionV2Endpoints:
         return LeidenArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
+    def local_clustering_coefficient(self) -> LocalClusteringCoefficientEndpoints:
+        return LocalClusteringCoefficientArrowEndpoints(
+            self._arrow_client, self._write_back_client, show_progress=self._show_progress
+        )
+
+    @property
     def louvain(self) -> LouvainArrowEndpoints:
         return LouvainArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def max_k_cut(self) -> MaxKCutEndpoints:
         return MaxKCutArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
+
+    @property
+    def modularity_optimization(self) -> ModularityOptimizationEndpoints:
+        return ModularityOptimizationArrowEndpoints(
+            self._arrow_client, self._write_back_client, show_progress=self._show_progress
+        )
 
     @property
     def node2vec(self) -> Node2VecArrowEndpoints:
@@ -169,12 +187,6 @@ class SessionV2Endpoints:
     @property
     def scc(self) -> SccArrowEndpoints:
         return SccArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
-
-    @property
-    def modularity_optimization(self) -> ModularityOptimizationEndpoints:
-        return ModularityOptimizationArrowEndpoints(
-            self._arrow_client, self._write_back_client, show_progress=self._show_progress
-        )
 
     @property
     def sllpa(self) -> SllpaEndpoints:
