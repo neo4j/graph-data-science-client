@@ -7,6 +7,7 @@ from graphdatascience.procedure_surface.api.community.kmeans_endpoints import KM
 from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints import LabelPropagationEndpoints
 from graphdatascience.procedure_surface.api.community.leiden_endpoints import LeidenEndpoints
 from graphdatascience.procedure_surface.api.community.maxkcut_endpoints import MaxKCutEndpoints
+from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaEndpoints
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
 from graphdatascience.procedure_surface.arrow.articlerank_arrow_endpoints import ArticleRankArrowEndpoints
 from graphdatascience.procedure_surface.arrow.articulationpoints_arrow_endpoints import ArticulationPointsArrowEndpoints
@@ -32,6 +33,7 @@ from graphdatascience.procedure_surface.arrow.maxkcut_arrow_endpoints import Max
 from graphdatascience.procedure_surface.arrow.node2vec_arrow_endpoints import Node2VecArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pagerank_arrow_endpoints import PageRankArrowEndpoints
 from graphdatascience.procedure_surface.arrow.scc_arrow_endpoints import SccArrowEndpoints
+from graphdatascience.procedure_surface.arrow.sllpa_arrow_endpoints import SllpaArrowEndpoints
 from graphdatascience.procedure_surface.arrow.triangle_count_arrow_endpoints import TriangleCountArrowEndpoints
 from graphdatascience.procedure_surface.arrow.wcc_arrow_endpoints import WccArrowEndpoints
 from graphdatascience.query_runner.query_runner import QueryRunner
@@ -161,6 +163,10 @@ class SessionV2Endpoints:
     @property
     def scc(self) -> SccArrowEndpoints:
         return SccArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
+
+    @property
+    def sllpa(self) -> SllpaEndpoints:
+        return SllpaArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def triangle_count(self) -> TriangleCountEndpoints:

@@ -9,8 +9,6 @@ from graphdatascience.session.aura_graph_data_science import AuraGraphDataScienc
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
 MISSING_ALGO_ENDPOINTS = {
-    "community.sllpa",
-    "community.sllpa.estimate",
     "community.modularityOptimization",
     "community.localClusteringCoefficient",
     "community.localClusteringCoefficient.estimate",
@@ -66,6 +64,8 @@ ENDPOINT_MAPPINGS = {
     "kcore.estimate": "k_core_decomposition.estimate",
     "maxkcut": "max_k_cut",
     "maxkcut.estimate": "max_k_cut.estimate",
+    "sllpa": "sllpa",
+    "sllpa.estimate": "sllpa.estimate",
     "triangleCount": "triangle_count",
     "triangleCount.estimate": "triangle_count.estimate",
     # embedding algos
