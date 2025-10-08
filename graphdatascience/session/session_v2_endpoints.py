@@ -7,6 +7,9 @@ from graphdatascience.procedure_surface.api.community.kmeans_endpoints import KM
 from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints import LabelPropagationEndpoints
 from graphdatascience.procedure_surface.api.community.leiden_endpoints import LeidenEndpoints
 from graphdatascience.procedure_surface.api.community.maxkcut_endpoints import MaxKCutEndpoints
+from graphdatascience.procedure_surface.api.community.modularity_optimization_endpoints import (
+    ModularityOptimizationEndpoints,
+)
 from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaEndpoints
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
 from graphdatascience.procedure_surface.arrow.articlerank_arrow_endpoints import ArticleRankArrowEndpoints
@@ -30,6 +33,9 @@ from graphdatascience.procedure_surface.arrow.labelpropagation_arrow_endpoints i
 from graphdatascience.procedure_surface.arrow.leiden_arrow_endpoints import LeidenArrowEndpoints
 from graphdatascience.procedure_surface.arrow.louvain_arrow_endpoints import LouvainArrowEndpoints
 from graphdatascience.procedure_surface.arrow.maxkcut_arrow_endpoints import MaxKCutArrowEndpoints
+from graphdatascience.procedure_surface.arrow.modularity_optimization_arrow_endpoints import (
+    ModularityOptimizationArrowEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.node2vec_arrow_endpoints import Node2VecArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pagerank_arrow_endpoints import PageRankArrowEndpoints
 from graphdatascience.procedure_surface.arrow.scc_arrow_endpoints import SccArrowEndpoints
@@ -163,6 +169,12 @@ class SessionV2Endpoints:
     @property
     def scc(self) -> SccArrowEndpoints:
         return SccArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
+
+    @property
+    def modularity_optimization(self) -> ModularityOptimizationEndpoints:
+        return ModularityOptimizationArrowEndpoints(
+            self._arrow_client, self._write_back_client, show_progress=self._show_progress
+        )
 
     @property
     def sllpa(self) -> SllpaEndpoints:
