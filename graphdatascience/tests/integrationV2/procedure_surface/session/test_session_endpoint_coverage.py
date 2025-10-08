@@ -9,8 +9,6 @@ from graphdatascience.session.aura_graph_data_science import AuraGraphDataScienc
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
 MISSING_ALGO_ENDPOINTS = {
-    "community.localClusteringCoefficient",
-    "community.localClusteringCoefficient.estimate",
     "embeddings.graphSage.train.estimate",  # TODO fix this by moving behind shared interface
     "embeddings.graphSage.estimate",
     "similarity.knn.filtered",
@@ -55,6 +53,8 @@ ENDPOINT_MAPPINGS = {
     "eigenvector.estimate": "eigenvector_centrality.estimate",
     "harmonic": "harmonic_centrality",
     "harmonic.estimate": "harmonic_centrality.estimate",
+    "localClusteringCoefficient": "local_clustering_coefficient",
+    "localClusteringCoefficient.estimate": "local_clustering_coefficient.estimate",
     # community algos
     "k1coloring": "k1_coloring",
     "k1coloring.estimate": "k1_coloring.estimate",
