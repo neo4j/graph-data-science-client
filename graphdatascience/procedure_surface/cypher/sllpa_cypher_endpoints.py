@@ -56,7 +56,7 @@ class SllpaCypherEndpoints(SllpaEndpoints):
 
         params = CallParameters(
             graph_name=G.name(),
-            configuration=config,
+            config=config,
         )
         params.ensure_job_id_in_config()
 
@@ -94,7 +94,7 @@ class SllpaCypherEndpoints(SllpaEndpoints):
 
         params = CallParameters(
             graph_name=G.name(),
-            configuration=config,
+            config=config,
         )
         params.ensure_job_id_in_config()
 
@@ -132,7 +132,7 @@ class SllpaCypherEndpoints(SllpaEndpoints):
 
         params = CallParameters(
             graph_name=G.name(),
-            configuration=config,
+            config=config,
         )
         params.ensure_job_id_in_config()
 
@@ -174,7 +174,7 @@ class SllpaCypherEndpoints(SllpaEndpoints):
 
         params = CallParameters(
             graph_name=G.name(),
-            configuration=config,
+            config=config,
         )
         params.ensure_job_id_in_config()
 
