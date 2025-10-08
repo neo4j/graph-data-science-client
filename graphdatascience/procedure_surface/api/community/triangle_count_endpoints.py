@@ -38,7 +38,7 @@ class TriangleCountEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the triangle count for each node
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
         job_id : Optional[str], default=None
             An identifier for the job that can be used to cancel or monitor progress
@@ -92,7 +92,7 @@ class TriangleCountEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
         job_id : Optional[str], default=None
             An identifier for the job that can be used to cancel or monitor progress
@@ -146,7 +146,7 @@ class TriangleCountEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
         job_id : Optional[str], default=None
             An identifier for the job that can be used to cancel or monitor progress
@@ -206,7 +206,7 @@ class TriangleCountEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to store the triangle count for each node in the database
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
         job_id : Optional[str], default=None
             An identifier for the job that can be used to cancel or monitor progress
@@ -258,7 +258,7 @@ class TriangleCountEndpoints(ABC):
         ----------
         G : Union[GraphV2, dict[str, Any]]
             The graph to estimate for, or a graph configuration dictionary
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
         label_filter : Optional[List[str]], default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified

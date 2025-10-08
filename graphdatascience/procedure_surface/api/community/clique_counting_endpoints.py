@@ -33,7 +33,7 @@ class CliqueCountingEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the clique counts for each node
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         job_id : Optional[str], default=None
             An identifier for the job
@@ -74,7 +74,7 @@ class CliqueCountingEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         job_id : Optional[str], default=None
             An identifier for the job
@@ -115,7 +115,7 @@ class CliqueCountingEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         job_id : Optional[str], default=None
             An identifier for the job
@@ -160,7 +160,7 @@ class CliqueCountingEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to write the clique counts to
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         job_id : Optional[str], default=None
             An identifier for the job
@@ -199,7 +199,7 @@ class CliqueCountingEndpoints(ABC):
         ----------
         G : Union[GraphV2, dict[str, Any]]
             The graph or graph configuration to estimate for
-        concurrency : Optional[int], default=4
+        concurrency : Optional[int], default=None
             The number of concurrent threads
         node_labels : Optional[List[str]], default=None
             The node labels used to select nodes for this algorithm run
