@@ -180,7 +180,7 @@ class AuthenticatedArrowClient:
 
         return self._flight_client.do_action(Action(endpoint, payload_bytes))  # type: ignore
 
-    def do_action_with_retry(self, endpoint: str, payload: bytes | dict[str, Any]) -> Iterator[Result]:
+    def do_action_with_retry(self, endpoint: str, payload: bytes | dict[str, Any]) -> list[Result]:
         @retry(
             reraise=True,
             before=before_log("Send action", self._logger, logging.DEBUG),
@@ -188,8 +188,10 @@ class AuthenticatedArrowClient:
             stop=self._retry_config.stop,
             wait=self._retry_config.wait,
         )
-        def run_with_retry() -> Iterator[Result]:
-            return self.do_action(endpoint, payload)
+        def run_with_retry() -> list[Result]:
+            # the Flight response error code is only checked on iterator consumption
+            # we eagerly collect iterator here to trigger retry in case of an error
+            return list(self.do_action(endpoint, payload))
 
         return run_with_retry()
 

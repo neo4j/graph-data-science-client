@@ -15,8 +15,7 @@ def create_graph(
     arrow_client: AuthenticatedArrowClient, graph_name: str, gdl: str, undirected: tuple[str, str] | None = None
 ) -> Generator[GraphV2, Any, None]:
     try:
-        raw_res = arrow_client.do_action("v2/graph.fromGDL", {"graphName": graph_name, "gdlGraph": gdl})
-        deserialize_single(raw_res)
+        raw_res = list(arrow_client.do_action("v2/graph.fromGDL", {"graphName": graph_name, "gdlGraph": gdl}))
 
         if undirected is not None:
             JobClient.run_job_and_wait(
@@ -26,9 +25,11 @@ def create_graph(
                 show_progress=False,
             )
 
-            raw_res = arrow_client.do_action(
-                "v2/graph.relationships.drop",
-                {"graphName": graph_name, "relationshipType": undirected[0]},
+            raw_res = list(
+                arrow_client.do_action(
+                    "v2/graph.relationships.drop",
+                    {"graphName": graph_name, "relationshipType": undirected[0]},
+                )
             )
             deserialize_single(raw_res)
 
