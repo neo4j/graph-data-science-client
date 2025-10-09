@@ -204,3 +204,6 @@ build-iPhoneSimulator/
 
 # Avoid accidental commiting of dev notebooks
 examples/dev/*
+
+# Datasets from loaders such as OGBLoader
+dataset/
