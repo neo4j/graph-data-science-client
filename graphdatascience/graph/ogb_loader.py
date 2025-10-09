@@ -111,7 +111,7 @@ class OGBNLoader(OGBLoader):
             node_dict["features"] = graph["node_feat"].tolist()  # type: ignore
 
         if len(dataset.labels[0]) == 1:
-            node_dict["classLabel"] = [cl[0] for cl in dataset.labels]
+            node_dict["classLabel"] = [cl[0] for cl in dataset.labels]  # type: ignore
         else:
             node_dict["classLabel"] = dataset.labels.tolist()  # type: ignore
 
@@ -174,7 +174,7 @@ class OGBNLoader(OGBLoader):
 
             if node_label in class_labels:
                 if len(class_labels[node_label]) == 1:
-                    node_dict["classLabel"] = [cl[0] for cl in class_labels[node_label]]
+                    node_dict["classLabel"] = [cl[0] for cl in class_labels[node_label]]  # type: ignore
                 else:
                     node_dict["classLabel"] = class_labels[node_label].tolist()  # type: ignore
 
