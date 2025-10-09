@@ -2,8 +2,6 @@
 
 ## Breaking changes
 
-* Drop support for PyArrow 17.0
-
 ## New features
 
 ## Bug fixes
@@ -12,6 +10,8 @@
 
 ## Improvements
 
-* Add support for PyArrow 21.0.0
-
 ## Other changes
+
+- Add support for PyArrow 21.0.0
+- Drop support for PyArrow 17.0
+- Support numpy 1.24.0
