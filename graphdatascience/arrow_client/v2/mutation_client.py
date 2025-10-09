@@ -16,3 +16,20 @@ class MutationClient:
         mutate_arrow_res = client.do_action_with_retry(MutationClient.MUTATE_ENDPOINT, mutate_config)
         mutate_millis = math.ceil((time.time() - start_time) * 1000)
         return MutateResult(mutateMillis=mutate_millis, **deserialize_single(mutate_arrow_res))
+
+    @staticmethod
+    def mutate_relationship_property(
+        client: AuthenticatedArrowClient,
+        job_id: str,
+        mutate_relationship_type: str,
+        mutate_property: str,
+    ) -> MutateResult:
+        mutate_config = {
+            "jobId": job_id,
+            "mutateProperty": mutate_property,
+            "mutateRelationshipType": mutate_relationship_type,
+        }
+        start_time = time.time()
+        mutate_arrow_res = client.do_action_with_retry(MutationClient.MUTATE_ENDPOINT, mutate_config)
+        mutate_millis = math.ceil((time.time() - start_time) * 1000)
+        return MutateResult(mutateMillis=mutate_millis, **deserialize_single(mutate_arrow_res))

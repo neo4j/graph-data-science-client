@@ -1,0 +1,434 @@
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+from typing import Any, List, Optional, Union
+
+from pandas import DataFrame
+
+from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+
+
+class KnnMutateResult(BaseResult):
+    """Represents the result of running K-Nearest Neighbors in mutate mode."""
+
+    pre_processing_millis: int
+    compute_millis: int
+    mutate_millis: int
+    post_processing_millis: int
+    nodes_compared: int
+    relationships_written: int
+    similarity_distribution: dict[str, Any]
+    did_converge: bool
+    ran_iterations: int
+    node_pairs_considered: int
+    configuration: dict[str, Any]
+
+
+class KnnStatsResult(BaseResult):
+    """Represents the result of running K-Nearest Neighbors in stats mode."""
+
+    pre_processing_millis: int
+    compute_millis: int
+    post_processing_millis: int
+    nodes_compared: int
+    similarity_pairs: int
+    similarity_distribution: dict[str, Any]
+    did_converge: bool
+    ran_iterations: int
+    node_pairs_considered: int
+    configuration: dict[str, Any]
+
+
+class KnnWriteResult(BaseResult):
+    """Represents the result of running K-Nearest Neighbors in write mode."""
+
+    pre_processing_millis: int
+    compute_millis: int
+    write_millis: int
+    post_processing_millis: int
+    nodes_compared: int
+    relationships_written: int
+    did_converge: bool
+    ran_iterations: int
+    node_pairs_considered: int
+    similarity_distribution: dict[str, Any]
+    configuration: dict[str, Any]
+
+
+class KnnEndpoints(ABC):
+    @abstractmethod
+    def mutate(
+        self,
+        G: GraphV2,
+        mutate_relationship_type: str,
+        mutate_property: str,
+        node_properties: Union[str, List[str], dict[str, str]],
+        top_k: Optional[int] = None,
+        similarity_cutoff: Optional[float] = None,
+        delta_threshold: Optional[float] = None,
+        max_iterations: Optional[int] = None,
+        sample_rate: Optional[float] = None,
+        perturbation_rate: Optional[float] = None,
+        random_joins: Optional[int] = None,
+        random_seed: Optional[int] = None,
+        initial_sampler: Optional[Any] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        sudo: Optional[bool] = None,
+        log_progress: bool = True,
+        username: Optional[str] = None,
+        concurrency: Optional[Any] = None,
+        job_id: Optional[Any] = None,
+    ) -> KnnMutateResult:
+        """
+        Runs the K-Nearest Neighbors algorithm and stores the results as new relationships in the graph catalog.
+
+        The K-Nearest Neighbors algorithm computes a distance value for all node pairs in the graph and creates new relationships between each node and its k nearest neighbors
+
+        Parameters
+        ----------
+        G : GraphV2
+            The graph to run the algorithm on
+        mutate_relationship_type : str
+            The relationship type to use for the new relationships.
+        mutate_property : str
+            The relationship property to store the similarity score in.
+        node_properties : Union[str, List[str]]
+            The node properties to use for similarity computation.
+        top_k : Optional[int], default=None
+            The number of nearest neighbors to find for each node.
+        similarity_cutoff : Optional[float], default=None
+            The threshold for similarity scores.
+        delta_threshold : Optional[float], default=None
+            The threshold for convergence assessment.
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations to run.
+        sample_rate : Optional[float], default=None
+            The sampling rate for the algorithm.
+        perturbation_rate : Optional[float], default=None
+            The rate at which to perturb the similarity graph.
+        random_joins : Optional[int], default=None
+            The number of random joins to perform.
+        random_seed : Optional[int], default=None
+            The seed for the random number generator.
+        initial_sampler : Optional[Any], default=None
+            The initial sampling strategy.
+        relationship_types : Optional[List[str]], default=None
+            Filter on relationship types.
+        node_labels : Optional[List[str]], default=None
+            Filter on node labels.
+        sudo : Optional[bool], default=None
+            Run the algorithm with elevated privileges.
+        log_progress : bool, default=True
+            Whether to log progress.
+        username : Optional[str], default=None
+            Username for the operation.
+        concurrency : Optional[Any], default=None
+            Concurrency configuration.
+        job_id : Optional[Any], default=None
+            Job ID for the operation.
+
+        Returns
+        -------
+        KnnMutateResult
+            Object containing metadata from the execution.
+        """
+
+    @abstractmethod
+    def stats(
+        self,
+        G: GraphV2,
+        node_properties: Union[str, List[str], dict[str, str]],
+        top_k: Optional[int] = None,
+        similarity_cutoff: Optional[float] = None,
+        delta_threshold: Optional[float] = None,
+        max_iterations: Optional[int] = None,
+        sample_rate: Optional[float] = None,
+        perturbation_rate: Optional[float] = None,
+        random_joins: Optional[int] = None,
+        random_seed: Optional[int] = None,
+        initial_sampler: Optional[Any] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        sudo: Optional[bool] = None,
+        log_progress: bool = True,
+        username: Optional[str] = None,
+        concurrency: Optional[Any] = None,
+        job_id: Optional[Any] = None,
+    ) -> KnnStatsResult:
+        """
+        Runs the K-Nearest Neighbors algorithm and returns execution statistics.
+
+        The K-Nearest Neighbors algorithm computes a distance value for all node pairs in the graph and creates new relationships between each node and its k nearest neighbors
+
+        Parameters
+        ----------
+        G : GraphV2
+            The graph to run the algorithm on
+        node_properties : Union[str, List[str], dict[str, str]]
+            The node properties to use for similarity computation.
+        top_k : Optional[int], default=None
+            The number of nearest neighbors to find for each node.
+        similarity_cutoff : Optional[float], default=None
+            The threshold for similarity scores.
+        delta_threshold : Optional[float], default=None
+            The threshold for convergence assessment.
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations to run.
+        sample_rate : Optional[float], default=None
+            The sampling rate for the algorithm.
+        perturbation_rate : Optional[float], default=None
+            The rate at which to perturb the similarity graph.
+        random_joins : Optional[int], default=None
+            The number of random joins to perform.
+        random_seed : Optional[int], default=None
+            The seed for the random number generator.
+        initial_sampler : Optional[Any], default=None
+            The initial sampling strategy.
+        relationship_types : Optional[List[str]], default=None
+            Filter on relationship types.
+        node_labels : Optional[List[str]], default=None
+            Filter on node labels.
+        sudo : Optional[bool], default=None
+            Run the algorithm with elevated privileges.
+        log_progress : bool, default=True
+            Whether to log progress.
+        username : Optional[str], default=None
+            Username for the operation.
+        concurrency : Optional[Any], default=None
+            Concurrency configuration.
+        job_id : Optional[Any], default=None
+            Job ID for the operation.
+
+        Returns
+        -------
+        KnnStatsResult
+            Object containing execution statistics and algorithm-specific results.
+        """
+
+    @abstractmethod
+    def stream(
+        self,
+        G: GraphV2,
+        node_properties: Union[str, List[str], dict[str, str]],
+        top_k: Optional[int] = None,
+        similarity_cutoff: Optional[float] = None,
+        delta_threshold: Optional[float] = None,
+        max_iterations: Optional[int] = None,
+        sample_rate: Optional[float] = None,
+        perturbation_rate: Optional[float] = None,
+        random_joins: Optional[int] = None,
+        random_seed: Optional[int] = None,
+        initial_sampler: Optional[Any] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        sudo: Optional[bool] = None,
+        log_progress: bool = True,
+        username: Optional[str] = None,
+        concurrency: Optional[Any] = None,
+        job_id: Optional[Any] = None,
+    ) -> DataFrame:
+        """
+        Runs the K-Nearest Neighbors algorithm and returns the result as a DataFrame.
+
+        The K-Nearest Neighbors algorithm computes a distance value for all node pairs in the graph and creates new relationships between each node and its k nearest neighbors
+
+        Parameters
+        ----------
+        G : GraphV2
+            The graph to run the algorithm on
+        node_properties : Union[str, List[str], dict[str, str]]
+            The node properties to use for similarity computation.
+        top_k : Optional[int], default=None
+            The number of nearest neighbors to find for each node.
+        similarity_cutoff : Optional[float], default=None
+            The threshold for similarity scores.
+        delta_threshold : Optional[float], default=None
+            The threshold for convergence assessment.
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations to run.
+        sample_rate : Optional[float], default=None
+            The sampling rate for the algorithm.
+        perturbation_rate : Optional[float], default=None
+            The rate at which to perturb the similarity graph.
+        random_joins : Optional[int], default=None
+            The number of random joins to perform.
+        random_seed : Optional[int], default=None
+            The seed for the random number generator.
+        initial_sampler : Optional[Any], default=None
+            The initial sampling strategy.
+        relationship_types : Optional[List[str]], default=None
+            Filter on relationship types.
+        node_labels : Optional[List[str]], default=None
+            Filter on node labels.
+        sudo : Optional[bool], default=None
+            Run the algorithm with elevated privileges.
+        log_progress : bool, default=True
+            Whether to log progress.
+        username : Optional[str], default=None
+            Username for the operation.
+        concurrency : Optional[Any], default=None
+            Concurrency configuration.
+        job_id : Optional[Any], default=None
+            Job ID for the operation.
+
+        Returns
+        -------
+        DataFrame
+            The similarity results as a DataFrame with columns 'node1', 'node2', and 'similarity'.
+        """
+
+    @abstractmethod
+    def write(
+        self,
+        G: GraphV2,
+        write_relationship_type: str,
+        write_property: str,
+        node_properties: Union[str, List[str], dict[str, str]],
+        top_k: Optional[int] = None,
+        similarity_cutoff: Optional[float] = None,
+        delta_threshold: Optional[float] = None,
+        max_iterations: Optional[int] = None,
+        sample_rate: Optional[float] = None,
+        perturbation_rate: Optional[float] = None,
+        random_joins: Optional[int] = None,
+        random_seed: Optional[int] = None,
+        initial_sampler: Optional[Any] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        sudo: Optional[bool] = None,
+        log_progress: bool = True,
+        username: Optional[str] = None,
+        concurrency: Optional[Any] = None,
+        job_id: Optional[Any] = None,
+        write_concurrency: Optional[int] = None,
+    ) -> KnnWriteResult:
+        """
+        Runs the K-Nearest Neighbors algorithm and writes the results back to the database.
+
+        The K-Nearest Neighbors algorithm computes a distance value for all node pairs in the graph and creates new relationships between each node and its k nearest neighbors
+
+        Parameters
+        ----------
+        G : GraphV2
+            The graph to run the algorithm on
+        write_relationship_type : str
+            The relationship type to use for the new relationships.
+        write_property : str
+            The relationship property to store the similarity score in.
+        node_properties : Union[str, List[str], dict[str, str]]
+            The node properties to use for similarity computation.
+        top_k : Optional[int], default=None
+            The number of nearest neighbors to find for each node.
+        similarity_cutoff : Optional[float], default=None
+            The threshold for similarity scores.
+        delta_threshold : Optional[float], default=None
+            The threshold for convergence assessment.
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations to run.
+        sample_rate : Optional[float], default=None
+            The sampling rate for the algorithm.
+        perturbation_rate : Optional[float], default=None
+            The rate at which to perturb the similarity graph.
+        random_joins : Optional[int], default=None
+            The number of random joins to perform.
+        random_seed : Optional[int], default=None
+            The seed for the random number generator.
+        initial_sampler : Optional[Any], default=None
+            The initial sampling strategy.
+        relationship_types : Optional[List[str]], default=None
+            Filter on relationship types.
+        node_labels : Optional[List[str]], default=None
+            Filter on node labels.
+        sudo : Optional[bool], default=None
+            Run the algorithm with elevated privileges.
+        log_progress : bool, default=True
+            Whether to log progress.
+        username : Optional[str], default=None
+            Username for the operation.
+        concurrency : Optional[Any], default=None
+            Concurrency configuration.
+        job_id : Optional[Any], default=None
+            Job ID for the operation.
+        write_concurrency : Optional[int], default=None
+            Concurrency for writing results.
+
+        Returns
+        -------
+        KnnWriteResult
+            Object containing metadata from the execution.
+        """
+
+    @abstractmethod
+    def estimate(
+        self,
+        G: GraphV2,
+        node_properties: Union[str, List[str], dict[str, str]],
+        top_k: Optional[int] = None,
+        similarity_cutoff: Optional[float] = None,
+        delta_threshold: Optional[float] = None,
+        max_iterations: Optional[int] = None,
+        sample_rate: Optional[float] = None,
+        perturbation_rate: Optional[float] = None,
+        random_joins: Optional[int] = None,
+        random_seed: Optional[int] = None,
+        initial_sampler: Optional[Any] = None,
+        relationship_types: Optional[List[str]] = None,
+        node_labels: Optional[List[str]] = None,
+        sudo: Optional[bool] = None,
+        log_progress: bool = True,
+        username: Optional[str] = None,
+        concurrency: Optional[Any] = None,
+        job_id: Optional[Any] = None,
+    ) -> EstimationResult:
+        """
+        Estimates the memory requirements for running the K-Nearest Neighbors algorithm.
+
+        The K-Nearest Neighbors algorithm computes a distance value for all node pairs in the graph and creates new relationships between each node and its k nearest neighbors
+
+        Parameters
+        ----------
+        G : GraphV2
+            The graph to run the algorithm on
+        node_properties : Union[str, List[str], dict[str, str]]
+            The node properties to use for similarity computation.
+        top_k : Optional[int], default=None
+            The number of nearest neighbors to find for each node.
+        similarity_cutoff : Optional[float], default=None
+            The threshold for similarity scores.
+        delta_threshold : Optional[float], default=None
+            The threshold for convergence assessment.
+        max_iterations : Optional[int], default=None
+            The maximum number of iterations to run.
+        sample_rate : Optional[float], default=None
+            The sampling rate for the algorithm.
+        perturbation_rate : Optional[float], default=None
+            The rate at which to perturb the similarity graph.
+        random_joins : Optional[int], default=None
+            The number of random joins to perform.
+        random_seed : Optional[int], default=None
+            The seed for the random number generator.
+        initial_sampler : Optional[Any], default=None
+            The initial sampling strategy.
+        relationship_types : Optional[List[str]], default=None
+            Filter on relationship types.
+        node_labels : Optional[List[str]], default=None
+            Filter on node labels.
+        sudo : Optional[bool], default=None
+            Run the algorithm with elevated privileges.
+        log_progress : bool, default=True
+            Whether to log progress.
+        username : Optional[str], default=None
+            Username for the operation.
+        concurrency : Optional[Any], default=None
+            Concurrency configuration.
+        job_id : Optional[Any], default=None
+            Job ID for the operation.
+
+        Returns
+        -------
+        EstimationResult
+            Object containing the estimated memory requirements.
+        """
