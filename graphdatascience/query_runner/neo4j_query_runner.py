@@ -196,14 +196,12 @@ class Neo4jQueryRunner(QueryRunner):
             df = result.to_df()
 
             if self._NEO4J_DRIVER_VERSION < SemanticVersion(5, 0, 0):
-                self._last_bookmarks = [session.last_bookmark()]
+                self._last_bookmarks = [session.last_bookmark()]  # type: ignore
             else:
                 self._last_bookmarks = session.last_bookmarks()
 
-            notifications = result.consume().notifications
-            if notifications:
-                for notification in notifications:
-                    self._forward_cypher_warnings(notification)
+            result_summary = result.consume()
+            self._handle_notifications(result_summary)
 
             return df
 
@@ -321,7 +319,21 @@ class Neo4jQueryRunner(QueryRunner):
     def driver_config(self) -> dict[str, Any]:
         return self._config
 
-    def _forward_cypher_warnings(self, notification: dict[str, Any]) -> None:
+    def _handle_notifications(self, result_summary: neo4j.ResultSummary) -> None:
+        if self._NEO4J_DRIVER_VERSION < SemanticVersion(6, 0, 0):
+            notifications = result_summary.notifications
+            if notifications:
+                for notification in notifications:
+                    self._forward_cypher_notification(notification)
+        if self._NEO4J_DRIVER_VERSION >= SemanticVersion(6, 0, 0):
+            status_objects = result_summary.gql_status_objects
+            for status in status_objects:
+                if status.raw_classification == "DEPRECATION" and not re.match(
+                    r".*returned by the procedure.*", status.status_description
+                ):
+                    warnings.warn(DeprecationWarning(status.status_description))
+
+    def _forward_cypher_notification(self, notification: dict[str, Any]) -> None:
         # (see https://neo4j.com/docs/status-codes/current/notifications/ for more details)
         severity = notification["severity"]
         if severity == "WARNING":
@@ -434,7 +446,7 @@ class Neo4jQueryRunner(QueryRunner):
                         category=neo4j.ExperimentalWarning,
                         message=r"^The configuration may change in the future.$",
                     )
-                else:
+                elif self._NEO4J_DRIVER_VERSION < SemanticVersion(6, 0, 0):
                     warnings.filterwarnings(
                         "ignore",
                         category=neo4j.ExperimentalWarning,
@@ -443,6 +455,13 @@ class Neo4jQueryRunner(QueryRunner):
                             "They might be changed or removed in any future version without prior notice.$"
                         ),
                     )
+                else:
+                    warnings.filterwarnings(
+                        "ignore",
+                        category=neo4j.warnings.PreviewWarning,
+                        message=(r"^Passing key-word arguments to verify_connectivity\(\) is a preview feature.*"),
+                    )
+
                 self._driver.verify_connectivity(database=database)
                 break
             except neo4j.exceptions.DriverError as e:
@@ -478,6 +497,8 @@ class Neo4jQueryRunner(QueryRunner):
         warnings.filterwarnings("ignore", message=r".*The procedure has a deprecated field.*by 'gds.*")
         # neo4j driver 4.4
         warnings.filterwarnings("ignore", message=r".*The query used a deprecated field from a procedure.*by 'gds.*")
+        # neo4j driver 6.0
+        warnings.filterwarnings("ignore", message=r".*returned by the procedure.* is deprecated.*")
 
     class ConnectivityRetriesConfig(NamedTuple):
         max_retries: int = 600

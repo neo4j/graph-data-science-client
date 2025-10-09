@@ -321,6 +321,7 @@ def test_missing_model_drop(gds: GraphDataScience) -> None:
 
 @pytest.mark.model_store_location
 @pytest.mark.filterwarnings("ignore: The query used a deprecated procedure.")
+@pytest.mark.filterwarnings("ignore: feature deprecated with replacement")
 def test_deprecated_model_Functions_still_work(gds: GraphDataScience, gs_model: GraphSageModel) -> None:
     gds.beta.model.list()
     gds.alpha.model.store(gs_model)

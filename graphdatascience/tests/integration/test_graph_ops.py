@@ -9,7 +9,7 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.tests.integration.conftest import AUTH, DB, URI, is_neo4j_44
+from graphdatascience.tests.integration.conftest import AUTH, DB, URI, id_warning_pattern, is_neo4j_44
 
 GRAPH_NAME = "g"
 
@@ -844,7 +844,7 @@ def test_graph_relationships_stream_without_arrow(gds_without_arrow: GraphDataSc
     else:
         result = gds_without_arrow.beta.graph.relationships.stream(G, ["REL", "REL2"])
 
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="The query used a deprecated function")
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message=id_warning_pattern())
     expected = gds_without_arrow.run_cypher(
         "MATCH (n)-[r]->(m) RETURN id(n) AS src_id, id(m) AS trg_id, type(r) AS rel_type"
     )
