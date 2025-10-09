@@ -1,11 +1,12 @@
 from typing import Generator
 
+import neo4j
 import pytest
 from neo4j import Driver, GraphDatabase
 
 from graphdatascience import GraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.tests.integration.conftest import AUTH, URI, is_neo4j_44
+from graphdatascience.tests.integration.conftest import AUTH, URI, id_warning_pattern, is_neo4j_44
 
 GRAPH_NAME = "g"
 
@@ -207,7 +208,7 @@ def test_forward_server_side_warning(gds: GraphDataScience) -> None:
     if is_neo4j_44(gds):
         return
 
-    with pytest.raises(Warning, match="The query used a deprecated function.*[`']id[`'].*"):
+    with pytest.raises(Warning, match=id_warning_pattern()):
         gds.run_cypher("MATCH (n) RETURN id(n)")
 
 
@@ -219,7 +220,7 @@ def test_forward_driver_configured_warning(warning_driver: Driver) -> None:
     if is_neo4j_44(gds):
         return
 
-    with pytest.raises(Warning, match="The query used a deprecated function.*[`']id[`'].*"):
+    with pytest.raises(Warning, match=id_warning_pattern()):
         gds.run_cypher("MATCH (n) RETURN id(n)")
 
 

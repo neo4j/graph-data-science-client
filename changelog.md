@@ -15,3 +15,4 @@
 - Add support for PyArrow 21.0.0
 - Drop support for PyArrow 17.0
 - Support numpy 1.24.0
+- Add support for neo4j 6.0

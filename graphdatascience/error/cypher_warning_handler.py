@@ -1,3 +1,4 @@
+import re
 import warnings
 from functools import wraps
 from typing import Any, Callable, TypeVar, cast
@@ -25,6 +26,13 @@ def filter_id_func_deprecation_warning() -> Callable[[F], F]:
             warnings.filterwarnings(
                 "ignore",
                 message=r"The query used a deprecated function. \('id'.*",
+            )
+
+            # with neo4j driver 6.0.0
+            warnings.filterwarnings(
+                "ignore",
+                message=r"warn: feature deprecated with replacement\. id is deprecated. It is replaced by elementId or consider using an application-generated id\."
+                ,
             )
 
             return func(self, *args, **kwargs)
