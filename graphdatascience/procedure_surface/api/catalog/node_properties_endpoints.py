@@ -139,12 +139,13 @@ class NodePropertiesEndpoints(ABC):
 @dataclass
 class NodePropertySpec:
     def __init__(self, node_properties: str | list[str] | dict[str, str]) -> None:
-        if isinstance(node_properties, str):
-            self._mappings = {node_properties: node_properties}
-        elif isinstance(node_properties, list):
-            self._mappings = {prop: prop for prop in node_properties}
-        elif isinstance(node_properties, dict):
-            self._mappings = node_properties
+        match node_properties:
+            case str():
+                self._mappings = {node_properties: node_properties}
+            case list():
+                self._mappings = {prop: prop for prop in node_properties}
+            case dict():
+                self._mappings = node_properties
 
     def property_names(self) -> list[str]:
         return list(self._mappings.keys())
