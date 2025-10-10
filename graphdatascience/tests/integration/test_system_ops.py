@@ -70,7 +70,7 @@ def test_list_defaults(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.filterwarnings("ignore: The query used a deprecated procedure")
-@pytest.mark.filterwarnings("ignore: feature deprecated with replacement")
+@pytest.mark.filterwarnings("ignore: .*feature deprecated with replacement")
 @pytest.mark.enterprise
 @pytest.mark.skip_on_aura
 def test_alpha_backup(gds: GraphDataScience) -> None:
@@ -89,7 +89,7 @@ def test_backup(gds: GraphDataScience) -> None:
 
 
 @pytest.mark.filterwarnings("ignore: The query used a deprecated procedure")
-@pytest.mark.filterwarnings("ignore: feature deprecated with replacement")
+@pytest.mark.filterwarnings("ignore: .*feature deprecated with replacement")
 @pytest.mark.enterprise
 @pytest.mark.skip_on_aura
 def test_alpha_restore(gds: GraphDataScience) -> None:
