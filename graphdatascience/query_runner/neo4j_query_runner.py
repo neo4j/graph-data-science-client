@@ -8,8 +8,10 @@ from typing import Any, NamedTuple
 
 import neo4j
 from pandas import DataFrame
+from tenacity import retry, retry_if_exception, stop_after_delay, wait_fixed
 
 from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.retry_utils.neo4j_retry_helper import is_retryable_neo4j_exception
 
 from ..call_parameters import CallParameters
 from ..error.endpoint_suggester import generate_suggestive_error_message
@@ -421,9 +423,11 @@ class Neo4jQueryRunner(QueryRunner):
 
         raise SyntaxError(generate_suggestive_error_message(requested_endpoint, all_endpoints)) from e
 
+    @retry(retry=retry_if_exception(is_retryable_neo4j_exception), stop=stop_after_delay(60), wait=wait_fixed(2))
     def verify_connectivity(self) -> None:
         self._driver.verify_connectivity()
 
+    @retry(retry=retry_if_exception(is_retryable_neo4j_exception), stop=stop_after_delay(60), wait=wait_fixed(2))
     def verify_authentication(self) -> None:
         self._driver.verify_authentication()
 
