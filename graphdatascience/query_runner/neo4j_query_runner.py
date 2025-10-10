@@ -4,7 +4,7 @@ import logging
 import re
 import time
 import warnings
-from typing import Any, NamedTuple, Optional, Union
+from typing import Any, NamedTuple
 
 import neo4j
 from pandas import DataFrame
@@ -31,13 +31,13 @@ class Neo4jQueryRunner(QueryRunner):
 
     @staticmethod
     def create_for_db(
-        endpoint: Union[str, neo4j.Driver],
-        auth: Union[tuple[str, str], neo4j.Auth, None] = None,
+        endpoint: str | neo4j.Driver,
+        auth: tuple[str, str] | neo4j.Auth | None = None,
         aura_ds: bool = False,
-        database: Optional[str] = None,
-        bookmarks: Optional[Any] = None,
+        database: str | None = None,
+        bookmarks: Any | None = None,
         show_progress: bool = True,
-        config: Optional[dict[str, Any]] = None,
+        config: dict[str, Any] | None = None,
     ) -> Neo4jQueryRunner:
         if isinstance(endpoint, str):
             if config is None:
@@ -79,7 +79,7 @@ class Neo4jQueryRunner(QueryRunner):
     @staticmethod
     def create_for_session(
         endpoint: str,
-        auth: Union[tuple[str, str], neo4j.Auth, None] = None,
+        auth: tuple[str, str] | neo4j.Auth | None = None,
         show_progress: bool = True,
     ) -> Neo4jQueryRunner:
         driver_config: dict[str, Any] = {"user_agent": f"neo4j-graphdatascience-v{__version__}"}
@@ -125,11 +125,11 @@ class Neo4jQueryRunner(QueryRunner):
         self,
         driver: neo4j.Driver,
         protocol: str,
-        auth: Union[tuple[str, str], neo4j.Auth, None] = None,
+        auth: tuple[str, str] | neo4j.Auth | None = None,
         config: dict[str, Any] = {},
-        database: Optional[str] = neo4j.DEFAULT_DATABASE,
+        database: str | None = neo4j.DEFAULT_DATABASE,
         auto_close: bool = False,
-        bookmarks: Optional[Any] = None,
+        bookmarks: Any | None = None,
         show_progress: bool = True,
         instance_description: str = "Neo4j DBMS",
     ):
@@ -141,15 +141,15 @@ class Neo4jQueryRunner(QueryRunner):
         self._database = database
         self._logger = logging.getLogger()
         self._bookmarks = bookmarks
-        self._last_bookmarks: Optional[Any] = None
-        self._server_version: Optional[ServerVersion] = None
+        self._last_bookmarks: Any | None = None
+        self._server_version: ServerVersion | None = None
         self._show_progress = show_progress
         self._progress_logger = QueryProgressLogger(
             self.__run_cypher_simplified_for_query_progress_logger, self.server_version
         )
         self._instance_description = instance_description
 
-    def __run_cypher_simplified_for_query_progress_logger(self, query: str, database: Optional[str]) -> DataFrame:
+    def __run_cypher_simplified_for_query_progress_logger(self, query: str, database: str | None) -> DataFrame:
         # progress logging should not retry a lot as it perodically fetches the latest progress anyway
         connectivity_retry_config = Neo4jQueryRunner.ConnectivityRetriesConfig(max_retries=2)
         # not using retryable cypher as failing is okay
@@ -159,11 +159,11 @@ class Neo4jQueryRunner(QueryRunner):
     def run_cypher(
         self,
         query: str,
-        params: Optional[dict[str, Any]] = None,
-        database: Optional[str] = None,
-        mode: Optional[QueryMode] = None,
+        params: dict[str, Any] | None = None,
+        database: str | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
-        connectivity_retry_config: Optional[ConnectivityRetriesConfig] = None,
+        connectivity_retry_config: ConnectivityRetriesConfig | None = None,
     ) -> DataFrame:
         if params is None:
             params = {}
@@ -209,11 +209,11 @@ class Neo4jQueryRunner(QueryRunner):
     def run_retryable_cypher(
         self,
         query: str,
-        params: Optional[dict[str, Any]] = None,
-        database: Optional[str] = None,
-        mode: Optional[QueryMode] = None,
+        params: dict[str, Any] | None = None,
+        database: str | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
-        connectivity_retry_config: Optional[ConnectivityRetriesConfig] = None,
+        connectivity_retry_config: ConnectivityRetriesConfig | None = None,
     ) -> DataFrame:
         if not database:
             database = self._database
@@ -248,7 +248,7 @@ class Neo4jQueryRunner(QueryRunner):
             else:
                 raise e
 
-    def call_function(self, endpoint: str, params: Optional[CallParameters] = None, custom_error: bool = True) -> Any:
+    def call_function(self, endpoint: str, params: CallParameters | None = None, custom_error: bool = True) -> Any:
         if params is None:
             params = CallParameters()
         query = f"RETURN {endpoint}({params.placeholder_str()})"
@@ -259,9 +259,9 @@ class Neo4jQueryRunner(QueryRunner):
     def call_procedure(
         self,
         endpoint: str,
-        params: Optional[CallParameters] = None,
-        yields: Optional[list[str]] = None,
-        database: Optional[str] = None,
+        params: CallParameters | None = None,
+        yields: list[str] | None = None,
+        database: str | None = None,
         mode: QueryMode = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
@@ -352,20 +352,20 @@ class Neo4jQueryRunner(QueryRunner):
     def set_database(self, database: str) -> None:
         self._database = database
 
-    def set_bookmarks(self, bookmarks: Optional[Any]) -> None:
+    def set_bookmarks(self, bookmarks: Any | None) -> None:
         self._bookmarks = bookmarks
 
     def close(self) -> None:
         if self._auto_close:
             self._driver.close()
 
-    def database(self) -> Optional[str]:
+    def database(self) -> str | None:
         return self._database
 
-    def bookmarks(self) -> Optional[Any]:
+    def bookmarks(self) -> Any | None:
         return self._bookmarks
 
-    def last_bookmarks(self) -> Optional[Any]:
+    def last_bookmarks(self) -> Any | None:
         return self._last_bookmarks
 
     def __del__(self) -> None:
@@ -373,7 +373,7 @@ class Neo4jQueryRunner(QueryRunner):
             self._driver.close()
 
     def create_graph_constructor(
-        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[list[str]]
+        self, graph_name: str, concurrency: int, undirected_relationship_types: list[str] | None
     ) -> GraphConstructor:
         return CypherGraphConstructor(
             self, graph_name, concurrency, undirected_relationship_types, self.server_version()
@@ -400,7 +400,7 @@ class Neo4jQueryRunner(QueryRunner):
         )
 
     @staticmethod
-    def handle_driver_exception(cypher_executor: Union[neo4j.Session, neo4j.Driver], e: Exception) -> None:
+    def handle_driver_exception(cypher_executor: neo4j.Session | neo4j.Driver, e: Exception) -> None:
         reg_gds_hit = re.search(
             r"There is no procedure with the name `(gds(?:\.\w+)+)` registered for this database instance",
             str(e),
@@ -430,7 +430,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._driver.verify_authentication()
 
     def _verify_connectivity(
-        self, database: Optional[str], retry_config: Neo4jQueryRunner.ConnectivityRetriesConfig
+        self, database: str | None, retry_config: Neo4jQueryRunner.ConnectivityRetriesConfig
     ) -> None:
         # TODO allow for optional func to call (check session status on failure)
         if database is None:

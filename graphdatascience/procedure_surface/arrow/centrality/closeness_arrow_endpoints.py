@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -21,7 +21,7 @@ class ClosenessArrowEndpoints(ClosenessEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: Optional[RemoteWriteBackClient] = None,
+        write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
         self._node_property_endpoints = NodePropertyEndpoints(
@@ -32,14 +32,14 @@ class ClosenessArrowEndpoints(ClosenessEndpoints):
         self,
         G: GraphV2,
         mutate_property: str,
-        use_wasserman_faust: Optional[bool] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        use_wasserman_faust: bool | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> ClosenessMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -60,14 +60,14 @@ class ClosenessArrowEndpoints(ClosenessEndpoints):
     def stats(
         self,
         G: GraphV2,
-        use_wasserman_faust: Optional[bool] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        use_wasserman_faust: bool | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> ClosenessStatsResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -88,14 +88,14 @@ class ClosenessArrowEndpoints(ClosenessEndpoints):
     def stream(
         self,
         G: GraphV2,
-        use_wasserman_faust: Optional[bool] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        use_wasserman_faust: bool | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -115,15 +115,15 @@ class ClosenessArrowEndpoints(ClosenessEndpoints):
         self,
         G: GraphV2,
         write_property: str,
-        use_wasserman_faust: Optional[bool] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        use_wasserman_faust: bool | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        write_concurrency: Any | None = None,
     ) -> ClosenessWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -145,11 +145,11 @@ class ClosenessArrowEndpoints(ClosenessEndpoints):
 
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        use_wasserman_faust: Optional[bool] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
+        G: GraphV2 | dict[str, Any],
+        use_wasserman_faust: bool | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
     ) -> EstimationResult:
         algo_config = self._node_property_endpoints.create_estimate_config(
             use_wasserman_faust=use_wasserman_faust,

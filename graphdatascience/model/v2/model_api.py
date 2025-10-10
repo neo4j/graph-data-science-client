@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from graphdatascience.model.v2.model_details import ModelDetails
 
@@ -37,7 +36,7 @@ class ModelApi(ABC):
         pass
 
     @abstractmethod
-    def drop(self, model: str, fail_if_missing: bool) -> Optional[ModelDetails]:
+    def drop(self, model: str, fail_if_missing: bool) -> ModelDetails | None:
         """
         Drop a specific model.
 

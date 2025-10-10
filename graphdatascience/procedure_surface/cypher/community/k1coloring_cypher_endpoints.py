@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -29,15 +29,15 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
         self,
         G: GraphV2,
         mutate_property: str,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> K1ColoringMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             mutate_property=mutate_property,
@@ -64,15 +64,15 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
     def stats(
         self,
         G: GraphV2,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> K1ColoringStatsResult:
         config = ConfigConverter.convert_to_gds_config(
             batch_size=batch_size,
@@ -98,16 +98,16 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
     def stream(
         self,
         G: GraphV2,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        min_community_size: Optional[int] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        min_community_size: int | None = None,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
             batch_size=batch_size,
@@ -131,17 +131,17 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
         self,
         G: GraphV2,
         write_property: str,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
-        min_community_size: Optional[int] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        write_concurrency: Any | None = None,
+        min_community_size: int | None = None,
     ) -> K1ColoringWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             write_property=write_property,
@@ -169,12 +169,12 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
 
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
+        G: GraphV2 | dict[str, Any],
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
     ) -> EstimationResult:
         algo_config = ConfigConverter.convert_to_gds_config(
             batch_size=batch_size,

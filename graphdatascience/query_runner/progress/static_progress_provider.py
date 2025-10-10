@@ -1,5 +1,3 @@
-from typing import Optional
-
 from .progress_provider import ProgressProvider, TaskWithProgress
 
 
@@ -20,7 +18,7 @@ class StaticProgressStore:
 
 
 class StaticProgressProvider(ProgressProvider):
-    def root_task_with_progress(self, job_id: str, database: Optional[str] = None) -> TaskWithProgress:
+    def root_task_with_progress(self, job_id: str, database: str | None = None) -> TaskWithProgress:
         if not StaticProgressStore.contains_job_id(job_id):
             raise Exception(f"Task with job id {job_id} not found in progress store")
 

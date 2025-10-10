@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import time
-from typing import Any, Optional
+from typing import Any
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -24,9 +24,9 @@ class RemoteWriteBackClient:
         self,
         graph_name: str,
         job_id: str,
-        concurrency: Optional[int] = None,
-        property_overwrites: Optional[dict[str, str]] = None,
-        relationship_type_overwrite: Optional[str] = None,
+        concurrency: int | None = None,
+        property_overwrites: dict[str, str] | None = None,
+        relationship_type_overwrite: str | None = None,
         log_progress: bool = True,
     ) -> WriteBackResult:
         arrow_config = self._arrow_configuration()

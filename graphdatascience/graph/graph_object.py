@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from types import TracebackType
-from typing import Any, Optional, Type, Union
+from typing import Any, Type
 
 from pandas import Series
 
@@ -26,9 +26,9 @@ class Graph:
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exception_type: Type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         self.drop()
 
@@ -104,7 +104,7 @@ class Graph:
         """
         return list(self._graph_info(["schema"])["relationships"].keys())
 
-    def node_properties(self, label: Optional[str] = None) -> Union[Series[str], list[str]]:
+    def node_properties(self, label: str | None = None) -> Series[str] | list[str]:
         """
         Args:
             label: the node label to get the properties for
@@ -123,7 +123,7 @@ class Graph:
 
         return list(labels_to_props[label].keys())
 
-    def relationship_properties(self, type: Optional[str] = None) -> Union[Series[str], list[str]]:
+    def relationship_properties(self, type: str | None = None) -> Series[str] | list[str]:
         """
         Args:
             type: the relationship type to get the properties for

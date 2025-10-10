@@ -5,7 +5,6 @@ import signal
 import threading
 from abc import ABC, abstractmethod
 from types import FrameType
-from typing import Optional
 
 
 class TerminationFlag(ABC):
@@ -21,7 +20,7 @@ class TerminationFlag(ABC):
         pass
 
     @staticmethod
-    def create(signals: Optional[list[signal.Signals]] = None) -> TerminationFlag:
+    def create(signals: list[signal.Signals] | None = None) -> TerminationFlag:
         if signals is None:
             signals = [signal.SIGINT, signal.SIGTERM]
 
@@ -36,7 +35,7 @@ class TerminationFlagImpl(TerminationFlag):
     def __init__(self, signals: list[signal.Signals]) -> None:
         self._event = threading.Event()
 
-        def receive_signal(sig: int, frame: Optional[FrameType]) -> None:
+        def receive_signal(sig: int, frame: FrameType | None) -> None:
             logging.info(f"Received signal {sig}.")
             self._event.set()
 

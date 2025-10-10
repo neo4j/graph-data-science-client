@@ -7,7 +7,7 @@ import warnings
 from collections import defaultdict
 from datetime import timedelta
 from http import HTTPStatus
-from typing import Any, Optional
+from typing import Any
 from urllib.parse import urlparse
 
 import requests
@@ -58,7 +58,7 @@ class AuraApi:
     API_VERSION = "v1"
 
     def __init__(
-        self, client_id: str, client_secret: str, project_id: Optional[str] = None, aura_env: Optional[str] = None
+        self, client_id: str, client_secret: str, project_id: str | None = None, aura_env: str | None = None
     ) -> None:
         self._base_uri = AuraApi.base_uri(aura_env)
         self._credentials = (client_id, client_secret)
@@ -72,7 +72,7 @@ class AuraApi:
         self._logger = logging.getLogger()
 
         self._project_id = project_id if project_id else self._get_project_id()
-        self._project_details: Optional[ProjectDetails] = None
+        self._project_details: ProjectDetails | None = None
 
     def _init_request_session(self) -> requests.Session:
         request_session = requests.Session()
@@ -108,7 +108,7 @@ class AuraApi:
         return host.split(".")[0].split("-")[0]
 
     @staticmethod
-    def base_uri(aura_env: Optional[str] = None) -> str:
+    def base_uri(aura_env: str | None = None) -> str:
         if aura_env is None or aura_env == "production":
             base_uri = "https://api.neo4j.io"
         elif aura_env == "staging":
@@ -121,9 +121,9 @@ class AuraApi:
         self,
         name: str,
         memory: SessionMemoryValue,
-        dbid: Optional[str] = None,
-        ttl: Optional[timedelta] = None,
-        cloud_location: Optional[CloudLocation] = None,
+        dbid: str | None = None,
+        ttl: timedelta | None = None,
+        cloud_location: CloudLocation | None = None,
     ) -> SessionDetails:
         json = {"name": name, "memory": memory.value, "project_id": self._project_id}
 
@@ -148,7 +148,7 @@ class AuraApi:
 
         return SessionDetails.from_json(raw_json["data"])
 
-    def get_session(self, session_id: str) -> Optional[SessionDetails]:
+    def get_session(self, session_id: str) -> SessionDetails | None:
         response = self._request_session.get(
             f"{self._base_uri}/{AuraApi.API_VERSION}/graph-analytics/sessions/{session_id}"
         )
@@ -163,7 +163,7 @@ class AuraApi:
 
         return SessionDetails.from_json(raw_json["data"])
 
-    def list_sessions(self, dbid: Optional[str] = None) -> list[SessionDetailsWithErrors]:
+    def list_sessions(self, dbid: str | None = None) -> list[SessionDetailsWithErrors]:
         # these are query parameters (not passed in the body)
         params = {
             "projectId": self._project_id,
@@ -247,7 +247,7 @@ class AuraApi:
 
         return InstanceCreateDetails.from_json(response.json()["data"])
 
-    def delete_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
+    def delete_instance(self, instance_id: str) -> InstanceSpecificDetails | None:
         response = self._request_session.delete(f"{self._base_uri}/v1/instances/{instance_id}")
 
         if response.status_code == HTTPStatus.NOT_FOUND.value:
@@ -266,7 +266,7 @@ class AuraApi:
 
         return [InstanceDetails.fromJson(i) for i in raw_data]
 
-    def list_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
+    def list_instance(self, instance_id: str) -> InstanceSpecificDetails | None:
         response = self._request_session.get(f"{self._base_uri}/v1/instances/{instance_id}")
 
         if response.status_code == HTTPStatus.NOT_FOUND.value:
@@ -393,7 +393,7 @@ class AuraApi:
                 return self.refresh_at <= int(time.time())
 
         def __init__(self, oauth_url: str, credentials: tuple[str, str], headers: dict[str, Any]) -> None:
-            self._token: Optional[AuraApi.Auth.Token] = None
+            self._token: AuraApi.Auth.Token | None = None
             self._logger = logging.getLogger()
             self._oauth_url = oauth_url
             self._credentials = credentials

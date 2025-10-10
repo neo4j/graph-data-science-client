@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any
 
 from pandas import DataFrame
 from tenacity import retry, retry_if_result, wait_incrementing
@@ -23,7 +23,7 @@ class WriteProtocol(ABC):
         job_id: str,
         config: dict[str, Any],
         arrow_config: dict[str, Any],
-        database: Optional[str] = None,
+        database: str | None = None,
     ) -> CallParameters:
         """Transforms the given parameters into CallParameters that correspond to the right protocol version."""
         pass
@@ -33,7 +33,7 @@ class WriteProtocol(ABC):
         self,
         query_runner: QueryRunner,
         parameters: CallParameters,
-        yields: Optional[list[str]],
+        yields: list[str] | None,
         log_progress: bool,
         terminationFlag: TerminationFlag,
     ) -> DataFrame:
@@ -56,7 +56,7 @@ class RemoteWriteBackV1(WriteProtocol):
         job_id: str,
         config: dict[str, Any],
         arrow_config: dict[str, Any],
-        database: Optional[str] = None,
+        database: str | None = None,
     ) -> CallParameters:
         return CallParameters(
             graphName=graph_name,
@@ -69,7 +69,7 @@ class RemoteWriteBackV1(WriteProtocol):
         self,
         query_runner: QueryRunner,
         parameters: CallParameters,
-        yields: Optional[list[str]],
+        yields: list[str] | None,
         log_progress: bool,
         terminationFlag: TerminationFlag,
     ) -> DataFrame:
@@ -92,7 +92,7 @@ class RemoteWriteBackV2(WriteProtocol):
         job_id: str,
         config: dict[str, Any],
         arrow_config: dict[str, Any],
-        database: Optional[str] = None,
+        database: str | None = None,
     ) -> CallParameters:
         configuration = {}
 
@@ -110,7 +110,7 @@ class RemoteWriteBackV2(WriteProtocol):
         self,
         query_runner: QueryRunner,
         parameters: CallParameters,
-        yields: Optional[list[str]],
+        yields: list[str] | None,
         log_progress: bool,
         terminationFlag: TerminationFlag,
     ) -> DataFrame:
@@ -127,7 +127,7 @@ class RemoteWriteBackV2(WriteProtocol):
 
 
 class RemoteWriteBackV3(WriteProtocol):
-    def __init__(self, progress_bar_options: Optional[dict[str, Any]] = None):
+    def __init__(self, progress_bar_options: dict[str, Any] | None = None):
         self._progress_bar_options = progress_bar_options or {}
 
     def write_back_params(
@@ -136,7 +136,7 @@ class RemoteWriteBackV3(WriteProtocol):
         job_id: str,
         config: dict[str, Any],
         arrow_config: dict[str, Any],
-        database: Optional[str] = None,
+        database: str | None = None,
     ) -> CallParameters:
         return RemoteWriteBackV2().write_back_params(graph_name, job_id, config, arrow_config, database)
 
@@ -144,7 +144,7 @@ class RemoteWriteBackV3(WriteProtocol):
         self,
         query_runner: QueryRunner,
         parameters: CallParameters,
-        yields: Optional[list[str]],
+        yields: list[str] | None,
         log_progress: bool,
         terminationFlag: TerminationFlag,
     ) -> DataFrame:
@@ -164,7 +164,7 @@ class RemoteWriteBackV3(WriteProtocol):
                 logging.DEBUG,
             ),
         )
-        def write_fn(progress_bar: Optional[TqdmProgressBar]) -> DataFrame:
+        def write_fn(progress_bar: TqdmProgressBar | None) -> DataFrame:
             terminationFlag.assert_running()
             result = query_runner.call_procedure(
                 ProtocolVersion.V3.versioned_procedure_name("gds.arrow.write"),

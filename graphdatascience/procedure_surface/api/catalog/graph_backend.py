@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 
@@ -16,5 +15,5 @@ class GraphBackend(ABC):
         pass
 
     @abstractmethod
-    def drop(self, fail_if_missing: bool = True) -> Optional[GraphInfo]:
+    def drop(self, fail_if_missing: bool = True) -> GraphInfo | None:
         pass

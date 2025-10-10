@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -16,19 +16,19 @@ class PageRankEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        damping_factor: Optional[float] = None,
-        tolerance: Optional[float] = None,
-        max_iterations: Optional[int] = None,
-        scaler: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        damping_factor: float | None = None,
+        tolerance: float | None = None,
+        max_iterations: int | None = None,
+        scaler: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
-        source_nodes: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        relationship_weight_property: str | None = None,
+        source_nodes: Any | None = None,
     ) -> PageRankMutateResult:
         """
         Runs the PageRank algorithm and stores the results in the graph catalog as a new node property.
@@ -42,31 +42,31 @@ class PageRankEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             Name of the node property to store the results in.
-        damping_factor : Optional[float], default=None
+        damping_factor : float | None, default=None
             Probability of a jump to a random node.
-        tolerance : Optional[float], default=None
+        tolerance : float | None, default=None
             Minimum change in scores between iterations.
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             Maximum number of iterations to run.
-        scaler : Optional[Any], default=None
+        scaler : Any | None, default=None
             Name of the scaler applied on the resulting scores.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Disable the memory guard.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Display progress logging.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             Number of threads to use for running the algorithm.
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             Identifier for the job.
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
-        source_nodes : Optional[Any], default=None
+        source_nodes : Any | None, default=None
             List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.
 
         Returns
@@ -80,19 +80,19 @@ class PageRankEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        damping_factor: Optional[float] = None,
-        tolerance: Optional[float] = None,
-        max_iterations: Optional[int] = None,
-        scaler: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        damping_factor: float | None = None,
+        tolerance: float | None = None,
+        max_iterations: int | None = None,
+        scaler: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
-        source_nodes: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        relationship_weight_property: str | None = None,
+        source_nodes: Any | None = None,
     ) -> PageRankStatsResult:
         """
         Runs the PageRank algorithm and returns result statistics without storing the results.
@@ -104,31 +104,31 @@ class PageRankEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        damping_factor : Optional[float], default=None
+        damping_factor : float | None, default=None
             Probability of a jump to a random node.
-        tolerance : Optional[float], default=None
+        tolerance : float | None, default=None
             Minimum change in scores between iterations.
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             Maximum number of iterations to run.
-        scaler : Optional[Any], default=None
+        scaler : Any | None, default=None
             Name of the scaler applied on the resulting scores.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Disable the memory guard.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Display progress logging.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             Number of threads to use for running the algorithm.
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             Identifier for the job.
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
-        source_nodes : Optional[Any], default=None
+        source_nodes : Any | None, default=None
             List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.
 
         Returns
@@ -142,19 +142,19 @@ class PageRankEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        damping_factor: Optional[float] = None,
-        tolerance: Optional[float] = None,
-        max_iterations: Optional[int] = None,
-        scaler: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        damping_factor: float | None = None,
+        tolerance: float | None = None,
+        max_iterations: int | None = None,
+        scaler: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
-        source_nodes: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        relationship_weight_property: str | None = None,
+        source_nodes: Any | None = None,
     ) -> DataFrame:
         """
         Executes the PageRank algorithm and returns a stream of results.
@@ -163,31 +163,31 @@ class PageRankEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        damping_factor : Optional[float], default=None
+        damping_factor : float | None, default=None
             The damping factor controls the probability of a random jump to a random node
-        tolerance : Optional[float], default=None
+        tolerance : float | None, default=None
             Minimum change in scores between iterations
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             The maximum number of iterations to run
-        scaler : Optional[Any], default=None
+        scaler : Any | None, default=None
             Configuration for scaling the scores
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationships types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             The property name that contains weight
-        source_nodes : Optional[Any], default=None
+        source_nodes : Any | None, default=None
             The source nodes for personalized PageRank
 
         Returns
@@ -202,20 +202,20 @@ class PageRankEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        damping_factor: Optional[float] = None,
-        tolerance: Optional[float] = None,
-        max_iterations: Optional[int] = None,
-        scaler: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        damping_factor: float | None = None,
+        tolerance: float | None = None,
+        max_iterations: int | None = None,
+        scaler: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
-        source_nodes: Optional[Any] = None,
-        write_concurrency: Optional[int] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        relationship_weight_property: str | None = None,
+        source_nodes: Any | None = None,
+        write_concurrency: int | None = None,
     ) -> PageRankWriteResult:
         """
         Runs the PageRank algorithm and stores the result in the Neo4j database as a new node property.
@@ -229,33 +229,33 @@ class PageRankEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             Name of the node property to store the results in.
-        damping_factor : Optional[float], default=None
+        damping_factor : float | None, default=None
             Probability of a jump to a random node.
-        tolerance : Optional[float], default=None
+        tolerance : float | None, default=None
             Minimum change in scores between iterations.
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             Maximum number of iterations to run.
-        scaler : Optional[Any], default=None
+        scaler : Any | None, default=None
             Name of the scaler applied on the resulting scores.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Disable the memory guard.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Display progress logging.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             Number of threads to use for running the algorithm.
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             Identifier for the job.
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
-        source_nodes : Optional[Any], default=None
+        source_nodes : Any | None, default=None
             List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.
-        write_concurrency : Optional[int], default=None
+        write_concurrency : int | None, default=None
             The number of concurrent threads used for writing
 
         Returns
@@ -268,41 +268,41 @@ class PageRankEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        damping_factor: Optional[float] = None,
-        tolerance: Optional[float] = None,
-        max_iterations: Optional[int] = None,
-        scaler: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
-        source_nodes: Optional[Any] = None,
+        G: GraphV2 | dict[str, Any],
+        damping_factor: float | None = None,
+        tolerance: float | None = None,
+        max_iterations: int | None = None,
+        scaler: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
+        relationship_weight_property: str | None = None,
+        source_nodes: Any | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
-        damping_factor : Optional[float], default=None
+        damping_factor : float | None, default=None
             The damping factor controls the probability of a random jump to a random node
-        tolerance : Optional[float], default=None
+        tolerance : float | None, default=None
             Minimum change in scores between iterations
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             The maximum number of iterations to run
-        scaler : Optional[Any], default=None
+        scaler : Any | None, default=None
             Configuration for scaling the scores
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationships types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             The property name that contains weight
-        source_nodes : Optional[Any], default=None
+        source_nodes : Any | None, default=None
             The source nodes for personalized PageRank
 
         Returns

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import Optional
 
 from graphdatascience.model.v2.model_api import ModelApi
 from graphdatascience.model.v2.model_details import ModelDetails
@@ -39,7 +38,7 @@ class Model(ABC):
         """
         return self._model_api.exists(self._name)
 
-    def drop(self, failIfMissing: bool = False) -> Optional[ModelDetails]:
+    def drop(self, failIfMissing: bool = False) -> ModelDetails | None:
         """
         Drop the model.
 

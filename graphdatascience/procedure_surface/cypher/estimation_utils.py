@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Any, Optional, Union
+from typing import Any
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
@@ -10,8 +10,8 @@ from graphdatascience.query_runner.query_runner import QueryRunner
 def estimate_algorithm(
     endpoint: str,
     query_runner: QueryRunner,
-    G: Union[GraphV2, dict[str, Any]],
-    algo_config: Optional[dict[str, Any]] = None,
+    G: GraphV2 | dict[str, Any],
+    algo_config: dict[str, Any] | None = None,
 ) -> EstimationResult:
     """
     Estimate the memory consumption of an algorithm run.
@@ -25,11 +25,11 @@ def estimate_algorithm(
         The query runner to use for the estimation call
     endpoint : str
         The full endpoint name for the estimation procedure (e.g., "gds.kcore.stats.estimate")
-    G : Optional[GraphV2], optional
+    G : GraphV2 | None, optional
         The graph to be used in the estimation
-    projection_config : Optional[dict[str, Any]], optional
+    projection_config : dict[str, Any] | None, optional
         Configuration dictionary for the projection
-    algo_config : Optional[dict[str, Any]], optional
+    algo_config : dict[str, Any] | None, optional
         Additional algorithm-specific configuration parameters
 
     Returns
@@ -42,7 +42,7 @@ def estimate_algorithm(
     ValueError
         If neither G nor projection_config is provided
     """
-    config: Union[dict[str, Any]] = OrderedDict()
+    config: dict[str, Any] = OrderedDict()
 
     if isinstance(G, GraphV2):
         config["graphNameOrConfiguration"] = G.name()

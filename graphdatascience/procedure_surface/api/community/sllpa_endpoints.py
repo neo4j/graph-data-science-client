@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -18,15 +18,15 @@ class SllpaEndpoints(ABC):
         mutate_property: str,
         *,
         max_iterations: int,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        min_association_strength: Optional[float] = None,
-        node_labels: Optional[List[str]] = None,
-        partitioning: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        min_association_strength: float | None = None,
+        node_labels: list[str] | None = None,
+        partitioning: Any | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> SllpaMutateResult:
         """
         Executes the Speaker-Listener Label Propagation algorithm (SLLPA) and writes the results to the in-memory graph as node properties.
@@ -39,23 +39,23 @@ class SllpaEndpoints(ABC):
             The property name to store the community ID for each node
         max_iterations : int
             Maximum number of iterations for the algorithm
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        min_association_strength : Optional[float], default=None
+        min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter nodes with specific labels
-        partitioning : Optional[Any], default=None
+        partitioning : Any | None, default=None
             Partitioning configuration for the algorithm
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter relationships with specific types
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Run with elevated privileges
-        username : Optional[str], default=None
+        username : str | None, default=None
             Username for authentication
 
         Returns
@@ -71,15 +71,15 @@ class SllpaEndpoints(ABC):
         G: GraphV2,
         *,
         max_iterations: int,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        min_association_strength: Optional[float] = None,
-        node_labels: Optional[List[str]] = None,
-        partitioning: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        min_association_strength: float | None = None,
+        node_labels: list[str] | None = None,
+        partitioning: Any | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> SllpaStatsResult:
         """
         Executes the Speaker-Listener Label Propagation algorithm (SLLPA) and returns statistics about the communities.
@@ -88,23 +88,23 @@ class SllpaEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        min_association_strength : Optional[float], default=None
+        min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter nodes with specific labels
-        partitioning : Optional[Any], default=None
+        partitioning : Any | None, default=None
             Partitioning configuration for the algorithm
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter relationships with specific types
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Run with elevated privileges
-        username : Optional[str], default=None
+        username : str | None, default=None
             Username for authentication
 
         Returns
@@ -120,15 +120,15 @@ class SllpaEndpoints(ABC):
         G: GraphV2,
         *,
         max_iterations: int,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        min_association_strength: Optional[float] = None,
-        node_labels: Optional[List[str]] = None,
-        partitioning: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        min_association_strength: float | None = None,
+        node_labels: list[str] | None = None,
+        partitioning: Any | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> DataFrame:
         """
         Executes the Speaker-Listener Label Propagation algorithm (SLLPA) and returns the results as a DataFrame.
@@ -137,23 +137,23 @@ class SllpaEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        min_association_strength : Optional[float], default=None
+        min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter nodes with specific labels
-        partitioning : Optional[Any], default=None
+        partitioning : Any | None, default=None
             Partitioning configuration for the algorithm
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter relationships with specific types
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Run with elevated privileges
-        username : Optional[str], default=None
+        username : str | None, default=None
             Username for authentication
 
         Returns
@@ -170,16 +170,16 @@ class SllpaEndpoints(ABC):
         write_property: str,
         *,
         max_iterations: int,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        min_association_strength: Optional[float] = None,
-        node_labels: Optional[List[str]] = None,
-        partitioning: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
-        write_concurrency: Optional[int] = None,
+        min_association_strength: float | None = None,
+        node_labels: list[str] | None = None,
+        partitioning: Any | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
+        write_concurrency: int | None = None,
     ) -> SllpaWriteResult:
         """
         Executes the Speaker-Listener Label Propagation algorithm (SLLPA) and writes the results back to the database.
@@ -190,25 +190,25 @@ class SllpaEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to store the community ID for each node in the database
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        min_association_strength : Optional[float], default=None
+        min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter nodes with specific labels
-        partitioning : Optional[Any], default=None
+        partitioning : Any | None, default=None
             Partitioning configuration for the algorithm
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter relationships with specific types
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Run with elevated privileges
-        username : Optional[str], default=None
+        username : str | None, default=None
             Username for authentication
-        write_concurrency : Optional[int], default=None
+        write_concurrency : int | None, default=None
             The number of concurrent threads for writing
 
         Returns
@@ -221,31 +221,31 @@ class SllpaEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
+        G: GraphV2 | dict[str, Any],
         *,
         max_iterations: int,
-        concurrency: Optional[int] = None,
-        min_association_strength: Optional[float] = None,
-        node_labels: Optional[List[str]] = None,
-        partitioning: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
+        concurrency: int | None = None,
+        min_association_strength: float | None = None,
+        node_labels: list[str] | None = None,
+        partitioning: Any | None = None,
+        relationship_types: list[str] | None = None,
     ) -> EstimationResult:
         """
         Estimates the memory consumption for running the Speaker-Listener Label Propagation algorithm (SLLPA).
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph to estimate for, or a graph configuration dictionary
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        min_association_strength : Optional[float], default=None
+        min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter nodes with specific labels
-        partitioning : Optional[Any], default=None
+        partitioning : Any | None, default=None
             Partitioning configuration for the algorithm
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter relationships with specific types
 
         Returns

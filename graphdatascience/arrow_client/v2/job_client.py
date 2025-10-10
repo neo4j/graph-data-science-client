@@ -1,5 +1,5 @@
 import json
-from typing import Any, Optional
+from typing import Any
 
 from pandas import ArrowDtype, DataFrame
 from pyarrow._flight import Ticket
@@ -16,7 +16,7 @@ RESULTS_SUMMARY_ENDPOINT = "v2/results.summary"
 
 
 class JobClient:
-    def __init__(self, progress_bar_options: Optional[dict[str, Any]] = None):
+    def __init__(self, progress_bar_options: dict[str, Any] | None = None):
         self._progress_bar_options = progress_bar_options or {}
 
     @staticmethod
@@ -39,9 +39,9 @@ class JobClient:
         client: AuthenticatedArrowClient,
         job_id: str,
         show_progress: bool,
-        termination_flag: Optional[TerminationFlag] = None,
+        termination_flag: TerminationFlag | None = None,
     ) -> None:
-        progress_bar: Optional[TqdmProgressBar] = None
+        progress_bar: TqdmProgressBar | None = None
 
         if termination_flag is None:
             termination_flag = TerminationFlag.create()

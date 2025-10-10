@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional, Union
+from typing import Any
 
 from pandas import DataFrame, Series
 
@@ -62,7 +62,7 @@ class ModelProcRunner(ModelResolver):
         else:
             endpoint = "gds.model.list"
             yields = ["modelType"]
-            result: Union[str, Series[Any]] = self._query_runner.call_procedure(
+            result: str | Series[Any] = self._query_runner.call_procedure(
                 endpoint=endpoint, params=params, yields=yields, custom_error=False
             ).squeeze()
             model_type = result if isinstance(result, str) else None
@@ -115,7 +115,7 @@ class ModelProcRunner(ModelResolver):
         return self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()  # type: ignore
 
     @compatible_with("list", min_inclusive=ServerVersion(2, 5, 0))
-    def list(self, model: Optional[Model] = None) -> DataFrame:
+    def list(self, model: Model | None = None) -> DataFrame:
         self._namespace += ".list"
 
         params = CallParameters()

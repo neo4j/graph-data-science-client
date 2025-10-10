@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -19,7 +19,7 @@ class SllpaArrowEndpoints(SllpaEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: Optional[RemoteWriteBackClient] = None,
+        write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = False,
     ):
         self._node_property_endpoints = NodePropertyEndpoints(
@@ -32,15 +32,15 @@ class SllpaArrowEndpoints(SllpaEndpoints):
         mutate_property: str,
         *,
         max_iterations: int,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        min_association_strength: Optional[float] = None,
-        node_labels: Optional[List[str]] = None,
-        partitioning: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        min_association_strength: float | None = None,
+        node_labels: list[str] | None = None,
+        partitioning: Any | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> SllpaMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -65,15 +65,15 @@ class SllpaArrowEndpoints(SllpaEndpoints):
         G: GraphV2,
         *,
         max_iterations: int,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        min_association_strength: Optional[float] = None,
-        node_labels: Optional[List[str]] = None,
-        partitioning: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        min_association_strength: float | None = None,
+        node_labels: list[str] | None = None,
+        partitioning: Any | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> SllpaStatsResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -98,15 +98,15 @@ class SllpaArrowEndpoints(SllpaEndpoints):
         G: GraphV2,
         *,
         max_iterations: int,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        min_association_strength: Optional[float] = None,
-        node_labels: Optional[List[str]] = None,
-        partitioning: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        min_association_strength: float | None = None,
+        node_labels: list[str] | None = None,
+        partitioning: Any | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -130,16 +130,16 @@ class SllpaArrowEndpoints(SllpaEndpoints):
         write_property: str,
         *,
         max_iterations: int,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        min_association_strength: Optional[float] = None,
-        node_labels: Optional[List[str]] = None,
-        partitioning: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
-        write_concurrency: Optional[int] = None,
+        min_association_strength: float | None = None,
+        node_labels: list[str] | None = None,
+        partitioning: Any | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
+        write_concurrency: int | None = None,
     ) -> SllpaWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -163,14 +163,14 @@ class SllpaArrowEndpoints(SllpaEndpoints):
 
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
+        G: GraphV2 | dict[str, Any],
         *,
         max_iterations: int,
-        concurrency: Optional[int] = None,
-        min_association_strength: Optional[float] = None,
-        node_labels: Optional[List[str]] = None,
-        partitioning: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
+        concurrency: int | None = None,
+        min_association_strength: float | None = None,
+        node_labels: list[str] | None = None,
+        partitioning: Any | None = None,
+        relationship_types: list[str] | None = None,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(
             max_iterations=max_iterations,

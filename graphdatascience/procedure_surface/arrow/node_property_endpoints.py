@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -22,14 +22,14 @@ class NodePropertyEndpoints:
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: Optional[RemoteWriteBackClient] = None,
+        write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
         self._arrow_client = arrow_client
         self._write_back_client = write_back_client
         self._show_progress = show_progress
 
-    def run_job_and_get_summary(self, endpoint: str, G: GraphV2, config: Dict[str, Any]) -> Dict[str, Any]:
+    def run_job_and_get_summary(self, endpoint: str, G: GraphV2, config: dict[str, Any]) -> dict[str, Any]:
         """Run a job and return the computation summary."""
         show_progress: bool = config.get("logProgress", True) and self._show_progress
 
@@ -37,8 +37,8 @@ class NodePropertyEndpoints:
         return JobClient.get_summary(self._arrow_client, job_id)
 
     def run_job_and_mutate(
-        self, endpoint: str, G: GraphV2, config: Dict[str, Any], mutate_property: str
-    ) -> Dict[str, Any]:
+        self, endpoint: str, G: GraphV2, config: dict[str, Any], mutate_property: str
+    ) -> dict[str, Any]:
         """Run a job, mutate node properties, and return summary with mutation result."""
         show_progress = config.get("logProgress", True) and self._show_progress
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress)
@@ -58,7 +58,7 @@ class NodePropertyEndpoints:
 
         return computation_result
 
-    def run_job_and_stream(self, endpoint: str, G: GraphV2, config: Dict[str, Any]) -> DataFrame:
+    def run_job_and_stream(self, endpoint: str, G: GraphV2, config: dict[str, Any]) -> DataFrame:
         """Run a job and return streamed results."""
         show_progress = config.get("logProgress", True) and self._show_progress
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress=show_progress)
@@ -68,11 +68,11 @@ class NodePropertyEndpoints:
         self,
         endpoint: str,
         G: GraphV2,
-        config: Dict[str, Any],
-        write_concurrency: Optional[int] = None,
-        concurrency: Optional[int] = None,
-        property_overwrites: Optional[Union[str, dict[str, str]]] = None,
-    ) -> Dict[str, Any]:
+        config: dict[str, Any],
+        write_concurrency: int | None = None,
+        concurrency: int | None = None,
+        property_overwrites: str | dict[str, str] | None = None,
+    ) -> dict[str, Any]:
         """Run a job, write results, and return summary with write time."""
         show_progress = config.get("logProgress", True) and self._show_progress
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress=show_progress)
@@ -98,19 +98,19 @@ class NodePropertyEndpoints:
 
         return computation_result
 
-    def create_base_config(self, G: GraphV2, **kwargs: Any) -> Dict[str, Any]:
+    def create_base_config(self, G: GraphV2, **kwargs: Any) -> dict[str, Any]:
         """Create base configuration with common parameters."""
         return ConfigConverter.convert_to_gds_config(graph_name=G.name(), **kwargs)
 
-    def create_estimate_config(self, **kwargs: Any) -> Dict[str, Any]:
+    def create_estimate_config(self, **kwargs: Any) -> dict[str, Any]:
         """Create configuration for estimation."""
         return ConfigConverter.convert_to_gds_config(**kwargs)
 
     def estimate(
         self,
         estimate_endpoint: str,
-        G: Union[GraphV2, dict[str, Any]],
-        algo_config: Optional[dict[str, Any]] = None,
+        G: GraphV2 | dict[str, Any],
+        algo_config: dict[str, Any] | None = None,
     ) -> EstimationResult:
         """Estimate memory requirements for the algorithm."""
         if isinstance(G, GraphV2):

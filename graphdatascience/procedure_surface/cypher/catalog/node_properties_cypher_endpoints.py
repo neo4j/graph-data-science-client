@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -17,23 +17,23 @@ from graphdatascience.query_runner.query_runner import QueryRunner
 
 
 class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
-    def __init__(self, query_runner: QueryRunner, gds_arrow_client: Optional[GdsArrowClient] = None):
+    def __init__(self, query_runner: QueryRunner, gds_arrow_client: GdsArrowClient | None = None):
         self._query_runner = query_runner
         self._gds_arrow_client = gds_arrow_client
 
     def stream(
         self,
         G: GraphV2,
-        node_properties: Union[str, List[str]],
+        node_properties: str | list[str],
         *,
-        list_node_labels: Optional[bool] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        list_node_labels: bool | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,  # setting the job id is not supported by the Cypher procedure
-        db_node_properties: Optional[List[str]] = None,
+        username: str | None = None,
+        job_id: Any | None = None,  # setting the job id is not supported by the Cypher procedure
+        db_node_properties: list[str] | None = None,
     ) -> DataFrame:
         if self._gds_arrow_client is not None:
             database = self._query_runner.database()
@@ -70,15 +70,15 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
     def write(
         self,
         G: GraphV2,
-        node_properties: Union[str, List[str], dict[str, str]],
+        node_properties: str | list[str] | dict[str, str],
         *,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
+        write_concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        job_id: Any | None = None,
     ) -> NodePropertiesWriteResult:
         node_property_spec = NodePropertySpec(node_properties)
 
@@ -108,11 +108,11 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
     def drop(
         self,
         G: GraphV2,
-        node_properties: List[str],
+        node_properties: list[str],
         *,
-        fail_if_missing: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        username: Optional[str] = None,
+        fail_if_missing: bool | None = None,
+        concurrency: Any | None = None,
+        username: str | None = None,
     ) -> NodePropertiesDropResult:
         config = ConfigConverter.convert_to_gds_config(
             fail_if_missing=fail_if_missing,

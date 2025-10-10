@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from pandas import DataFrame, Series
 
@@ -9,7 +9,7 @@ from .model import Model
 
 
 class ModelBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
-    def list(self, model: Optional[Model] = None) -> DataFrame:
+    def list(self, model: Model | None = None) -> DataFrame:
         self._namespace += ".list"
 
         params = CallParameters()

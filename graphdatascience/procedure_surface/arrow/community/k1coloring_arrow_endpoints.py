@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -19,7 +19,7 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: Optional[RemoteWriteBackClient] = None,
+        write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
         self._node_property_endpoints = NodePropertyEndpoints(
@@ -30,15 +30,15 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
         self,
         G: GraphV2,
         mutate_property: str,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> K1ColoringMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -60,15 +60,15 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
     def stats(
         self,
         G: GraphV2,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> K1ColoringStatsResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -90,16 +90,16 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
     def stream(
         self,
         G: GraphV2,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        min_community_size: Optional[int] = None,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        min_community_size: int | None = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -121,17 +121,17 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
         self,
         G: GraphV2,
         write_property: str,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        write_concurrency: Optional[int] = None,
-        min_community_size: Optional[int] = None,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        write_concurrency: int | None = None,
+        min_community_size: int | None = None,
     ) -> K1ColoringWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -155,12 +155,12 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
 
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
+        G: GraphV2 | dict[str, Any],
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(
             batch_size=batch_size,

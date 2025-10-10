@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from typing import Optional
 
 from neo4j import Auth, basic_auth
 
@@ -15,11 +14,11 @@ class DbmsConnectionInfo:
     """
 
     uri: str
-    username: Optional[str] = None
-    password: Optional[str] = None
-    database: Optional[str] = None
+    username: str | None = None
+    password: str | None = None
+    database: str | None = None
     # Optional: typed authentication, used instead of username/password. Supports for example a token. See https://neo4j.com/docs/python-manual/current/connect-advanced/#authentication-methods
-    auth: Optional[Auth] = None
+    auth: Auth | None = None
 
     def __post_init__(self) -> None:
         # Validate auth fields
@@ -29,7 +28,7 @@ class DbmsConnectionInfo:
                 "Please provide either a username/password or a token."
             )
 
-    def get_auth(self) -> Optional[Auth]:
+    def get_auth(self) -> Auth | None:
         """
         Returns:
             A neo4j.Auth object for authentication.

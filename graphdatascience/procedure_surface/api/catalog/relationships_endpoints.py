@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 from pydantic import AliasChoices, Field, field_validator
@@ -16,13 +16,13 @@ class RelationshipsEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        relationship_properties: Optional[list[str]] = None,
+        relationship_types: list[str] | None = None,
+        relationship_properties: list[str] | None = None,
         *,
-        concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
+        username: str | None = None,
     ) -> DataFrame:
         """
         Streams all relationships of the specified types with the specified properties.
@@ -31,18 +31,18 @@ class RelationshipsEndpoints(ABC):
         ----------
         G : Graph
             The graph to stream relationships from
-        relationship_types: Optional[List[str]], default = None
+        relationship_types: list[str] | None, default = None
             The relationship types to stream
             If not specified, all relationships in the graph will be streamed.
-        relationship_properties: Optional[List[str]], default = None
+        relationship_properties: list[str] | None, default = None
             The relationship properties to stream. If not specified, no properties will be streamed.
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
         Returns
         -------
@@ -56,14 +56,14 @@ class RelationshipsEndpoints(ABC):
         self,
         G: GraphV2,
         relationship_type: str,
-        relationship_properties: Optional[list[str]] = None,
+        relationship_properties: list[str] | None = None,
         *,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        concurrency: Any | None = None,
+        write_concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        job_id: Any | None = None,
     ) -> RelationshipsWriteResult:
         """
         Writes all relationships of the specified relationship type with the specified properties from the graph to the database.
@@ -74,19 +74,19 @@ class RelationshipsEndpoints(ABC):
             The graph to write relationships from
         relationship_type : str
             The relationship type to write to the database
-        relationship_properties: Optional[List[str]], default = None
+        relationship_properties: list[str] | None, default = None
             The relationship properties to write. If not specified, no properties will be written.
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        write_concurrency : Optional[Any], default=None
+        write_concurrency : Any | None, default=None
             The number of concurrent threads used for writing
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
         Returns
         -------
@@ -127,11 +127,11 @@ class RelationshipsEndpoints(ABC):
         G: GraphV2,
         relationship_types: list[str],
         *,
-        concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        job_id: Any | None = None,
     ) -> RelationshipsInverseIndexResult:
         """
         Creates an index of the specified relationships indexing the reverse direction of each relationship.
@@ -141,17 +141,17 @@ class RelationshipsEndpoints(ABC):
         ----------
         G : Graph
             The graph to operate on
-        relationship_types: Optional[List[str]] = None,
+        relationship_types: list[str] | None = None,
             The relationship types to create the inverse index for
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
         Returns
         -------
@@ -166,12 +166,12 @@ class RelationshipsEndpoints(ABC):
         relationship_type: str,
         mutate_relationship_type: str,
         *,
-        aggregation: Optional[Union[Aggregation, dict[str, Aggregation]]] = None,
-        concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        aggregation: Aggregation | dict[str, Aggregation] | None = None,
+        concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        job_id: Any | None = None,
     ) -> RelationshipsToUndirectedResult:
         """
         Creates a new relationship type in the graph.
@@ -185,19 +185,19 @@ class RelationshipsEndpoints(ABC):
             The input relationship type
         mutate_relationship_type: str,
             The name of the undirected relationship type to create
-        aggregation: Optional[Union[Aggregation, dict[str, Aggregation]]] = None,
+        aggregation: Aggregation | dict[str, Aggregation] | None = None,
             Specifies how to aggregate parallel relationships in the graph.
             If a single aggregation is provided, it will be used for properties of the specified relationships.
             A dictionary can be provided to specify property specific aggregations.
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
         Returns
         -------

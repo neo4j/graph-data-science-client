@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -26,13 +26,13 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         self,
         G: GraphV2,
         mutate_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> ArticulationPointsMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             mutate_property=mutate_property,
@@ -58,13 +58,13 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
     def stats(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> ArticulationPointsStatsResult:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -89,13 +89,13 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -119,14 +119,14 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         self,
         G: GraphV2,
         write_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        write_concurrency: Any | None = None,
     ) -> ArticulationPointsWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             write_property=write_property,
@@ -152,10 +152,10 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
 
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
+        G: GraphV2 | dict[str, Any],
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
     ) -> EstimationResult:
         # Build algorithm configuration mirroring other algorithms (see CELF implementation)
         algo_config = ConfigConverter.convert_to_gds_config(

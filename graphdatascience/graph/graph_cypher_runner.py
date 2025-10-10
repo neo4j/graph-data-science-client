@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from itertools import chain, zip_longest
-from typing import Any, Optional
+from typing import Any
 
 from pandas import Series
 
@@ -24,7 +24,7 @@ class GraphCypherRunner(CallerBase):
     def project(
         self,
         query: str,
-        database: Optional[str] = None,
+        database: str | None = None,
         **params: Any,
     ) -> GraphCreateResult:
         """
@@ -37,7 +37,7 @@ class GraphCypherRunner(CallerBase):
             the Cypher projection query
         database: str
             the database on which to run the query
-        params: Dict[str, Any]
+        params: dict[str, Any]
             parameters to the query
 
         Returns
@@ -47,7 +47,7 @@ class GraphCypherRunner(CallerBase):
 
         GraphCypherRunner._verify_query_ends_with_return_clause(self._namespace, query)
 
-        result: Optional[dict[str, Any]] = self._query_runner.run_retryable_cypher(
+        result: dict[str, Any] | None = self._query_runner.run_retryable_cypher(
             query, params, database, custom_error=False, mode=QueryMode.READ
         ).squeeze()
 

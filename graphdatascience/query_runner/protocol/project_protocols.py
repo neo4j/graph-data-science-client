@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from logging import DEBUG, getLogger
-from typing import Any, Optional
+from typing import Any
 
 from pandas import DataFrame
 from tenacity import retry, retry_if_result, wait_incrementing
@@ -28,8 +28,8 @@ class ProjectProtocol(ABC):
         endpoint: str,
         params: CallParameters,
         terminationFlag: TerminationFlag,
-        yields: Optional[list[str]] = None,
-        database: Optional[str] = None,
+        yields: list[str] | None = None,
+        database: str | None = None,
         logging: bool = False,
     ) -> DataFrame:
         """Returns the procedure name for the corresponding protocol version."""
@@ -63,8 +63,8 @@ class ProjectProtocolV1(ProjectProtocol):
         endpoint: str,
         params: CallParameters,
         terminationFlag: TerminationFlag,
-        yields: Optional[list[str]] = None,
-        database: Optional[str] = None,
+        yields: list[str] | None = None,
+        database: str | None = None,
         logging: bool = False,
     ) -> DataFrame:
         versioned_endpoint = ProtocolVersion.V1.versioned_procedure_name(endpoint)
@@ -94,8 +94,8 @@ class ProjectProtocolV2(ProjectProtocol):
         endpoint: str,
         params: CallParameters,
         terminationFlag: TerminationFlag,
-        yields: Optional[list[str]] = None,
-        database: Optional[str] = None,
+        yields: list[str] | None = None,
+        database: str | None = None,
         logging: bool = False,
     ) -> DataFrame:
         versioned_endpoint = ProtocolVersion.V2.versioned_procedure_name(endpoint)
@@ -126,8 +126,8 @@ class ProjectProtocolV3(ProjectProtocol):
         endpoint: str,
         params: CallParameters,
         termination_flag: TerminationFlag,
-        yields: Optional[list[str]] = None,
-        database: Optional[str] = None,
+        yields: list[str] | None = None,
+        database: str | None = None,
         logging: bool = False,
     ) -> DataFrame:
         def is_not_done(result: DataFrame) -> bool:

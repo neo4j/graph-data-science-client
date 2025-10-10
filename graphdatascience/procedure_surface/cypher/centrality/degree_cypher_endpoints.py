@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -24,15 +24,15 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         self,
         G: GraphV2,
         mutate_property: str,
-        orientation: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        orientation: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        relationship_weight_property: str | None = None,
     ) -> DegreeMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             mutateProperty=mutate_property,
@@ -61,15 +61,15 @@ class DegreeCypherEndpoints(DegreeEndpoints):
     def stats(
         self,
         G: GraphV2,
-        orientation: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        orientation: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        relationship_weight_property: str | None = None,
     ) -> DegreeStatsResult:
         config = ConfigConverter.convert_to_gds_config(
             orientation=orientation,
@@ -97,15 +97,15 @@ class DegreeCypherEndpoints(DegreeEndpoints):
     def stream(
         self,
         G: GraphV2,
-        orientation: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        orientation: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        relationship_weight_property: str | None = None,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
             orientation=orientation,
@@ -131,16 +131,16 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         self,
         G: GraphV2,
         write_property: str,
-        orientation: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        orientation: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
-        write_concurrency: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        relationship_weight_property: str | None = None,
+        write_concurrency: Any | None = None,
     ) -> DegreeWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             writeProperty=write_property,
@@ -168,12 +168,12 @@ class DegreeCypherEndpoints(DegreeEndpoints):
 
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        orientation: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
+        G: GraphV2 | dict[str, Any],
+        orientation: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
+        relationship_weight_property: str | None = None,
     ) -> EstimationResult:
         algo_config = ConfigConverter.convert_to_gds_config(
             orientation=orientation,

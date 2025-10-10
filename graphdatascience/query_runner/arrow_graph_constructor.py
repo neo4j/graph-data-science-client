@@ -5,7 +5,7 @@ import logging
 import math
 import warnings
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Optional
+from typing import Any
 
 import numpy
 from pandas import DataFrame
@@ -22,7 +22,7 @@ class ArrowGraphConstructor(GraphConstructor):
         graph_name: str,
         flight_client: GdsArrowClient,
         concurrency: int,
-        undirected_relationship_types: Optional[list[str]],
+        undirected_relationship_types: list[str] | None,
         chunk_size: int = 10_000,
     ):
         self._database = database

@@ -1,7 +1,7 @@
 import dataclasses
 import re
 from datetime import datetime, timedelta, timezone
-from typing import Optional, cast
+from typing import cast
 
 import pytest
 from pytest_mock import MockerFixture
@@ -31,10 +31,10 @@ from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryV
 class FakeAuraApi(AuraApi):
     def __init__(
         self,
-        existing_instances: Optional[list[InstanceSpecificDetails]] = None,
-        existing_sessions: Optional[list[SessionDetailsWithErrors]] = None,
+        existing_instances: list[InstanceSpecificDetails] | None = None,
+        existing_sessions: list[SessionDetailsWithErrors] | None = None,
         status_after_creating: str = "Ready",
-        size_estimation: Optional[EstimationDetails] = None,
+        size_estimation: EstimationDetails | None = None,
         client_id: str = "client_id",
         console_user: str = "user-1",
         admin_user: str = "",
@@ -57,9 +57,9 @@ class FakeAuraApi(AuraApi):
         self,
         name: str,
         memory: SessionMemoryValue,
-        dbid: Optional[str] = None,
-        ttl: Optional[timedelta] = None,
-        cloud_location: Optional[CloudLocation] = None,
+        dbid: str | None = None,
+        ttl: timedelta | None = None,
+        cloud_location: CloudLocation | None = None,
     ) -> SessionDetails:
         if not cloud_location and dbid:
             instance_details = self.list_instance(dbid)
@@ -156,7 +156,7 @@ class FakeAuraApi(AuraApi):
     def delete_instance(self, instance_id: str) -> InstanceSpecificDetails:
         return self._instances.pop(instance_id)
 
-    def list_sessions(self, dbid: Optional[str] = None) -> list[SessionDetailsWithErrors]:
+    def list_sessions(self, dbid: str | None = None) -> list[SessionDetailsWithErrors]:
         if dbid:
             self._mimic_paused_db_behaviour(dbid)
 
@@ -172,7 +172,7 @@ class FakeAuraApi(AuraApi):
     def list_instances(self) -> list[InstanceDetails]:
         return [v for _, v in self._instances.items()]
 
-    def get_session(self, session_id: str) -> Optional[SessionDetails]:
+    def get_session(self, session_id: str) -> SessionDetails | None:
         matched_session = self._sessions.get(session_id, None)
 
         if matched_session:
@@ -186,7 +186,7 @@ class FakeAuraApi(AuraApi):
         else:
             return None
 
-    def list_instance(self, instance_id: str) -> Optional[InstanceSpecificDetails]:
+    def list_instance(self, instance_id: str) -> InstanceSpecificDetails | None:
         matched_instances = self._instances.get(instance_id, None)
 
         if matched_instances:

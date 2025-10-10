@@ -8,7 +8,7 @@ import time
 import warnings
 from dataclasses import dataclass
 from types import TracebackType
-from typing import Any, Callable, Dict, Iterable, List, Optional, Type, Union
+from typing import Any, Callable, Iterable, Type
 
 import pandas
 import pyarrow
@@ -49,13 +49,13 @@ class GdsArrowClient:
     @staticmethod
     def create(
         arrow_info: ArrowInfo,
-        auth: Optional[Union[ArrowAuthentication, tuple[str, str]]] = None,
+        auth: ArrowAuthentication | tuple[str, str] | None = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
-        tls_root_certs: Optional[bytes] = None,
-        connection_string_override: Optional[str] = None,
-        retry_config: Optional[RetryConfig] = None,
-        arrow_client_options: Optional[dict[str, Any]] = None,
+        tls_root_certs: bytes | None = None,
+        connection_string_override: str | None = None,
+        retry_config: RetryConfig | None = None,
+        arrow_client_options: dict[str, Any] | None = None,
     ) -> GdsArrowClient:
         connection_string: str
         if connection_string_override is not None:
@@ -83,14 +83,14 @@ class GdsArrowClient:
         self,
         host: str,
         port: int = 8491,
-        auth: Optional[Union[ArrowAuthentication, tuple[str, str]]] = None,
+        auth: ArrowAuthentication | tuple[str, str] | None = None,
         encrypted: bool = False,
         disable_server_verification: bool = False,
-        tls_root_certs: Optional[bytes] = None,
+        tls_root_certs: bytes | None = None,
         arrow_endpoint_version: ArrowEndpointVersion = ArrowEndpointVersion.V1,
-        user_agent: Optional[str] = None,
-        retry_config: Optional[RetryConfig] = None,
-        arrow_client_options: Optional[dict[str, Any]] = None,
+        user_agent: str | None = None,
+        retry_config: RetryConfig | None = None,
+        arrow_client_options: dict[str, Any] | None = None,
     ):
         """Creates a new GdsArrowClient instance.
 
@@ -100,7 +100,7 @@ class GdsArrowClient:
             The host address of the GDS Arrow server
         port: int
             The host port of the GDS Arrow server (default is 8491)
-        auth: Optional[Union[ArrowAuthentication, tuple[str, str]]]
+        auth: Optional[ArrowAuthentication | tuple[str, str]]
             Either an implementation of ArrowAuthentication providing a pair to be used for basic authentication, or a username, password tuple
         encrypted: bool
             A flag that indicates whether the connection should be encrypted (default is False)
@@ -108,17 +108,17 @@ class GdsArrowClient:
             .. deprecated:: 1.16
                 Use arrow_client_options instead
             A flag that disables server verification for TLS connections (default is False)
-        tls_root_certs: Optional[bytes]
+        tls_root_certs: bytes | None
             .. deprecated:: 1.16
                 Use arrow_client_options instead
             PEM-encoded certificates that are used for the connection to the GDS Arrow Flight server
         arrow_endpoint_version:
             The version of the Arrow endpoint to use (default is ArrowEndpointVersion.V1)
-        user_agent: Optional[str]
+        user_agent: str | None
             The user agent string to use for the connection. (default is `neo4j-graphdatascience-v[VERSION] pyarrow-v[PYARROW_VERSION])
-        retry_config: Optional[RetryConfig]
+        retry_config: RetryConfig | None
             The retry configuration to use for the Arrow requests send by the client.
-        arrow_client_options: Optional[dict[str, Any]]
+        arrow_client_options: dict[str, Any] | None
             Additional configuration for the Arrow flight client.
 
         """
@@ -199,13 +199,13 @@ class GdsArrowClient:
         """
         return self._host, self._port
 
-    def request_token(self) -> Optional[str]:
+    def request_token(self) -> str | None:
         """
         Requests a token from the server and returns it.
 
         Returns
         -------
-        Optional[str]
+        str | None
             a token from the server and returns it.
         """
 
@@ -232,10 +232,10 @@ class GdsArrowClient:
         self,
         graph_name: str,
         database: str,
-        node_properties: Union[str, List[str]],
-        node_labels: Optional[List[str]] = None,
+        node_properties: str | list[str],
+        node_labels: list[str] | None = None,
         list_node_labels: bool = False,
-        concurrency: Optional[int] = None,
+        concurrency: int | None = None,
     ) -> pandas.DataFrame:
         """
         Get node properties from the graph.
@@ -246,13 +246,13 @@ class GdsArrowClient:
             The name of the graph
         database : str
             The name of the database to which the graph belongs
-        node_properties : Union[str, List[str]]
+        node_properties : str | list[str]
             The name of the node properties to retrieve
-        node_labels : Optional[List[str]]
+        node_labels : list[str] | None
             A list of node labels to filter the nodes
         list_node_labels : bool
             A flag that indicates whether the node labels should be included in the result
-        concurrency : Optional[int]
+        concurrency : int | None
             The number of threads used on the server side when serving the data
 
         Returns
@@ -276,7 +276,7 @@ class GdsArrowClient:
 
         return self._do_get_with_retry(database, graph_name, proc, concurrency, config)
 
-    def get_node_labels(self, graph_name: str, database: str, concurrency: Optional[int] = None) -> pandas.DataFrame:
+    def get_node_labels(self, graph_name: str, database: str, concurrency: int | None = None) -> pandas.DataFrame:
         """
         Get all nodes and their labels from the graph.
 
@@ -286,7 +286,7 @@ class GdsArrowClient:
             The name of the graph
         database : str
             The name of the database to which the graph belongs
-        concurrency : Optional[int]
+        concurrency : int | None
             The number of threads used on the server side when serving the data
 
         Returns
@@ -297,7 +297,7 @@ class GdsArrowClient:
         return self._do_get_with_retry(database, graph_name, "gds.graph.nodeLabels.stream", concurrency, {})
 
     def get_relationships(
-        self, graph_name: str, database: str, relationship_types: list[str], concurrency: Optional[int] = None
+        self, graph_name: str, database: str, relationship_types: list[str], concurrency: int | None = None
     ) -> pandas.DataFrame:
         """
         Get relationships from the graph.
@@ -308,9 +308,9 @@ class GdsArrowClient:
             The name of the graph
         database : str
             The name of the database to which the graph belongs
-        relationship_types : List[str]
+        relationship_types : list[str]
             The name of the relationship types to retrieve
-        concurrency : Optional[int]
+        concurrency : int | None
             The number of threads used on the server side when serving the data
 
         Returns
@@ -330,9 +330,9 @@ class GdsArrowClient:
         self,
         graph_name: str,
         database: str,
-        relationship_properties: Union[str, list[str]],
+        relationship_properties: str | list[str],
         relationship_types: list[str],
-        concurrency: Optional[int] = None,
+        concurrency: int | None = None,
     ) -> pandas.DataFrame:
         """
         Get relationships and their properties from the graph.
@@ -343,11 +343,11 @@ class GdsArrowClient:
             The name of the graph
         database : str
             The name of the database to which the graph belongs
-        relationship_properties : Union[str, List[str]]
+        relationship_properties : str | list[str]
             The name of the relationship properties to retrieve
-        relationship_types : List[str]
+        relationship_types : list[str]
             The name of the relationship types to retrieve
-        concurrency : Optional[int]
+        concurrency : int | None
             The number of threads used on the server side when serving the data
 
         Returns
@@ -372,9 +372,9 @@ class GdsArrowClient:
         self,
         graph_name: str,
         database: str,
-        undirected_relationship_types: Optional[list[str]] = None,
-        inverse_indexed_relationship_types: Optional[list[str]] = None,
-        concurrency: Optional[int] = None,
+        undirected_relationship_types: list[str] | None = None,
+        inverse_indexed_relationship_types: list[str] | None = None,
+        concurrency: int | None = None,
     ) -> None:
         """
         Starts a new graph import process on the GDS server.
@@ -387,11 +387,11 @@ class GdsArrowClient:
             The name used to identify the graph in the catalog and the import process
         database: str
             The name of the database from which the graph will be accessible
-        undirected_relationship_types : Optional[List[str]]
+        undirected_relationship_types : list[str] | None
             A list of relationship types that should be treated as undirected
-        inverse_indexed_relationship_types : Optional[List[str]]
+        inverse_indexed_relationship_types : list[str] | None
             A list of relationship types that should be indexed in reverse direction as well
-        concurrency : Optional[int]
+        concurrency : int | None
             The number of threads used on the server side when importing the graph
         """
 
@@ -413,9 +413,9 @@ class GdsArrowClient:
         self,
         graph_name: str,
         database: str,
-        undirected_relationship_types: Optional[list[str]] = None,
-        inverse_indexed_relationship_types: Optional[list[str]] = None,
-        concurrency: Optional[int] = None,
+        undirected_relationship_types: list[str] | None = None,
+        inverse_indexed_relationship_types: list[str] | None = None,
+        concurrency: int | None = None,
     ) -> None:
         """
         Starts a new graph import process on the GDS server.
@@ -428,11 +428,11 @@ class GdsArrowClient:
             The name used to identify the graph in the catalog and the import process
         database: str
             The name of the database from which the graph will be accessible
-        undirected_relationship_types : Optional[List[str]]
+        undirected_relationship_types : list[str] | None
             A list of relationship types that should be treated as undirected
-        inverse_indexed_relationship_types : Optional[List[str]]
+        inverse_indexed_relationship_types : list[str] | None
             A list of relationship types that should be indexed in reverse direction as well
-        concurrency : Optional[int]
+        concurrency : int | None
             The number of threads used on the server side when importing the graph
         """
 
@@ -453,10 +453,10 @@ class GdsArrowClient:
     def create_database(
         self,
         database: str,
-        id_type: Optional[str] = None,
-        id_property: Optional[str] = None,
-        db_format: Optional[str] = None,
-        concurrency: Optional[int] = None,
+        id_type: str | None = None,
+        id_property: str | None = None,
+        db_format: str | None = None,
+        concurrency: int | None = None,
         force: bool = False,
         high_io: bool = False,
         use_bad_collector: bool = False,
@@ -470,13 +470,13 @@ class GdsArrowClient:
         ----------
         database: str
             The name used to identify the database and the import process
-        id_type : Optional[str]
+        id_type : str | None
             Sets the node id type used in the input data. Can be either `INTEGER` or `STRING` (default is `INTEGER`)
-        id_property : Optional[str]
+        id_property : str | None
             The node property key which stores the node id of the input data (default is `originalId`)
         db_format
             Database format. Valid values standard, aligned, high_limit or block (default is controlled by the db setting `db.db_format`)
-        concurrency : Optional[int]
+        concurrency : int | None
             The number of threads used on the server side when importing the graph
         force: bool
             Force deletes any existing database files prior to the import (default is False)
@@ -570,7 +570,7 @@ class GdsArrowClient:
     def upload_nodes(
         self,
         graph_name: str,
-        node_data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], pandas.DataFrame],
+        node_data: pyarrow.Table | Iterable[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10_000,
         progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
@@ -581,7 +581,7 @@ class GdsArrowClient:
         ----------
         graph_name : str
             The name of the import process
-        node_data : Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame]
+        node_data : pyarrow.Table | Iterable[pyarrow.RecordBatch] | DataFrame
             The node data to upload
         batch_size : int
             The number of rows per batch
@@ -593,7 +593,7 @@ class GdsArrowClient:
     def upload_relationships(
         self,
         graph_name: str,
-        relationship_data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], pandas.DataFrame],
+        relationship_data: pyarrow.Table | Iterable[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10_000,
         progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
@@ -604,7 +604,7 @@ class GdsArrowClient:
         ----------
         graph_name : str
             The name of the import process
-        relationship_data : Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame]
+        relationship_data : pyarrow.Table | Iterable[pyarrow.RecordBatch] | DataFrame
             The relationship data to upload
         batch_size : int
             The number of rows per batch
@@ -616,7 +616,7 @@ class GdsArrowClient:
     def upload_triplets(
         self,
         graph_name: str,
-        triplet_data: Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], pandas.DataFrame],
+        triplet_data: pyarrow.Table | Iterable[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10_000,
         progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
@@ -627,7 +627,7 @@ class GdsArrowClient:
         ----------
         graph_name : str
             The name of the import process
-        triplet_data : Union[pyarrow.Table, Iterable[pyarrow.RecordBatch], DataFrame]
+        triplet_data : pyarrow.Table | Iterable[pyarrow.RecordBatch] | DataFrame
             The triplet data to upload
         batch_size : int
             The number of rows per batch
@@ -636,7 +636,7 @@ class GdsArrowClient:
         """
         self._upload_data(graph_name, "triplet", triplet_data, batch_size, progress_callback)
 
-    def __getstate__(self) -> Dict[str, Any]:
+    def __getstate__(self) -> dict[str, Any]:
         state = self.__dict__.copy()
         # Remove the FlightClient as it isn't serializable
         if "_flight_client" in state:
@@ -685,7 +685,7 @@ class GdsArrowClient:
         self,
         graph_name: str,
         entity_type: str,
-        data: Union[pyarrow.Table, list[pyarrow.RecordBatch], pandas.DataFrame],
+        data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int,
         progress_callback: Callable[[int], None],
     ) -> None:
@@ -737,7 +737,7 @@ class GdsArrowClient:
         database: str,
         graph_name: str,
         procedure_name: str,
-        concurrency: Optional[int],
+        concurrency: int | None,
         configuration: dict[str, Any],
     ) -> pandas.DataFrame:
         @retry(
@@ -757,7 +757,7 @@ class GdsArrowClient:
         database: str,
         graph_name: str,
         procedure_name: str,
-        concurrency: Optional[int],
+        concurrency: int | None,
         configuration: dict[str, Any],
     ) -> pandas.DataFrame:
         payload: dict[str, Any] = {
@@ -809,9 +809,9 @@ class GdsArrowClient:
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exception_type: Type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         self.close()
 
@@ -921,10 +921,10 @@ class AuthMiddleware(ClientMiddleware):  # type: ignore
     def __init__(self, auth: ArrowAuthentication, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._auth = auth
-        self._token: Optional[str] = None
+        self._token: str | None = None
         self._token_timestamp = 0
 
-    def token(self) -> Optional[str]:
+    def token(self) -> str | None:
         # check whether the token is older than 10 minutes. If so, reset it.
         if self._token and int(time.time()) - self._token_timestamp > 600:
             self._token = None

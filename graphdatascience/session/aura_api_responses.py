@@ -4,7 +4,7 @@ import dataclasses
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, NamedTuple, Optional
+from typing import Any, NamedTuple
 
 from pandas import Timedelta
 
@@ -17,22 +17,22 @@ from .session_sizes import SessionMemoryValue
 class SessionDetails:
     id: str
     name: str
-    instance_id: Optional[str]
+    instance_id: str | None
     memory: SessionMemoryValue
     status: str
     host: str
     created_at: datetime
-    expiry_date: Optional[datetime]
-    ttl: Optional[timedelta]
+    expiry_date: datetime | None
+    ttl: timedelta | None
     user_id: str
     project_id: str
-    cloud_location: Optional[CloudLocation] = None
+    cloud_location: CloudLocation | None = None
 
     @classmethod
     def from_json(cls, data: dict[str, Any]) -> SessionDetails:
         id = data["id"]
         expiry_date = data.get("expiry_date")
-        ttl: Optional[Any] = data.get("ttl")
+        ttl: Any | None = data.get("ttl")
         instance_id = data.get("instance_id")
         cloud_location = CloudLocation(data["cloud_provider"], data["region"]) if data.get("cloud_provider") else None
 
@@ -57,7 +57,7 @@ class SessionDetails:
 
 @dataclass(repr=True, frozen=True)
 class SessionDetailsWithErrors(SessionDetails):
-    errors: Optional[list[SessionErrorData]] = None
+    errors: list[SessionErrorData] | None = None
 
     @classmethod
     def from_json_with_error(cls, data: dict[str, Any], errors: list[dict[str, Any]]) -> SessionDetailsWithErrors:
@@ -65,7 +65,7 @@ class SessionDetailsWithErrors(SessionDetails):
 
         id = data["id"]
         expiry_date = data.get("expiry_date")
-        ttl: Optional[Any] = data.get("ttl")
+        ttl: Any | None = data.get("ttl")
         instance_id = data.get("instance_id")
         cloud_location = CloudLocation(data["cloud_provider"], data["region"]) if data.get("cloud_provider") else None
 
@@ -133,7 +133,7 @@ class InstanceSpecificDetails(InstanceDetails):
     status: str
     connection_url: str
     memory: SessionMemoryValue
-    type: Optional[str]
+    type: str | None
     region: str
 
     @classmethod

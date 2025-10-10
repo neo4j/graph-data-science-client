@@ -2,7 +2,7 @@ import itertools
 import os
 import warnings
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 from uuid import uuid4
 
 from pandas import DataFrame, concat
@@ -59,7 +59,7 @@ class CypherGraphConstructor(GraphConstructor):
         query_runner: QueryRunner,
         graph_name: str,
         concurrency: int,
-        undirected_relationship_types: Optional[list[str]],
+        undirected_relationship_types: list[str] | None,
         server_version: ServerVersion,
     ):
         self._query_runner = query_runner
@@ -131,7 +131,7 @@ class CypherGraphConstructor(GraphConstructor):
             query_runner: QueryRunner,
             graph_name: str,
             concurrency: int,
-            undirected_relationship_types: Optional[list[str]],
+            undirected_relationship_types: list[str] | None,
             server_version: ServerVersion,
         ):
             self._query_runner = query_runner

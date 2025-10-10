@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 import warnings
 from datetime import datetime, timedelta, timezone
-from typing import Any, Optional
+from typing import Any
 
 from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
@@ -29,7 +29,7 @@ class DedicatedSessions:
         self,
         node_count: int,
         relationship_count: int,
-        algorithm_categories: Optional[list[AlgorithmCategory]] = None,
+        algorithm_categories: list[AlgorithmCategory] | None = None,
     ) -> SessionMemory:
         if algorithm_categories is None:
             algorithm_categories = []
@@ -58,12 +58,12 @@ class DedicatedSessions:
         self,
         session_name: str,
         memory: SessionMemory,
-        db_connection: Optional[DbmsConnectionInfo] = None,
-        ttl: Optional[timedelta] = None,
-        cloud_location: Optional[CloudLocation] = None,
-        timeout: Optional[int] = None,
-        neo4j_driver_options: Optional[dict[str, Any]] = None,
-        arrow_client_options: Optional[dict[str, Any]] = None,
+        db_connection: DbmsConnectionInfo | None = None,
+        ttl: timedelta | None = None,
+        cloud_location: CloudLocation | None = None,
+        timeout: int | None = None,
+        neo4j_driver_options: dict[str, Any] | None = None,
+        arrow_client_options: dict[str, Any] | None = None,
     ) -> AuraGraphDataScience:
         if db_connection is None:
             if not cloud_location:
@@ -109,7 +109,7 @@ class DedicatedSessions:
         )
 
     def _create_db_runner(
-        self, db_connection: DbmsConnectionInfo, config: Optional[dict[str, Any]] = None
+        self, db_connection: DbmsConnectionInfo, config: dict[str, Any] | None = None
     ) -> Neo4jQueryRunner:
         db_runner = Neo4jQueryRunner.create_for_db(
             endpoint=db_connection.uri,
@@ -122,7 +122,7 @@ class DedicatedSessions:
         self._validate_db_connection(db_runner)
         return db_runner
 
-    def _await_session_running(self, session_details: SessionDetails, timeout: Optional[int] = None) -> None:
+    def _await_session_running(self, session_details: SessionDetails, timeout: int | None = None) -> None:
         if session_details.expiry_date:
             until_expiry: timedelta = session_details.expiry_date - datetime.now(timezone.utc)
             if until_expiry < timedelta(days=1):
@@ -133,7 +133,7 @@ class DedicatedSessions:
             if err := wait_result.error:
                 raise RuntimeError(f"Failed to get or create session `{session_details.name}`: {err}")
 
-    def delete(self, *, session_name: Optional[str] = None, session_id: Optional[str] = None) -> bool:
+    def delete(self, *, session_name: str | None = None, session_id: str | None = None) -> bool:
         if not session_name and not session_id:
             raise ValueError("Either session_name or session_id must be provided.")
 
@@ -147,11 +147,11 @@ class DedicatedSessions:
 
         return False
 
-    def list(self, dbid: Optional[str] = None) -> list[SessionInfo]:
+    def list(self, dbid: str | None = None) -> list[SessionInfo]:
         sessions = self._aura_api.list_sessions(dbid)
         return [SessionInfo.from_session_details(i) for i in sessions]
 
-    def _find_existing_session(self, session_name: str) -> Optional[SessionDetails]:
+    def _find_existing_session(self, session_name: str) -> SessionDetails | None:
         matched_sessions: list[SessionDetails] = []
         matched_sessions = [s for s in self._aura_api.list_sessions() if s.name == session_name]
 
@@ -182,12 +182,12 @@ class DedicatedSessions:
         session_name: str,
         memory: SessionMemoryValue,
         cloud_location: CloudLocation,
-        ttl: Optional[timedelta] = None,
+        ttl: timedelta | None = None,
     ) -> SessionDetails:
         return self._aura_api.get_or_create_session(session_name, memory, ttl=ttl, cloud_location=cloud_location)
 
     def _get_or_create_attached_session(
-        self, session_name: str, memory: SessionMemoryValue, dbid: str, ttl: Optional[timedelta] = None
+        self, session_name: str, memory: SessionMemoryValue, dbid: str, ttl: timedelta | None = None
     ) -> SessionDetails:
         return self._aura_api.get_or_create_session(name=session_name, dbid=dbid, memory=memory, ttl=ttl)
 
@@ -196,7 +196,7 @@ class DedicatedSessions:
         session_name: str,
         memory: SessionMemoryValue,
         cloud_location: CloudLocation,
-        ttl: Optional[timedelta] = None,
+        ttl: timedelta | None = None,
     ) -> SessionDetails:
         return self._aura_api.get_or_create_session(
             name=session_name,
@@ -210,8 +210,8 @@ class DedicatedSessions:
         session_id: str,
         session_bolt_connection_info: DbmsConnectionInfo,
         arrow_authentication: ArrowAuthentication,
-        db_runner: Optional[Neo4jQueryRunner],
-        arrow_client_options: Optional[dict[str, Any]] = None,
+        db_runner: Neo4jQueryRunner | None,
+        arrow_client_options: dict[str, Any] | None = None,
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience.create(
             session_bolt_connection_info=session_bolt_connection_info,

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -24,14 +24,14 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         G: GraphV2,
         model_name: str,
         *,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        username: Optional[str] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        username: str | None = None,
         log_progress: bool = True,
-        sudo: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        batch_size: Optional[int] = None,
+        sudo: bool | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        batch_size: int | None = None,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
             modelName=model_name,
@@ -58,15 +58,15 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         model_name: str,
         write_property: str,
         *,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        username: Optional[str] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        username: str | None = None,
         log_progress: bool = True,
-        sudo: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[int] = None,
-        job_id: Optional[Any] = None,
-        batch_size: Optional[int] = None,
+        sudo: bool | None = None,
+        concurrency: Any | None = None,
+        write_concurrency: int | None = None,
+        job_id: Any | None = None,
+        batch_size: int | None = None,
     ) -> GraphSageWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             modelName=model_name,
@@ -96,14 +96,14 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         G: GraphV2,
         model_name: str,
         mutate_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        username: Optional[str] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        username: str | None = None,
         log_progress: bool = True,
-        sudo: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        batch_size: Optional[int] = None,
+        sudo: bool | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        batch_size: int | None = None,
     ) -> GraphSageMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             modelName=model_name,
@@ -129,16 +129,16 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
 
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
+        G: GraphV2 | dict[str, Any],
         model_name: str,
-        relationship_types: Optional[list[str]] = None,
-        node_labels: Optional[list[str]] = None,
-        batch_size: Optional[int] = None,
-        concurrency: Optional[int] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        batch_size: int | None = None,
+        concurrency: int | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        sudo: Optional[bool] = None,
-        job_id: Optional[str] = None,
+        username: str | None = None,
+        sudo: bool | None = None,
+        job_id: str | None = None,
     ) -> EstimationResult:
         algo_config = ConfigConverter.convert_to_gds_config(
             modelName=model_name,

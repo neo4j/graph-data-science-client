@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -19,7 +19,7 @@ class SccArrowEndpoints(SccEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: Optional[RemoteWriteBackClient] = None,
+        write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
         self._node_property_endpoints = NodePropertyEndpoints(
@@ -30,14 +30,14 @@ class SccArrowEndpoints(SccEndpoints):
         self,
         G: GraphV2,
         mutate_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        consecutive_ids: Optional[bool] = None,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        consecutive_ids: bool | None = None,
     ) -> SccMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -57,14 +57,14 @@ class SccArrowEndpoints(SccEndpoints):
     def stats(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        consecutive_ids: Optional[bool] = None,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        consecutive_ids: bool | None = None,
     ) -> SccStatsResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -84,14 +84,14 @@ class SccArrowEndpoints(SccEndpoints):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        consecutive_ids: Optional[bool] = None,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        consecutive_ids: bool | None = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -110,15 +110,15 @@ class SccArrowEndpoints(SccEndpoints):
         self,
         G: GraphV2,
         write_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        consecutive_ids: Optional[bool] = None,
-        write_concurrency: Optional[int] = None,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        consecutive_ids: bool | None = None,
+        write_concurrency: int | None = None,
     ) -> SccWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -139,11 +139,11 @@ class SccArrowEndpoints(SccEndpoints):
 
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
-        consecutive_ids: Optional[bool] = None,
+        G: GraphV2 | dict[str, Any],
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
+        consecutive_ids: bool | None = None,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(
             relationship_types=relationship_types,

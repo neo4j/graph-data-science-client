@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any
 
 from pandas import DataFrame
 
@@ -15,9 +15,9 @@ class QueryRunner(ABC):
     def call_procedure(
         self,
         endpoint: str,
-        params: Optional[CallParameters] = None,
-        yields: Optional[list[str]] = None,
-        database: Optional[str] = None,
+        params: CallParameters | None = None,
+        yields: list[str] | None = None,
+        database: str | None = None,
         mode: QueryMode = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
@@ -26,16 +26,16 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
-    def call_function(self, endpoint: str, params: Optional[CallParameters] = None) -> Any:
+    def call_function(self, endpoint: str, params: CallParameters | None = None) -> Any:
         pass
 
     @abstractmethod
     def run_cypher(
         self,
         query: str,
-        params: Optional[dict[str, Any]] = None,
-        database: Optional[str] = None,
-        mode: Optional[QueryMode] = None,
+        params: dict[str, Any] | None = None,
+        database: str | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         pass
@@ -44,9 +44,9 @@ class QueryRunner(ABC):
     def run_retryable_cypher(
         self,
         query: str,
-        params: Optional[dict[str, Any]] = None,
-        database: Optional[str] = None,
-        mode: Optional[QueryMode] = None,
+        params: dict[str, Any] | None = None,
+        database: str | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         pass
@@ -68,7 +68,7 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
-    def set_bookmarks(self, bookmarks: Optional[Any]) -> None:
+    def set_bookmarks(self, bookmarks: Any | None) -> None:
         pass
 
     def close(self) -> None:
@@ -76,20 +76,20 @@ class QueryRunner(ABC):
 
     @abstractmethod
     def create_graph_constructor(
-        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[list[str]]
+        self, graph_name: str, concurrency: int, undirected_relationship_types: list[str] | None
     ) -> GraphConstructor:
         pass
 
     @abstractmethod
-    def database(self) -> Optional[str]:
+    def database(self) -> str | None:
         pass
 
     @abstractmethod
-    def bookmarks(self) -> Optional[Any]:
+    def bookmarks(self) -> Any | None:
         pass
 
     @abstractmethod
-    def last_bookmarks(self) -> Optional[Any]:
+    def last_bookmarks(self) -> Any | None:
         pass
 
     @abstractmethod

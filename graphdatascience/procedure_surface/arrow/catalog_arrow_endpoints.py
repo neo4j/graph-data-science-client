@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import builtins
 from types import TracebackType
-from typing import Any, List, NamedTuple, Optional, Type, Union
+from typing import Any, NamedTuple, Type
 from uuid import uuid4
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -40,7 +41,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        query_runner: Optional[QueryRunner] = None,
+        query_runner: QueryRunner | None = None,
         show_progress: bool = False,
     ):
         self._arrow_client = arrow_client
@@ -51,8 +52,8 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             protocol_version = ProtocolVersionResolver(query_runner).resolve()
             self._project_protocol = ProjectProtocol.select(protocol_version)
 
-    def list(self, G: Optional[Union[GraphV2, str]] = None) -> List[GraphInfoWithDegrees]:
-        graph_name: Optional[str] = None
+    def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
+        graph_name: str | None = None
         if isinstance(G, GraphV2):
             graph_name = G.name()
         elif isinstance(G, str):
@@ -65,11 +66,11 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         graph_name: str,
         query: str,
         *,
-        job_id: Optional[str] = None,
+        job_id: str | None = None,
         concurrency: int = 4,
-        undirected_relationship_types: Optional[List[str]] = None,
-        inverse_indexed_relationship_types: Optional[List[str]] = None,
-        batch_size: Optional[int] = None,
+        undirected_relationship_types: builtins.list[str] | None = None,
+        inverse_indexed_relationship_types: builtins.list[str] | None = None,
+        batch_size: int | None = None,
         logging: bool = True,
     ) -> GraphWithProjectResult:
         """
@@ -82,15 +83,15 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         query : str
             Cypher query to select nodes and relationships for the graph projection.
             Must contain `gds.graph.project.remote`. Example: `MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)`
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             Unique identifier for the projection job.
         concurrency : int, default=4
             Number of concurrent threads/processes to use during graph projection.
-        undirected_relationship_types : Optional[List[str]], default=None
+        undirected_relationship_types : list[str] | None, default=None
             List of relationship types to treat as undirected.
-        inverse_indexed_relationship_types : Optional[List[str]], default=None
+        inverse_indexed_relationship_types : list[str] | None, default=None
             List of relationship types to index in both directions.
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             Number of rows to process in each batch when projecting the graph.
         logging : bool, default=True
             Whether to log progress during graph projection.
@@ -135,7 +136,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         return GraphWithProjectResult(get_graph(graph_name, self._arrow_client), job_result)
 
-    def drop(self, G: Union[GraphV2, str], fail_if_missing: bool = True) -> Optional[GraphInfo]:
+    def drop(self, G: GraphV2 | str, fail_if_missing: bool = True) -> GraphInfo | None:
         graph_name = G.name() if isinstance(G, GraphV2) else G
 
         return self._graph_backend.drop(graph_name, fail_if_missing)
@@ -146,8 +147,8 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         graph_name: str,
         node_filter: str,
         relationship_filter: str,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> GraphWithFilterResult:
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
@@ -173,16 +174,16 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         node_count: int,
         average_degree: float,
         *,
-        relationship_distribution: Optional[str] = None,
-        relationship_seed: Optional[int] = None,
-        relationship_property: Optional[RelationshipPropertySpec] = None,
-        orientation: Optional[str] = None,
-        allow_self_loops: Optional[bool] = None,
-        read_concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        sudo: Optional[bool] = None,
+        relationship_distribution: str | None = None,
+        relationship_seed: int | None = None,
+        relationship_property: RelationshipPropertySpec | None = None,
+        orientation: str | None = None,
+        allow_self_loops: bool | None = None,
+        read_concurrency: int | None = None,
+        job_id: str | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
+        username: str | None = None,
     ) -> GraphWithGenerationStats:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=graph_name,
@@ -265,8 +266,8 @@ class GraphWithProjectResult(NamedTuple):
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exception_type: Type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         self.graph.drop()

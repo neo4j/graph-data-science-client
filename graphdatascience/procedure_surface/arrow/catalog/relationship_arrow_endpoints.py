@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -22,7 +22,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: Optional[RemoteWriteBackClient],
+        write_back_client: RemoteWriteBackClient | None,
         show_progress: bool = False,
     ):
         self._arrow_client = arrow_client
@@ -32,13 +32,13 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        relationship_properties: Optional[list[str]] = None,
+        relationship_types: list[str] | None = None,
+        relationship_properties: list[str] | None = None,
         *,
-        concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
+        username: str | None = None,
     ) -> DataFrame:
         config_input = {
             "graph_name": G.name(),
@@ -65,14 +65,14 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         self,
         G: GraphV2,
         relationship_type: str,
-        relationship_properties: Optional[list[str]] = None,
+        relationship_properties: list[str] | None = None,
         *,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        concurrency: Any | None = None,
+        write_concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        job_id: Any | None = None,
     ) -> RelationshipsWriteResult:
         if self._write_back_client is None:
             raise ValueError("Write back is only available if a database connection is provided.")
@@ -125,7 +125,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         G: GraphV2,
         relationship_type: str,
         *,
-        fail_if_missing: Optional[bool] = None,
+        fail_if_missing: bool | None = None,
     ) -> RelationshipsDropResult:
         if relationship_type not in G.relationship_types():
             raise ValueError(f"Relationship type '{relationship_type}' does not exist in graph '{G.name()}'")
@@ -144,11 +144,11 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         G: GraphV2,
         relationship_types: list[str],
         *,
-        concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        job_id: Any | None = None,
     ) -> RelationshipsInverseIndexResult:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
@@ -173,12 +173,12 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         relationship_type: str,
         mutate_relationship_type: str,
         *,
-        aggregation: Optional[Union[Aggregation, dict[str, Aggregation]]] = None,
-        concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        aggregation: Aggregation | dict[str, Aggregation] | None = None,
+        concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        job_id: Any | None = None,
     ) -> RelationshipsToUndirectedResult:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),

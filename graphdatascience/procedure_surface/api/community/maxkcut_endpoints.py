@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -17,18 +17,18 @@ class MaxKCutEndpoints(ABC):
         G: GraphV2,
         mutate_property: str,
         *,
-        concurrency: Optional[int] = None,
-        iterations: Optional[int] = None,
-        job_id: Optional[str] = None,
-        k: Optional[int] = None,
+        concurrency: int | None = None,
+        iterations: int | None = None,
+        job_id: str | None = None,
+        k: int | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        relationship_weight_property: Optional[str] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
-        vns_max_neighborhood_order: Optional[int] = None,
+        node_labels: list[str] | None = None,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        relationship_weight_property: str | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
+        vns_max_neighborhood_order: int | None = None,
     ) -> MaxKCutMutateResult:
         """
         Executes the Approximate Maximum k-cut algorithm and writes the results to the in-memory graph as node properties.
@@ -43,32 +43,32 @@ class MaxKCutEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the community ID for each node
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
-        iterations : Optional[int], default=8
+        iterations : int | None, default=8
             The number of iterations the algorithm runs. More iterations may lead to better results but
             will increase computation time.
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job that can be used to cancel or monitor progress
-        k : Optional[int], default=2
+        k : int | None, default=2
             The number of communities to detect. Must be at least 2.
         log_progress : bool, default=True
             Whether to log progress information during execution
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
-        random_seed : Optional[int], default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results. If None, a random seed is used.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             The relationship weight property. If None, each relationship has weight 1.0.
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Override memory estimation limits. Setting this to True allows running the algorithm
             even if the estimated memory requirements exceed available memory.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        vns_max_neighborhood_order : Optional[int], default=0
+        vns_max_neighborhood_order : int | None, default=0
             The maximum neighborhood order for the Variable Neighborhood Search. Higher values may
             lead to better results but increase computation time.
 
@@ -83,19 +83,19 @@ class MaxKCutEndpoints(ABC):
         self,
         G: GraphV2,
         *,
-        concurrency: Optional[int] = None,
-        iterations: Optional[int] = None,
-        job_id: Optional[str] = None,
-        k: Optional[int] = None,
+        concurrency: int | None = None,
+        iterations: int | None = None,
+        job_id: str | None = None,
+        k: int | None = None,
         log_progress: bool = True,
-        min_community_size: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        relationship_weight_property: Optional[str] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
-        vns_max_neighborhood_order: Optional[int] = None,
+        min_community_size: int | None = None,
+        node_labels: list[str] | None = None,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        relationship_weight_property: str | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
+        vns_max_neighborhood_order: int | None = None,
     ) -> DataFrame:
         """
         Executes the Approximate Maximum k-cut algorithm and returns a stream of results.
@@ -107,34 +107,34 @@ class MaxKCutEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
-        iterations : Optional[int], default=8
+        iterations : int | None, default=8
             The number of iterations the algorithm runs. More iterations may lead to better results but
             will increase computation time.
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job that can be used to cancel or monitor progress
-        k : Optional[int], default=2
+        k : int | None, default=2
             The number of communities to detect. Must be at least 2.
         log_progress : bool, default=True
             Whether to log progress information during execution
-        min_community_size : Optional[int], default=None
+        min_community_size : int | None, default=None
             The minimum community size. Communities smaller than this will be filtered from results.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
-        random_seed : Optional[int], default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results. If None, a random seed is used.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             The relationship weight property. If None, each relationship has weight 1.0.
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Override memory estimation limits. Setting this to True allows running the algorithm
             even if the estimated memory requirements exceed available memory.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        vns_max_neighborhood_order : Optional[int], default=0
+        vns_max_neighborhood_order : int | None, default=0
             The maximum neighborhood order for the Variable Neighborhood Search. Higher values may
             lead to better results but increase computation time.
 
@@ -149,16 +149,16 @@ class MaxKCutEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
+        G: GraphV2 | dict[str, Any],
         *,
-        concurrency: Optional[int] = None,
-        iterations: Optional[int] = None,
-        k: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        relationship_weight_property: Optional[str] = None,
-        vns_max_neighborhood_order: Optional[int] = None,
+        concurrency: int | None = None,
+        iterations: int | None = None,
+        k: int | None = None,
+        node_labels: list[str] | None = None,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        relationship_weight_property: str | None = None,
+        vns_max_neighborhood_order: int | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory requirements for running the Approximate Maximum k-cut algorithm.
@@ -168,24 +168,24 @@ class MaxKCutEndpoints(ABC):
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph to estimate for, or a graph configuration dictionary
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
-        iterations : Optional[int], default=8
+        iterations : int | None, default=8
             The number of iterations the algorithm runs
-        k : Optional[int], default=2
+        k : int | None, default=2
             The number of communities to detect. Must be at least 2.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
-        random_seed : Optional[int], default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             The relationship weight property. If None, each relationship has weight 1.0.
-        vns_max_neighborhood_order : Optional[int], default=0
+        vns_max_neighborhood_order : int | None, default=0
             The maximum neighborhood order for the Variable Neighborhood Search
 
         Returns

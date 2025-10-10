@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import pandas as pd
 
@@ -19,14 +19,14 @@ class LocalClusteringCoefficientEndpoints:
         G: GraphV2,
         *,
         mutate_property: str,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        triangle_count_property: Optional[str] = None,
-        username: Optional[str] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        triangle_count_property: str | None = None,
+        username: str | None = None,
     ) -> "LocalClusteringCoefficientMutateResult":
         """
         Executes the LocalClusteringCoefficient algorithm and writes results back to the graph.
@@ -37,21 +37,21 @@ class LocalClusteringCoefficientEndpoints:
             The graph on which to run the algorithm
         mutate_property : str
             Property name to store the result
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             Number of concurrent threads
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Node labels to include in the computation
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Relationship types to include in the computation
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Run with elevated privileges
-        triangle_count_property : Optional[str], default=None
+        triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
-        username : Optional[str], default=None
+        username : str | None, default=None
             Username for authentication
 
         Returns
@@ -66,14 +66,14 @@ class LocalClusteringCoefficientEndpoints:
         self,
         G: GraphV2,
         *,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        triangle_count_property: Optional[str] = None,
-        username: Optional[str] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        triangle_count_property: str | None = None,
+        username: str | None = None,
     ) -> "LocalClusteringCoefficientStatsResult":
         """
         Executes the LocalClusteringCoefficient algorithm and returns statistics.
@@ -82,21 +82,21 @@ class LocalClusteringCoefficientEndpoints:
         ----------
         G : GraphV2
             The graph on which to run the algorithm
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             Number of concurrent threads
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Node labels to include in the computation
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Relationship types to include in the computation
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Run with elevated privileges
-        triangle_count_property : Optional[str], default=None
+        triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
-        username : Optional[str], default=None
+        username : str | None, default=None
             Username for authentication
 
         Returns
@@ -111,14 +111,14 @@ class LocalClusteringCoefficientEndpoints:
         self,
         G: GraphV2,
         *,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        triangle_count_property: Optional[str] = None,
-        username: Optional[str] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        triangle_count_property: str | None = None,
+        username: str | None = None,
     ) -> pd.DataFrame:
         """
         Executes the LocalClusteringCoefficient algorithm and streams results.
@@ -127,21 +127,21 @@ class LocalClusteringCoefficientEndpoints:
         ----------
         G : GraphV2
             The graph on which to run the algorithm
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             Number of concurrent threads
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Node labels to include in the computation
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Relationship types to include in the computation
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Run with elevated privileges
-        triangle_count_property : Optional[str], default=None
+        triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
-        username : Optional[str], default=None
+        username : str | None, default=None
             Username for authentication
 
         Returns
@@ -157,16 +157,16 @@ class LocalClusteringCoefficientEndpoints:
         G: GraphV2,
         *,
         write_property: str,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        triangle_count_property: Optional[str] = None,
-        username: Optional[str] = None,
-        write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        triangle_count_property: str | None = None,
+        username: str | None = None,
+        write_concurrency: int | None = None,
+        write_to_result_store: bool | None = None,
     ) -> "LocalClusteringCoefficientWriteResult":
         """
         Executes the LocalClusteringCoefficient algorithm and writes results to the database.
@@ -177,25 +177,25 @@ class LocalClusteringCoefficientEndpoints:
             The graph on which to run the algorithm
         write_property : str
             Property name to store results in the database
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             Number of concurrent threads
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Node labels to include in the computation
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Relationship types to include in the computation
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Run with elevated privileges
-        triangle_count_property : Optional[str], default=None
+        triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
-        username : Optional[str], default=None
+        username : str | None, default=None
             Username for authentication
-        write_concurrency : Optional[int], default=None
+        write_concurrency : int | None, default=None
             Concurrency for writing back to the database
-        write_to_result_store : Optional[bool], default=None
+        write_to_result_store : bool | None, default=None
             Whether to write to the result store
 
         Returns
@@ -210,14 +210,14 @@ class LocalClusteringCoefficientEndpoints:
         self,
         G: GraphV2,
         *,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        triangle_count_property: Optional[str] = None,
-        username: Optional[str] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        triangle_count_property: str | None = None,
+        username: str | None = None,
     ) -> EstimationResult:
         """
         Estimates the LocalClusteringCoefficient algorithm memory requirements.
@@ -226,21 +226,21 @@ class LocalClusteringCoefficientEndpoints:
         ----------
         G : GraphV2
             The graph on which to run the algorithm
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             Number of concurrent threads
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Node labels to include in the computation
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Relationship types to include in the computation
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Run with elevated privileges
-        triangle_count_property : Optional[str], default=None
+        triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
-        username : Optional[str], default=None
+        username : str | None, default=None
             Username for authentication
 
         Returns
@@ -259,7 +259,7 @@ class LocalClusteringCoefficientMutateResult(BaseResult):
     node_count: int
     node_properties_written: int
     average_clustering_coefficient: float
-    configuration: Dict[str, Any]
+    configuration: dict[str, Any]
 
 
 class LocalClusteringCoefficientStatsResult(BaseResult):
@@ -268,7 +268,7 @@ class LocalClusteringCoefficientStatsResult(BaseResult):
     post_processing_millis: int
     node_count: int
     average_clustering_coefficient: float
-    configuration: Dict[str, Any]
+    configuration: dict[str, Any]
 
 
 class LocalClusteringCoefficientWriteResult(BaseResult):
@@ -279,4 +279,4 @@ class LocalClusteringCoefficientWriteResult(BaseResult):
     node_count: int
     node_properties_written: int
     average_clustering_coefficient: float
-    configuration: Dict[str, Any]
+    configuration: dict[str, Any]

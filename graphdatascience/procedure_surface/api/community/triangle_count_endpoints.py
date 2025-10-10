@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -17,15 +17,15 @@ class TriangleCountEndpoints(ABC):
         G: GraphV2,
         mutate_property: str,
         *,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        label_filter: Optional[List[str]] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        label_filter: list[str] | None = None,
         log_progress: bool = True,
-        max_degree: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        max_degree: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> TriangleCountMutateResult:
         """
         Executes the Triangle Count algorithm and writes the results to the in-memory graph as node properties.
@@ -38,27 +38,27 @@ class TriangleCountEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the triangle count for each node
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job that can be used to cancel or monitor progress
-        label_filter : Optional[List[str]], default=None
+        label_filter : list[str] | None, default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
         log_progress : bool, default=True
             Whether to log progress information during execution
-        max_degree : Optional[int], default=None
+        max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Override memory estimation limits. Setting this to True allows running the algorithm
             even if the estimated memory requirements exceed available memory.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
 
         Returns
@@ -72,15 +72,15 @@ class TriangleCountEndpoints(ABC):
         self,
         G: GraphV2,
         *,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        label_filter: Optional[List[str]] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        label_filter: list[str] | None = None,
         log_progress: bool = True,
-        max_degree: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        max_degree: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> TriangleCountStatsResult:
         """
         Executes the Triangle Count algorithm and returns statistics about the computation.
@@ -92,27 +92,27 @@ class TriangleCountEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job that can be used to cancel or monitor progress
-        label_filter : Optional[List[str]], default=None
+        label_filter : list[str] | None, default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
         log_progress : bool, default=True
             Whether to log progress information during execution
-        max_degree : Optional[int], default=None
+        max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Override memory estimation limits. Setting this to True allows running the algorithm
             even if the estimated memory requirements exceed available memory.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
 
         Returns
@@ -126,15 +126,15 @@ class TriangleCountEndpoints(ABC):
         self,
         G: GraphV2,
         *,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        label_filter: Optional[List[str]] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        label_filter: list[str] | None = None,
         log_progress: bool = True,
-        max_degree: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        max_degree: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> DataFrame:
         """
         Executes the Triangle Count algorithm and returns a stream of results.
@@ -146,27 +146,27 @@ class TriangleCountEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job that can be used to cancel or monitor progress
-        label_filter : Optional[List[str]], default=None
+        label_filter : list[str] | None, default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
         log_progress : bool, default=True
             Whether to log progress information during execution
-        max_degree : Optional[int], default=None
+        max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Override memory estimation limits. Setting this to True allows running the algorithm
             even if the estimated memory requirements exceed available memory.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
 
         Returns
@@ -183,16 +183,16 @@ class TriangleCountEndpoints(ABC):
         G: GraphV2,
         write_property: str,
         *,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        label_filter: Optional[List[str]] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        label_filter: list[str] | None = None,
         log_progress: bool = True,
-        max_degree: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
-        write_concurrency: Optional[int] = None,
+        max_degree: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
+        write_concurrency: int | None = None,
     ) -> TriangleCountWriteResult:
         """
         Executes the Triangle Count algorithm and writes the results back to the database.
@@ -206,29 +206,29 @@ class TriangleCountEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to store the triangle count for each node in the database
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job that can be used to cancel or monitor progress
-        label_filter : Optional[List[str]], default=None
+        label_filter : list[str] | None, default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
         log_progress : bool, default=True
             Whether to log progress information during execution
-        max_degree : Optional[int], default=None
+        max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Override memory estimation limits. Setting this to True allows running the algorithm
             even if the estimated memory requirements exceed available memory.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        write_concurrency : Optional[int], default=None
+        write_concurrency : int | None, default=None
             The number of concurrent threads for writing results to the database
 
         Returns
@@ -240,13 +240,13 @@ class TriangleCountEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
+        G: GraphV2 | dict[str, Any],
         *,
-        concurrency: Optional[int] = None,
-        label_filter: Optional[List[str]] = None,
-        max_degree: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
+        concurrency: int | None = None,
+        label_filter: list[str] | None = None,
+        max_degree: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory requirements for running the Triangle Count algorithm.
@@ -256,19 +256,19 @@ class TriangleCountEndpoints(ABC):
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph to estimate for, or a graph configuration dictionary
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
-        label_filter : Optional[List[str]], default=None
+        label_filter : list[str] | None, default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
-        max_degree : Optional[int], default=None
+        max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import base64
 import time
-from typing import Any, Optional
+from typing import Any
 
 from pyarrow._flight import ClientMiddleware, ClientMiddlewareFactory
 
@@ -22,10 +22,10 @@ class AuthMiddleware(ClientMiddleware):  # type: ignore
     def __init__(self, auth: ArrowAuthentication, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._auth = auth
-        self._token: Optional[str] = None
+        self._token: str | None = None
         self._token_timestamp = 0
 
-    def token(self) -> Optional[str]:
+    def token(self) -> str | None:
         # check whether the token is older than 10 minutes. If so, reset it.
         if self._token and int(time.time()) - self._token_timestamp > 600:
             self._token = None

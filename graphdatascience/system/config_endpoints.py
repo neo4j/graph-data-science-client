@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from pandas import DataFrame
 
@@ -11,7 +11,7 @@ from ..server_version.server_version import ServerVersion
 
 
 class ConfigProcRunner(IllegalAttrChecker, UncallableNamespace):
-    def set(self, key: str, value: Any, username: Optional[str] = None) -> None:
+    def set(self, key: str, value: Any, username: str | None = None) -> None:
         self._namespace += ".set"
 
         params = CallParameters(key=key, value=value)
@@ -22,7 +22,7 @@ class ConfigProcRunner(IllegalAttrChecker, UncallableNamespace):
 
         self._query_runner.call_procedure(endpoint=self._namespace, params=params)
 
-    def list(self, key: Optional[str] = None, username: Optional[str] = None) -> DataFrame:
+    def list(self, key: str | None = None, username: str | None = None) -> DataFrame:
         self._namespace += ".list"
 
         config: dict[str, Any] = {}

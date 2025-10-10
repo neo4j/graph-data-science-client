@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 from pandas import DataFrame
 
 from graphdatascience.model.v2.model_api import ModelApi
@@ -31,15 +29,15 @@ class GraphSageModelV2(Model):
         G: GraphV2,
         write_property: str,
         *,
-        relationship_types: Optional[list[str]] = None,
-        node_labels: Optional[list[str]] = None,
-        batch_size: Optional[int] = None,
-        concurrency: Optional[int] = None,
-        write_concurrency: Optional[int] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        batch_size: int | None = None,
+        concurrency: int | None = None,
+        write_concurrency: int | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        sudo: Optional[bool] = None,
-        job_id: Optional[str] = None,
+        username: str | None = None,
+        sudo: bool | None = None,
+        job_id: str | None = None,
     ) -> GraphSageWriteResult:
         """
         Generate embeddings for the given graph and write the results to the database.
@@ -50,24 +48,24 @@ class GraphSageModelV2(Model):
             The graph to generate embeddings for.
         write_property : str
             The property to write the embeddings to.
-        relationship_types : Optional[list[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types to consider.
-        node_labels : Optional[list[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels to consider.
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             The batch size for prediction.
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The concurrency for computation.
-        write_concurrency : Optional[int], default=None
+        write_concurrency : int | None, default=None
             The concurrency for writing.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username for the operation.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             The job ID for the operation.
 
         Returns
@@ -95,14 +93,14 @@ class GraphSageModelV2(Model):
         self,
         G: GraphV2,
         *,
-        relationship_types: Optional[list[str]] = None,
-        node_labels: Optional[list[str]] = None,
-        batch_size: Optional[int] = None,
-        concurrency: Optional[int] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        batch_size: int | None = None,
+        concurrency: int | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        sudo: Optional[bool] = None,
-        job_id: Optional[str] = None,
+        username: str | None = None,
+        sudo: bool | None = None,
+        job_id: str | None = None,
     ) -> DataFrame:
         """
         Generate embeddings for the given graph and stream the results.
@@ -111,22 +109,22 @@ class GraphSageModelV2(Model):
         ----------
         G : GraphV2
             The graph to generate embeddings for.
-        relationship_types : Optional[list[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types to consider.
-        node_labels : Optional[list[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels to consider.
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             The batch size for prediction.
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The concurrency for computation.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username for the operation.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             The job ID for the operation.
 
         Returns
@@ -153,14 +151,14 @@ class GraphSageModelV2(Model):
         G: GraphV2,
         mutate_property: str,
         *,
-        relationship_types: Optional[list[str]] = None,
-        node_labels: Optional[list[str]] = None,
-        batch_size: Optional[int] = None,
-        concurrency: Optional[int] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        batch_size: int | None = None,
+        concurrency: int | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        sudo: Optional[bool] = None,
-        job_id: Optional[str] = None,
+        username: str | None = None,
+        sudo: bool | None = None,
+        job_id: str | None = None,
     ) -> GraphSageMutateResult:
         """
         Generate embeddings for the given graph and mutate the graph with the results.
@@ -171,22 +169,22 @@ class GraphSageModelV2(Model):
             The graph to generate embeddings for.
         mutate_property : str
             The property to mutate with the embeddings.
-        relationship_types : Optional[list[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types to consider.
-        node_labels : Optional[list[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels to consider.
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             The batch size for prediction.
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The concurrency for computation.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username for the operation.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             The job ID for the operation.
 
         Returns
@@ -213,14 +211,14 @@ class GraphSageModelV2(Model):
         self,
         G: GraphV2,
         *,
-        relationship_types: Optional[list[str]] = None,
-        node_labels: Optional[list[str]] = None,
-        batch_size: Optional[int] = None,
-        concurrency: Optional[int] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        batch_size: int | None = None,
+        concurrency: int | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        sudo: Optional[bool] = None,
-        job_id: Optional[str] = None,
+        username: str | None = None,
+        sudo: bool | None = None,
+        job_id: str | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory needed to generate embeddings for the given graph and write the results to the database.
@@ -229,22 +227,22 @@ class GraphSageModelV2(Model):
         ----------
         G : GraphV2
             The graph to generate embeddings for.
-        relationship_types : Optional[list[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types to consider.
-        node_labels : Optional[list[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels to consider.
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             The batch size for prediction.
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The concurrency for computation.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username for the operation.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             The job ID for the operation.
 
         Returns

@@ -5,7 +5,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from types import FrameType
-from typing import Any, Callable, NamedTuple, Optional
+from typing import Any, Callable, NamedTuple
 
 import nbformat
 from nbclient.exceptions import CellExecutionError
@@ -33,7 +33,7 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
     def preprocess_cell(self, cell: Any, resources: Any, index: int) -> None:
         if index == 0:
 
-            def handle_signal(sig: int, frame: Optional[FrameType]) -> None:
+            def handle_signal(sig: int, frame: FrameType | None) -> None:
                 print("Received SIGNAL, running tear down cells")
                 self.teardown(resources)
                 sys.exit(1)
@@ -138,7 +138,7 @@ if __name__ == "__main__":
         "graph-analytics-serverless-standalone.ipynb",
     ]
 
-    notebooks: Optional[list[str]] = None
+    notebooks: list[str] | None = None
     if notebook_filter == "sessions-attached":
 
         def filter_func(notebook: str) -> bool:

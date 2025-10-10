@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from types import TracebackType
-from typing import Any, NamedTuple, Optional, Type
+from typing import Any, NamedTuple, Type
 
 from pandas import Series
 
@@ -21,8 +21,8 @@ class GraphCreateResult(NamedTuple):
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exception_type: Type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         self.graph.drop()

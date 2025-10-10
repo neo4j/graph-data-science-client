@@ -1,7 +1,7 @@
 import datetime
 import json
 import re
-from typing import Any, Optional
+from typing import Any
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
@@ -36,7 +36,7 @@ class ModelApiArrow(ModelApi):
 
         return self._parse_model_details(result[0])
 
-    def drop(self, model: str, fail_if_missing: bool) -> Optional[ModelDetails]:
+    def drop(self, model: str, fail_if_missing: bool) -> ModelDetails | None:
         raw_result = self._arrow_client.do_action_with_retry(
             "v2/model.drop", payload=json.dumps({"modelName": model, "failIfMissing": fail_if_missing}).encode("utf-8")
         )

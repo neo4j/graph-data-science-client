@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -15,16 +15,16 @@ class NodePropertiesEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        node_properties: Union[str, List[str]],
+        node_properties: str | list[str],
         *,
-        list_node_labels: Optional[bool] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        list_node_labels: bool | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,
-        db_node_properties: Optional[List[str]] = None,
+        username: str | None = None,
+        job_id: Any | None = None,
+        db_node_properties: list[str] | None = None,
     ) -> DataFrame:
         """
         Streams the specified node properties from the graph.
@@ -33,23 +33,23 @@ class NodePropertiesEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to stream node properties from
-        node_properties : Union[str, List[str]]
+        node_properties : str | list[str]
             The node properties to stream
-        list_node_labels : Optional[boolean], default=None
+        list_node_labels : boolean | None, default=None
             Whether to include node labels in the stream
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter by node labels
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        db_node_properties : Optional[List[str]], default=None
+        db_node_properties : list[str] | None, default=None
             Retrieves additional node properties from the database and attaches them to the stream.
         Returns
         -------
@@ -62,15 +62,15 @@ class NodePropertiesEndpoints(ABC):
     def write(
         self,
         G: GraphV2,
-        node_properties: Union[str, List[str], dict[str, str]],
+        node_properties: str | list[str] | dict[str, str],
         *,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
+        write_concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        job_id: Any | None = None,
     ) -> NodePropertiesWriteResult:
         """
         Writes the specified node properties from the graph to the database.
@@ -79,22 +79,22 @@ class NodePropertiesEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to write node properties from
-        node_properties : Union[str, List[str], dict[str, str]]
+        node_properties : str | list[str] | dict[str, str]
             The node properties to write.
             If a dictionary is provided, the keys are the property names and the values are the aliases that will be used as the property name in the database.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter by node labels
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        write_concurrency : Optional[Any], default=None
+        write_concurrency : Any | None, default=None
             The number of concurrent threads used for writing
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
         Returns
         -------
@@ -107,11 +107,11 @@ class NodePropertiesEndpoints(ABC):
     def drop(
         self,
         G: GraphV2,
-        node_properties: List[str],
+        node_properties: list[str],
         *,
-        fail_if_missing: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        username: Optional[str] = None,
+        fail_if_missing: bool | None = None,
+        concurrency: Any | None = None,
+        username: str | None = None,
     ) -> NodePropertiesDropResult:
         """
         Drops the specified node properties from the graph.
@@ -120,13 +120,13 @@ class NodePropertiesEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to drop node properties from
-        node_properties : List[str]
+        node_properties : list[str]
             The node properties to drop
-        fail_if_missing: Optional[bool] = None,
+        fail_if_missing: bool | None = None,
             Whether to fail if any of the node properties are missing
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
         Returns
         -------
@@ -138,7 +138,7 @@ class NodePropertiesEndpoints(ABC):
 
 @dataclass
 class NodePropertySpec:
-    def __init__(self, node_properties: Union[str, List[str], dict[str, str]]) -> None:
+    def __init__(self, node_properties: str | list[str] | dict[str, str]) -> None:
         if isinstance(node_properties, str):
             self._mappings = {node_properties: node_properties}
         elif isinstance(node_properties, list):
@@ -146,7 +146,7 @@ class NodePropertySpec:
         elif isinstance(node_properties, dict):
             self._mappings = node_properties
 
-    def property_names(self) -> List[str]:
+    def property_names(self) -> list[str]:
         return list(self._mappings.keys())
 
     def to_dict(self) -> dict[str, str]:
@@ -155,7 +155,7 @@ class NodePropertySpec:
 
 class NodePropertiesWriteResult(BaseResult):
     graph_name: str
-    node_properties: List[str]
+    node_properties: list[str]
     properties_written: int
     write_millis: int
     configuration: dict[str, Any]
@@ -163,5 +163,5 @@ class NodePropertiesWriteResult(BaseResult):
 
 class NodePropertiesDropResult(BaseResult):
     graph_name: str
-    node_properties: List[str]
+    node_properties: list[str]
     properties_removed: int

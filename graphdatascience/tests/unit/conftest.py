@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import Any, Generator, Optional, Union
+from typing import Any, Generator
 
 import pytest
 from pandas import DataFrame
@@ -24,14 +24,12 @@ from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 # Should mirror the latest GDS server version under development.
 DEFAULT_SERVER_VERSION = ServerVersion(2, 10, 0)
 
-QueryResult = Union[DataFrame, Exception]
+QueryResult = DataFrame | Exception
 QueryResultMap = dict[str, QueryResult]  # Substring -> QueryResult
 
 
 class CollectingQueryRunner(QueryRunner):
-    def __init__(
-        self, server_version: ServerVersion, result_mock: Optional[Union[QueryResult, QueryResultMap]] = None
-    ) -> None:
+    def __init__(self, server_version: ServerVersion, result_mock: QueryResult | QueryResultMap | None = None) -> None:
         self._result_map: dict[str, QueryResult] = {}
         if isinstance(result_mock, DataFrame) or isinstance(result_mock, Exception):
             self._result_map = {"": result_mock}
@@ -47,9 +45,9 @@ class CollectingQueryRunner(QueryRunner):
     def call_procedure(
         self,
         endpoint: str,
-        params: Optional[CallParameters] = None,
-        yields: Optional[list[str]] = None,
-        database: Optional[str] = None,
+        params: CallParameters | None = None,
+        yields: list[str] | None = None,
+        database: str | None = None,
         mode: QueryMode = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
@@ -66,7 +64,7 @@ class CollectingQueryRunner(QueryRunner):
         else:
             return self.run_cypher(query, params, database, mode, custom_error)
 
-    def call_function(self, endpoint: str, params: Optional[CallParameters] = None) -> Any:
+    def call_function(self, endpoint: str, params: CallParameters | None = None) -> Any:
         if params is None:
             params = CallParameters()
         query = f"RETURN {endpoint}({params.placeholder_str()})"
@@ -76,9 +74,9 @@ class CollectingQueryRunner(QueryRunner):
     def run_cypher(
         self,
         query: str,
-        params: Optional[dict[str, Any]] = None,
-        db: Optional[str] = None,
-        mode: Optional[QueryMode] = None,
+        params: dict[str, Any] | None = None,
+        db: str | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         if params is None:
@@ -98,9 +96,9 @@ class CollectingQueryRunner(QueryRunner):
     def run_retryable_cypher(
         self,
         query: str,
-        params: Optional[dict[str, Any]] = None,
-        database: Optional[str] = None,
-        mode: Optional[QueryMode] = None,
+        params: dict[str, Any] | None = None,
+        database: str | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         if params is None:
@@ -144,23 +142,23 @@ class CollectingQueryRunner(QueryRunner):
     def set_database(self, database: str) -> None:
         self._database = database
 
-    def set_bookmarks(self, _: Optional[Any]) -> None:
+    def set_bookmarks(self, _: Any | None) -> None:
         pass
 
     def database(self) -> str:
         return self._database
 
-    def bookmarks(self) -> Optional[Any]:
+    def bookmarks(self) -> Any | None:
         return None
 
-    def last_bookmarks(self) -> Optional[Any]:
+    def last_bookmarks(self) -> Any | None:
         return None
 
     def set_show_progress(self, show_progress: bool) -> None:
         pass
 
     def create_graph_constructor(
-        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[list[str]]
+        self, graph_name: str, concurrency: int, undirected_relationship_types: list[str] | None
     ) -> GraphConstructor:
         return CypherGraphConstructor(
             self, graph_name, concurrency, undirected_relationship_types, self._server_version

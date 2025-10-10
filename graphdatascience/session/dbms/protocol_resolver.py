@@ -1,5 +1,3 @@
-from typing import Optional
-
 from neo4j.exceptions import Neo4jError
 
 from graphdatascience import QueryRunner
@@ -51,7 +49,7 @@ class ProtocolVersionResolver:
             return [ProtocolVersion.V1]
 
     @staticmethod
-    def _from_str(version_string: str) -> Optional[ProtocolVersion]:
+    def _from_str(version_string: str) -> ProtocolVersion | None:
         if version_string == "v1":
             return ProtocolVersion.V1
         elif version_string == "v2":

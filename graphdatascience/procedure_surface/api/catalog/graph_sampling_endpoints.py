@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from types import TracebackType
-from typing import List, NamedTuple, Optional, Type
+from typing import NamedTuple, Type
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
@@ -18,18 +18,18 @@ class GraphSamplingEndpoints(ABC):
         self,
         G: GraphV2,
         graph_name: str,
-        start_nodes: Optional[List[int]] = None,
-        restart_probability: Optional[float] = None,
-        sampling_ratio: Optional[float] = None,
-        node_label_stratification: Optional[bool] = None,
-        relationship_weight_property: Optional[str] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        start_nodes: list[int] | None = None,
+        restart_probability: float | None = None,
+        sampling_ratio: float | None = None,
+        node_label_stratification: bool | None = None,
+        relationship_weight_property: str | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> GraphWithSamplingResult:
         """
         Random walk with restarts (RWR) samples the graph by taking random walks from a set of start nodes.
@@ -82,7 +82,7 @@ class GraphSamplingEndpoints(ABC):
         Returns
         -------
         GraphWithSamplingResult
-            Tuple of the graph object and the result of the Random Walk with Restart (RWR), including the dimensions of the sampled graph.
+            tuple of the graph object and the result of the Random Walk with Restart (RWR), including the dimensions of the sampled graph.
         """
         pass
 
@@ -91,18 +91,18 @@ class GraphSamplingEndpoints(ABC):
         self,
         G: GraphV2,
         graph_name: str,
-        start_nodes: Optional[List[int]] = None,
-        restart_probability: Optional[float] = None,
-        sampling_ratio: Optional[float] = None,
-        node_label_stratification: Optional[bool] = None,
-        relationship_weight_property: Optional[str] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        start_nodes: list[int] | None = None,
+        restart_probability: float | None = None,
+        sampling_ratio: float | None = None,
+        node_label_stratification: bool | None = None,
+        relationship_weight_property: str | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> GraphWithSamplingResult:
         """
         Common Neighbour Aware Random Walk (CNARW) samples the graph by taking random walks from a set of start nodes
@@ -157,7 +157,7 @@ class GraphSamplingEndpoints(ABC):
         Returns
         -------
         GraphSamplingResult
-            Tuple of the graph object and the result of the Common Neighbour Aware Random Walk (CNARW), including the dimensions of the sampled graph.
+            tuple of the graph object and the result of the Common Neighbour Aware Random Walk (CNARW), including the dimensions of the sampled graph.
         """
         pass
 
@@ -180,8 +180,8 @@ class GraphWithSamplingResult(NamedTuple):
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exception_type: Type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         self.graph.drop()

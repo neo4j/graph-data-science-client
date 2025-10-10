@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -21,14 +21,14 @@ class GraphSagePredictEndpoints(ABC):
         G: GraphV2,
         model_name: str,
         *,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        username: Optional[str] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        username: str | None = None,
         log_progress: bool = True,
-        sudo: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        batch_size: Optional[int] = None,
+        sudo: bool | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        batch_size: int | None = None,
     ) -> DataFrame:
         """
         Uses a pre-trained GraphSage model to predict embeddings for a graph and returns the results as a stream.
@@ -39,21 +39,21 @@ class GraphSagePredictEndpoints(ABC):
             The graph to run the algorithm on
         model_name : str
             Name under which the model will is stored
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        username : Optional[str] = None
+        username : str | None = None
             The username to attribute the procedure run to
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             Batch size for training
 
         Returns
@@ -69,15 +69,15 @@ class GraphSagePredictEndpoints(ABC):
         model_name: str,
         write_property: str,
         *,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        username: Optional[str] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        username: str | None = None,
         log_progress: bool = True,
-        sudo: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[int] = None,
-        job_id: Optional[Any] = None,
-        batch_size: Optional[int] = None,
+        sudo: bool | None = None,
+        concurrency: Any | None = None,
+        write_concurrency: int | None = None,
+        job_id: Any | None = None,
+        batch_size: int | None = None,
     ) -> GraphSageWriteResult:
         """ "
         Uses a pre-trained GraphSage model to predict embeddings for a graph and writes the results back to the database.
@@ -90,23 +90,23 @@ class GraphSagePredictEndpoints(ABC):
             Name under which the model will is stored
         write_property : str
             The name of the node property to write the embeddings to
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        username : Optional[str] = None
+        username : str | None = None
             The username to attribute the procedure run to
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        write_concurrency : Optional[int], default=None
+        write_concurrency : int | None, default=None
              The number of concurrent threads used for writing
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             Batch size for training
 
         Returns
@@ -121,14 +121,14 @@ class GraphSagePredictEndpoints(ABC):
         G: GraphV2,
         model_name: str,
         mutate_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        username: Optional[str] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        username: str | None = None,
         log_progress: bool = True,
-        sudo: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        batch_size: Optional[int] = None,
+        sudo: bool | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        batch_size: int | None = None,
     ) -> GraphSageMutateResult:
         """ "
         Uses a pre-trained GraphSage model to predict embeddings for a graph and writes the results back to the graph as a node property.
@@ -141,21 +141,21 @@ class GraphSagePredictEndpoints(ABC):
             Name under which the model will is stored
         mutate_property : str
             The name of the node property to store the embeddings
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        username : Optional[str] = None
+        username : str | None = None
             The username to attribute the procedure run to
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             Batch size for training
 
         Returns
@@ -167,42 +167,42 @@ class GraphSagePredictEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
+        G: GraphV2 | dict[str, Any],
         model_name: str,
-        relationship_types: Optional[list[str]] = None,
-        node_labels: Optional[list[str]] = None,
-        batch_size: Optional[int] = None,
-        concurrency: Optional[int] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        batch_size: int | None = None,
+        concurrency: int | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        sudo: Optional[bool] = None,
-        job_id: Optional[str] = None,
+        username: str | None = None,
+        sudo: bool | None = None,
+        job_id: str | None = None,
     ) -> EstimationResult:
         """
         Returns an estimation of the memory consumption for that procedure.
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
         model_name : str
             Name under which the model will is stored
-        relationship_types : Optional[list[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types to consider.
-        node_labels : Optional[list[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels to consider.
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             The batch size for prediction.
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The concurrency for computation.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username for the operation.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             The job ID for the operation.
 
         Returns

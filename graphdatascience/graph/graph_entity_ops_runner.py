@@ -1,5 +1,5 @@
 from functools import reduce
-from typing import Any, Type, Union
+from typing import Any, Type
 from warnings import filterwarnings
 
 import pandas as pd
@@ -20,7 +20,7 @@ from ..utils.util_proc_runner import UtilProcRunner
 from .graph_object import Graph
 from .graph_type_check import graph_type_check
 
-Strings = Union[str, list[str]]
+Strings = str | list[str]
 
 
 class TopologyDataFrame(DataFrame):
@@ -103,7 +103,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
     def stream(
         self,
         G: Graph,
-        node_properties: Union[str, list[str]],
+        node_properties: Strings,
         node_labels: Strings = ["*"],
         separate_property_columns: bool = False,
         db_node_properties: list[str] = [],

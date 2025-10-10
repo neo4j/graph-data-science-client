@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any
 
 from pandas import Series
 
@@ -14,7 +14,7 @@ class NRTrainingPipeline(TrainingPipeline[NRModel]):
     Construct an instance of this class using :func:`graphdatascience.GraphDataScience.nr_pipe`.
     """
 
-    def addLinearRegression(self, **config: Any) -> "Series[Any]":
+    def addLinearRegression(self, **config: Any) -> Series[Any]:
         """
         Add a linear regression model candidate to the pipeline.
 
@@ -30,7 +30,7 @@ class NRTrainingPipeline(TrainingPipeline[NRModel]):
 
         return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
-    def addRandomForest(self, **config: Any) -> "Series[Any]":
+    def addRandomForest(self, **config: Any) -> Series[Any]:
         """
         Add a random forest regressor candidate to the pipeline.
 
@@ -46,7 +46,7 @@ class NRTrainingPipeline(TrainingPipeline[NRModel]):
 
         return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
-    def selectFeatures(self, node_properties: Union[str, list[str]]) -> "Series[Any]":
+    def selectFeatures(self, node_properties: str | list[str]) -> Series[Any]:
         """
         Select the node properties to use for training.
 

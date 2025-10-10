@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
@@ -8,9 +7,9 @@ class TaskWithProgress:
     task_name: str
     progress_percent: str
     status: str
-    sub_tasks_description: Optional[str] = None
+    sub_tasks_description: str | None = None
 
-    def relative_progress(self) -> Optional[float]:
+    def relative_progress(self) -> float | None:
         try:
             return float(self.progress_percent.removesuffix("%"))
         except ValueError:
@@ -19,6 +18,6 @@ class TaskWithProgress:
 
 class ProgressProvider(ABC):
     @abstractmethod
-    def root_task_with_progress(self, job_id: str, database: Optional[str] = None) -> TaskWithProgress:
+    def root_task_with_progress(self, job_id: str, database: str | None = None) -> TaskWithProgress:
         """Return the task with progress for the given job_id."""
         pass

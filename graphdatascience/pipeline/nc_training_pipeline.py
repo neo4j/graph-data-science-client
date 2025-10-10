@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Any, Union
+from typing import Any
 
 from pandas import Series
 
@@ -15,7 +15,7 @@ class NCTrainingPipeline(ClassificationTrainingPipeline[NCModel], ABC):
     Construct an instance of this class using :func:`graphdatascience.GraphDataScience.nc_pipe`.
     """
 
-    def selectFeatures(self, node_properties: Union[str, list[str]]) -> "Series[Any]":
+    def selectFeatures(self, node_properties: str | list[str]) -> Series[Any]:
         """
         Select the node properties to use for training.
 
@@ -31,7 +31,7 @@ class NCTrainingPipeline(ClassificationTrainingPipeline[NCModel], ABC):
 
         return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
-    def feature_properties(self) -> "Series[Any]":
+    def feature_properties(self) -> Series[Any]:
         """
         Get the feature properties of the pipeline.
 
@@ -40,7 +40,7 @@ class NCTrainingPipeline(ClassificationTrainingPipeline[NCModel], ABC):
 
         """
         pipeline_info = self._list_info()["pipelineInfo"][0]
-        feature_properties: "Series[Any]" = Series(pipeline_info["featurePipeline"]["featureProperties"], dtype=object)
+        feature_properties: Series[Any] = Series(pipeline_info["featurePipeline"]["featureProperties"], dtype=object)
         return feature_properties
 
     def _endpoint_prefix(self) -> str:

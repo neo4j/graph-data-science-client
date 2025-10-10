@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from types import TracebackType
-from typing import List, NamedTuple, Optional, Type, Union
+from typing import NamedTuple, Type
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
@@ -15,25 +15,25 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
 
 class CatalogEndpoints(ABC):
     @abstractmethod
-    def list(self, G: Optional[Union[GraphV2, str]] = None) -> List[GraphInfoWithDegrees]:
+    def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
         """List graphs in the graph catalog.
 
         Args:
-            G (Optional[Union[GraphV2, str]], optional): GraphV2 object or name to filter results.
+            G (GraphV2 | str | None, optional): GraphV2 object or name to filter results.
                If None, list all graphs. Defaults to None.
 
         Returns:
-            List[GraphListResult]: List of graph metadata objects containing information like
+            list[GraphListResult]: List of graph metadata objects containing information like
                                  graph name, node count, relationship count, etc.
         """
         pass
 
     @abstractmethod
-    def drop(self, G: Union[GraphV2, str], fail_if_missing: bool = True) -> Optional[GraphInfo]:
+    def drop(self, G: GraphV2 | str, fail_if_missing: bool = True) -> GraphInfo | None:
         """Drop a graph from the graph catalog.
 
         Args:
-            G (Union[GraphV2, str]): GraphV2 object or name to drop.
+            G (GraphV2 | str): GraphV2 object or name to drop.
             fail_if_missing (bool): Whether to fail if the graph is missing. Defaults to True.
 
         Returns:
@@ -48,8 +48,8 @@ class CatalogEndpoints(ABC):
         graph_name: str,
         node_filter: str,
         relationship_filter: str,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> GraphWithFilterResult:
         """Create a subgraph of a graph based on a filter expression.
 
@@ -69,7 +69,7 @@ class CatalogEndpoints(ABC):
             Unique identifier for the filtering job. Defaults to None.
 
         Returns:
-            GraphWithFilterResult: Tuple of the filtered graph object and the information like
+            GraphWithFilterResult: tuple of the filtered graph object and the information like
                                 graph name, node count, relationship count, etc.
         """
         pass
@@ -81,16 +81,16 @@ class CatalogEndpoints(ABC):
         node_count: int,
         average_degree: float,
         *,
-        relationship_distribution: Optional[str] = None,
-        relationship_seed: Optional[int] = None,
-        relationship_property: Optional[RelationshipPropertySpec] = None,
-        orientation: Optional[str] = None,
-        allow_self_loops: Optional[bool] = None,
-        read_concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        sudo: Optional[bool] = None,
+        relationship_distribution: str | None = None,
+        relationship_seed: int | None = None,
+        relationship_property: RelationshipPropertySpec | None = None,
+        orientation: str | None = None,
+        allow_self_loops: bool | None = None,
+        read_concurrency: int | None = None,
+        job_id: str | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
+        username: str | None = None,
     ) -> GraphWithGenerationStats:
         """
         Generates a random graph and store it in the graph catalog.
@@ -103,31 +103,31 @@ class CatalogEndpoints(ABC):
             The number of nodes in the generated graph
         average_degree : float
             The average out-degree of the generated nodes
-        relationship_distribution : Optional[str], default=None
+        relationship_distribution : str | None, default=None
             Determines the relationship distribution strategy.
-        relationship_seed : Optional[int], default=None
+        relationship_seed : int | None, default=None
             Seed value for generating deterministic relationships.
-        relationship_property : Optional[RelationshipPropertySpec], default=None
+        relationship_property : RelationshipPropertySpec | None, default=None
             Configure generated relationship properties.
-        orientation : Optional[str], default=None
+        orientation : str | None, default=None
             Specifies the orientation of the generated relationships.
-        allow_self_loops : Optional[bool], default=None
+        allow_self_loops : bool | None, default=None
             Whether nodes in the graph can have relationships where start and end nodes are the same.
-        read_concurrency : Optional[int], default=None
+        read_concurrency : int | None, default=None
             Number of concurrent threads/processes to use during graph generation.
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             Unique identifier for the job associated with the graph generation.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress during graph generation.
-        username : Optional[str], default=None
+        username : str | None, default=None
             Username of the individual requesting the graph generation.
 
         Returns
         -------
         GraphGenerationStats:
-            Tuple of the generated graph object and the result object containing stats about the generation.
+            tuple of the generated graph object and the result object containing stats about the generation.
         """
 
     @property
@@ -170,7 +170,7 @@ class GraphGenerationStats(BaseResult):
     nodes: int
     relationships: int
     generate_millis: int
-    relationship_seed: Optional[int]
+    relationship_seed: int | None
     average_degree: float
     relationship_distribution: str
     relationship_property: RelationshipPropertySpec
@@ -179,9 +179,9 @@ class GraphGenerationStats(BaseResult):
 class RelationshipPropertySpec(BaseResult):
     name: str
     type: str
-    min: Optional[float] = None
-    max: Optional[float] = None
-    value: Optional[float] = None
+    min: float | None = None
+    max: float | None = None
+    value: float | None = None
 
     @staticmethod
     def fixed(name: str, value: float) -> RelationshipPropertySpec:
@@ -202,9 +202,9 @@ class GraphWithFilterResult(NamedTuple):
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exception_type: Type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         self.graph.drop()
 
@@ -218,8 +218,8 @@ class GraphWithGenerationStats(NamedTuple):
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exception_type: Type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         self.graph.drop()

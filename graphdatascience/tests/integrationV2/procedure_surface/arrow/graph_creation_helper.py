@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Any, Generator, Optional, Tuple
+from typing import Any, Generator
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import Cat
 
 @contextmanager
 def create_graph(
-    arrow_client: AuthenticatedArrowClient, graph_name: str, gdl: str, undirected: Optional[Tuple[str, str]] = None
+    arrow_client: AuthenticatedArrowClient, graph_name: str, gdl: str, undirected: tuple[str, str] | None = None
 ) -> Generator[GraphV2, Any, None]:
     try:
         raw_res = arrow_client.do_action("v2/graph.fromGDL", {"graphName": graph_name, "gdlGraph": gdl})
@@ -44,7 +44,7 @@ def create_graph_from_db(
     graph_name: str,
     graph_data: str,
     query: str,
-    undirected_relationship_types: Optional[list[str]] = None,
+    undirected_relationship_types: list[str] | None = None,
 ) -> Generator[GraphV2, Any, None]:
     try:
         query_runner.run_cypher(graph_data)
