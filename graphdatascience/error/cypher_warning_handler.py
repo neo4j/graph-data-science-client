@@ -32,6 +32,11 @@ def filter_id_func_deprecation_warning() -> Callable[[F], F]:
                 "ignore",
                 message=r"warn: feature deprecated with replacement\. id is deprecated. It is replaced by elementId or consider using an application-generated id\.",
             )
+            # with neo4j driver 6.0.0 + Neo4j 5.X
+            warnings.filterwarnings(
+                "ignore",
+                message=r"warn: feature deprecated without replacement\. id is deprecated and will be removed without a replacement\.",
+            )
 
             return func(self, *args, **kwargs)
 
