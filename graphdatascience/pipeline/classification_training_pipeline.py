@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC
 from typing import Any
 
@@ -9,7 +11,7 @@ from .training_pipeline import MODEL_TYPE, TrainingPipeline
 
 
 class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
-    def addLogisticRegression(self, **config: Any) -> "Series[Any]":
+    def addLogisticRegression(self, **config: Any) -> Series[Any]:
         """
         Add a logistic regression model candidate to the pipeline.
 
@@ -26,7 +28,7 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
             params=params,
         ).squeeze()
 
-    def addRandomForest(self, **config: Any) -> "Series[Any]":
+    def addRandomForest(self, **config: Any) -> Series[Any]:
         """
         Add a random forest model candidate to the pipeline.
 
@@ -46,7 +48,7 @@ class ClassificationTrainingPipeline(TrainingPipeline[MODEL_TYPE], ABC):
             endpoint=f"{endpoint_prefix}addRandomForest", params=params
         ).squeeze()
 
-    def addMLP(self, **config: Any) -> "Series[Any]":
+    def addMLP(self, **config: Any) -> Series[Any]:
         """
         Add a multi-layer perceptron model candidate to the pipeline.
 

@@ -493,7 +493,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         node_properties: builtins.list[str],
         node_labels: Strings = ["*"],
         **config: Any,
-    ) -> "Series[Any]":
+    ) -> Series[Any]:
         self._namespace += ".writeNodeProperties"
 
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
@@ -504,7 +504,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         relationship_type: str,
         relationship_property: str = "",
         **config: Any,
-    ) -> "Series[Any]":
+    ) -> Series[Any]:
         self._namespace += ".writeRelationship"
         params = CallParameters(
             graph_name=G.name(),
@@ -556,7 +556,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
     @graph_type_check
-    def deleteRelationships(self, G: Graph, relationship_type: str) -> "Series[Any]":
+    def deleteRelationships(self, G: Graph, relationship_type: str) -> Series[Any]:
         self._namespace += ".deleteRelationships"
 
         params = CallParameters(

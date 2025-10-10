@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC
 from typing import Any
 
@@ -19,7 +21,7 @@ class AlgoProcRunner(IllegalAttrChecker, ABC):
         return self._query_runner.call_procedure(endpoint=self._namespace, params=params, logging=with_logging)
 
     @graph_type_check
-    def estimate(self, G: Graph, **config: Any) -> "Series[Any]":
+    def estimate(self, G: Graph, **config: Any) -> Series[Any]:
         self._namespace += "." + "estimate"
         return self._run_procedure(G, config, with_logging=False).squeeze()  # type: ignore
 
@@ -30,13 +32,13 @@ class StreamModeRunner(AlgoProcRunner):
 
 
 class StandardModeRunner(AlgoProcRunner):
-    def __call__(self, G: Graph, **config: Any) -> "Series[Any]":
+    def __call__(self, G: Graph, **config: Any) -> Series[Any]:
         return self._run_procedure(G, config).squeeze()  # type: ignore
 
 
 class GraphSageRunner(AlgoProcRunner):
     @graph_type_check
-    def __call__(self, G: Graph, **config: Any) -> tuple[GraphSageModel, "Series[Any]"]:
+    def __call__(self, G: Graph, **config: Any) -> tuple[GraphSageModel, Series[Any]]:
         result = self._run_procedure(G, config).squeeze()
         model_name = result["modelInfo"]["modelName"]
 

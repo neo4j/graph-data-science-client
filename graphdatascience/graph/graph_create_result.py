@@ -14,7 +14,7 @@ class GraphCreateResult(NamedTuple):
     """
 
     graph: Graph
-    result: "Series[Any]"
+    result: Series[Any]
 
     def __enter__(self: GraphCreateResult) -> Graph:
         return self.graph

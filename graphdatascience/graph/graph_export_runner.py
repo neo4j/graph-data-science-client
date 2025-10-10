@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from pandas import Series
@@ -11,16 +13,16 @@ from .graph_type_check import graph_type_check
 
 class GraphExportCsvRunner(IllegalAttrChecker):
     # TODO: Add an integration test for this call.
-    def __call__(self, G: Graph, **config: Any) -> "Series[Any]":
+    def __call__(self, G: Graph, **config: Any) -> Series[Any]:
         return self._export_call(G, config)
 
     @graph_type_check
-    def _export_call(self, G: Graph, config: dict[str, Any]) -> "Series[Any]":
+    def _export_call(self, G: Graph, config: dict[str, Any]) -> Series[Any]:
         params = CallParameters(graph_name=G.name(), config=config)
         return self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()  # type: ignore
 
     @graph_type_check
-    def estimate(self, G: Graph, **config: Any) -> "Series[Any]":
+    def estimate(self, G: Graph, **config: Any) -> Series[Any]:
         self._namespace += ".estimate"
 
         return self._export_call(G, config)
@@ -35,11 +37,11 @@ class GraphExportCsvEndpoints(UncallableNamespace, IllegalAttrChecker):
 
 
 class GraphExportRunner(IllegalAttrChecker):
-    def __call__(self, G: Graph, **config: Any) -> "Series[Any]":
+    def __call__(self, G: Graph, **config: Any) -> Series[Any]:
         return self._export_call(G, config)
 
     @graph_type_check
-    def _export_call(self, G: Graph, config: dict[str, Any]) -> "Series[Any]":
+    def _export_call(self, G: Graph, config: dict[str, Any]) -> Series[Any]:
         params = CallParameters(graph_name=G.name(), config=config)
         return self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()  # type: ignore
 

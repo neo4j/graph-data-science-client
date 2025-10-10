@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from pandas import DataFrame, Series
@@ -18,13 +20,13 @@ class ModelBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.call_procedure(endpoint=self._namespace, params=params)
 
-    def exists(self, model_name: str) -> "Series[Any]":
+    def exists(self, model_name: str) -> Series[Any]:
         self._namespace += ".exists"
         params = CallParameters(model_name=model_name)
 
         return self._query_runner.call_procedure(endpoint=self._namespace, params=params).squeeze()  # type: ignore
 
-    def drop(self, model: Model) -> "Series[Any]":
+    def drop(self, model: Model) -> Series[Any]:
         self._namespace += ".drop"
         params = CallParameters(model_name=model.name())
 

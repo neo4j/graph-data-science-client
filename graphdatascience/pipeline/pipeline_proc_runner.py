@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from pandas import DataFrame, Series
@@ -35,14 +37,14 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return self._query_runner.call_procedure(endpoint=self._namespace, params=params)
 
-    def exists(self, pipeline_name: str) -> "Series[Any]":
+    def exists(self, pipeline_name: str) -> Series[Any]:
         self._namespace += ".exists"
 
         return self._query_runner.call_procedure(  # type: ignore
             endpoint=self._namespace, params=CallParameters(pipeline_name=pipeline_name)
         ).squeeze()
 
-    def drop(self, pipeline: TrainingPipeline[PipelineModel]) -> "Series[Any]":
+    def drop(self, pipeline: TrainingPipeline[PipelineModel]) -> Series[Any]:
         self._namespace += ".drop"
 
         return self._query_runner.call_procedure(  # type: ignore
