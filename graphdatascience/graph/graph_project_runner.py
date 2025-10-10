@@ -27,7 +27,7 @@ class GraphProjectRunner(IllegalAttrChecker):
 
         return GraphCreateResult(Graph(graph_name, self._query_runner), result)
 
-    def estimate(self, node_projection: Any, relationship_projection: Any, **config: Any) -> "Series[Any]":
+    def estimate(self, node_projection: Any, relationship_projection: Any, **config: Any) -> Series[Any]:
         self._namespace += ".estimate"
         result = self._query_runner.call_procedure(
             endpoint=self._namespace,

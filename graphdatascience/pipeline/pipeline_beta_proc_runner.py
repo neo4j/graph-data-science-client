@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from pandas import DataFrame, Series
@@ -23,8 +25,8 @@ class PipelineBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
     def list(self, pipeline: TrainingPipeline[PipelineModel] | None = None) -> DataFrame:
         return PipelineProcRunner(self._query_runner, self._namespace, self._server_version).list(pipeline)
 
-    def exists(self, pipeline_name: str) -> "Series[Any]":
+    def exists(self, pipeline_name: str) -> Series[Any]:
         return PipelineProcRunner(self._query_runner, self._namespace, self._server_version).exists(pipeline_name)
 
-    def drop(self, pipeline: TrainingPipeline[PipelineModel]) -> "Series[Any]":
+    def drop(self, pipeline: TrainingPipeline[PipelineModel]) -> Series[Any]:
         return PipelineProcRunner(self._query_runner, self._namespace, self._server_version).drop(pipeline)

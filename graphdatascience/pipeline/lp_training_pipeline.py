@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from pandas import DataFrame, Series
@@ -14,7 +16,7 @@ class LPTrainingPipeline(ClassificationTrainingPipeline[LPModel]):
     Construct an instance of this class using :func:`graphdatascience.GraphDataScience.lp_pipe`.
     """
 
-    def addFeature(self, feature_type: str, **config: Any) -> "Series[Any]":
+    def addFeature(self, feature_type: str, **config: Any) -> Series[Any]:
         """
         Add a link feature to the pipeline.
 

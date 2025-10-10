@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 from typing import Any
 
@@ -13,28 +15,28 @@ from ..server_version.server_version import ServerVersion
 
 
 class DebugProcRunner(UncallableNamespace, IllegalAttrChecker):
-    def sysInfo(self) -> "Series[Any]":
+    def sysInfo(self) -> Series[Any]:
         self._namespace += ".sysInfo"
         return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
 
-    def arrow(self) -> "Series[Any]":
+    def arrow(self) -> Series[Any]:
         self._namespace += ".arrow"
         return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
 
 
 class MemoryProcRunner(UncallableNamespace, IllegalAttrChecker):
     @compatible_with("memory.list", min_inclusive=ServerVersion(2, 13, 0))
-    def list(self) -> "Series[Any]":
+    def list(self) -> Series[Any]:
         return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
 
     @compatible_with("memory.summary", min_inclusive=ServerVersion(2, 13, 0))
-    def summary(self) -> "Series[Any]":
+    def summary(self) -> Series[Any]:
         self._namespace += ".summary"
         return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
 
 
 class LicenseProcRunner(UncallableNamespace, IllegalAttrChecker):
-    def state(self) -> "Series[Any]":
+    def state(self) -> Series[Any]:
         self._namespace += ".state"
 
         try:
@@ -102,7 +104,7 @@ class DirectSystemEndpoints(CallerBase):
         return MemoryProcRunner(self._query_runner, f"{self._namespace}.debug", self._server_version)
 
     @compatible_with("systemMonitor", min_inclusive=ServerVersion(2, 5, 0))
-    def systemMonitor(self) -> "Series[Any]":
+    def systemMonitor(self) -> Series[Any]:
         return SystemAlphaEndpoints(self._query_runner, self._namespace, self._server_version).systemMonitor()
 
     @compatible_with("userLog", min_inclusive=ServerVersion(2, 5, 0))
@@ -126,7 +128,7 @@ class SystemAlphaEndpoints(CallerBase):
         self._namespace += ".userLog"
         return self._query_runner.call_procedure(endpoint=self._namespace)
 
-    def systemMonitor(self) -> "Series[Any]":
+    def systemMonitor(self) -> Series[Any]:
         self._namespace += ".systemMonitor"
         return self._query_runner.call_procedure(endpoint=self._namespace).squeeze()  # type: ignore
 

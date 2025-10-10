@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from pandas import DataFrame, Series
@@ -78,7 +80,7 @@ class SimpleRelEmbeddingModel:
         mutate_relationship_type: str,
         mutate_property: str,
         **general_config: Any,
-    ) -> "Series[Any]":
+    ) -> Series[Any]:
         """
         Compute relationship embeddings and add them to graph projection under a new relationship type
 
@@ -122,7 +124,7 @@ class SimpleRelEmbeddingModel:
         write_relationship_type: str,
         write_property: str,
         **general_config: Any,
-    ) -> "Series[Any]":
+    ) -> Series[Any]:
         """
         Compute relationship embeddings and write them back to the database under a new relationship type
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from pandas import Series
@@ -62,7 +64,7 @@ class NRTrainingPipeline(TrainingPipeline[NRModel]):
 
         return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
-    def feature_properties(self) -> "Series[Any]":
+    def feature_properties(self) -> Series[Any]:
         """
         Get the feature properties of the pipeline.
 
@@ -71,7 +73,7 @@ class NRTrainingPipeline(TrainingPipeline[NRModel]):
 
         """
         pipeline_info = self._list_info()["pipelineInfo"][0]
-        feature_properties: "Series[Any]" = Series(pipeline_info["featurePipeline"]["featureProperties"], dtype=object)
+        feature_properties: Series[Any] = Series(pipeline_info["featurePipeline"]["featureProperties"], dtype=object)
         return feature_properties
 
     def _endpoint_prefix(self) -> str:

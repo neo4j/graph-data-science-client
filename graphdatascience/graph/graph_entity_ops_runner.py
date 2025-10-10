@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from functools import reduce
 from typing import Any, Type
 from warnings import filterwarnings
@@ -195,13 +197,13 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
         return reduce(add_property, db_node_properties, query_prefix)
 
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
-    def write(self, G: Graph, node_properties: Strings, node_labels: Strings = ["*"], **config: Any) -> "Series[Any]":
+    def write(self, G: Graph, node_properties: Strings, node_labels: Strings = ["*"], **config: Any) -> Series[Any]:
         self._namespace += ".write"
         return self._handle_properties(G, node_properties, node_labels, config).squeeze()  # type: ignore
 
     @compatible_with("drop", min_inclusive=ServerVersion(2, 2, 0))
     @graph_type_check
-    def drop(self, G: Graph, node_properties: list[str], **config: Any) -> "Series[Any]":
+    def drop(self, G: Graph, node_properties: list[str], **config: Any) -> Series[Any]:
         self._namespace += ".drop"
         params = CallParameters(
             graph_name=G.name(),
@@ -266,7 +268,7 @@ class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
         relationship_type: str,
         relationship_properties: list[str],
         **config: Any,
-    ) -> "Series[Any]":
+    ) -> Series[Any]:
         self._namespace += ".write"
         params = CallParameters(
             graph_name=G.name(),
@@ -284,7 +286,7 @@ class GraphRelationshipPropertiesRunner(GraphEntityOpsBaseRunner):
 class GraphRelationshipRunner(GraphEntityOpsBaseRunner):
     @compatible_with("write", min_inclusive=ServerVersion(2, 2, 0))
     @graph_type_check
-    def write(self, G: Graph, relationship_type: str, relationship_property: str = "", **config: Any) -> "Series[Any]":
+    def write(self, G: Graph, relationship_type: str, relationship_property: str = "", **config: Any) -> Series[Any]:
         self._namespace += ".write"
         params = CallParameters(
             graph_name=G.name(),
@@ -302,7 +304,7 @@ class GraphRelationshipRunner(GraphEntityOpsBaseRunner):
 class ToUndirectedRunner(IllegalAttrChecker):
     def _run_procedure(
         self, G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any
-    ) -> "Series[Any]":
+    ) -> Series[Any]:
         actual_config = {
             **config,
             "relationshipType": relationship_type,
@@ -316,12 +318,12 @@ class ToUndirectedRunner(IllegalAttrChecker):
         ).squeeze()
 
     @graph_type_check
-    def __call__(self, G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any) -> "Series[Any]":
+    def __call__(self, G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any) -> Series[Any]:
         return self._run_procedure(G, relationship_type, mutate_relationship_type, **config)
 
     @graph_type_check
     @compatible_with("estimate", min_inclusive=ServerVersion(2, 3, 0))
-    def estimate(self, G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any) -> "Series[Any]":
+    def estimate(self, G: Graph, relationship_type: str, mutate_relationship_type: str, **config: Any) -> Series[Any]:
         self._namespace += ".estimate"
         return self._run_procedure(G, relationship_type, mutate_relationship_type, **config)
 
@@ -333,7 +335,7 @@ class GraphRelationshipsRunner(GraphEntityOpsBaseRunner):
         self,
         G: Graph,
         relationship_type: str,
-    ) -> "Series[Any]":
+    ) -> Series[Any]:
         self._namespace += ".drop"
         params = CallParameters(
             graph_name=G.name(),
@@ -397,7 +399,7 @@ class GraphPropertyRunner(UncallableNamespace, IllegalAttrChecker):
         G: Graph,
         graph_property: str,
         **config: Any,
-    ) -> "Series[Any]":
+    ) -> Series[Any]:
         self._namespace += ".drop"
         params = CallParameters(graph_name=G.name(), graph_property=graph_property, config=config)
 
@@ -407,7 +409,7 @@ class GraphPropertyRunner(UncallableNamespace, IllegalAttrChecker):
 class GraphLabelRunner(GraphEntityOpsBaseRunner):
     @compatible_with("write", min_inclusive=ServerVersion(2, 3, 0))
     @graph_type_check
-    def write(self, G: Graph, node_label: str, **config: Any) -> "Series[Any]":
+    def write(self, G: Graph, node_label: str, **config: Any) -> Series[Any]:
         self._namespace += ".write"
         params = CallParameters(graph_name=G.name(), node_label=node_label, config=config)
 
@@ -415,7 +417,7 @@ class GraphLabelRunner(GraphEntityOpsBaseRunner):
 
     @compatible_with("mutate", min_inclusive=ServerVersion(2, 3, 0))
     @graph_type_check
-    def mutate(self, G: Graph, node_label: str, **config: Any) -> "Series[Any]":
+    def mutate(self, G: Graph, node_label: str, **config: Any) -> Series[Any]:
         self._namespace += ".mutate"
         params = CallParameters(graph_name=G.name(), node_label=node_label, config=config)
 

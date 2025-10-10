@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from typing import Any, Generic, TypeVar
 
@@ -37,7 +39,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
     def _create_trained_model(self, name: str, query_runner: QueryRunner) -> MODEL_TYPE:
         pass
 
-    def addNodeProperty(self, procedure_name: str, **config: Any) -> "Series[Any]":
+    def addNodeProperty(self, procedure_name: str, **config: Any) -> Series[Any]:
         """
         Add a node property step to the pipeline.
 
@@ -64,7 +66,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
 
         return {key: _maybe_expand_tuple(val) for (key, val) in config.items()}
 
-    def configureAutoTuning(self, **config: Any) -> "Series[Any]":
+    def configureAutoTuning(self, **config: Any) -> Series[Any]:
         """
         Configure auto-tuning for the pipeline.
 
@@ -82,7 +84,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
     @graph_type_check
-    def train(self, G: Graph, **config: Any) -> tuple[MODEL_TYPE, "Series[Any]"]:
+    def train(self, G: Graph, **config: Any) -> tuple[MODEL_TYPE, Series[Any]]:
         """
         Train a model on a given graph using the pipeline.
 
@@ -109,7 +111,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         )
 
     @graph_type_check
-    def train_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
+    def train_estimate(self, G: Graph, **config: Any) -> Series[Any]:
         """
         Estimate the training time for a given graph and configuration.
 
@@ -130,7 +132,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
 
         return self._query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()  # type: ignore
 
-    def configureSplit(self, **config: Any) -> "Series[Any]":
+    def configureSplit(self, **config: Any) -> Series[Any]:
         """
         Configure the splits for training the pipeline.
 
@@ -169,7 +171,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         split_config: "Series[float]" = Series(pipeline_info["splitConfig"])
         return split_config
 
-    def parameter_space(self) -> "Series[Any]":
+    def parameter_space(self) -> Series[Any]:
         """
         Get the parameter space of the pipeline.
 
@@ -178,10 +180,10 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
 
         """
         pipeline_info = self._list_info()["pipelineInfo"][0]
-        parameter_space: "Series[Any]" = Series(pipeline_info["trainingParameterSpace"])
+        parameter_space: Series[Any] = Series(pipeline_info["trainingParameterSpace"])
         return parameter_space
 
-    def auto_tuning_config(self) -> "Series[Any]":
+    def auto_tuning_config(self) -> Series[Any]:
         """
         Get the auto-tuning configuration of the pipeline.
 
@@ -190,7 +192,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
 
         """
         pipeline_info = self._list_info()["pipelineInfo"][0]
-        auto_tuning_config: "Series[Any]" = Series(pipeline_info["autoTuningConfig"])
+        auto_tuning_config: Series[Any] = Series(pipeline_info["autoTuningConfig"])
         return auto_tuning_config
 
     def _list_info(self) -> DataFrame:
@@ -240,7 +242,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
             custom_error=False,
         )["exists"].squeeze()  # type: ignore
 
-    def drop(self, failIfMissing: bool = False) -> "Series[Any]":
+    def drop(self, failIfMissing: bool = False) -> Series[Any]:
         """
         Drop the pipeline.
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from pandas import Series
@@ -9,7 +11,7 @@ from .lp_training_pipeline import LPTrainingPipeline
 
 
 class LPPipelineCreateRunner(UncallableNamespace, IllegalAttrChecker):
-    def create(self, name: str) -> tuple[LPTrainingPipeline, "Series[Any]"]:
+    def create(self, name: str) -> tuple[LPTrainingPipeline, Series[Any]]:
         self._namespace += ".create"
 
         params = CallParameters(name=name)

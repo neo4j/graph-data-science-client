@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from pandas import Series
@@ -19,7 +21,7 @@ class NCModel(PipelineModel):
         return "gds.beta.pipeline.nodeClassification.predict."
 
     @graph_type_check
-    def predict_write(self, G: Graph, **config: Any) -> "Series[Any]":
+    def predict_write(self, G: Graph, **config: Any) -> Series[Any]:
         """
         Predict the node labels of a graph and write the results to the database.
 
@@ -40,7 +42,7 @@ class NCModel(PipelineModel):
         ).squeeze()
 
     @graph_type_check
-    def predict_write_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
+    def predict_write_estimate(self, G: Graph, **config: Any) -> Series[Any]:
         """
         Estimate the memory needed to predict the node labels of a graph and write the results to the database.
 

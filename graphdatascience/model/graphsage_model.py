@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from pandas import Series
@@ -18,7 +20,7 @@ class GraphSageModel(Model):
         return "gds.beta.graphSage."
 
     @graph_type_check
-    def predict_write(self, G: Graph, **config: Any) -> "Series[Any]":
+    def predict_write(self, G: Graph, **config: Any) -> Series[Any]:
         """
         Generate embeddings for the given graph and write the results to the database.
 
@@ -39,7 +41,7 @@ class GraphSageModel(Model):
         ).squeeze()
 
     @graph_type_check
-    def predict_write_estimate(self, G: Graph, **config: Any) -> "Series[Any]":
+    def predict_write_estimate(self, G: Graph, **config: Any) -> Series[Any]:
         """
         Estimate the memory needed to generate embeddings for the given graph and write the results to the database.
 
