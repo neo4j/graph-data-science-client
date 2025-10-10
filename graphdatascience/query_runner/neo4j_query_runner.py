@@ -329,7 +329,7 @@ class Neo4jQueryRunner(QueryRunner):
             status_objects = result_summary.gql_status_objects
             for status in status_objects:
                 if status.raw_classification == "DEPRECATION" and not re.match(
-                    r".*returned by the procedure.*", status.status_description
+                    r"(.*returned by the procedure.*)|(.*procedure field deprecated.*)", status.status_description
                 ):
                     warnings.warn(DeprecationWarning(status.status_description))
 
@@ -458,7 +458,7 @@ class Neo4jQueryRunner(QueryRunner):
                 else:
                     warnings.filterwarnings(
                         "ignore",
-                        category=neo4j.warnings.PreviewWarning,
+                        category=neo4j.warnings.PreviewWarning,  # type: ignore[attr-defined]
                         message=(r"^Passing key-word arguments to verify_connectivity\(\) is a preview feature.*"),
                     )
 
