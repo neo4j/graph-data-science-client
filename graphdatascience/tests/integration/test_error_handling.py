@@ -1,6 +1,5 @@
 from typing import Generator
 
-import neo4j
 import pytest
 from neo4j import Driver, GraphDatabase
 
