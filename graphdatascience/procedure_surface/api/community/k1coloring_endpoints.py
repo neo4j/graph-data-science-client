@@ -11,9 +11,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class K1ColoringEndpoints(ABC):
-    """
-    Abstract base class defining the API for the K-1 Coloring algorithm.
-    """
 
     @abstractmethod
     def mutate(
@@ -31,32 +28,35 @@ class K1ColoringEndpoints(ABC):
         job_id: Optional[Any] = None,
     ) -> K1ColoringMutateResult:
         """
-        Executes the K-1 Coloring algorithm and writes the results to the in-memory graph as node properties.
+        Runs the K-1 Coloring algorithm and stores the results in the graph catalog as a new node property.
+
+        The K-1 Coloring algorithm assigns a color to every node in the graph, trying to optimize for two objectives: 
+        to make sure that every neighbor of a given node has a different color than the node itself, and to use as few colors as possible.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the color for each node
+            Name of the node property to store the results in.
         batch_size : Optional[int], default=None
             The batch size for processing
         max_iterations : Optional[int], default=None
-            The maximum number of iterations of K-1 Coloring to run
+            Maximum number of iterations to run.
         relationship_types : Optional[List[str]], default=None
-            The relationships types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : Optional[List[str]], default=None
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
-            Whether to log progress
+            Display progress logging.
         username : Optional[str], default=None
-            The username to attribute the procedure run to
+            As an administrator, run the algorithm as a different user, to access also their graphs.
         concurrency : Optional[Any], default=None
-            The number of concurrent threads
+            Number of CPU threads to use.
         job_id : Optional[Any], default=None
-            An identifier for the job
+            Identifier for the computation.
 
         Returns
         -------

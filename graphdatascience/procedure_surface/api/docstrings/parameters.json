@@ -1,0 +1,29 @@
+{
+  "G": "The graph to run the algorithm on.",
+  "sudo": "Disable the memory guard.",
+  "log_progress": "Display progress logging.",
+  "username": "As an administrator, run the algorithm as a different user, to access also their graphs.",
+  "job_id": "Identifier for the computation.",
+
+  "tolerance": "Minimum change in scores between iterations.",
+  "concurrency": "Number of CPU threads to use.",
+  "max_iterations": "Maximum number of iterations to run.",
+  "scaler": "Name of the scaler applied on the resulting scores.",
+  "source_nodes": "List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.",
+  "orientation": "The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.",
+
+  "sampling_size": "Number of source nodes to consider for computing centrality scores.",
+  "sampling_seed": "Seed value for the random number generator that selects source nodes.",
+  "damping_factor": "Probability of a jump to a random node.",
+  "use_wasserman_faust": "Use the improved Wasserman-Faust formula for closeness computation.",
+  "seed_set_size": "Number of nodes that maximize the expected spread in the network.",
+  "propagation_probability": "Probability of a node being activated by an active neighbour node.",
+  "monte_carlo_simulations": "Number of Monte-Carlo simulations.",
+
+  "mutate_property": "Name of the node property to store the results in.",
+  "write_property": "Name of the node property to store the results in.",
+
+  "node_labels": "Filter the graph using the given node labels. Nodes with any of the given labels will be included.",
+  "relationship_types": "Filter the graph using the given relationship types. Relationships with any of the given types will be included.",
+  "relationship_weight_property": "Name of the property to be used as weights.",
+}

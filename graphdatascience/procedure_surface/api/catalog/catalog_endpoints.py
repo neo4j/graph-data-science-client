@@ -118,7 +118,7 @@ class CatalogEndpoints(ABC):
         job_id : Optional[str], default=None
             Unique identifier for the job associated with the graph generation.
         sudo : Optional[bool], default=None
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : Optional[bool], default=None
             Whether to log progress during graph generation.
         username : Optional[str], default=None
