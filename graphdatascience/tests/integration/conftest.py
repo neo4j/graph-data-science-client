@@ -132,10 +132,10 @@ def is_neo4j_44(gds: GraphDataScience) -> bool:
 
 
 def id_warning_pattern() -> str:
-    if neo4j.__version__.startswith("5."):
-        return r".*The query used a deprecated function.*[`']id[`'].*"
+    if neo4j.__version__.startswith("6."):
+        return r"(.*feature deprecated without replacement\. id is deprecated and will be removed without a replacement.*)|(.*feature deprecated with replacement\. id is deprecated.*)"
     else:
-        return r".*id is deprecated. It is replaced by elementId or consider using an application-generated id.*"
+        return r".*The query used a deprecated function.*[`']id[`'].*"
 
 
 @pytest.fixture(autouse=True)
