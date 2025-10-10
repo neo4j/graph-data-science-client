@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Optional, Protocol, TypedDict, Union
+from typing import Any, Protocol, TypedDict
 from warnings import warn
 
 import numpy as np
@@ -22,8 +22,8 @@ class _HomogeneousOGBGraphBase(TypedDict):
 
 
 class HomogeneousOGBGraph(_HomogeneousOGBGraphBase, total=False):
-    edge_feat: Optional[npt.NDArray[np.float64]]
-    node_feat: Optional[npt.NDArray[np.float64]]
+    edge_feat: npt.NDArray[np.float64] | None
+    node_feat: npt.NDArray[np.float64] | None
 
 
 class _HeterogeneousOGBGraphBase(TypedDict):
@@ -156,7 +156,7 @@ class OGBNLoader(OGBLoader):
         nodes = []
 
         for node_label, node_count in graph["num_nodes_dict"].items():
-            node_labels: Union[str, list[list[str]]] = node_label
+            node_labels: str | list[list[str]] = node_label
             if node_label in split["train"]:
                 node_labels = [[node_label, "Train"] for _ in range(node_count)]
                 for node_id in split["valid"][node_label]:
@@ -205,7 +205,7 @@ class OGBNLoader(OGBLoader):
         self,
         dataset_name: str,
         dataset_root_path: str = "dataset",
-        graph_name: Optional[str] = None,
+        graph_name: str | None = None,
         concurrency: int = 4,
     ) -> Graph:
         try:
@@ -332,7 +332,7 @@ class OGBLLoader(OGBLoader):
         self,
         dataset_name: str,
         dataset_root_path: str = "dataset",
-        graph_name: Optional[str] = None,
+        graph_name: str | None = None,
         concurrency: int = 4,
     ) -> Graph:
         try:

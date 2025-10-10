@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, Optional
+from typing import Any
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
@@ -23,18 +23,18 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         self,
         G: GraphV2,
         graph_name: str,
-        start_nodes: Optional[List[int]] = None,
-        restart_probability: Optional[float] = None,
-        sampling_ratio: Optional[float] = None,
-        node_label_stratification: Optional[bool] = None,
-        relationship_weight_property: Optional[str] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        start_nodes: list[int] | None = None,
+        restart_probability: float | None = None,
+        sampling_ratio: float | None = None,
+        node_label_stratification: bool | None = None,
+        relationship_weight_property: str | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> GraphWithSamplingResult:
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
@@ -67,18 +67,18 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         self,
         G: GraphV2,
         graph_name: str,
-        start_nodes: Optional[List[int]] = None,
-        restart_probability: Optional[float] = None,
-        sampling_ratio: Optional[float] = None,
-        node_label_stratification: Optional[bool] = None,
-        relationship_weight_property: Optional[str] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        start_nodes: list[int] | None = None,
+        restart_probability: float | None = None,
+        sampling_ratio: float | None = None,
+        node_label_stratification: bool | None = None,
+        relationship_weight_property: str | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> GraphWithSamplingResult:
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),

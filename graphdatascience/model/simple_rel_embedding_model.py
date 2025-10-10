@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any
 
 from pandas import DataFrame, Series
 
@@ -6,7 +6,7 @@ from ..call_parameters import CallParameters
 from ..query_runner.query_runner import QueryRunner
 from ..server_version.server_version import ServerVersion
 
-NodeFilter = Union[int, list[int], str]
+NodeFilter = int | list[int] | str
 
 
 class SimpleRelEmbeddingModel:

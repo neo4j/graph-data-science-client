@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC
 from datetime import datetime
 from types import TracebackType
-from typing import Any, Optional, Type, Union
+from typing import Any, Type
 
 from graphdatascience.procedure_surface.api.catalog.graph_backend import GraphBackend
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
@@ -25,9 +25,9 @@ class GraphV2(ABC):
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exception_type: Type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         self.drop()
 
@@ -93,7 +93,7 @@ class GraphV2(ABC):
 
         return {rel_type: list(val.get("properties", {}).keys()) for rel_type, val in rel_schema.items()}
 
-    def degree_distribution(self) -> dict[str, Union[float, int]]:
+    def degree_distribution(self) -> dict[str, float | int]:
         """
         Returns:
             the degree distribution of the graph
@@ -128,7 +128,7 @@ class GraphV2(ABC):
         """
         return self._backend.exists()
 
-    def drop(self, failIfMissing: bool = True) -> Optional[GraphInfo]:
+    def drop(self, failIfMissing: bool = True) -> GraphInfo | None:
         """
         Args:
             failIfMissing: whether to fail if the graph does not exist

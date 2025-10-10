@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from types import TracebackType
-from typing import Any, Optional, Type
+from typing import Any, Type
 
 from tqdm.auto import tqdm
 
@@ -9,7 +9,7 @@ from graphdatascience.query_runner.progress.progress_provider import TaskWithPro
 
 
 class TqdmProgressBar:
-    def __init__(self, task_name: str, relative_progress: Optional[float], bar_options: dict[str, Any] = {}):
+    def __init__(self, task_name: str, relative_progress: float | None, bar_options: dict[str, Any] = {}):
         root_task_name = task_name
         if relative_progress is None:  # Qualitative progress report
             self._tqdm_bar = tqdm(
@@ -33,17 +33,17 @@ class TqdmProgressBar:
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exception_type: Type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         self.finish(success=exception_value is None)
 
     def update(
         self,
         status: str,
-        progress: Optional[float],
-        sub_tasks_description: Optional[str] = None,
+        progress: float | None,
+        sub_tasks_description: str | None = None,
     ) -> None:
         postfix = f"status: {status}, task: {sub_tasks_description}" if sub_tasks_description else f"status: {status}"
         self._tqdm_bar.set_postfix_str(postfix, refresh=False)
@@ -63,7 +63,7 @@ class TqdmProgressBar:
         self._tqdm_bar.close()
 
     @staticmethod
-    def _relative_progress(task: TaskWithProgress) -> Optional[float]:
+    def _relative_progress(task: TaskWithProgress) -> float | None:
         try:
             return float(task.progress_percent.removesuffix("%"))
         except ValueError:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
@@ -15,12 +15,12 @@ class NodeLabelEndpoints(ABC):
         node_label: str,
         *,
         node_filter: str,
-        sudo: Optional[bool] = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        write_concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> NodeLabelMutateResult:
         """
         Attaches the specified node label to the filtered nodes in the graph.
@@ -33,17 +33,17 @@ class NodeLabelEndpoints(ABC):
             The node label to write back.
         node_filter : str
             A Cypher predicate for filtering nodes in the input graph.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        write_concurrency : Optional[Any], default=None
+        write_concurrency : Any | None, default=None
             The number of concurrent threads used for the mutation
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
         Returns
         -------
@@ -59,12 +59,12 @@ class NodeLabelEndpoints(ABC):
         node_label: str,
         *,
         node_filter: str,
-        sudo: Optional[bool] = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        write_concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> NodeLabelWriteResult:
         """
         Writes the specified node label to the filtered nodes in the database.
@@ -77,17 +77,17 @@ class NodeLabelEndpoints(ABC):
             The node label to write back.
         node_filter : str
             A Cypher predicate for filtering nodes in the input graph.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        write_concurrency : Optional[Any], default=None
+        write_concurrency : Any | None, default=None
             The number of concurrent threads used for the mutation
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
         Returns
         -------

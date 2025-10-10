@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable
 
 from pandas import DataFrame
 
@@ -37,11 +37,11 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
     def create(
         cls,
         session_bolt_connection_info: DbmsConnectionInfo,
-        arrow_authentication: Optional[ArrowAuthentication],
-        db_endpoint: Optional[Union[Neo4jQueryRunner, DbmsConnectionInfo]],
+        arrow_authentication: ArrowAuthentication | None,
+        db_endpoint: Neo4jQueryRunner | DbmsConnectionInfo | None,
         delete_fn: Callable[[], bool],
-        arrow_client_options: Optional[dict[str, Any]] = None,
-        bookmarks: Optional[Any] = None,
+        arrow_client_options: dict[str, Any] | None = None,
+        bookmarks: Any | None = None,
         show_progress: bool = True,
     ) -> AuraGraphDataScience:
         session_bolt_query_runner = Neo4jQueryRunner.create_for_session(
@@ -126,8 +126,8 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
     def run_cypher(
         self,
         query: str,
-        params: Optional[dict[str, Any]] = None,
-        database: Optional[str] = None,
+        params: dict[str, Any] | None = None,
+        database: str | None = None,
         retryable: bool = False,
         mode: QueryMode = QueryMode.WRITE,
     ) -> DataFrame:
@@ -212,7 +212,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         self._query_runner.set_show_progress(show_progress)
         self._v2_endpoints.set_show_progress(show_progress)
 
-    def database(self) -> Optional[str]:
+    def database(self) -> str | None:
         """
         Get the database which cypher queries are run against.
 
@@ -221,7 +221,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         """
         return self._query_runner.database()
 
-    def bookmarks(self) -> Optional[Any]:
+    def bookmarks(self) -> Any | None:
         """
         Get the Neo4j bookmarks defining the currently required states for cypher queries to execute
 
@@ -231,7 +231,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         """
         return self._query_runner.bookmarks()
 
-    def last_bookmarks(self) -> Optional[Any]:
+    def last_bookmarks(self) -> Any | None:
         """
         Get the Neo4j bookmarks defining the state following the most recently called query
 

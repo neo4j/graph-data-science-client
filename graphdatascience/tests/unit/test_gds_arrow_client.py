@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Any, Generator, Union
+from typing import Any, Generator, TypeAlias
 
 import pyarrow as pa
 import pytest
@@ -18,7 +18,7 @@ from graphdatascience.query_runner.arrow_authentication import UsernamePasswordA
 from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.gds_arrow_client import AuthMiddleware, GdsArrowClient
 
-ActionParam = Union[str, tuple[str, Any], Action]
+ActionParam: TypeAlias = str | tuple[str, Any] | Action
 
 
 class FlightServer(FlightServerBase):  # type: ignore

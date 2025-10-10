@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -16,13 +16,13 @@ class CliqueCountingEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> CliqueCountingMutateResult:
         """
         Executes the clique counting algorithm and writes the results to the in-memory graph as node properties.
@@ -33,19 +33,19 @@ class CliqueCountingEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the clique counts for each node
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Override memory estimation limits
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
 
         Returns
@@ -59,13 +59,13 @@ class CliqueCountingEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> CliqueCountingStatsResult:
         """
         Executes the clique counting algorithm and returns statistics.
@@ -74,19 +74,19 @@ class CliqueCountingEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Override memory estimation limits
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
 
         Returns
@@ -100,13 +100,13 @@ class CliqueCountingEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> DataFrame:
         """
         Executes the clique counting algorithm and returns a stream of results.
@@ -115,19 +115,19 @@ class CliqueCountingEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Override memory estimation limits
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
 
         Returns
@@ -142,14 +142,14 @@ class CliqueCountingEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
-        write_concurrency: Optional[int] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
+        write_concurrency: int | None = None,
     ) -> CliqueCountingWriteResult:
         """
         Executes the clique counting algorithm and writes the results back to the database.
@@ -160,21 +160,21 @@ class CliqueCountingEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to write the clique counts to
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Override memory estimation limits
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        write_concurrency : Optional[int], default=None
+        write_concurrency : int | None, default=None
             The number of concurrent threads for write operations
 
         Returns
@@ -187,23 +187,23 @@ class CliqueCountingEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        concurrency: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
+        G: GraphV2 | dict[str, Any],
+        concurrency: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
     ) -> EstimationResult:
         """
         Estimates the memory requirements for running the clique counting algorithm.
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph or graph configuration to estimate for
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
 
         Returns
@@ -217,7 +217,7 @@ class CliqueCountingEndpoints(ABC):
 class CliqueCountingMutateResult(BaseResult):
     compute_millis: int
     configuration: dict[str, Any]
-    global_count: List[int]
+    global_count: list[int]
     mutate_millis: int
     node_properties_written: int
     pre_processing_millis: int
@@ -226,14 +226,14 @@ class CliqueCountingMutateResult(BaseResult):
 class CliqueCountingStatsResult(BaseResult):
     compute_millis: int
     configuration: dict[str, Any]
-    global_count: List[int]
+    global_count: list[int]
     pre_processing_millis: int
 
 
 class CliqueCountingWriteResult(BaseResult):
     compute_millis: int
     configuration: dict[str, Any]
-    global_count: List[int]
+    global_count: list[int]
     node_properties_written: int
     pre_processing_millis: int
     write_millis: int

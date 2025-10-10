@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -30,7 +29,7 @@ class SessionMemoryValue:
         return SessionMemoryValue(value.replace("Gi", "GB"))
 
     @staticmethod
-    def fromInstanceSize(value: Optional[str]) -> SessionMemoryValue:
+    def fromInstanceSize(value: str | None) -> SessionMemoryValue:
         if not value:
             return SESSION_MEMORY_VALUE_UNKNOWN
 

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 from ..call_parameters import CallParameters
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..query_runner.session_query_runner import SessionQueryRunner
@@ -17,11 +15,11 @@ class GraphProjectRemoteRunner(IllegalAttrChecker):
         self,
         graph_name: str,
         query: str,
-        job_id: Optional[str] = None,
+        job_id: str | None = None,
         concurrency: int = 4,
-        undirected_relationship_types: Optional[list[str]] = None,
-        inverse_indexed_relationship_types: Optional[list[str]] = None,
-        batch_size: Optional[int] = None,
+        undirected_relationship_types: list[str] | None = None,
+        inverse_indexed_relationship_types: list[str] | None = None,
+        batch_size: int | None = None,
         logging: bool = True,
     ) -> GraphCreateResult:
         if inverse_indexed_relationship_types is None:

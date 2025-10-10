@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -14,13 +14,13 @@ class ArticulationPointsEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> "ArticulationPointsMutateResult":
         """
         Runs the Articulation Points algorithm and stores the results in the graph catalog as a new node property.
@@ -33,19 +33,19 @@ class ArticulationPointsEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the articulation point flag for each node
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
 
         Returns
@@ -58,13 +58,13 @@ class ArticulationPointsEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> "ArticulationPointsStatsResult":
         """
         Runs the Articulation Points algorithm and returns result statistics without storing the results.
@@ -75,19 +75,19 @@ class ArticulationPointsEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
 
         Returns
@@ -100,13 +100,13 @@ class ArticulationPointsEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> "DataFrame":
         """
         Executes the ArticulationPoints algorithm and returns results as a stream.
@@ -115,19 +115,19 @@ class ArticulationPointsEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
 
         Returns
@@ -143,14 +143,14 @@ class ArticulationPointsEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        write_concurrency: Any | None = None,
     ) -> "ArticulationPointsWriteResult":
         """
         Runs the Articulation Points algorithm and stores the result in the Neo4j database as a new node property.
@@ -163,21 +163,21 @@ class ArticulationPointsEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to store the articulation point flag for each node
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        write_concurrency : Optional[Any], default=None
+        write_concurrency : Any | None, default=None
             The number of concurrent threads for writing
 
         Returns
@@ -189,23 +189,23 @@ class ArticulationPointsEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
+        G: GraphV2 | dict[str, Any],
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph to be used in the estimation. Provided either as a GraphV2 object or a configuration dictionary for the projection.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run.
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads used for the estimation.
 
         Returns

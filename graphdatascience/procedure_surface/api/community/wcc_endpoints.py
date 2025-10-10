@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -20,17 +20,17 @@ class WccEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        threshold: Optional[float] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        threshold: float | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        seed_property: Optional[str] = None,
-        consecutive_ids: Optional[bool] = None,
-        relationship_weight_property: Optional[str] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        seed_property: str | None = None,
+        consecutive_ids: bool | None = None,
+        relationship_weight_property: str | None = None,
     ) -> WccMutateResult:
         """
         Executes the WCC algorithm and writes the results to the in-memory graph as node properties.
@@ -41,27 +41,27 @@ class WccEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the component ID for each node
-        threshold : Optional[float], default=None
+        threshold : float | None, default=None
             The minimum required weight to consider a relationship during traversal
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationships types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        seed_property : Optional[str], default=None
+        seed_property : str | None, default=None
             Defines node properties that are used as initial component identifiers
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Flag to decide whether component identifiers are mapped into a consecutive id space
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             The property name that contains weight
 
         Returns
@@ -75,17 +75,17 @@ class WccEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        threshold: Optional[float] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        threshold: float | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        seed_property: Optional[str] = None,
-        consecutive_ids: Optional[bool] = None,
-        relationship_weight_property: Optional[str] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        seed_property: str | None = None,
+        consecutive_ids: bool | None = None,
+        relationship_weight_property: str | None = None,
     ) -> WccStatsResult:
         """
         Executes the WCC algorithm and returns statistics.
@@ -94,27 +94,27 @@ class WccEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        threshold : Optional[float], default=None
+        threshold : float | None, default=None
             The minimum required weight to consider a relationship during traversal
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationships types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        seed_property : Optional[str], default=None
+        seed_property : str | None, default=None
             Defines node properties that are used as initial component identifiers
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Flag to decide whether component identifiers are mapped into a consecutive id space
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             The property name that contains weight
 
         Returns
@@ -128,18 +128,18 @@ class WccEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        min_component_size: Optional[int] = None,
-        threshold: Optional[float] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        min_component_size: int | None = None,
+        threshold: float | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        seed_property: Optional[str] = None,
-        consecutive_ids: Optional[bool] = None,
-        relationship_weight_property: Optional[str] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        seed_property: str | None = None,
+        consecutive_ids: bool | None = None,
+        relationship_weight_property: str | None = None,
     ) -> DataFrame:
         """
         Executes the WCC algorithm and returns a stream of results.
@@ -148,29 +148,29 @@ class WccEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        min_component_size : Optional[int], default=None
+        min_component_size : int | None, default=None
             Don't stream components with fewer nodes than this
-        threshold : Optional[float], default=None
+        threshold : float | None, default=None
             The minimum required weight to consider a relationship during traversal
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationships types considered in this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        seed_property : Optional[str], default=None
+        seed_property : str | None, default=None
             Defines node properties that are used as initial component identifiers
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Flag to decide whether component identifiers are mapped into a consecutive id space
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             The property name that contains weight
 
         Returns
@@ -185,19 +185,19 @@ class WccEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        min_component_size: Optional[int] = None,
-        threshold: Optional[float] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        min_component_size: int | None = None,
+        threshold: float | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        seed_property: Optional[str] = None,
-        consecutive_ids: Optional[bool] = None,
-        relationship_weight_property: Optional[str] = None,
-        write_concurrency: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        seed_property: str | None = None,
+        consecutive_ids: bool | None = None,
+        relationship_weight_property: str | None = None,
+        write_concurrency: Any | None = None,
     ) -> WccWriteResult:
         """
         Executes the WCC algorithm and writes the results to the Neo4j database.
@@ -208,31 +208,31 @@ class WccEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to write component IDs to
-        min_component_size : Optional[int], default=None
+        min_component_size : int | None, default=None
             Don't write components with fewer nodes than this
-        threshold : Optional[float], default=None
+        threshold : float | None, default=None
             The minimum required weight to consider a relationship during traversal
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationships types considered in this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        seed_property : Optional[str], default=None
+        seed_property : str | None, default=None
             Defines node properties that are used as initial component identifiers
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Flag to decide whether component identifiers are mapped into a consecutive id space
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             The property name that contains weight
-        write_concurrency : Optional[Any], default=None
+        write_concurrency : Any | None, default=None
             The number of concurrent threads during the write phase
 
         Returns
@@ -245,35 +245,35 @@ class WccEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        threshold: Optional[float] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
-        seed_property: Optional[str] = None,
-        consecutive_ids: Optional[bool] = None,
-        relationship_weight_property: Optional[str] = None,
+        G: GraphV2 | dict[str, Any],
+        threshold: float | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
+        seed_property: str | None = None,
+        consecutive_ids: bool | None = None,
+        relationship_weight_property: str | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
-        threshold : Optional[float], default=None
+        threshold : float | None, default=None
             The minimum required weight to consider a relationship during traversal
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        seed_property : Optional[str], default=None
+        seed_property : str | None, default=None
             A property to use as the starting component id for a node
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Flag to decide if the component identifiers should be returned consecutively or not
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             The property name that contains weight
 
         Returns

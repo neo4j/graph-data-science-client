@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -20,14 +20,14 @@ class SccEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        consecutive_ids: Optional[bool] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        consecutive_ids: bool | None = None,
     ) -> SccMutateResult:
         """
         Executes the SCC algorithm and writes the results to the in-memory graph as node properties.
@@ -38,21 +38,21 @@ class SccEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the component ID for each node
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationships types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Flag to decide whether component identifiers are mapped into a consecutive id space
 
         Returns
@@ -66,14 +66,14 @@ class SccEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        consecutive_ids: Optional[bool] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        consecutive_ids: bool | None = None,
     ) -> SccStatsResult:
         """
         Executes the SCC algorithm and returns statistics.
@@ -82,21 +82,21 @@ class SccEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationships types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Flag to decide whether component identifiers are mapped into a consecutive id space
 
         Returns
@@ -110,14 +110,14 @@ class SccEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        consecutive_ids: Optional[bool] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        consecutive_ids: bool | None = None,
     ) -> DataFrame:
         """
         Executes the SCC algorithm and returns a stream of results.
@@ -126,21 +126,21 @@ class SccEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationships types considered in this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Flag to decide whether component identifiers are mapped into a consecutive id space
 
         Returns
@@ -155,15 +155,15 @@ class SccEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        consecutive_ids: Optional[bool] = None,
-        write_concurrency: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        consecutive_ids: bool | None = None,
+        write_concurrency: Any | None = None,
     ) -> SccWriteResult:
         """
         Executes the SCC algorithm and writes the results to the Neo4j database.
@@ -174,23 +174,23 @@ class SccEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to write component IDs to
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationships types considered in this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Flag to decide whether component identifiers are mapped into a consecutive id space
-        write_concurrency : Optional[Any], default=None
+        write_concurrency : Any | None, default=None
             The number of concurrent threads during the write phase
 
         Returns
@@ -203,26 +203,26 @@ class SccEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
-        consecutive_ids: Optional[bool] = None,
+        G: GraphV2 | dict[str, Any],
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
+        consecutive_ids: bool | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Flag to decide if the component identifiers should be returned consecutively or not
 
         Returns

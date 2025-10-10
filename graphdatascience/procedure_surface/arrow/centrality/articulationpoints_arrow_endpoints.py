@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -21,7 +21,7 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: Optional[RemoteWriteBackClient] = None,
+        write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
         self._node_property_endpoints = NodePropertyEndpoints(
@@ -32,13 +32,13 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         self,
         G: GraphV2,
         mutate_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> ArticulationPointsMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -60,13 +60,13 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
     def stats(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> ArticulationPointsStatsResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -88,13 +88,13 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> DataFrame:
         raise NotImplementedError(
             "Stream mode is not supported for ArticulationPoints arrow endpoints. "
@@ -106,14 +106,14 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         self,
         G: GraphV2,
         write_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        write_concurrency: Any | None = None,
     ) -> ArticulationPointsWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -134,10 +134,10 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
 
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
+        G: GraphV2 | dict[str, Any],
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(
             relationship_types=relationship_types,

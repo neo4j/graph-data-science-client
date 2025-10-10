@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import builtins
 import os
 import pathlib
 import warnings
-from typing import Any, List, Optional, Union
+from typing import Any
 
 import pandas as pd
 from multimethod import multimethod
@@ -36,7 +37,7 @@ from .graph_type_check import (
 )
 from .ogb_loader import OGBLLoader, OGBNLoader
 
-Strings = Union[str, List[str]]
+Strings = str | list[str]
 
 is_neo4j_4_driver = ServerVersion.from_string(neo4j_driver_version) < ServerVersion(5, 0, 0)
 
@@ -63,10 +64,10 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def construct(
         self,
         graph_name: str,
-        nodes: Union[DataFrame, list[DataFrame]],
-        relationships: Optional[Union[DataFrame, list[DataFrame]]] = None,
+        nodes: DataFrame | list[DataFrame],
+        relationships: DataFrame | list[DataFrame] | None = None,
         concurrency: int = 4,
-        undirected_relationship_types: Optional[list[str]] = None,
+        undirected_relationship_types: list[str] | None = None,
     ) -> Graph:
         nodes = nodes if isinstance(nodes, list) else [nodes]
 
@@ -292,11 +293,11 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
     def drop(
         self,
-        graph: Union[Graph, str],
+        graph: Graph | str,
         failIfMissing: bool = False,
         dbName: str = "",
-        username: Optional[str] = None,
-    ) -> Optional[Series[Any]]:
+        username: str | None = None,
+    ) -> Series[Any] | None:
         self._namespace += ".drop"
 
         if isinstance(graph, Graph):
@@ -328,7 +329,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         return result.squeeze()  # type: ignore
 
-    def list(self, G: Optional[Union[Graph, str]] = None) -> DataFrame:
+    def list(self, G: Graph | str | None = None) -> DataFrame:
         self._namespace += ".list"
 
         if isinstance(G, Graph):
@@ -413,7 +414,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def streamNodeProperties(
         self,
         G: Graph,
-        node_properties: List[str],
+        node_properties: builtins.list[str],
         node_labels: Strings = ["*"],
         separate_property_columns: bool = False,
         **config: Any,
@@ -449,7 +450,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def streamRelationshipProperties(
         self,
         G: Graph,
-        relationship_properties: List[str],
+        relationship_properties: builtins.list[str],
         relationship_types: Strings = ["*"],
         separate_property_columns: bool = False,
         **config: Any,
@@ -489,7 +490,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def writeNodeProperties(
         self,
         G: Graph,
-        node_properties: List[str],
+        node_properties: builtins.list[str],
         node_labels: Strings = ["*"],
         **config: Any,
     ) -> "Series[Any]":
@@ -525,7 +526,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def _(
         self,
         G: Graph,
-        node_properties: List[str],
+        node_properties: builtins.list[str],
         **config: Any,
     ) -> Series:  # type: ignore
         self._namespace += ".removeNodeProperties"
@@ -546,7 +547,7 @@ class BaseGraphProcRunner(UncallableNamespace, IllegalAttrChecker):
     def _(
         self,
         G: Graph,
-        node_properties: List[str],
+        node_properties: builtins.list[str],
         node_labels: Strings,
         **config: Any,
     ) -> Series:  # type: ignore

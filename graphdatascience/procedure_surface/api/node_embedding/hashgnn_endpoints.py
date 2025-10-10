@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -22,20 +22,20 @@ class HashGNNEndpoints(ABC):
         iterations: int,
         embedding_density: int,
         mutate_property: str,
-        output_dimension: Optional[int] = None,
-        neighbor_influence: Optional[float] = None,
-        generate_features: Optional[Dict[str, Any]] = None,
-        binarize_features: Optional[Dict[str, Any]] = None,
-        heterogeneous: Optional[bool] = None,
-        feature_properties: Optional[List[str]] = None,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        output_dimension: int | None = None,
+        neighbor_influence: float | None = None,
+        generate_features: dict[str, Any] | None = None,
+        binarize_features: dict[str, Any] | None = None,
+        heterogeneous: bool | None = None,
+        feature_properties: list[str] | None = None,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> HashGNNMutateResult:
         """
         Executes the HashGNN algorithm and writes the results back to the graph as a node property.
@@ -50,19 +50,19 @@ class HashGNNEndpoints(ABC):
             The density of the generated embeddings (number of bits per embedding)
         mutate_property : str
             The name of the node property to store the embeddings
-        output_dimension : Optional[int], default=None
+        output_dimension : int | None, default=None
             The dimension of the output embeddings
-        neighbor_influence : Optional[float], default=None
+        neighbor_influence : float | None, default=None
             The influence of neighboring nodes
-        generate_features : Optional[Dict[str, Any]], default=None
+        generate_features : dict[str, Any] | None, default=None
             Configuration for generating synthetic features from existing node properties
-        binarize_features : Optional[Dict[str, Any]], default=None
+        binarize_features : dict[str, Any] | None, default=None
             Configuration for binarizing continuous features
-        heterogeneous : Optional[bool], default=None
+        heterogeneous : bool | None, default=None
             Whether to use heterogeneous node processing for different node types
-        feature_properties : Optional[List[str]], default=None
+        feature_properties : list[str] | None, default=None
             The names of the node properties to use as input features
-        random_seed : Optional[int], default=None
+        random_seed : int | None, default=None
             Seed for random number generation to ensure reproducible results
 
         Returns
@@ -77,20 +77,20 @@ class HashGNNEndpoints(ABC):
         G: GraphV2,
         iterations: int,
         embedding_density: int,
-        output_dimension: Optional[int] = None,
-        neighbor_influence: Optional[float] = None,
-        generate_features: Optional[Dict[str, Any]] = None,
-        binarize_features: Optional[Dict[str, Any]] = None,
-        heterogeneous: Optional[bool] = None,
-        feature_properties: Optional[List[str]] = None,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        output_dimension: int | None = None,
+        neighbor_influence: float | None = None,
+        generate_features: dict[str, Any] | None = None,
+        binarize_features: dict[str, Any] | None = None,
+        heterogeneous: bool | None = None,
+        feature_properties: list[str] | None = None,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> DataFrame:
         """
         Executes the HashGNN algorithm and returns the results as a stream.
@@ -103,19 +103,19 @@ class HashGNNEndpoints(ABC):
             The number of iterations to run the algorithm
         embedding_density : int
             The density of the generated embeddings (number of bits per embedding)
-        output_dimension : Optional[int], default=None
+        output_dimension : int | None, default=None
             The dimension of the output embeddings
-        neighbor_influence : Optional[float], default=None
+        neighbor_influence : float | None, default=None
             The influence of neighboring nodes
-        generate_features : Optional[Dict[str, Any]], default=None
+        generate_features : dict[str, Any] | None, default=None
             Configuration for generating synthetic features from existing node properties
-        binarize_features : Optional[Dict[str, Any]], default=None
+        binarize_features : dict[str, Any] | None, default=None
             Configuration for binarizing continuous features
-        heterogeneous : Optional[bool], default=None
+        heterogeneous : bool | None, default=None
             Whether to use heterogeneous node processing for different node types
-        feature_properties : Optional[List[str]], default=None
+        feature_properties : list[str] | None, default=None
             The names of the node properties to use as input features
-        random_seed : Optional[int], default=None
+        random_seed : int | None, default=None
             Seed for random number generation to ensure reproducible results
 
         Returns
@@ -131,21 +131,21 @@ class HashGNNEndpoints(ABC):
         iterations: int,
         embedding_density: int,
         write_property: str,
-        output_dimension: Optional[int] = None,
-        neighbor_influence: Optional[float] = None,
-        generate_features: Optional[Dict[str, Any]] = None,
-        binarize_features: Optional[Dict[str, Any]] = None,
-        heterogeneous: Optional[bool] = None,
-        feature_properties: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        output_dimension: int | None = None,
+        neighbor_influence: float | None = None,
+        generate_features: dict[str, Any] | None = None,
+        binarize_features: dict[str, Any] | None = None,
+        heterogeneous: bool | None = None,
+        feature_properties: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        write_concurrency: Optional[int] = None,
-        random_seed: Optional[int] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        write_concurrency: int | None = None,
+        random_seed: int | None = None,
     ) -> HashGNNWriteResult:
         """
         Executes the HashGNN algorithm and writes the results back to the database.
@@ -160,35 +160,35 @@ class HashGNNEndpoints(ABC):
             The density of the generated embeddings (number of bits per embedding)
         write_property : str
             The name of the node property to write the embeddings to
-        output_dimension : Optional[int], default=None
+        output_dimension : int | None, default=None
             The dimension of the output embeddings. If not specified, defaults to embedding_density / 64
-        neighbor_influence : Optional[float], default=None
+        neighbor_influence : float | None, default=None
             The influence of neighboring nodes (0.0 to 1.0)
-        generate_features : Optional[Dict[str, Any]], default=None
+        generate_features : dict[str, Any] | None, default=None
             Configuration for generating synthetic features from existing node properties
-        binarize_features : Optional[Dict[str, Any]], default=None
+        binarize_features : dict[str, Any] | None, default=None
             Configuration for binarizing continuous features
-        heterogeneous : Optional[bool], default=None
+        heterogeneous : bool | None, default=None
             Whether to use heterogeneous node processing for different node types
-        feature_properties : Optional[List[str]], default=None
+        feature_properties : list[str] | None, default=None
             The names of the node properties to use as input features
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        write_concurrency : Optional[int], default=None
+        write_concurrency : int | None, default=None
             The number of concurrent threads used for writing
-        random_seed : Optional[int], default=None
+        random_seed : int | None, default=None
             Seed for random number generation to ensure reproducible results
 
         Returns
@@ -200,41 +200,41 @@ class HashGNNEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
+        G: GraphV2 | dict[str, Any],
         iterations: int,
         embedding_density: int,
-        output_dimension: Optional[int] = None,
-        neighbor_influence: Optional[float] = None,
-        generate_features: Optional[Dict[str, Any]] = None,
-        binarize_features: Optional[Dict[str, Any]] = None,
-        heterogeneous: Optional[bool] = None,
-        feature_properties: Optional[List[str]] = None,
-        random_seed: Optional[int] = None,
+        output_dimension: int | None = None,
+        neighbor_influence: float | None = None,
+        generate_features: dict[str, Any] | None = None,
+        binarize_features: dict[str, Any] | None = None,
+        heterogeneous: bool | None = None,
+        feature_properties: list[str] | None = None,
+        random_seed: int | None = None,
     ) -> EstimationResult:
         """
         Returns an estimation of the memory consumption for that procedure.
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
         iterations : int
             The number of iterations to run the algorithm
         embedding_density : int
             The density of the generated embeddings (number of bits per embedding)
-        output_dimension : Optional[int], default=None
+        output_dimension : int | None, default=None
             The dimension of the output embeddings.
-        neighbor_influence : Optional[float], default=None
+        neighbor_influence : float | None, default=None
             The influence of neighboring nodes.
-        generate_features : Optional[Dict[str, Any]], default=None
+        generate_features : dict[str, Any] | None, default=None
             Configuration for generating synthetic features from existing node properties
-        binarize_features : Optional[Dict[str, Any]], default=None
+        binarize_features : dict[str, Any] | None, default=None
             Configuration for binarizing continuous features
-        heterogeneous : Optional[bool], default=None
+        heterogeneous : bool | None, default=None
             Whether to use heterogeneous node processing for different node types
-        feature_properties : Optional[List[str]], default=None
+        feature_properties : list[str] | None, default=None
             The names of the node properties to use as input features
-        random_seed : Optional[int], default=None
+        random_seed : int | None, default=None
             Seed for random number generation to ensure reproducible results
 
         Returns
@@ -254,7 +254,7 @@ class HashGNNMutateResult(BaseResult):
     pre_processing_millis: int
     compute_millis: int
     mutate_millis: int
-    configuration: Dict[str, Any]
+    configuration: dict[str, Any]
 
 
 class HashGNNWriteResult(BaseResult):
@@ -267,4 +267,4 @@ class HashGNNWriteResult(BaseResult):
     pre_processing_millis: int
     compute_millis: int
     write_millis: int
-    configuration: Dict[str, Any]
+    configuration: dict[str, Any]

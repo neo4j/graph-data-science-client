@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 import pandas as pd
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -19,7 +17,7 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
     def __init__(
         self,
         client: AuthenticatedArrowClient,
-        remote_write_back_client: Optional[RemoteWriteBackClient] = None,
+        remote_write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
         self._node_property_endpoints = NodePropertyEndpoints(
@@ -33,14 +31,14 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
         G: GraphV2,
         *,
         mutate_property: str,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        triangle_count_property: Optional[str] = None,
-        username: Optional[str] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        triangle_count_property: str | None = None,
+        username: str | None = None,
     ) -> LocalClusteringCoefficientMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -64,14 +62,14 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
         self,
         G: GraphV2,
         *,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        triangle_count_property: Optional[str] = None,
-        username: Optional[str] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        triangle_count_property: str | None = None,
+        username: str | None = None,
     ) -> LocalClusteringCoefficientStatsResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -97,14 +95,14 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
         self,
         G: GraphV2,
         *,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        triangle_count_property: Optional[str] = None,
-        username: Optional[str] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        triangle_count_property: str | None = None,
+        username: str | None = None,
     ) -> pd.DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -129,16 +127,16 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
         G: GraphV2,
         *,
         write_property: str,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        triangle_count_property: Optional[str] = None,
-        username: Optional[str] = None,
-        write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        triangle_count_property: str | None = None,
+        username: str | None = None,
+        write_concurrency: int | None = None,
+        write_to_result_store: bool | None = None,
     ) -> LocalClusteringCoefficientWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -170,14 +168,14 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
         self,
         G: GraphV2,
         *,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        triangle_count_property: Optional[str] = None,
-        username: Optional[str] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        triangle_count_property: str | None = None,
+        username: str | None = None,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(
             concurrency=concurrency,

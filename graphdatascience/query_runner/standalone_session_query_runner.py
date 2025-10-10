@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from pandas import DataFrame
 
@@ -17,9 +17,9 @@ class StandaloneSessionQueryRunner(QueryRunner):
     def call_procedure(
         self,
         endpoint: str,
-        params: Optional[CallParameters] = None,
-        yields: Optional[list[str]] = None,
-        database: Optional[str] = None,
+        params: CallParameters | None = None,
+        yields: list[str] | None = None,
+        database: str | None = None,
         mode: QueryMode = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
@@ -32,14 +32,14 @@ class StandaloneSessionQueryRunner(QueryRunner):
             endpoint, params, yields, database, logging=logging, retryable=retryable, custom_error=custom_error
         )
 
-    def call_function(self, endpoint: str, params: Optional[CallParameters] = None) -> Any:
+    def call_function(self, endpoint: str, params: CallParameters | None = None) -> Any:
         return self._query_runner.call_function(endpoint, params)
 
     def server_version(self) -> ServerVersion:
         return self._query_runner.server_version()
 
     def create_graph_constructor(
-        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[list[str]]
+        self, graph_name: str, concurrency: int, undirected_relationship_types: list[str] | None
     ) -> GraphConstructor:
         return self._query_runner.create_graph_constructor(graph_name, concurrency, undirected_relationship_types)
 
@@ -52,15 +52,15 @@ class StandaloneSessionQueryRunner(QueryRunner):
     def close(self) -> None:
         self._query_runner.close()
 
-    def database(self) -> Optional[str]:
+    def database(self) -> str | None:
         return "neo4j"
 
     def run_cypher(
         self,
         query: str,
-        params: Optional[dict[str, Any]] = None,
-        database: Optional[str] = None,
-        mode: Optional[QueryMode] = None,
+        params: dict[str, Any] | None = None,
+        database: str | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         raise NotImplementedError
@@ -68,9 +68,9 @@ class StandaloneSessionQueryRunner(QueryRunner):
     def run_retryable_cypher(
         self,
         query: str,
-        params: Optional[dict[str, Any]] = None,
-        database: Optional[str] = None,
-        mode: Optional[QueryMode] = None,
+        params: dict[str, Any] | None = None,
+        database: str | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         raise NotImplementedError
@@ -81,13 +81,13 @@ class StandaloneSessionQueryRunner(QueryRunner):
     def set_database(self, database: str) -> None:
         raise NotImplementedError
 
-    def set_bookmarks(self, bookmarks: Optional[Any]) -> None:
+    def set_bookmarks(self, bookmarks: Any | None) -> None:
         raise NotImplementedError
 
-    def bookmarks(self) -> Optional[Any]:
+    def bookmarks(self) -> Any | None:
         raise NotImplementedError
 
-    def last_bookmarks(self) -> Optional[Any]:
+    def last_bookmarks(self) -> Any | None:
         raise NotImplementedError
 
     def set_server_version(self, _: ServerVersion) -> None:

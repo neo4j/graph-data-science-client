@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -19,7 +19,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: Optional[RemoteWriteBackClient],
+        write_back_client: RemoteWriteBackClient | None,
         show_progress: bool = True,
     ):
         self._arrow_client = arrow_client
@@ -33,14 +33,14 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         G: GraphV2,
         model_name: str,
         *,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        username: Optional[str] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        username: str | None = None,
         log_progress: bool = True,
-        sudo: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        batch_size: Optional[int] = None,
+        sudo: bool | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        batch_size: int | None = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -62,15 +62,15 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         model_name: str,
         write_property: str,
         *,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        username: Optional[str] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        username: str | None = None,
         log_progress: bool = True,
-        sudo: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[int] = None,
-        job_id: Optional[Any] = None,
-        batch_size: Optional[int] = None,
+        sudo: bool | None = None,
+        concurrency: Any | None = None,
+        write_concurrency: int | None = None,
+        job_id: Any | None = None,
+        batch_size: int | None = None,
     ) -> GraphSageWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -96,14 +96,14 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         G: GraphV2,
         model_name: str,
         mutate_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        username: Optional[str] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        username: str | None = None,
         log_progress: bool = True,
-        sudo: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        batch_size: Optional[int] = None,
+        sudo: bool | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        batch_size: int | None = None,
     ) -> GraphSageMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -129,16 +129,16 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
 
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
+        G: GraphV2 | dict[str, Any],
         model_name: str,
-        relationship_types: Optional[list[str]] = None,
-        node_labels: Optional[list[str]] = None,
-        batch_size: Optional[int] = None,
-        concurrency: Optional[int] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        batch_size: int | None = None,
+        concurrency: int | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        sudo: Optional[bool] = None,
-        job_id: Optional[str] = None,
+        username: str | None = None,
+        sudo: bool | None = None,
+        job_id: str | None = None,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(
             modelName=model_name,

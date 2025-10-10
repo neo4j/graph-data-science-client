@@ -1,6 +1,6 @@
 from functools import wraps
 from inspect import signature
-from typing import Any, Callable, Optional, TypeVar, cast
+from typing import Any, Callable, TypeVar, cast
 
 from .server_version import ServerVersion
 
@@ -17,7 +17,7 @@ class WithNamespaceAndServerVersion:
 
 
 def compatible_with(
-    func_name: str, min_inclusive: Optional[ServerVersion] = None, max_exclusive: Optional[ServerVersion] = None
+    func_name: str, min_inclusive: ServerVersion | None = None, max_exclusive: ServerVersion | None = None
 ) -> Callable[[F], F]:
     def decorator(func: F) -> F:
         @wraps(func)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -20,15 +20,15 @@ class K1ColoringEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> K1ColoringMutateResult:
         """
         Executes the K-1 Coloring algorithm and writes the results to the in-memory graph as node properties.
@@ -39,23 +39,23 @@ class K1ColoringEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the color for each node
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             The batch size for processing
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             The maximum number of iterations of K-1 Coloring to run
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationships types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
 
         Returns
@@ -69,15 +69,15 @@ class K1ColoringEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> K1ColoringStatsResult:
         """
         Executes the K-1 Coloring algorithm and returns statistics.
@@ -86,23 +86,23 @@ class K1ColoringEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             The batch size for processing
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             The maximum number of iterations of K-1 Coloring to run
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationships types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
 
         Returns
@@ -116,16 +116,16 @@ class K1ColoringEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        min_community_size: Optional[int] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        min_community_size: int | None = None,
     ) -> DataFrame:
         """
         Executes the K-1 Coloring algorithm and returns a stream of results.
@@ -134,25 +134,25 @@ class K1ColoringEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             The batch size for processing
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             The maximum number of iterations of K-1 Coloring to run
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationships types considered in this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        min_community_size : Optional[int], default=None
+        min_community_size : int | None, default=None
             Only community ids of communities with a size greater than or equal to the given value are returned
 
         Returns
@@ -167,17 +167,17 @@ class K1ColoringEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
-        min_community_size: Optional[int] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        write_concurrency: Any | None = None,
+        min_community_size: int | None = None,
     ) -> K1ColoringWriteResult:
         """
         Executes the K-1 Coloring algorithm and writes the results to the Neo4j database.
@@ -188,27 +188,27 @@ class K1ColoringEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to write colors to
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             The batch size for processing
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             The maximum number of iterations of K-1 Coloring to run
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationships types considered in this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        write_concurrency : Optional[Any], default=None
+        write_concurrency : Any | None, default=None
             The number of concurrent threads during the write phase
-        min_community_size : Optional[int], default=None
+        min_community_size : int | None, default=None
             Only community ids of communities with a size greater than or equal to the given value are written to Neo4j
 
         Returns
@@ -221,29 +221,29 @@ class K1ColoringEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        batch_size: Optional[int] = None,
-        max_iterations: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
+        G: GraphV2 | dict[str, Any],
+        batch_size: int | None = None,
+        max_iterations: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             The batch size for processing
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             The maximum number of iterations of K-1 Coloring to run
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
 
         Returns

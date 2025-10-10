@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
@@ -21,12 +21,12 @@ class NodeLabelCypherEndpoints(NodeLabelEndpoints):
         node_label: str,
         *,
         node_filter: str,
-        sudo: Optional[bool] = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        write_concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> NodeLabelMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             node_filter=node_filter,
@@ -53,12 +53,12 @@ class NodeLabelCypherEndpoints(NodeLabelEndpoints):
         node_label: str,
         *,
         node_filter: str,
-        sudo: Optional[bool] = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        write_concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> NodeLabelWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             node_filter=node_filter,

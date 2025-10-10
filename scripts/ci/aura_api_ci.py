@@ -1,7 +1,7 @@
 import logging
 import time
 from time import sleep
-from typing import Any, Optional
+from typing import Any
 
 import requests
 
@@ -21,8 +21,8 @@ class AuraApiCI:
         def is_expired(self) -> bool:
             return self.expires_at >= int(time.time())
 
-    def __init__(self, client_id: str, client_secret: str, project_id: Optional[str] = None) -> None:
-        self._token: Optional[AuraApiCI.AuraAuthToken] = None
+    def __init__(self, client_id: str, client_secret: str, project_id: str | None = None) -> None:
+        self._token: AuraApiCI.AuraAuthToken | None = None
         self._logger = logging.getLogger()
         self._auth = (client_id, client_secret)
         self._project_id = project_id

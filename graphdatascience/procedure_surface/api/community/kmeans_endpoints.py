@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -18,21 +18,21 @@ class KMeansEndpoints(ABC):
         node_property: str,
         mutate_property: str,
         *,
-        compute_silhouette: Optional[bool] = False,
-        concurrency: Optional[int] = None,
-        delta_threshold: Optional[float] = 0.05,
-        initial_sampler: Optional[str] = "UNIFORM",
-        job_id: Optional[str] = None,
-        k: Optional[int] = 10,
+        compute_silhouette: bool | None = False,
+        concurrency: int | None = None,
+        delta_threshold: float | None = 0.05,
+        initial_sampler: str | None = "UNIFORM",
+        job_id: str | None = None,
+        k: int | None = 10,
         log_progress: bool = True,
-        max_iterations: Optional[int] = 10,
-        node_labels: Optional[List[str]] = None,
-        number_of_restarts: Optional[int] = 1,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        seed_centroids: Optional[List[List[float]]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        max_iterations: int | None = 10,
+        node_labels: list[str] | None = None,
+        number_of_restarts: int | None = 1,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        seed_centroids: list[list[float]] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> KMeansMutateResult:
         """
         Executes the K-Means algorithm and writes the results to the in-memory graph as node properties.
@@ -45,35 +45,35 @@ class KMeansEndpoints(ABC):
             The node property to use for clustering
         mutate_property : str
             The property name to store the community ID for each node
-        compute_silhouette : Optional[bool], default=False
+        compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        delta_threshold : Optional[float], default=0.05
+        delta_threshold : float | None, default=0.05
             The convergence threshold for the algorithm
-        initial_sampler : Optional[str], default="UNIFORM"
+        initial_sampler : str | None, default="UNIFORM"
             The sampling method for initial centroids
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
-        k : Optional[int], default=10
+        k : int | None, default=10
             The number of clusters
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : Optional[int], default=10
+        max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        number_of_restarts : Optional[int], default=1
+        number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
-        random_seed : Optional[int], default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        seed_centroids : Optional[List[List[float]]], default=None
+        seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Override memory estimation limits
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
 
         Returns
@@ -89,21 +89,21 @@ class KMeansEndpoints(ABC):
         G: GraphV2,
         node_property: str,
         *,
-        compute_silhouette: Optional[bool] = False,
-        concurrency: Optional[int] = None,
-        delta_threshold: Optional[float] = 0.05,
-        initial_sampler: Optional[str] = "UNIFORM",
-        job_id: Optional[str] = None,
-        k: Optional[int] = 10,
+        compute_silhouette: bool | None = False,
+        concurrency: int | None = None,
+        delta_threshold: float | None = 0.05,
+        initial_sampler: str | None = "UNIFORM",
+        job_id: str | None = None,
+        k: int | None = 10,
         log_progress: bool = True,
-        max_iterations: Optional[int] = 10,
-        node_labels: Optional[List[str]] = None,
-        number_of_restarts: Optional[int] = 1,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        seed_centroids: Optional[List[List[float]]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        max_iterations: int | None = 10,
+        node_labels: list[str] | None = None,
+        number_of_restarts: int | None = 1,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        seed_centroids: list[list[float]] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> KMeansStatsResult:
         """
         Executes the K-Means algorithm and returns statistics.
@@ -114,35 +114,35 @@ class KMeansEndpoints(ABC):
             The graph to run the algorithm on
         node_property : str
             The node property to use for clustering
-        compute_silhouette : Optional[bool], default=False
+        compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        delta_threshold : Optional[float], default=0.05
+        delta_threshold : float | None, default=0.05
             The convergence threshold for the algorithm
-        initial_sampler : Optional[str], default="UNIFORM"
+        initial_sampler : str | None, default="UNIFORM"
             The sampling method for initial centroids
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
-        k : Optional[int], default=10
+        k : int | None, default=10
             The number of clusters
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : Optional[int], default=10
+        max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        number_of_restarts : Optional[int], default=1
+        number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
-        random_seed : Optional[int], default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        seed_centroids : Optional[List[List[float]]], default=None
+        seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Override memory estimation limits
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
 
         Returns
@@ -158,21 +158,21 @@ class KMeansEndpoints(ABC):
         G: GraphV2,
         node_property: str,
         *,
-        compute_silhouette: Optional[bool] = False,
-        concurrency: Optional[int] = None,
-        delta_threshold: Optional[float] = 0.05,
-        initial_sampler: Optional[str] = "UNIFORM",
-        job_id: Optional[str] = None,
-        k: Optional[int] = 10,
+        compute_silhouette: bool | None = False,
+        concurrency: int | None = None,
+        delta_threshold: float | None = 0.05,
+        initial_sampler: str | None = "UNIFORM",
+        job_id: str | None = None,
+        k: int | None = 10,
         log_progress: bool = True,
-        max_iterations: Optional[int] = 10,
-        node_labels: Optional[List[str]] = None,
-        number_of_restarts: Optional[int] = 1,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        seed_centroids: Optional[List[List[float]]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        max_iterations: int | None = 10,
+        node_labels: list[str] | None = None,
+        number_of_restarts: int | None = 1,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        seed_centroids: list[list[float]] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> DataFrame:
         """
         Executes the K-Means algorithm and returns a stream of results.
@@ -183,35 +183,35 @@ class KMeansEndpoints(ABC):
             The graph to run the algorithm on
         node_property : str
             The node property to use for clustering
-        compute_silhouette : Optional[bool], default=False
+        compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        delta_threshold : Optional[float], default=0.05
+        delta_threshold : float | None, default=0.05
             The convergence threshold for the algorithm
-        initial_sampler : Optional[str], default="UNIFORM"
+        initial_sampler : str | None, default="UNIFORM"
             The sampling method for initial centroids
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
-        k : Optional[int], default=10
+        k : int | None, default=10
             The number of clusters
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : Optional[int], default=10
+        max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        number_of_restarts : Optional[int], default=1
+        number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
-        random_seed : Optional[int], default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        seed_centroids : Optional[List[List[float]]], default=None
+        seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Override memory estimation limits
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
 
         Returns
@@ -228,22 +228,22 @@ class KMeansEndpoints(ABC):
         node_property: str,
         write_property: str,
         *,
-        compute_silhouette: Optional[bool] = False,
-        concurrency: Optional[int] = None,
-        delta_threshold: Optional[float] = 0.05,
-        initial_sampler: Optional[str] = "UNIFORM",
-        job_id: Optional[str] = None,
-        k: Optional[int] = 10,
+        compute_silhouette: bool | None = False,
+        concurrency: int | None = None,
+        delta_threshold: float | None = 0.05,
+        initial_sampler: str | None = "UNIFORM",
+        job_id: str | None = None,
+        k: int | None = 10,
         log_progress: bool = True,
-        max_iterations: Optional[int] = 10,
-        node_labels: Optional[List[str]] = None,
-        number_of_restarts: Optional[int] = 1,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        seed_centroids: Optional[List[List[float]]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
-        write_concurrency: Optional[int] = None,
+        max_iterations: int | None = 10,
+        node_labels: list[str] | None = None,
+        number_of_restarts: int | None = 1,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        seed_centroids: list[list[float]] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
+        write_concurrency: int | None = None,
     ) -> KMeansWriteResult:
         """
         Executes the K-Means algorithm and writes the results back to the database.
@@ -256,37 +256,37 @@ class KMeansEndpoints(ABC):
             The node property to use for clustering
         write_property : str
             The property name to write the community IDs to
-        compute_silhouette : Optional[bool], default=False
+        compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        delta_threshold : Optional[float], default=0.05
+        delta_threshold : float | None, default=0.05
             The convergence threshold for the algorithm
-        initial_sampler : Optional[str], default="UNIFORM"
+        initial_sampler : str | None, default="UNIFORM"
             The sampling method for initial centroids
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
-        k : Optional[int], default=10
+        k : int | None, default=10
             The number of clusters
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : Optional[int], default=10
+        max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        number_of_restarts : Optional[int], default=1
+        number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
-        random_seed : Optional[int], default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        seed_centroids : Optional[List[List[float]]], default=None
+        seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Override memory estimation limits
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        write_concurrency : Optional[int], default=None
+        write_concurrency : int | None, default=None
             The number of concurrent threads for write operations
 
         Returns
@@ -299,51 +299,51 @@ class KMeansEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
+        G: GraphV2 | dict[str, Any],
         node_property: str,
         *,
-        compute_silhouette: Optional[bool] = False,
-        concurrency: Optional[int] = None,
-        delta_threshold: Optional[float] = 0.05,
-        initial_sampler: Optional[str] = "UNIFORM",
-        k: Optional[int] = 10,
-        max_iterations: Optional[int] = 10,
-        node_labels: Optional[List[str]] = None,
-        number_of_restarts: Optional[int] = 1,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        seed_centroids: Optional[List[List[float]]] = None,
+        compute_silhouette: bool | None = False,
+        concurrency: int | None = None,
+        delta_threshold: float | None = 0.05,
+        initial_sampler: str | None = "UNIFORM",
+        k: int | None = 10,
+        max_iterations: int | None = 10,
+        node_labels: list[str] | None = None,
+        number_of_restarts: int | None = 1,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        seed_centroids: list[list[float]] | None = None,
     ) -> EstimationResult:
         """
         Estimates the memory requirements for running the K-Means algorithm.
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph or graph configuration to estimate for
         node_property : str
             The node property to use for clustering
-        compute_silhouette : Optional[bool], default=False
+        compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        delta_threshold : Optional[float], default=0.05
+        delta_threshold : float | None, default=0.05
             The convergence threshold for the algorithm
-        initial_sampler : Optional[str], default="UNIFORM"
+        initial_sampler : str | None, default="UNIFORM"
             The sampling method for initial centroids
-        k : Optional[int], default=10
+        k : int | None, default=10
             The number of clusters
-        max_iterations : Optional[int], default=10
+        max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        number_of_restarts : Optional[int], default=1
+        number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
-        random_seed : Optional[int], default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        seed_centroids : Optional[List[List[float]]], default=None
+        seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
 
         Returns
@@ -357,7 +357,7 @@ class KMeansEndpoints(ABC):
 class KMeansMutateResult(BaseResult):
     average_distance_to_centroid: float
     average_silhouette: float
-    centroids: List[Any]
+    centroids: list[Any]
     community_distribution: dict[str, Any]
     compute_millis: int
     configuration: dict[str, Any]
@@ -370,7 +370,7 @@ class KMeansMutateResult(BaseResult):
 class KMeansStatsResult(BaseResult):
     average_distance_to_centroid: float
     average_silhouette: float
-    centroids: List[Any]
+    centroids: list[Any]
     community_distribution: dict[str, Any]
     compute_millis: int
     configuration: dict[str, Any]
@@ -381,7 +381,7 @@ class KMeansStatsResult(BaseResult):
 class KMeansWriteResult(BaseResult):
     average_distance_to_centroid: float
     average_silhouette: float
-    centroids: List[Any]
+    centroids: list[Any]
     community_distribution: dict[str, Any]
     compute_millis: int
     configuration: dict[str, Any]

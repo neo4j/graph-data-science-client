@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -30,13 +30,13 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
         self,
         G: GraphV2,
         mutate_property: str,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> CliqueCountingMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             mutate_property=mutate_property,
@@ -61,13 +61,13 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
     def stats(
         self,
         G: GraphV2,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> CliqueCountingStatsResult:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -91,13 +91,13 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
     def stream(
         self,
         G: GraphV2,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -120,14 +120,14 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
         self,
         G: GraphV2,
         write_property: str,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
-        write_concurrency: Optional[int] = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
+        write_concurrency: int | None = None,
     ) -> CliqueCountingWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             write_property=write_property,
@@ -152,10 +152,10 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
 
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        concurrency: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
+        G: GraphV2 | dict[str, Any],
+        concurrency: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
     ) -> EstimationResult:
         algo_config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,

@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from pandas import DataFrame, Series
 
@@ -20,7 +20,7 @@ class PipelineBetaProcRunner(UncallableNamespace, IllegalAttrChecker):
     def nodeClassification(self) -> NCPipelineCreateRunner:
         return NCPipelineCreateRunner(self._query_runner, f"{self._namespace}.nodeClassification", self._server_version)
 
-    def list(self, pipeline: Optional[TrainingPipeline[PipelineModel]] = None) -> DataFrame:
+    def list(self, pipeline: TrainingPipeline[PipelineModel] | None = None) -> DataFrame:
         return PipelineProcRunner(self._query_runner, self._namespace, self._server_version).list(pipeline)
 
     def exists(self, pipeline_name: str) -> "Series[Any]":

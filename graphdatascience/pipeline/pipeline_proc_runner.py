@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from pandas import DataFrame, Series
 
@@ -26,7 +26,7 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
         else:
             raise ValueError(f"No pipeline named '{pipeline_name}' exists")
 
-    def list(self, pipeline: Optional[TrainingPipeline[PipelineModel]] = None) -> DataFrame:
+    def list(self, pipeline: TrainingPipeline[PipelineModel] | None = None) -> DataFrame:
         self._namespace += ".list"
 
         params = CallParameters()

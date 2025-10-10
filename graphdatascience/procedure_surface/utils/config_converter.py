@@ -1,9 +1,9 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class ConfigConverter:
     @staticmethod
-    def convert_to_gds_config(**kwargs: Optional[Any]) -> dict[str, Any]:
+    def convert_to_gds_config(**kwargs: Any | None) -> dict[str, Any]:
         config: dict[str, Any] = {}
 
         # Process kwargs
@@ -24,7 +24,7 @@ class ConfigConverter:
         return "".join([word.capitalize() if i > 0 else word.lower() for i, word in enumerate(parts)])
 
     @staticmethod
-    def _process_dict_values(input_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def _process_dict_values(input_dict: dict[str, Any]) -> dict[str, Any]:
         """Process dictionary values, converting keys to camelCase and handling nested dictionaries."""
         result = {}
         for key, value in input_dict.items():

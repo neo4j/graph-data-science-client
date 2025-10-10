@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -19,7 +19,7 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: Optional[RemoteWriteBackClient] = None,
+        write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
         self._arrow_client = arrow_client
@@ -32,15 +32,15 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         G: GraphV2,
         mutate_property: str,
         *,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        label_filter: Optional[List[str]] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        label_filter: list[str] | None = None,
         log_progress: bool = True,
-        max_degree: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        max_degree: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> TriangleCountMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -65,15 +65,15 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         self,
         G: GraphV2,
         *,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        label_filter: Optional[List[str]] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        label_filter: list[str] | None = None,
         log_progress: bool = True,
-        max_degree: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        max_degree: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> TriangleCountStatsResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -98,15 +98,15 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         self,
         G: GraphV2,
         *,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        label_filter: Optional[List[str]] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        label_filter: list[str] | None = None,
         log_progress: bool = True,
-        max_degree: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
+        max_degree: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -128,16 +128,16 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         G: GraphV2,
         write_property: str,
         *,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        label_filter: Optional[List[str]] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        label_filter: list[str] | None = None,
         log_progress: bool = True,
-        max_degree: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
-        write_concurrency: Optional[int] = None,
+        max_degree: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
+        write_concurrency: int | None = None,
     ) -> TriangleCountWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -161,13 +161,13 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
 
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
+        G: GraphV2 | dict[str, Any],
         *,
-        concurrency: Optional[int] = None,
-        label_filter: Optional[List[str]] = None,
-        max_degree: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
+        concurrency: int | None = None,
+        label_filter: list[str] | None = None,
+        max_degree: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(
             concurrency=concurrency,

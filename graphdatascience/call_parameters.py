@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Any, Optional
+from typing import Any
 from uuid import uuid4
 
 
@@ -9,7 +9,7 @@ class CallParameters(OrderedDict[str, Any]):
     def placeholder_str(self) -> str:
         return ", ".join([f"${k}" for k in self.keys()])
 
-    def get_job_id(self) -> Optional[str]:
+    def get_job_id(self) -> str | None:
         config = self["config"] if "config" in self else {}
 
         job_id = None

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from types import TracebackType
-from typing import Any, Optional, Type, Union
+from typing import Any, Type
 
 import neo4j
 from neo4j import Driver
@@ -33,32 +33,32 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def __init__(
         self,
         /,
-        endpoint: Union[str, Driver, QueryRunner],
-        auth: Optional[tuple[str, str]] = None,
+        endpoint: str | Driver | QueryRunner,
+        auth: tuple[str, str] | None = None,
         aura_ds: bool = False,
-        database: Optional[str] = None,
-        arrow: Union[str, bool] = True,
+        database: str | None = None,
+        arrow: str | bool = True,
         arrow_disable_server_verification: bool = True,
-        arrow_tls_root_certs: Optional[bytes] = None,
-        bookmarks: Optional[Any] = None,
+        arrow_tls_root_certs: bytes | None = None,
+        bookmarks: Any | None = None,
         show_progress: bool = True,
-        arrow_client_options: Optional[dict[str, Any]] = None,
+        arrow_client_options: dict[str, Any] | None = None,
     ):
         """
         Construct a new GraphDataScience object.
 
         Parameters
         ----------
-        endpoint : Union[str, Driver, QueryRunner]
+        endpoint : str | Driver | QueryRunner
             The Neo4j endpoint to connect to. Most commonly, this is a Bolt connection URI.
-        auth : Optional[Tuple[str, str]], default None
+        auth : tuple[str, str] | None, default None
             A username, password pair for database authentication.
         aura_ds : bool, default False
             A flag that indicates that that the client is used to connect
             to a Neo4j AuraDS instance.
-        database: Optional[str], default None
+        database: str | None, default None
             The Neo4j database to query against.
-        arrow : Union[str, bool], default True
+        arrow : str | bool, default True
             Arrow connection information. This is either a string or a bool.
 
             - If it is a string, it will be interpreted as a connection URL to a GDS Arrow Server.
@@ -70,17 +70,17 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                 Use arrow_client_options instead
 
             A flag that overrides other TLS settings and disables server verification for TLS connections.
-        arrow_tls_root_certs : Optional[bytes], default None
+        arrow_tls_root_certs : bytes | None, default None
             .. deprecated:: 1.16
                 Use arrow_client_options instead
 
             PEM-encoded certificates that are used for the connection to the
             GDS Arrow Flight server.
-        bookmarks : Optional[Any], default None
+        bookmarks : Any | None, default None
             The Neo4j bookmarks to require a certain state before the next query gets executed.
         show_progress : bool, default True
             A flag to indicate whether to show progress bars for running procedures.
-        arrow_client_options : Optional[dict[str, Any]], default None
+        arrow_client_options : dict[str, Any] | None, default None
             Additional options to be passed to the Arrow Flight client.
         """
         if aura_ds:
@@ -184,7 +184,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         """
         self._query_runner.set_show_progress(show_progress)
 
-    def database(self) -> Optional[str]:
+    def database(self) -> str | None:
         """
         Get the database which queries are run against.
 
@@ -193,7 +193,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         """
         return self._query_runner.database()
 
-    def bookmarks(self) -> Optional[Any]:
+    def bookmarks(self) -> Any | None:
         """
         Get the Neo4j bookmarks defining the currently required states for queries to execute
 
@@ -203,7 +203,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         """
         return self._query_runner.bookmarks()
 
-    def last_bookmarks(self) -> Optional[Any]:
+    def last_bookmarks(self) -> Any | None:
         """
         Get the Neo4j bookmarks defining the state following the most recently called query
 
@@ -216,8 +216,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def run_cypher(
         self,
         query: str,
-        params: Optional[dict[str, Any]] = None,
-        database: Optional[str] = None,
+        params: dict[str, Any] | None = None,
+        database: str | None = None,
         retryable: bool = False,
         mode: QueryMode = QueryMode.WRITE,
     ) -> DataFrame:
@@ -228,7 +228,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         ----------
         query: str
             the Cypher query
-        params: Dict[str, Any]
+        params: dict[str, Any]
             parameters to the query
         database: str
             the database on which to run the query
@@ -264,13 +264,13 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     def from_neo4j_driver(
         cls: Type[GraphDataScience],
         driver: Driver,
-        auth: Optional[tuple[str, str]] = None,
-        database: Optional[str] = None,
-        arrow: Union[str, bool] = True,
+        auth: tuple[str, str] | None = None,
+        database: str | None = None,
+        arrow: str | bool = True,
         arrow_disable_server_verification: bool = True,
-        arrow_tls_root_certs: Optional[bytes] = None,
-        bookmarks: Optional[Any] = None,
-        arrow_client_options: Optional[dict[str, Any]] = None,
+        arrow_tls_root_certs: bytes | None = None,
+        bookmarks: Any | None = None,
+        arrow_client_options: dict[str, Any] | None = None,
     ) -> GraphDataScience:
         """
         Construct a new GraphDataScience object from an existing Neo4j Driver.
@@ -280,11 +280,11 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         ----------
         driver: Driver
             The Neo4j Driver instance to use.
-        auth : Optional[Tuple[str, str]], default None
+        auth : tuple[str, str] | None, default None
             A username, password pair for authentication.
-        database: Optional[str], default None
+        database: str | None, default None
             The Neo4j database to query against.
-        arrow : Union[str, bool], default True
+        arrow : str | bool, default True
             Arrow connection information. This is either a string or a bool.
 
             - If it is a string, it will be interpreted as a connection URL to a GDS Arrow Server.
@@ -296,17 +296,17 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                 Use arrow_client_options instead
 
             A flag that overrides other TLS settings and disables server verification for TLS connections.
-        arrow_tls_root_certs : Optional[bytes], default None
+        arrow_tls_root_certs : bytes | None, default None
             .. deprecated:: 1.16
                 Use arrow_client_options instead
 
             PEM-encoded certificates that are used for the connection to the
             GDS Arrow Flight server.
-        bookmarks : Optional[Any], default None
+        bookmarks : Any | None, default None
             The Neo4j bookmarks to require a certain state before the next query gets executed.
         show_progress : bool, default True
             A flag to indicate whether to show progress bars for running procedures.
-        arrow_client_options : Optional[dict[str, Any]], default None
+        arrow_client_options : dict[str, Any] | None, default None
             Additional options to be passed to the Arrow Flight client.
         Returns:
             A new GraphDataScience object. configured with the provided Neo4j Driver.
@@ -323,7 +323,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         )
 
     @staticmethod
-    def _validate_endpoint(endpoint: Union[str, Driver, QueryRunner]) -> None:
+    def _validate_endpoint(endpoint: str | Driver | QueryRunner) -> None:
         if isinstance(endpoint, str):
             protocol = endpoint.split(":")[0]
             if protocol != Neo4jQueryRunner._AURA_DS_PROTOCOL:
@@ -347,8 +347,8 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exception_type: Type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         self.close()

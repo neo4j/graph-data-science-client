@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 import neo4j
 
@@ -31,7 +31,7 @@ class ModelApiCypher(ModelApi):
 
         return self._to_model_details(result.iloc[0].to_dict())
 
-    def drop(self, model: str, fail_if_missing: bool) -> Optional[ModelDetails]:
+    def drop(self, model: str, fail_if_missing: bool) -> ModelDetails | None:
         params = CallParameters(model_name=model, fail_if_missing=fail_if_missing)
 
         result = self._query_runner.call_procedure("gds.model.drop", params=params, custom_error=False)

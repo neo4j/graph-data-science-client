@@ -2,6 +2,8 @@
 
 ## Breaking changes
 
+- Drop support for Python 3.9
+
 ## New features
 
 ## Bug fixes

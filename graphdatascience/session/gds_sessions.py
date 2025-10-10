@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Any, Optional
+from typing import Any
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
@@ -23,12 +23,12 @@ class AuraAPICredentials:
     Attributes:
         client_id (str): The client ID for authentication.
         client_secret (str): The client secret for authentication.
-        project_id (Optional[str]): The project ID for authentication. Needed if a client belongs to multiple projects.
+        project_id (str | None): The project ID for authentication. Needed if a client belongs to multiple projects.
     """
 
     client_id: str
     client_secret: str
-    project_id: Optional[str] = None
+    project_id: str | None = None
 
     @staticmethod
     def from_env() -> AuraAPICredentials:
@@ -71,7 +71,7 @@ class GdsSessions:
         self,
         node_count: int,
         relationship_count: int,
-        algorithm_categories: Optional[list[AlgorithmCategory]] = None,
+        algorithm_categories: list[AlgorithmCategory] | None = None,
     ) -> SessionMemory:
         """
         Estimates the memory required for a session with the given node and relationship counts.
@@ -79,7 +79,7 @@ class GdsSessions:
         Args:
             node_count (int): The number of nodes.
             relationship_count (int): The number of relationships.
-            algorithm_categories (Optional[list[AlgorithmCategory]]): The algorithm categories to consider.
+            algorithm_categories (list[AlgorithmCategory] | None): The algorithm categories to consider.
 
         Returns:
             SessionMemory: The estimated memory required for the session.
@@ -101,12 +101,12 @@ class GdsSessions:
         self,
         session_name: str,
         memory: SessionMemory,
-        db_connection: Optional[DbmsConnectionInfo] = None,
-        ttl: Optional[timedelta] = None,
-        cloud_location: Optional[CloudLocation] = None,
-        timeout: Optional[int] = None,
-        neo4j_driver_config: Optional[dict[str, Any]] = None,
-        arrow_client_options: Optional[dict[str, Any]] = None,
+        db_connection: DbmsConnectionInfo | None = None,
+        ttl: timedelta | None = None,
+        cloud_location: CloudLocation | None = None,
+        timeout: int | None = None,
+        neo4j_driver_config: dict[str, Any] | None = None,
+        arrow_client_options: dict[str, Any] | None = None,
     ) -> AuraGraphDataScience:
         """
         Retrieves an existing session with the given session name and database connection,
@@ -118,12 +118,12 @@ class GdsSessions:
         Args:
             session_name (str): The name of the session.
             memory (SessionMemory): The size of the session specified by memory.
-            db_connection (Optional[DbmsConnectionInfo]): The database connection information.
-            ttl: (Optional[timedelta]): The sessions time to live after inactivity in seconds.
-            cloud_location (Optional[CloudLocation]): The cloud location. Required if the GDS session is for a self-managed database.
-            timeout (Optional[int]): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
-           neo4j_driver_config (Optional[dict[str, Any]]): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified..
-            arrow_client_options (Optional[dict[str, Any]]): Optional configuration for the Arrow Flight client.
+            db_connection (DbmsConnectionInfo | None): The database connection information.
+            ttl: (timedelta | None): The sessions time to live after inactivity in seconds.
+            cloud_location (CloudLocation | None): The cloud location. Required if the GDS session is for a self-managed database.
+            timeout (int | None): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
+           neo4j_driver_config (dict[str, Any] | None): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified..
+            arrow_client_options (dict[str, Any] | None): Optional configuration for the Arrow Flight client.
         Returns:
             AuraGraphDataScience: The session.
         """
@@ -138,7 +138,7 @@ class GdsSessions:
             arrow_client_options=arrow_client_options,
         )
 
-    def delete(self, *, session_name: Optional[str] = None, session_id: Optional[str] = None) -> bool:
+    def delete(self, *, session_name: str | None = None, session_id: str | None = None) -> bool:
         """
         Delete a GDS session either by name or id.
         Args:

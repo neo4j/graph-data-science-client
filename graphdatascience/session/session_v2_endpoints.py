@@ -1,5 +1,3 @@
-from typing import Optional
-
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import CliqueCountingEndpoints
@@ -69,7 +67,7 @@ class SessionV2Endpoints:
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        db_client: Optional[QueryRunner] = None,
+        db_client: QueryRunner | None = None,
         show_progress: bool = False,
     ):
         self._arrow_client = arrow_client

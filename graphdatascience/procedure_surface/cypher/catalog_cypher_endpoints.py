@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import builtins
 from types import TracebackType
-from typing import Any, List, NamedTuple, Optional, Type, Union
+from typing import Any, NamedTuple, Type
 
 from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     CatalogEndpoints,
@@ -30,14 +31,14 @@ class CatalogCypherEndpoints(CatalogEndpoints):
     def __init__(self, query_runner: QueryRunner):
         self._query_runner = query_runner
 
-    def list(self, G: Optional[Union[GraphV2, str]] = None) -> List[GraphInfoWithDegrees]:
+    def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
         graph_name = G if isinstance(G, str) else G.name() if G is not None else None
         params = CallParameters(graphName=graph_name) if graph_name else CallParameters()
 
         result = self._query_runner.call_procedure(endpoint="gds.graph.list", params=params)
         return [GraphInfoWithDegrees(**row.to_dict()) for _, row in result.iterrows()]
 
-    def drop(self, G: Union[GraphV2, str], fail_if_missing: bool = True) -> Optional[GraphInfo]:
+    def drop(self, G: GraphV2 | str, fail_if_missing: bool = True) -> GraphInfo | None:
         graph_name = G if isinstance(G, str) else G.name()
 
         params = (
@@ -55,14 +56,14 @@ class CatalogCypherEndpoints(CatalogEndpoints):
     def project(
         self,
         graph_name: str,
-        node_projection: Optional[Union[str, List[str], dict[str, Any]]] = None,
-        relationship_projection: Optional[Union[str, List[str], dict[str, Any]]] = None,
-        node_properties: Optional[Union[str, List[str], dict[str, Any]]] = None,
-        relationship_properties: Optional[Union[str, List[str], dict[str, Any]]] = None,
-        read_concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        sudo: Optional[bool] = None,
-        username: Optional[str] = None,
+        node_projection: str | builtins.list[str] | dict[str, Any] | None = None,
+        relationship_projection: str | builtins.list[str] | dict[str, Any] | None = None,
+        node_properties: str | builtins.list[str] | dict[str, Any] | None = None,
+        relationship_properties: str | builtins.list[str] | dict[str, Any] | None = None,
+        read_concurrency: int | None = None,
+        job_id: str | None = None,
+        sudo: bool | None = None,
+        username: str | None = None,
     ) -> GraphWithProjectResult:
         config = ConfigConverter.convert_to_gds_config(
             nodeProperties=node_properties,
@@ -91,8 +92,8 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         graph_name: str,
         node_filter: str,
         relationship_filter: str,
-        concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> GraphWithFilterResult:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -117,16 +118,16 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         node_count: int,
         average_degree: float,
         *,
-        relationship_distribution: Optional[str] = None,
-        relationship_seed: Optional[int] = None,
-        relationship_property: Optional[RelationshipPropertySpec] = None,
-        orientation: Optional[str] = None,
-        allow_self_loops: Optional[bool] = None,
-        read_concurrency: Optional[int] = None,
-        job_id: Optional[str] = None,
-        sudo: Optional[bool] = None,
+        relationship_distribution: str | None = None,
+        relationship_seed: int | None = None,
+        relationship_property: RelationshipPropertySpec | None = None,
+        orientation: str | None = None,
+        allow_self_loops: bool | None = None,
+        read_concurrency: int | None = None,
+        job_id: str | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
+        username: str | None = None,
     ) -> GraphWithGenerationStats:
         config = ConfigConverter.convert_to_gds_config(
             relationship_distribution=relationship_distribution,
@@ -190,8 +191,8 @@ class GraphWithProjectResult(NamedTuple):
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exception_type: Type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         self.graph.drop()

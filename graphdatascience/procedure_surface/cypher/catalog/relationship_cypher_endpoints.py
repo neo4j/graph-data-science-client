@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -18,20 +18,20 @@ from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 
 
 class RelationshipCypherEndpoints(RelationshipsEndpoints):
-    def __init__(self, query_runner: QueryRunner, gds_arrow_client: Optional[GdsArrowClient] = None):
+    def __init__(self, query_runner: QueryRunner, gds_arrow_client: GdsArrowClient | None = None):
         self._query_runner = query_runner
         self._gds_arrow_client = gds_arrow_client
 
     def stream(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        relationship_properties: Optional[list[str]] = None,
+        relationship_types: list[str] | None = None,
+        relationship_properties: list[str] | None = None,
         *,
-        concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
+        username: str | None = None,
     ) -> DataFrame:
         effective_rel_types = relationship_types if relationship_types is not None else ["*"]
 
@@ -93,14 +93,14 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         self,
         G: GraphV2,
         relationship_type: str,
-        relationship_properties: Optional[list[str]] = None,
+        relationship_properties: list[str] | None = None,
         *,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        concurrency: Any | None = None,
+        write_concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        job_id: Any | None = None,
     ) -> RelationshipsWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -157,11 +157,11 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         G: GraphV2,
         relationship_types: list[str],
         *,
-        concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        job_id: Any | None = None,
     ) -> RelationshipsInverseIndexResult:
         config = ConfigConverter.convert_to_gds_config(
             relationship_types=relationship_types,
@@ -190,14 +190,14 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         relationship_type: str,
         mutate_relationship_type: str,
         *,
-        aggregation: Optional[Union[Aggregation, dict[str, Aggregation]]] = None,
-        concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        aggregation: Aggregation | dict[str, Aggregation] | None = None,
+        concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        job_id: Any | None = None,
     ) -> RelationshipsToUndirectedResult:
-        aggregation_value: Optional[Union[str, dict[str, str]]] = None
+        aggregation_value: str | dict[str, str] | None = None
         if isinstance(aggregation, Aggregation):
             aggregation_value = aggregation.name
         elif isinstance(aggregation, dict):

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Any, Optional
+from typing import Any
 
 import networkx as nx
 from pandas import DataFrame
@@ -28,7 +28,7 @@ class NXLoader(UncallableNamespace, IllegalAttrChecker):
         return Graph(graph_name, self._query_runner)
 
     @staticmethod
-    def _attr_to_labels_key(labels_attr: Any, node_id: Any, no_node_labels: Optional[bool]) -> tuple[str, ...]:
+    def _attr_to_labels_key(labels_attr: Any, node_id: Any, no_node_labels: bool | None) -> tuple[str, ...]:
         node_labels: list[str]
         if no_node_labels:
             node_labels = ["N"]
@@ -80,7 +80,7 @@ class NXLoader(UncallableNamespace, IllegalAttrChecker):
         ]
 
     @staticmethod
-    def _attr_to_type_key(type_attr: Optional[str]) -> str:
+    def _attr_to_type_key(type_attr: str | None) -> str:
         return "R" if type_attr is None else type_attr
 
     @staticmethod

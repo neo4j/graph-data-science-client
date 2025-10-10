@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -17,19 +17,19 @@ class ModularityOptimizationEndpoints(ABC):
         G: GraphV2,
         mutate_property: str,
         *,
-        batch_size: Optional[int] = None,
-        concurrency: Optional[int] = None,
-        consecutive_ids: Optional[bool] = None,
-        job_id: Optional[str] = None,
+        batch_size: int | None = None,
+        concurrency: int | None = None,
+        consecutive_ids: bool | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        max_iterations: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        relationship_weight_property: Optional[str] = None,
-        seed_property: Optional[str] = None,
-        sudo: Optional[bool] = False,
-        tolerance: Optional[float] = None,
-        username: Optional[str] = None,
+        max_iterations: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        relationship_weight_property: str | None = None,
+        seed_property: str | None = None,
+        sudo: bool | None = False,
+        tolerance: float | None = None,
+        username: str | None = None,
     ) -> ModularityOptimizationMutateResult:
         """
         Executes the Modularity Optimization algorithm and writes the results to the in-memory graph as node properties.
@@ -40,31 +40,31 @@ class ModularityOptimizationEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the community ID for each node
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             Number of nodes to process in each batch
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             Maximum number of iterations for the algorithm
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter nodes with specific labels
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter relationships with specific types
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             Property name for relationship weights
-        seed_property : Optional[str], default=None
+        seed_property : str | None, default=None
             Property name for initial community assignments
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Run with elevated privileges
-        tolerance : Optional[float], default=None
+        tolerance : float | None, default=None
             Convergence tolerance for the algorithm
-        username : Optional[str], default=None
+        username : str | None, default=None
             Username for authentication
 
         Returns
@@ -79,19 +79,19 @@ class ModularityOptimizationEndpoints(ABC):
         self,
         G: GraphV2,
         *,
-        batch_size: Optional[int] = None,
-        concurrency: Optional[int] = None,
-        consecutive_ids: Optional[bool] = None,
-        job_id: Optional[str] = None,
+        batch_size: int | None = None,
+        concurrency: int | None = None,
+        consecutive_ids: bool | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        max_iterations: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        relationship_weight_property: Optional[str] = None,
-        seed_property: Optional[str] = None,
-        sudo: Optional[bool] = False,
-        tolerance: Optional[float] = None,
-        username: Optional[str] = None,
+        max_iterations: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        relationship_weight_property: str | None = None,
+        seed_property: str | None = None,
+        sudo: bool | None = False,
+        tolerance: float | None = None,
+        username: str | None = None,
     ) -> ModularityOptimizationStatsResult:
         """
         Executes the Modularity Optimization algorithm and returns statistics about the communities.
@@ -100,31 +100,31 @@ class ModularityOptimizationEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             Number of nodes to process in each batch
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             Maximum number of iterations for the algorithm
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter nodes with specific labels
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter relationships with specific types
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             Property name for relationship weights
-        seed_property : Optional[str], default=None
+        seed_property : str | None, default=None
             Property name for initial community assignments
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Run with elevated privileges
-        tolerance : Optional[float], default=None
+        tolerance : float | None, default=None
             Convergence tolerance for the algorithm
-        username : Optional[str], default=None
+        username : str | None, default=None
             Username for authentication
 
         Returns
@@ -139,20 +139,20 @@ class ModularityOptimizationEndpoints(ABC):
         self,
         G: GraphV2,
         *,
-        batch_size: Optional[int] = None,
-        concurrency: Optional[int] = None,
-        consecutive_ids: Optional[bool] = None,
-        job_id: Optional[str] = None,
+        batch_size: int | None = None,
+        concurrency: int | None = None,
+        consecutive_ids: bool | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        max_iterations: Optional[int] = None,
-        min_community_size: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        relationship_weight_property: Optional[str] = None,
-        seed_property: Optional[str] = None,
-        sudo: Optional[bool] = False,
-        tolerance: Optional[float] = None,
-        username: Optional[str] = None,
+        max_iterations: int | None = None,
+        min_community_size: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        relationship_weight_property: str | None = None,
+        seed_property: str | None = None,
+        sudo: bool | None = False,
+        tolerance: float | None = None,
+        username: str | None = None,
     ) -> DataFrame:
         """
         Executes the Modularity Optimization algorithm and returns the results as a DataFrame.
@@ -161,33 +161,33 @@ class ModularityOptimizationEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             Number of nodes to process in each batch
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             Maximum number of iterations for the algorithm
-        min_community_size : Optional[int], default=None
+        min_community_size : int | None, default=None
             Minimum size for communities to be included in results
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter nodes with specific labels
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter relationships with specific types
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             Property name for relationship weights
-        seed_property : Optional[str], default=None
+        seed_property : str | None, default=None
             Property name for initial community assignments
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Run with elevated privileges
-        tolerance : Optional[float], default=None
+        tolerance : float | None, default=None
             Convergence tolerance for the algorithm
-        username : Optional[str], default=None
+        username : str | None, default=None
             Username for authentication
 
         Returns
@@ -203,22 +203,22 @@ class ModularityOptimizationEndpoints(ABC):
         G: GraphV2,
         write_property: str,
         *,
-        batch_size: Optional[int] = None,
-        concurrency: Optional[int] = None,
-        consecutive_ids: Optional[bool] = None,
-        job_id: Optional[str] = None,
+        batch_size: int | None = None,
+        concurrency: int | None = None,
+        consecutive_ids: bool | None = None,
+        job_id: str | None = None,
         log_progress: bool = True,
-        max_iterations: Optional[int] = None,
-        min_community_size: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        relationship_weight_property: Optional[str] = None,
-        seed_property: Optional[str] = None,
-        sudo: Optional[bool] = False,
-        tolerance: Optional[float] = None,
-        username: Optional[str] = None,
-        write_concurrency: Optional[int] = None,
-        write_to_result_store: Optional[bool] = None,
+        max_iterations: int | None = None,
+        min_community_size: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        relationship_weight_property: str | None = None,
+        seed_property: str | None = None,
+        sudo: bool | None = False,
+        tolerance: float | None = None,
+        username: str | None = None,
+        write_concurrency: int | None = None,
+        write_to_result_store: bool | None = None,
     ) -> ModularityOptimizationWriteResult:
         """
         Executes the Modularity Optimization algorithm and writes the results back to the database.
@@ -229,37 +229,37 @@ class ModularityOptimizationEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to store the community ID for each node
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             Number of nodes to process in each batch
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
-        job_id : Optional[str], default=None
+        job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             Maximum number of iterations for the algorithm
-        min_community_size : Optional[int], default=None
+        min_community_size : int | None, default=None
             Minimum size for communities to be included in results
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter nodes with specific labels
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter relationships with specific types
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             Property name for relationship weights
-        seed_property : Optional[str], default=None
+        seed_property : str | None, default=None
             Property name for initial community assignments
-        sudo : Optional[bool], default=False
+        sudo : bool | None, default=False
             Run with elevated privileges
-        tolerance : Optional[float], default=None
+        tolerance : float | None, default=None
             Convergence tolerance for the algorithm
-        username : Optional[str], default=None
+        username : str | None, default=None
             Username for authentication
-        write_concurrency : Optional[int], default=None
+        write_concurrency : int | None, default=None
             The number of concurrent threads for writing
-        write_to_result_store : Optional[bool], default=None
+        write_to_result_store : bool | None, default=None
             Whether to write results to the result store
 
         Returns
@@ -272,42 +272,42 @@ class ModularityOptimizationEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
+        G: GraphV2 | dict[str, Any],
         *,
-        batch_size: Optional[int] = None,
-        concurrency: Optional[int] = None,
-        consecutive_ids: Optional[bool] = None,
-        max_iterations: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        relationship_weight_property: Optional[str] = None,
-        seed_property: Optional[str] = None,
-        tolerance: Optional[float] = None,
+        batch_size: int | None = None,
+        concurrency: int | None = None,
+        consecutive_ids: bool | None = None,
+        max_iterations: int | None = None,
+        node_labels: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        relationship_weight_property: str | None = None,
+        seed_property: str | None = None,
+        tolerance: float | None = None,
     ) -> EstimationResult:
         """
         Estimates the memory consumption for running the Modularity Optimization algorithm.
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph configuration or graph object
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             Number of nodes to process in each batch
-        concurrency : Optional[int], default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : Optional[bool], default=None
+        consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             Maximum number of iterations for the algorithm
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter nodes with specific labels
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter relationships with specific types
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             Property name for relationship weights
-        seed_property : Optional[str], default=None
+        seed_property : str | None, default=None
             Property name for initial community assignments
-        tolerance : Optional[float], default=None
+        tolerance : float | None, default=None
             Convergence tolerance for the algorithm
 
         Returns
@@ -328,8 +328,8 @@ class ModularityOptimizationMutateResult(BaseResult):
     ran_iterations: int
     modularity: float
     community_count: int
-    community_distribution: Dict[str, float]
-    configuration: Dict[str, Any]
+    community_distribution: dict[str, float]
+    configuration: dict[str, Any]
 
 
 class ModularityOptimizationStatsResult(BaseResult):
@@ -341,8 +341,8 @@ class ModularityOptimizationStatsResult(BaseResult):
     ran_iterations: int
     modularity: float
     community_count: int
-    community_distribution: Dict[str, float]
-    configuration: Dict[str, Any]
+    community_distribution: dict[str, float]
+    configuration: dict[str, Any]
 
 
 class ModularityOptimizationWriteResult(BaseResult):
@@ -355,5 +355,5 @@ class ModularityOptimizationWriteResult(BaseResult):
     ran_iterations: int
     modularity: float
     community_count: int
-    community_distribution: Dict[str, float]
-    configuration: Dict[str, Any]
+    community_distribution: dict[str, float]
+    configuration: dict[str, Any]

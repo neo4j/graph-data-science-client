@@ -6,7 +6,6 @@ import random as rd
 import signal
 import sys
 from types import FrameType
-from typing import Optional
 
 from aura_api_ci import AuraApiCI
 
@@ -27,7 +26,7 @@ def main() -> None:
     logging.info(f"Creation of database with id '{instance_id}'")
 
     # Teardown instance on SIGNAL
-    def handle_signal(sig: int, frame: Optional[FrameType]) -> None:
+    def handle_signal(sig: int, frame: FrameType | None) -> None:
         logging.info("Received SIGNAL, tearing down instance")
         aura_api.teardown_instance(instance_id)
         sys.exit(1)

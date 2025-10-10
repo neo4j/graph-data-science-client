@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -17,7 +17,7 @@ class MaxKCutArrowEndpoints(MaxKCutEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: Optional[RemoteWriteBackClient] = None,
+        write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
         self._arrow_client = arrow_client
@@ -30,18 +30,18 @@ class MaxKCutArrowEndpoints(MaxKCutEndpoints):
         G: GraphV2,
         mutate_property: str,
         *,
-        concurrency: Optional[int] = None,
-        iterations: Optional[int] = None,
-        job_id: Optional[str] = None,
-        k: Optional[int] = None,
+        concurrency: int | None = None,
+        iterations: int | None = None,
+        job_id: str | None = None,
+        k: int | None = None,
         log_progress: bool = True,
-        node_labels: Optional[List[str]] = None,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        relationship_weight_property: Optional[str] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
-        vns_max_neighborhood_order: Optional[int] = None,
+        node_labels: list[str] | None = None,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        relationship_weight_property: str | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
+        vns_max_neighborhood_order: int | None = None,
     ) -> MaxKCutMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -67,19 +67,19 @@ class MaxKCutArrowEndpoints(MaxKCutEndpoints):
         self,
         G: GraphV2,
         *,
-        concurrency: Optional[int] = None,
-        iterations: Optional[int] = None,
-        job_id: Optional[str] = None,
-        k: Optional[int] = None,
+        concurrency: int | None = None,
+        iterations: int | None = None,
+        job_id: str | None = None,
+        k: int | None = None,
         log_progress: bool = True,
-        min_community_size: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        relationship_weight_property: Optional[str] = None,
-        sudo: Optional[bool] = False,
-        username: Optional[str] = None,
-        vns_max_neighborhood_order: Optional[int] = None,
+        min_community_size: int | None = None,
+        node_labels: list[str] | None = None,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        relationship_weight_property: str | None = None,
+        sudo: bool | None = False,
+        username: str | None = None,
+        vns_max_neighborhood_order: int | None = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -102,16 +102,16 @@ class MaxKCutArrowEndpoints(MaxKCutEndpoints):
 
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
+        G: GraphV2 | dict[str, Any],
         *,
-        concurrency: Optional[int] = None,
-        iterations: Optional[int] = None,
-        k: Optional[int] = None,
-        node_labels: Optional[List[str]] = None,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        relationship_weight_property: Optional[str] = None,
-        vns_max_neighborhood_order: Optional[int] = None,
+        concurrency: int | None = None,
+        iterations: int | None = None,
+        k: int | None = None,
+        node_labels: list[str] | None = None,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        relationship_weight_property: str | None = None,
+        vns_max_neighborhood_order: int | None = None,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(
             concurrency=concurrency,

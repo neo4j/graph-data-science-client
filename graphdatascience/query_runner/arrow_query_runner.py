@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any, Optional
+from typing import Any
 
 from pandas import DataFrame
 
@@ -23,11 +23,11 @@ class ArrowQueryRunner(QueryRunner):
     def create(
         fallback_query_runner: QueryRunner,
         arrow_info: ArrowInfo,
-        arrow_authentication: Optional[ArrowAuthentication] = None,
+        arrow_authentication: ArrowAuthentication | None = None,
         encrypted: bool = False,
-        arrow_client_options: Optional[dict[str, Any]] = None,
-        connection_string_override: Optional[str] = None,
-        retry_config: Optional[RetryConfig] = None,
+        arrow_client_options: dict[str, Any] | None = None,
+        connection_string_override: str | None = None,
+        retry_config: RetryConfig | None = None,
     ) -> ArrowQueryRunner:
         if not arrow_info.enabled:
             raise ValueError("Arrow is not enabled on the server")
@@ -61,9 +61,9 @@ class ArrowQueryRunner(QueryRunner):
     def run_cypher(
         self,
         query: str,
-        params: Optional[dict[str, Any]] = None,
-        database: Optional[str] = None,
-        mode: Optional[QueryMode] = None,
+        params: dict[str, Any] | None = None,
+        database: str | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         return self._fallback_query_runner.run_cypher(query, params, database, mode, custom_error=custom_error)
@@ -71,24 +71,24 @@ class ArrowQueryRunner(QueryRunner):
     def run_retryable_cypher(
         self,
         query: str,
-        params: Optional[dict[str, Any]] = None,
-        database: Optional[str] = None,
-        mode: Optional[QueryMode] = None,
+        params: dict[str, Any] | None = None,
+        database: str | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         return self._fallback_query_runner.run_retryable_cypher(
             query, params, database, mode, custom_error=custom_error
         )
 
-    def call_function(self, endpoint: str, params: Optional[CallParameters] = None) -> Any:
+    def call_function(self, endpoint: str, params: CallParameters | None = None) -> Any:
         return self._fallback_query_runner.call_function(endpoint, params)
 
     def call_procedure(
         self,
         endpoint: str,
-        params: Optional[CallParameters] = None,
-        yields: Optional[list[str]] = None,
-        database: Optional[str] = None,
+        params: CallParameters | None = None,
+        yields: list[str] | None = None,
+        database: str | None = None,
         mode: QueryMode = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
@@ -201,10 +201,10 @@ class ArrowQueryRunner(QueryRunner):
     def set_database(self, database: str) -> None:
         self._fallback_query_runner.set_database(database)
 
-    def set_bookmarks(self, bookmarks: Optional[Any]) -> None:
+    def set_bookmarks(self, bookmarks: Any | None) -> None:
         self._fallback_query_runner.set_bookmarks(bookmarks)
 
-    def database(self) -> Optional[str]:
+    def database(self) -> str | None:
         return self._fallback_query_runner.database()
 
     def _database_or_throw(self) -> str:
@@ -217,10 +217,10 @@ class ArrowQueryRunner(QueryRunner):
 
         return database
 
-    def bookmarks(self) -> Optional[Any]:
+    def bookmarks(self) -> Any | None:
         return self._fallback_query_runner.bookmarks()
 
-    def last_bookmarks(self) -> Optional[Any]:
+    def last_bookmarks(self) -> Any | None:
         return self._fallback_query_runner.last_bookmarks()
 
     def close(self) -> None:
@@ -241,7 +241,7 @@ class ArrowQueryRunner(QueryRunner):
         self._fallback_query_runner.set_show_progress(show_progress)
 
     def create_graph_constructor(
-        self, graph_name: str, concurrency: int, undirected_relationship_types: Optional[list[str]]
+        self, graph_name: str, concurrency: int, undirected_relationship_types: list[str] | None
     ) -> GraphConstructor:
         database = self._database_or_throw()
 

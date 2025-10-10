@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from ..error.cypher_warning_handler import (
     filter_id_func_deprecation_warning,
@@ -36,7 +36,7 @@ class TopologicalLPAlphaRunner(UncallableNamespace, IllegalAttrChecker):
         return self._run_standard_function(node1, node2, config)
 
     @filter_id_func_deprecation_warning()
-    def sameCommunity(self, node1: int, node2: int, communityProperty: Optional[str] = None) -> float:
+    def sameCommunity(self, node1: int, node2: int, communityProperty: str | None = None) -> float:
         self._namespace += ".sameCommunity"
         community_property = f", '{communityProperty}'" if communityProperty else ""
 

@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
@@ -17,7 +17,7 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: Optional[RemoteWriteBackClient] = None,
+        write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
         self._node_property_endpoints = NodePropertyEndpoints(
@@ -33,12 +33,12 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
         node_label: str,
         *,
         node_filter: str,
-        sudo: Optional[bool] = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        write_concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> NodeLabelMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
@@ -64,12 +64,12 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
         node_label: str,
         *,
         node_filter: str,
-        sudo: Optional[bool] = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        write_concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> NodeLabelWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),

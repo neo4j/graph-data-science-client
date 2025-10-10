@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional
+from typing import Any
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
@@ -18,32 +18,32 @@ class GraphSageTrainEndpoints(ABC):
         self,
         G: GraphV2,
         model_name: str,
-        feature_properties: List[str],
+        feature_properties: list[str],
         *,
-        activation_function: Optional[Any] = None,
-        negative_sample_weight: Optional[int] = None,
-        embedding_dimension: Optional[int] = None,
-        tolerance: Optional[float] = None,
-        learning_rate: Optional[float] = None,
-        max_iterations: Optional[int] = None,
-        sample_sizes: Optional[List[int]] = None,
-        aggregator: Optional[Any] = None,
-        penalty_l2: Optional[float] = None,
-        search_depth: Optional[int] = None,
-        epochs: Optional[int] = None,
-        projected_feature_dimension: Optional[int] = None,
-        batch_sampling_ratio: Optional[float] = None,
-        store_model_to_disk: Optional[bool] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        username: Optional[str] = None,
+        activation_function: Any | None = None,
+        negative_sample_weight: int | None = None,
+        embedding_dimension: int | None = None,
+        tolerance: float | None = None,
+        learning_rate: float | None = None,
+        max_iterations: int | None = None,
+        sample_sizes: list[int] | None = None,
+        aggregator: Any | None = None,
+        penalty_l2: float | None = None,
+        search_depth: int | None = None,
+        epochs: int | None = None,
+        projected_feature_dimension: int | None = None,
+        batch_sampling_ratio: float | None = None,
+        store_model_to_disk: bool | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        username: str | None = None,
         log_progress: bool = True,
-        sudo: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        batch_size: Optional[int] = None,
-        relationship_weight_property: Optional[str] = None,
-        random_seed: Optional[Any] = None,
+        sudo: bool | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        batch_size: int | None = None,
+        relationship_weight_property: str | None = None,
+        random_seed: Any | None = None,
     ) -> tuple[GraphSageModelV2, GraphSageTrainResult]:
         """
         Trains a GraphSage model on the given graph.
@@ -54,55 +54,55 @@ class GraphSageTrainEndpoints(ABC):
             The graph to run the algorithm on
         model_name : str
             Name under which the model will be stored
-        feature_properties : List[str]
+        feature_properties : list[str]
             The names of the node properties to use as input features
-        activation_function : Optional[Any], default=None
+        activation_function : Any | None, default=None
             The activation function to apply after each layer
-        negative_sample_weight : Optional[int], default=None
+        negative_sample_weight : int | None, default=None
             Weight of negative samples in the loss function
-        embedding_dimension : Optional[int], default=None
+        embedding_dimension : int | None, default=None
             The dimension of the generated embeddings
-        tolerance : Optional[float], default=None
+        tolerance : float | None, default=None
             Tolerance for early stopping based on loss improvement
-        learning_rate : Optional[float], default=None
+        learning_rate : float | None, default=None
             Learning rate for the training optimization
-        max_iterations : Optional[int], default=None
+        max_iterations : int | None, default=None
             Maximum number of training iterations
-        sample_sizes : Optional[List[int]], default=None
+        sample_sizes : list[int] | None, default=None
             Number of neighbors to sample at each layer
-        aggregator : Optional[Any], default=None
+        aggregator : Any | None, default=None
             The aggregator function for neighborhood aggregation
-        penalty_l2 : Optional[float], default=None
+        penalty_l2 : float | None, default=None
             L2 regularization penalty
-        search_depth : Optional[int], default=None
+        search_depth : int | None, default=None
             Maximum search depth for neighbor sampling
-        epochs : Optional[int], default=None
+        epochs : int | None, default=None
             Number of training epochs
-        projected_feature_dimension : Optional[int], default=None
+        projected_feature_dimension : int | None, default=None
             Dimension to project input features to before training
-        batch_sampling_ratio : Optional[float], default=None
+        batch_sampling_ratio : float | None, default=None
             Ratio of nodes to sample for each training batch
-        store_model_to_disk : Optional[bool], default=None
+        store_model_to_disk : bool | None, default=None
             Whether to persist the model to disk
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        username : Optional[str] = None
+        username : str | None = None
             The username to attribute the procedure run to
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job
-        batch_size : Optional[int], default=None
+        batch_size : int | None, default=None
             Batch size for training
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : Optional[Any], default=None
+        random_seed : Any | None, default=None
             Random seed for reproducible results
 
         Returns

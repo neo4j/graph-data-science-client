@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable
 
 from pandas import DataFrame
 
@@ -6,7 +6,7 @@ from ...server_version.server_version import ServerVersion
 from .progress_provider import ProgressProvider, TaskWithProgress
 
 # takes a query str, optional db str and returns the result as a DataFrame
-CypherQueryFunction = Callable[[str, Optional[str]], DataFrame]
+CypherQueryFunction = Callable[[str, str | None], DataFrame]
 ServerVersionFunction = Callable[[], ServerVersion]
 
 
@@ -19,7 +19,7 @@ class QueryProgressProvider(ProgressProvider):
         self._run_cypher_func = run_cypher_func
         self._server_version_func = server_version_func
 
-    def root_task_with_progress(self, job_id: str, database: Optional[str] = None) -> TaskWithProgress:
+    def root_task_with_progress(self, job_id: str, database: str | None = None) -> TaskWithProgress:
         tier = "beta." if self._server_version_func() < ServerVersion(2, 5, 0) else ""
 
         # expect at exactly one row (query will fail if not existing)

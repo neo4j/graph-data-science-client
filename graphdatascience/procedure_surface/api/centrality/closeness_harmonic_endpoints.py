@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -16,13 +16,13 @@ class ClosenessHarmonicEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> ClosenessHarmonicMutateResult:
         """
         Runs the Harmonic Centrality algorithm and stores the results in the graph catalog as a new node property.
@@ -36,20 +36,20 @@ class ClosenessHarmonicEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the harmonic closeness centrality score for each node
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress of the algorithm execution
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads used for the algorithm execution.
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job that can be used for monitoring and cancellation
 
         Returns
@@ -63,13 +63,13 @@ class ClosenessHarmonicEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> ClosenessHarmonicStatsResult:
         """
         Runs the Harmonic Centrality algorithm and returns result statistics without storing the results.
@@ -83,20 +83,20 @@ class ClosenessHarmonicEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress of the algorithm execution
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads used for the algorithm execution.
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job that can be used for monitoring and cancellation
 
         Returns
@@ -110,13 +110,13 @@ class ClosenessHarmonicEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> DataFrame:
         """
         Executes the Harmonic Closeness Centrality algorithm and returns a stream of results.
@@ -125,20 +125,20 @@ class ClosenessHarmonicEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress of the algorithm execution
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads used for the algorithm execution.
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job that can be used for monitoring and cancellation
 
         Returns
@@ -153,14 +153,14 @@ class ClosenessHarmonicEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        write_concurrency: Any | None = None,
     ) -> ClosenessHarmonicWriteResult:
         """
         Runs the Harmonic Centrality algorithm and stores the result in the Neo4j database as a new node property.
@@ -176,22 +176,22 @@ class ClosenessHarmonicEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to write the harmonic closeness centrality scores to
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress of the algorithm execution
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads used for the algorithm execution.
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job that can be used for monitoring and cancellation
-        write_concurrency : Optional[Any], default=None
+        write_concurrency : Any | None, default=None
             The number of concurrent threads during the write phase
 
         Returns
@@ -204,23 +204,23 @@ class ClosenessHarmonicEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
+        G: GraphV2 | dict[str, Any],
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of a Harmonic Closeness Centrality algorithm run.
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run.
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads used for the algorithm execution.
 
         Returns

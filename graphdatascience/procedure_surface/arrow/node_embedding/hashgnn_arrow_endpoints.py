@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -23,7 +23,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: Optional[RemoteWriteBackClient] = None,
+        write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
         self._node_property_endpoints = NodePropertyEndpoints(
@@ -36,20 +36,20 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
         iterations: int,
         embedding_density: int,
         mutate_property: str,
-        output_dimension: Optional[int] = None,
-        neighbor_influence: Optional[float] = None,
-        generate_features: Optional[Dict[str, Any]] = None,
-        binarize_features: Optional[Dict[str, Any]] = None,
-        heterogeneous: Optional[bool] = None,
-        feature_properties: Optional[List[str]] = None,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        output_dimension: int | None = None,
+        neighbor_influence: float | None = None,
+        generate_features: dict[str, Any] | None = None,
+        binarize_features: dict[str, Any] | None = None,
+        heterogeneous: bool | None = None,
+        feature_properties: list[str] | None = None,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> HashGNNMutateResult:
         """
         Compute node embeddings using HashGNN and store the result as a node property in the in-memory graph.
@@ -84,20 +84,20 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
         G: GraphV2,
         iterations: int,
         embedding_density: int,
-        output_dimension: Optional[int] = None,
-        neighbor_influence: Optional[float] = None,
-        generate_features: Optional[Dict[str, Any]] = None,
-        binarize_features: Optional[Dict[str, Any]] = None,
-        heterogeneous: Optional[bool] = None,
-        feature_properties: Optional[List[str]] = None,
-        random_seed: Optional[int] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        output_dimension: int | None = None,
+        neighbor_influence: float | None = None,
+        generate_features: dict[str, Any] | None = None,
+        binarize_features: dict[str, Any] | None = None,
+        heterogeneous: bool | None = None,
+        feature_properties: list[str] | None = None,
+        random_seed: int | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
     ) -> DataFrame:
         """
         Compute node embeddings using HashGNN and stream the results.
@@ -131,21 +131,21 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
         iterations: int,
         embedding_density: int,
         write_property: str,
-        output_dimension: Optional[int] = None,
-        neighbor_influence: Optional[float] = None,
-        generate_features: Optional[Dict[str, Any]] = None,
-        binarize_features: Optional[Dict[str, Any]] = None,
-        heterogeneous: Optional[bool] = None,
-        feature_properties: Optional[List[str]] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        output_dimension: int | None = None,
+        neighbor_influence: float | None = None,
+        generate_features: dict[str, Any] | None = None,
+        binarize_features: dict[str, Any] | None = None,
+        heterogeneous: bool | None = None,
+        feature_properties: list[str] | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        write_concurrency: Optional[int] = None,
-        random_seed: Optional[int] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        write_concurrency: int | None = None,
+        random_seed: int | None = None,
     ) -> HashGNNWriteResult:
         """
         Compute node embeddings using HashGNN and write the results to the Neo4j database.
@@ -180,16 +180,16 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
 
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
+        G: GraphV2 | dict[str, Any],
         iterations: int,
         embedding_density: int,
-        output_dimension: Optional[int] = None,
-        neighbor_influence: Optional[float] = None,
-        generate_features: Optional[Dict[str, Any]] = None,
-        binarize_features: Optional[Dict[str, Any]] = None,
-        heterogeneous: Optional[bool] = None,
-        feature_properties: Optional[List[str]] = None,
-        random_seed: Optional[int] = None,
+        output_dimension: int | None = None,
+        neighbor_influence: float | None = None,
+        generate_features: dict[str, Any] | None = None,
+        binarize_features: dict[str, Any] | None = None,
+        heterogeneous: bool | None = None,
+        feature_properties: list[str] | None = None,
+        random_seed: int | None = None,
     ) -> EstimationResult:
         """
         Estimate the cost of running HashGNN on the given graph.

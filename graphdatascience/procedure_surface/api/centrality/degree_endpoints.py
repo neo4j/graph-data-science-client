@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -16,15 +16,15 @@ class DegreeEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        orientation: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        orientation: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        relationship_weight_property: str | None = None,
     ) -> DegreeMutateResult:
         """
         Runs the Degree Centrality algorithm and stores the results in the graph catalog as a new node property.
@@ -40,23 +40,23 @@ class DegreeEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             Name of the node property to store the results in.
-        orientation : Optional[Any], default=None
+        orientation : Any | None, default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Disable the memory guard.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Display progress logging.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             Number of threads to use for running the algorithm.
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             Identifier for the job.
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
 
         Returns
@@ -70,15 +70,15 @@ class DegreeEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        orientation: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        orientation: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        relationship_weight_property: str | None = None,
     ) -> DegreeStatsResult:
         """
         Runs the Degree Centrality algorithm and returns result statistics without storing the results.
@@ -92,23 +92,23 @@ class DegreeEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        orientation : Optional[Any], default=None
+        orientation : Any | None, default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Disable the memory guard.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Display progress logging.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             Number of threads to use for running the algorithm.
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             Identifier for the job.
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
 
         Returns
@@ -122,15 +122,15 @@ class DegreeEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        orientation: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        orientation: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        relationship_weight_property: str | None = None,
     ) -> DataFrame:
         """
         Executes the Degree Centrality algorithm and returns a stream of results.
@@ -139,27 +139,27 @@ class DegreeEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        orientation : Optional[Any], default=None
+        orientation : Any | None, default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
             'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
             'REVERSE' treats each relationship as if it were directed in the opposite direction.
             'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Whether to log progress of the algorithm execution
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads used for the algorithm execution.
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             An identifier for the job that can be used for monitoring and cancellation
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             The property name that contains relationship weights. If specified,
             weighted degree centrality is computed where each relationship contributes
             its weight to the total degree.
@@ -177,16 +177,16 @@ class DegreeEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        orientation: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        sudo: Optional[bool] = None,
+        orientation: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        concurrency: Optional[Any] = None,
-        job_id: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
-        write_concurrency: Optional[Any] = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        relationship_weight_property: str | None = None,
+        write_concurrency: Any | None = None,
     ) -> DegreeWriteResult:
         """
         Runs the Degree Centrality algorithm and stores the result in the Neo4j database as a new node property.
@@ -202,25 +202,25 @@ class DegreeEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to store the degree centrality score for each node in the database
-        orientation : Optional[Any], default=None
+        orientation : Any | None, default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : Optional[bool], default=None
+        sudo : bool | None, default=None
             Disable the memory guard.
-        log_progress : Optional[bool], default=None
+        log_progress : bool | None, default=None
             Display progress logging.
-        username : Optional[str], default=None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of threads to use for running the algorithm.
-        job_id : Optional[Any], default=None
+        job_id : Any | None, default=None
             Identifier for the job.
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
-        write_concurrency : Optional[Any], default=None
+        write_concurrency : Any | None, default=None
             The number of concurrent threads used during the write phase.
 
         Returns
@@ -233,29 +233,29 @@ class DegreeEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: Union[GraphV2, dict[str, Any]],
-        orientation: Optional[Any] = None,
-        relationship_types: Optional[List[str]] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
-        relationship_weight_property: Optional[str] = None,
+        G: GraphV2 | dict[str, Any],
+        orientation: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
+        relationship_weight_property: str | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
 
         Parameters
         ----------
-        G : Union[GraphV2, dict[str, Any]]
+        G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
-        orientation : Optional[Any], default=None
+        orientation : Any | None, default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-        relationship_types : Optional[List[str]], default=None
+        relationship_types : list[str] | None, default=None
             The relationship types used to select relationships for this algorithm run
-        node_labels : Optional[List[str]], default=None
+        node_labels : list[str] | None, default=None
             The node labels used to select nodes for this algorithm run
-        concurrency : Optional[Any], default=None
+        concurrency : Any | None, default=None
             The number of concurrent threads
-        relationship_weight_property : Optional[str], default=None
+        relationship_weight_property : str | None, default=None
             The property name that contains weight
 
         Returns

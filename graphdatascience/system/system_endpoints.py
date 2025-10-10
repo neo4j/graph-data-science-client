@@ -1,5 +1,5 @@
 import re
-from typing import Any, Optional
+from typing import Any
 
 from pandas import DataFrame, Series
 
@@ -94,7 +94,7 @@ class DirectSystemEndpoints(CallerBase):
         return self._query_runner.call_procedure(endpoint=namespace, params=CallParameters(config=config))
 
     @compatible_with("listProgress", min_inclusive=ServerVersion(2, 5, 0))
-    def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
+    def listProgress(self, job_id: str | None = None) -> DataFrame:
         return SystemBetaEndpoints(self._query_runner, self._namespace, self._server_version).listProgress(job_id)
 
     @property
@@ -111,7 +111,7 @@ class DirectSystemEndpoints(CallerBase):
 
 
 class SystemBetaEndpoints(CallerBase):
-    def listProgress(self, job_id: Optional[str] = None) -> DataFrame:
+    def listProgress(self, job_id: str | None = None) -> DataFrame:
         self._namespace += ".listProgress"
 
         params = CallParameters()

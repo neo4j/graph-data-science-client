@@ -1,5 +1,3 @@
-from typing import Optional
-
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_backend import GraphBackend
@@ -29,5 +27,5 @@ class ArrowGraphBackend(GraphBackend):
     def exists(self) -> bool:
         return any(self._graph_ops.list(self._name))
 
-    def drop(self, fail_if_missing: bool = True) -> Optional[GraphInfo]:
+    def drop(self, fail_if_missing: bool = True) -> GraphInfo | None:
         return self._graph_ops.drop(self._name, fail_if_missing)

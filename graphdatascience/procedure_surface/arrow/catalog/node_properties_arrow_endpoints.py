@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from pandas import DataFrame
 
@@ -23,12 +23,12 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        query_runner: Optional[QueryRunner] = None,
+        query_runner: QueryRunner | None = None,
         show_progress: bool = True,
     ):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
-        self._write_back_client: Optional[RemoteWriteBackClient] = (
+        self._write_back_client: RemoteWriteBackClient | None = (
             RemoteWriteBackClient(arrow_client, query_runner) if query_runner is not None else None
         )
         self._node_property_endpoints = NodePropertyEndpoints(
@@ -39,16 +39,16 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
     def stream(
         self,
         G: GraphV2,
-        node_properties: Union[str, List[str]],
+        node_properties: str | list[str],
         *,
-        list_node_labels: Optional[bool] = None,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        list_node_labels: bool | None = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,
-        db_node_properties: Optional[List[str]] = None,
+        username: str | None = None,
+        job_id: Any | None = None,
+        db_node_properties: list[str] | None = None,
     ) -> DataFrame:
         has_db_properties = (db_node_properties is not None) and (len(db_node_properties) > 0)
 
@@ -80,15 +80,15 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
     def write(
         self,
         G: GraphV2,
-        node_properties: Union[str, List[str], dict[str, str]],
+        node_properties: str | list[str] | dict[str, str],
         *,
-        node_labels: Optional[List[str]] = None,
-        concurrency: Optional[Any] = None,
-        write_concurrency: Optional[Any] = None,
-        sudo: Optional[bool] = None,
+        node_labels: list[str] | None = None,
+        concurrency: Any | None = None,
+        write_concurrency: Any | None = None,
+        sudo: bool | None = None,
         log_progress: bool = True,
-        username: Optional[str] = None,
-        job_id: Optional[Any] = None,
+        username: str | None = None,
+        job_id: Any | None = None,
     ) -> NodePropertiesWriteResult:
         if self._write_back_client is None:
             raise ValueError("Write back is only available if a database connection is provided.")
@@ -127,11 +127,11 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
     def drop(
         self,
         G: GraphV2,
-        node_properties: List[str],
+        node_properties: list[str],
         *,
-        fail_if_missing: Optional[bool] = None,
-        concurrency: Optional[Any] = None,
-        username: Optional[str] = None,
+        fail_if_missing: bool | None = None,
+        concurrency: Any | None = None,
+        username: str | None = None,
     ) -> NodePropertiesDropResult:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),

@@ -1,6 +1,6 @@
 import warnings
 from concurrent.futures import Future, ThreadPoolExecutor, wait
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 from pandas import DataFrame
 
@@ -32,7 +32,7 @@ class QueryProgressLogger:
         self._progress_bar_options.setdefault("maxinterval", self._polling_interval)
 
     def run_with_progress_logging(
-        self, runnable: DataFrameProducer, job_id: str, database: Optional[str] = None
+        self, runnable: DataFrameProducer, job_id: str, database: str | None = None
     ) -> DataFrame:
         if self._server_version_func() < ServerVersion(2, 1, 0):
             return runnable()
@@ -59,9 +59,9 @@ class QueryProgressLogger:
         )
 
     def _log(
-        self, future: Future[Any], job_id: str, progress_provider: ProgressProvider, database: Optional[str] = None
+        self, future: Future[Any], job_id: str, progress_provider: ProgressProvider, database: str | None = None
     ) -> None:
-        pbar: Optional[TqdmProgressBar] = None
+        pbar: TqdmProgressBar | None = None
         warn_if_failure = True
 
         while wait([future], timeout=self._polling_interval).not_done:

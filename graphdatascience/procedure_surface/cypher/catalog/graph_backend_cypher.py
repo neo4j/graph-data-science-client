@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_backend import GraphBackend
@@ -44,7 +42,7 @@ class CypherGraphBackend(GraphBackend):
         )
         return result.squeeze()["exists"]  # type: ignore
 
-    def drop(self, fail_if_missing: bool = True) -> Optional[GraphInfo]:
+    def drop(self, fail_if_missing: bool = True) -> GraphInfo | None:
         info = self._query_runner.call_procedure(
             endpoint="gds.graph.drop",
             params=CallParameters(graph_name=self._name, failIfMissing=fail_if_missing),
