@@ -301,9 +301,7 @@ class Neo4jQueryRunner(QueryRunner):
             if "Unknown function 'gds.version'" in str(e):
                 # Some Python versions appear to not call __del__ of self._query_runner when an exception
                 # is raised, so we have to close the driver manually.
-                self._driver.close()
-                # if isinstance(endpoint, str):
-                #    driver.close()
+                self.close()
 
                 raise GdsNotFound(
                     f"""The Graph Data Science library is not correctly installed on the {self._instance_description}.
