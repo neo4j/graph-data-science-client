@@ -27,11 +27,13 @@ class GraphInfo(BaseResult):
     @field_validator("creation_time", "modification_time", mode="before")
     @classmethod
     def strip_timezone(cls, value: Any) -> Any:
-        if isinstance(value, str):
-            return re.sub(r"\[.*\]$", "", value)
-        if isinstance(value, neo4j.time.DateTime):
-            return value.to_native()
-        return value
+        match value:
+            case str():
+                return re.sub(r"\[.*\]$", "", value)
+            case neo4j.time.DateTime():
+                return value.to_native()
+            case _:
+                return value
 
 
 class GraphInfoWithDegrees(GraphInfo):

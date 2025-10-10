@@ -689,12 +689,13 @@ class GdsArrowClient:
         batch_size: int,
         progress_callback: Callable[[int], None],
     ) -> None:
-        if isinstance(data, pyarrow.Table):
-            batches = data.to_batches(batch_size)
-        elif isinstance(data, pandas.DataFrame):
-            batches = pyarrow.Table.from_pandas(data).to_batches(batch_size)
-        else:
-            batches = data
+        match data:
+            case pyarrow.Table():
+                batches = data.to_batches(batch_size)
+            case pandas.DataFrame():
+                batches = pyarrow.Table.from_pandas(data).to_batches(batch_size)
+            case _:
+                batches = data
 
         flight_descriptor = self._versioned_flight_descriptor({"name": graph_name, "entity_type": entity_type})
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
