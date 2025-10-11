@@ -12,6 +12,9 @@
 
 ## Improvements
 
+- Added retries to verifying connection and authentication of DB connection provided to `GdsSessions.getOrCreate`
+
+
 ## Other changes
 
 - Add support for PyArrow 21.0.0
