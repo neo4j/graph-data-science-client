@@ -189,6 +189,7 @@ class AuthenticatedArrowClient:
             wait=self._retry_config.wait,
         )
         def run_with_retry() -> Iterator[Result]:
+            # TODO collect result to avoid lazy response status eval
             return self.do_action(endpoint, payload)
 
         return run_with_retry()
