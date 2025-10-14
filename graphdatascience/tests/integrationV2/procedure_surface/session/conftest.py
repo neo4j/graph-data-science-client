@@ -16,15 +16,13 @@ from graphdatascience.tests.integrationV2.procedure_surface.conftest import (
 
 
 @pytest.fixture(scope="package")
-def session_container(
-    network: Network, password_dir: Path, logs_dir: Path, inside_ci: bool
-) -> Generator[DockerContainer, None, None]:
+def session_url(network: Network, password_dir: Path, logs_dir: Path, inside_ci: bool) -> Generator[str, None, None]:
     yield from start_session(inside_ci, logs_dir, network, password_dir)
 
 
 @pytest.fixture(scope="package")
-def arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient:
-    return create_arrow_client(session_container)
+def arrow_client(session_url: str) -> AuthenticatedArrowClient:
+    return create_arrow_client(session_url)
 
 
 @pytest.fixture(scope="package")
