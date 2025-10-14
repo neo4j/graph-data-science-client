@@ -34,7 +34,10 @@ class NodePropertyEndpoints:
         show_progress: bool = config.get("logProgress", True) and self._show_progress
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress)
-        return JobClient.get_summary(self._arrow_client, job_id)
+        result = JobClient.get_summary(self._arrow_client, job_id)
+        if config := result.get("configuration"):
+            self._drop_write_internals(config)
+        return result
 
     def run_job_and_mutate(
         self, endpoint: str, G: GraphV2, config: dict[str, Any], mutate_property: str
@@ -49,12 +52,9 @@ class NodePropertyEndpoints:
         computation_result["nodePropertiesWritten"] = mutate_result.node_properties_written
         computation_result["mutateMillis"] = mutate_result.mutate_millis
 
-        if (config := computation_result.get("configuration", None)) is not None:
+        if config := computation_result.get("configuration"):
             config["mutateProperty"] = mutate_property
-            config.pop("writeConcurrency", None)
-            config.pop("writeToResultStore", None)
-            config.pop("writeProperty", None)
-            config.pop("writeMillis", None)
+            self._drop_write_internals(config)
 
         return computation_result
 
@@ -125,3 +125,9 @@ class NodePropertyEndpoints:
         res = self._arrow_client.do_action_with_retry(estimate_endpoint, payload)
 
         return EstimationResult(**deserialize_single(res))
+
+    def _drop_write_internals(self, config: dict[str, Any]) -> None:
+        config.pop("writeConcurrency", None)
+        config.pop("writeToResultStore", None)
+        config.pop("writeProperty", None)
+        config.pop("writeMillis", None)
