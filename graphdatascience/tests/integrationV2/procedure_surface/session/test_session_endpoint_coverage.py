@@ -14,8 +14,6 @@ MISSING_ALGO_ENDPOINTS = {
     "similarity.nodeSimilarity.filtered",
     "similarity.nodeSimilarity.filtered.estimate",
     "similarity.nodeSimilarity",
-    "similarity.knn",
-    "similarity.knn.estimate",
     "similarity.nodeSimilarity.estimate",
     "pathfinding.sourceTarget.dijkstra.estimate",
     "pathfinding.sourceTarget.aStar",
