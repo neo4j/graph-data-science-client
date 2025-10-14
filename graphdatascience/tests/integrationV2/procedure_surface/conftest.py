@@ -45,9 +45,11 @@ def latest_neo4j_version() -> str:
     return previous_month.strftime("%Y.%m.0")
 
 
-def start_session(
-    inside_ci: bool, logs_dir: Path, network: Network, password_dir: Path
-) -> Generator[DockerContainer, None, None]:
+def start_session(inside_ci: bool, logs_dir: Path, network: Network, password_dir: Path) -> Generator[str, None, None]:
+    if session_uri := os.environ.get("GDS_SESSION_URI"):
+        yield session_uri
+        return
+
     session_image = os.getenv(
         "GDS_SESSION_IMAGE", "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest"
     )
@@ -66,7 +68,7 @@ def start_session(
         session_container = session_container.with_network(network).with_network_aliases("gds-session")
     with session_container as session_container:
         wait_for_logs(session_container, "Running GDS tasks: 0")
-        yield session_container
+        yield f"{session_container.get_container_host_ip()}:{session_container.get_exposed_port(8491)}"
         stdout, stderr = session_container.get_logs()
 
         if stderr:
@@ -80,12 +82,11 @@ def start_session(
             f.write(stdout.decode("utf-8"))
 
 
-def create_arrow_client(session_container: DockerContainer) -> AuthenticatedArrowClient:
+def create_arrow_client(session_url: str) -> AuthenticatedArrowClient:
     """Create an authenticated Arrow client connected to the session container."""
-    host = session_container.get_container_host_ip()
-    port = session_container.get_exposed_port(8491)
+
     return AuthenticatedArrowClient.create(
-        arrow_info=ArrowInfo(f"{host}:{port}", True, True, ["v1", "v2"]),
+        arrow_info=ArrowInfo(session_url, True, True, ["v1", "v2"]),
         auth=UsernamePasswordAuthentication("neo4j", "password"),
         encrypted=False,
         advertised_listen_address=("gds-session", 8491),
