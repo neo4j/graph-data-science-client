@@ -1,0 +1,292 @@
+from typing import Any
+
+from pandas import DataFrame
+
+from graphdatascience.call_parameters import CallParameters
+from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.similarity.knn_endpoints import (
+    KnnMutateResult,
+    KnnStatsResult,
+    KnnWriteResult,
+)
+from graphdatascience.procedure_surface.api.similarity.knn_filtered_endpoints import KnnFilteredEndpoints
+from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
+from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.query_runner.query_runner import QueryRunner
+
+
+class KnnFilteredCypherEndpoints(KnnFilteredEndpoints):
+    def __init__(self, query_runner: QueryRunner):
+        self._query_runner = query_runner
+
+    def mutate(
+        self,
+        G: GraphV2,
+        mutate_relationship_type: str,
+        mutate_property: str,
+        node_properties: str | list[str] | dict[str, str],
+        source_node_filter: str,
+        target_node_filter: str,
+        seed_target_nodes: bool | None = None,
+        top_k: int | None = None,
+        similarity_cutoff: float | None = None,
+        delta_threshold: float | None = None,
+        max_iterations: int | None = None,
+        sample_rate: float | None = None,
+        perturbation_rate: float | None = None,
+        random_joins: int | None = None,
+        random_seed: int | None = None,
+        initial_sampler: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+    ) -> KnnMutateResult:
+        config = ConfigConverter.convert_to_gds_config(
+            mutateRelationshipType=mutate_relationship_type,
+            mutateProperty=mutate_property,
+            nodeProperties=node_properties,
+            sourceNodeFilter=source_node_filter,
+            targetNodeFilter=target_node_filter,
+            seedTargetNodes=seed_target_nodes,
+            topK=top_k,
+            similarityCutoff=similarity_cutoff,
+            deltaThreshold=delta_threshold,
+            maxIterations=max_iterations,
+            sampleRate=sample_rate,
+            perturbationRate=perturbation_rate,
+            randomJoins=random_joins,
+            randomSeed=random_seed,
+            initialSampler=initial_sampler,
+            relationshipTypes=relationship_types,
+            nodeLabels=node_labels,
+            sudo=sudo,
+            logProgress=log_progress,
+            username=username,
+            concurrency=concurrency,
+            jobId=job_id,
+        )
+        params = CallParameters(graph_name=G.name(), config=config)
+        params.ensure_job_id_in_config()
+
+        result = self._query_runner.call_procedure("gds.knn.filtered.mutate", params=params).iloc[0]
+
+        return KnnMutateResult(**result.to_dict())
+
+    def stats(
+        self,
+        G: GraphV2,
+        node_properties: str | list[str] | dict[str, str],
+        source_node_filter: str,
+        target_node_filter: str,
+        seed_target_nodes: bool | None = None,
+        top_k: int | None = None,
+        similarity_cutoff: float | None = None,
+        delta_threshold: float | None = None,
+        max_iterations: int | None = None,
+        sample_rate: float | None = None,
+        perturbation_rate: float | None = None,
+        random_joins: int | None = None,
+        random_seed: int | None = None,
+        initial_sampler: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+    ) -> KnnStatsResult:
+        config = ConfigConverter.convert_to_gds_config(
+            nodeProperties=node_properties,
+            sourceNodeFilter=source_node_filter,
+            targetNodeFilter=target_node_filter,
+            seedTargetNodes=seed_target_nodes,
+            topK=top_k,
+            similarityCutoff=similarity_cutoff,
+            deltaThreshold=delta_threshold,
+            maxIterations=max_iterations,
+            sampleRate=sample_rate,
+            perturbationRate=perturbation_rate,
+            randomJoins=random_joins,
+            randomSeed=random_seed,
+            initialSampler=initial_sampler,
+            relationshipTypes=relationship_types,
+            nodeLabels=node_labels,
+            sudo=sudo,
+            logProgress=log_progress,
+            username=username,
+            concurrency=concurrency,
+            jobId=job_id,
+        )
+        params = CallParameters(graph_name=G.name(), config=config)
+        params.ensure_job_id_in_config()
+
+        result = self._query_runner.call_procedure("gds.knn.filtered.stats", params=params, logging=log_progress).iloc[
+            0
+        ]
+
+        return KnnStatsResult(**result.to_dict())
+
+    def stream(
+        self,
+        G: GraphV2,
+        node_properties: str | list[str] | dict[str, str],
+        source_node_filter: str,
+        target_node_filter: str,
+        seed_target_nodes: bool | None = None,
+        top_k: int | None = None,
+        similarity_cutoff: float | None = None,
+        delta_threshold: float | None = None,
+        max_iterations: int | None = None,
+        sample_rate: float | None = None,
+        perturbation_rate: float | None = None,
+        random_joins: int | None = None,
+        random_seed: int | None = None,
+        initial_sampler: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+    ) -> DataFrame:
+        config = ConfigConverter.convert_to_gds_config(
+            nodeProperties=node_properties,
+            sourceNodeFilter=source_node_filter,
+            targetNodeFilter=target_node_filter,
+            seedTargetNodes=seed_target_nodes,
+            topK=top_k,
+            similarityCutoff=similarity_cutoff,
+            deltaThreshold=delta_threshold,
+            maxIterations=max_iterations,
+            sampleRate=sample_rate,
+            perturbationRate=perturbation_rate,
+            randomJoins=random_joins,
+            randomSeed=random_seed,
+            initialSampler=initial_sampler,
+            relationshipTypes=relationship_types,
+            nodeLabels=node_labels,
+            sudo=sudo,
+            logProgress=log_progress,
+            username=username,
+            concurrency=concurrency,
+            jobId=job_id,
+        )
+        params = CallParameters(graph_name=G.name(), config=config)
+        params.ensure_job_id_in_config()
+
+        return self._query_runner.call_procedure("gds.knn.filtered.stream", params=params, logging=log_progress)
+
+    def write(
+        self,
+        G: GraphV2,
+        write_relationship_type: str,
+        write_property: str,
+        node_properties: str | list[str] | dict[str, str],
+        source_node_filter: str,
+        target_node_filter: str,
+        seed_target_nodes: bool | None = None,
+        top_k: int | None = None,
+        similarity_cutoff: float | None = None,
+        delta_threshold: float | None = None,
+        max_iterations: int | None = None,
+        sample_rate: float | None = None,
+        perturbation_rate: float | None = None,
+        random_joins: int | None = None,
+        random_seed: int | None = None,
+        initial_sampler: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        write_concurrency: int | None = None,
+        write_to_result_store: bool | None = None,
+        sudo: bool | None = None,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+    ) -> KnnWriteResult:
+        config = ConfigConverter.convert_to_gds_config(
+            writeRelationshipType=write_relationship_type,
+            writeProperty=write_property,
+            nodeProperties=node_properties,
+            sourceNodeFilter=source_node_filter,
+            targetNodeFilter=target_node_filter,
+            seedTargetNodes=seed_target_nodes,
+            topK=top_k,
+            similarityCutoff=similarity_cutoff,
+            deltaThreshold=delta_threshold,
+            maxIterations=max_iterations,
+            sampleRate=sample_rate,
+            perturbationRate=perturbation_rate,
+            randomJoins=random_joins,
+            randomSeed=random_seed,
+            initialSampler=initial_sampler,
+            relationshipTypes=relationship_types,
+            nodeLabels=node_labels,
+            writeConcurrency=write_concurrency,
+            writeToResultStore=write_to_result_store,
+            sudo=sudo,
+            logProgress=log_progress,
+            username=username,
+            concurrency=concurrency,
+            jobId=job_id,
+        )
+        params = CallParameters(graph_name=G.name(), config=config)
+        params.ensure_job_id_in_config()
+
+        result = self._query_runner.call_procedure("gds.knn.filtered.write", params=params, logging=log_progress).iloc[
+            0
+        ]
+
+        return KnnWriteResult(**result.to_dict())
+
+    def estimate(
+        self,
+        G: GraphV2 | dict[str, Any],
+        node_properties: str | list[str] | dict[str, str],
+        source_node_filter: str,
+        target_node_filter: str,
+        seed_target_nodes: bool | None = None,
+        top_k: int | None = None,
+        similarity_cutoff: float | None = None,
+        delta_threshold: float | None = None,
+        max_iterations: int | None = None,
+        sample_rate: float | None = None,
+        perturbation_rate: float | None = None,
+        random_joins: int | None = None,
+        random_seed: int | None = None,
+        initial_sampler: Any | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool | None = None,
+        username: str | None = None,
+        concurrency: Any | None = None,
+    ) -> EstimationResult:
+        config = ConfigConverter.convert_to_gds_config(
+            nodeProperties=node_properties,
+            sourceNodeFilter=source_node_filter,
+            targetNodeFilter=target_node_filter,
+            seedTargetNodes=seed_target_nodes,
+            topK=top_k,
+            similarityCutoff=similarity_cutoff,
+            deltaThreshold=delta_threshold,
+            maxIterations=max_iterations,
+            sampleRate=sample_rate,
+            perturbationRate=perturbation_rate,
+            randomJoins=random_joins,
+            randomSeed=random_seed,
+            initialSampler=initial_sampler,
+            relationshipTypes=relationship_types,
+            nodeLabels=node_labels,
+            sudo=sudo,
+            username=username,
+            concurrency=concurrency,
+        )
+
+        return estimate_algorithm("gds.knn.filtered.stats.estimate", self._query_runner, G, config)
