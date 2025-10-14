@@ -59,6 +59,7 @@ def test_pagerank_stats(pagerank_endpoints: PageRankArrowEndpoints, sample_graph
     assert result.compute_millis >= 0
     assert result.pre_processing_millis >= 0
     assert result.post_processing_millis >= 0
+    assert "writeToResultStore" not in result.configuration
     assert "p50" in result.centrality_distribution
 
 
