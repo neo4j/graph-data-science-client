@@ -35,7 +35,7 @@ class NodePropertyEndpoints:
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress)
         result = JobClient.get_summary(self._arrow_client, job_id)
-        if config := result.get("configuration"):
+        if config := result.get("configuration", None):
             self._drop_write_internals(config)
         return result
 
@@ -52,7 +52,7 @@ class NodePropertyEndpoints:
         computation_result["nodePropertiesWritten"] = mutate_result.node_properties_written
         computation_result["mutateMillis"] = mutate_result.mutate_millis
 
-        if config := computation_result.get("configuration"):
+        if (config := computation_result.get("configuration", None)) is not None:
             config["mutateProperty"] = mutate_property
             self._drop_write_internals(config)
 
