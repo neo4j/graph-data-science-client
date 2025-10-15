@@ -64,7 +64,6 @@ def test_knn_stats(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> N
     assert "p50" in result.similarity_distribution
 
 
-@pytest.mark.skip(reason="SEGFAULT for custom metadata. tracked in GDSA-312")
 def test_knn_stream(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test KNN stream operation."""
     result_df = knn_endpoints.stream(
@@ -74,7 +73,7 @@ def test_knn_stream(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> 
     )
 
     assert set(result_df.columns) == {"node1", "node2", "similarity"}
-    assert len(result_df) == 2
+    assert len(result_df) == 8
 
 
 def test_knn_mutate(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> None:

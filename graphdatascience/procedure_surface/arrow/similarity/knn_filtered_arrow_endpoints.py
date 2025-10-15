@@ -13,6 +13,7 @@ from graphdatascience.procedure_surface.api.similarity.knn_endpoints import (
 )
 from graphdatascience.procedure_surface.api.similarity.knn_filtered_endpoints import KnnFilteredEndpoints
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
+from graphdatascience.procedure_surface.arrow.stream_result_mapper import rename_similarity_stream_result
 
 
 class KnnFilteredArrowEndpoints(KnnFilteredEndpoints):
@@ -154,7 +155,34 @@ class KnnFilteredArrowEndpoints(KnnFilteredEndpoints):
         concurrency: Any | None = None,
         job_id: Any | None = None,
     ) -> DataFrame:
-        raise NotImplementedError("Filtered KNN stream endpoint is not available via Arrow")
+        config = self._endpoints_helper.create_base_config(
+            G,
+            nodeProperties=node_properties,
+            sourceNodeFilter=source_node_filter,
+            targetNodeFilter=target_node_filter,
+            seedTargetNodes=seed_target_nodes,
+            nodeLabels=node_labels,
+            relationshipTypes=relationship_types,
+            similarityCutoff=similarity_cutoff,
+            perturbationRate=perturbation_rate,
+            deltaThreshold=delta_threshold,
+            sampleRate=sample_rate,
+            randomJoins=random_joins,
+            initialSampler=initial_sampler,
+            maxIterations=max_iterations,
+            topK=top_k,
+            randomSeed=random_seed,
+            concurrency=concurrency,
+            jobId=job_id,
+            logProgress=log_progress,
+            sudo=sudo,
+            username=username,
+        )
+
+        result = self._endpoints_helper.run_job_and_stream("v2/similarity.knn.filtered", G, config)
+        rename_similarity_stream_result(result)
+
+        return result
 
     def write(
         self,

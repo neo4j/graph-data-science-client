@@ -15,6 +15,7 @@ from graphdatascience.procedure_surface.api.similarity.knn_endpoints import (
     KnnWriteResult,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
+from graphdatascience.procedure_surface.arrow.stream_result_mapper import rename_similarity_stream_result
 
 
 class KnnArrowEndpoints(KnnEndpoints):
@@ -145,29 +146,30 @@ class KnnArrowEndpoints(KnnEndpoints):
         concurrency: Any | None = None,
         job_id: Any | None = None,
     ) -> DataFrame:
-        # config = self._endpoints_helper.create_base_config(
-        #     G,
-        #     nodeProperties=node_properties,
-        #     topK=top_k,
-        #     similarityCutoff=similarity_cutoff,
-        #     deltaThreshold=delta_threshold,
-        #     maxIterations=max_iterations,
-        #     sampleRate=sample_rate,
-        #     perturbationRate=perturbation_rate,
-        #     randomJoins=random_joins,
-        #     randomSeed=random_seed,
-        #     initialSampler=initial_sampler,
-        #     relationshipTypes=relationship_types,
-        #     nodeLabels=node_labels,
-        #     sudo=sudo,
-        #     logProgress=log_progress,
-        #     username=username,
-        #     concurrency=concurrency,
-        #     jobId=job_id,
-        # )
-        # return self._endpoints_helper.run_job_and_stream("v2/similarity.knn", G, config)
+        config = self._endpoints_helper.create_base_config(
+            G,
+            nodeProperties=node_properties,
+            topK=top_k,
+            similarityCutoff=similarity_cutoff,
+            deltaThreshold=delta_threshold,
+            maxIterations=max_iterations,
+            sampleRate=sample_rate,
+            perturbationRate=perturbation_rate,
+            randomJoins=random_joins,
+            randomSeed=random_seed,
+            initialSampler=initial_sampler,
+            relationshipTypes=relationship_types,
+            nodeLabels=node_labels,
+            sudo=sudo,
+            logProgress=log_progress,
+            username=username,
+            concurrency=concurrency,
+            jobId=job_id,
+        )
+        result = self._endpoints_helper.run_job_and_stream("v2/similarity.knn", G, config)
+        rename_similarity_stream_result(result)
 
-        raise NotImplementedError()
+        return result
 
     def write(
         self,
