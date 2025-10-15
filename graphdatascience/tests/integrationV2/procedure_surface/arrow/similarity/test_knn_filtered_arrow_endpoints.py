@@ -49,7 +49,7 @@ def knn_filtered_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[
     yield KnnFilteredArrowEndpoints(arrow_client)
 
 
-def test_stats(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_filtered_stats(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
     result = knn_filtered_endpoints.stats(
         sample_graph,
         node_properties="prop",
@@ -70,10 +70,7 @@ def test_stats(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: 
     assert result.configuration is not None
 
 
-@pytest.mark.skip(reason="SEGFAULT for custom metadata. tracked in GDSA-312")
-def test_stream_raises_not_implemented(
-    knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2
-) -> None:
+def test_knn_filtered_stream(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
     result_df = knn_filtered_endpoints.stream(
         G=sample_graph,
         node_properties=["prop"],
@@ -83,10 +80,10 @@ def test_stream_raises_not_implemented(
     )
 
     assert set(result_df.columns) == {"node1", "node2", "similarity"}
-    assert len(result_df) == 2
+    assert len(result_df) == 4
 
 
-def test_mutate(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_filtered_mutate(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
     result = knn_filtered_endpoints.mutate(
         sample_graph,
         node_properties="prop",
@@ -110,7 +107,9 @@ def test_mutate(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph:
     assert result.configuration is not None
 
 
-def test_knn_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
+def test_knn_filtered_write(
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
+) -> None:
     endpoints = KnnFilteredArrowEndpoints(
         arrow_client, write_back_client=RemoteWriteBackClient(arrow_client, query_runner), show_progress=False
     )
@@ -139,7 +138,7 @@ def test_knn_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRu
     assert result.configuration is not None
 
 
-def test_estimate(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_filtered_estimate(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
     result = knn_filtered_endpoints.estimate(
         sample_graph,
         node_properties="prop",
