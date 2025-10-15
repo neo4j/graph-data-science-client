@@ -15,8 +15,6 @@ from graphdatascience.procedure_surface.api.similarity.knn_endpoints import (
 
 
 class KnnFilteredEndpoints(ABC):
-    """Base class for Filtered K-Nearest Neighbors endpoints."""
-
     @abstractmethod
     def mutate(
         self,
@@ -44,7 +42,65 @@ class KnnFilteredEndpoints(ABC):
         concurrency: Any | None = None,
         job_id: Any | None = None,
     ) -> KnnMutateResult:
-        """Run filtered K-Nearest Neighbors in mutate mode."""
+        """
+        Runs the Filtered K-Nearest Neighbors algorithm and stores the results as new relationships in the graph catalog.
+
+        The Filtered K-Nearest Neighbors algorithm computes a distance value for node pairs in the graph with customizable source and target node filters, creating new relationships between each node and its k nearest neighbors within the filtered subset.
+
+        Parameters
+        ----------
+        G : GraphV2
+            The graph to run the algorithm on
+        mutate_relationship_type : str
+            The relationship type to use for the new relationships.
+        mutate_property : str
+            The relationship property to store the similarity score in.
+        node_properties : str | list[str] | dict[str, str]
+            The node properties to use for similarity computation.
+        source_node_filter : str
+            A Cypher expression to filter which nodes can be sources in the similarity computation.
+        target_node_filter : str
+            A Cypher expression to filter which nodes can be targets in the similarity computation.
+        seed_target_nodes : bool | None, default=None
+            Whether to use a seeded approach for target node selection.
+        top_k : int | None, default=None
+            The number of nearest neighbors to find for each node.
+        similarity_cutoff : float | None, default=None
+            The threshold for similarity scores.
+        delta_threshold : float | None, default=None
+            The threshold for convergence assessment.
+        max_iterations : int | None, default=None
+            The maximum number of iterations to run.
+        sample_rate : float | None, default=None
+            The sampling rate for the algorithm.
+        perturbation_rate : float | None, default=None
+            The rate at which to perturb the similarity graph.
+        random_joins : int | None, default=None
+            The number of random joins to perform.
+        random_seed : int | None, default=None
+            The seed for the random number generator.
+        initial_sampler : Any | None, default=None
+            The initial sampling strategy.
+        relationship_types : list[str] | None, default=None
+            Filter on relationship types.
+        node_labels : list[str] | None, default=None
+            Filter on node labels.
+        sudo : bool | None, default=None
+            Run the algorithm with elevated privileges.
+        log_progress : bool, default=True
+            Whether to log progress.
+        username : str | None, default=None
+            Username for the operation.
+        concurrency : Any | None, default=None
+            Concurrency configuration.
+        job_id : Any | None, default=None
+            Job ID for the operation.
+
+        Returns
+        -------
+        KnnMutateResult
+            Object containing metadata from the execution.
+        """
         ...
 
     @abstractmethod
@@ -72,7 +128,61 @@ class KnnFilteredEndpoints(ABC):
         concurrency: Any | None = None,
         job_id: Any | None = None,
     ) -> KnnStatsResult:
-        """Run filtered K-Nearest Neighbors in stats mode."""
+        """
+        Runs the Filtered K-Nearest Neighbors algorithm and returns execution statistics.
+
+        The Filtered K-Nearest Neighbors algorithm computes a distance value for node pairs in the graph with customizable source and target node filters, creating new relationships between each node and its k nearest neighbors within the filtered subset.
+
+        Parameters
+        ----------
+        G : GraphV2
+            The graph to run the algorithm on
+        node_properties : str | list[str] | dict[str, str]
+            The node properties to use for similarity computation.
+        source_node_filter : str
+            A Cypher expression to filter which nodes can be sources in the similarity computation.
+        target_node_filter : str
+            A Cypher expression to filter which nodes can be targets in the similarity computation.
+        seed_target_nodes : bool | None, default=None
+            Whether to use a seeded approach for target node selection.
+        top_k : int | None, default=None
+            The number of nearest neighbors to find for each node.
+        similarity_cutoff : float | None, default=None
+            The threshold for similarity scores.
+        delta_threshold : float | None, default=None
+            The threshold for convergence assessment.
+        max_iterations : int | None, default=None
+            The maximum number of iterations to run.
+        sample_rate : float | None, default=None
+            The sampling rate for the algorithm.
+        perturbation_rate : float | None, default=None
+            The rate at which to perturb the similarity graph.
+        random_joins : int | None, default=None
+            The number of random joins to perform.
+        random_seed : int | None, default=None
+            The seed for the random number generator.
+        initial_sampler : Any | None, default=None
+            The initial sampling strategy.
+        relationship_types : list[str] | None, default=None
+            Filter on relationship types.
+        node_labels : list[str] | None, default=None
+            Filter on node labels.
+        sudo : bool | None, default=None
+            Run the algorithm with elevated privileges.
+        log_progress : bool, default=True
+            Whether to log progress.
+        username : str | None, default=None
+            Username for the operation.
+        concurrency : Any | None, default=None
+            Concurrency configuration.
+        job_id : Any | None, default=None
+            Job ID for the operation.
+
+        Returns
+        -------
+        KnnStatsResult
+            Object containing execution statistics and algorithm-specific results.
+        """
         ...
 
     @abstractmethod
@@ -100,7 +210,61 @@ class KnnFilteredEndpoints(ABC):
         concurrency: Any | None = None,
         job_id: Any | None = None,
     ) -> DataFrame:
-        """Run filtered K-Nearest Neighbors in stream mode."""
+        """
+        Runs the Filtered K-Nearest Neighbors algorithm and returns the result as a DataFrame.
+
+        The Filtered K-Nearest Neighbors algorithm computes a distance value for node pairs in the graph with customizable source and target node filters, creating new relationships between each node and its k nearest neighbors within the filtered subset.
+
+        Parameters
+        ----------
+        G : GraphV2
+            The graph to run the algorithm on
+        node_properties : str | list[str] | dict[str, str]
+            The node properties to use for similarity computation.
+        source_node_filter : str
+            A Cypher expression to filter which nodes can be sources in the similarity computation.
+        target_node_filter : str
+            A Cypher expression to filter which nodes can be targets in the similarity computation.
+        seed_target_nodes : bool | None, default=None
+            Whether to use a seeded approach for target node selection.
+        top_k : int | None, default=None
+            The number of nearest neighbors to find for each node.
+        similarity_cutoff : float | None, default=None
+            The threshold for similarity scores.
+        delta_threshold : float | None, default=None
+            The threshold for convergence assessment.
+        max_iterations : int | None, default=None
+            The maximum number of iterations to run.
+        sample_rate : float | None, default=None
+            The sampling rate for the algorithm.
+        perturbation_rate : float | None, default=None
+            The rate at which to perturb the similarity graph.
+        random_joins : int | None, default=None
+            The number of random joins to perform.
+        random_seed : int | None, default=None
+            The seed for the random number generator.
+        initial_sampler : Any | None, default=None
+            The initial sampling strategy.
+        relationship_types : list[str] | None, default=None
+            Filter on relationship types.
+        node_labels : list[str] | None, default=None
+            Filter on node labels.
+        sudo : bool | None, default=None
+            Run the algorithm with elevated privileges.
+        log_progress : bool, default=True
+            Whether to log progress.
+        username : str | None, default=None
+            Username for the operation.
+        concurrency : Any | None, default=None
+            Concurrency configuration.
+        job_id : Any | None, default=None
+            Job ID for the operation.
+
+        Returns
+        -------
+        DataFrame
+            The similarity results as a DataFrame with columns 'node1', 'node2', and 'similarity'.
+        """
         ...
 
     @abstractmethod
@@ -132,7 +296,69 @@ class KnnFilteredEndpoints(ABC):
         concurrency: Any | None = None,
         job_id: Any | None = None,
     ) -> KnnWriteResult:
-        """Run filtered K-Nearest Neighbors in write mode."""
+        """
+        Runs the Filtered K-Nearest Neighbors algorithm and writes the results back to the database.
+
+        The Filtered K-Nearest Neighbors algorithm computes a distance value for node pairs in the graph with customizable source and target node filters, creating new relationships between each node and its k nearest neighbors within the filtered subset.
+
+        Parameters
+        ----------
+        G : GraphV2
+            The graph to run the algorithm on
+        write_relationship_type : str
+            The relationship type to use for the new relationships.
+        write_property : str
+            The relationship property to store the similarity score in.
+        node_properties : str | list[str] | dict[str, str]
+            The node properties to use for similarity computation.
+        source_node_filter : str
+            A Cypher expression to filter which nodes can be sources in the similarity computation.
+        target_node_filter : str
+            A Cypher expression to filter which nodes can be targets in the similarity computation.
+        seed_target_nodes : bool | None, default=None
+            Whether to use a seeded approach for target node selection.
+        top_k : int | None, default=None
+            The number of nearest neighbors to find for each node.
+        similarity_cutoff : float | None, default=None
+            The threshold for similarity scores.
+        delta_threshold : float | None, default=None
+            The threshold for convergence assessment.
+        max_iterations : int | None, default=None
+            The maximum number of iterations to run.
+        sample_rate : float | None, default=None
+            The sampling rate for the algorithm.
+        perturbation_rate : float | None, default=None
+            The rate at which to perturb the similarity graph.
+        random_joins : int | None, default=None
+            The number of random joins to perform.
+        random_seed : int | None, default=None
+            The seed for the random number generator.
+        initial_sampler : Any | None, default=None
+            The initial sampling strategy.
+        relationship_types : list[str] | None, default=None
+            Filter on relationship types.
+        node_labels : list[str] | None, default=None
+            Filter on node labels.
+        write_concurrency : int | None, default=None
+            Concurrency for writing results.
+        write_to_result_store : bool | None, default=None
+            Whether to write results to the result store.
+        sudo : bool | None, default=None
+            Run the algorithm with elevated privileges.
+        log_progress : bool, default=True
+            Whether to log progress.
+        username : str | None, default=None
+            Username for the operation.
+        concurrency : Any | None, default=None
+            Concurrency configuration.
+        job_id : Any | None, default=None
+            Job ID for the operation.
+
+        Returns
+        -------
+        KnnWriteResult
+            Object containing metadata from the execution.
+        """
         ...
 
     @abstractmethod
@@ -158,58 +384,55 @@ class KnnFilteredEndpoints(ABC):
         username: str | None = None,
         concurrency: Any | None = None,
     ) -> EstimationResult:
-        """Estimate filtered K-Nearest Neighbors execution requirements.
+        """
+        Estimates the memory requirements for running the Filtered K-Nearest Neighbors algorithm.
+
+        The Filtered K-Nearest Neighbors algorithm computes a distance value for node pairs in the graph with customizable source and target node filters, creating new relationships between each node and its k nearest neighbors within the filtered subset.
 
         Parameters
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on.
-        node_properties : str | list[str]
+        node_properties : str | list[str] | dict[str, str]
             The node properties to use for similarity computation.
-        mutate_property : str
-            The relationship property to store the similarity score in.
-        mutate_relationship_type : str
-            The relationship type to use for the new relationships.
-        source_node_filter : str | None, default=None
+        source_node_filter : str
             A Cypher expression to filter which nodes can be sources in the similarity computation.
-        target_node_filter : str | None, default=None
+        target_node_filter : str
             A Cypher expression to filter which nodes can be targets in the similarity computation.
         seed_target_nodes : bool | None, default=None
             Whether to use a seeded approach for target node selection.
-        similarity_cutoff : float | None, default=None
-            The threshold for similarity scores.
-        perturbation_rate : float | None, default=None
-            The rate at which to perturb the similarity graph.
-        delta_threshold : float | None, default=None
-            The threshold for convergence assessment.
-        sample_rate : float | None, default=None
-            The sampling rate for the algorithm.
-        random_joins : int | None, default=None
-            The number of random joins to perform.
-        initial_sampler : str | None, default=None
-            The initial sampling strategy.
-        max_iterations : int | None, default=None
-            The maximum number of iterations to run.
         top_k : int | None, default=None
             The number of nearest neighbors to find for each node.
+        similarity_cutoff : float | None, default=None
+            The threshold for similarity scores.
+        delta_threshold : float | None, default=None
+            The threshold for convergence assessment.
+        max_iterations : int | None, default=None
+            The maximum number of iterations to run.
+        sample_rate : float | None, default=None
+            The sampling rate for the algorithm.
+        perturbation_rate : float | None, default=None
+            The rate at which to perturb the similarity graph.
+        random_joins : int | None, default=None
+            The number of random joins to perform.
         random_seed : int | None, default=None
             The seed for the random number generator.
-        concurrency : int | None, default=None
-            Concurrency configuration.
-        job_id : str | None, default=None
-            Job ID for the operation.
-        log_progress : bool | None, default=None
-            Whether to log progress.
+        initial_sampler : Any | None, default=None
+            The initial sampling strategy.
+        relationship_types : list[str] | None, default=None
+            Filter on relationship types.
+        node_labels : list[str] | None, default=None
+            Filter on node labels.
         sudo : bool | None, default=None
             Run the algorithm with elevated privileges.
         username : str | None, default=None
             Username for the operation.
-        **kwargs : Any
-            Additional parameters.
+        concurrency : Any | None, default=None
+            Concurrency configuration.
 
         Returns
         -------
-        KnnMutateResult
-            Object containing metadata from the execution.
+        EstimationResult
+            Object containing the estimated memory requirements.
         """
         ...

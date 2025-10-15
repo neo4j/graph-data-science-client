@@ -70,17 +70,20 @@ def test_stats(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: 
     assert result.configuration is not None
 
 
+@pytest.mark.skip(reason="SEGFAULT for custom metadata. tracked in GDSA-312")
 def test_stream_raises_not_implemented(
     knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2
 ) -> None:
-    with pytest.raises(NotImplementedError, match="Filtered KNN stream endpoint is not available via Arrow"):
-        knn_filtered_endpoints.stream(
-            sample_graph,
-            node_properties="prop",
-            top_k=2,
-            source_node_filter="SourceNode",
-            target_node_filter="TargetNode",
-        )
+    result_df = knn_filtered_endpoints.stream(
+        G=sample_graph,
+        node_properties=["prop"],
+        top_k=2,
+        source_node_filter="SourceNode",
+        target_node_filter="TargetNode",
+    )
+
+    assert set(result_df.columns) == {"node1", "node2", "similarity"}
+    assert len(result_df) == 2
 
 
 def test_mutate(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
