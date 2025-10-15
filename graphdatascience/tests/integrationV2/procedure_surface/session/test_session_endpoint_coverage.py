@@ -9,8 +9,6 @@ from graphdatascience.session.aura_graph_data_science import AuraGraphDataScienc
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
 MISSING_ALGO_ENDPOINTS = {
-    "community.hdbscan",
-    "community.hdbscan.estimate",
     "similarity.knn.filtered",
     "similarity.knn.filtered.estimate",
     "similarity.nodeSimilarity.filtered",
