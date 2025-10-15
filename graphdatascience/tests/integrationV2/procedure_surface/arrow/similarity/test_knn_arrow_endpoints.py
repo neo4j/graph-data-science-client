@@ -73,8 +73,7 @@ def test_knn_stream(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> 
         top_k=2,
     )
 
-    # TODO the column names dont match the ones in the cypher endpoint
-    assert set(result_df.columns) == {"sourceNodeId", "targetNodeId", "relationshipType", "similarity"}
+    assert set(result_df.columns) == {"node1", "node2", "similarity"}
     assert len(result_df) == 2
 
 
