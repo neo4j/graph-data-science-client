@@ -79,7 +79,7 @@ class GraphSagePredictEndpoints(ABC):
         job_id: Any | None = None,
         batch_size: int | None = None,
     ) -> GraphSageWriteResult:
-        """ "
+        """
         Uses a pre-trained GraphSage model to predict embeddings for a graph and writes the results back to the database.
 
         Parameters
@@ -130,7 +130,7 @@ class GraphSagePredictEndpoints(ABC):
         job_id: Any | None = None,
         batch_size: int | None = None,
     ) -> GraphSageMutateResult:
-        """ "
+        """
         Uses a pre-trained GraphSage model to predict embeddings for a graph and writes the results back to the graph as a node property.
 
         Parameters
