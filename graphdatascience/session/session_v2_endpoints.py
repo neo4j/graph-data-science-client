@@ -1,6 +1,7 @@
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import CliqueCountingEndpoints
+from graphdatascience.procedure_surface.api.community.hdbscan_endpoints import HdbscanEndpoints
 from graphdatascience.procedure_surface.api.community.kmeans_endpoints import KMeansEndpoints
 from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints import LabelPropagationEndpoints
 from graphdatascience.procedure_surface.api.community.leiden_endpoints import LeidenEndpoints
@@ -31,6 +32,7 @@ from graphdatascience.procedure_surface.arrow.centrality.pagerank_arrow_endpoint
 from graphdatascience.procedure_surface.arrow.community.clique_counting_arrow_endpoints import (
     CliqueCountingArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.community.hdbscan_arrow_endpoints import HdbscanArrowEndpoints
 from graphdatascience.procedure_surface.arrow.community.k1coloring_arrow_endpoints import K1ColoringArrowEndpoints
 from graphdatascience.procedure_surface.arrow.community.kcore_arrow_endpoints import KCoreArrowEndpoints
 from graphdatascience.procedure_surface.arrow.community.kmeans_arrow_endpoints import KMeansArrowEndpoints
@@ -142,6 +144,10 @@ class SessionV2Endpoints:
     @property
     def hash_gnn(self) -> HashGNNArrowEndpoints:
         return HashGNNArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
+
+    @property
+    def hdbscan(self) -> HdbscanEndpoints:
+        return HdbscanArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def influence_maximization_celf(self) -> CelfArrowEndpoints:
