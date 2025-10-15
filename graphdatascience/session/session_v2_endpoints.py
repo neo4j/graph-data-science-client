@@ -13,6 +13,7 @@ from graphdatascience.procedure_surface.api.community.modularity_optimization_en
 )
 from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaEndpoints
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
 from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.articlerank_arrow_endpoints import ArticleRankArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.articulationpoints_arrow_endpoints import (
@@ -122,15 +123,14 @@ class SessionV2Endpoints:
         return FastRPArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
-    def graphsage_predict(self) -> GraphSagePredictArrowEndpoints:
-        return GraphSagePredictArrowEndpoints(
-            self._arrow_client, self._write_back_client, show_progress=self._show_progress
-        )
-
-    @property
-    def graphsage_train(self) -> GraphSageTrainArrowEndpoints:
-        return GraphSageTrainArrowEndpoints(
-            self._arrow_client, self._write_back_client, show_progress=self._show_progress
+    def graph_sage(self) -> GraphSageEndpoints:
+        return GraphSageEndpoints(
+            train_endpoints=GraphSageTrainArrowEndpoints(
+                self._arrow_client, self._write_back_client, show_progress=self._show_progress
+            ),
+            predict_endpoints=GraphSagePredictArrowEndpoints(
+                self._arrow_client, self._write_back_client, show_progress=self._show_progress
+            ),
         )
 
     @property
@@ -165,6 +165,7 @@ class SessionV2Endpoints:
             self._arrow_client, self._write_back_client, show_progress=self._show_progress
         )
 
+    @property
     def leiden(self) -> LeidenEndpoints:
         return LeidenArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
