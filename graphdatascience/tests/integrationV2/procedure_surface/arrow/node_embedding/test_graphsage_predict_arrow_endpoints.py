@@ -57,7 +57,7 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
 
 @pytest.fixture
 def gs_model(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> Generator[GraphSageModelV2, None, None]:
-    model, _ = GraphSageTrainArrowEndpoints(arrow_client, None).train(
+    model, _ = GraphSageTrainArrowEndpoints(arrow_client, None)(
         G=sample_graph,
         model_name="gs-model",
         feature_properties=["feature"],
@@ -87,7 +87,7 @@ def test_mutate(gs_model: GraphSageModelV2, sample_graph: GraphV2) -> None:
 
 @pytest.mark.db_integration
 def test_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
-    model, _ = GraphSageTrainArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner)).train(
+    model, _ = GraphSageTrainArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))(
         G=db_graph,
         model_name="gs-model-write",
         feature_properties=["feature"],

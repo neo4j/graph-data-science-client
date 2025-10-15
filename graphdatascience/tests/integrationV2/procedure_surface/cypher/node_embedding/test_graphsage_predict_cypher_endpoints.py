@@ -40,7 +40,7 @@ def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
 
 @pytest.fixture
 def gs_model(query_runner: QueryRunner, sample_graph: GraphV2) -> Generator[GraphSageModelV2, None, None]:
-    model, _ = GraphSageTrainCypherEndpoints(query_runner).train(
+    model, _ = GraphSageTrainCypherEndpoints(query_runner)(
         G=sample_graph,
         model_name="gs-model",
         feature_properties=["feature"],

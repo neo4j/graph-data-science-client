@@ -46,7 +46,7 @@ def test_graphsage_train(
     graphsage_endpoints: GraphSageTrainCypherEndpoints, sample_graph_with_features: GraphV2
 ) -> None:
     """Test GraphSage train operation."""
-    model, train_result = graphsage_endpoints.train(
+    model, train_result = graphsage_endpoints(
         G=sample_graph_with_features,
         model_name="testModel",
         feature_properties=["feature"],
@@ -59,3 +59,25 @@ def test_graphsage_train(
     assert train_result.model_info is not None
     assert train_result.configuration is not None
     assert model.name() == "testModel"
+
+
+def test_graphsage_train_estimate(
+    graphsage_endpoints: GraphSageTrainCypherEndpoints, sample_graph_with_features: GraphV2
+) -> None:
+    """Test GraphSage estimate operation."""
+    result = graphsage_endpoints.estimate(
+        G=sample_graph_with_features,
+        model_name="testModel",
+        feature_properties=["feature"],
+        embedding_dimension=1,
+        epochs=1,
+        max_iterations=1,
+    )
+
+    assert result.node_count == 3
+    assert result.relationship_count == 2
+    assert "KiB" in result.required_memory
+    assert result.bytes_min > 0
+    assert result.bytes_max > 0
+    assert result.heap_percentage_min > 0
+    assert result.heap_percentage_max > 0
