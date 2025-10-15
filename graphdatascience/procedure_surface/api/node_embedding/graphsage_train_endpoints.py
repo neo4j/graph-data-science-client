@@ -5,16 +5,13 @@ from typing import Any
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
 
 
 class GraphSageTrainEndpoints(ABC):
-    """
-    Abstract base class defining the API for the GraphSage algorithm.
-    """
-
     @abstractmethod
-    def train(
+    def __call__(
         self,
         G: GraphV2,
         model_name: str,
@@ -44,9 +41,46 @@ class GraphSageTrainEndpoints(ABC):
         batch_size: int | None = None,
         relationship_weight_property: str | None = None,
         random_seed: Any | None = None,
-    ) -> tuple[GraphSageModelV2, GraphSageTrainResult]:
+    ) -> tuple[GraphSageModelV2, GraphSageTrainResult]: ...
+
+    @abstractmethod
+    def estimate(
+        self,
+        G: GraphV2,
+        model_name: str,
+        feature_properties: list[str],
+        *,
+        activation_function: Any | None = None,
+        negative_sample_weight: int | None = None,
+        embedding_dimension: int | None = None,
+        tolerance: float | None = None,
+        learning_rate: float | None = None,
+        max_iterations: int | None = None,
+        sample_sizes: list[int] | None = None,
+        aggregator: Any | None = None,
+        penalty_l2: float | None = None,
+        search_depth: int | None = None,
+        epochs: int | None = None,
+        projected_feature_dimension: int | None = None,
+        batch_sampling_ratio: float | None = None,
+        store_model_to_disk: bool | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        username: str | None = None,
+        log_progress: bool = True,
+        sudo: bool | None = None,
+        concurrency: Any | None = None,
+        job_id: Any | None = None,
+        batch_size: int | None = None,
+        relationship_weight_property: str | None = None,
+        random_seed: Any | None = None,
+    ) -> EstimationResult:
         """
-        Trains a GraphSage model on the given graph.
+        Estimates memory requirements and other statistics for training a GraphSage model.
+
+        This method provides memory estimation for the GraphSage training algorithm without
+        actually executing the training. It helps determine the computational requirements
+        before running the actual training procedure.
 
         Parameters
         ----------
@@ -84,9 +118,9 @@ class GraphSageTrainEndpoints(ABC):
             Ratio of nodes to sample for each training batch
         store_model_to_disk : bool | None, default=None
             Whether to persist the model to disk
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str] | None = None
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str] | None = None
             The node labels used to select nodes for this algorithm run
         username : str | None = None
             The username to attribute the procedure run to
@@ -107,8 +141,8 @@ class GraphSageTrainEndpoints(ABC):
 
         Returns
         -------
-        GraphSageModelV2
-            Trained model
+        EstimationResult
+            The estimation result containing memory requirements and other statistics
         """
 
 

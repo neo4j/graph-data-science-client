@@ -35,7 +35,7 @@ def graphsage_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[Gra
 
 def test_graphsage_train(graphsage_endpoints: GraphSageTrainArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test GraphSage train operation."""
-    model, result = graphsage_endpoints.train(
+    model, result = graphsage_endpoints(
         G=sample_graph,
         model_name="testGraphSageModel",
         feature_properties=["feature"],
@@ -55,3 +55,24 @@ def test_graphsage_train(graphsage_endpoints: GraphSageTrainArrowEndpoints, samp
 
     # Clean up the model
     model.drop()
+
+
+def test_graphsage_train_estimate(graphsage_endpoints: GraphSageTrainArrowEndpoints, sample_graph: GraphV2) -> None:
+    """Test GraphSage estimate operation."""
+    result = graphsage_endpoints.estimate(
+        G=sample_graph,
+        model_name="testGraphSageModel",
+        feature_properties=["feature"],
+        embedding_dimension=1,
+        epochs=1,
+        max_iterations=1,
+    )
+
+    # Check the result
+    assert result.node_count == 4
+    assert result.relationship_count == 4
+    assert "KiB" in result.required_memory
+    assert result.bytes_min > 0
+    assert result.bytes_max > 0
+    assert result.heap_percentage_min > 0
+    assert result.heap_percentage_max > 0
