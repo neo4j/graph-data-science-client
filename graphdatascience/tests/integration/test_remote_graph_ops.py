@@ -1,5 +1,6 @@
 from typing import Generator
 
+import neo4j
 import pytest
 
 from graphdatascience.server_version.server_version import ServerVersion
@@ -79,8 +80,11 @@ def test_remote_projection_and_writeback_custom_database_name(gds_with_cloud_set
             nodes_with_wcc_default_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
         else:
             # we get a warning because property wcc doesn't exist in the database -- which is good!
-            with pytest.warns(RuntimeWarning):
+            if neo4j.__version__.startswith("6."):
                 nodes_with_wcc_default_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
+            else:
+                with pytest.warns(RuntimeWarning):
+                    nodes_with_wcc_default_db = gds_with_cloud_setup.run_cypher(count_wcc_nodes_query).squeeze()
         assert nodes_with_wcc_default_db == 0
     finally:
         gds_with_cloud_setup.run_cypher("DROP DATABASE $dbName IF EXISTS", {"dbName": OTHER_DB})
@@ -108,22 +112,28 @@ def test_remote_write_back_page_rank(gds_with_cloud_setup: AuraGraphDataScience)
     assert result["nodePropertiesWritten"] == 3
 
 
+@pytest.mark.skip(reason="Built-in remote-ops are bugged in Neo4j <2025.10")
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_node_similarity(gds_with_cloud_setup: AuraGraphDataScience) -> None:
-    G, result = gds_with_cloud_setup.graph.project(GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
+    G, _ = gds_with_cloud_setup.v2.graph.project(GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
 
-    result = gds_with_cloud_setup.nodeSimilarity.write(
-        G, writeRelationshipType="SIMILAR", writeProperty="score", similarityCutoff=0
+    gds_with_cloud_setup.nodeSimilarity.mutate(
+        gds_with_cloud_setup.graph.get(G.name()),
+        mutateRelationshipType="SIMILAR",
+        mutateProperty="score",
+        similarityCutoff=0,
     )
 
-    assert result["relationshipsWritten"] == 2
+    result = gds_with_cloud_setup.v2.graph.relationships.write(G, "SIMILAR", ["score"])
+
+    assert result.properties_written == 2
 
 
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_node_properties(gds_with_cloud_setup: AuraGraphDataScience) -> None:
-    G, result = gds_with_cloud_setup.graph.project(GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
+    G, _ = gds_with_cloud_setup.graph.project(GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
     result = gds_with_cloud_setup.pageRank.mutate(G, mutateProperty="score")
     result = gds_with_cloud_setup.graph.nodeProperties.write(G, node_properties=["score"])
 
@@ -157,6 +167,7 @@ def test_remote_write_back_node_properties_with_select_labels(gds_with_cloud_set
     assert result["propertiesWritten"] == 1
 
 
+@pytest.mark.skip(reason="Built-in remote-ops are bugged in Neo4j <2025.10")
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_node_label(gds_with_cloud_setup: AuraGraphDataScience) -> None:
@@ -166,30 +177,33 @@ def test_remote_write_back_node_label(gds_with_cloud_setup: AuraGraphDataScience
     assert result["nodeLabelsWritten"] == 3
 
 
+@pytest.mark.skip(reason="Built-in remote-ops are bugged in Neo4j <2025.10")
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_relationship_topology(gds_with_cloud_setup: AuraGraphDataScience) -> None:
-    G, result = gds_with_cloud_setup.graph.project(
+    G, _ = gds_with_cloud_setup.v2.graph.project(
         GRAPH_NAME, "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m, {relationshipType: 'FOO'})"
     )
-    result = gds_with_cloud_setup.graph.relationship.write(G, "FOO")
+    result = gds_with_cloud_setup.v2.graph.relationships.write(G, "FOO")
 
-    assert result["relationshipsWritten"] == 4
+    assert result.relationships_written == 4
 
 
+@pytest.mark.skip(reason="Built-in remote-ops are bugged in Neo4j <2025.10")
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_relationship_property(gds_with_cloud_setup: AuraGraphDataScience) -> None:
-    G, result = gds_with_cloud_setup.graph.project(
+    G, _ = gds_with_cloud_setup.v2.graph.project(
         GRAPH_NAME,
         "MATCH (n)-->(m) "
         "RETURN gds.graph.project.remote(n, m, {relationshipType: 'FOO', relationshipProperties: {bar: 42}})",
     )
-    result = gds_with_cloud_setup.graph.relationship.write(G, "FOO", "bar")
+    result = gds_with_cloud_setup.v2.graph.relationships.write(G, "FOO", ["bar"])
 
-    assert result["relationshipsWritten"] == 4
+    assert result.relationships_written == 4
 
 
+@pytest.mark.skip(reason="Built-in remote-ops are bugged in Neo4j <2025.10")
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_relationship_properties(gds_with_cloud_setup: AuraGraphDataScience) -> None:
@@ -207,6 +221,7 @@ def test_remote_write_back_relationship_properties(gds_with_cloud_setup: AuraGra
     assert result["relationshipsWritten"] == 4
 
 
+@pytest.mark.skip(reason="Built-in remote-ops are bugged in Neo4j <2025.10")
 @pytest.mark.cloud_architecture
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 7, 0))
 def test_remote_write_back_relationship_property_from_pathfinding_algo(
