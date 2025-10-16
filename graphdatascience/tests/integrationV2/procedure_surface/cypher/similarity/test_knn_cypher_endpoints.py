@@ -39,37 +39,31 @@ def knn_endpoints(query_runner: QueryRunner) -> Generator[KnnCypherEndpoints, No
 
 
 def test_knn_stats(knn_endpoints: KnnCypherEndpoints, sample_graph: GraphV2) -> None:
-    """Test KNN stats operation."""
     result = knn_endpoints.stats(G=sample_graph, node_properties=["prop"], top_k=2)
 
-    assert result.ran_iterations >= 0
-    assert result.did_converge in [True, False]
+    assert result.ran_iterations > 0
+    assert result.did_converge
     assert result.compute_millis > 0
     assert result.pre_processing_millis >= 0
     assert result.post_processing_millis >= 0
     assert result.nodes_compared > 0
     assert result.similarity_pairs == 8
     assert result.node_pairs_considered > 0
-    assert "p50" in result.similarity_distribution or "p10" in result.similarity_distribution
+    assert "p50" in result.similarity_distribution
 
 
 def test_knn_stream(knn_endpoints: KnnCypherEndpoints, sample_graph: GraphV2) -> None:
-    """Test KNN stream operation."""
     result_df = knn_endpoints.stream(
         G=sample_graph,
         node_properties=["prop"],
         top_k=2,
     )
 
-    assert "node1" in result_df.columns
-    assert "node2" in result_df.columns
-    assert "similarity" in result_df.columns
-    assert len(result_df.columns) == 3
+    assert set(result_df.columns) == {"node1", "node2", "similarity"}
     assert len(result_df) == 8
 
 
 def test_knn_mutate(knn_endpoints: KnnCypherEndpoints, sample_graph: GraphV2) -> None:
-    """Test KNN mutate operation."""
     result = knn_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="SIMILAR",
@@ -78,14 +72,14 @@ def test_knn_mutate(knn_endpoints: KnnCypherEndpoints, sample_graph: GraphV2) ->
         top_k=2,
     )
 
-    assert result.ran_iterations >= 0
-    assert result.did_converge in [True, False]
+    assert result.ran_iterations > 0
+    assert result.did_converge
     assert result.pre_processing_millis >= 0
     assert result.compute_millis >= 0
     assert result.post_processing_millis >= 0
     assert result.mutate_millis >= 0
     assert result.relationships_written == 8
-    assert result.node_pairs_considered >= 0
+    assert result.node_pairs_considered > 0
 
 
 def test_knn_estimate(knn_endpoints: KnnCypherEndpoints, sample_graph: GraphV2) -> None:
