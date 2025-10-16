@@ -208,6 +208,52 @@ class RelationshipsEndpoints(ABC):
 
     pass
 
+    @abstractmethod
+    def collapse_path(
+        self,
+        G: GraphV2,
+        path_templates: list[list[str]],
+        mutate_relationship_type: str,
+        *,
+        allow_self_loops: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        sudo: bool = False,
+        log_progress: bool = True,
+        username: str | None = None,
+    ) -> CollapsePathResult:
+        """
+        Collapse a path in the graph catalog.
+
+        Parameters
+        ----------
+
+        G : GraphV2
+            Name of the generated graph.
+        path_templates : list[list[str]]
+            A path template is an ordered list of relationship types used for the traversal. The same relationship type can be added multiple times, in order to traverse them as indicated. And, you may specify several path templates to process in one go.
+        mutate_relationship_type : str
+            The name of the new relationship type to be created.
+        allow_self_loops : bool, default=False
+            Whether nodes in the graph can have relationships where start and end nodes are the same.
+        concurrency : int | None, default=None:
+            Number of concurrent threads to use. Defaults to None.
+        job_id : str | None, default=None
+            Unique identifier for the job associated with the graph generation.
+        sudo : bool | None, default=None
+            Override memory estimation limits
+        log_progress : bool | None, default=None
+            Whether to log progress during graph generation.
+        username : str | None, default=None
+            Username of the individual requesting the graph generation.
+
+        Returns
+        -------
+        CollapsePathResult: meta data about the generated relationships.
+        """
+
+    pass
+
 
 class RelationshipsWriteResult(BaseResult):
     graph_name: str
@@ -249,6 +295,14 @@ class RelationshipsInverseIndexResult(BaseResult):
 
 class RelationshipsToUndirectedResult(RelationshipsInverseIndexResult):
     relationships_written: int
+
+
+class CollapsePathResult(BaseResult):
+    preProcessingMillis: int
+    computeMillis: int
+    mutateMillis: int
+    relationshipsWritten: int
+    configuration: dict[str, Any]
 
 
 class Aggregation(str, Enum):
