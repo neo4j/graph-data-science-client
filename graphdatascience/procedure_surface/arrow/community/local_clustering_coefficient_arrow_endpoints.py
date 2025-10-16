@@ -136,7 +136,6 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
         triangle_count_property: str | None = None,
         username: str | None = None,
         write_concurrency: int | None = None,
-        write_to_result_store: bool | None = None,
     ) -> LocalClusteringCoefficientWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -150,7 +149,6 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
             triangle_count_property=triangle_count_property,
             username=username,
             write_concurrency=write_concurrency,
-            write_to_result_store=write_to_result_store,
         )
 
         result = self._node_property_endpoints.run_job_and_write(

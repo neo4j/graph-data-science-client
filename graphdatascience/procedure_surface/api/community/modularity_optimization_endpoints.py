@@ -218,7 +218,6 @@ class ModularityOptimizationEndpoints(ABC):
         tolerance: float | None = None,
         username: str | None = None,
         write_concurrency: int | None = None,
-        write_to_result_store: bool | None = None,
     ) -> ModularityOptimizationWriteResult:
         """
         Executes the Modularity Optimization algorithm and writes the results back to the database.
@@ -259,8 +258,6 @@ class ModularityOptimizationEndpoints(ABC):
             Username for authentication
         write_concurrency : int | None, default=None
             The number of concurrent threads for writing
-        write_to_result_store : bool | None, default=None
-            Whether to write results to the result store
 
         Returns
         -------

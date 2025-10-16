@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
@@ -220,7 +222,7 @@ class KnnCypherEndpoints(KnnEndpoints):
 
     def estimate(
         self,
-        G: GraphV2,
+        G: GraphV2 | dict[str, Any],
         node_properties: str | list[str] | dict[str, str],
         top_k: int = 10,
         similarity_cutoff: float = 0.0,
@@ -258,8 +260,6 @@ class KnnCypherEndpoints(KnnEndpoints):
             concurrency=concurrency,
             jobId=job_id,
         )
-        params = CallParameters(graph_name=G.name(), config=config)
-        params.ensure_job_id_in_config()
 
         return estimate_algorithm(
             endpoint="gds.knn.stats.estimate", query_runner=self._query_runner, G=G, algo_config=config
