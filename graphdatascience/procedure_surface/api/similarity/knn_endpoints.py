@@ -10,53 +10,6 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
-class KnnMutateResult(BaseResult):
-    """Represents the result of running K-Nearest Neighbors in mutate mode."""
-
-    pre_processing_millis: int
-    compute_millis: int
-    mutate_millis: int
-    post_processing_millis: int
-    nodes_compared: int
-    relationships_written: int
-    similarity_distribution: dict[str, Any]
-    did_converge: bool
-    ran_iterations: int
-    node_pairs_considered: int
-    configuration: dict[str, Any]
-
-
-class KnnStatsResult(BaseResult):
-    """Represents the result of running K-Nearest Neighbors in stats mode."""
-
-    pre_processing_millis: int
-    compute_millis: int
-    post_processing_millis: int
-    nodes_compared: int
-    similarity_pairs: int
-    similarity_distribution: dict[str, Any]
-    did_converge: bool
-    ran_iterations: int
-    node_pairs_considered: int
-    configuration: dict[str, Any]
-
-
-class KnnWriteResult(BaseResult):
-    """Represents the result of running K-Nearest Neighbors in write mode."""
-
-    pre_processing_millis: int
-    compute_millis: int
-    write_millis: int
-    post_processing_millis: int
-    nodes_compared: int
-    relationships_written: int
-    did_converge: bool
-    ran_iterations: int
-    node_pairs_considered: int
-    similarity_distribution: dict[str, Any]
-    configuration: dict[str, Any]
-
-
 class KnnEndpoints(ABC):
     @abstractmethod
     def mutate(
@@ -84,8 +37,6 @@ class KnnEndpoints(ABC):
     ) -> KnnMutateResult:
         """
         Runs the K-Nearest Neighbors algorithm and stores the results as new relationships in the graph catalog.
-
-        The K-Nearest Neighbors algorithm computes a distance value for all node pairs in the graph and creates new relationships between each node and its k nearest neighbors
 
         Parameters
         ----------
@@ -161,8 +112,6 @@ class KnnEndpoints(ABC):
         """
         Runs the K-Nearest Neighbors algorithm and returns execution statistics.
 
-        The K-Nearest Neighbors algorithm computes a distance value for all node pairs in the graph and creates new relationships between each node and its k nearest neighbors
-
         Parameters
         ----------
         G : GraphV2
@@ -232,8 +181,6 @@ class KnnEndpoints(ABC):
     ) -> DataFrame:
         """
         Runs the K-Nearest Neighbors algorithm and returns the result as a DataFrame.
-
-        The K-Nearest Neighbors algorithm computes a distance value for all node pairs in the graph and creates new relationships between each node and its k nearest neighbors
 
         Parameters
         ----------
@@ -307,8 +254,6 @@ class KnnEndpoints(ABC):
     ) -> KnnWriteResult:
         """
         Runs the K-Nearest Neighbors algorithm and writes the results back to the database.
-
-        The K-Nearest Neighbors algorithm computes a distance value for all node pairs in the graph and creates new relationships between each node and its k nearest neighbors
 
         Parameters
         ----------
@@ -386,8 +331,6 @@ class KnnEndpoints(ABC):
         """
         Estimates the memory requirements for running the K-Nearest Neighbors algorithm.
 
-        The K-Nearest Neighbors algorithm computes a distance value for all node pairs in the graph and creates new relationships between each node and its k nearest neighbors
-
         Parameters
         ----------
         G : GraphV2
@@ -432,3 +375,44 @@ class KnnEndpoints(ABC):
         EstimationResult
             Object containing the estimated memory requirements.
         """
+
+
+class KnnMutateResult(BaseResult):
+    pre_processing_millis: int
+    compute_millis: int
+    mutate_millis: int
+    post_processing_millis: int
+    nodes_compared: int
+    relationships_written: int
+    similarity_distribution: dict[str, Any]
+    did_converge: bool
+    ran_iterations: int
+    node_pairs_considered: int
+    configuration: dict[str, Any]
+
+
+class KnnStatsResult(BaseResult):
+    pre_processing_millis: int
+    compute_millis: int
+    post_processing_millis: int
+    nodes_compared: int
+    similarity_pairs: int
+    similarity_distribution: dict[str, Any]
+    did_converge: bool
+    ran_iterations: int
+    node_pairs_considered: int
+    configuration: dict[str, Any]
+
+
+class KnnWriteResult(BaseResult):
+    pre_processing_millis: int
+    compute_millis: int
+    write_millis: int
+    post_processing_millis: int
+    nodes_compared: int
+    relationships_written: int
+    did_converge: bool
+    ran_iterations: int
+    node_pairs_considered: int
+    similarity_distribution: dict[str, Any]
+    configuration: dict[str, Any]
