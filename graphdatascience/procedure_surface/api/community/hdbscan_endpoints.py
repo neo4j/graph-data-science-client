@@ -11,7 +11,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class HdbscanEndpoints(ABC):
-
     @abstractmethod
     def mutate(
         self,
