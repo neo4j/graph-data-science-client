@@ -4,7 +4,6 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.endpoints_helper_base import EndpointsHelperBase
 
 
-# TODO find common parts with node_property_endpoints and refactor into a base class
 class RelationshipEndpointsHelper(EndpointsHelperBase):
     """
     Helper class for Arrow algorithm endpoints that work with relationships.

@@ -16,7 +16,6 @@ from graphdatascience.procedure_surface.api.community.sllpa_endpoints import Sll
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
-from graphdatascience.procedure_surface.api.similarity.knn_filtered_endpoints import KnnFilteredEndpoints
 from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.articlerank_arrow_endpoints import ArticleRankArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.articulationpoints_arrow_endpoints import (
@@ -172,10 +171,6 @@ class SessionV2Endpoints:
     @property
     def knn(self) -> KnnEndpoints:
         return KnnArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
-
-    @property
-    def knn_filtered(self) -> KnnFilteredEndpoints:
-        return KnnFilteredArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def label_propagation(self) -> LabelPropagationEndpoints:

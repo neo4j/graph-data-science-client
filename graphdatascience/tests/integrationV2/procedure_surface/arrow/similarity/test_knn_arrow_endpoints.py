@@ -6,7 +6,6 @@ from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnWriteResult
 from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints import KnnArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
@@ -107,7 +106,6 @@ def test_knn_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRu
         G=db_graph, write_relationship_type="SIMILAR", write_property="similarity", node_properties=["prop"], top_k=2
     )
 
-    assert isinstance(result, KnnWriteResult)
     assert result.ran_iterations > 0
     assert result.did_converge
     assert result.pre_processing_millis >= 0
