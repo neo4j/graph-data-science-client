@@ -63,11 +63,11 @@ def test_knn_filtered_stats(knn_filtered_endpoints: KnnFilteredArrowEndpoints, s
     assert result.post_processing_millis >= 0
     assert result.nodes_compared >= 0
     assert result.similarity_pairs >= 0
-    assert result.similarity_distribution is not None
-    assert isinstance(result.did_converge, bool)
+    assert "p50" in result.similarity_distribution
+    assert result.did_converge
     assert result.ran_iterations >= 0
     assert result.node_pairs_considered >= 0
-    assert result.configuration is not None
+    assert "concurrency" in result.configuration
 
 
 def test_knn_filtered_stream(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
@@ -99,12 +99,12 @@ def test_knn_filtered_mutate(knn_filtered_endpoints: KnnFilteredArrowEndpoints, 
     assert result.mutate_millis >= 0
     assert result.post_processing_millis >= 0
     assert result.nodes_compared >= 0
-    assert result.relationships_written >= 0
-    assert result.similarity_distribution is not None
-    assert isinstance(result.did_converge, bool)
-    assert result.ran_iterations >= 0
+    assert result.relationships_written > 0
+    assert "p50" in result.similarity_distribution
+    assert result.did_converge
+    assert result.ran_iterations > 0
     assert result.node_pairs_considered >= 0
-    assert result.configuration is not None
+    assert "concurrency" in result.configuration
 
 
 def test_knn_filtered_write(
@@ -124,18 +124,17 @@ def test_knn_filtered_write(
         target_node_filter="TargetNode",
     )
 
-    assert isinstance(result, KnnWriteResult)
     assert result.pre_processing_millis >= 0
     assert result.compute_millis >= 0
     assert result.write_millis >= 0
     assert result.post_processing_millis >= 0
     assert result.nodes_compared >= 0
-    assert result.relationships_written >= 0
-    assert isinstance(result.did_converge, bool)
-    assert result.ran_iterations >= 0
+    assert result.relationships_written > 0
+    assert result.did_converge
+    assert result.ran_iterations > 0
     assert result.node_pairs_considered >= 0
-    assert result.similarity_distribution is not None
-    assert result.configuration is not None
+    assert "p50" in result.similarity_distribution
+    assert "concurrency" in result.configuration
 
 
 def test_knn_filtered_estimate(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:

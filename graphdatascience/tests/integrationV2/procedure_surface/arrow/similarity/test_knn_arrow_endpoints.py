@@ -53,13 +53,13 @@ def test_knn_stats(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> N
     """Test KNN stats operation."""
     result = knn_endpoints.stats(G=sample_graph, node_properties=["prop"], top_k=2)
 
-    assert result.ran_iterations >= 0
-    assert result.did_converge in [True, False]
+    assert result.ran_iterations > 0
+    assert result.did_converge
     assert result.compute_millis >= 0
     assert result.pre_processing_millis >= 0
     assert result.post_processing_millis >= 0
     assert result.nodes_compared > 0
-    assert result.similarity_pairs >= 0
+    assert result.similarity_pairs > 0
     assert result.node_pairs_considered > 0
     assert "p50" in result.similarity_distribution
 
@@ -86,14 +86,14 @@ def test_knn_mutate(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> 
         top_k=2,
     )
 
-    assert result.ran_iterations >= 0
-    assert result.did_converge in [True, False]
+    assert result.ran_iterations > 0
+    assert result.did_converge
     assert result.pre_processing_millis >= 0
     assert result.compute_millis >= 0
     assert result.post_processing_millis >= 0
     assert result.mutate_millis >= 0
     assert result.relationships_written == sample_graph.node_count() * 2
-    assert result.node_pairs_considered >= 0
+    assert result.node_pairs_considered > 0
 
 
 @pytest.mark.db_integration
@@ -108,14 +108,14 @@ def test_knn_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRu
     )
 
     assert isinstance(result, KnnWriteResult)
-    assert result.ran_iterations >= 0
-    assert result.did_converge in [True, False]
+    assert result.ran_iterations > 0
+    assert result.did_converge
     assert result.pre_processing_millis >= 0
     assert result.compute_millis >= 0
     assert result.post_processing_millis >= 0
     assert result.write_millis >= 0
     assert result.relationships_written == db_graph.node_count() * 2
-    assert result.node_pairs_considered >= 0
+    assert result.node_pairs_considered > 0
 
     # Check that relationships were written to the database
     count_result = query_runner.run_cypher("MATCH ()-[r:SIMILAR]->() RETURN COUNT(r) AS count")
