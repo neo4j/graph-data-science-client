@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoi
     ArticulationPointsWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
@@ -24,7 +24,7 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -52,7 +52,7 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_mutate(
-            "v2/centrality.articulationPoints", G, config, mutate_property
+            "v2/centrality.articulationPoints", config, mutate_property
         )
 
         return ArticulationPointsMutateResult(**result)
@@ -80,7 +80,7 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         )
 
         computation_result = self._node_property_endpoints.run_job_and_get_summary(
-            "v2/centrality.articulationPoints", G, config
+            "v2/centrality.articulationPoints", config
         )
 
         return ArticulationPointsStatsResult(**computation_result)
@@ -127,7 +127,12 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/centrality.articulationPoints", G, config, write_concurrency, concurrency, write_property
+            "v2/centrality.articulationPoints",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return ArticulationPointsWriteResult(**result)

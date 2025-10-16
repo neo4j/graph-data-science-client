@@ -22,7 +22,7 @@ class MutationClient:
         client: AuthenticatedArrowClient,
         job_id: str,
         mutate_relationship_type: str,
-        mutate_property: str,
+        mutate_property: str | None,
     ) -> MutateResult:
         return MutationClient._mutate(
             client=client,

@@ -14,7 +14,7 @@ from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints im
     NodePropertiesWriteResult,
     NodePropertySpec,
 )
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.procedure_surface.utils.result_utils import join_db_node_properties
 
@@ -31,7 +31,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         self._write_back_client: RemoteWriteBackClient | None = (
             RemoteWriteBackClient(arrow_client, query_runner) if query_runner is not None else None
         )
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, self._write_back_client, show_progress=show_progress
         )
         self._show_progress = show_progress

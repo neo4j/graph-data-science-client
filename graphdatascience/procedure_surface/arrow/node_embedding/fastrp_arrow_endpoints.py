@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints impo
     FastRPStatsResult,
     FastRPWriteResult,
 )
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class FastRPArrowEndpoints(FastRPEndpoints):
@@ -22,7 +22,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -64,7 +64,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
             sudo=sudo,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate("v2/embeddings.fastrp", G, config, mutate_property)
+        result = self._node_property_endpoints.run_job_and_mutate("v2/embeddings.fastrp", config, mutate_property)
 
         return FastRPMutateResult(**result)
 
@@ -105,7 +105,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
             sudo=sudo,
         )
 
-        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/embeddings.fastrp", G, config)
+        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/embeddings.fastrp", config)
 
         return FastRPStatsResult(**computation_result)
 
@@ -188,7 +188,12 @@ class FastRPArrowEndpoints(FastRPEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/embeddings.fastrp", G, config, write_concurrency, concurrency, write_property
+            "v2/embeddings.fastrp",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return FastRPWriteResult(**result)

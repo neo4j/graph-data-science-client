@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints imp
     ArticleRankWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class ArticleRankArrowEndpoints(ArticleRankEndpoints):
@@ -22,7 +22,7 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -60,9 +60,7 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
             tolerance=tolerance,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate(
-            "v2/centrality.articleRank", G, config, mutate_property
-        )
+        result = self._node_property_endpoints.run_job_and_mutate("v2/centrality.articleRank", config, mutate_property)
 
         return ArticleRankMutateResult(**result)
 
@@ -99,9 +97,7 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
             tolerance=tolerance,
         )
 
-        computation_result = self._node_property_endpoints.run_job_and_get_summary(
-            "v2/centrality.articleRank", G, config
-        )
+        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/centrality.articleRank", config)
 
         return ArticleRankStatsResult(**computation_result)
 
@@ -176,7 +172,12 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/centrality.articleRank", G, config, write_concurrency, concurrency, write_property
+            "v2/centrality.articleRank",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return ArticleRankWriteResult(**result)

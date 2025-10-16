@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_end
     GraphSageWriteResult,
 )
 from graphdatascience.procedure_surface.arrow.model_api_arrow import ModelApiArrow
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
@@ -23,7 +23,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         show_progress: bool = True,
     ):
         self._arrow_client = arrow_client
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
         self._model_api = ModelApiArrow(arrow_client)
@@ -86,7 +86,12 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         )
 
         raw_result = self._node_property_endpoints.run_job_and_write(
-            "v2/embeddings.graphSage", G, config, write_concurrency, concurrency, write_property
+            "v2/embeddings.graphSage",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return GraphSageWriteResult(**raw_result)
@@ -120,7 +125,6 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
 
         raw_result = self._node_property_endpoints.run_job_and_mutate(
             "v2/embeddings.graphSage",
-            G,
             config,
             mutate_property,
         )

@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.community.wcc_endpoints import (
     WccWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class WccArrowEndpoints(WccEndpoints):
@@ -22,7 +22,7 @@ class WccArrowEndpoints(WccEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -56,7 +56,7 @@ class WccArrowEndpoints(WccEndpoints):
             threshold=threshold,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate("v2/community.wcc", G, config, mutate_property)
+        result = self._node_property_endpoints.run_job_and_mutate("v2/community.wcc", config, mutate_property)
 
         return WccMutateResult(**result)
 
@@ -89,7 +89,7 @@ class WccArrowEndpoints(WccEndpoints):
             threshold=threshold,
         )
 
-        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/community.wcc", G, config)
+        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/community.wcc", config)
 
         return WccStatsResult(**computation_result)
 
@@ -160,7 +160,12 @@ class WccArrowEndpoints(WccEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/community.wcc", G, config, write_concurrency, concurrency, write_property
+            "v2/community.wcc",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return WccWriteResult(**result)

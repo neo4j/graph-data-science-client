@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import
     PageRankWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class PageRankArrowEndpoints(PageRankEndpoints):
@@ -22,7 +22,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = False,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -60,7 +60,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
             tolerance=tolerance,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate("v2/centrality.pageRank", G, config, mutate_property)
+        result = self._node_property_endpoints.run_job_and_mutate("v2/centrality.pageRank", config, mutate_property)
 
         return PageRankMutateResult(**result)
 
@@ -97,7 +97,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
             tolerance=tolerance,
         )
 
-        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/centrality.pageRank", G, config)
+        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/centrality.pageRank", config)
 
         return PageRankStatsResult(**computation_result)
 
@@ -172,7 +172,12 @@ class PageRankArrowEndpoints(PageRankEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/centrality.pageRank", G, config, write_concurrency, concurrency, write_property
+            "v2/centrality.pageRank",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
         return PageRankWriteResult(**result)
 

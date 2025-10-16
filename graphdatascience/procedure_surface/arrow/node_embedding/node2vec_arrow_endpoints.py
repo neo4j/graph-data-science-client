@@ -11,7 +11,7 @@ from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints im
     Node2VecMutateResult,
     Node2VecWriteResult,
 )
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class Node2VecArrowEndpoints(Node2VecEndpoints):
@@ -21,7 +21,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -80,7 +80,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
             random_seed=random_seed,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate("v2/embeddings.node2vec", G, config, mutate_property)
+        result = self._node_property_endpoints.run_job_and_mutate("v2/embeddings.node2vec", config, mutate_property)
 
         return Node2VecMutateResult(**result)
 
@@ -199,7 +199,12 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/embeddings.node2vec", G, config, write_concurrency, concurrency, write_property
+            "v2/embeddings.node2vec",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return Node2VecWriteResult(**result)

@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.community.clique_counting_endpoints 
     CliqueCountingWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
@@ -22,7 +22,7 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -50,7 +50,7 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_mutate(
-            "v2/community.cliquecounting", G, config, mutate_property
+            "v2/community.cliquecounting", config, mutate_property
         )
 
         return CliqueCountingMutateResult(**result)
@@ -78,7 +78,7 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
         )
 
         computation_result = self._node_property_endpoints.run_job_and_get_summary(
-            "v2/community.cliquecounting", G, config
+            "v2/community.cliquecounting", config
         )
 
         return CliqueCountingStatsResult(**computation_result)
@@ -132,7 +132,12 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/community.cliquecounting", G, config, write_concurrency, concurrency, write_property
+            "v2/community.cliquecounting",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return CliqueCountingWriteResult(**result)

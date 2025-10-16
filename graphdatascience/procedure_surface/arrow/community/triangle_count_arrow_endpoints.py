@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.community.triangle_count_endpoints i
     TriangleCountWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class TriangleCountArrowEndpoints(TriangleCountEndpoints):
@@ -25,7 +25,7 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         self._arrow_client = arrow_client
         self._write_back_client = write_back_client
         self._show_progress = show_progress
-        self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client, show_progress)
+        self._node_property_endpoints = NodePropertyEndpointsHelper(arrow_client, write_back_client, show_progress)
 
     def mutate(
         self,
@@ -55,9 +55,7 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
             username=username,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate(
-            "v2/community.triangleCount", G, config, mutate_property
-        )
+        result = self._node_property_endpoints.run_job_and_mutate("v2/community.triangleCount", config, mutate_property)
 
         return TriangleCountMutateResult(**result)
 
@@ -88,9 +86,7 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
             username=username,
         )
 
-        computation_result = self._node_property_endpoints.run_job_and_get_summary(
-            "v2/community.triangleCount", G, config
-        )
+        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/community.triangleCount", config)
 
         return TriangleCountStatsResult(**computation_result)
 
@@ -154,7 +150,12 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/community.triangleCount", G, config, write_concurrency, concurrency, write_property
+            "v2/community.triangleCount",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return TriangleCountWriteResult(**result)

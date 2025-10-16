@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.community.kmeans_endpoints import (
     KMeansWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class KMeansArrowEndpoints(KMeansEndpoints):
@@ -22,7 +22,7 @@ class KMeansArrowEndpoints(KMeansEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -68,7 +68,7 @@ class KMeansArrowEndpoints(KMeansEndpoints):
             username=username,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate("v2/community.kmeans", G, config, mutate_property)
+        result = self._node_property_endpoints.run_job_and_mutate("v2/community.kmeans", config, mutate_property)
 
         return KMeansMutateResult(**result)
 
@@ -113,7 +113,7 @@ class KMeansArrowEndpoints(KMeansEndpoints):
             username=username,
         )
 
-        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/community.kmeans", G, config)
+        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/community.kmeans", config)
 
         return KMeansStatsResult(**computation_result)
 
@@ -204,7 +204,12 @@ class KMeansArrowEndpoints(KMeansEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/community.kmeans", G, config, write_concurrency, concurrency, write_property
+            "v2/community.kmeans",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return KMeansWriteResult(**result)

@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.centrality.closeness_endpoints impor
     ClosenessWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class ClosenessArrowEndpoints(ClosenessEndpoints):
@@ -24,7 +24,7 @@ class ClosenessArrowEndpoints(ClosenessEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -53,7 +53,7 @@ class ClosenessArrowEndpoints(ClosenessEndpoints):
             job_id=job_id,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate("v2/centrality.closeness", G, config, mutate_property)
+        result = self._node_property_endpoints.run_job_and_mutate("v2/centrality.closeness", config, mutate_property)
 
         return ClosenessMutateResult(**result)
 
@@ -81,7 +81,7 @@ class ClosenessArrowEndpoints(ClosenessEndpoints):
             job_id=job_id,
         )
 
-        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/centrality.closeness", G, config)
+        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/centrality.closeness", config)
 
         return ClosenessStatsResult(**computation_result)
 
@@ -138,7 +138,12 @@ class ClosenessArrowEndpoints(ClosenessEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/centrality.closeness", G, config, write_concurrency, concurrency, write_property
+            "v2/centrality.closeness",
+            G,
+            config,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
+            property_overwrites=write_property,
         )
 
         return ClosenessWriteResult(**result)

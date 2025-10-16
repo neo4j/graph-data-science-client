@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.community.sllpa_endpoints import (
     SllpaWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class SllpaArrowEndpoints(SllpaEndpoints):
@@ -22,7 +22,7 @@ class SllpaArrowEndpoints(SllpaEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = False,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -56,7 +56,7 @@ class SllpaArrowEndpoints(SllpaEndpoints):
             username=username,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate("v2/community.sllpa", G, config, mutate_property)
+        result = self._node_property_endpoints.run_job_and_mutate("v2/community.sllpa", config, mutate_property)
 
         return SllpaMutateResult(**result)
 
@@ -89,7 +89,7 @@ class SllpaArrowEndpoints(SllpaEndpoints):
             username=username,
         )
 
-        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/community.sllpa", G, config)
+        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/community.sllpa", config)
 
         return SllpaStatsResult(**computation_result)
 
@@ -156,7 +156,12 @@ class SllpaArrowEndpoints(SllpaEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/community.sllpa", G, config, write_concurrency, concurrency, write_property
+            "v2/community.sllpa",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return SllpaWriteResult(**result)

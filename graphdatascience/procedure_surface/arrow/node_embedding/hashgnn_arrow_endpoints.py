@@ -11,7 +11,7 @@ from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints imp
     HashGNNMutateResult,
     HashGNNWriteResult,
 )
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class HashGNNArrowEndpoints(HashGNNEndpoints):
@@ -26,7 +26,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -75,7 +75,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
             job_id=job_id,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate("v2/embeddings.hashgnn", G, config, mutate_property)
+        result = self._node_property_endpoints.run_job_and_mutate("v2/embeddings.hashgnn", config, mutate_property)
 
         return HashGNNMutateResult(**result)
 
@@ -173,7 +173,12 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/embeddings.hashgnn", G, config, write_concurrency, concurrency, write_property
+            "v2/embeddings.hashgnn",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return HashGNNWriteResult(**result)

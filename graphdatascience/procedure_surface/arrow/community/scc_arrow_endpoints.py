@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.community.scc_endpoints import (
     SccWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class SccArrowEndpoints(SccEndpoints):
@@ -22,7 +22,7 @@ class SccArrowEndpoints(SccEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -50,7 +50,7 @@ class SccArrowEndpoints(SccEndpoints):
             sudo=sudo,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate("v2/community.scc", G, config, mutate_property)
+        result = self._node_property_endpoints.run_job_and_mutate("v2/community.scc", config, mutate_property)
 
         return SccMutateResult(**result)
 
@@ -77,7 +77,7 @@ class SccArrowEndpoints(SccEndpoints):
             sudo=sudo,
         )
 
-        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/community.scc", G, config)
+        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/community.scc", config)
 
         return SccStatsResult(**computation_result)
 
@@ -132,7 +132,12 @@ class SccArrowEndpoints(SccEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/community.scc", G, config, write_concurrency, concurrency, write_property
+            "v2/community.scc",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return SccWriteResult(**result)
