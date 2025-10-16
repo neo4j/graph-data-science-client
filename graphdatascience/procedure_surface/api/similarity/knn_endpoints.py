@@ -18,22 +18,22 @@ class KnnEndpoints(ABC):
         mutate_relationship_type: str,
         mutate_property: str,
         node_properties: str | list[str] | dict[str, str],
-        top_k: int | None = None,
-        similarity_cutoff: float | None = None,
-        delta_threshold: float | None = None,
-        max_iterations: int | None = None,
-        sample_rate: float | None = None,
-        perturbation_rate: float | None = None,
-        random_joins: int | None = None,
+        top_k: int = 10,
+        similarity_cutoff: float = 0.0,
+        delta_threshold: float = 0.001,
+        max_iterations: int = 100,
+        sample_rate: float = 0.5,
+        perturbation_rate: float = 0.0,
+        random_joins: int = 10,
         random_seed: int | None = None,
-        initial_sampler: Any | None = None,
+        initial_sampler: str = "UNIFORM",
         relationship_types: list[str] | None = None,
         node_labels: list[str] | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> KnnMutateResult:
         """
         Runs the K-Nearest Neighbors algorithm and stores the results as new relationships in the graph catalog.
@@ -92,22 +92,22 @@ class KnnEndpoints(ABC):
         self,
         G: GraphV2,
         node_properties: str | list[str] | dict[str, str],
-        top_k: int | None = None,
-        similarity_cutoff: float | None = None,
-        delta_threshold: float | None = None,
-        max_iterations: int | None = None,
-        sample_rate: float | None = None,
-        perturbation_rate: float | None = None,
-        random_joins: int | None = None,
+        top_k: int = 10,
+        similarity_cutoff: float = 0.0,
+        delta_threshold: float = 0.001,
+        max_iterations: int = 100,
+        sample_rate: float = 0.5,
+        perturbation_rate: float = 0.0,
+        random_joins: int = 10,
         random_seed: int | None = None,
-        initial_sampler: Any | None = None,
+        initial_sampler: str = "UNIFORM",
         relationship_types: list[str] | None = None,
         node_labels: list[str] | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> KnnStatsResult:
         """
         Runs the K-Nearest Neighbors algorithm and returns execution statistics.
@@ -162,22 +162,22 @@ class KnnEndpoints(ABC):
         self,
         G: GraphV2,
         node_properties: str | list[str] | dict[str, str],
-        top_k: int | None = None,
-        similarity_cutoff: float | None = None,
-        delta_threshold: float | None = None,
-        max_iterations: int | None = None,
-        sample_rate: float | None = None,
-        perturbation_rate: float | None = None,
-        random_joins: int | None = None,
+        top_k: int = 10,
+        similarity_cutoff: float = 0.0,
+        delta_threshold: float = 0.001,
+        max_iterations: int = 100,
+        sample_rate: float = 0.5,
+        perturbation_rate: float = 0.0,
+        random_joins: int = 10,
         random_seed: int | None = None,
-        initial_sampler: Any | None = None,
+        initial_sampler: str = "UNIFORM",
         relationship_types: list[str] | None = None,
         node_labels: list[str] | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> DataFrame:
         """
         Runs the K-Nearest Neighbors algorithm and returns the result as a DataFrame.
@@ -234,22 +234,22 @@ class KnnEndpoints(ABC):
         write_relationship_type: str,
         write_property: str,
         node_properties: str | list[str] | dict[str, str],
-        top_k: int | None = None,
-        similarity_cutoff: float | None = None,
-        delta_threshold: float | None = None,
-        max_iterations: int | None = None,
-        sample_rate: float | None = None,
-        perturbation_rate: float | None = None,
-        random_joins: int | None = None,
+        top_k: int = 10,
+        similarity_cutoff: float = 0.0,
+        delta_threshold: float = 0.001,
+        max_iterations: int = 100,
+        sample_rate: float = 0.5,
+        perturbation_rate: float = 0.0,
+        random_joins: int = 10,
         random_seed: int | None = None,
-        initial_sampler: Any | None = None,
+        initial_sampler: str = "UNIFORM",
         relationship_types: list[str] | None = None,
         node_labels: list[str] | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         write_concurrency: int | None = None,
     ) -> KnnWriteResult:
         """
@@ -311,22 +311,21 @@ class KnnEndpoints(ABC):
         self,
         G: GraphV2,
         node_properties: str | list[str] | dict[str, str],
-        top_k: int | None = None,
-        similarity_cutoff: float | None = None,
-        delta_threshold: float | None = None,
-        max_iterations: int | None = None,
-        sample_rate: float | None = None,
-        perturbation_rate: float | None = None,
-        random_joins: int | None = None,
+        top_k: int = 10,
+        similarity_cutoff: float = 0.0,
+        delta_threshold: float = 0.001,
+        max_iterations: int = 100,
+        sample_rate: float = 0.5,
+        perturbation_rate: float = 0.0,
+        random_joins: int = 10,
         random_seed: int | None = None,
-        initial_sampler: Any | None = None,
+        initial_sampler: str = "UNIFORM",
         relationship_types: list[str] | None = None,
         node_labels: list[str] | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
     ) -> EstimationResult:
         """
         Estimates the memory requirements for running the K-Nearest Neighbors algorithm.
@@ -337,29 +336,29 @@ class KnnEndpoints(ABC):
             The graph to run the algorithm on
         node_properties:  str | list[str] | dict[str, str],
             The node properties to use for similarity computation.
-        top_k : int | None, default=None
+        top_k : int, default=10
             The number of nearest neighbors to find for each node.
-        similarity_cutoff : float | None, default=None
+        similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
-        delta_threshold : float | None, default=None
+        delta_threshold : float, default=0.001
             The threshold for convergence assessment.
-        max_iterations : int | None, default=None
+        max_iterations : int, default=100
             The maximum number of iterations to run.
-        sample_rate : float | None, default=None
+        sample_rate : float, default=0.5
             The sampling rate for the algorithm.
-        perturbation_rate : float | None, default=None
+        perturbation_rate : float, default=0.0
             The rate at which to perturb the similarity graph.
-        random_joins : int | None, default=None
+        random_joins : int, default=10
             The number of random joins to perform.
         random_seed : int | None, default=None
             The seed for the random number generator.
-        initial_sampler : Any | None, default=None
+        initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
         relationship_types : list[str] | None, default=None
             Filter on relationship types.
         node_labels : list[str] | None, default=None
             Filter on node labels.
-        sudo : bool | None, default=None
+        sudo : bool, default=False
             Run the algorithm with elevated privileges.
         log_progress : bool, default=True
             Whether to log progress.
