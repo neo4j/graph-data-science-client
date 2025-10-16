@@ -57,13 +57,8 @@ ENDPOINT_MAPPINGS = {
 
 
 @pytest.fixture
-def gds(arrow_client: AuthenticatedArrowClient, db_query_runner: QueryRunner) -> AuraGraphDataScience:
-    return AuraGraphDataScience(
-        query_runner=db_query_runner,
-        delete_fn=lambda: True,
-        gds_version=ServerVersion.from_string("2.7.0"),
-        v2_endpoints=SessionV2Endpoints(arrow_client, db_query_runner, show_progress=False),
-    )
+def endpoints(arrow_client: AuthenticatedArrowClient) -> SessionV2Endpoints:
+    return SessionV2Endpoints(arrow_client, db_client=None, show_progress=False)
 
 
 def to_snake(camel: str) -> str:
@@ -98,8 +93,8 @@ def check_gds_v2_availability(endpoints: SessionV2Endpoints, algo: str) -> bool:
 
 
 @pytest.mark.db_integration
-def test_algo_coverage(gds: AuraGraphDataScience) -> None:
-    arrow_client = gds.v2._arrow_client
+def test_algo_coverage(endpoints: SessionV2Endpoints) -> None:
+    arrow_client = endpoints._arrow_client
 
     # Get all available Arrow actions
     available_v2_actions = [
@@ -124,7 +119,7 @@ def test_algo_coverage(gds: AuraGraphDataScience) -> None:
     for category, algos in algos_per_category.items():
         for algo in algos:
             is_available = check_gds_v2_availability(
-                gds.v2,
+                endpoints,
                 algo,
             )
             action = f"{category}.{algo}"

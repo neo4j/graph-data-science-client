@@ -5,12 +5,12 @@ from pandas import DataFrame
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.similarity.knn_endpoints import (
+from graphdatascience.procedure_surface.api.similarity.knn_filtered_endpoints import KnnFilteredEndpoints
+from graphdatascience.procedure_surface.api.similarity.knn_results import (
     KnnMutateResult,
     KnnStatsResult,
     KnnWriteResult,
 )
-from graphdatascience.procedure_surface.api.similarity.knn_filtered_endpoints import KnnFilteredEndpoints
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner

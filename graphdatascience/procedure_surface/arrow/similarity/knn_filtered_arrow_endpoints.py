@@ -6,12 +6,12 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.similarity.knn_endpoints import (
+from graphdatascience.procedure_surface.api.similarity.knn_filtered_endpoints import KnnFilteredEndpoints
+from graphdatascience.procedure_surface.api.similarity.knn_results import (
     KnnMutateResult,
     KnnStatsResult,
     KnnWriteResult,
 )
-from graphdatascience.procedure_surface.api.similarity.knn_filtered_endpoints import KnnFilteredEndpoints
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
 from graphdatascience.procedure_surface.arrow.stream_result_mapper import rename_similarity_stream_result
 

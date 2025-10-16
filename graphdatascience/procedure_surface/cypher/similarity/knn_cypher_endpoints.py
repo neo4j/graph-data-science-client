@@ -7,13 +7,17 @@ from pandas import DataFrame
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.similarity.knn_endpoints import (
-    KnnEndpoints,
+from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
+from graphdatascience.procedure_surface.api.similarity.knn_filtered_endpoints import KnnFilteredEndpoints
+from graphdatascience.procedure_surface.api.similarity.knn_results import (
     KnnMutateResult,
     KnnStatsResult,
     KnnWriteResult,
 )
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
+from graphdatascience.procedure_surface.cypher.similarity.knn_filtered_cypher_endpoints import (
+    KnnFilteredCypherEndpoints,
+)
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
 
@@ -21,6 +25,10 @@ from graphdatascience.query_runner.query_runner import QueryRunner
 class KnnCypherEndpoints(KnnEndpoints):
     def __init__(self, query_runner: QueryRunner):
         self._query_runner = query_runner
+
+    @property
+    def filtered(self) -> KnnFilteredEndpoints:
+        return KnnFilteredCypherEndpoints(self._query_runner)
 
     def mutate(
         self,
