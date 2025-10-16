@@ -1,5 +1,6 @@
 import logging
 import os
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Generator
@@ -14,8 +15,16 @@ from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordA
 from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 
 LOGGER = logging.getLogger(__name__)
+
+
+@dataclass
+class GdsSessionConnectionInfo:
+    host: str
+    arrow_port: int
+    bolt_port: int
 
 
 @pytest.fixture(scope="package")
@@ -45,9 +54,12 @@ def latest_neo4j_version() -> str:
     return previous_month.strftime("%Y.%m.0")
 
 
-def start_session(inside_ci: bool, logs_dir: Path, network: Network, password_dir: Path) -> Generator[str, None, None]:
-    if session_uri := os.environ.get("GDS_SESSION_URI"):
-        yield session_uri
+def start_session(
+    inside_ci: bool, logs_dir: Path, network: Network, password_dir: Path
+) -> Generator[GdsSessionConnectionInfo, None, None]:
+    if (session_uri := os.environ.get("GDS_SESSION_URI")) is not None:
+        uri_parts = session_uri.split(":")
+        yield GdsSessionConnectionInfo(host=uri_parts[0], arrow_port=8491, bolt_port=int(uri_parts[1]))
         return
 
     session_image = os.getenv(
@@ -68,7 +80,11 @@ def start_session(inside_ci: bool, logs_dir: Path, network: Network, password_di
         session_container = session_container.with_network(network).with_network_aliases("gds-session")
     with session_container as session_container:
         wait_for_logs(session_container, "Running GDS tasks: 0")
-        yield f"{session_container.get_container_host_ip()}:{session_container.get_exposed_port(8491)}"
+        yield GdsSessionConnectionInfo(
+            host=session_container.get_container_host_ip(),
+            arrow_port=session_container.get_exposed_port(8491),
+            bolt_port=-1,  # not used in tests
+        )
         stdout, stderr = session_container.get_logs()
 
         if stderr:
@@ -82,18 +98,18 @@ def start_session(inside_ci: bool, logs_dir: Path, network: Network, password_di
             f.write(stdout.decode("utf-8"))
 
 
-def create_arrow_client(session_url: str) -> AuthenticatedArrowClient:
+def create_arrow_client(session_uri: GdsSessionConnectionInfo) -> AuthenticatedArrowClient:
     """Create an authenticated Arrow client connected to the session container."""
 
     return AuthenticatedArrowClient.create(
-        arrow_info=ArrowInfo(session_url, True, True, ["v1", "v2"]),
+        arrow_info=ArrowInfo(f"{session_uri.host}:{session_uri.arrow_port}", True, True, ["v1", "v2"]),
         auth=UsernamePasswordAuthentication("neo4j", "password"),
         encrypted=False,
         advertised_listen_address=("gds-session", 8491),
     )
 
 
-def start_database(inside_ci: bool, logs_dir: Path, network: Network) -> Generator[DockerContainer, None, None]:
+def start_database(inside_ci: bool, logs_dir: Path, network: Network) -> Generator[DbmsConnectionInfo, None, None]:
     default_neo4j_image = (
         f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura/neo4j-enterprise:{latest_neo4j_version()}"
     )
@@ -116,7 +132,11 @@ def start_database(inside_ci: bool, logs_dir: Path, network: Network) -> Generat
     )
     with db_container as db_container:
         wait_for_logs(db_container, "Started.")
-        yield db_container
+        yield DbmsConnectionInfo(
+            uri=f"{db_container.get_container_host_ip()}:{db_container.get_exposed_port(7687)}",
+            username="neo4j",
+            password="password",
+        )
         stdout, stderr = db_container.get_logs()
 
         if stderr:
@@ -130,11 +150,9 @@ def start_database(inside_ci: bool, logs_dir: Path, network: Network) -> Generat
             f.write(stdout.decode("utf-8"))
 
 
-def create_db_query_runner(neo4j_container: DockerContainer) -> Generator[Neo4jQueryRunner, None, None]:
-    host = neo4j_container.get_container_host_ip()
-    port = 7687
+def create_db_query_runner(neo4j_connection: DbmsConnectionInfo) -> Generator[Neo4jQueryRunner, None, None]:
     query_runner = Neo4jQueryRunner.create_for_db(
-        f"bolt://{host}:{port}",
+        f"bolt://{neo4j_connection.uri}",
         ("neo4j", "password"),
     )
     yield query_runner
