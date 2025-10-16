@@ -7,10 +7,6 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
 MISSING_ALGO_ENDPOINTS = {
-    "similarity.nodeSimilarity.filtered",
-    "similarity.nodeSimilarity.filtered.estimate",
-    "similarity.nodeSimilarity",
-    "similarity.nodeSimilarity.estimate",
     "pathfinding.sourceTarget.dijkstra.estimate",
     "pathfinding.sourceTarget.aStar",
     "pathfinding.prizeSteinerTree.estimate",
