@@ -182,7 +182,6 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
         tolerance: float | None = None,
         username: str | None = None,
         write_concurrency: int | None = None,
-        write_to_result_store: bool | None = None,
     ) -> ModularityOptimizationWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             write_property=write_property,
@@ -201,7 +200,6 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
             tolerance=tolerance,
             username=username,
             write_concurrency=write_concurrency,
-            write_to_result_store=write_to_result_store,
         )
 
         params = CallParameters(

@@ -166,7 +166,6 @@ class LocalClusteringCoefficientEndpoints:
         triangle_count_property: str | None = None,
         username: str | None = None,
         write_concurrency: int | None = None,
-        write_to_result_store: bool | None = None,
     ) -> "LocalClusteringCoefficientWriteResult":
         """
         Executes the LocalClusteringCoefficient algorithm and writes results to the database.
@@ -195,8 +194,6 @@ class LocalClusteringCoefficientEndpoints:
             Username for authentication
         write_concurrency : int | None, default=None
             Concurrency for writing back to the database
-        write_to_result_store : bool | None, default=None
-            Whether to write to the result store
 
         Returns
         -------

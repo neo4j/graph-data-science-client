@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -228,7 +230,7 @@ class KnnArrowEndpoints(KnnEndpoints):
 
     def estimate(
         self,
-        G: GraphV2,
+        G: GraphV2 | dict[str, Any],
         node_properties: str | list[str] | dict[str, str],
         top_k: int = 10,
         similarity_cutoff: float = 0.0,

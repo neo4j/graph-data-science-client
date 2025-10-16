@@ -134,7 +134,6 @@ class LocalClusteringCoefficientCypherEndpoints(LocalClusteringCoefficientEndpoi
         triangle_count_property: str | None = None,
         username: str | None = None,
         write_concurrency: int | None = None,
-        write_to_result_store: bool | None = None,
     ) -> LocalClusteringCoefficientWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             write_property=write_property,
@@ -147,7 +146,6 @@ class LocalClusteringCoefficientCypherEndpoints(LocalClusteringCoefficientEndpoi
             triangle_count_property=triangle_count_property,
             username=username,
             write_concurrency=write_concurrency,
-            write_to_result_store=write_to_result_store,
         )
 
         # Run procedure and return results

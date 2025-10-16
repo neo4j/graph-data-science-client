@@ -170,7 +170,6 @@ class ModularityOptimizationArrowEndpoints(ModularityOptimizationEndpoints):
         tolerance: float | None = None,
         username: str | None = None,
         write_concurrency: int | None = None,
-        write_to_result_store: bool | None = None,
     ) -> ModularityOptimizationWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -189,7 +188,6 @@ class ModularityOptimizationArrowEndpoints(ModularityOptimizationEndpoints):
             tolerance=tolerance,
             username=username,
             write_concurrency=write_concurrency,
-            write_to_result_store=write_to_result_store,
         )
 
         result = self._node_property_endpoints.run_job_and_write(
