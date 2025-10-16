@@ -13,7 +13,7 @@ from graphdatascience.procedure_surface.arrow.model_api_arrow import ModelApiArr
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_predict_arrow_endpoints import (
     GraphSagePredictArrowEndpoints,
 )
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
@@ -25,7 +25,7 @@ class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
     ):
         self._arrow_client = arrow_client
         self._write_back_client = write_back_client
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client=write_back_client, show_progress=show_progress
         )
         self._model_api = ModelApiArrow(arrow_client)
@@ -91,7 +91,7 @@ class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
             random_seed=random_seed,
         )
 
-        result = self._node_property_endpoints.run_job_and_get_summary("v2/embeddings.graphSage.train", G, config)
+        result = self._node_property_endpoints.run_job_and_get_summary("v2/embeddings.graphSage.train", config)
 
         model = GraphSageModelV2(
             model_name,

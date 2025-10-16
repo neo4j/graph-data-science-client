@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoi
     ClosenessHarmonicWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class ClosenessHarmonicArrowEndpoints(ClosenessHarmonicEndpoints):
@@ -22,7 +22,7 @@ class ClosenessHarmonicArrowEndpoints(ClosenessHarmonicEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -49,7 +49,7 @@ class ClosenessHarmonicArrowEndpoints(ClosenessHarmonicEndpoints):
             username=username,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate("v2/centrality.harmonic", G, config, mutate_property)
+        result = self._node_property_endpoints.run_job_and_mutate("v2/centrality.harmonic", config, mutate_property)
 
         return ClosenessHarmonicMutateResult(**result)
 
@@ -75,7 +75,7 @@ class ClosenessHarmonicArrowEndpoints(ClosenessHarmonicEndpoints):
             username=username,
         )
 
-        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/centrality.harmonic", G, config)
+        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/centrality.harmonic", config)
 
         return ClosenessHarmonicStatsResult(**computation_result)
 
@@ -128,7 +128,12 @@ class ClosenessHarmonicArrowEndpoints(ClosenessHarmonicEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/centrality.harmonic", G, config, write_concurrency, concurrency, write_property
+            "v2/centrality.harmonic",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return ClosenessHarmonicWriteResult(**result)

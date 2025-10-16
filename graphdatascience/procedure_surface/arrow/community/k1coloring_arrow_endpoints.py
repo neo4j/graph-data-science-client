@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.community.k1coloring_endpoints impor
     K1ColoringWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class K1ColoringArrowEndpoints(K1ColoringEndpoints):
@@ -22,7 +22,7 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -53,7 +53,7 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
             username=username,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate("v2/community.k1coloring", G, config, mutate_property)
+        result = self._node_property_endpoints.run_job_and_mutate("v2/community.k1coloring", config, mutate_property)
 
         return K1ColoringMutateResult(**result)
 
@@ -83,7 +83,7 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
             username=username,
         )
 
-        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/community.k1coloring", G, config)
+        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/community.k1coloring", config)
 
         return K1ColoringStatsResult(**computation_result)
 
@@ -148,7 +148,12 @@ class K1ColoringArrowEndpoints(K1ColoringEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/community.k1coloring", G, config, write_concurrency, concurrency, write_property
+            "v2/community.k1coloring",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return K1ColoringWriteResult(**result)

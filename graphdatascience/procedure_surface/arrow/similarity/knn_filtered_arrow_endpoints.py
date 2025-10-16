@@ -78,7 +78,7 @@ class KnnFilteredArrowEndpoints(KnnFilteredEndpoints):
         )
 
         result = self._endpoints_helper.run_job_and_mutate(
-            "v2/similarity.knn.filtered", G, config, mutate_property, mutate_relationship_type
+            "v2/similarity.knn.filtered", config, mutate_property, mutate_relationship_type
         )
 
         return KnnMutateResult(**result)
@@ -131,7 +131,7 @@ class KnnFilteredArrowEndpoints(KnnFilteredEndpoints):
             username=username,
         )
 
-        result = self._endpoints_helper.run_job_and_get_summary("v2/similarity.knn.filtered", G, config)
+        result = self._endpoints_helper.run_job_and_get_summary("v2/similarity.knn.filtered", config)
         result["similarityPairs"] = result.pop("relationshipsWritten", 0)
         return KnnStatsResult(**result)
 

@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints
     LabelPropagationWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class LabelPropagationArrowEndpoints(LabelPropagationEndpoints):
@@ -22,7 +22,7 @@ class LabelPropagationArrowEndpoints(LabelPropagationEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -61,7 +61,7 @@ class LabelPropagationArrowEndpoints(LabelPropagationEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_mutate(
-            "v2/community.labelPropagation", G, config, mutate_property
+            "v2/community.labelPropagation", config, mutate_property
         )
 
         return LabelPropagationMutateResult(**result)
@@ -100,7 +100,7 @@ class LabelPropagationArrowEndpoints(LabelPropagationEndpoints):
         )
 
         computation_result = self._node_property_endpoints.run_job_and_get_summary(
-            "v2/community.labelPropagation", G, config
+            "v2/community.labelPropagation", config
         )
 
         return LabelPropagationStatsResult(**computation_result)
@@ -180,7 +180,12 @@ class LabelPropagationArrowEndpoints(LabelPropagationEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/community.labelPropagation", G, config, write_concurrency, concurrency, write_property
+            "v2/community.labelPropagation",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return LabelPropagationWriteResult(**result)

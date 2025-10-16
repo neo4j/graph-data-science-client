@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.community.kcore_endpoints import (
     KCoreWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class KCoreArrowEndpoints(KCoreEndpoints):
@@ -22,7 +22,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -48,7 +48,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
             sudo=sudo,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate("v2/community.kcore", G, config, mutate_property)
+        result = self._node_property_endpoints.run_job_and_mutate("v2/community.kcore", config, mutate_property)
 
         return KCoreMutateResult(**result)
 
@@ -73,7 +73,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
             sudo=sudo,
         )
 
-        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/community.kcore", G, config)
+        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/community.kcore", config)
 
         return KCoreStatsResult(**computation_result)
 
@@ -128,7 +128,12 @@ class KCoreArrowEndpoints(KCoreEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/community.kcore", G, config, write_concurrency, concurrency, write_property
+            "v2/community.kcore",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
         return KCoreWriteResult(**result)
 

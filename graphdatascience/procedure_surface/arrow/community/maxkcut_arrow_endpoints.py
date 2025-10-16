@@ -10,7 +10,7 @@ from graphdatascience.procedure_surface.api.community.maxkcut_endpoints import (
     MaxKCutMutateResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class MaxKCutArrowEndpoints(MaxKCutEndpoints):
@@ -23,7 +23,7 @@ class MaxKCutArrowEndpoints(MaxKCutEndpoints):
         self._arrow_client = arrow_client
         self._write_back_client = write_back_client
         self._show_progress = show_progress
-        self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client, show_progress)
+        self._node_property_endpoints = NodePropertyEndpointsHelper(arrow_client, write_back_client, show_progress)
 
     def mutate(
         self,
@@ -59,7 +59,7 @@ class MaxKCutArrowEndpoints(MaxKCutEndpoints):
             vns_max_neighborhood_order=vns_max_neighborhood_order,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate("v2/community.maxkcut", G, config, mutate_property)
+        result = self._node_property_endpoints.run_job_and_mutate("v2/community.maxkcut", config, mutate_property)
 
         return MaxKCutMutateResult(**result)
 

@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.community.modularity_optimization_en
     ModularityOptimizationWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class ModularityOptimizationArrowEndpoints(ModularityOptimizationEndpoints):
@@ -26,7 +26,7 @@ class ModularityOptimizationArrowEndpoints(ModularityOptimizationEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = False,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -67,7 +67,7 @@ class ModularityOptimizationArrowEndpoints(ModularityOptimizationEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_mutate(
-            "v2/community.modularityOptimization", G, config, mutate_property
+            "v2/community.modularityOptimization", config, mutate_property
         )
 
         return ModularityOptimizationMutateResult(**result)
@@ -107,7 +107,7 @@ class ModularityOptimizationArrowEndpoints(ModularityOptimizationEndpoints):
             username=username,
         )
 
-        result = self._node_property_endpoints.run_job_and_get_summary("v2/community.modularityOptimization", G, config)
+        result = self._node_property_endpoints.run_job_and_get_summary("v2/community.modularityOptimization", config)
 
         return ModularityOptimizationStatsResult(**result)
 
@@ -191,7 +191,12 @@ class ModularityOptimizationArrowEndpoints(ModularityOptimizationEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/community.modularityOptimization", G, config, write_concurrency, concurrency, write_property
+            "v2/community.modularityOptimization",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return ModularityOptimizationWriteResult(**result)

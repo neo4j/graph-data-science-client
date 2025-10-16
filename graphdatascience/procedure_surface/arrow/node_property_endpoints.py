@@ -1,133 +1,33 @@
 from typing import Any
 
-from pandas import DataFrame
-
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-
-from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from ...arrow_client.v2.data_mapper_utils import deserialize_single
-from ...arrow_client.v2.job_client import JobClient
-from ...arrow_client.v2.mutation_client import MutationClient
-from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from ..api.estimation_result import EstimationResult
-from ..utils.config_converter import ConfigConverter
+from graphdatascience.procedure_surface.arrow.endpoints_helper_base import EndpointsHelperBase
 
 
-class NodePropertyEndpoints:
+class NodePropertyEndpointsHelper(EndpointsHelperBase):
     """
     Helper class for Arrow algorithm endpoints that work with node properties.
     Provides common functionality for job execution, mutation, streaming, and writing.
     """
 
-    def __init__(
-        self,
-        arrow_client: AuthenticatedArrowClient,
-        write_back_client: RemoteWriteBackClient | None = None,
-        show_progress: bool = True,
-    ):
-        self._arrow_client = arrow_client
-        self._write_back_client = write_back_client
-        self._show_progress = show_progress
-
-    def run_job_and_get_summary(self, endpoint: str, G: GraphV2, config: dict[str, Any]) -> dict[str, Any]:
-        """Run a job and return the computation summary."""
-        show_progress: bool = config.get("logProgress", True) and self._show_progress
-
-        job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress)
-        result = JobClient.get_summary(self._arrow_client, job_id)
-        if config := result.get("configuration", None):
-            self._drop_write_internals(config)
-        return result
-
-    def run_job_and_mutate(
-        self, endpoint: str, G: GraphV2, config: dict[str, Any], mutate_property: str
-    ) -> dict[str, Any]:
-        """Run a job, mutate node properties, and return summary with mutation result."""
-        show_progress = config.get("logProgress", True) and self._show_progress
-        job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress)
-        mutate_result = MutationClient.mutate_node_property(self._arrow_client, job_id, mutate_property)
-        computation_result = JobClient.get_summary(self._arrow_client, job_id)
-
-        # modify computation result to include mutation details
-        computation_result["nodePropertiesWritten"] = mutate_result.node_properties_written
-        computation_result["mutateMillis"] = mutate_result.mutate_millis
-
-        if (config := computation_result.get("configuration", None)) is not None:
-            config["mutateProperty"] = mutate_property
-            self._drop_write_internals(config)
-
-        return computation_result
-
-    def run_job_and_stream(self, endpoint: str, G: GraphV2, config: dict[str, Any]) -> DataFrame:
-        """Run a job and return streamed results."""
-        show_progress = config.get("logProgress", True) and self._show_progress
-        job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress=show_progress)
-        return JobClient.stream_results(self._arrow_client, G.name(), job_id)
+    def run_job_and_mutate(self, endpoint: str, config: dict[str, Any], mutate_property: str) -> dict[str, Any]:
+        return self._run_job_and_mutate(endpoint, config, mutate_property=mutate_property)
 
     def run_job_and_write(
         self,
         endpoint: str,
         G: GraphV2,
         config: dict[str, Any],
+        property_overwrites: str | dict[str, str],
         write_concurrency: int | None = None,
         concurrency: int | None = None,
-        property_overwrites: str | dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        """Run a job, write results, and return summary with write time."""
-        show_progress = config.get("logProgress", True) and self._show_progress
-        job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress=show_progress)
-        computation_result = JobClient.get_summary(self._arrow_client, job_id)
-
-        if self._write_back_client is None:
-            raise Exception("Write back client is not initialized")
-
-        if isinstance(property_overwrites, str):
-            # The remote write back procedure allows specifying a single overwrite. The key is ignored.
-            property_overwrites = {property_overwrites: property_overwrites}
-
-        write_result = self._write_back_client.write(
-            G.name(),
-            job_id,
-            concurrency=write_concurrency if write_concurrency is not None else concurrency,
+        return self._run_job_and_write(
+            endpoint,
+            G,
+            config,
             property_overwrites=property_overwrites,
-            log_progress=show_progress,
+            relationship_type_overwrite=None,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
-
-        # modify computation result to include write details
-        computation_result["writeMillis"] = write_result.write_millis
-
-        return computation_result
-
-    def create_base_config(self, G: GraphV2, **kwargs: Any) -> dict[str, Any]:
-        """Create base configuration with common parameters."""
-        return ConfigConverter.convert_to_gds_config(graph_name=G.name(), **kwargs)
-
-    def create_estimate_config(self, **kwargs: Any) -> dict[str, Any]:
-        """Create configuration for estimation."""
-        return ConfigConverter.convert_to_gds_config(**kwargs)
-
-    def estimate(
-        self,
-        estimate_endpoint: str,
-        G: GraphV2 | dict[str, Any],
-        algo_config: dict[str, Any] | None = None,
-    ) -> EstimationResult:
-        """Estimate memory requirements for the algorithm."""
-        if isinstance(G, GraphV2):
-            payload = {"graphName": G.name()}
-        elif isinstance(G, dict):
-            payload = G
-        else:
-            raise ValueError("Either graph_name or projection_config must be provided.")
-
-        payload.update(algo_config or {})
-
-        res = self._arrow_client.do_action_with_retry(estimate_endpoint, payload)
-
-        return EstimationResult(**deserialize_single(res))
-
-    def _drop_write_internals(self, config: dict[str, Any]) -> None:
-        config.pop("writeConcurrency", None)
-        config.pop("writeToResultStore", None)
-        config.pop("writeProperty", None)
-        config.pop("writeMillis", None)

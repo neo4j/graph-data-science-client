@@ -9,7 +9,7 @@ from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import 
     NodeLabelMutateResult,
     NodeLabelWriteResult,
 )
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 
 
@@ -20,11 +20,11 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
         self._arrow_client = arrow_client
-        self._node_property_endpoints = NodePropertyEndpoints(arrow_client, write_back_client)
+        self._node_property_endpoints = NodePropertyEndpointsHelper(arrow_client, write_back_client)
         self._show_progress = show_progress
 
     def mutate(
@@ -83,6 +83,11 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/graph.nodeLabel.stream", G, config, write_concurrency, concurrency
+            "v2/graph.nodeLabel.stream",
+            G,
+            config,
+            property_overwrites={},
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
         return NodeLabelWriteResult(**result)

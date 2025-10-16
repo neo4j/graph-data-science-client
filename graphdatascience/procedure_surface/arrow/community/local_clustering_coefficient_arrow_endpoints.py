@@ -10,7 +10,7 @@ from graphdatascience.procedure_surface.api.community.local_clustering_coefficie
     LocalClusteringCoefficientWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoints):
@@ -20,7 +20,7 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
         remote_write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             client,
             remote_write_back_client,
             show_progress,
@@ -53,7 +53,7 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
         )
 
         result = self._node_property_endpoints.run_job_and_mutate(
-            "v2/community.localClusteringCoefficient", G, config, mutate_property
+            "v2/community.localClusteringCoefficient", config, mutate_property
         )
 
         return LocalClusteringCoefficientMutateResult(**result)
@@ -85,7 +85,6 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
 
         result = self._node_property_endpoints.run_job_and_get_summary(
             "v2/community.localClusteringCoefficient",
-            G,
             config,
         )
 
@@ -155,9 +154,9 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
             "v2/community.localClusteringCoefficient",
             G,
             config,
-            write_concurrency,
-            concurrency,
-            write_property,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return LocalClusteringCoefficientWriteResult(**result)

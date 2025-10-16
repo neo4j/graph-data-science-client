@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.centrality.degree_endpoints import (
     DegreeWriteResult,
 )
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
 
 class DegreeArrowEndpoints(DegreeEndpoints):
@@ -22,7 +22,7 @@ class DegreeArrowEndpoints(DegreeEndpoints):
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._node_property_endpoints = NodePropertyEndpoints(
+        self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
 
@@ -52,7 +52,7 @@ class DegreeArrowEndpoints(DegreeEndpoints):
             sudo=sudo,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate("v2/centrality.degree", G, config, mutate_property)
+        result = self._node_property_endpoints.run_job_and_mutate("v2/centrality.degree", config, mutate_property)
 
         return DegreeMutateResult(**result)
 
@@ -81,7 +81,7 @@ class DegreeArrowEndpoints(DegreeEndpoints):
             sudo=sudo,
         )
 
-        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/centrality.degree", G, config)
+        computation_result = self._node_property_endpoints.run_job_and_get_summary("v2/centrality.degree", config)
 
         return DegreeStatsResult(**computation_result)
 
@@ -140,7 +140,12 @@ class DegreeArrowEndpoints(DegreeEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_write(
-            "v2/centrality.degree", G, config, write_concurrency, concurrency, write_property
+            "v2/centrality.degree",
+            G,
+            config,
+            property_overwrites=write_property,
+            write_concurrency=write_concurrency,
+            concurrency=concurrency,
         )
 
         return DegreeWriteResult(**result)
