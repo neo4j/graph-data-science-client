@@ -865,12 +865,8 @@ class GdsArrowClient:
 
     @staticmethod
     def handle_flight_error(e: Exception) -> None:
-        if (
-            isinstance(e, flight.FlightServerError)
-            or isinstance(e, flight.FlightInternalError)
-            or isinstance(e, ClientError)
-        ):
-            original_message = e.args[0]
+        if isinstance(e, flight.FlightServerError | flight.FlightInternalError | ClientError):
+            original_message = e.args[0] if len(e.args) > 0 else e.message
             improved_message = original_message.replace(
                 "Flight RPC failed with message: org.apache.arrow.flight.FlightRuntimeException: ", ""
             )
