@@ -44,10 +44,6 @@ class NodeSimilarityFilteredEndpoints(ABC):
         """
         Runs the Filtered Node Similarity algorithm and stores the results as new relationships in the graph catalog.
 
-        The Filtered Node Similarity algorithm computes the similarity between nodes based on their neighborhoods
-        with customizable source and target node filters, creating new relationships between each node and its
-        most similar neighbors within the filtered subset.
-
         Parameters
         ----------
         G : GraphV2
@@ -128,10 +124,6 @@ class NodeSimilarityFilteredEndpoints(ABC):
         """
         Runs the Filtered Node Similarity algorithm and returns execution statistics.
 
-        The Filtered Node Similarity algorithm computes the similarity between nodes based on their neighborhoods
-        with customizable source and target node filters, creating new relationships between each node and its
-        most similar neighbors within the filtered subset.
-
         Parameters
         ----------
         G : GraphV2
@@ -207,10 +199,6 @@ class NodeSimilarityFilteredEndpoints(ABC):
     ) -> DataFrame:
         """
         Runs the Filtered Node Similarity algorithm and returns the result as a DataFrame.
-
-        The Filtered Node Similarity algorithm computes the similarity between nodes based on their neighborhoods
-        with customizable source and target node filters, creating new relationships between each node and its
-        most similar neighbors within the filtered subset.
 
         Parameters
         ----------
@@ -291,10 +279,6 @@ class NodeSimilarityFilteredEndpoints(ABC):
         """
         Runs the Filtered Node Similarity algorithm and writes the results back to the database.
 
-        The Filtered Node Similarity algorithm computes the similarity between nodes based on their neighborhoods
-        with customizable source and target node filters, creating new relationships between each node and its
-        most similar neighbors within the filtered subset.
-
         Parameters
         ----------
         G : GraphV2
@@ -374,10 +358,6 @@ class NodeSimilarityFilteredEndpoints(ABC):
     ) -> EstimationResult:
         """
         Estimates the memory requirements for running the Filtered Node Similarity algorithm.
-
-        The Filtered Node Similarity algorithm computes the similarity between nodes based on their neighborhoods
-        with customizable source and target node filters, creating new relationships between each node and its
-        most similar neighbors within the filtered subset.
 
         Parameters
         ----------
