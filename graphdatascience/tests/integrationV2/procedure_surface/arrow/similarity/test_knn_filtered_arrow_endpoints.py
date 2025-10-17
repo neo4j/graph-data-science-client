@@ -106,6 +106,7 @@ def test_knn_filtered_mutate(knn_filtered_endpoints: KnnFilteredArrowEndpoints, 
     assert "concurrency" in result.configuration
 
 
+@pytest.mark.db_integration
 def test_knn_filtered_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
