@@ -73,7 +73,7 @@ class NodeSimilarityEndpoints(ABC):
         similarity_metric : str, default="JACCARD"
             The similarity metric to use for computation.
         use_components : bool | str, default=False
-            Whether to compute similarity within connected components.
+            Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None
@@ -143,7 +143,7 @@ class NodeSimilarityEndpoints(ABC):
         similarity_metric : str, default="JACCARD"
             The similarity metric to use for computation.
         use_components : bool | str, default=False
-            Whether to compute similarity within connected components.
+            Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None
@@ -213,7 +213,7 @@ class NodeSimilarityEndpoints(ABC):
         similarity_metric : str, default="JACCARD"
             The similarity metric to use for computation.
         use_components : bool | str, default=False
-            Whether to compute similarity within connected components.
+            Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None
@@ -290,7 +290,7 @@ class NodeSimilarityEndpoints(ABC):
         similarity_metric : str, default="JACCARD"
             The similarity metric to use for computation.
         use_components : bool | str, default=False
-            Whether to compute similarity within connected components.
+            Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None
@@ -338,7 +338,7 @@ class NodeSimilarityEndpoints(ABC):
     ) -> EstimationResult:
         """
         Estimates the memory requirements for running the Node Similarity algorithm.
-        
+
         Parameters
         ----------
         G : GraphV2
@@ -360,7 +360,7 @@ class NodeSimilarityEndpoints(ABC):
         similarity_metric : str, default="JACCARD"
             The similarity metric to use for computation.
         use_components : bool | str, default=False
-            Whether to compute similarity within connected components.
+            Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None

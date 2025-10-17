@@ -71,9 +71,9 @@ class NodeSimilarityFilteredEndpoints(ABC):
         upper_degree_cutoff : int, default=2147483647
             The maximum degree a node can have to be considered.
         similarity_metric : str, default="JACCARD"
-            The similarity metric to use for computation.
+            The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components : bool | str, default=False
-            Whether to compute similarity within connected components.
+            Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None
@@ -147,9 +147,9 @@ class NodeSimilarityFilteredEndpoints(ABC):
         upper_degree_cutoff : int, default=2147483647
             The maximum degree a node can have to be considered.
         similarity_metric : str, default="JACCARD"
-            The similarity metric to use for computation.
+            The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components : bool | str, default=False
-            Whether to compute similarity within connected components.
+            Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None
@@ -223,9 +223,9 @@ class NodeSimilarityFilteredEndpoints(ABC):
         upper_degree_cutoff : int, default=2147483647
             The maximum degree a node can have to be considered.
         similarity_metric : str, default="JACCARD"
-            The similarity metric to use for computation.
+            The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components : bool | str, default=False
-            Whether to compute similarity within connected components.
+            Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None
@@ -306,9 +306,9 @@ class NodeSimilarityFilteredEndpoints(ABC):
         upper_degree_cutoff : int, default=2147483647
             The maximum degree a node can have to be considered.
         similarity_metric : str, default="JACCARD"
-            The similarity metric to use for computation.
+            The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components : bool | str, default=False
-            Whether to compute similarity within connected components.
+            Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None
@@ -382,9 +382,9 @@ class NodeSimilarityFilteredEndpoints(ABC):
         upper_degree_cutoff : int, default=2147483647
             The maximum degree a node can have to be considered.
         similarity_metric : str, default="JACCARD"
-            The similarity metric to use for computation.
+            The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components : bool | str, default=False
-            Whether to compute similarity within connected components.
+            Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None
