@@ -10,8 +10,6 @@ from graphdatascience.procedure_surface.cypher.community.clique_counting_cypher_
 )
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
-pytest.skip("CliqueCounting has not yet landed in a Neo4j release", allow_module_level=True)
-
 
 @pytest.fixture
 def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
@@ -23,7 +21,7 @@ def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
     projection_query = """
         MATCH (n)
         OPTIONAL MATCH (n)-[r]->(m)
-        WITH gds.graph.project('g', n, m, {relationshipType: "T"}, {undirectedRelationshipTyps: ["T"]}) AS G
+        WITH gds.graph.project('g', n, m, {relationshipType: "T"}, {undirectedRelationshipTypes: ["T"]}) AS G
         RETURN G
     """
 
@@ -58,9 +56,8 @@ def test_clique_counting_stream(
         G=sample_graph,
     )
 
-    assert "nodeId" in result_df.columns
-    assert "cliqueCount" in result_df.columns
-    assert len(result_df.columns) == 2
+    assert set(result_df.columns) == {"nodeId", "counts"}
+    assert len(result_df) == 4
 
 
 def test_clique_counting_mutate(
