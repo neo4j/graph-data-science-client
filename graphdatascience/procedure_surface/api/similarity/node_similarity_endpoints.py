@@ -48,9 +48,6 @@ class NodeSimilarityEndpoints(ABC):
         """
         Runs the Node Similarity algorithm and stores the results as new relationships in the graph catalog.
 
-        The Node Similarity algorithm computes the similarity between nodes based on their neighborhoods,
-        creating new relationships between each node and its most similar neighbors.
-
         Parameters
         ----------
         G : GraphV2
@@ -125,9 +122,6 @@ class NodeSimilarityEndpoints(ABC):
         """
         Runs the Node Similarity algorithm and returns execution statistics.
 
-        The Node Similarity algorithm computes the similarity between nodes based on their neighborhoods,
-        creating new relationships between each node and its most similar neighbors.
-
         Parameters
         ----------
         G : GraphV2
@@ -197,9 +191,6 @@ class NodeSimilarityEndpoints(ABC):
     ) -> DataFrame:
         """
         Runs the Node Similarity algorithm and returns the result as a DataFrame.
-
-        The Node Similarity algorithm computes the similarity between nodes based on their neighborhoods,
-        creating new relationships between each node and its most similar neighbors.
 
         Parameters
         ----------
@@ -274,9 +265,6 @@ class NodeSimilarityEndpoints(ABC):
         """
         Runs the Node Similarity algorithm and writes the results back to the database.
 
-        The Node Similarity algorithm computes the similarity between nodes based on their neighborhoods,
-        creating new relationships between each node and its most similar neighbors.
-
         Parameters
         ----------
         G : GraphV2
@@ -350,10 +338,7 @@ class NodeSimilarityEndpoints(ABC):
     ) -> EstimationResult:
         """
         Estimates the memory requirements for running the Node Similarity algorithm.
-
-        The Node Similarity algorithm computes the similarity between nodes based on their neighborhoods,
-        creating new relationships between each node and its most similar neighbors.
-
+        
         Parameters
         ----------
         G : GraphV2
