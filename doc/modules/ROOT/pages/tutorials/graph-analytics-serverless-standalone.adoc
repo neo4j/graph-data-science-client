@@ -12,10 +12,10 @@ https://github.com/neo4j/graph-data-science-client/blob/main/examples/graph-anal
 in the Neo4j Graph Data Science Client Github repository.
 
 The notebook shows how to use the `graphdatascience` Python library to
-create, manage, and use a GDS Session.
+create, manage, and use an Aura Graph Analytics (AGA) Session.
 
 We consider a graph of people and fruits, which we’re using as a simple
-example to show how to load data from Pandas `DataFrame` to a GDS
+example to show how to load data from Pandas `DataFrame` to an AGA
 Session, run algorithms, and inspect the results. We will cover all
 management operations: creation, listing, and deletion.
 
@@ -138,13 +138,15 @@ gds_sessions = sessions.list()
 DataFrame(gds_sessions)
 ----
 
-== Adding a dataset
+== Projecting a dataset
 
-We assume that the configured Neo4j database instance is empty. We will
-add our dataset using standard Cypher.
+AGA sessions always start empty, with no data. So our first step will be
+to project data into the session. In this example, we will illustrate
+how to do this using Pandas DataFrames.
 
-In a more realistic scenario, this step is already done, and we would
-just connect to the existing database.
+Many systems offer ways to read data into Pandas DataFrames, enabling
+these systems to be used as data sources for AGA. For simplicity, we
+will define the DataFrames used in this notebook by hand.
 
 [source, python, role=no-test]
 ----
@@ -185,9 +187,12 @@ knows_df["relationshipType"] = "KNOWS"
 
 == Construct Graph from DataFrames
 
-Now that we have imported a graph to our database, we create graphs
-directly from pandas `DataFrame` objects. We do that by using the
-`gds.graph.construct()` method.
+With DataFrames in hand, the next step is to build a graph from them. We
+do that by using the `gds.graph.construct()` function.
+
+After calling this function, we will get a Graph Object back,
+representing the graph that now exists within the AGA session. We will
+use it as input to the various algorithms that we will run on the graph.
 
 [source, python, role=no-test]
 ----
