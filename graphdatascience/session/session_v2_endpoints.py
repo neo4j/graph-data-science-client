@@ -64,6 +64,7 @@ from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_train_arr
 )
 from graphdatascience.procedure_surface.arrow.node_embedding.hashgnn_arrow_endpoints import HashGNNArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.node2vec_arrow_endpoints import Node2VecArrowEndpoints
+from graphdatascience.procedure_surface.arrow.system_arrow_endpoints import SystemArrowEndpoints
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
@@ -90,6 +91,10 @@ class SessionV2Endpoints:
     @property
     def config(self) -> ConfigArrowEndpoints:
         return ConfigArrowEndpoints(self._arrow_client)
+
+    @property
+    def system(self) -> SystemArrowEndpoints:
+        return SystemArrowEndpoints(self._arrow_client)
 
     ## Algorithms
 
