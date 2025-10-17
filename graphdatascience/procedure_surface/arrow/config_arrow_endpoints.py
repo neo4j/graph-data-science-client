@@ -13,23 +13,21 @@ from graphdatascience.procedure_surface.utils.config_converter import ConfigConv
 
 
 class ConfigArrowEndpoints(ConfigEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient, show_progress: bool = False):
+    def __init__(self, arrow_client: AuthenticatedArrowClient):
         self._arrow_client = arrow_client
-        self._show_progress = show_progress
 
     @property
     def defaults(self) -> DefaultsEndpoints:
-        return DefaultsArrowEndpoints(self._arrow_client, self._show_progress)
+        return DefaultsArrowEndpoints(self._arrow_client)
 
     @property
     def limits(self) -> LimitsEndpoints:
-        return LimitsArrowEndpoints(self._arrow_client, self._show_progress)
+        return LimitsArrowEndpoints(self._arrow_client)
 
 
 class DefaultsArrowEndpoints(DefaultsEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient, show_progress: bool = False):
+    def __init__(self, arrow_client: AuthenticatedArrowClient):
         self._arrow_client = arrow_client
-        self._show_progress = show_progress
 
     def set(
         self,
@@ -58,9 +56,8 @@ class DefaultsArrowEndpoints(DefaultsEndpoints):
 
 
 class LimitsArrowEndpoints(LimitsEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient, show_progress: bool = False):
+    def __init__(self, arrow_client: AuthenticatedArrowClient):
         self._arrow_client = arrow_client
-        self._show_progress = show_progress
 
     def set(
         self,
