@@ -16,6 +16,7 @@ from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.tests.integrationV2.conftest import inside_ci
 
 LOGGER = logging.getLogger(__name__)
 
@@ -55,7 +56,7 @@ def latest_neo4j_version() -> str:
 
 
 def start_session(
-    inside_ci: bool, logs_dir: Path, network: Network, password_dir: Path
+    logs_dir: Path, network: Network, password_dir: Path
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
     if (session_uri := os.environ.get("GDS_SESSION_URI")) is not None:
         uri_parts = session_uri.split(":")
@@ -76,7 +77,7 @@ def start_session(
         .with_exposed_ports(8491)
         .with_volume_mapping(password_dir, "/passwords")
     )
-    if not inside_ci:
+    if not inside_ci():
         session_container = session_container.with_network(network).with_network_aliases("gds-session")
     with session_container as session_container:
         wait_for_logs(session_container, "Running GDS tasks: 0")
@@ -90,7 +91,7 @@ def start_session(
         if stderr:
             print(f"Error logs from session container:\n{stderr}")
 
-        if inside_ci:
+        if inside_ci():
             print(f"Session container logs:\n{stdout}")
 
         out_file = logs_dir / "session_container.log"
@@ -109,7 +110,7 @@ def create_arrow_client(session_uri: GdsSessionConnectionInfo) -> AuthenticatedA
     )
 
 
-def start_database(inside_ci: bool, logs_dir: Path, network: Network) -> Generator[DbmsConnectionInfo, None, None]:
+def start_database(logs_dir: Path, network: Network) -> Generator[DbmsConnectionInfo, None, None]:
     default_neo4j_image = (
         f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura/neo4j-enterprise:{latest_neo4j_version()}"
     )
@@ -142,7 +143,7 @@ def start_database(inside_ci: bool, logs_dir: Path, network: Network) -> Generat
         if stderr:
             print(f"Error logs from database container:\n{stderr}")
 
-        if inside_ci:
+        if inside_ci():
             print(f"Database container logs:\n{stdout}")
 
         out_file = db_logs_dir / "stdout.log"

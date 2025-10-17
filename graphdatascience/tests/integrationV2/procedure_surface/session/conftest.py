@@ -18,9 +18,9 @@ from graphdatascience.tests.integrationV2.procedure_surface.conftest import (
 
 @pytest.fixture(scope="package")
 def session_connection(
-    network: Network, password_dir: Path, logs_dir: Path, inside_ci: bool
+    network: Network, password_dir: Path, logs_dir: Path
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
-    yield from start_session(inside_ci, logs_dir, network, password_dir)
+    yield from start_session(logs_dir, network, password_dir)
 
 
 @pytest.fixture(scope="package")
@@ -29,8 +29,8 @@ def arrow_client(session_connection: GdsSessionConnectionInfo) -> AuthenticatedA
 
 
 @pytest.fixture(scope="package")
-def neo4j_connection(network: Network, logs_dir: Path, inside_ci: bool) -> Generator[DbmsConnectionInfo, None, None]:
-    yield from start_database(inside_ci, logs_dir, network)
+def neo4j_connection(network: Network, logs_dir: Path) -> Generator[DbmsConnectionInfo, None, None]:
+    yield from start_database(logs_dir, network)
 
 
 @pytest.fixture(scope="package")
