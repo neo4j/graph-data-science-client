@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractproperty
 from typing import Any
 
 from pandas import DataFrame
@@ -16,7 +16,7 @@ from graphdatascience.procedure_surface.api.similarity.knn_results import (
 
 
 class KnnEndpoints(ABC):
-    @abstractmethod
+    @abstractproperty
     def filtered(self) -> KnnFilteredEndpoints:
         pass
 

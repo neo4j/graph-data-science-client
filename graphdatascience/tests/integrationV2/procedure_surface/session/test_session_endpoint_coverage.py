@@ -3,9 +3,7 @@ from collections import defaultdict
 
 import pytest
 
-from graphdatascience import QueryRunner, ServerVersion
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
 MISSING_ALGO_ENDPOINTS = {
