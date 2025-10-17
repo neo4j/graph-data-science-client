@@ -11,11 +11,12 @@ from testcontainers.neo4j import Neo4jContainer
 from graphdatascience import QueryRunner
 from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.tests.integrationV2.conftest import inside_ci
 
 
 @pytest.fixture(scope="package")
 def gds_plugin_container(
-    logs_dir: Path, inside_ci: bool, tmp_path_factory: pytest.TempPathFactory
+    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory
 ) -> Generator[Neo4jContainer, None, None]:
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", "neo4j:enterprise")
 
@@ -58,7 +59,7 @@ def gds_plugin_container(
         if stderr:
             print(f"Error logs from Neo4j container:\n{stderr}")
 
-        if inside_ci:
+        if inside_ci():
             print(f"Neo4j container logs:\n{stdout}")
 
         out_file = db_logs_dir / "stdout.log"
