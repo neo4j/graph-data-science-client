@@ -34,6 +34,8 @@ def arrow_client(session_connection: DockerContainer) -> AuthenticatedArrowClien
 
 @pytest.fixture(scope="package")
 def neo4j_connection(network: Network, logs_dir: Path, inside_ci: bool) -> Generator[DbmsConnectionInfo, None, None]:
+    if inside_ci:
+        raise RuntimeError("Communication between Session and DB is not supported yet in CI.")
     yield from start_database(inside_ci, logs_dir, network)
 
 
