@@ -34,7 +34,7 @@ version `1.15` or later.
 
 [source, python, role=no-test]
 ----
-%pip install "graphdatascience>=1.15" python-dotenv
+%pip install "graphdatascience>=1.15" python-dotenv "neo4j_viz[gds]"
 ----
 
 [source, python, role=no-test]
@@ -202,6 +202,18 @@ relationships = [likes_df, knows_df]
 
 G = gds.graph.construct("people-fruits", nodes, relationships)
 str(G)
+----
+
+[source, python, role=no-test]
+----
+# Let us visualize the projected graph
+from neo4j_viz.gds import from_gds
+
+VG = from_gds(gds, G, db_node_properties=["name"])
+for node in VG.nodes:
+    node.caption = node.properties.get("name")
+
+VG.render(initial_zoom=1.2)
 ----
 
 == Running Algorithms
