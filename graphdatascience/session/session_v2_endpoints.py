@@ -15,6 +15,7 @@ from graphdatascience.procedure_surface.api.community.modularity_optimization_en
 from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaEndpoints
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.shortest_path_endpoints import ShortestPathEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
 from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.articlerank_arrow_endpoints import ArticleRankArrowEndpoints
@@ -64,6 +65,9 @@ from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_train_arr
 )
 from graphdatascience.procedure_surface.arrow.node_embedding.hashgnn_arrow_endpoints import HashGNNArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.node2vec_arrow_endpoints import Node2VecArrowEndpoints
+from graphdatascience.procedure_surface.arrow.pathfinding.shortest_path_arrow_endpoints import (
+    ShortestPathArrowEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints import KnnArrowEndpoints
 from graphdatascience.query_runner.query_runner import QueryRunner
 
@@ -212,6 +216,12 @@ class SessionV2Endpoints:
     @property
     def scc(self) -> SccArrowEndpoints:
         return SccArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
+
+    @property
+    def shortestPath(self) -> ShortestPathEndpoints:
+        return ShortestPathArrowEndpoints(
+            self._arrow_client, self._write_back_client, show_progress=self._show_progress
+        )
 
     @property
     def sllpa(self) -> SllpaEndpoints:

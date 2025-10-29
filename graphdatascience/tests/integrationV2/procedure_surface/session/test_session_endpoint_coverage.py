@@ -7,7 +7,6 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
 MISSING_ALGO_ENDPOINTS = {
-    "pathfinding.sourceTarget.dijkstra.estimate",
     "pathfinding.sourceTarget.aStar",
     "pathfinding.prizeSteinerTree.estimate",
     "pathfinding.sourceTarget.yens",
@@ -21,7 +20,6 @@ MISSING_ALGO_ENDPOINTS = {
     "pathfinding.singleSource.dijkstra.estimate",
     "pathfinding.prizeSteinerTree",
     "pathfinding.spanningTree.estimate",
-    "pathfinding.sourceTarget.dijkstra",
     "pathfinding.kSpanningTree",
     "pathfinding.spanningTree",
     "pathfinding.sourceTarget.aStar.estimate",

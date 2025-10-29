@@ -11,7 +11,7 @@ class RelationshipEndpointsHelper(EndpointsHelperBase):
     """
 
     def run_job_and_mutate(
-        self, endpoint: str, config: Dict[str, Any], mutate_property: str, mutate_relationship_type: str
+        self, endpoint: str, config: Dict[str, Any], mutate_property: str | None, mutate_relationship_type: str
     ) -> Dict[str, Any]:
         """Run a job, mutate node properties, and return summary with mutation result."""
         return self._run_job_and_mutate(
