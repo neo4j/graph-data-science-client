@@ -46,6 +46,8 @@ class EndpointsHelperBase:
         show_progress = config.get("logProgress", True) and self._show_progress
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress)
 
+        computation_result = JobClient.get_summary(self._arrow_client, job_id)
+
         if mutate_relationship_type:
             mutate_result = MutationClient.mutate_relationship_property(
                 self._arrow_client, job_id, mutate_relationship_type, mutate_property
@@ -55,11 +57,12 @@ class EndpointsHelperBase:
         else:
             raise ValueError("Either mutate_property or mutate_relationship_type must be provided for mutation.")
 
-        computation_result = JobClient.get_summary(self._arrow_client, job_id)
-
-        # modify computation result to include mutation details
-        computation_result["nodePropertiesWritten"] = mutate_result.node_properties_written
         computation_result["mutateMillis"] = mutate_result.mutate_millis
+        if mutate_property:
+            # modify computation result to include mutation details
+            computation_result["nodePropertiesWritten"] = mutate_result.node_properties_written
+        if mutate_relationship_type:
+            computation_result["relationshipsWritten"] = mutate_result.relationships_written
 
         if (config := computation_result.get("configuration", None)) is not None:
             config["mutateProperty"] = mutate_property
@@ -109,6 +112,11 @@ class EndpointsHelperBase:
 
         # modify computation result to include write details
         computation_result["writeMillis"] = write_result.write_millis
+
+        if relationship_type_overwrite:
+            computation_result["relationshipsWritten"] = write_result.written_relationships
+        if property_overwrites:
+            computation_result["propertiesWritten"] = write_result.written_node_properties
 
         return computation_result
 
