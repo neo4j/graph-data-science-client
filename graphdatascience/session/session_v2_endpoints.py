@@ -1,20 +1,37 @@
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
+from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import ArticleRankEndpoints
+from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import ArticulationPointsEndpoints
+from graphdatascience.procedure_surface.api.centrality.betweenness_endpoints import BetweennessEndpoints
+from graphdatascience.procedure_surface.api.centrality.celf_endpoints import CelfEndpoints
+from graphdatascience.procedure_surface.api.centrality.closeness_endpoints import ClosenessEndpoints
+from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoints import ClosenessHarmonicEndpoints
+from graphdatascience.procedure_surface.api.centrality.degree_endpoints import DegreeEndpoints
+from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import EigenvectorEndpoints
+from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import PageRankEndpoints
 from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import CliqueCountingEndpoints
 from graphdatascience.procedure_surface.api.community.hdbscan_endpoints import HdbscanEndpoints
+from graphdatascience.procedure_surface.api.community.k1coloring_endpoints import K1ColoringEndpoints
+from graphdatascience.procedure_surface.api.community.kcore_endpoints import KCoreEndpoints
 from graphdatascience.procedure_surface.api.community.kmeans_endpoints import KMeansEndpoints
 from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints import LabelPropagationEndpoints
 from graphdatascience.procedure_surface.api.community.leiden_endpoints import LeidenEndpoints
 from graphdatascience.procedure_surface.api.community.local_clustering_coefficient_endpoints import (
     LocalClusteringCoefficientEndpoints,
 )
+from graphdatascience.procedure_surface.api.community.louvain_endpoints import LouvainEndpoints
 from graphdatascience.procedure_surface.api.community.maxkcut_endpoints import MaxKCutEndpoints
 from graphdatascience.procedure_surface.api.community.modularity_optimization_endpoints import (
     ModularityOptimizationEndpoints,
 )
+from graphdatascience.procedure_surface.api.community.scc_endpoints import SccEndpoints
 from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaEndpoints
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
+from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints
+from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
+from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNEndpoints
+from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.shortest_path_endpoints import ShortestPathEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
@@ -109,17 +126,17 @@ class SessionV2Endpoints:
         )
 
     @property
-    def article_rank(self) -> ArticleRankArrowEndpoints:
+    def article_rank(self) -> ArticleRankEndpoints:
         return ArticleRankArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
-    def articulation_points(self) -> ArticulationPointsArrowEndpoints:
+    def articulation_points(self) -> ArticulationPointsEndpoints:
         return ArticulationPointsArrowEndpoints(
             self._arrow_client, self._write_back_client, show_progress=self._show_progress
         )
 
     @property
-    def betweenness_centrality(self) -> BetweennessArrowEndpoints:
+    def betweenness_centrality(self) -> BetweennessEndpoints:
         return BetweennessArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
@@ -129,19 +146,19 @@ class SessionV2Endpoints:
         )
 
     @property
-    def closeness_centrality(self) -> ClosenessArrowEndpoints:
+    def closeness_centrality(self) -> ClosenessEndpoints:
         return ClosenessArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
-    def degree_centrality(self) -> DegreeArrowEndpoints:
+    def degree_centrality(self) -> DegreeEndpoints:
         return DegreeArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
-    def eigenvector_centrality(self) -> EigenvectorArrowEndpoints:
+    def eigenvector_centrality(self) -> EigenvectorEndpoints:
         return EigenvectorArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
-    def fast_rp(self) -> FastRPArrowEndpoints:
+    def fast_rp(self) -> FastRPEndpoints:
         return FastRPArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
@@ -156,13 +173,13 @@ class SessionV2Endpoints:
         )
 
     @property
-    def harmonic_centrality(self) -> ClosenessHarmonicArrowEndpoints:
+    def harmonic_centrality(self) -> ClosenessHarmonicEndpoints:
         return ClosenessHarmonicArrowEndpoints(
             self._arrow_client, self._write_back_client, show_progress=self._show_progress
         )
 
     @property
-    def hash_gnn(self) -> HashGNNArrowEndpoints:
+    def hash_gnn(self) -> HashGNNEndpoints:
         return HashGNNArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
@@ -170,15 +187,15 @@ class SessionV2Endpoints:
         return HdbscanArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
-    def influence_maximization_celf(self) -> CelfArrowEndpoints:
+    def influence_maximization_celf(self) -> CelfEndpoints:
         return CelfArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
-    def k1_coloring(self) -> K1ColoringArrowEndpoints:
+    def k1_coloring(self) -> K1ColoringEndpoints:
         return K1ColoringArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
-    def k_core_decomposition(self) -> KCoreArrowEndpoints:
+    def k_core_decomposition(self) -> KCoreEndpoints:
         return KCoreArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
@@ -206,7 +223,7 @@ class SessionV2Endpoints:
         )
 
     @property
-    def louvain(self) -> LouvainArrowEndpoints:
+    def louvain(self) -> LouvainEndpoints:
         return LouvainArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
@@ -220,7 +237,7 @@ class SessionV2Endpoints:
         )
 
     @property
-    def node2vec(self) -> Node2VecArrowEndpoints:
+    def node2vec(self) -> Node2VecEndpoints:
         return Node2VecArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
@@ -230,11 +247,11 @@ class SessionV2Endpoints:
         )
 
     @property
-    def page_rank(self) -> PageRankArrowEndpoints:
+    def page_rank(self) -> PageRankEndpoints:
         return PageRankArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
-    def scc(self) -> SccArrowEndpoints:
+    def scc(self) -> SccEndpoints:
         return SccArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
@@ -254,5 +271,5 @@ class SessionV2Endpoints:
         )
 
     @property
-    def wcc(self) -> WccArrowEndpoints:
+    def wcc(self) -> WccEndpoints:
         return WccArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
