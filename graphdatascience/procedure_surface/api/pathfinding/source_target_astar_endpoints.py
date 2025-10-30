@@ -10,7 +10,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
-class DijkstraWriteResult(BaseResult):
+class AStarWriteResult(BaseResult):
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
@@ -19,7 +19,7 @@ class DijkstraWriteResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class DijkstraMutateResult(BaseResult):
+class AStarMutateResult(BaseResult):
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
@@ -28,13 +28,15 @@ class DijkstraMutateResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class SourceTargetDijkstraEndpoints(ABC):
+class SourceTargetAStarEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
         G: GraphV2,
         source_node: int,
-        target_nodes: int | list[int],
+        target_node: int,
+        latitude_property: str,
+        longitude_property: str,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] | None = None,
         node_labels: list[str] | None = None,
@@ -45,7 +47,7 @@ class SourceTargetDijkstraEndpoints(ABC):
         job_id: str | None = None,
     ) -> DataFrame:
         """
-        Runs the Dijkstra shortest path algorithm for a source node to one or more target nodes and returns the result as a DataFrame.
+        Runs the A* shortest path algorithm and returns the result as a DataFrame.
 
         Parameters
         ----------
@@ -53,8 +55,12 @@ class SourceTargetDijkstraEndpoints(ABC):
             The graph to run the algorithm on.
         source_node : int
             The source node for the shortest path computation.
-        target_nodes : int | list[int]
-            A single target node or a list of target nodes for the shortest path computation.
+        target_node : int
+            The target node for the shortest path computation.
+        latitude_property : str
+            The node property that stores latitude values.
+        longitude_property : str
+            The node property that stores longitude values.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None
@@ -84,7 +90,9 @@ class SourceTargetDijkstraEndpoints(ABC):
         G: GraphV2,
         mutate_relationship_type: str,
         source_node: int,
-        target_nodes: int | list[int],
+        target_node: int,
+        latitude_property: str,
+        longitude_property: str,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] | None = None,
         node_labels: list[str] | None = None,
@@ -93,9 +101,9 @@ class SourceTargetDijkstraEndpoints(ABC):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
-    ) -> DijkstraMutateResult:
+    ) -> AStarMutateResult:
         """
-        Runs the Dijkstra shortest path algorithm for a source node to one or more target nodes and stores the results as new relationships in the graph catalog.
+        Runs the A* shortest path algorithm and stores the results as new relationships in the graph catalog.
 
         Parameters
         ----------
@@ -105,8 +113,12 @@ class SourceTargetDijkstraEndpoints(ABC):
             The relationship type to use for the new relationships in the graph catalog.
         source_node : int
             The source node for the shortest path computation.
-        target_nodes : int | list[int]
-            A single target node or a list of target nodes for the shortest path computation.
+        target_node : int
+            The target node for the shortest path computation.
+        latitude_property : str
+            The node property that stores latitude values.
+        longitude_property : str
+            The node property that stores longitude values.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None
@@ -126,7 +138,7 @@ class SourceTargetDijkstraEndpoints(ABC):
 
         Returns
         -------
-        DijkstraMutateResult
+        AStarMutateResult
             Object containing metadata from the execution.
         """
 
@@ -136,7 +148,9 @@ class SourceTargetDijkstraEndpoints(ABC):
         G: GraphV2,
         write_relationship_type: str,
         source_node: int,
-        target_nodes: int | list[int],
+        target_node: int,
+        latitude_property: str,
+        longitude_property: str,
         write_node_ids: bool = False,
         write_costs: bool = False,
         relationship_weight_property: str | None = None,
@@ -148,9 +162,9 @@ class SourceTargetDijkstraEndpoints(ABC):
         concurrency: int | None = None,
         job_id: str | None = None,
         write_concurrency: int | None = None,
-    ) -> DijkstraWriteResult:
+    ) -> AStarWriteResult:
         """
-        Runs the Dijkstra shortest path algorithm for a source node to one or more target nodes and writes the results back to the database.
+        Runs the A* shortest path algorithm and writes the results back to the database.
 
         Parameters
         ----------
@@ -160,12 +174,16 @@ class SourceTargetDijkstraEndpoints(ABC):
             The relationship type to use for the new relationships.
         source_node : int
             The source node for the shortest path computation.
-        target_nodes : int | list[int]
-            A single target node or a list of target nodes for the shortest path computation.
+        target_node : int
+            The target node for the shortest path computation.
+        latitude_property : str
+            The node property that stores latitude values.
+        longitude_property : str
+            The node property that stores longitude values.
         write_node_ids : bool, default=False
-            Whether to write node IDs of the shortest path onto the relationship(s).
+            Whether to write node IDs of the shortest path onto the relationship.
         write_costs : bool, default=False
-            Whether to write costs of the shortest path onto the relationship(s).
+            Whether to write costs of the shortest path onto the relationship.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None
@@ -187,7 +205,7 @@ class SourceTargetDijkstraEndpoints(ABC):
 
         Returns
         -------
-        DijkstraWriteResult
+        AStarWriteResult
             Object containing metadata from the execution.
         """
 
@@ -196,7 +214,9 @@ class SourceTargetDijkstraEndpoints(ABC):
         self,
         G: GraphV2 | dict[str, Any],
         source_node: int,
-        target_nodes: int | list[int],
+        target_node: int,
+        latitude_property: str,
+        longitude_property: str,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] | None = None,
         node_labels: list[str] | None = None,
@@ -205,7 +225,7 @@ class SourceTargetDijkstraEndpoints(ABC):
         concurrency: int | None = None,
     ) -> EstimationResult:
         """
-        Estimates the memory requirements for running the Dijkstra shortest path algorithm for a source node to one or more target nodes.
+        Estimates the memory requirements for running the A* shortest path algorithm.
 
         Parameters
         ----------
@@ -213,8 +233,12 @@ class SourceTargetDijkstraEndpoints(ABC):
             The graph to run the algorithm on.
         source_node : int
             The source node for the shortest path computation.
-        target_nodes : int | list[int]
-            A single target node or a list of target nodes for the shortest path computation.
+        target_node : int
+            The target node for the shortest path computation.
+        latitude_property : str
+            The node property that stores latitude values.
+        longitude_property : str
+            The node property that stores longitude values.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None

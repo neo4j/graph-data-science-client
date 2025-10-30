@@ -6,9 +6,8 @@ from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.arrow.pathfinding.source_target_dijkstra_arrow_endpoints import (
-    SourceTargetDijkstraArrowEndpoints,
-)
+from graphdatascience.procedure_surface.api.pathfinding.source_target_astar_endpoints import AStarWriteResult
+from graphdatascience.procedure_surface.arrow.pathfinding.source_target_astar_arrow_endpoints import AStarArrowEndpoints
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -17,11 +16,11 @@ from graphdatascience.tests.integrationV2.procedure_surface.node_lookup_helper i
 
 graph = """
         CREATE
-            (a: Node {id: 0}),
-            (b: Node {id: 1}),
-            (c: Node {id: 2}),
-            (d: Node {id: 3}),
-            (e: Node {id: 4}),
+            (a: Node {id: 0, latitude: 55.6761, longitude: 12.5683}),
+            (b: Node {id: 1, latitude: 55.6869, longitude: 12.5985}),
+            (c: Node {id: 2, latitude: 55.6889, longitude: 12.5872}),
+            (d: Node {id: 3, latitude: 55.6867, longitude: 12.5760}),
+            (e: Node {id: 4, latitude: 55.6842, longitude: 12.5681}),
             (a)-[:ROAD {cost: 50}]->(b),
             (a)-[:ROAD {cost: 50}]->(c),
             (a)-[:ROAD {cost: 100}]->(d),
@@ -47,8 +46,8 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
         "g",
         graph,
         """
-                    MATCH (source)-[r:ROAD]->(target)
-                    WITH gds.graph.project.remote(source, target, {relationshipProperties: properties(r)}) as g
+                    MATCH (source)-[r]->(target)
+                    WITH gds.graph.project.remote(source, target, {sourceNodeProperties: properties(source), targetNodeProperties: properties(target), relationshipProperties: properties(r)}) as g
                     RETURN g
                 """,
     ) as g:
@@ -56,64 +55,36 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
 
 
 @pytest.fixture
-def dijkstra_endpoints(
+def astar_endpoints(
     arrow_client: AuthenticatedArrowClient,
-) -> Generator[SourceTargetDijkstraArrowEndpoints, None, None]:
-    yield SourceTargetDijkstraArrowEndpoints(arrow_client)
+) -> Generator[AStarArrowEndpoints, None, None]:
+    yield AStarArrowEndpoints(arrow_client)
 
 
-def test_dijkstra_stream(dijkstra_endpoints: SourceTargetDijkstraArrowEndpoints, sample_graph: GraphV2) -> None:
-    result_df = dijkstra_endpoints.stream(
+def test_astar_stream(astar_endpoints: AStarArrowEndpoints, sample_graph: GraphV2) -> None:
+    result_df = astar_endpoints.stream(
         G=sample_graph,
-        source_node=0,  # Node A
-        target_nodes=[3, 4],  # Nodes D and E
+        source_node=0,
+        target_node=4,
+        latitude_property="latitude",
+        longitude_property="longitude",
         relationship_weight_property="cost",
     )
 
-    assert len(result_df) == 2
-    assert set(result_df.columns) == {
-        "sourceNode",
-        "targetNode",
-        "totalCost",
-        "nodeIds",
-        "costs",
-        "index",
-    }  # skipping path column
+    assert len(result_df) > 0
+    assert "sourceNode" in result_df.columns
+    assert "targetNode" in result_df.columns
+    assert "totalCost" in result_df.columns
 
 
-@pytest.mark.db_integration
-def test_dijkstra_write(
-    db_graph: GraphV2,
-    arrow_client: AuthenticatedArrowClient,
-    query_runner: QueryRunner,
-) -> None:
-    endpoints_with_writeback = SourceTargetDijkstraArrowEndpoints(
-        arrow_client=arrow_client,
-        write_back_client=RemoteWriteBackClient(arrow_client, query_runner),
-    )
-
-    result = endpoints_with_writeback.write(
-        G=db_graph,
-        write_relationship_type="PATH",
-        source_node=find_node_by_id(query_runner, 0),
-        target_nodes=find_node_by_id(query_runner, 1),
-        relationship_weight_property="cost",
-    )
-
-    assert result.pre_processing_millis >= 0
-    assert result.compute_millis >= 0
-    assert result.post_processing_millis >= 0
-    assert result.write_millis >= 0
-    assert result.relationships_written == 1
-    assert "sourceNode" in result.configuration
-
-
-def test_dijkstra_mutate(dijkstra_endpoints: SourceTargetDijkstraArrowEndpoints, sample_graph: GraphV2) -> None:
-    result = dijkstra_endpoints.mutate(
+def test_astar_mutate(astar_endpoints: AStarArrowEndpoints, sample_graph: GraphV2) -> None:
+    result = astar_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="PATH",
-        source_node=0,  # Node A
-        target_nodes=4,  # Node E
+        source_node=0,
+        target_node=4,
+        latitude_property="latitude",
+        longitude_property="longitude",
         relationship_weight_property="cost",
     )
 
@@ -125,11 +96,43 @@ def test_dijkstra_mutate(dijkstra_endpoints: SourceTargetDijkstraArrowEndpoints,
     assert "sourceNode" in result.configuration
 
 
-def test_dijkstra_estimate(dijkstra_endpoints: SourceTargetDijkstraArrowEndpoints, sample_graph: GraphV2) -> None:
-    result = dijkstra_endpoints.estimate(
+@pytest.mark.db_integration
+def test_astar_write(
+    arrow_client: AuthenticatedArrowClient,
+    query_runner: QueryRunner,
+    db_graph: GraphV2,
+) -> None:
+    endpoints_with_writeback = AStarArrowEndpoints(
+        arrow_client=arrow_client,
+        write_back_client=RemoteWriteBackClient(arrow_client, query_runner),
+    )
+
+    result = endpoints_with_writeback.write(
+        G=db_graph,
+        write_relationship_type="PATH",
+        source_node=find_node_by_id(query_runner, 0),
+        target_node=4,
+        latitude_property="latitude",
+        longitude_property="longitude",
+        relationship_weight_property="cost",
+    )
+
+    assert isinstance(result, AStarWriteResult)
+    assert result.pre_processing_millis >= 0
+    assert result.compute_millis >= 0
+    assert result.post_processing_millis >= 0
+    assert result.write_millis >= 0
+    assert result.relationships_written == 1
+    assert "sourceNode" in result.configuration
+
+
+def test_astar_estimate(astar_endpoints: AStarArrowEndpoints, sample_graph: GraphV2) -> None:
+    result = astar_endpoints.estimate(
         sample_graph,
         source_node=0,
-        target_nodes=4,
+        target_node=4,
+        latitude_property="latitude",
+        longitude_property="longitude",
         relationship_weight_property="cost",
     )
 
