@@ -33,6 +33,7 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints i
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_endpoints import PrizeSteinerTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.shortest_path_endpoints import ShortestPathEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints import SteinerTreeEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
@@ -87,6 +88,9 @@ from graphdatascience.procedure_surface.arrow.node_embedding.hashgnn_arrow_endpo
 from graphdatascience.procedure_surface.arrow.node_embedding.node2vec_arrow_endpoints import Node2VecArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pathfinding.all_shortest_path_arrow_endpoints import (
     AllShortestPathArrowEndpoints,
+)
+from graphdatascience.procedure_surface.arrow.pathfinding.prize_steiner_tree_arrow_endpoints import (
+    PrizeSteinerTreeArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.pathfinding.shortest_path_arrow_endpoints import (
     ShortestPathArrowEndpoints,
@@ -253,6 +257,12 @@ class SessionV2Endpoints:
     @property
     def page_rank(self) -> PageRankEndpoints:
         return PageRankArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
+
+    @property
+    def prize_steiner_tree(self) -> PrizeSteinerTreeEndpoints:
+        return PrizeSteinerTreeArrowEndpoints(
+            self._arrow_client, self._write_back_client, show_progress=self._show_progress
+        )
 
     @property
     def scc(self) -> SccEndpoints:
