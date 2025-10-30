@@ -7,9 +7,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
 MISSING_ALGO_ENDPOINTS = {
-    "pathfinding.spanningTree.estimate",
     "pathfinding.kSpanningTree",
-    "pathfinding.spanningTree",
 }
 
 # mapping of the snake-cased version of endpoint parts to the actual attribute names in SessionV2Endpoints
@@ -34,8 +32,6 @@ ENDPOINT_MAPPINGS = {
     "source_target": "shortest_path",
     "single_source": "all_shortest_path",
     "delta_stepping": "delta",
-    "prizesteiner_tree": "prize_steiner_tree",
-    "steiner_tree": "steiner_tree",
 }
 
 
