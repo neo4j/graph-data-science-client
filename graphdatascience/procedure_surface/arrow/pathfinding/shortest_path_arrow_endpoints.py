@@ -11,11 +11,17 @@ from graphdatascience.procedure_surface.api.pathfinding.source_target_astar_endp
 from graphdatascience.procedure_surface.api.pathfinding.source_target_dijkstra_endpoints import (
     SourceTargetDijkstraEndpoints,
 )
+from graphdatascience.procedure_surface.api.pathfinding.source_target_yens_endpoints import (
+    SourceTargetYensEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.pathfinding.source_target_astar_arrow_endpoints import (
     AStarArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.pathfinding.source_target_dijkstra_arrow_endpoints import (
     SourceTargetDijkstraArrowEndpoints,
+)
+from graphdatascience.procedure_surface.arrow.pathfinding.source_target_yens_arrow_endpoints import (
+    YensArrowEndpoints,
 )
 
 
@@ -28,6 +34,7 @@ class ShortestPathArrowEndpoints(ShortestPathEndpoints):
     ):
         self._dijkstra = SourceTargetDijkstraArrowEndpoints(arrow_client, write_back_client, show_progress)
         self._astar = AStarArrowEndpoints(arrow_client, write_back_client, show_progress)
+        self._yens = YensArrowEndpoints(arrow_client, write_back_client, show_progress)
 
     @property
     def dijkstra(self) -> SourceTargetDijkstraEndpoints:
@@ -36,3 +43,7 @@ class ShortestPathArrowEndpoints(ShortestPathEndpoints):
     @property
     def astar(self) -> SourceTargetAStarEndpoints:
         return self._astar
+
+    @property
+    def yens(self) -> SourceTargetYensEndpoints:
+        return self._yens

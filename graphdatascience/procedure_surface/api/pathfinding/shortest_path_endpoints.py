@@ -8,12 +8,15 @@ from graphdatascience.procedure_surface.api.pathfinding.source_target_astar_endp
 from graphdatascience.procedure_surface.api.pathfinding.source_target_dijkstra_endpoints import (
     SourceTargetDijkstraEndpoints,
 )
+from graphdatascience.procedure_surface.api.pathfinding.source_target_yens_endpoints import (
+    SourceTargetYensEndpoints,
+)
 
 
 class ShortestPathEndpoints(ABC):
     """
     Container for shortest path algorithm endpoints.
-    Provides access to different shortest path algorithms like Dijkstra and A*.
+    Provides access to different shortest path algorithms such as Dijkstra and A*.
     """
 
     @property
@@ -26,4 +29,10 @@ class ShortestPathEndpoints(ABC):
     @abstractmethod
     def astar(self) -> SourceTargetAStarEndpoints:
         """Access to A* shortest path algorithm endpoints."""
+        ...
+
+    @property
+    @abstractmethod
+    def yens(self) -> SourceTargetYensEndpoints:
+        """Access to Yen's K shortest paths algorithm endpoints."""
         ...

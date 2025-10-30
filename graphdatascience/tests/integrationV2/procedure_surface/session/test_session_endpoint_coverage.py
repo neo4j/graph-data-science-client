@@ -8,7 +8,6 @@ from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
 MISSING_ALGO_ENDPOINTS = {
     "pathfinding.prizeSteinerTree.estimate",
-    "pathfinding.sourceTarget.yens",
     "pathfinding.singleSource.deltaStepping.estimate",
     "pathfinding.singleSource.deltaStepping",
     "pathfinding.steinerTree",
@@ -21,7 +20,6 @@ MISSING_ALGO_ENDPOINTS = {
     "pathfinding.spanningTree.estimate",
     "pathfinding.kSpanningTree",
     "pathfinding.spanningTree",
-    "pathfinding.sourceTarget.yens.estimate",
 }
 
 ENDPOINT_MAPPINGS = {
