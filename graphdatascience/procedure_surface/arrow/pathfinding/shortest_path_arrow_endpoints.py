@@ -41,7 +41,7 @@ class ShortestPathArrowEndpoints(ShortestPathEndpoints):
         return self._dijkstra
 
     @property
-    def astar(self) -> SourceTargetAStarEndpoints:
+    def a_star(self) -> SourceTargetAStarEndpoints:
         return self._astar
 
     @property

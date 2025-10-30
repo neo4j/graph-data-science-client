@@ -15,8 +15,10 @@ from graphdatascience.procedure_surface.api.community.modularity_optimization_en
 from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaEndpoints
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.shortest_path_endpoints import ShortestPathEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
+from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
 from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.articlerank_arrow_endpoints import ArticleRankArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.articulationpoints_arrow_endpoints import (
@@ -65,10 +67,16 @@ from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_train_arr
 )
 from graphdatascience.procedure_surface.arrow.node_embedding.hashgnn_arrow_endpoints import HashGNNArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.node2vec_arrow_endpoints import Node2VecArrowEndpoints
+from graphdatascience.procedure_surface.arrow.pathfinding.all_shortest_path_arrow_endpoints import (
+    AllShortestPathArrowEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.pathfinding.shortest_path_arrow_endpoints import (
     ShortestPathArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints import KnnArrowEndpoints
+from graphdatascience.procedure_surface.arrow.similarity.node_similarity_arrow_endpoints import (
+    NodeSimilarityArrowEndpoints,
+)
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
@@ -93,6 +101,12 @@ class SessionV2Endpoints:
         return CatalogArrowEndpoints(self._arrow_client, self._db_client, show_progress=self._show_progress)
 
     ## Algorithms
+
+    @property
+    def all_shortest_path(self) -> AllShortestPathEndpoints:
+        return AllShortestPathArrowEndpoints(
+            self._arrow_client, self._write_back_client, show_progress=self._show_progress
+        )
 
     @property
     def article_rank(self) -> ArticleRankArrowEndpoints:
@@ -210,6 +224,12 @@ class SessionV2Endpoints:
         return Node2VecArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
+    def node_similarity(self) -> NodeSimilarityEndpoints:
+        return NodeSimilarityArrowEndpoints(
+            self._arrow_client, self._write_back_client, show_progress=self._show_progress
+        )
+
+    @property
     def page_rank(self) -> PageRankArrowEndpoints:
         return PageRankArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
@@ -218,7 +238,7 @@ class SessionV2Endpoints:
         return SccArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
-    def shortestPath(self) -> ShortestPathEndpoints:
+    def shortest_path(self) -> ShortestPathEndpoints:
         return ShortestPathArrowEndpoints(
             self._arrow_client, self._write_back_client, show_progress=self._show_progress
         )

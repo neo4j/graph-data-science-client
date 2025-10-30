@@ -27,7 +27,7 @@ class ShortestPathEndpoints(ABC):
 
     @property
     @abstractmethod
-    def astar(self) -> SourceTargetAStarEndpoints:
+    def a_star(self) -> SourceTargetAStarEndpoints:
         """Access to A* shortest path algorithm endpoints."""
         ...
 
