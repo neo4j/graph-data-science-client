@@ -34,6 +34,7 @@ from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints imp
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.shortest_path_endpoints import ShortestPathEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints import SteinerTreeEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
 from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
 from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
@@ -89,6 +90,9 @@ from graphdatascience.procedure_surface.arrow.pathfinding.all_shortest_path_arro
 )
 from graphdatascience.procedure_surface.arrow.pathfinding.shortest_path_arrow_endpoints import (
     ShortestPathArrowEndpoints,
+)
+from graphdatascience.procedure_surface.arrow.pathfinding.steiner_tree_arrow_endpoints import (
+    SteinerTreeArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints import KnnArrowEndpoints
 from graphdatascience.procedure_surface.arrow.similarity.node_similarity_arrow_endpoints import (
@@ -259,6 +263,10 @@ class SessionV2Endpoints:
         return ShortestPathArrowEndpoints(
             self._arrow_client, self._write_back_client, show_progress=self._show_progress
         )
+
+    @property
+    def steiner_tree(self) -> SteinerTreeEndpoints:
+        return SteinerTreeArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def sllpa(self) -> SllpaEndpoints:
