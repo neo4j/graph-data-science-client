@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
+from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_ford_endpoints import (
+    SingleSourceBellmanFordEndpoints,
+)
 from graphdatascience.procedure_surface.api.pathfinding.single_source_delta_endpoints import SingleSourceDeltaEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.single_source_dijkstra_endpoints import (
     SingleSourceDijkstraEndpoints,
@@ -11,7 +14,7 @@ from graphdatascience.procedure_surface.api.pathfinding.single_source_dijkstra_e
 class AllShortestPathEndpoints(ABC):
     """
     Container for shortest path algorithm endpoints from a given source node.
-    Provides access to different shortest path algorithms such as Delta Stepping and Dijkstra.
+    Provides access to different shortest path algorithms such as Delta Stepping, Dijkstra, and Bellman-Ford.
     """
 
     @property
@@ -24,4 +27,10 @@ class AllShortestPathEndpoints(ABC):
     @abstractmethod
     def dijkstra(self) -> SingleSourceDijkstraEndpoints:
         """Access to Dijkstra shortest path algorithm endpoints."""
+        ...
+
+    @property
+    @abstractmethod
+    def bellman_ford(self) -> SingleSourceBellmanFordEndpoints:
+        """Access to Bellman-Ford shortest path algorithm endpoints."""
         ...
