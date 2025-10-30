@@ -8,20 +8,19 @@ from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
 MISSING_ALGO_ENDPOINTS = {
     "pathfinding.prizeSteinerTree.estimate",
-    "pathfinding.singleSource.deltaStepping.estimate",
-    "pathfinding.singleSource.deltaStepping",
-    "pathfinding.steinerTree",
-    "pathfinding.singleSource.dijkstra",
     "pathfinding.singleSource.bellmanFord",
+    "pathfinding.steinerTree",
     "pathfinding.steinerTree.estimate",
     "pathfinding.singleSource.bellmanFord.estimate",
-    "pathfinding.singleSource.dijkstra.estimate",
     "pathfinding.prizeSteinerTree",
     "pathfinding.spanningTree.estimate",
     "pathfinding.kSpanningTree",
     "pathfinding.spanningTree",
+    "pathfinding.singleSource.dijkstra",
+    "pathfinding.singleSource.dijkstra.estimate",
 }
 
+# mapping of the snake-cased version of endpoint parts to the actual attribute names in SessionV2Endpoints
 ENDPOINT_MAPPINGS = {
     # centrality algos
     "betweenness": "betweenness_centrality",
@@ -30,17 +29,19 @@ ENDPOINT_MAPPINGS = {
     "degree": "degree_centrality",
     "eigenvector": "eigenvector_centrality",
     "harmonic": "harmonic_centrality",
-    "localClusteringCoefficient": "local_clustering_coefficient",
     # community algos
     "cliquecounting": "clique_counting",
     "k1coloring": "k1_coloring",
     "kcore": "k_core_decomposition",
     "maxkcut": "max_k_cut",
-    "modularityOptimization": "modularity_optimization",
     # embedding algos
     "fastrp": "fast_rp",
     "graphSage": "graphsage",
     "hashgnn": "hash_gnn",
+    # pathfinding algos
+    "source_target": "shortest_path",
+    "single_source": "all_shortest_path",
+    "delta_stepping": "delta",
 }
 
 
@@ -80,7 +81,6 @@ def check_gds_v2_availability(endpoints: SessionV2Endpoints, algo: str) -> bool:
     return True
 
 
-@pytest.mark.db_integration
 def test_algo_coverage(endpoints: SessionV2Endpoints) -> None:
     arrow_client = endpoints._arrow_client
 
