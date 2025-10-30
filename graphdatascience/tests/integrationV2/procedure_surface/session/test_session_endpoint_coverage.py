@@ -6,10 +6,6 @@ import pytest
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
-MISSING_ALGO_ENDPOINTS = {
-    "pathfinding.kSpanningTree",
-}
-
 # mapping of the snake-cased version of endpoint parts to the actual attribute names in SessionV2Endpoints
 ENDPOINT_MAPPINGS = {
     # centrality algos
@@ -32,6 +28,10 @@ ENDPOINT_MAPPINGS = {
     "source_target": "shortest_path",
     "single_source": "all_shortest_path",
     "delta_stepping": "delta",
+    "kspanning_tree": "k_spanning_tree",
+    "prizesteiner_tree": "prize_steiner_tree",
+    "spanning_tree": "spanning_tree",
+    "steiner_tree": "steiner_tree",
 }
 
 
@@ -111,10 +111,5 @@ def test_algo_coverage(endpoints: SessionV2Endpoints) -> None:
     print(f"Total algorithm actions found: {len(algorithm_actions)}")
     print(f"Available through gds.v2: {len(available_endpoints)}")
 
-    # check if any previously missing algos are now available
-    newly_available_endpoints = available_endpoints.intersection(MISSING_ALGO_ENDPOINTS)
-    assert not newly_available_endpoints, "Endpoints now available, please remove from MISSING_ALGO_ENDPOINTS"
-
     # check missing endpoints against known missing algos
-    missing_endpoints = missing_endpoints.difference(MISSING_ALGO_ENDPOINTS)
     assert not missing_endpoints, f"Unexpectedly missing endpoints {len(missing_endpoints)}"
