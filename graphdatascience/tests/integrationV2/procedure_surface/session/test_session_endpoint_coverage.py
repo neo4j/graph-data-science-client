@@ -16,8 +16,6 @@ MISSING_ALGO_ENDPOINTS = {
     "pathfinding.spanningTree.estimate",
     "pathfinding.kSpanningTree",
     "pathfinding.spanningTree",
-    "pathfinding.singleSource.dijkstra",
-    "pathfinding.singleSource.dijkstra.estimate",
 }
 
 # mapping of the snake-cased version of endpoint parts to the actual attribute names in SessionV2Endpoints
