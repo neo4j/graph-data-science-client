@@ -13,7 +13,7 @@
 ## Improvements
 
 - Added retries to verifying connection and authentication of DB connection provided to `GdsSessions.getOrCreate`
-
+- `GdsSessions.get_or_create` now allows to specify the `aura_instance_id`. This is required if the instance id could not be derived from the provided database connection URI.
 
 ## Other changes
 
