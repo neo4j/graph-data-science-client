@@ -248,9 +248,11 @@ class AuraApi:
         return InstanceCreateDetails.from_json(response.json()["data"])
 
     def delete_instance(self, instance_id: str) -> InstanceSpecificDetails | None:
+        # Delete an AuraDB instance.
+        # If the instance cannot be found or was already deleted, returns None.
         response = self._request_session.delete(f"{self._base_uri}/v1/instances/{instance_id}")
 
-        if response.status_code == HTTPStatus.NOT_FOUND.value:
+        if response.status_code in [HTTPStatus.NOT_FOUND.value, HTTPStatus.GONE.value]:
             return None
 
         self._check_resp(response)
