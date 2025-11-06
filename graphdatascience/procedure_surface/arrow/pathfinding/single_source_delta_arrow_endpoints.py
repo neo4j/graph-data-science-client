@@ -90,12 +90,7 @@ class DeltaSteppingArrowEndpoints(SingleSourceDeltaEndpoints):
             jobId=job_id,
         )
 
-        result = self._endpoints_helper.run_job_and_get_result(
-            "v2/pathfinding.singleSource.deltaStepping",
-            G,
-            config,
-            ["preProcessingMillis", "computeMillis", "postProcessingMillis", "configuration"],
-        )
+        result = self._endpoints_helper.run_job_and_get_summary("v2/pathfinding.singleSource.deltaStepping", config)
 
         return DeltaSteppingStatsResult(**result)
 
