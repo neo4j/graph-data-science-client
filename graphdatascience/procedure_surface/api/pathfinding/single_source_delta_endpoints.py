@@ -10,6 +10,13 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
+class DeltaSteppingStatsResult(BaseResult):
+    pre_processing_millis: int
+    compute_millis: int
+    post_processing_millis: int
+    configuration: dict[str, Any]
+
+
 class DeltaSteppingWriteResult(BaseResult):
     pre_processing_millis: int
     compute_millis: int
@@ -76,6 +83,55 @@ class SingleSourceDeltaEndpoints(ABC):
         -------
         DataFrame
             The shortest path results as a DataFrame with columns for sourceNode, targetNode, totalCost, nodeIds, costs, index.
+        """
+
+    @abstractmethod
+    def stats(
+        self,
+        G: GraphV2,
+        source_node: int,
+        delta: float = 2.0,
+        relationship_weight_property: str | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool = False,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+    ) -> DeltaSteppingStatsResult:
+        """
+        Runs the Delta Stepping shortest path algorithm and returns statistics about the execution.
+
+        Parameters
+        ----------
+        G : GraphV2
+            The graph to run the algorithm on.
+        source_node : int
+            The source node for the shortest path computation.
+        delta : float, default=2.0
+            The bucket width for grouping nodes by tentative distance.
+        relationship_weight_property : str | None, default=None
+            The relationship property to use as weights.
+        relationship_types : list[str] | None, default=None
+            Filter on relationship types.
+        node_labels : list[str] | None, default=None
+            Filter on node labels.
+        sudo : bool, default=False
+            Run the algorithm with elevated privileges.
+        log_progress : bool, default=True
+            Whether to log progress.
+        username : str | None, default=None
+            Username for the operation.
+        concurrency : int | None, default=None
+            Concurrency configuration.
+        job_id : str | None, default=None
+            Job ID for the operation.
+
+        Returns
+        -------
+        DeltaSteppingStatsResult
+            Object containing statistics from the execution.
         """
 
     @abstractmethod
