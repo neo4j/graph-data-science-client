@@ -84,6 +84,20 @@ def test_bellman_ford_stream(bellman_ford_endpoints: BellmanFordArrowEndpoints, 
     assert len(result_df) == 5
 
 
+def test_bellman_ford_stats(bellman_ford_endpoints: BellmanFordArrowEndpoints, sample_graph: GraphV2) -> None:
+    result = bellman_ford_endpoints.stats(
+        G=sample_graph,
+        source_node=0,
+        relationship_weight_property="cost",
+    )
+
+    assert result.pre_processing_millis >= 0
+    assert result.compute_millis >= 0
+    assert result.post_processing_millis >= 0
+    assert result.contains_negative_cycle is False
+    assert "sourceNode" in result.configuration
+
+
 def test_bellman_ford_mutate(bellman_ford_endpoints: BellmanFordArrowEndpoints, sample_graph: GraphV2) -> None:
     result = bellman_ford_endpoints.mutate(
         G=sample_graph,
