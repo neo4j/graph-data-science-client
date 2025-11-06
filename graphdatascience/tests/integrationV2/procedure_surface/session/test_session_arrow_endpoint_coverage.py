@@ -22,12 +22,12 @@ ENDPOINT_MAPPINGS = {
     "maxkcut": "max_k_cut",
     # embedding algos
     "fastrp": "fast_rp",
-    "graphSage": "graphsage",
     "hashgnn": "hash_gnn",
     # pathfinding algos
-    "source_target": "shortest_path",
-    "single_source": "all_shortest_path",
-    "delta_stepping": "delta",
+    "sourceTarget": "shortest_path",
+    "singleSource.bellmanFord": "bellman_ford",
+    "singleSource": "all_shortest_paths",
+    "deltaStepping": "delta",
     "kspanning_tree": "k_spanning_tree",
     "prizesteiner_tree": "prize_steiner_tree",
     "spanning_tree": "spanning_tree",
@@ -55,9 +55,12 @@ def to_snake(camel: str) -> str:
 def check_gds_v2_availability(endpoints: SessionV2Endpoints, algo: str) -> bool:
     """Check if an algorithm is available through gds.v2 interface"""
 
+    for old, new in ENDPOINT_MAPPINGS.items():
+        if old in algo:
+            algo = algo.replace(old, new)
+
     algo_parts = algo.split(".")
     algo_parts = [to_snake(part) for part in algo_parts]
-    algo_parts = [ENDPOINT_MAPPINGS.get(part, part) for part in algo_parts]
 
     callable_object = endpoints
     for algo_part in algo_parts:
