@@ -1,6 +1,7 @@
 import logging
 import re
 from datetime import datetime, timedelta, timezone
+from http import HTTPStatus
 
 import pytest
 from _pytest.logging import LogCaptureFixture
@@ -715,7 +716,7 @@ def test_delete_instance(requests_mock: Mocker) -> None:
     )
 
 
-def test_delete_already_deleting_instance(requests_mock: Mocker) -> None:
+def test_delete_missing_instance(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
     mock_auth_token(requests_mock)
@@ -724,6 +725,21 @@ def test_delete_already_deleting_instance(requests_mock: Mocker) -> None:
         status_code=404,
         reason="Not Found",
         json={"errors": [{"message": "DB not found: id0", "reason": "db-not-found"}]},
+    )
+
+    result = api.delete_instance("id0")
+    assert result is None
+
+
+def test_delete_already_deleted_instance(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+    requests_mock.delete(
+        "https://api.neo4j.io/v1/instances/id0",
+        status_code=HTTPStatus.GONE,
+        reason="Already Deleted",
+        json={"errors": [{"message": "DB already deleted: id0", "reason": "db-already-deleted"}]},
     )
 
     result = api.delete_instance("id0")
