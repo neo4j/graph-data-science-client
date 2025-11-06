@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_ford_endpoints import (
     BellmanFordMutateResult,
+    BellmanFordStatsResult,
     BellmanFordWriteResult,
     SingleSourceBellmanFordEndpoints,
 )
@@ -60,6 +61,36 @@ class BellmanFordArrowEndpoints(SingleSourceBellmanFordEndpoints):
             result["isNegativeCycle"] = (result["sourceNode"] == result["targetNode"]) & (result["totalCost"] < 0)
 
         return result
+
+    def stats(
+        self,
+        G: GraphV2,
+        source_node: int,
+        relationship_weight_property: str | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool = False,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+    ) -> BellmanFordStatsResult:
+        config = self._endpoints_helper.create_base_config(
+            G,
+            sourceNode=source_node,
+            relationshipWeightProperty=relationship_weight_property,
+            relationshipTypes=relationship_types,
+            nodeLabels=node_labels,
+            sudo=sudo,
+            logProgress=log_progress,
+            username=username,
+            concurrency=concurrency,
+            jobId=job_id,
+        )
+
+        result = self._endpoints_helper.run_job_and_get_summary("v2/pathfinding.singleSource.bellmanFord", config)
+
+        return BellmanFordStatsResult(**result)
 
     def mutate(
         self,

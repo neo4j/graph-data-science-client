@@ -36,6 +36,9 @@ from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoi
 from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import KSpanningTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_endpoints import PrizeSteinerTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.shortest_path_endpoints import ShortestPathEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_ford_endpoints import (
+    SingleSourceBellmanFordEndpoints,
+)
 from graphdatascience.procedure_surface.api.pathfinding.spanning_tree_endpoints import SpanningTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints import SteinerTreeEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
@@ -100,6 +103,9 @@ from graphdatascience.procedure_surface.arrow.pathfinding.prize_steiner_tree_arr
 from graphdatascience.procedure_surface.arrow.pathfinding.shortest_path_arrow_endpoints import (
     ShortestPathArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.pathfinding.single_source_bellman_ford_arrow_endpoints import (
+    BellmanFordArrowEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.pathfinding.spanning_tree_arrow_endpoints import (
     SpanningTreeArrowEndpoints,
 )
@@ -154,6 +160,10 @@ class SessionV2Endpoints:
     @property
     def betweenness_centrality(self) -> BetweennessEndpoints:
         return BetweennessArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
+
+    @property
+    def bellman_ford(self) -> SingleSourceBellmanFordEndpoints:
+        return BellmanFordArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def clique_counting(self) -> CliqueCountingEndpoints:

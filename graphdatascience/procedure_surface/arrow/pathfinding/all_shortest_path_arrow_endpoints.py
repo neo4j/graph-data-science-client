@@ -3,9 +3,6 @@ from __future__ import annotations
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_ford_endpoints import (
-    SingleSourceBellmanFordEndpoints,
-)
 from graphdatascience.procedure_surface.api.pathfinding.single_source_delta_endpoints import SingleSourceDeltaEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.single_source_dijkstra_endpoints import (
     SingleSourceDijkstraEndpoints,
@@ -39,7 +36,3 @@ class AllShortestPathArrowEndpoints(AllShortestPathEndpoints):
     @property
     def dijkstra(self) -> SingleSourceDijkstraEndpoints:
         return self._dijkstra
-
-    @property
-    def bellman_ford(self) -> SingleSourceBellmanFordEndpoints:
-        return self._bellman_ford
