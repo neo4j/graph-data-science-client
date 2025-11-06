@@ -1,4 +1,5 @@
 import re
+from collections import OrderedDict
 from typing import Any
 from unittest import mock
 
@@ -8,34 +9,67 @@ from graphdatascience.tests.integrationV2.procedure_surface.session.gds_api_spec
     EndpointSpec,
 )
 
-MISSING_ENDPOINTS: set[str] = set(
-    "all_shortest_path.stream",
-)
-
-# mapping of the snake-cased version of endpoint parts to the actual attribute names in SessionV2Endpoints
-ENDPOINT_MAPPINGS = {
-    # centrality algos
-    "betweenness": "betweenness_centrality",
-    "celf": "influence_maximization_celf",
-    "closeness": "closeness_centrality",
-    "degree": "degree_centrality",
-    "eigenvector": "eigenvector_centrality",
-    "harmonic": "harmonic_centrality",
-    # community algos
-    "cliquecounting": "clique_counting",
-    "k1coloring": "k1_coloring",
-    "kcore": "k_core_decomposition",
-    "maxkcut": "max_k_cut",
-    # embedding algos
-    "fastrp": "fast_rp",
-    "graphSage": "graphsage",
-    "hashgnn": "hash_gnn",
-    # pathfinding algos
-    "kspanning_tree": "k_spanning_tree",
-    "prizesteiner_tree": "prize_steiner_tree",
-    "spanning_tree": "spanning_tree",
-    "steiner_tree": "steiner_tree",
+MISSING_ENDPOINTS: set[str] = {
+    "all_shortest_paths.stream",
+    "bfs.stream",
+    "bfs.mutate",
+    "bfs.stats",
+    "bfs.write",
+    "bridges.stream",
+    "conductance.stream",
+    "dag.longest_path.stream",
+    "dag.topological_sort.stream",
+    "dfs.mutate",
+    "dfs.stream",
+    "hits.mutate",
+    "hits.stream",
+    "hits.stats",
+    "hits.write",
+    "max_flow.stream",
+    "max_flow.write",
+    "max_flow.stats",
+    "max_flow.mutate",
+    "modularity.stats",
+    "modularity.stream",
+    "random_walk.stats",
+    "random_walk.stream",
+    "random_walk.mutate",
+    "ml.kge.predict.mutate",
+    "ml.kge.predict.stream",
+    "ml.kge.predict.write",
+    "scale_properties.mutate",
+    "scale_properties.stats",
+    "scale_properties.stream",
+    "scale_properties.write",
 }
+
+
+ENDPOINT_MAPPINGS = OrderedDict(
+    [
+        # centrality algos
+        ("closeness.harmonic", "harmonic_centrality"),
+        ("closeness", "closeness_centrality"),
+        ("betweenness", "betweenness_centrality"),
+        ("degree", "degree_centrality"),
+        ("eigenvector", "eigenvector_centrality"),
+        ("influenceMaximization.celf", "influence_maximization_celf"),
+        # community algos
+        ("cliquecounting", "clique_counting"),
+        ("k1coloring", "k1_coloring"),
+        ("kcore", "k_core_decomposition"),
+        ("maxkcut", "max_k_cut"),
+        # embedding algos
+        ("fastrp", "fast_rp"),
+        ("graphSage", "graphsage"),
+        ("hashgnn", "hash_gnn"),
+        # pathfinding algos
+        ("astar", "a_star"),
+        ("kspanning_tree", "k_spanning_tree"),
+        ("prizesteiner_tree", "prize_steiner_tree"),
+        ("spanning_tree", "spanning_tree"),
+        ("steiner_tree", "steiner_tree"),
+    ]
+)
 
 
 def to_snake(camel: str) -> str:
@@ -52,9 +86,13 @@ def to_snake(camel: str) -> str:
 
 def pythonic_endpoint_name(endpoint: str) -> str:
     endpoint = endpoint.removeprefix("gds.")  # endpoints are called on a object called `gds`
+
+    for old, new in ENDPOINT_MAPPINGS.items():
+        if old in endpoint:
+            endpoint = endpoint.replace(old, new)
+
     endpoint_parts = endpoint.split(".")
     endpoint_parts = [to_snake(part) for part in endpoint_parts]
-    endpoint_parts = [ENDPOINT_MAPPINGS.get(part, part) for part in endpoint_parts]
 
     return ".".join(endpoint_parts)
 
@@ -95,9 +133,9 @@ def test_api_spec_coverage(gds_api_spec: list[EndpointSpec]) -> None:
                 endpoints,
                 endpoint_name,
             )
-            if not callable_object:
+            if not callable_object and endpoint_name not in MISSING_ENDPOINTS:
                 missing_endpoints.add(endpoint_name)
-            else:
+            elif callable_object:
                 # TODO verify against gds-api spec
                 # returnFields = callable_object.__
                 available_endpoints.add(endpoint_name)
@@ -112,5 +150,4 @@ def test_api_spec_coverage(gds_api_spec: list[EndpointSpec]) -> None:
     assert not newly_available_endpoints, "Endpoints now available, please remove from MISSING_ENDPOINTS"
 
     # check missing endpoints against known missing algos
-    missing_endpoints = missing_endpoints.difference(MISSING_ENDPOINTS)
     assert not missing_endpoints, f"Unexpectedly missing endpoints {len(missing_endpoints)}"
