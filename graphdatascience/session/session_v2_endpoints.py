@@ -136,7 +136,7 @@ class SessionV2Endpoints:
     ## Algorithms
 
     @property
-    def all_shortest_path(self) -> AllShortestPathEndpoints:
+    def all_shortest_paths(self) -> AllShortestPathEndpoints:
         return AllShortestPathArrowEndpoints(
             self._arrow_client, self._write_back_client, show_progress=self._show_progress
         )

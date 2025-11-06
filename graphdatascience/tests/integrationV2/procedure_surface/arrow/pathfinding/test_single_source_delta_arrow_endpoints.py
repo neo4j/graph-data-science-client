@@ -75,6 +75,20 @@ def test_delta_stepping_stream(delta_stepping_endpoints: DeltaSteppingArrowEndpo
     assert len(result_df) == 5
 
 
+def test_delta_stepping_stats(delta_stepping_endpoints: DeltaSteppingArrowEndpoints, sample_graph: GraphV2) -> None:
+    result = delta_stepping_endpoints.stats(
+        G=sample_graph,
+        source_node=0,
+        delta=3.0,
+        relationship_weight_property="cost",
+    )
+
+    assert result.pre_processing_millis >= 0
+    assert result.compute_millis >= 0
+    assert result.post_processing_millis >= 0
+    assert "sourceNode" in result.configuration
+
+
 def test_delta_stepping_mutate(delta_stepping_endpoints: DeltaSteppingArrowEndpoints, sample_graph: GraphV2) -> None:
     result = delta_stepping_endpoints.mutate(
         G=sample_graph,

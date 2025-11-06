@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.pathfinding.single_source_delta_endpoints import (
     DeltaSteppingMutateResult,
+    DeltaSteppingStatsResult,
     DeltaSteppingWriteResult,
     SingleSourceDeltaEndpoints,
 )
@@ -60,6 +61,43 @@ class DeltaSteppingArrowEndpoints(SingleSourceDeltaEndpoints):
         map_shortest_path_stream_result(result)
 
         return result
+
+    def stats(
+        self,
+        G: GraphV2,
+        source_node: int,
+        delta: float = 2.0,
+        relationship_weight_property: str | None = None,
+        relationship_types: list[str] | None = None,
+        node_labels: list[str] | None = None,
+        sudo: bool = False,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+    ) -> DeltaSteppingStatsResult:
+        config = self._endpoints_helper.create_base_config(
+            G,
+            sourceNode=source_node,
+            delta=delta,
+            relationshipWeightProperty=relationship_weight_property,
+            relationshipTypes=relationship_types,
+            nodeLabels=node_labels,
+            sudo=sudo,
+            logProgress=log_progress,
+            username=username,
+            concurrency=concurrency,
+            jobId=job_id,
+        )
+
+        result = self._endpoints_helper.run_job_and_get_result(
+            "v2/pathfinding.singleSource.deltaStepping",
+            G,
+            config,
+            ["preProcessingMillis", "computeMillis", "postProcessingMillis", "configuration"],
+        )
+
+        return DeltaSteppingStatsResult(**result)
 
     def mutate(
         self,
