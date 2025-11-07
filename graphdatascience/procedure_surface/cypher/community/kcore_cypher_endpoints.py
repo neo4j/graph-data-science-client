@@ -125,8 +125,6 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
-        target_nodes: Any | None = None,
-        relationship_weight_property: str | None = None,
         write_concurrency: int | None = None,
     ) -> KCoreWriteResult:
         config = ConfigConverter.convert_to_gds_config(
@@ -136,9 +134,7 @@ class KCoreCypherEndpoints(KCoreEndpoints):
             log_progress=log_progress,
             node_labels=node_labels,
             relationship_types=relationship_types,
-            relationship_weight_property=relationship_weight_property,
             sudo=sudo,
-            target_nodes=target_nodes,
             username=username,
             write_concurrency=write_concurrency,
         )

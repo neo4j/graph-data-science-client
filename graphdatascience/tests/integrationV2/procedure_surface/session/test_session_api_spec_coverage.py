@@ -1,6 +1,8 @@
+import inspect
 import re
 import typing
 from collections import OrderedDict
+from types import MethodType
 from typing import Any
 from unittest import mock
 
@@ -11,6 +13,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 from graphdatascience.tests.integrationV2.procedure_surface.session.gds_api_spec import (
     EndpointWithModesSpec,
+    Parameter,
     ReturnField,
 )
 
@@ -76,6 +79,32 @@ ENDPOINT_MAPPINGS = OrderedDict(
     ]
 )
 
+IGNORED_PARAMETERS = {
+    r".*\.write": ["write_to_result_store"],  # writeToResultStore is not relevant for the user
+    r".*shortest_path\.dijkstra.*": ["target_node"],  # marked as deprecated. targetNodes can be used
+    r".*sllpa\.mutate.*": [
+        "relationship_weight_property",
+        "write_property",
+        "write_concurrency",
+        "write_to_result_store",
+    ],
+    r".*sllpa\.(stats|stream).*": [
+        "write_property",
+        "write_to_result_store",
+        "mutate_property",
+        "relationship_weight_property",
+        "write_concurrency",
+    ],
+    r".*sllpa\.write.*": [
+        "mutate_property",
+        "relationship_weight_property",
+    ],
+}
+
+
+def method_str(s: MethodType) -> str:
+    return f"{s.__self__.__class__.__name__}.{s.__name__}"
+
 
 def to_snake(camel: str) -> str:
     # adjusted version of pydantic.alias_generators.to_snake (without digit handling)
@@ -102,11 +131,11 @@ def pythonic_endpoint_name(endpoint: str) -> str:
     return ".".join(endpoint_parts)
 
 
-def resolve_callable_object(endpoints: SessionV2Endpoints, endpoint: str) -> Any | None:
+def resolve_callable_object(endpoints: SessionV2Endpoints, endpoint: str) -> MethodType | None:
     """Check if an algorithm is available through gds.v2 interface"""
     endpoint_parts = endpoint.split(".")
 
-    callable_object = endpoints
+    callable_object: SessionV2Endpoints | MethodType = endpoints
     for endpoint_part in endpoint_parts:
         # Get the algorithm endpoint
         if not hasattr(callable_object, endpoint_part):
@@ -121,13 +150,15 @@ def resolve_callable_object(endpoints: SessionV2Endpoints, endpoint: str) -> Any
 
 
 def verify_return_fields(
-    callable_object: Any,
+    callable_object: MethodType,
     expected_return_fields: list[ReturnField],
 ) -> None:
     return_annotation: Any | None = typing.get_type_hints(callable_object).get("return")
 
     if not return_annotation:
-        raise ValueError(f"Callable object {callable_object} has no return annotation. Mypy should complain :/")
+        raise ValueError(
+            f"Callable object {method_str(callable_object)} has no return annotation. Mypy should complain :/"
+        )
 
     if return_annotation is DataFrame:
         return  # For DataFrames we dont know the columns in advance
@@ -150,6 +181,39 @@ def verify_return_fields(
             f"Callable object {callable_object} has mismatching return fields. "
             f"Missing fields: {missing_fields}, Extra fields: {extra_fields}"
         )
+
+
+def verify_configuration_fields(callable_object: MethodType, endpoint_spec: EndpointWithModesSpec) -> None:
+    expected_configuration = {to_snake(param.name): param for param in endpoint_spec.parameters}
+    py_endpoint = pythonic_endpoint_name(endpoint_spec.name)
+    for endpoint_pattern, ignored_params in IGNORED_PARAMETERS.items():
+        if re.match(endpoint_pattern, py_endpoint):
+            for param in ignored_params:
+                expected_configuration.pop(param)
+
+    method_signature: Any | inspect.Signature = inspect.signature(callable_object)
+
+    if not isinstance(method_signature, inspect.Signature):
+        raise ValueError(f"Callable object {callable_object} has no signature. Actual type {type(method_signature)}")
+
+    actual_parameters = method_signature.parameters
+
+    # validate parameter names match
+    actual_parameters_keys = set(actual_parameters.keys()) - {
+        "G"
+    }  # exclude Graph parameter as its not part of the spec
+    expected_parameter_keys = expected_configuration.keys()
+
+    missing_params = expected_parameter_keys - actual_parameters_keys
+    extra_params = actual_parameters_keys - expected_parameter_keys
+
+    if missing_params or extra_params:
+        raise ValueError(
+            f"Callable object {pythonic_endpoint_name(endpoint_spec.name)} has mismatching method parameters. "
+            f"Missing parameters: {missing_params}, Extra parameters: {extra_params}"
+        )
+
+    # validate optional parameters are after mandatory
 
 
 def test_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec]) -> None:
@@ -176,6 +240,7 @@ def test_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec]) -> None:
                 # returnFields = callable_object.__
                 available_endpoints.add(endpoint_name)
                 verify_return_fields(callable_object, expected_return_fields=endpoint_spec.returnFields)
+                verify_configuration_fields(callable_object, endpoint_spec=endpoint_spec)
 
     # Print summary
     print("\nGDS API Spec Coverage Summary:")
