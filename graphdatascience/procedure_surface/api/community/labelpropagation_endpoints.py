@@ -19,16 +19,16 @@ class LabelPropagationEndpoints(ABC):
         mutate_property: str,
         *,
         concurrency: int | None = None,
-        consecutive_ids: bool | None = False,
+        consecutive_ids: bool = False,
         job_id: str | None = None,
         log_progress: bool = True,
-        max_iterations: int | None = 10,
+        max_iterations: int = 10,
         node_labels: list[str] = ALL_LABELS,
         node_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> LabelPropagationMutateResult:
         """
@@ -42,13 +42,13 @@ class LabelPropagationEndpoints(ABC):
             The property name to store the community ID for each node
         concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : bool | None, default=False
+        consecutive_ids : bool, default=False
             Whether to use consecutive community IDs starting from 0
         job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : int | None, default=10
+        max_iterations : int, default=10
             The maximum number of iterations
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
@@ -60,7 +60,7 @@ class LabelPropagationEndpoints(ABC):
             The property name for relationship weights
         seed_property : str | None, default=None
             The property name containing seed values for initial community assignment
-        sudo : bool | None, default=False
+        sudo : bool, default=False
             Override memory estimation limits
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -78,16 +78,16 @@ class LabelPropagationEndpoints(ABC):
         G: GraphV2,
         *,
         concurrency: int | None = None,
-        consecutive_ids: bool | None = False,
+        consecutive_ids: bool = False,
         job_id: str | None = None,
         log_progress: bool = True,
-        max_iterations: int | None = 10,
+        max_iterations: int = 10,
         node_labels: list[str] = ALL_LABELS,
         node_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> LabelPropagationStatsResult:
         """
@@ -99,13 +99,13 @@ class LabelPropagationEndpoints(ABC):
             The graph to run the algorithm on
         concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : bool | None, default=False
+        consecutive_ids : bool, default=False
             Whether to use consecutive community IDs starting from 0
         job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : int | None, default=10
+        max_iterations : int, default=10
             The maximum number of iterations
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
@@ -117,7 +117,7 @@ class LabelPropagationEndpoints(ABC):
             The property name for relationship weights
         seed_property : str | None, default=None
             The property name containing seed values for initial community assignment
-        sudo : bool | None, default=False
+        sudo : bool, default=False
             Override memory estimation limits
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -135,17 +135,17 @@ class LabelPropagationEndpoints(ABC):
         G: GraphV2,
         *,
         concurrency: int | None = None,
-        consecutive_ids: bool | None = False,
+        consecutive_ids: bool = False,
         job_id: str | None = None,
         log_progress: bool = True,
-        max_iterations: int | None = 10,
+        max_iterations: int = 10,
         min_community_size: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         node_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> DataFrame:
         """
@@ -157,13 +157,13 @@ class LabelPropagationEndpoints(ABC):
             The graph to run the algorithm on
         concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : bool | None, default=False
+        consecutive_ids : bool, default=False
             Whether to use consecutive community IDs starting from 0
         job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : int | None, default=10
+        max_iterations : int, default=10
             The maximum number of iterations
         min_community_size : int | None, default=None
             Minimum community size to include in results
@@ -177,7 +177,7 @@ class LabelPropagationEndpoints(ABC):
             The property name for relationship weights
         seed_property : str | None, default=None
             The property name containing seed values for initial community assignment
-        sudo : bool | None, default=False
+        sudo : bool, default=False
             Override memory estimation limits
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -196,17 +196,17 @@ class LabelPropagationEndpoints(ABC):
         write_property: str,
         *,
         concurrency: int | None = None,
-        consecutive_ids: bool | None = False,
+        consecutive_ids: bool = False,
         job_id: str | None = None,
         log_progress: bool = True,
-        max_iterations: int | None = 10,
+        max_iterations: int = 10,
         min_community_size: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         node_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
         write_concurrency: int | None = None,
     ) -> LabelPropagationWriteResult:
@@ -221,13 +221,13 @@ class LabelPropagationEndpoints(ABC):
             The property name to write the community IDs to
         concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : bool | None, default=False
+        consecutive_ids : bool, default=False
             Whether to use consecutive community IDs starting from 0
         job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : int | None, default=10
+        max_iterations : int, default=10
             The maximum number of iterations
         min_community_size : int | None, default=None
             Minimum community size to include in results
@@ -241,7 +241,7 @@ class LabelPropagationEndpoints(ABC):
             The property name for relationship weights
         seed_property : str | None, default=None
             The property name containing seed values for initial community assignment
-        sudo : bool | None = False
+        sudo : bool, default=False
             Override memory estimation limits
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -261,8 +261,8 @@ class LabelPropagationEndpoints(ABC):
         G: GraphV2 | dict[str, Any],
         *,
         concurrency: int | None = None,
-        consecutive_ids: bool | None = False,
-        max_iterations: int | None = 10,
+        consecutive_ids: bool = False,
+        max_iterations: int = 10,
         node_labels: list[str] = ALL_LABELS,
         node_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
@@ -278,9 +278,9 @@ class LabelPropagationEndpoints(ABC):
             The graph or graph configuration to estimate for
         concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : bool | None, default=False
+        consecutive_ids : bool, default=False
             Whether to use consecutive community IDs starting from 0
-        max_iterations : int | None, default=10
+        max_iterations : int, default=10
             The maximum number of iterations
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
@@ -303,7 +303,7 @@ class LabelPropagationEndpoints(ABC):
 
 class LabelPropagationMutateResult(BaseResult):
     community_count: int
-    community_distribution: dict[str, Any]
+    community_distribution: dict[str, int | float]
     compute_millis: int
     configuration: dict[str, Any]
     did_converge: bool
@@ -316,7 +316,7 @@ class LabelPropagationMutateResult(BaseResult):
 
 class LabelPropagationStatsResult(BaseResult):
     community_count: int
-    community_distribution: dict[str, Any]
+    community_distribution: dict[str, int | float]
     compute_millis: int
     configuration: dict[str, Any]
     did_converge: bool
@@ -327,7 +327,7 @@ class LabelPropagationStatsResult(BaseResult):
 
 class LabelPropagationWriteResult(BaseResult):
     community_count: int
-    community_distribution: dict[str, Any]
+    community_distribution: dict[str, int | float]
     compute_millis: int
     configuration: dict[str, Any]
     did_converge: bool

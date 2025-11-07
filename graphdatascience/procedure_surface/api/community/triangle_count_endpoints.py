@@ -25,7 +25,7 @@ class TriangleCountEndpoints(ABC):
         max_degree: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> TriangleCountMutateResult:
         """
@@ -56,7 +56,7 @@ class TriangleCountEndpoints(ABC):
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        sudo : bool | None, default=False
+        sudo : bool, default=False
             Override memory estimation limits. Setting this to True allows running the algorithm
             even if the estimated memory requirements exceed available memory.
         username : str | None, default=None
@@ -80,7 +80,7 @@ class TriangleCountEndpoints(ABC):
         max_degree: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> TriangleCountStatsResult:
         """
@@ -110,7 +110,7 @@ class TriangleCountEndpoints(ABC):
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        sudo : bool | None, default=False
+        sudo : bool, default=False
             Override memory estimation limits. Setting this to True allows running the algorithm
             even if the estimated memory requirements exceed available memory.
         username : str | None, default=None
@@ -134,7 +134,7 @@ class TriangleCountEndpoints(ABC):
         max_degree: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> DataFrame:
         """
@@ -164,7 +164,7 @@ class TriangleCountEndpoints(ABC):
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        sudo : bool | None, default=False
+        sudo : bool, default=False
             Override memory estimation limits. Setting this to True allows running the algorithm
             even if the estimated memory requirements exceed available memory.
         username : str | None, default=None
@@ -191,7 +191,7 @@ class TriangleCountEndpoints(ABC):
         max_degree: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
         write_concurrency: int | None = None,
     ) -> TriangleCountWriteResult:
@@ -224,7 +224,7 @@ class TriangleCountEndpoints(ABC):
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        sudo : bool | None, default=False
+        sudo : bool, default=False
             Override memory estimation limits. Setting this to True allows running the algorithm
             even if the estimated memory requirements exceed available memory.
         username : str | None, default=None

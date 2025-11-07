@@ -21,14 +21,15 @@ class SccEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        relationship_types: list[str] = ALL_TYPES,
-        node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        *,
+        concurrency: int | None = None,
+        consecutive_ids: bool = False,
+        job_id: str | None = None,
         log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        consecutive_ids: bool | None = None,
     ) -> SccMutateResult:
         """
         Executes the SCC algorithm and writes the results to the in-memory graph as node properties.
@@ -39,22 +40,22 @@ class SccEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the component ID for each node
-        relationship_types : list[str]
-            The relationships types used to select relationships for this algorithm run
+        concurrency : int | None, default=None
+            The number of concurrent threads
+        consecutive_ids : bool, default=False
+            Flag to decide whether component identifiers are mapped into a consecutive id space
+        job_id : str | None, default=None
+            An identifier for the job
+        log_progress : bool, default=True
+            Whether to log progress
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        relationship_types : list[str]
+            The relationship types used to select relationships for this algorithm run
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
-            Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
-            The number of concurrent threads
-        job_id : Any | None, default=None
-            An identifier for the job
-        consecutive_ids : bool | None, default=None
-            Flag to decide whether component identifiers are mapped into a consecutive id space
 
         Returns
         -------
@@ -67,14 +68,15 @@ class SccEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        relationship_types: list[str] = ALL_TYPES,
-        node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        *,
+        concurrency: int | None = None,
+        consecutive_ids: bool = False,
+        job_id: str | None = None,
         log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        consecutive_ids: bool | None = None,
     ) -> SccStatsResult:
         """
         Executes the SCC algorithm and returns statistics.
@@ -83,22 +85,22 @@ class SccEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        relationship_types : list[str]
-            The relationships types used to select relationships for this algorithm run
+        concurrency : int | None, default=None
+            The number of concurrent threads
+        consecutive_ids : bool, default=False
+            Flag to decide whether component identifiers are mapped into a consecutive id space
+        job_id : str | None, default=None
+            An identifier for the job
+        log_progress : bool, default=True
+            Whether to log progress
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        relationship_types : list[str]
+            The relationship types used to select relationships for this algorithm run
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
-            Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
-            The number of concurrent threads
-        job_id : Any | None, default=None
-            An identifier for the job
-        consecutive_ids : bool | None, default=None
-            Flag to decide whether component identifiers are mapped into a consecutive id space
 
         Returns
         -------
@@ -111,14 +113,15 @@ class SccEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: list[str] = ALL_TYPES,
-        node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        *,
+        concurrency: int | None = None,
+        consecutive_ids: bool = False,
+        job_id: str | None = None,
         log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        consecutive_ids: bool | None = None,
     ) -> DataFrame:
         """
         Executes the SCC algorithm and returns a stream of results.
@@ -127,22 +130,22 @@ class SccEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        relationship_types : list[str]
-            The relationships types considered in this algorithm run
+        concurrency : int | None, default=None
+            The number of concurrent threads
+        consecutive_ids : bool, default=False
+            Flag to decide whether component identifiers are mapped into a consecutive id space
+        job_id : str | None, default=None
+            An identifier for the job
+        log_progress : bool, default=True
+            Whether to log progress
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        relationship_types : list[str]
+            The relationship types considered in this algorithm run
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
-            Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
-            The number of concurrent threads
-        job_id : Any | None, default=None
-            An identifier for the job
-        consecutive_ids : bool | None, default=None
-            Flag to decide whether component identifiers are mapped into a consecutive id space
 
         Returns
         -------
@@ -156,15 +159,16 @@ class SccEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        relationship_types: list[str] = ALL_TYPES,
-        node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        *,
+        concurrency: int | None = None,
+        consecutive_ids: bool = False,
+        job_id: str | None = None,
         log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        consecutive_ids: bool | None = None,
-        write_concurrency: Any | None = None,
+        write_concurrency: int | None = None,
     ) -> SccWriteResult:
         """
         Executes the SCC algorithm and writes the results to the Neo4j database.
@@ -175,23 +179,23 @@ class SccEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to write component IDs to
-        relationship_types : list[str]
-            The relationships types considered in this algorithm run
+        concurrency : int | None, default=None
+            The number of concurrent threads
+        consecutive_ids : bool, default=False
+            Flag to decide whether component identifiers are mapped into a consecutive id space
+        job_id : str | None, default=None
+            An identifier for the job
+        log_progress : bool, default=True
+            Whether to log progress
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        relationship_types : list[str]
+            The relationship types considered in this algorithm run
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
-            Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
-            The number of concurrent threads
-        job_id : Any | None, default=None
-            An identifier for the job
-        consecutive_ids : bool | None, default=None
-            Flag to decide whether component identifiers are mapped into a consecutive id space
-        write_concurrency : Any | None, default=None
+        write_concurrency : int | None, default=None
             The number of concurrent threads during the write phase
 
         Returns
@@ -205,10 +209,11 @@ class SccEndpoints(ABC):
     def estimate(
         self,
         G: GraphV2 | dict[str, Any],
-        relationship_types: list[str] = ALL_TYPES,
+        *,
+        concurrency: int | None = None,
+        consecutive_ids: bool = False,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
-        consecutive_ids: bool | None = None,
+        relationship_types: list[str] = ALL_TYPES,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
@@ -217,14 +222,14 @@ class SccEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        concurrency : int | None, default=None
+            The number of concurrent threads
+        consecutive_ids : bool, default=False
+            Flag to decide if the component identifiers should be returned consecutively or not
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        concurrency : Any | None, default=None
-            The number of concurrent threads
-        consecutive_ids : bool | None, default=None
-            Flag to decide if the component identifiers should be returned consecutively or not
+        relationship_types : list[str]
+            The relationship types used to select relationships for this algorithm run
 
         Returns
         -------
@@ -236,7 +241,7 @@ class SccEndpoints(ABC):
 
 class SccMutateResult(BaseResult):
     component_count: int
-    component_distribution: dict[str, Any]
+    component_distribution: dict[str, int | float]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
@@ -247,7 +252,7 @@ class SccMutateResult(BaseResult):
 
 class SccStatsResult(BaseResult):
     component_count: int
-    component_distribution: dict[str, Any]
+    component_distribution: dict[str, int | float]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
@@ -256,7 +261,7 @@ class SccStatsResult(BaseResult):
 
 class SccWriteResult(BaseResult):
     component_count: int
-    component_distribution: dict[str, Any]
+    component_distribution: dict[str, int | float]
     pre_processing_millis: int
     compute_millis: int
     write_millis: int

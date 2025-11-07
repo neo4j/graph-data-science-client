@@ -22,7 +22,7 @@ class CliqueCountingEndpoints(ABC):
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> CliqueCountingMutateResult:
         """
@@ -44,7 +44,7 @@ class CliqueCountingEndpoints(ABC):
             The node labels used to select nodes for this algorithm run
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        sudo : bool | None, default=False
+        sudo : bool, default=False
             Override memory estimation limits
         username : str | None, default=None
             The username to attribute the procedure run to

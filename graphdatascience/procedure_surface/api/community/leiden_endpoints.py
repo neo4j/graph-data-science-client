@@ -19,22 +19,22 @@ class LeidenEndpoints(ABC):
         mutate_property: str,
         *,
         concurrency: int | None = None,
-        consecutive_ids: bool | None = False,
-        gamma: float | None = 1.0,
-        include_intermediate_communities: bool | None = False,
+        consecutive_ids: bool = False,
+        gamma: float = 1.0,
+        include_intermediate_communities: bool = False,
         job_id: str | None = None,
         log_progress: bool = True,
-        max_levels: int | None = 10,
+        max_levels: int = 10,
         node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
-        sudo: bool | None = False,
-        theta: float | None = 0.01,
-        tolerance: float | None = 1e-4,
+        sudo: bool = False,
+        theta: float = 0.01,
+        tolerance: float = 0.0001,
         username: str | None = None,
-    ) -> "LeidenMutateResult":
+    ) -> LeidenMutateResult:
         """
         Executes the Leiden community detection algorithm and writes the results to the in-memory graph as node properties.
 
@@ -46,17 +46,17 @@ class LeidenEndpoints(ABC):
             The property name to store the community ID for each node
         concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : bool | None, default=False
+        consecutive_ids : bool, default=False
             Whether to use consecutive community IDs
-        gamma : float | None, default=1.0
+        gamma : float, default=1.0
             The gamma parameter for the Leiden algorithm
-        include_intermediate_communities : bool | None, default=False
+        include_intermediate_communities : bool, default=False
             Whether to include intermediate communities
         job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_levels : int | None, default=10
+        max_levels : int, default=10
             The maximum number of levels
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
@@ -68,11 +68,11 @@ class LeidenEndpoints(ABC):
             The relationship weight property
         seed_property : str | None, default=None
             The seed property
-        sudo : bool | None, default=False
+        sudo : bool, default=False
             Override memory estimation limits
-        theta : float | None, default=0.01
+        theta : float, default=0.01
             The theta parameter for the Leiden algorithm
-        tolerance : float | None, default=1e-4
+        tolerance : float, default=0.0001
             The tolerance parameter for the Leiden algorithm
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -89,22 +89,22 @@ class LeidenEndpoints(ABC):
         G: GraphV2,
         *,
         concurrency: int | None = None,
-        consecutive_ids: bool | None = False,
-        gamma: float | None = 1.0,
-        include_intermediate_communities: bool | None = False,
+        consecutive_ids: bool = False,
+        gamma: float = 1.0,
+        include_intermediate_communities: bool = False,
         job_id: str | None = None,
         log_progress: bool = True,
-        max_levels: int | None = 10,
+        max_levels: int = 10,
         node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
-        sudo: bool | None = False,
-        theta: float | None = 0.01,
-        tolerance: float | None = 1e-4,
+        sudo: bool = False,
+        theta: float = 0.01,
+        tolerance: float = 0.0001,
         username: str | None = None,
-    ) -> "LeidenStatsResult":
+    ) -> LeidenStatsResult:
         """
         Executes the Leiden community detection algorithm and returns statistics.
 
@@ -114,17 +114,17 @@ class LeidenEndpoints(ABC):
             The graph to run the algorithm on
         concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : bool | None, default=False
+        consecutive_ids : bool, default=False
             Whether to use consecutive community IDs
-        gamma : float | None, default=1.0
+        gamma : float, default=1.0
             The gamma parameter for the Leiden algorithm
-        include_intermediate_communities : bool | None, default=False
+        include_intermediate_communities : bool, default=False
             Whether to include intermediate communities
         job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_levels : int | None, default=10
+        max_levels : int, default=10
             The maximum number of levels
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
@@ -136,11 +136,11 @@ class LeidenEndpoints(ABC):
             The relationship weight property
         seed_property : str | None, default=None
             The seed property
-        sudo : bool | None, default=False
+        sudo : bool, default=False
             Override memory estimation limits
-        theta : float | None, default=0.01
+        theta : float, default=0.01
             The theta parameter for the Leiden algorithm
-        tolerance : float | None, default=1e-4
+        tolerance : float, default=0.0001
             The tolerance parameter for the Leiden algorithm
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -157,21 +157,21 @@ class LeidenEndpoints(ABC):
         G: GraphV2,
         *,
         concurrency: int | None = None,
-        consecutive_ids: bool | None = False,
-        gamma: float | None = 1.0,
-        include_intermediate_communities: bool | None = False,
+        consecutive_ids: bool = False,
+        gamma: float = 1.0,
+        include_intermediate_communities: bool = False,
         job_id: str | None = None,
         log_progress: bool = True,
-        max_levels: int | None = 10,
+        max_levels: int = 10,
         min_community_size: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
-        sudo: bool | None = False,
-        theta: float | None = 0.01,
-        tolerance: float | None = 1e-4,
+        sudo: bool = False,
+        theta: float = 0.01,
+        tolerance: float = 0.0001,
         username: str | None = None,
     ) -> DataFrame:
         """
@@ -183,17 +183,17 @@ class LeidenEndpoints(ABC):
             The graph to run the algorithm on
         concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : bool | None, default=False
+        consecutive_ids : bool, default=False
             Whether to use consecutive community IDs
-        gamma : float | None, default=1.0
+        gamma : float, default=1.0
             The gamma parameter for the Leiden algorithm
-        include_intermediate_communities : bool | None, default=False
+        include_intermediate_communities : bool, default=False
             Whether to include intermediate communities
         job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_levels : int | None, default=10
+        max_levels : int, default=10
             The maximum number of levels
         min_community_size : int | None, default=None
             The minimum community size
@@ -207,11 +207,11 @@ class LeidenEndpoints(ABC):
             The relationship weight property
         seed_property : str | None, default=None
             The seed property
-        sudo : bool | None, default=False
+        sudo : bool, default=False
             Override memory estimation limits
-        theta : float | None, default=0.01
+        theta : float, default=0.01
             The theta parameter for the Leiden algorithm
-        tolerance : float | None, default=1e-4
+        tolerance : float, default=0.0001
             The tolerance parameter for the Leiden algorithm
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -229,24 +229,24 @@ class LeidenEndpoints(ABC):
         write_property: str,
         *,
         concurrency: int | None = None,
-        consecutive_ids: bool | None = False,
-        gamma: float | None = 1.0,
-        include_intermediate_communities: bool | None = False,
+        consecutive_ids: bool = False,
+        gamma: float = 1.0,
+        include_intermediate_communities: bool = False,
         job_id: str | None = None,
         log_progress: bool = True,
-        max_levels: int | None = 10,
+        max_levels: int = 10,
         min_community_size: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
-        sudo: bool | None = False,
-        theta: float | None = 0.01,
-        tolerance: float | None = 1e-4,
+        sudo: bool = False,
+        theta: float = 0.01,
+        tolerance: float = 0.0001,
         username: str | None = None,
         write_concurrency: int | None = None,
-    ) -> "LeidenWriteResult":
+    ) -> LeidenWriteResult:
         """
         Executes the Leiden community detection algorithm and writes the results back to the database.
 
@@ -258,17 +258,17 @@ class LeidenEndpoints(ABC):
             The property name to write the community ID to
         concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : bool | None, default=False
+        consecutive_ids : bool, default=False
             Whether to use consecutive community IDs
-        gamma : float | None, default=1.0
+        gamma : float, default=1.0
             The gamma parameter for the Leiden algorithm
-        include_intermediate_communities : bool | None, default=False
+        include_intermediate_communities : bool, default=False
             Whether to include intermediate communities
         job_id : str | None, default=None
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_levels : int | None, default=10
+        max_levels : int, default=10
             The maximum number of levels
         min_community_size : int | None, default=None
             The minimum community size
@@ -282,11 +282,11 @@ class LeidenEndpoints(ABC):
             The relationship weight property
         seed_property : str | None, default=None
             The seed property
-        sudo : bool | None, default=False
+        sudo : bool, default=False
             Override memory estimation limits
-        theta : float | None, default=0.01
+        theta : float, default=0.01
             The theta parameter for the Leiden algorithm
-        tolerance : float | None, default=1e-4
+        tolerance : float, default=0.0001
             The tolerance parameter for the Leiden algorithm
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -305,17 +305,17 @@ class LeidenEndpoints(ABC):
         G: GraphV2 | dict[str, Any],
         *,
         concurrency: int | None = None,
-        consecutive_ids: bool | None = False,
-        gamma: float | None = 1.0,
-        include_intermediate_communities: bool | None = False,
-        max_levels: int | None = 10,
+        consecutive_ids: bool = False,
+        gamma: float = 1.0,
+        include_intermediate_communities: bool = False,
+        max_levels: int = 10,
         node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
-        theta: float | None = 0.01,
-        tolerance: float | None = 1e-4,
+        theta: float = 0.01,
+        tolerance: float = 0.0001,
     ) -> EstimationResult:
         """
         Estimate the memory requirements for running the Leiden algorithm.
@@ -326,13 +326,13 @@ class LeidenEndpoints(ABC):
             The graph to estimate for
         concurrency : int | None, default=None
             The number of concurrent threads
-        consecutive_ids : bool | None, default=False
+        consecutive_ids : bool, default=False
             Whether to use consecutive community IDs
-        gamma : float | None, default=1.0
+        gamma : float, default=1.0
             The gamma parameter for the Leiden algorithm
-        include_intermediate_communities : bool | None, default=False
+        include_intermediate_communities : bool, default=False
             Whether to include intermediate communities
-        max_levels : int | None, default=10
+        max_levels : int, default=10
             The maximum number of levels
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
@@ -344,9 +344,9 @@ class LeidenEndpoints(ABC):
             The relationship weight property
         seed_property : str | None, default=None
             The seed property
-        theta : float | None, default=0.01
+        theta : float, default=0.01
             The theta parameter for the Leiden algorithm
-        tolerance : float | None, default=1e-4
+        tolerance : float, default=0.0001
             The tolerance parameter for the Leiden algorithm
 
         Returns
@@ -358,7 +358,7 @@ class LeidenEndpoints(ABC):
 
 class LeidenMutateResult(BaseResult):
     community_count: int
-    community_distribution: dict[str, Any]
+    community_distribution: dict[str, int | float]
     compute_millis: int
     configuration: dict[str, Any]
     did_converge: bool
@@ -374,7 +374,7 @@ class LeidenMutateResult(BaseResult):
 
 class LeidenStatsResult(BaseResult):
     community_count: int
-    community_distribution: dict[str, Any]
+    community_distribution: dict[str, int | float]
     compute_millis: int
     configuration: dict[str, Any]
     did_converge: bool
@@ -388,7 +388,7 @@ class LeidenStatsResult(BaseResult):
 
 class LeidenWriteResult(BaseResult):
     community_count: int
-    community_distribution: dict[str, Any]
+    community_distribution: dict[str, int | float]
     compute_millis: int
     configuration: dict[str, Any]
     did_converge: bool
