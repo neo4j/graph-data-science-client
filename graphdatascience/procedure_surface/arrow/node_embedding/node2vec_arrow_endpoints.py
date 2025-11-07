@@ -81,6 +81,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
         )
 
         result = self._node_property_endpoints.run_job_and_mutate("v2/embeddings.node2vec", config, mutate_property)
+        result["postProcessingMillis"] = 0  # node2vec always returns 0 for post processing time
 
         return Node2VecMutateResult(**result)
 
