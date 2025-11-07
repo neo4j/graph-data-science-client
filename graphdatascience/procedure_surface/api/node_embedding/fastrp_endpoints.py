@@ -337,6 +337,7 @@ class FastRPEndpoints(ABC):
 
 
 class FastRPMutateResult(BaseResult):
+    node_count: int
     pre_processing_millis: int
     compute_millis: int
     mutate_millis: int
@@ -345,12 +346,14 @@ class FastRPMutateResult(BaseResult):
 
 
 class FastRPStatsResult(BaseResult):
+    node_count: int
     pre_processing_millis: int
     compute_millis: int
     configuration: dict[str, Any]
 
 
 class FastRPWriteResult(BaseResult):
+    node_count: int
     pre_processing_millis: int
     compute_millis: int
     write_millis: int
