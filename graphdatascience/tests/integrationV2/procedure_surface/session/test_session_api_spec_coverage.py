@@ -12,8 +12,8 @@ from pydantic import BaseModel
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 from graphdatascience.tests.integrationV2.procedure_surface.session.gds_api_spec import (
+    EndpointSpec,
     EndpointWithModesSpec,
-    Parameter,
     ReturnField,
 )
 
@@ -183,7 +183,7 @@ def verify_return_fields(
         )
 
 
-def verify_configuration_fields(callable_object: MethodType, endpoint_spec: EndpointWithModesSpec) -> None:
+def verify_configuration_fields(callable_object: MethodType, endpoint_spec: EndpointSpec) -> None:
     expected_configuration = {to_snake(param.name): param for param in endpoint_spec.parameters}
     py_endpoint = pythonic_endpoint_name(endpoint_spec.name)
     for endpoint_pattern, ignored_params in IGNORED_PARAMETERS.items():
@@ -213,7 +213,17 @@ def verify_configuration_fields(callable_object: MethodType, endpoint_spec: Endp
             f"Missing parameters: {missing_params}, Extra parameters: {extra_params}"
         )
 
-    # validate optional parameters are after mandatory
+    # validate optional parameters are keyword-only arguments
+    optional_positional_args = [
+        name
+        for name, param in actual_parameters.items()
+        if param.kind is not inspect.Parameter.KEYWORD_ONLY and param.default is not inspect.Parameter.empty
+    ]
+    if optional_positional_args:
+        raise ValueError(
+            f"Callable object {pythonic_endpoint_name(endpoint_spec.name)} has optional positional arguments: "
+            f"{optional_positional_args}. All optional parameters should be keyword-only."
+        )
 
 
 def test_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec]) -> None:

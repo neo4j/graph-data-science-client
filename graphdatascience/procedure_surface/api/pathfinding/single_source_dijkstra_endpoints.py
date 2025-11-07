@@ -34,6 +34,7 @@ class SingleSourceDijkstraEndpoints(ABC):
         self,
         G: GraphV2,
         source_node: int,
+        *,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] | None = None,
         node_labels: list[str] | None = None,
@@ -79,8 +80,9 @@ class SingleSourceDijkstraEndpoints(ABC):
     def mutate(
         self,
         G: GraphV2,
-        mutate_relationship_type: str,
         source_node: int,
+        mutate_relationship_type: str,
+        *,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] | None = None,
         node_labels: list[str] | None = None,
@@ -97,10 +99,10 @@ class SingleSourceDijkstraEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on.
-        mutate_relationship_type : str
-            The relationship type to use for the new relationships in the graph catalog.
         source_node : int
             The source node for the shortest path computation.
+        mutate_relationship_type : str
+            The relationship type to use for the new relationships in the graph catalog.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
         relationship_types : list[str] | None, default=None
@@ -128,8 +130,9 @@ class SingleSourceDijkstraEndpoints(ABC):
     def write(
         self,
         G: GraphV2,
-        write_relationship_type: str,
         source_node: int,
+        write_relationship_type: str,
+        *,
         write_node_ids: bool = False,
         write_costs: bool = False,
         relationship_weight_property: str | None = None,
@@ -149,10 +152,10 @@ class SingleSourceDijkstraEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on.
-        write_relationship_type : str
-            The relationship type to use for the new relationships.
         source_node : int
             The source node for the shortest path computation.
+        write_relationship_type : str
+            The relationship type to use for the new relationships.
         write_node_ids : bool, default=False
             Whether to write node IDs of the shortest path onto the relationship.
         write_costs : bool, default=False
@@ -187,6 +190,7 @@ class SingleSourceDijkstraEndpoints(ABC):
         self,
         G: GraphV2 | dict[str, Any],
         source_node: int,
+        *,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] | None = None,
         node_labels: list[str] | None = None,

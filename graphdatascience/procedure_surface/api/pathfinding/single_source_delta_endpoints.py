@@ -41,6 +41,7 @@ class SingleSourceDeltaEndpoints(ABC):
         self,
         G: GraphV2,
         source_node: int,
+        *,
         delta: float = 2.0,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] | None = None,
@@ -90,6 +91,7 @@ class SingleSourceDeltaEndpoints(ABC):
         self,
         G: GraphV2,
         source_node: int,
+        *,
         delta: float = 2.0,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] | None = None,
@@ -138,8 +140,9 @@ class SingleSourceDeltaEndpoints(ABC):
     def mutate(
         self,
         G: GraphV2,
-        mutate_relationship_type: str,
         source_node: int,
+        mutate_relationship_type: str,
+        *,
         delta: float = 2.0,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] | None = None,
@@ -157,10 +160,10 @@ class SingleSourceDeltaEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on.
-        mutate_relationship_type : str
-            The relationship type to use for the new relationships in the graph catalog.
         source_node : int
             The source node for the shortest path computation.
+        mutate_relationship_type : str
+            The relationship type to use for the new relationships in the graph catalog.
         delta : float, default=2.0
             The bucket width for grouping nodes by tentative distance.
         relationship_weight_property : str | None, default=None
@@ -190,8 +193,9 @@ class SingleSourceDeltaEndpoints(ABC):
     def write(
         self,
         G: GraphV2,
-        write_relationship_type: str,
         source_node: int,
+        write_relationship_type: str,
+        *,
         delta: float = 2.0,
         write_node_ids: bool = False,
         write_costs: bool = False,
@@ -212,10 +216,10 @@ class SingleSourceDeltaEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on.
-        write_relationship_type : str
-            The relationship type to use for the new relationships.
         source_node : int
             The source node for the shortest path computation.
+        write_relationship_type : str
+            The relationship type to use for the new relationships.
         delta : float, default=2.0
             The bucket width for grouping nodes by tentative distance.
         write_node_ids : bool, default=False
@@ -252,6 +256,7 @@ class SingleSourceDeltaEndpoints(ABC):
         self,
         G: GraphV2 | dict[str, Any],
         source_node: int,
+        *,
         delta: float = 2.0,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] | None = None,
