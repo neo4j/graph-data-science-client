@@ -21,19 +21,19 @@ class LouvainEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        tolerance: float | None = None,
-        max_levels: int | None = None,
-        include_intermediate_communities: bool | None = None,
-        max_iterations: int | None = None,
+        tolerance: float = 0.0001,
+        max_levels: int = 10,
+        include_intermediate_communities: bool = False,
+        max_iterations: int = 10,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         seed_property: str | None = None,
-        consecutive_ids: bool | None = None,
+        consecutive_ids: bool = False,
         relationship_weight_property: str | None = None,
     ) -> LouvainMutateResult:
         """
@@ -45,31 +45,31 @@ class LouvainEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the community ID for each node
-        tolerance : float
+        tolerance : float, default=0.0001
             The tolerance value for the algorithm convergence
-        max_levels : int | None, default=None
+        max_levels : int, default=10
             The maximum number of levels in the hierarchy
-        include_intermediate_communities : bool | None, default=None
+        include_intermediate_communities : bool, default=False
             Whether to include intermediate community assignments
-        max_iterations : int
+        max_iterations : int, default=10
             The maximum number of iterations per level
         relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             An identifier for the job
         seed_property : str | None, default=None
             Defines node properties that are used as initial community identifiers
-        consecutive_ids : bool | None, default=None
+        consecutive_ids : bool, default=False
             Flag to decide whether community identifiers are mapped into a consecutive id space
         relationship_weight_property : str | None, default=None
             The property name that contains weight
@@ -85,19 +85,19 @@ class LouvainEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        tolerance: float | None = None,
-        max_levels: int | None = None,
-        include_intermediate_communities: bool | None = None,
-        max_iterations: int | None = None,
+        tolerance: float = 0.0001,
+        max_levels: int = 10,
+        include_intermediate_communities: bool = False,
+        max_iterations: int = 10,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         seed_property: str | None = None,
-        consecutive_ids: bool | None = None,
+        consecutive_ids: bool = False,
         relationship_weight_property: str | None = None,
     ) -> LouvainStatsResult:
         """
@@ -107,31 +107,31 @@ class LouvainEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        tolerance : float
+        tolerance : float, default=0.0001
             The tolerance value for the algorithm convergence
-        max_levels : int | None, default=None
+        max_levels : int, default=10
             The maximum number of levels in the hierarchy
-        include_intermediate_communities : bool | None, default=None
+        include_intermediate_communities : bool, default=False
             Whether to include intermediate community assignments
-        max_iterations : int
+        max_iterations : int, default=10
             The maximum number of iterations per level
         relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             An identifier for the job
         seed_property : str | None, default=None
             Defines node properties that are used as initial community identifiers
-        consecutive_ids : bool | None, default=None
+        consecutive_ids : bool, default=False
             Flag to decide whether community identifiers are mapped into a consecutive id space
         relationship_weight_property : str | None, default=None
             The property name that contains weight
@@ -147,19 +147,19 @@ class LouvainEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        tolerance: float | None = None,
-        max_levels: int | None = None,
-        include_intermediate_communities: bool | None = None,
-        max_iterations: int | None = None,
+        tolerance: float = 0.0001,
+        max_levels: int = 10,
+        include_intermediate_communities: bool = False,
+        max_iterations: int = 10,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         seed_property: str | None = None,
-        consecutive_ids: bool | None = None,
+        consecutive_ids: bool = False,
         relationship_weight_property: str | None = None,
         min_community_size: int | None = None,
     ) -> DataFrame:
@@ -170,31 +170,31 @@ class LouvainEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        tolerance : float
+        tolerance : float, default=0.0001
             The tolerance value for the algorithm convergence
-        max_levels : int | None, default=None
+        max_levels : int, default=10
             The maximum number of levels in the hierarchy
-        include_intermediate_communities : bool | None, default=None
+        include_intermediate_communities : bool, default=False
             Whether to include intermediate community assignments
-        max_iterations : int
+        max_iterations : int, default=10
             The maximum number of iterations per level
         relationship_types : list[str]
             The relationships types considered in this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             An identifier for the job
         seed_property : str | None, default=None
             Defines node properties that are used as initial community identifiers
-        consecutive_ids : bool | None, default=None
+        consecutive_ids : bool, default=False
             Flag to decide whether community identifiers are mapped into a consecutive id space
         relationship_weight_property : str | None, default=None
             The property name that contains weight
@@ -213,21 +213,21 @@ class LouvainEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        tolerance: float | None = None,
-        max_levels: int | None = None,
-        include_intermediate_communities: bool | None = None,
-        max_iterations: int | None = None,
+        tolerance: float = 0.0001,
+        max_levels: int = 10,
+        include_intermediate_communities: bool = False,
+        max_iterations: int = 10,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         seed_property: str | None = None,
-        consecutive_ids: bool | None = None,
+        consecutive_ids: bool = False,
         relationship_weight_property: str | None = None,
-        write_concurrency: Any | None = None,
+        write_concurrency: int | None = None,
         min_community_size: int | None = None,
     ) -> LouvainWriteResult:
         """
@@ -239,35 +239,35 @@ class LouvainEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to write community IDs to
-        tolerance : float
+        tolerance : float, default=0.0001
             The tolerance value for the algorithm convergence
-        max_levels : int | None, default=None
+        max_levels : int, default=10
             The maximum number of levels in the hierarchy
-        include_intermediate_communities : bool | None, default=None
+        include_intermediate_communities : bool, default=False
             Whether to include intermediate community assignments
-        max_iterations : int
+        max_iterations : int, default=10
             The maximum number of iterations per level
         relationship_types : list[str]
             The relationships types considered in this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             An identifier for the job
         seed_property : str | None, default=None
             Defines node properties that are used as initial community identifiers
-        consecutive_ids : bool | None, default=None
+        consecutive_ids : bool, default=False
             Flag to decide whether community identifiers are mapped into a consecutive id space
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        write_concurrency : Any | None, default=None
+        write_concurrency : int | None, default=None
             The number of concurrent threads during the write phase
         min_community_size : int | None, default=None
             Don't write communities with fewer nodes than this
@@ -283,15 +283,15 @@ class LouvainEndpoints(ABC):
     def estimate(
         self,
         G: GraphV2 | dict[str, Any],
-        tolerance: float | None = None,
-        max_levels: int | None = None,
-        include_intermediate_communities: bool | None = None,
-        max_iterations: int | None = None,
+        tolerance: float = 0.0001,
+        max_levels: int = 10,
+        include_intermediate_communities: bool = False,
+        max_iterations: int = 10,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
         seed_property: str | None = None,
-        consecutive_ids: bool | None = None,
+        consecutive_ids: bool = False,
         relationship_weight_property: str | None = None,
     ) -> EstimationResult:
         """
@@ -301,23 +301,23 @@ class LouvainEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
-        tolerance : float
+        tolerance : float, default=0.0001
             The tolerance value for the algorithm convergence
-        max_levels : int | None, default=None
+        max_levels : int, default=10
             The maximum number of levels in the hierarchy
-        include_intermediate_communities : bool | None, default=None
+        include_intermediate_communities : bool, default=False
             Whether to include intermediate community assignments
-        max_iterations : int
+        max_iterations : int, default=10
             The maximum number of iterations per level
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
         seed_property : str | None, default=None
             A property to use as the starting community id for a node
-        consecutive_ids : bool | None, default=None
+        consecutive_ids : bool, default=False
             Flag to decide if the component identifiers should be returned consecutively or not
         relationship_weight_property : str | None, default=None
             The property name that contains weight
@@ -332,10 +332,10 @@ class LouvainEndpoints(ABC):
 
 class LouvainMutateResult(BaseResult):
     modularity: float
-    modularities: list[Any]
+    modularities: list[float]
     ran_levels: int
     community_count: int
-    community_distribution: dict[str, Any]
+    community_distribution: dict[str, int | float]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
@@ -346,10 +346,10 @@ class LouvainMutateResult(BaseResult):
 
 class LouvainStatsResult(BaseResult):
     modularity: float
-    modularities: list[Any]
+    modularities: list[float]
     ran_levels: int
     community_count: int
-    community_distribution: dict[str, Any]
+    community_distribution: dict[str, int | float]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
@@ -358,10 +358,10 @@ class LouvainStatsResult(BaseResult):
 
 class LouvainWriteResult(BaseResult):
     modularity: float
-    modularities: list[Any]
+    modularities: list[float]
     ran_levels: int
     community_count: int
-    community_distribution: dict[str, Any]
+    community_distribution: dict[str, int | float]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int

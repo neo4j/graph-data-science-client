@@ -33,7 +33,7 @@ class TriangleCountCypherEndpoints(TriangleCountEndpoints):
         max_degree: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> TriangleCountMutateResult:
         config = ConfigConverter.convert_to_gds_config(
@@ -67,7 +67,7 @@ class TriangleCountCypherEndpoints(TriangleCountEndpoints):
         max_degree: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> TriangleCountStatsResult:
         config = ConfigConverter.convert_to_gds_config(
@@ -100,7 +100,7 @@ class TriangleCountCypherEndpoints(TriangleCountEndpoints):
         max_degree: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
@@ -134,7 +134,7 @@ class TriangleCountCypherEndpoints(TriangleCountEndpoints):
         max_degree: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
         write_concurrency: int | None = None,
     ) -> TriangleCountWriteResult:

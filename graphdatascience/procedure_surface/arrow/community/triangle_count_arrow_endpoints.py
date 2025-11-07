@@ -40,7 +40,7 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         max_degree: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> TriangleCountMutateResult:
         config = self._node_property_endpoints.create_base_config(
@@ -71,7 +71,7 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         max_degree: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> TriangleCountStatsResult:
         config = self._node_property_endpoints.create_base_config(
@@ -102,7 +102,7 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         max_degree: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
@@ -132,7 +132,7 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         max_degree: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
         write_concurrency: int | None = None,
     ) -> TriangleCountWriteResult:

@@ -21,16 +21,16 @@ class WccEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        threshold: float | None = None,
+        threshold: float = 0.0,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         seed_property: str | None = None,
-        consecutive_ids: bool | None = None,
+        consecutive_ids: bool = False,
         relationship_weight_property: str | None = None,
     ) -> WccMutateResult:
         """
@@ -42,25 +42,25 @@ class WccEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the component ID for each node
-        threshold : float | None, default=None
+        threshold : float, default=0.0
             The minimum required weight to consider a relationship during traversal
         relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             An identifier for the job
         seed_property : str | None, default=None
             Defines node properties that are used as initial component identifiers
-        consecutive_ids : bool | None, default=None
+        consecutive_ids : bool, default=False
             Flag to decide whether component identifiers are mapped into a consecutive id space
         relationship_weight_property : str | None, default=None
             The property name that contains weight
@@ -76,16 +76,16 @@ class WccEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        threshold: float | None = None,
+        threshold: float = 0.0,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         seed_property: str | None = None,
-        consecutive_ids: bool | None = None,
+        consecutive_ids: bool = False,
         relationship_weight_property: str | None = None,
     ) -> WccStatsResult:
         """
@@ -95,25 +95,25 @@ class WccEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        threshold : float | None, default=None
+        threshold : float, default=0.0
             The minimum required weight to consider a relationship during traversal
         relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             An identifier for the job
         seed_property : str | None, default=None
             Defines node properties that are used as initial component identifiers
-        consecutive_ids : bool | None, default=None
+        consecutive_ids : bool, default=False
             Flag to decide whether component identifiers are mapped into a consecutive id space
         relationship_weight_property : str | None, default=None
             The property name that contains weight
@@ -130,16 +130,16 @@ class WccEndpoints(ABC):
         self,
         G: GraphV2,
         min_component_size: int | None = None,
-        threshold: float | None = None,
+        threshold: float = 0.0,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         seed_property: str | None = None,
-        consecutive_ids: bool | None = None,
+        consecutive_ids: bool = False,
         relationship_weight_property: str | None = None,
     ) -> DataFrame:
         """
@@ -151,25 +151,25 @@ class WccEndpoints(ABC):
             The graph to run the algorithm on
         min_component_size : int | None, default=None
             Don't stream components with fewer nodes than this
-        threshold : float | None, default=None
+        threshold : float, default=0.0
             The minimum required weight to consider a relationship during traversal
         relationship_types : list[str]
             The relationships types considered in this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             An identifier for the job
         seed_property : str | None, default=None
             Defines node properties that are used as initial component identifiers
-        consecutive_ids : bool | None, default=None
+        consecutive_ids : bool, default=False
             Flag to decide whether component identifiers are mapped into a consecutive id space
         relationship_weight_property : str | None, default=None
             The property name that contains weight
@@ -187,18 +187,18 @@ class WccEndpoints(ABC):
         G: GraphV2,
         write_property: str,
         min_component_size: int | None = None,
-        threshold: float | None = None,
+        threshold: float = 0.0,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         seed_property: str | None = None,
-        consecutive_ids: bool | None = None,
+        consecutive_ids: bool = False,
         relationship_weight_property: str | None = None,
-        write_concurrency: Any | None = None,
+        write_concurrency: int | None = None,
     ) -> WccWriteResult:
         """
         Executes the WCC algorithm and writes the results to the Neo4j database.
@@ -211,29 +211,29 @@ class WccEndpoints(ABC):
             The property name to write component IDs to
         min_component_size : int | None, default=None
             Don't write components with fewer nodes than this
-        threshold : float | None, default=None
+        threshold : float, default=0.0
             The minimum required weight to consider a relationship during traversal
         relationship_types : list[str]
             The relationships types considered in this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             An identifier for the job
         seed_property : str | None, default=None
             Defines node properties that are used as initial component identifiers
-        consecutive_ids : bool | None, default=None
+        consecutive_ids : bool, default=False
             Flag to decide whether component identifiers are mapped into a consecutive id space
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        write_concurrency : Any | None, default=None
+        write_concurrency : int | None, default=None
             The number of concurrent threads during the write phase
 
         Returns
@@ -247,12 +247,12 @@ class WccEndpoints(ABC):
     def estimate(
         self,
         G: GraphV2 | dict[str, Any],
-        threshold: float | None = None,
+        threshold: float = 0.0,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
         seed_property: str | None = None,
-        consecutive_ids: bool | None = None,
+        consecutive_ids: bool = False,
         relationship_weight_property: str | None = None,
     ) -> EstimationResult:
         """
@@ -262,17 +262,17 @@ class WccEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
-        threshold : float | None, default=None
+        threshold : float, default=0.0
             The minimum required weight to consider a relationship during traversal
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
         seed_property : str | None, default=None
             A property to use as the starting component id for a node
-        consecutive_ids : bool | None, default=None
+        consecutive_ids : bool, default=False
             Flag to decide if the component identifiers should be returned consecutively or not
         relationship_weight_property : str | None, default=None
             The property name that contains weight
@@ -287,7 +287,7 @@ class WccEndpoints(ABC):
 
 class WccMutateResult(BaseResult):
     component_count: int
-    component_distribution: dict[str, Any]
+    component_distribution: dict[str, int | float]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
@@ -298,7 +298,7 @@ class WccMutateResult(BaseResult):
 
 class WccStatsResult(BaseResult):
     component_count: int
-    component_distribution: dict[str, Any]
+    component_distribution: dict[str, int | float]
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int
@@ -307,7 +307,7 @@ class WccStatsResult(BaseResult):
 
 class WccWriteResult(BaseResult):
     component_count: int
-    component_distribution: dict[str, Any]
+    component_distribution: dict[str, int | float]
     pre_processing_millis: int
     compute_millis: int
     write_millis: int
