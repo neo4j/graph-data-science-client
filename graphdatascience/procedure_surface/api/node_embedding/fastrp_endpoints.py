@@ -25,20 +25,20 @@ class FastRPEndpoints(ABC):
         G: GraphV2,
         mutate_property: str,
         embedding_dimension: int,
-        iteration_weights: list[float] | None = None,
-        normalization_strength: float | None = None,
-        node_self_influence: float | None = None,
-        property_ratio: float | None = None,
+        iteration_weights: list[float] = [0.0, 1.0, 1.0],
+        normalization_strength: float = 0.0,
+        node_self_influence: float = 0.0,
+        property_ratio: float = 0.0,
         feature_properties: list[str] | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        random_seed: Any | None = None,
+        random_seed: int | None = None,
     ) -> FastRPMutateResult:
         """
         Executes the FastRP algorithm and writes the results back to the graph as a node property.
@@ -51,16 +51,17 @@ class FastRPEndpoints(ABC):
             The property name to store the FastRP embeddings for each node
         embedding_dimension : int
             The dimension of the generated embeddings
-        iteration_weights : list[float] | None, default=None
-            Weights for each iteration. Controls the influence of each iteration on the final embedding
-        normalization_strength : float | None, default=None
+        iteration_weights : list[float] = [0.0, 1.0, 1.0]
+            Weights for each iteration. Controls the influence of each iteration on the final embedding.
+        normalization_strength : float, default=0.0
             The normalization strength parameter controls how much the embedding is normalized
-        node_self_influence : float | None, default=None
+        node_self_influence : float, default=0.0
             The influence of the node's own features on its embedding
-        property_ratio : float | None, default=None
+        property_ratio : float, default=0.0
             The ratio of node properties to use in the embedding
         feature_properties : list[str] | None, default=None
-            List of node properties to use as features in the embedding
+            List of node properties to use as features in the embedding.
+            Defaults to [] if not specified
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
@@ -91,20 +92,20 @@ class FastRPEndpoints(ABC):
         self,
         G: GraphV2,
         embedding_dimension: int,
-        iteration_weights: list[float] | None = None,
-        normalization_strength: float | None = None,
-        node_self_influence: float | None = None,
-        property_ratio: float | None = None,
+        iteration_weights: list[float] = [0.0, 1.0, 1.0],
+        normalization_strength: float = 0.0,
+        node_self_influence: float = 0.0,
+        property_ratio: float = 0.0,
         feature_properties: list[str] | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        random_seed: Any | None = None,
+        random_seed: int | None = None,
     ) -> FastRPStatsResult:
         """
         Executes the FastRP algorithm and returns result statistics without writing the result to Neo4j.
@@ -115,23 +116,24 @@ class FastRPEndpoints(ABC):
             The graph to run the algorithm on
         embedding_dimension : int
             The dimension of the generated embeddings
-        iteration_weights : list[float] | None, default=None
-            Weights for each iteration. Controls the influence of each iteration on the final embedding
-        normalization_strength : float | None, default=None
+        iteration_weights : list[float] = [0.0, 1.0, 1.0]
+            Weights for each iteration. Controls the influence of each iteration on the final embedding.
+        normalization_strength : float, default=0.0
             The normalization strength parameter controls how much the embedding is normalized
-        node_self_influence : float | None, default=None
+        node_self_influence : float, default=0.0
             The influence of the node's own features on its embedding
-        property_ratio : float | None, default=None
+        property_ratio : float, default=0.0
             The ratio of node properties to use in the embedding
         feature_properties : list[str] | None, default=None
-            List of node properties to use as features in the embedding
+            List of node properties to use as features in the embedding.
+            Defaults to [] if not specified
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None = None
             The username to attribute the procedure run to
@@ -141,7 +143,7 @@ class FastRPEndpoints(ABC):
             An identifier for the job
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : Any | None, default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results
 
         Returns
@@ -155,20 +157,20 @@ class FastRPEndpoints(ABC):
         self,
         G: GraphV2,
         embedding_dimension: int,
-        iteration_weights: list[float] | None = None,
-        normalization_strength: float | None = None,
-        node_self_influence: float | None = None,
-        property_ratio: float | None = None,
+        iteration_weights: list[float] = [0.0, 1.0, 1.0],
+        normalization_strength: float = 0.0,
+        node_self_influence: float = 0.0,
+        property_ratio: float = 0.0,
         feature_properties: list[str] | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        random_seed: Any | None = None,
+        random_seed: int | None = None,
     ) -> DataFrame:
         """
         Executes the FastRP algorithm and returns the results as a stream.
@@ -179,23 +181,24 @@ class FastRPEndpoints(ABC):
             The graph to run the algorithm on
         embedding_dimension : int
             The dimension of the generated embeddings
-        iteration_weights : list[float] | None, default=None
-            Weights for each iteration. Controls the influence of each iteration on the final embedding
-        normalization_strength : float | None, default=None
+        iteration_weights : list[float] = [0.0, 1.0, 1.0]
+            Weights for each iteration. Controls the influence of each iteration on the final embedding.
+        normalization_strength : float, default=0.0
             The normalization strength parameter controls how much the embedding is normalized
-        node_self_influence : float | None, default=None
+        node_self_influence : float, default=0.0
             The influence of the node's own features on its embedding
-        property_ratio : float | None, default=None
+        property_ratio : float, default=0.0
             The ratio of node properties to use in the embedding
         feature_properties : list[str] | None, default=None
-            List of node properties to use as features in the embedding
+            List of node properties to use as features in the embedding.
+            Defaults to [] if not specified
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -205,7 +208,7 @@ class FastRPEndpoints(ABC):
             An identifier for the job
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : Any | None, default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results
 
         Returns
@@ -220,20 +223,20 @@ class FastRPEndpoints(ABC):
         G: GraphV2,
         write_property: str,
         embedding_dimension: int,
-        iteration_weights: list[float] | None = None,
-        normalization_strength: float | None = None,
-        node_self_influence: float | None = None,
-        property_ratio: float | None = None,
+        iteration_weights: list[float] = [0.0, 1.0, 1.0],
+        normalization_strength: float = 0.0,
+        node_self_influence: float = 0.0,
+        property_ratio: float = 0.0,
         feature_properties: list[str] | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        random_seed: Any | None = None,
+        random_seed: int | None = None,
         write_concurrency: int | None = None,
     ) -> FastRPWriteResult:
         """
@@ -247,23 +250,24 @@ class FastRPEndpoints(ABC):
             The property name to write the FastRP embeddings for each node
         embedding_dimension : int
             The dimension of the generated embeddings
-        iteration_weights : list[float] | None, default=None
-            Weights for each iteration. Controls the influence of each iteration on the final embedding
-        normalization_strength : float | None, default=None
+        iteration_weights : list[float] = [0.0, 1.0, 1.0]
+            Weights for each iteration. Controls the influence of each iteration on the final embedding.
+        normalization_strength : float, default=0.0
             The normalization strength parameter controls how much the embedding is normalized
-        node_self_influence : float | None, default=None
+        node_self_influence : float, default=0.0
             The influence of the node's own features on its embedding
-        property_ratio : float | None, default=None
+        property_ratio : float, default=0.0
             The ratio of node properties to use in the embedding
         feature_properties : list[str] | None, default=None
-            List of node properties to use as features in the embedding
+            List of node properties to use as features in the embedding.
+            Defaults to [] if not specified
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool
+        sudo : bool, default=False
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -273,7 +277,7 @@ class FastRPEndpoints(ABC):
             An identifier for the job
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : Any | None, default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results
         write_concurrency : int | None, default=None
             The number of concurrent threads used for writing
@@ -289,16 +293,16 @@ class FastRPEndpoints(ABC):
         self,
         G: GraphV2 | dict[str, Any],
         embedding_dimension: int,
-        iteration_weights: list[float] | None = None,
-        normalization_strength: float | None = None,
-        node_self_influence: float | None = None,
-        property_ratio: float | None = None,
+        iteration_weights: list[float] = [0.0, 1.0, 1.0],
+        normalization_strength: float = 0.0,
+        node_self_influence: float = 0.0,
+        property_ratio: float = 0.0,
         feature_properties: list[str] | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
         relationship_weight_property: str | None = None,
-        random_seed: Any | None = None,
+        random_seed: int | None = None,
     ) -> EstimationResult:
         """
         Returns an estimation of the memory consumption for that procedure.
@@ -309,16 +313,17 @@ class FastRPEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph.
         embedding_dimension : int
             The dimension of the generated embeddings
-        iteration_weights : list[float] | None, default=None
-            Weights for each iteration. Controls the influence of each iteration on the final embedding
-        normalization_strength : float | None, default=None
+        iteration_weights : list[float] = [0.0, 1.0, 1.0]
+            Weights for each iteration. Controls the influence of each iteration on the final embedding.
+        normalization_strength : float, default=0.0
             The normalization strength parameter controls how much the embedding is normalized
-        node_self_influence : float | None, default=None
+        node_self_influence : float, default=0.0
             The influence of the node's own features on its embedding
-        property_ratio : float | None, default=None
+        property_ratio : float, default=0.0
             The ratio of node properties to use in the embedding
         feature_properties : list[str] | None, default=None
-            List of node properties to use as features in the embedding
+            List of node properties to use as features in the embedding.
+            Defaults to [] if not specified
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
@@ -327,7 +332,7 @@ class FastRPEndpoints(ABC):
             The number of concurrent threads
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : Any | None, default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results
 
         Returns

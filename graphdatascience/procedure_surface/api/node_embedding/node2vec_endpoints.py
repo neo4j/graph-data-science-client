@@ -21,29 +21,29 @@ class Node2VecEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        iterations: int | None = None,
-        negative_sampling_rate: int | None = None,
-        positive_sampling_factor: float | None = None,
-        embedding_dimension: int | None = None,
-        embedding_initializer: Any | None = None,
-        initial_learning_rate: float | None = None,
-        min_learning_rate: float | None = None,
-        window_size: int | None = None,
-        negative_sampling_exponent: float | None = None,
+        iterations: int = 1,
+        negative_sampling_rate: int = 5,
+        positive_sampling_factor: float = 0.001,
+        embedding_dimension: int = 128,
+        embedding_initializer: str = "NORMALIZED",
+        initial_learning_rate: float = 0.025,
+        min_learning_rate: float = 0.0001,
+        window_size: int = 10,
+        negative_sampling_exponent: float = 0.75,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        walk_length: int | None = None,
-        walks_per_node: int | None = None,
-        in_out_factor: float | None = None,
-        return_factor: float | None = None,
-        walk_buffer_size: int | None = None,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        walk_length: int = 80,
+        walks_per_node: int = 10,
+        in_out_factor: float = 1.0,
+        return_factor: float = 1.0,
+        walk_buffer_size: int = 1000,
         relationship_weight_property: str | None = None,
-        random_seed: Any | None = None,
+        random_seed: int | None = None,
     ) -> Node2VecMutateResult:
         """
         Executes the Node2Vec algorithm and writes the results back to the graph as a node property.
@@ -54,51 +54,51 @@ class Node2VecEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The name of the node property to store the embeddings
-        iterations : int | None, default=None
+        iterations : int, default=1
             The number of training iterations
-        negative_sampling_rate : int | None, default=None
+        negative_sampling_rate : int, default=5
             Number of negative samples for each positive sample
-        positive_sampling_factor : float | None, default=None
+        positive_sampling_factor : float, default=0.001
             Factor to multiply positive sampling weights
-        embedding_dimension : int | None, default=None
+        embedding_dimension : int, default=128
             The dimension of the generated embeddings
-        embedding_initializer : Any | None, default=None
-            Strategy for initializing node embeddings
-        initial_learning_rate : float | None, default=None
+        embedding_initializer : str, default="NORMALIZED"
+            Strategy for initializing node embeddings. Either "UNIFORM" or "NORMALIZED"
+        initial_learning_rate : float, default=0.025
             The initial learning rate
-        min_learning_rate : float | None, default=None
+        min_learning_rate : float, default=0.0001
             The minimum learning rate
-        window_size : int | None, default=None
+        window_size : int, default=10
             Size of the context window
-        negative_sampling_exponent : float | None, default=None
+        negative_sampling_exponent : float, default=0.75
             Exponent for negative sampling probability distribution
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        username : str | None = None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
-        sudo : bool
+        sudo : bool, default=False
             Override memory estimation limits
         concurrency : Any | None, default=None
             The number of concurrent threads
         job_id : Any | None, default=None
             An identifier for the job
-        walk_length : int | None, default=None
+        walk_length : int, default=80
             The length of each random walk
-        walks_per_node : int | None, default=None
+        walks_per_node : int, default=10
             Number of walks to sample for each node
-        in_out_factor : float | None, default=None
+        in_out_factor : float, default=1.0
             Controls the likelihood of immediately revisiting a node in the walk
-        return_factor : float | None, default=None
+        return_factor : float, default=1.0
             Controls the likelihood of visiting already visited nodes
-        walk_buffer_size : int | None, default=None
+        walk_buffer_size : int, default=1000
             Buffer size for walk sampling
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : Any | None, default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results
 
         Returns
@@ -111,29 +111,29 @@ class Node2VecEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        iterations: int | None = None,
-        negative_sampling_rate: int | None = None,
-        positive_sampling_factor: float | None = None,
-        embedding_dimension: int | None = None,
-        embedding_initializer: Any | None = None,
-        initial_learning_rate: float | None = None,
-        min_learning_rate: float | None = None,
-        window_size: int | None = None,
-        negative_sampling_exponent: float | None = None,
+        iterations: int = 1,
+        negative_sampling_rate: int = 5,
+        positive_sampling_factor: float = 0.001,
+        embedding_dimension: int = 128,
+        embedding_initializer: str = "NORMALIZED",
+        initial_learning_rate: float = 0.025,
+        min_learning_rate: float = 0.0001,
+        window_size: int = 10,
+        negative_sampling_exponent: float = 0.75,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        walk_length: int | None = None,
-        walks_per_node: int | None = None,
-        in_out_factor: float | None = None,
-        return_factor: float | None = None,
-        walk_buffer_size: int | None = None,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        walk_length: int = 80,
+        walks_per_node: int = 10,
+        in_out_factor: float = 1.0,
+        return_factor: float = 1.0,
+        walk_buffer_size: int = 1000,
         relationship_weight_property: str | None = None,
-        random_seed: Any | None = None,
+        random_seed: int | None = None,
     ) -> DataFrame:
         """
         Executes the Node2Vec algorithm and returns the results as a stream.
@@ -142,51 +142,51 @@ class Node2VecEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        iterations : int | None, default=None
+        iterations : int, default=1
             The number of training iterations
-        negative_sampling_rate : int | None, default=None
+        negative_sampling_rate : int, default=5
             Number of negative samples for each positive sample
-        positive_sampling_factor : float | None, default=None
+        positive_sampling_factor : float, default=0.001
             Factor to multiply positive sampling weights
-        embedding_dimension : int | None, default=None
+        embedding_dimension : int, default=128
             The dimension of the generated embeddings
-        embedding_initializer : Any | None, default=None
-            Strategy for initializing node embeddings
-        initial_learning_rate : float | None, default=None
+        embedding_initializer : str, default="NORMALIZED"
+            Strategy for initializing node embeddings. Either "UNIFORM" or "NORMALIZED"
+        initial_learning_rate : float, default=0.025
             The initial learning rate
-        min_learning_rate : float | None, default=None
+        min_learning_rate : float, default=0.0001
             The minimum learning rate
-        window_size : int | None, default=None
+        window_size : int, default=10
             Size of the context window
-        negative_sampling_exponent : float | None, default=None
+        negative_sampling_exponent : float, default=0.75
             Exponent for negative sampling probability distribution
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        username : str | None = None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
-        sudo : bool
+        sudo : bool, default=False
             Override memory estimation limits
         concurrency : Any | None, default=None
             The number of concurrent threads
         job_id : Any | None, default=None
             An identifier for the job
-        walk_length : int | None, default=None
+        walk_length : int, default=80
             The length of each random walk
-        walks_per_node : int | None, default=None
+        walks_per_node : int, default=10
             Number of walks to sample for each node
-        in_out_factor : float | None, default=None
+        in_out_factor : float, default=1.0
             Controls the likelihood of immediately revisiting a node in the walk
-        return_factor : float | None, default=None
+        return_factor : float, default=1.0
             Controls the likelihood of visiting already visited nodes
-        walk_buffer_size : int | None, default=None
+        walk_buffer_size : int, default=1000
             Buffer size for walk sampling
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : Any | None, default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results
 
         Returns
@@ -200,30 +200,30 @@ class Node2VecEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        iterations: int | None = None,
-        negative_sampling_rate: int | None = None,
-        positive_sampling_factor: float | None = None,
-        embedding_dimension: int | None = None,
-        embedding_initializer: Any | None = None,
-        initial_learning_rate: float | None = None,
-        min_learning_rate: float | None = None,
-        window_size: int | None = None,
-        negative_sampling_exponent: float | None = None,
+        iterations: int = 1,
+        negative_sampling_rate: int = 5,
+        positive_sampling_factor: float = 0.001,
+        embedding_dimension: int = 128,
+        embedding_initializer: str = "NORMALIZED",
+        initial_learning_rate: float = 0.025,
+        min_learning_rate: float = 0.0001,
+        window_size: int = 10,
+        negative_sampling_exponent: float = 0.75,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        walk_length: int | None = None,
-        walks_per_node: int | None = None,
-        in_out_factor: float | None = None,
-        return_factor: float | None = None,
-        walk_buffer_size: int | None = None,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        walk_length: int = 80,
+        walks_per_node: int = 10,
+        in_out_factor: float = 1.0,
+        return_factor: float = 1.0,
+        walk_buffer_size: int = 1000,
         relationship_weight_property: str | None = None,
-        random_seed: Any | None = None,
-        write_concurrency: Any | None = None,
+        random_seed: int | None = None,
+        write_concurrency: int | None = None,
     ) -> Node2VecWriteResult:
         """
         Executes the Node2Vec algorithm and writes the results back to the database.
@@ -234,53 +234,53 @@ class Node2VecEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The name of the node property to write the embeddings to
-        iterations : int | None, default=None
+        iterations : int, default=1
             The number of training iterations
-        negative_sampling_rate : int | None, default=None
+        negative_sampling_rate : int, default=5
             Number of negative samples for each positive sample
-        positive_sampling_factor : float | None, default=None
+        positive_sampling_factor : float, default=0.001
             Factor to multiply positive sampling weights
-        embedding_dimension : int | None, default=None
+        embedding_dimension : int, default=128
             The dimension of the generated embeddings
-        embedding_initializer : Any | None, default=None
-            Strategy for initializing node embeddings
-        initial_learning_rate : float | None, default=None
+        embedding_initializer : str, default="NORMALIZED"
+            Strategy for initializing node embeddings. Either "UNIFORM" or "NORMALIZED"
+        initial_learning_rate : float, default=0.025
             The initial learning rate
-        min_learning_rate : float | None, default=None
+        min_learning_rate : float, default=0.0001
             The minimum learning rate
-        window_size : int | None, default=None
+        window_size : int, default=10
             Size of the context window
-        negative_sampling_exponent : float | None, default=None
+        negative_sampling_exponent : float, default=0.75
             Exponent for negative sampling probability distribution
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        username : str | None = None
+        username : str | None, default=None
             The username to attribute the procedure run to
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
-        sudo : bool
+        sudo : bool, default=False
             Override memory estimation limits
         concurrency : Any | None, default=None
             The number of concurrent threads
         job_id : Any | None, default=None
             An identifier for the job
-        walk_length : int | None, default=None
+        walk_length : int, default=80
             The length of each random walk
-        walks_per_node : int | None, default=None
+        walks_per_node : int, default=10
             Number of walks to sample for each node
-        in_out_factor : float | None, default=None
+        in_out_factor : float, default=1.0
             Controls the likelihood of immediately revisiting a node in the walk
-        return_factor : float | None, default=None
+        return_factor : float, default=1.0
             Controls the likelihood of visiting already visited nodes
-        walk_buffer_size : int | None, default=None
+        walk_buffer_size : int, default=1000
             Buffer size for walk sampling
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : Any | None, default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results
-        write_concurrency : Any | None, default=None
+        write_concurrency : int | None, default=None
             The number of concurrent threads used for writing result
 
         Returns
@@ -293,25 +293,25 @@ class Node2VecEndpoints(ABC):
     def estimate(
         self,
         G: GraphV2 | dict[str, Any],
-        iterations: int | None = None,
-        negative_sampling_rate: int | None = None,
-        positive_sampling_factor: float | None = None,
-        embedding_dimension: int | None = None,
-        embedding_initializer: Any | None = None,
-        initial_learning_rate: float | None = None,
-        min_learning_rate: float | None = None,
-        window_size: int | None = None,
-        negative_sampling_exponent: float | None = None,
+        iterations: int = 1,
+        negative_sampling_rate: int = 5,
+        positive_sampling_factor: float = 0.001,
+        embedding_dimension: int = 128,
+        embedding_initializer: str = "NORMALIZED",
+        initial_learning_rate: float = 0.025,
+        min_learning_rate: float = 0.0001,
+        window_size: int = 10,
+        negative_sampling_exponent: float = 0.75,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
-        walk_length: int | None = None,
-        walks_per_node: int | None = None,
-        in_out_factor: float | None = None,
-        return_factor: float | None = None,
-        walk_buffer_size: int | None = None,
+        concurrency: int | None = None,
+        walk_length: int = 80,
+        walks_per_node: int = 10,
+        in_out_factor: float = 1.0,
+        return_factor: float = 1.0,
+        walk_buffer_size: int = 1000,
         relationship_weight_property: str | None = None,
-        random_seed: Any | None = None,
+        random_seed: int | None = None,
     ) -> EstimationResult:
         """
         Returns an estimation of the memory consumption for that procedure.
@@ -320,23 +320,23 @@ class Node2VecEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
-        iterations : int | None, default=None
+        iterations : int, default=1
             The number of training iterations
-        negative_sampling_rate : int | None, default=None
+        negative_sampling_rate : int, default=5
             Number of negative samples for each positive sample
-        positive_sampling_factor : float | None, default=None
+        positive_sampling_factor : float, default=0.001
             Factor to multiply positive sampling weights
-        embedding_dimension : int | None, default=None
+        embedding_dimension : int, default=128
             The dimension of the generated embeddings
-        embedding_initializer : Any | None, default=None
-            Strategy for initializing node embeddings
-        initial_learning_rate : float | None, default=None
+        embedding_initializer : str, default="NORMALIZED"
+            Strategy for initializing node embeddings. Either "UNIFORM" or "NORMALIZED"
+        initial_learning_rate : float, default=0.025
             The initial learning rate
-        min_learning_rate : float | None, default=None
+        min_learning_rate : float, default=0.0001
             The minimum learning rate
-        window_size : int | None, default=None
+        window_size : int, default=10
             Size of the context window
-        negative_sampling_exponent : float | None, default=None
+        negative_sampling_exponent : float, default=0.75
             Exponent for negative sampling probability distribution
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
@@ -344,19 +344,19 @@ class Node2VecEndpoints(ABC):
             The node labels used to select nodes for this algorithm run
         concurrency : Any | None, default=None
             The number of concurrent threads
-        walk_length : int | None, default=None
+        walk_length : int, default=80
             The length of each random walk
-        walks_per_node : int | None, default=None
+        walks_per_node : int, default=10
             Number of walks to sample for each node
-        in_out_factor : float | None, default=None
+        in_out_factor : float, default=1.0
             Controls the likelihood of immediately revisiting a node in the walk
-        return_factor : float | None, default=None
+        return_factor : float, default=1.0
             Controls the likelihood of visiting already visited nodes
-        walk_buffer_size : int | None, default=None
+        walk_buffer_size : int, default=1000
             Buffer size for walk sampling
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : Any | None, default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results
 
         Returns
