@@ -44,9 +44,9 @@ class LocalClusteringCoefficientEndpoints:
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Node labels to include in the computation
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Relationship types to include in the computation
         sudo : bool | None, default=False
             Run with elevated privileges
@@ -89,9 +89,9 @@ class LocalClusteringCoefficientEndpoints:
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Node labels to include in the computation
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Relationship types to include in the computation
         sudo : bool | None, default=False
             Run with elevated privileges
@@ -134,9 +134,9 @@ class LocalClusteringCoefficientEndpoints:
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Node labels to include in the computation
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Relationship types to include in the computation
         sudo : bool | None, default=False
             Run with elevated privileges
@@ -183,9 +183,9 @@ class LocalClusteringCoefficientEndpoints:
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Node labels to include in the computation
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Relationship types to include in the computation
         sudo : bool | None, default=False
             Run with elevated privileges
@@ -230,9 +230,9 @@ class LocalClusteringCoefficientEndpoints:
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Node labels to include in the computation
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Relationship types to include in the computation
         sudo : bool | None, default=False
             Run with elevated privileges

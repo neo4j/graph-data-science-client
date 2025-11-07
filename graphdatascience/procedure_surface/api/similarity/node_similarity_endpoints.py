@@ -77,9 +77,9 @@ class NodeSimilarityEndpoints(ABC):
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -147,9 +147,9 @@ class NodeSimilarityEndpoints(ABC):
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -217,9 +217,9 @@ class NodeSimilarityEndpoints(ABC):
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -294,9 +294,9 @@ class NodeSimilarityEndpoints(ABC):
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -364,9 +364,9 @@ class NodeSimilarityEndpoints(ABC):
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.

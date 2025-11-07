@@ -58,11 +58,11 @@ class LeidenEndpoints(ABC):
             Whether to log progress
         max_levels : int | None, default=10
             The maximum number of levels
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         relationship_weight_property : str | None, default=None
             The relationship weight property
@@ -126,11 +126,11 @@ class LeidenEndpoints(ABC):
             Whether to log progress
         max_levels : int | None, default=10
             The maximum number of levels
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         relationship_weight_property : str | None, default=None
             The relationship weight property
@@ -197,11 +197,11 @@ class LeidenEndpoints(ABC):
             The maximum number of levels
         min_community_size : int | None, default=None
             The minimum community size
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         relationship_weight_property : str | None, default=None
             The relationship weight property
@@ -272,11 +272,11 @@ class LeidenEndpoints(ABC):
             The maximum number of levels
         min_community_size : int | None, default=None
             The minimum community size
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         relationship_weight_property : str | None, default=None
             The relationship weight property
@@ -334,11 +334,11 @@ class LeidenEndpoints(ABC):
             Whether to include intermediate communities
         max_levels : int | None, default=10
             The maximum number of levels
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         relationship_weight_property : str | None, default=None
             The relationship weight property

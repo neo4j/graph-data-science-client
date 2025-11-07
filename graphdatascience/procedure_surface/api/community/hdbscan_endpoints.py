@@ -50,15 +50,15 @@ class HdbscanEndpoints(ABC):
             The number of samples used for density estimation
         min_cluster_size : int | None, default=None
             The minimum size of clusters
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         concurrency : int | None, default=None
             The number of concurrent threads
         log_progress : bool, default=True
             Whether to log progress
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         job_id : Any | None, default=None
             An identifier for the job
@@ -106,15 +106,15 @@ class HdbscanEndpoints(ABC):
             The number of samples used for density estimation
         min_cluster_size : int | None, default=None
             The minimum size of clusters
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         concurrency : int | None, default=None
             The number of concurrent threads
         log_progress : bool, default=True
             Whether to log progress
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         job_id : Any | None, default=None
             An identifier for the job
@@ -162,15 +162,15 @@ class HdbscanEndpoints(ABC):
             The number of samples used for density estimation
         min_cluster_size : int | None, default=None
             The minimum size of clusters
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         concurrency : int | None, default=None
             The number of concurrent threads
         log_progress : bool, default=True
             Whether to log progress
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         job_id : Any | None, default=None
             An identifier for the job
@@ -219,9 +219,9 @@ class HdbscanEndpoints(ABC):
             The number of samples used for density estimation
         min_cluster_size : int | None, default=None
             The minimum size of clusters
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         write_concurrency : int | None, default=None
             The number of concurrent threads for writing
@@ -229,7 +229,7 @@ class HdbscanEndpoints(ABC):
             The number of concurrent threads
         log_progress : bool, default=True
             Whether to log progress
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         job_id : Any | None, default=None
             An identifier for the job
@@ -278,15 +278,15 @@ class HdbscanEndpoints(ABC):
             The number of samples used for density estimation
         min_cluster_size : int | None, default=None
             The minimum size of clusters
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         concurrency : int | None, default=None
             The number of concurrent threads
         log_progress : bool, default=True
             Whether to log progress
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         job_id : Any | None, default=None
             An identifier for the job

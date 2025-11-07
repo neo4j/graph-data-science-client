@@ -45,19 +45,19 @@ class LouvainEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the community ID for each node
-        tolerance : float | None, default=None
+        tolerance : float
             The tolerance value for the algorithm convergence
         max_levels : int | None, default=None
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool | None, default=None
             Whether to include intermediate community assignments
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations per level
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -107,19 +107,19 @@ class LouvainEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        tolerance : float | None, default=None
+        tolerance : float
             The tolerance value for the algorithm convergence
         max_levels : int | None, default=None
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool | None, default=None
             Whether to include intermediate community assignments
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations per level
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -170,19 +170,19 @@ class LouvainEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        tolerance : float | None, default=None
+        tolerance : float
             The tolerance value for the algorithm convergence
         max_levels : int | None, default=None
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool | None, default=None
             Whether to include intermediate community assignments
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations per level
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationships types considered in this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -239,19 +239,19 @@ class LouvainEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to write community IDs to
-        tolerance : float | None, default=None
+        tolerance : float
             The tolerance value for the algorithm convergence
         max_levels : int | None, default=None
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool | None, default=None
             Whether to include intermediate community assignments
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations per level
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationships types considered in this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -301,17 +301,17 @@ class LouvainEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
-        tolerance : float | None, default=None
+        tolerance : float
             The tolerance value for the algorithm convergence
         max_levels : int | None, default=None
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool | None, default=None
             Whether to include intermediate community assignments
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations per level
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         concurrency : Any | None, default=None
             The number of concurrent threads

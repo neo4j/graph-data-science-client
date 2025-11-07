@@ -72,15 +72,15 @@ class Node2VecEndpoints(ABC):
             Size of the context window
         negative_sampling_exponent : float | None, default=None
             Exponent for negative sampling probability distribution
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         username : str | None = None
             The username to attribute the procedure run to
         log_progress : bool | None, default=None
             Whether to log progress
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         concurrency : Any | None, default=None
             The number of concurrent threads
@@ -160,15 +160,15 @@ class Node2VecEndpoints(ABC):
             Size of the context window
         negative_sampling_exponent : float | None, default=None
             Exponent for negative sampling probability distribution
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         username : str | None = None
             The username to attribute the procedure run to
         log_progress : bool | None, default=None
             Whether to log progress
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         concurrency : Any | None, default=None
             The number of concurrent threads
@@ -252,15 +252,15 @@ class Node2VecEndpoints(ABC):
             Size of the context window
         negative_sampling_exponent : float | None, default=None
             Exponent for negative sampling probability distribution
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         username : str | None = None
             The username to attribute the procedure run to
         log_progress : bool | None, default=None
             Whether to log progress
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         concurrency : Any | None, default=None
             The number of concurrent threads
@@ -338,9 +338,9 @@ class Node2VecEndpoints(ABC):
             Size of the context window
         negative_sampling_exponent : float | None, default=None
             Exponent for negative sampling probability distribution
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         concurrency : Any | None, default=None
             The number of concurrent threads

@@ -35,11 +35,11 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         mutate_property: str,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> ArticulationPointsMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -63,11 +63,11 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         G: GraphV2,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> ArticulationPointsStatsResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -91,11 +91,11 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         G: GraphV2,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> DataFrame:
         raise NotImplementedError(
             "Stream mode is not supported for ArticulationPoints arrow endpoints. "
@@ -109,12 +109,12 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         write_property: str,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        write_concurrency: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        write_concurrency: int | None = None,
     ) -> ArticulationPointsWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,

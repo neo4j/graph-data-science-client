@@ -18,13 +18,13 @@ class ArticleRankEndpoints(ABC):
         G: GraphV2,
         mutate_property: str,
         *,
-        damping_factor: float | None = None,
-        tolerance: float | None = None,
-        max_iterations: int | None = None,
-        scaler: Any | None = None,
+        damping_factor: float = 0.85,
+        tolerance: float = 1.0e-7,
+        max_iterations: int = 20,
+        scaler: Any = "NONE",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -45,19 +45,19 @@ class ArticleRankEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             Name of the node property to store the results in.
-        damping_factor : float | None, default=None
+        damping_factor : float
             Probability of a jump to a random node.
-        tolerance : float | None, default=None
+        tolerance : float
             Minimum change in scores between iterations.
-        max_iterations : int | None, default=None
+        max_iterations : int
             Maximum number of iterations to run.
-        scaler : Any | None, default=None
+        scaler : Any
             Name of the scaler applied on the resulting scores.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool | None, default=None
+        sudo : bool
             Disable the memory guard.
         log_progress : bool | None, default=None
             Display progress logging.
@@ -83,13 +83,13 @@ class ArticleRankEndpoints(ABC):
         self,
         G: GraphV2,
         *,
-        damping_factor: float | None = None,
-        tolerance: float | None = None,
-        max_iterations: int | None = None,
-        scaler: Any | None = None,
+        damping_factor: float = 0.85,
+        tolerance: float = 1.0e-7,
+        max_iterations: int = 20,
+        scaler: Any = "NONE",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -108,19 +108,19 @@ class ArticleRankEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        damping_factor : float | None, default=None
+        damping_factor : float
             Probability of a jump to a random node.
-        tolerance : float | None, default=None
+        tolerance : float
             Minimum change in scores between iterations.
-        max_iterations : int | None, default=None
+        max_iterations : int
             Maximum number of iterations to run.
-        scaler : Any | None, default=None
+        scaler : Any
             Name of the scaler applied on the resulting scores.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool | None, default=None
+        sudo : bool
             Disable the memory guard.
         log_progress : bool | None, default=None
             Display progress logging.
@@ -146,13 +146,13 @@ class ArticleRankEndpoints(ABC):
         self,
         G: GraphV2,
         *,
-        damping_factor: float | None = None,
-        tolerance: float | None = None,
-        max_iterations: int | None = None,
-        scaler: Any | None = None,
+        damping_factor: float = 0.85,
+        tolerance: float = 1.0e-7,
+        max_iterations: int = 20,
+        scaler: Any = "NONE",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -167,21 +167,21 @@ class ArticleRankEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        damping_factor : float | None, default=None
+        damping_factor : float
             The damping factor controls the probability of a random jump to a random node
-        tolerance : float | None, default=None
+        tolerance : float
             Minimum change in scores between iterations
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations to run
-        scaler : Any | None, default=None
+        scaler : Any
             Configuration for scaling the scores
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -206,13 +206,13 @@ class ArticleRankEndpoints(ABC):
         G: GraphV2,
         write_property: str,
         *,
-        damping_factor: float | None = None,
-        tolerance: float | None = None,
-        max_iterations: int | None = None,
-        scaler: Any | None = None,
+        damping_factor: float = 0.85,
+        tolerance: float = 1.0e-7,
+        max_iterations: int = 20,
+        scaler: Any = "NONE",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -234,19 +234,19 @@ class ArticleRankEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to write the ArticleRank score for each node
-        damping_factor : float | None, default=None
+        damping_factor : float
             Probability of a jump to a random node.
-        tolerance : float | None, default=None
+        tolerance : float
             Minimum change in scores between iterations.
-        max_iterations : int | None, default=None
+        max_iterations : int
             Maximum number of iterations to run.
-        scaler : Any | None, default=None
+        scaler : Any
             Name of the scaler applied on the resulting scores.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool | None, default=None
+        sudo : bool
             Disable the memory guard.
         log_progress : bool | None, default=None
             Display progress logging.
@@ -274,10 +274,10 @@ class ArticleRankEndpoints(ABC):
         self,
         G: GraphV2 | dict[str, Any],
         *,
-        damping_factor: float | None = None,
-        tolerance: float | None = None,
-        max_iterations: int | None = None,
-        scaler: Any | None = None,
+        damping_factor: float = 0.85,
+        tolerance: float = 1.0e-7,
+        max_iterations: int = 20,
+        scaler: Any = "NONE",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
@@ -291,17 +291,17 @@ class ArticleRankEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
-        damping_factor : float | None, default=None
+        damping_factor : float
             The damping factor controls the probability of a random jump to a random node
-        tolerance : float | None, default=None
+        tolerance : float
             Minimum change in scores between iterations
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations to run
-        scaler : Any | None, default=None
+        scaler : Any
             Configuration for scaling the scores
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         concurrency : Any | None, default=None
             The number of concurrent threads

@@ -66,9 +66,9 @@ class SingleSourceDeltaEndpoints(ABC):
             The bucket width for grouping nodes by tentative distance.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -116,9 +116,9 @@ class SingleSourceDeltaEndpoints(ABC):
             The bucket width for grouping nodes by tentative distance.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -169,9 +169,9 @@ class SingleSourceDeltaEndpoints(ABC):
             The bucket width for grouping nodes by tentative distance.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -229,9 +229,9 @@ class SingleSourceDeltaEndpoints(ABC):
             Whether to write costs of the shortest path onto the relationship.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -279,9 +279,9 @@ class SingleSourceDeltaEndpoints(ABC):
             The bucket width for grouping nodes by tentative distance.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.

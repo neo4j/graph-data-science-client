@@ -64,9 +64,9 @@ class SourceTargetAStarEndpoints(ABC):
             The node property that stores longitude values.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -122,9 +122,9 @@ class SourceTargetAStarEndpoints(ABC):
             The node property that stores longitude values.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -187,9 +187,9 @@ class SourceTargetAStarEndpoints(ABC):
             Whether to write costs of the shortest path onto the relationship.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -242,9 +242,9 @@ class SourceTargetAStarEndpoints(ABC):
             The node property that stores longitude values.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.

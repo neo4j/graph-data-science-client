@@ -56,9 +56,9 @@ class SingleSourceDijkstraEndpoints(ABC):
             The source node for the shortest path computation.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -106,9 +106,9 @@ class SingleSourceDijkstraEndpoints(ABC):
             The relationship type to use for the new relationships in the graph catalog.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -163,9 +163,9 @@ class SingleSourceDijkstraEndpoints(ABC):
             Whether to write costs of the shortest path onto the relationship.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -210,9 +210,9 @@ class SingleSourceDijkstraEndpoints(ABC):
             The source node for the shortest path computation.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.

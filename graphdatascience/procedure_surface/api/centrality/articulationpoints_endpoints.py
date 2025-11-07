@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from typing import Any
 
@@ -17,12 +19,12 @@ class ArticulationPointsEndpoints(ABC):
         mutate_property: str,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
         job_id: Any | None = None,
-    ) -> "ArticulationPointsMutateResult":
+    ) -> ArticulationPointsMutateResult:
         """
         Runs the Articulation Points algorithm and stores the results in the graph catalog as a new node property.
 
@@ -34,11 +36,11 @@ class ArticulationPointsEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the articulation point flag for each node
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -61,12 +63,12 @@ class ArticulationPointsEndpoints(ABC):
         G: GraphV2,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
         job_id: Any | None = None,
-    ) -> "ArticulationPointsStatsResult":
+    ) -> ArticulationPointsStatsResult:
         """
         Runs the Articulation Points algorithm and returns result statistics without storing the results.
 
@@ -76,11 +78,11 @@ class ArticulationPointsEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -103,12 +105,12 @@ class ArticulationPointsEndpoints(ABC):
         G: GraphV2,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
         job_id: Any | None = None,
-    ) -> "DataFrame":
+    ) -> DataFrame:
         """
         Executes the ArticulationPoints algorithm and returns results as a stream.
 
@@ -116,11 +118,11 @@ class ArticulationPointsEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -146,13 +148,13 @@ class ArticulationPointsEndpoints(ABC):
         write_property: str,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
         job_id: Any | None = None,
-        write_concurrency: Any | None = None,
-    ) -> "ArticulationPointsWriteResult":
+        write_concurrency: int | None = None,
+    ) -> ArticulationPointsWriteResult:
         """
         Runs the Articulation Points algorithm and stores the result in the Neo4j database as a new node property.
 
@@ -164,11 +166,11 @@ class ArticulationPointsEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to store the articulation point flag for each node
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -202,9 +204,9 @@ class ArticulationPointsEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to be used in the estimation. Provided either as a GraphV2 object or a configuration dictionary for the projection.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
         concurrency : Any | None, default=None
             The number of concurrent threads used for the estimation.

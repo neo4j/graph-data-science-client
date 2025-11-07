@@ -40,9 +40,9 @@ class CliqueCountingEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         sudo : bool | None, default=False
             Override memory estimation limits
@@ -81,9 +81,9 @@ class CliqueCountingEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         sudo : bool | None, default=False
             Override memory estimation limits
@@ -122,9 +122,9 @@ class CliqueCountingEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         sudo : bool | None, default=False
             Override memory estimation limits
@@ -167,9 +167,9 @@ class CliqueCountingEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         sudo : bool | None, default=False
             Override memory estimation limits
@@ -202,9 +202,9 @@ class CliqueCountingEndpoints(ABC):
             The graph or graph configuration to estimate for
         concurrency : int | None, default=None
             The number of concurrent threads
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
 
         Returns

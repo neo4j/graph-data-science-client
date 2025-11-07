@@ -39,7 +39,7 @@ class RelationshipsEndpoints(ABC):
             The relationship properties to stream. If not specified, no properties will be streamed.
         concurrency : Any | None, default=None
             The number of concurrent threads
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -81,7 +81,7 @@ class RelationshipsEndpoints(ABC):
             The number of concurrent threads
         write_concurrency : Any | None, default=None
             The number of concurrent threads used for writing
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -146,7 +146,7 @@ class RelationshipsEndpoints(ABC):
             The relationship types to create the inverse index for
         concurrency : Any | None, default=None
             The number of concurrent threads
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -192,7 +192,7 @@ class RelationshipsEndpoints(ABC):
             A dictionary can be provided to specify property specific aggregations.
         concurrency : Any | None, default=None
             The number of concurrent threads
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress

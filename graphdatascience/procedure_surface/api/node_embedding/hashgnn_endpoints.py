@@ -173,11 +173,11 @@ class HashGNNEndpoints(ABC):
             Whether to use heterogeneous node processing for different node types
         feature_properties : list[str] | None, default=None
             The names of the node properties to use as input features
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress

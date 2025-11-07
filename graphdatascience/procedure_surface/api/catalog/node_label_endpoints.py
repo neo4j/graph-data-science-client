@@ -18,9 +18,9 @@ class NodeLabelEndpoints(ABC):
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        write_concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        write_concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> NodeLabelMutateResult:
         """
         Attaches the specified node label to the filtered nodes in the graph.
@@ -33,7 +33,7 @@ class NodeLabelEndpoints(ABC):
             The node label to write back.
         node_filter : str
             A Cypher predicate for filtering nodes in the input graph.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -77,7 +77,7 @@ class NodeLabelEndpoints(ABC):
             The node label to write back.
         node_filter : str
             A Cypher predicate for filtering nodes in the input graph.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress

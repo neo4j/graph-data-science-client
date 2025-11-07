@@ -21,7 +21,7 @@ class BetweennessEndpoints(ABC):
         sampling_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -46,11 +46,11 @@ class BetweennessEndpoints(ABC):
             Number of source nodes to consider for computing centrality scores.
         sampling_seed : int | None, default=None
             Seed value for the random number generator that selects source nodes.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool | None, default=None
+        sudo : bool
             Disable the memory guard.
         log_progress : bool | None, default=None
             Display progress logging.
@@ -77,7 +77,7 @@ class BetweennessEndpoints(ABC):
         sampling_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -100,11 +100,11 @@ class BetweennessEndpoints(ABC):
             Number of source nodes to consider for computing centrality scores.
         sampling_seed : int | None, default=None
             Seed value for the random number generator that selects source nodes.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool | None, default=None
+        sudo : bool
             Disable the memory guard.
         log_progress : bool | None, default=None
             Display progress logging.
@@ -131,7 +131,7 @@ class BetweennessEndpoints(ABC):
         sampling_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -149,11 +149,11 @@ class BetweennessEndpoints(ABC):
             The number of nodes to use for sampling.
         sampling_seed : int | None, default=None
             The seed value for sampling randomization
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -181,7 +181,7 @@ class BetweennessEndpoints(ABC):
         sampling_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -207,11 +207,11 @@ class BetweennessEndpoints(ABC):
             Number of source nodes to consider for computing centrality scores.
         sampling_seed : int | None, default=None
             Seed value for the random number generator that selects source nodes.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool | None, default=None
+        sudo : bool
             Disable the memory guard.
         log_progress : bool | None, default=None
             Display progress logging.
@@ -254,9 +254,9 @@ class BetweennessEndpoints(ABC):
             The number of nodes to use for sampling.
         sampling_seed : int | None, default=None
             The seed value for sampling randomization
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         concurrency : Any | None, default=None
             The number of concurrent threads

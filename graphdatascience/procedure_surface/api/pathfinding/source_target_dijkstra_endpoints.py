@@ -58,9 +58,9 @@ class SourceTargetDijkstraEndpoints(ABC):
             A single target node or a list of target nodes for the shortest path computation.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -110,9 +110,9 @@ class SourceTargetDijkstraEndpoints(ABC):
             A single target node or a list of target nodes for the shortest path computation.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -169,9 +169,9 @@ class SourceTargetDijkstraEndpoints(ABC):
             Whether to write costs of the shortest path onto the relationship(s).
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -218,9 +218,9 @@ class SourceTargetDijkstraEndpoints(ABC):
             A single target node or a list of target nodes for the shortest path computation.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.

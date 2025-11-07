@@ -17,10 +17,10 @@ class DegreeEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        orientation: Any | None = None,
+        orientation: str = "NATURAL",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -43,11 +43,11 @@ class DegreeEndpoints(ABC):
             Name of the node property to store the results in.
         orientation : Any | None, default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool | None, default=None
+        sudo : bool
             Disable the memory guard.
         log_progress : bool | None, default=None
             Display progress logging.
@@ -71,10 +71,10 @@ class DegreeEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        orientation: Any | None = None,
+        orientation: str = "NATURAL",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -95,11 +95,11 @@ class DegreeEndpoints(ABC):
             The graph to run the algorithm on
         orientation : Any | None, default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool | None, default=None
+        sudo : bool
             Disable the memory guard.
         log_progress : bool | None, default=None
             Display progress logging.
@@ -123,10 +123,10 @@ class DegreeEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        orientation: Any | None = None,
+        orientation: str = "NATURAL",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -145,11 +145,11 @@ class DegreeEndpoints(ABC):
             'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
             'REVERSE' treats each relationship as if it were directed in the opposite direction.
             'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         log_progress : bool | None, default=None
@@ -178,16 +178,16 @@ class DegreeEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        orientation: Any | None = None,
+        orientation: str = "NATURAL",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
         job_id: Any | None = None,
         relationship_weight_property: str | None = None,
-        write_concurrency: Any | None = None,
+        write_concurrency: int | None = None,
     ) -> DegreeWriteResult:
         """
         Runs the Degree Centrality algorithm and stores the result in the Neo4j database as a new node property.
@@ -205,11 +205,11 @@ class DegreeEndpoints(ABC):
             The property name to store the degree centrality score for each node in the database
         orientation : Any | None, default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool | None, default=None
+        sudo : bool
             Disable the memory guard.
         log_progress : bool | None, default=None
             Display progress logging.
@@ -235,7 +235,7 @@ class DegreeEndpoints(ABC):
     def estimate(
         self,
         G: GraphV2 | dict[str, Any],
-        orientation: Any | None = None,
+        orientation: str = "NATURAL",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
@@ -250,9 +250,9 @@ class DegreeEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph.
         orientation : Any | None, default=None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         concurrency : Any | None, default=None
             The number of concurrent threads

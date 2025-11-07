@@ -17,14 +17,14 @@ class EigenvectorEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        max_iterations: int | None = None,
-        tolerance: float | None = None,
+        max_iterations: int = 20,
+        tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any | None = None,
+        scaler: Any = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -44,21 +44,21 @@ class EigenvectorEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the eigenvector centrality score for each node
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations to run the algorithm
-        tolerance : float | None, default=None
+        tolerance : float
             The tolerance for convergence detection
         source_nodes : Any | None, default=None
             The source nodes to start the computation from
-        scaler : Any | None, default=None
+        scaler : Any
             Scaling configuration for the algorithm
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         log_progress : bool | None, default=None
@@ -81,14 +81,14 @@ class EigenvectorEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        max_iterations: int | None = None,
-        tolerance: float | None = None,
+        max_iterations: int = 20,
+        tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any | None = None,
+        scaler: Any = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -106,21 +106,21 @@ class EigenvectorEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations to run the algorithm
-        tolerance : float | None, default=None
+        tolerance : float
             The tolerance for convergence detection
         source_nodes : Any | None, default=None
             The source nodes to start the computation from
-        scaler : Any | None, default=None
+        scaler : Any
             Scaling configuration for the algorithm
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         log_progress : bool | None, default=None
@@ -143,14 +143,14 @@ class EigenvectorEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        max_iterations: int | None = None,
-        tolerance: float | None = None,
+        max_iterations: int = 20,
+        tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any | None = None,
+        scaler: Any = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -163,21 +163,21 @@ class EigenvectorEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations to run the algorithm
-        tolerance : float | None, default=None
+        tolerance : float
             The tolerance for convergence detection
         source_nodes : Any | None, default=None
             The source nodes to start the computation from
-        scaler : Any | None, default=None
+        scaler : Any
             Scaling configuration for the algorithm
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         log_progress : bool | None, default=None
@@ -201,19 +201,19 @@ class EigenvectorEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        max_iterations: int | None = None,
-        tolerance: float | None = None,
+        max_iterations: int = 20,
+        tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any | None = None,
+        scaler: Any = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
         job_id: Any | None = None,
-        write_concurrency: Any | None = None,
+        write_concurrency: int | None = None,
     ) -> EigenvectorWriteResult:
         """
         Runs the Eigenvector Centrality algorithm and stores the result in the Neo4j database as a new node property.
@@ -229,21 +229,21 @@ class EigenvectorEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to write the eigenvector centrality scores to
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations to run the algorithm
-        tolerance : float | None, default=None
+        tolerance : float
             The tolerance for convergence detection
         source_nodes : Any | None, default=None
             The source nodes to start the computation from
-        scaler : Any | None, default=None
+        scaler : Any
             Scaling configuration for the algorithm
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         log_progress : bool | None, default=None
@@ -268,10 +268,10 @@ class EigenvectorEndpoints(ABC):
     def estimate(
         self,
         G: GraphV2 | dict[str, Any],
-        max_iterations: int | None = None,
-        tolerance: float | None = None,
+        max_iterations: int = 20,
+        tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any | None = None,
+        scaler: Any = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -284,19 +284,19 @@ class EigenvectorEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph configuration.
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations to run the algorithm
-        tolerance : float | None, default=None
+        tolerance : float
             The tolerance for convergence detection
         source_nodes : Any | None, default=None
             The source nodes to start the computation from
-        scaler : Any | None, default=None
+        scaler : Any
             Scaling configuration for the algorithm
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
         concurrency : Any | None, default=None
             The number of concurrent threads used for the algorithm execution.
