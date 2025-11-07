@@ -7,6 +7,7 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
@@ -22,9 +23,9 @@ class MaxKCutEndpoints(ABC):
         job_id: str | None = None,
         k: int | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         sudo: bool | None = False,
         username: str | None = None,
@@ -89,9 +90,9 @@ class MaxKCutEndpoints(ABC):
         k: int | None = None,
         log_progress: bool = True,
         min_community_size: int | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         sudo: bool | None = False,
         username: str | None = None,
@@ -154,9 +155,9 @@ class MaxKCutEndpoints(ABC):
         concurrency: int | None = None,
         iterations: int | None = None,
         k: int | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         vns_max_neighborhood_order: int | None = None,
     ) -> EstimationResult:

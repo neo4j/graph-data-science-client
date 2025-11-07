@@ -11,6 +11,7 @@ from graphdatascience.procedure_surface.api.community.clique_counting_endpoints 
     CliqueCountingStatsResult,
     CliqueCountingWriteResult,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
@@ -33,8 +34,8 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> CliqueCountingMutateResult:
@@ -61,8 +62,8 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> CliqueCountingStatsResult:
@@ -89,8 +90,8 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> DataFrame:
@@ -114,8 +115,8 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
         write_concurrency: Any | None = None,
@@ -146,8 +147,8 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
         self,
         G: GraphV2 | dict[str, Any],
         concurrency: Any | None = 4,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(
             concurrency=concurrency,

@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.community.sllpa_endpoints import (
     SllpaStatsResult,
     SllpaWriteResult,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
@@ -34,9 +35,9 @@ class SllpaCypherEndpoints(SllpaEndpoints):
         job_id: str | None = None,
         log_progress: bool = True,
         min_association_strength: float | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         partitioning: Any | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> SllpaMutateResult:
@@ -73,9 +74,9 @@ class SllpaCypherEndpoints(SllpaEndpoints):
         job_id: str | None = None,
         log_progress: bool = True,
         min_association_strength: float | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         partitioning: Any | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> SllpaStatsResult:
@@ -111,9 +112,9 @@ class SllpaCypherEndpoints(SllpaEndpoints):
         job_id: str | None = None,
         log_progress: bool = True,
         min_association_strength: float | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         partitioning: Any | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> DataFrame:
@@ -150,9 +151,9 @@ class SllpaCypherEndpoints(SllpaEndpoints):
         job_id: str | None = None,
         log_progress: bool = True,
         min_association_strength: float | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         partitioning: Any | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
         write_concurrency: int | None = None,
@@ -189,9 +190,9 @@ class SllpaCypherEndpoints(SllpaEndpoints):
         max_iterations: int,
         concurrency: int | None = None,
         min_association_strength: float | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         partitioning: Any | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
     ) -> EstimationResult:
         from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 

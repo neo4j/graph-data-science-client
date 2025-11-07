@@ -4,6 +4,7 @@ from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_endpoints import (
     GraphSageMutateResult,
@@ -24,8 +25,8 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         G: GraphV2,
         model_name: str,
         *,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
         sudo: bool | None = None,
@@ -58,8 +59,8 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         model_name: str,
         write_property: str,
         *,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
         sudo: bool | None = None,
@@ -96,8 +97,8 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         G: GraphV2,
         model_name: str,
         mutate_property: str,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
         sudo: bool | None = None,
@@ -131,8 +132,8 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         self,
         G: GraphV2 | dict[str, Any],
         model_name: str,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         batch_size: int | None = None,
         concurrency: int | None = None,
         log_progress: bool = True,

@@ -7,6 +7,7 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
@@ -22,9 +23,9 @@ class LabelPropagationEndpoints(ABC):
         job_id: str | None = None,
         log_progress: bool = True,
         max_iterations: int | None = 10,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         node_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
         sudo: bool | None = False,
@@ -81,9 +82,9 @@ class LabelPropagationEndpoints(ABC):
         job_id: str | None = None,
         log_progress: bool = True,
         max_iterations: int | None = 10,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         node_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
         sudo: bool | None = False,
@@ -139,9 +140,9 @@ class LabelPropagationEndpoints(ABC):
         log_progress: bool = True,
         max_iterations: int | None = 10,
         min_community_size: int | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         node_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
         sudo: bool | None = False,
@@ -200,9 +201,9 @@ class LabelPropagationEndpoints(ABC):
         log_progress: bool = True,
         max_iterations: int | None = 10,
         min_community_size: int | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         node_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
         sudo: bool | None = False,
@@ -262,9 +263,9 @@ class LabelPropagationEndpoints(ABC):
         concurrency: int | None = None,
         consecutive_ids: bool | None = False,
         max_iterations: int | None = 10,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         node_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
     ) -> EstimationResult:

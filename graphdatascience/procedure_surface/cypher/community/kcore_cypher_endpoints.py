@@ -9,6 +9,7 @@ from graphdatascience.procedure_surface.api.community.kcore_endpoints import (
     KCoreStatsResult,
     KCoreWriteResult,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 
 from ....call_parameters import CallParameters
@@ -30,8 +31,8 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         self,
         G: GraphV2,
         mutate_property: str,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -61,8 +62,8 @@ class KCoreCypherEndpoints(KCoreEndpoints):
     def stats(
         self,
         G: GraphV2,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -91,8 +92,8 @@ class KCoreCypherEndpoints(KCoreEndpoints):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -118,8 +119,8 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         self,
         G: GraphV2,
         write_property: str,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -151,8 +152,8 @@ class KCoreCypherEndpoints(KCoreEndpoints):
     def estimate(
         self,
         G: GraphV2 | dict[str, Any],
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
     ) -> EstimationResult:
         algo_config = ConfigConverter.convert_to_gds_config(

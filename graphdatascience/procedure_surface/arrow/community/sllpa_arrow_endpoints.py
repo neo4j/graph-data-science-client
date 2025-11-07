@@ -11,6 +11,7 @@ from graphdatascience.procedure_surface.api.community.sllpa_endpoints import (
     SllpaStatsResult,
     SllpaWriteResult,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
@@ -36,9 +37,9 @@ class SllpaArrowEndpoints(SllpaEndpoints):
         job_id: str | None = None,
         log_progress: bool = True,
         min_association_strength: float | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         partitioning: Any | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> SllpaMutateResult:
@@ -69,9 +70,9 @@ class SllpaArrowEndpoints(SllpaEndpoints):
         job_id: str | None = None,
         log_progress: bool = True,
         min_association_strength: float | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         partitioning: Any | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> SllpaStatsResult:
@@ -102,9 +103,9 @@ class SllpaArrowEndpoints(SllpaEndpoints):
         job_id: str | None = None,
         log_progress: bool = True,
         min_association_strength: float | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         partitioning: Any | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> DataFrame:
@@ -134,9 +135,9 @@ class SllpaArrowEndpoints(SllpaEndpoints):
         job_id: str | None = None,
         log_progress: bool = True,
         min_association_strength: float | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         partitioning: Any | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
         write_concurrency: int | None = None,
@@ -173,9 +174,9 @@ class SllpaArrowEndpoints(SllpaEndpoints):
         max_iterations: int,
         concurrency: int | None = None,
         min_association_strength: float | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         partitioning: Any | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(
             max_iterations=max_iterations,

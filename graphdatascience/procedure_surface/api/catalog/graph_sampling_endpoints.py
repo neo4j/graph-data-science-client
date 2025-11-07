@@ -6,6 +6,7 @@ from typing import NamedTuple, Type
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 
 
 class GraphSamplingEndpoints(ABC):
@@ -23,8 +24,8 @@ class GraphSamplingEndpoints(ABC):
         sampling_ratio: float | None = None,
         node_label_stratification: bool | None = None,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -96,8 +97,8 @@ class GraphSamplingEndpoints(ABC):
         sampling_ratio: float | None = None,
         node_label_stratification: bool | None = None,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,

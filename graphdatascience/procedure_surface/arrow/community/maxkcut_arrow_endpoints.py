@@ -9,6 +9,7 @@ from graphdatascience.procedure_surface.api.community.maxkcut_endpoints import (
     MaxKCutEndpoints,
     MaxKCutMutateResult,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
@@ -35,9 +36,9 @@ class MaxKCutArrowEndpoints(MaxKCutEndpoints):
         job_id: str | None = None,
         k: int | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         sudo: bool | None = False,
         username: str | None = None,
@@ -73,9 +74,9 @@ class MaxKCutArrowEndpoints(MaxKCutEndpoints):
         k: int | None = None,
         log_progress: bool = True,
         min_community_size: int | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         sudo: bool | None = False,
         username: str | None = None,
@@ -107,9 +108,9 @@ class MaxKCutArrowEndpoints(MaxKCutEndpoints):
         concurrency: int | None = None,
         iterations: int | None = None,
         k: int | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         vns_max_neighborhood_order: int | None = None,
     ) -> EstimationResult:

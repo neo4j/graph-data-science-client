@@ -11,6 +11,7 @@ from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoi
     ArticulationPointsStatsResult,
     ArticulationPointsWriteResult,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
@@ -32,8 +33,8 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         self,
         G: GraphV2,
         mutate_property: str,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -60,8 +61,8 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
     def stats(
         self,
         G: GraphV2,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -88,8 +89,8 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -106,8 +107,8 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         self,
         G: GraphV2,
         write_property: str,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -140,8 +141,8 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
     def estimate(
         self,
         G: GraphV2 | dict[str, Any],
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(

@@ -6,6 +6,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.similarity.node_similarity_results import (
     NodeSimilarityMutateResult,
@@ -33,8 +34,8 @@ class NodeSimilarityFilteredEndpoints(ABC):
         similarity_metric: str = "JACCARD",
         use_components: bool | str = False,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
@@ -113,8 +114,8 @@ class NodeSimilarityFilteredEndpoints(ABC):
         similarity_metric: str = "JACCARD",
         use_components: bool | str = False,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
@@ -189,8 +190,8 @@ class NodeSimilarityFilteredEndpoints(ABC):
         similarity_metric: str = "JACCARD",
         use_components: bool | str = False,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
@@ -267,8 +268,8 @@ class NodeSimilarityFilteredEndpoints(ABC):
         similarity_metric: str = "JACCARD",
         use_components: bool | str = False,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
@@ -350,8 +351,8 @@ class NodeSimilarityFilteredEndpoints(ABC):
         similarity_metric: str = "JACCARD",
         use_components: bool | str = False,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         username: str | None = None,
         concurrency: int | None = None,

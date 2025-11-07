@@ -11,6 +11,7 @@ from graphdatascience.procedure_surface.api.community.triangle_count_endpoints i
     TriangleCountStatsResult,
     TriangleCountWriteResult,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 
@@ -37,8 +38,8 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         label_filter: list[str] | None = None,
         log_progress: bool = True,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> TriangleCountMutateResult:
@@ -68,8 +69,8 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         label_filter: list[str] | None = None,
         log_progress: bool = True,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> TriangleCountStatsResult:
@@ -99,8 +100,8 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         label_filter: list[str] | None = None,
         log_progress: bool = True,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> DataFrame:
@@ -129,8 +130,8 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         label_filter: list[str] | None = None,
         log_progress: bool = True,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
         write_concurrency: int | None = None,
@@ -167,8 +168,8 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
         concurrency: int | None = None,
         label_filter: list[str] | None = None,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(
             concurrency=concurrency,

@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.centrality.betweenness_endpoints imp
     BetweennessStatsResult,
     BetweennessWriteResult,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
@@ -31,8 +32,8 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         mutate_property: str,
         sampling_size: int | None = None,
         sampling_seed: int | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -68,8 +69,8 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         G: GraphV2,
         sampling_size: int | None = None,
         sampling_seed: int | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -104,8 +105,8 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         G: GraphV2,
         sampling_size: int | None = None,
         sampling_seed: int | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -137,8 +138,8 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         write_property: str,
         sampling_size: int | None = None,
         sampling_seed: int | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -176,8 +177,8 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
         G: GraphV2 | dict[str, Any],
         sampling_size: int | None = None,
         sampling_seed: int | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
         relationship_weight_property: str | None = None,
     ) -> EstimationResult:

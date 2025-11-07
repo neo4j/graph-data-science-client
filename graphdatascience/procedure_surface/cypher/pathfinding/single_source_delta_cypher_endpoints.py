@@ -6,6 +6,7 @@ from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.pathfinding.single_source_delta_endpoints import (
     DeltaSteppingMutateResult,
@@ -29,8 +30,8 @@ class DeltaSteppingCypherEndpoints(SingleSourceDeltaEndpoints):
         *,
         delta: float = 2.0,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
@@ -65,8 +66,8 @@ class DeltaSteppingCypherEndpoints(SingleSourceDeltaEndpoints):
         source_node: int,
         delta: float = 2.0,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
@@ -102,8 +103,8 @@ class DeltaSteppingCypherEndpoints(SingleSourceDeltaEndpoints):
         *,
         delta: float = 2.0,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
@@ -142,8 +143,8 @@ class DeltaSteppingCypherEndpoints(SingleSourceDeltaEndpoints):
         write_node_ids: bool = False,
         write_costs: bool = False,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
@@ -183,8 +184,8 @@ class DeltaSteppingCypherEndpoints(SingleSourceDeltaEndpoints):
         *,
         delta: float = 2.0,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         username: str | None = None,
         concurrency: int | None = None,

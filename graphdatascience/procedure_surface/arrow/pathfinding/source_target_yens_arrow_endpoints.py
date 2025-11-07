@@ -7,6 +7,7 @@ from pandas import DataFrame
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.pathfinding.source_target_yens_endpoints import (
     SourceTargetYensEndpoints,
@@ -35,8 +36,8 @@ class YensArrowEndpoints(SourceTargetYensEndpoints):
         target_node: int,
         k: int,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
@@ -71,8 +72,8 @@ class YensArrowEndpoints(SourceTargetYensEndpoints):
         target_node: int,
         k: int,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
@@ -113,8 +114,8 @@ class YensArrowEndpoints(SourceTargetYensEndpoints):
         write_node_ids: bool = False,
         write_costs: bool = False,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
@@ -159,8 +160,8 @@ class YensArrowEndpoints(SourceTargetYensEndpoints):
         target_node: int,
         k: int,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         username: str | None = None,
         concurrency: int | None = None,

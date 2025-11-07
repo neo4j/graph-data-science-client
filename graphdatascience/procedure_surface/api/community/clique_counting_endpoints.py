@@ -7,6 +7,7 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
@@ -19,8 +20,8 @@ class CliqueCountingEndpoints(ABC):
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> CliqueCountingMutateResult:
@@ -62,8 +63,8 @@ class CliqueCountingEndpoints(ABC):
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> CliqueCountingStatsResult:
@@ -103,8 +104,8 @@ class CliqueCountingEndpoints(ABC):
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> DataFrame:
@@ -145,8 +146,8 @@ class CliqueCountingEndpoints(ABC):
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
         write_concurrency: int | None = None,
@@ -189,8 +190,8 @@ class CliqueCountingEndpoints(ABC):
         self,
         G: GraphV2 | dict[str, Any],
         concurrency: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
     ) -> EstimationResult:
         """
         Estimates the memory requirements for running the clique counting algorithm.
