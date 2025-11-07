@@ -31,13 +31,14 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         self,
         G: GraphV2,
         mutate_property: str,
-        relationship_types: list[str] = ALL_TYPES,
-        node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
-        log_progress: bool = True,
-        username: str | None = None,
+        *,
         concurrency: int | None = None,
         job_id: str | None = None,
+        log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
+        username: str | None = None,
     ) -> KCoreMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             mutate_property=mutate_property,
@@ -62,13 +63,14 @@ class KCoreCypherEndpoints(KCoreEndpoints):
     def stats(
         self,
         G: GraphV2,
-        relationship_types: list[str] = ALL_TYPES,
-        node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
-        log_progress: bool = True,
-        username: str | None = None,
+        *,
         concurrency: int | None = None,
         job_id: str | None = None,
+        log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
+        username: str | None = None,
     ) -> KCoreStatsResult:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -92,13 +94,14 @@ class KCoreCypherEndpoints(KCoreEndpoints):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: list[str] = ALL_TYPES,
-        node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
-        log_progress: bool = True,
-        username: str | None = None,
+        *,
         concurrency: int | None = None,
         job_id: str | None = None,
+        log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
+        username: str | None = None,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -119,13 +122,14 @@ class KCoreCypherEndpoints(KCoreEndpoints):
         self,
         G: GraphV2,
         write_property: str,
-        relationship_types: list[str] = ALL_TYPES,
-        node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
-        log_progress: bool = True,
-        username: str | None = None,
+        *,
         concurrency: int | None = None,
         job_id: str | None = None,
+        log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
+        username: str | None = None,
         write_concurrency: int | None = None,
     ) -> KCoreWriteResult:
         config = ConfigConverter.convert_to_gds_config(
@@ -152,9 +156,10 @@ class KCoreCypherEndpoints(KCoreEndpoints):
     def estimate(
         self,
         G: GraphV2 | dict[str, Any],
-        relationship_types: list[str] = ALL_TYPES,
+        *,
+        concurrency: int | None = None,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        relationship_types: list[str] = ALL_TYPES,
     ) -> EstimationResult:
         algo_config = ConfigConverter.convert_to_gds_config(
             relationship_types=relationship_types,

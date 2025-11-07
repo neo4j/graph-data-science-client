@@ -1,4 +1,4 @@
-import pandas as pd
+from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
@@ -37,7 +37,7 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
     ) -> LocalClusteringCoefficientMutateResult:
@@ -68,7 +68,7 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
     ) -> LocalClusteringCoefficientStatsResult:
@@ -100,10 +100,10 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
-    ) -> pd.DataFrame:
+    ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
             concurrency=concurrency,
@@ -132,7 +132,7 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
         write_concurrency: int | None = None,

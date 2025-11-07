@@ -19,17 +19,17 @@ class MaxKCutEndpoints(ABC):
         mutate_property: str,
         *,
         concurrency: int | None = None,
-        iterations: int | None = None,
+        iterations: int = 8,
         job_id: str | None = None,
-        k: int | None = None,
+        k: int = 2,
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
-        vns_max_neighborhood_order: int | None = None,
+        vns_max_neighborhood_order: int = 0,
     ) -> MaxKCutMutateResult:
         """
         Executes the Approximate Maximum k-cut algorithm and writes the results to the in-memory graph as node properties.
@@ -85,18 +85,18 @@ class MaxKCutEndpoints(ABC):
         G: GraphV2,
         *,
         concurrency: int | None = None,
-        iterations: int | None = None,
+        iterations: int = 8,
         job_id: str | None = None,
-        k: int | None = None,
+        k: int = 2,
         log_progress: bool = True,
         min_community_size: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
-        vns_max_neighborhood_order: int | None = None,
+        vns_max_neighborhood_order: int = 0,
     ) -> DataFrame:
         """
         Executes the Approximate Maximum k-cut algorithm and returns a stream of results.
@@ -153,13 +153,13 @@ class MaxKCutEndpoints(ABC):
         G: GraphV2 | dict[str, Any],
         *,
         concurrency: int | None = None,
-        iterations: int | None = None,
-        k: int | None = None,
+        iterations: int = 8,
+        k: int = 2,
         node_labels: list[str] = ALL_LABELS,
-        random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
-        vns_max_neighborhood_order: int | None = None,
+        random_seed: int | None = None,
+        vns_max_neighborhood_order: int = 0,
     ) -> EstimationResult:
         """
         Estimate the memory requirements for running the Approximate Maximum k-cut algorithm.

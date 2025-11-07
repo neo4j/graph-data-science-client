@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-import pandas as pd
+from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
@@ -19,14 +19,14 @@ class HdbscanEndpoints(ABC):
         node_property: str,
         mutate_property: str,
         *,
-        leaf_size: int | None = None,
-        samples: int | None = None,
-        min_cluster_size: int | None = None,
+        leaf_size: int = 1,
+        samples: int = 10,
+        min_cluster_size: int = 5,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
+        sudo: bool = False,
         job_id: Any | None = None,
         username: str | None = None,
     ) -> HdbscanMutateResult:
@@ -77,14 +77,14 @@ class HdbscanEndpoints(ABC):
         G: GraphV2,
         node_property: str,
         *,
-        leaf_size: int | None = None,
-        samples: int | None = None,
-        min_cluster_size: int | None = None,
+        leaf_size: int = 1,
+        samples: int = 10,
+        min_cluster_size: int = 5,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
+        sudo: bool = False,
         job_id: Any | None = None,
         username: str | None = None,
     ) -> HdbscanStatsResult:
@@ -133,17 +133,17 @@ class HdbscanEndpoints(ABC):
         G: GraphV2,
         node_property: str,
         *,
-        leaf_size: int | None = None,
-        samples: int | None = None,
-        min_cluster_size: int | None = None,
+        leaf_size: int = 1,
+        samples: int = 10,
+        min_cluster_size: int = 5,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
+        sudo: bool = False,
         job_id: Any | None = None,
         username: str | None = None,
-    ) -> pd.DataFrame:
+    ) -> DataFrame:
         """
         Runs the HDBSCAN algorithm and returns the cluster ID for each node as a DataFrame.
 
@@ -190,17 +190,17 @@ class HdbscanEndpoints(ABC):
         node_property: str,
         write_property: str,
         *,
-        leaf_size: int | None = None,
-        samples: int | None = None,
-        min_cluster_size: int | None = None,
+        leaf_size: int = 1,
+        samples: int = 10,
+        min_cluster_size: int = 5,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        write_concurrency: int | None = None,
         concurrency: int | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
+        sudo: bool = False,
         job_id: Any | None = None,
         username: str | None = None,
+        write_concurrency: int | None = None,
     ) -> HdbscanWriteResult:
         """
         Runs the HDBSCAN algorithm and writes the cluster ID for each node back to the database.
@@ -245,19 +245,15 @@ class HdbscanEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: GraphV2,
+        G: GraphV2 | dict[str, Any],
         node_property: str,
         *,
-        leaf_size: int | None = None,
-        samples: int | None = None,
-        min_cluster_size: int | None = None,
+        leaf_size: int = 1,
+        samples: int = 10,
+        min_cluster_size: int = 5,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,
-        log_progress: bool = True,
-        sudo: bool | None = None,
-        job_id: Any | None = None,
-        username: str | None = None,
     ) -> EstimationResult:
         """
         Estimates memory requirements and other statistics for the HDBSCAN algorithm.

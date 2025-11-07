@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from abc import abstractmethod
 from typing import Any
 
-import pandas as pd
+from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
@@ -25,10 +27,10 @@ class LocalClusteringCoefficientEndpoints:
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
-    ) -> "LocalClusteringCoefficientMutateResult":
+    ) -> LocalClusteringCoefficientMutateResult:
         """
         Executes the LocalClusteringCoefficient algorithm and writes results back to the graph.
 
@@ -72,10 +74,10 @@ class LocalClusteringCoefficientEndpoints:
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
-    ) -> "LocalClusteringCoefficientStatsResult":
+    ) -> LocalClusteringCoefficientStatsResult:
         """
         Executes the LocalClusteringCoefficient algorithm and returns statistics.
 
@@ -117,10 +119,10 @@ class LocalClusteringCoefficientEndpoints:
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
-    ) -> pd.DataFrame:
+    ) -> DataFrame:
         """
         Executes the LocalClusteringCoefficient algorithm and streams results.
 
@@ -163,11 +165,11 @@ class LocalClusteringCoefficientEndpoints:
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
         write_concurrency: int | None = None,
-    ) -> "LocalClusteringCoefficientWriteResult":
+    ) -> LocalClusteringCoefficientWriteResult:
         """
         Executes the LocalClusteringCoefficient algorithm and writes results to the database.
 
