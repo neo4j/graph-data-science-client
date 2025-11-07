@@ -209,9 +209,15 @@ str(G)
 # Let us visualize the projected graph
 from neo4j_viz.gds import from_gds
 
-VG = from_gds(gds, G, db_node_properties=["name"])
+VG = from_gds(gds, G)
+
+# Concatenate the dataframes with name and nodeId columns
+names = pd.concat([people_df[["nodeId", "name"]], fruits_df[["nodeId", "name"]]])
+# Create a dictionary mapping nodeId to name
+names_mapping = names.set_index("nodeId")["name"]
+
 for node in VG.nodes:
-    node.caption = node.properties.get("name")
+    node.caption = names_mapping[node.id]
 
 VG.render(initial_zoom=1.2)
 ----
