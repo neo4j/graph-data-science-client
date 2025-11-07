@@ -30,6 +30,7 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
         self,
         G: GraphV2,
         mutate_property: str,
+        *,
         damping_factor: float | None = None,
         tolerance: float | None = None,
         max_iterations: int | None = None,
@@ -67,6 +68,7 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
     def stats(
         self,
         G: GraphV2,
+        *,
         damping_factor: float | None = None,
         tolerance: float | None = None,
         max_iterations: int | None = None,
@@ -104,6 +106,7 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
     def stream(
         self,
         G: GraphV2,
+        *,
         damping_factor: float | None = None,
         tolerance: float | None = None,
         max_iterations: int | None = None,
@@ -140,6 +143,7 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
         self,
         G: GraphV2,
         write_property: str,
+        *,
         damping_factor: float | None = None,
         tolerance: float | None = None,
         max_iterations: int | None = None,
@@ -185,6 +189,7 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
     def estimate(
         self,
         G: GraphV2 | dict[str, Any],
+        *,
         damping_factor: float | None = None,
         tolerance: float | None = None,
         max_iterations: int | None = None,
