@@ -111,8 +111,6 @@ class KCoreArrowEndpoints(KCoreEndpoints):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
-        target_nodes: Any | None = None,
-        relationship_weight_property: str | None = None,
         write_concurrency: int | None = None,
     ) -> KCoreWriteResult:
         config = self._node_property_endpoints.create_base_config(
@@ -122,9 +120,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
             log_progress=log_progress,
             node_labels=node_labels,
             relationship_types=relationship_types,
-            relationship_weight_property=relationship_weight_property,
             sudo=sudo,
-            target_nodes=target_nodes,
         )
 
         result = self._node_property_endpoints.run_job_and_write(

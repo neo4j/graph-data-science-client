@@ -153,8 +153,6 @@ class KCoreEndpoints(ABC):
         username: str | None = None,
         concurrency: Any | None = None,
         job_id: Any | None = None,
-        target_nodes: Any | None = None,
-        relationship_weight_property: str | None = None,
         write_concurrency: Any | None = None,
     ) -> KCoreWriteResult:
         """
@@ -180,10 +178,6 @@ class KCoreEndpoints(ABC):
             The number of concurrent threads
         job_id : Any | None, default=None
             An identifier for the job
-        target_nodes : Any | None, default=None
-            Subset of nodes to compute the algorithm for
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
         write_concurrency : Any | None, default=None
             The number of concurrent threads during the write phase
 
