@@ -1,5 +1,3 @@
-from typing import Any
-
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
@@ -36,9 +34,9 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        write_concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        write_concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> NodeLabelMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
@@ -67,9 +65,9 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        write_concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        write_concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> NodeLabelWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),

@@ -20,11 +20,11 @@ class NodePropertiesEndpoints(ABC):
         *,
         list_node_labels: bool | None = None,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         db_node_properties: list[str] | None = None,
     ) -> DataFrame:
         """
@@ -66,12 +66,12 @@ class NodePropertiesEndpoints(ABC):
         node_properties: str | list[str] | dict[str, str],
         *,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
-        write_concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        write_concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,
+        job_id: str | None = None,
     ) -> NodePropertiesWriteResult:
         """
         Writes the specified node properties from the graph to the database.
@@ -111,7 +111,7 @@ class NodePropertiesEndpoints(ABC):
         node_properties: list[str],
         *,
         fail_if_missing: bool | None = None,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
         username: str | None = None,
     ) -> NodePropertiesDropResult:
         """
@@ -125,7 +125,7 @@ class NodePropertiesEndpoints(ABC):
             The node properties to drop
         fail_if_missing: bool | None = None,
             Whether to fail if any of the node properties are missing
-        concurrency : Any | None, default=None
+        concurrency : int | None = None
             The number of concurrent threads
         username : str | None, default=None
             The username to attribute the procedure run to

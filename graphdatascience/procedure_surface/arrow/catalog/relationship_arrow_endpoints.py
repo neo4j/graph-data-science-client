@@ -1,5 +1,3 @@
-from typing import Any
-
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -36,8 +34,8 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         relationship_types: list[str] = ALL_TYPES,
         relationship_properties: list[str] | None = None,
         *,
-        concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
     ) -> DataFrame:
@@ -68,12 +66,12 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         relationship_type: str,
         relationship_properties: list[str] | None = None,
         *,
-        concurrency: Any | None = None,
-        write_concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        write_concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,
+        job_id: str | None = None,
     ) -> RelationshipsWriteResult:
         if self._write_back_client is None:
             raise ValueError("Write back is only available if a database connection is provided.")
@@ -126,9 +124,9 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         G: GraphV2,
         relationship_type: str,
         *,
-        fail_if_missing: bool | None = None,
+        fail_if_missing: bool = True,
     ) -> RelationshipsDropResult:
-        if relationship_type not in G.relationship_types():
+        if relationship_type not in G.relationship_types() and fail_if_missing:
             raise ValueError(f"Relationship type '{relationship_type}' does not exist in graph '{G.name()}'")
 
         config = ConfigConverter.convert_to_gds_config(
@@ -145,11 +143,11 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         G: GraphV2,
         relationship_types: list[str],
         *,
-        concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,
+        job_id: str | None = None,
     ) -> RelationshipsInverseIndexResult:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
@@ -175,11 +173,11 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         mutate_relationship_type: str,
         *,
         aggregation: Aggregation | dict[str, Aggregation] | None = None,
-        concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,
+        job_id: str | None = None,
     ) -> RelationshipsToUndirectedResult:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),

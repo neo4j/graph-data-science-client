@@ -1,5 +1,3 @@
-from typing import Any
-
 from pandas import DataFrame
 
 from graphdatascience import QueryRunner
@@ -44,11 +42,11 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         *,
         list_node_labels: bool | None = None,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         db_node_properties: list[str] | None = None,
     ) -> DataFrame:
         has_db_properties = (db_node_properties is not None) and (len(db_node_properties) > 0)
@@ -84,12 +82,12 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         node_properties: str | list[str] | dict[str, str],
         *,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
-        write_concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        write_concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,
+        job_id: str | None = None,
     ) -> NodePropertiesWriteResult:
         if self._write_back_client is None:
             raise ValueError("Write back is only available if a database connection is provided.")
@@ -131,7 +129,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         node_properties: list[str],
         *,
         fail_if_missing: bool | None = None,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
         username: str | None = None,
     ) -> NodePropertiesDropResult:
         config = ConfigConverter.convert_to_gds_config(

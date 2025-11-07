@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
@@ -39,11 +38,11 @@ class NodeLabelEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        write_concurrency : Any | None, default=None
+        write_concurrency : int | None, default=None
             The number of concurrent threads used for the mutation
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             An identifier for the job
         Returns
         -------
@@ -62,9 +61,9 @@ class NodeLabelEndpoints(ABC):
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        write_concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        write_concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> NodeLabelWriteResult:
         """
         Writes the specified node label to the filtered nodes in the database.

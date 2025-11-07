@@ -1,5 +1,3 @@
-from typing import Any
-
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import (
@@ -24,9 +22,9 @@ class NodeLabelCypherEndpoints(NodeLabelEndpoints):
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        write_concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        write_concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> NodeLabelMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             node_filter=node_filter,
@@ -56,9 +54,9 @@ class NodeLabelCypherEndpoints(NodeLabelEndpoints):
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        write_concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        write_concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> NodeLabelWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             node_filter=node_filter,

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import (
     GraphSamplingEndpoints,
@@ -25,17 +23,17 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         G: GraphV2,
         graph_name: str,
         start_nodes: list[int] | None = None,
-        restart_probability: float | None = None,
-        sampling_ratio: float | None = None,
-        node_label_stratification: bool | None = None,
+        restart_probability: float = 0.1,
+        sampling_ratio: float = 0.15,
+        node_label_stratification: bool = False,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> GraphWithSamplingResult:
         config = ConfigConverter.convert_to_gds_config(
             start_nodes=start_nodes,
@@ -72,17 +70,17 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         G: GraphV2,
         graph_name: str,
         start_nodes: list[int] | None = None,
-        restart_probability: float | None = None,
-        sampling_ratio: float | None = None,
-        node_label_stratification: bool | None = None,
+        restart_probability: float = 0.1,
+        sampling_ratio: float = 0.15,
+        node_label_stratification: bool = False,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> GraphWithSamplingResult:
         config = ConfigConverter.convert_to_gds_config(
             start_nodes=start_nodes,
