@@ -9,6 +9,7 @@ from graphdatascience.procedure_surface.api.community.clique_counting_endpoints 
     CliqueCountingStatsResult,
     CliqueCountingWriteResult,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 
 from ....call_parameters import CallParameters
@@ -33,8 +34,8 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> CliqueCountingMutateResult:
@@ -64,8 +65,8 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> CliqueCountingStatsResult:
@@ -94,8 +95,8 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> DataFrame:
@@ -123,8 +124,8 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
         write_concurrency: int | None = None,
@@ -154,8 +155,8 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
         self,
         G: GraphV2 | dict[str, Any],
         concurrency: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
     ) -> EstimationResult:
         algo_config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,

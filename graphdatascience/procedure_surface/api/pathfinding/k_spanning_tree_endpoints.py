@@ -5,6 +5,7 @@ from typing import Any
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 
 
 class KSpanningTreeWriteResult(BaseResult):
@@ -26,8 +27,8 @@ class KSpanningTreeEndpoints(ABC):
         source_node: int,
         relationship_weight_property: str | None = None,
         objective: str = "minimum",
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,

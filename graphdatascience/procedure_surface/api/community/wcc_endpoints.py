@@ -7,6 +7,7 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
@@ -21,8 +22,8 @@ class WccEndpoints(ABC):
         G: GraphV2,
         mutate_property: str,
         threshold: float | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -76,8 +77,8 @@ class WccEndpoints(ABC):
         self,
         G: GraphV2,
         threshold: float | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -130,8 +131,8 @@ class WccEndpoints(ABC):
         G: GraphV2,
         min_component_size: int | None = None,
         threshold: float | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -187,8 +188,8 @@ class WccEndpoints(ABC):
         write_property: str,
         min_component_size: int | None = None,
         threshold: float | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -247,8 +248,8 @@ class WccEndpoints(ABC):
         self,
         G: GraphV2 | dict[str, Any],
         threshold: float | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
         seed_property: str | None = None,
         consecutive_ids: bool | None = None,

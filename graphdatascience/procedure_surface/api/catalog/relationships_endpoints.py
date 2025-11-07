@@ -9,6 +9,7 @@ from pydantic import AliasChoices, Field, field_validator
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
 
 
 class RelationshipsEndpoints(ABC):
@@ -16,7 +17,7 @@ class RelationshipsEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_properties: list[str] | None = None,
         *,
         concurrency: Any | None = None,
@@ -141,7 +142,7 @@ class RelationshipsEndpoints(ABC):
         ----------
         G : Graph
             The graph to operate on
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
             The relationship types to create the inverse index for
         concurrency : Any | None, default=None
             The number of concurrent threads

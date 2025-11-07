@@ -5,6 +5,7 @@ import pandas as pd
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
@@ -22,8 +23,8 @@ class LocalClusteringCoefficientEndpoints:
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
@@ -69,8 +70,8 @@ class LocalClusteringCoefficientEndpoints:
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
@@ -114,8 +115,8 @@ class LocalClusteringCoefficientEndpoints:
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
@@ -160,8 +161,8 @@ class LocalClusteringCoefficientEndpoints:
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
@@ -210,8 +211,8 @@ class LocalClusteringCoefficientEndpoints:
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         triangle_count_property: str | None = None,
         username: str | None = None,

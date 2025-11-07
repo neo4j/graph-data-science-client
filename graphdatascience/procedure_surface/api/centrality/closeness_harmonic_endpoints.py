@@ -7,6 +7,7 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
@@ -16,8 +17,8 @@ class ClosenessHarmonicEndpoints(ABC):
         self,
         G: GraphV2,
         mutate_property: str,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -63,8 +64,8 @@ class ClosenessHarmonicEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -110,8 +111,8 @@ class ClosenessHarmonicEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -153,8 +154,8 @@ class ClosenessHarmonicEndpoints(ABC):
         self,
         G: GraphV2,
         write_property: str,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -205,8 +206,8 @@ class ClosenessHarmonicEndpoints(ABC):
     def estimate(
         self,
         G: GraphV2 | dict[str, Any],
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
     ) -> EstimationResult:
         """

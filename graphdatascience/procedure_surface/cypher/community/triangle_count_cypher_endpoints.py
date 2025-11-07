@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.community.triangle_count_endpoints i
     TriangleCountStatsResult,
     TriangleCountWriteResult,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
@@ -30,8 +31,8 @@ class TriangleCountCypherEndpoints(TriangleCountEndpoints):
         label_filter: list[str] | None = None,
         log_progress: bool = True,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> TriangleCountMutateResult:
@@ -64,8 +65,8 @@ class TriangleCountCypherEndpoints(TriangleCountEndpoints):
         label_filter: list[str] | None = None,
         log_progress: bool = True,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> TriangleCountStatsResult:
@@ -97,8 +98,8 @@ class TriangleCountCypherEndpoints(TriangleCountEndpoints):
         label_filter: list[str] | None = None,
         log_progress: bool = True,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> DataFrame:
@@ -131,8 +132,8 @@ class TriangleCountCypherEndpoints(TriangleCountEndpoints):
         label_filter: list[str] | None = None,
         log_progress: bool = True,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
         write_concurrency: int | None = None,
@@ -165,8 +166,8 @@ class TriangleCountCypherEndpoints(TriangleCountEndpoints):
         concurrency: int | None = None,
         label_filter: list[str] | None = None,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
     ) -> EstimationResult:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,

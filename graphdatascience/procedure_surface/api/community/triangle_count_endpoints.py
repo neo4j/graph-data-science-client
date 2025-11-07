@@ -7,6 +7,7 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
@@ -22,8 +23,8 @@ class TriangleCountEndpoints(ABC):
         label_filter: list[str] | None = None,
         log_progress: bool = True,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> TriangleCountMutateResult:
@@ -77,8 +78,8 @@ class TriangleCountEndpoints(ABC):
         label_filter: list[str] | None = None,
         log_progress: bool = True,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> TriangleCountStatsResult:
@@ -131,8 +132,8 @@ class TriangleCountEndpoints(ABC):
         label_filter: list[str] | None = None,
         log_progress: bool = True,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
     ) -> DataFrame:
@@ -188,8 +189,8 @@ class TriangleCountEndpoints(ABC):
         label_filter: list[str] | None = None,
         log_progress: bool = True,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
         sudo: bool | None = False,
         username: str | None = None,
         write_concurrency: int | None = None,
@@ -245,8 +246,8 @@ class TriangleCountEndpoints(ABC):
         concurrency: int | None = None,
         label_filter: list[str] | None = None,
         max_degree: int | None = None,
-        node_labels: list[str] | None = None,
-        relationship_types: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
     ) -> EstimationResult:
         """
         Estimate the memory requirements for running the Triangle Count algorithm.

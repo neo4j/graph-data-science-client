@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints im
     NodePropertiesWriteResult,
     NodePropertySpec,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.procedure_surface.utils.result_utils import join_db_node_properties, transpose_property_columns
 from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
@@ -27,7 +28,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         node_properties: str | list[str],
         *,
         list_node_labels: bool | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
         sudo: bool | None = None,
         log_progress: bool = True,
@@ -72,7 +73,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         G: GraphV2,
         node_properties: str | list[str] | dict[str, str],
         *,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
         write_concurrency: Any | None = None,
         sudo: bool | None = None,

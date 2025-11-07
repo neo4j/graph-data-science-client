@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.centrality.degree_endpoints import (
     DegreeStatsResult,
     DegreeWriteResult,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
@@ -25,8 +26,8 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         G: GraphV2,
         mutate_property: str,
         orientation: Any | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -62,8 +63,8 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         self,
         G: GraphV2,
         orientation: Any | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -98,8 +99,8 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         self,
         G: GraphV2,
         orientation: Any | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -132,8 +133,8 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         G: GraphV2,
         write_property: str,
         orientation: Any | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -170,8 +171,8 @@ class DegreeCypherEndpoints(DegreeEndpoints):
         self,
         G: GraphV2 | dict[str, Any],
         orientation: Any | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
         relationship_weight_property: str | None = None,
     ) -> EstimationResult:

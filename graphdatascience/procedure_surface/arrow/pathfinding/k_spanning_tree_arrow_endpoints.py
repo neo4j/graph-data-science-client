@@ -3,6 +3,7 @@ from __future__ import annotations
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import (
     KSpanningTreeEndpoints,
     KSpanningTreeWriteResult,
@@ -29,8 +30,8 @@ class KSpanningTreeArrowEndpoints(KSpanningTreeEndpoints):
         source_node: int,
         relationship_weight_property: str | None = None,
         objective: str = "minimum",
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,

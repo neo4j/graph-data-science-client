@@ -7,6 +7,7 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
@@ -29,8 +30,8 @@ class Node2VecEndpoints(ABC):
         min_learning_rate: float | None = None,
         window_size: int | None = None,
         negative_sampling_exponent: float | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
         sudo: bool | None = None,
@@ -119,8 +120,8 @@ class Node2VecEndpoints(ABC):
         min_learning_rate: float | None = None,
         window_size: int | None = None,
         negative_sampling_exponent: float | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
         sudo: bool | None = None,
@@ -208,8 +209,8 @@ class Node2VecEndpoints(ABC):
         min_learning_rate: float | None = None,
         window_size: int | None = None,
         negative_sampling_exponent: float | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
         sudo: bool | None = None,
@@ -301,8 +302,8 @@ class Node2VecEndpoints(ABC):
         min_learning_rate: float | None = None,
         window_size: int | None = None,
         negative_sampling_exponent: float | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
         walk_length: int | None = None,
         walks_per_node: int | None = None,

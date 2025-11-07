@@ -15,6 +15,7 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
     RelationshipsToUndirectedResult,
     RelationshipsWriteResult,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 
 
@@ -32,7 +33,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_properties: list[str] | None = None,
         *,
         concurrency: Any | None = None,

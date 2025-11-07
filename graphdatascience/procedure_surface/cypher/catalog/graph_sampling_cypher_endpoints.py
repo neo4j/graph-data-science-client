@@ -8,6 +8,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints imp
     GraphSamplingResult,
     GraphWithSamplingResult,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 
 from ....call_parameters import CallParameters
@@ -28,8 +29,8 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         sampling_ratio: float | None = None,
         node_label_stratification: bool | None = None,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -75,8 +76,8 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         sampling_ratio: float | None = None,
         node_label_stratification: bool | None = None,
         relationship_weight_property: str | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,

@@ -7,6 +7,7 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
@@ -24,9 +25,9 @@ class LeidenEndpoints(ABC):
         job_id: str | None = None,
         log_progress: bool = True,
         max_levels: int | None = 10,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
         sudo: bool | None = False,
@@ -94,9 +95,9 @@ class LeidenEndpoints(ABC):
         job_id: str | None = None,
         log_progress: bool = True,
         max_levels: int | None = 10,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
         sudo: bool | None = False,
@@ -163,9 +164,9 @@ class LeidenEndpoints(ABC):
         log_progress: bool = True,
         max_levels: int | None = 10,
         min_community_size: int | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
         sudo: bool | None = False,
@@ -235,9 +236,9 @@ class LeidenEndpoints(ABC):
         log_progress: bool = True,
         max_levels: int | None = 10,
         min_community_size: int | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
         sudo: bool | None = False,
@@ -308,9 +309,9 @@ class LeidenEndpoints(ABC):
         gamma: float | None = 1.0,
         include_intermediate_communities: bool | None = False,
         max_levels: int | None = 10,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         relationship_weight_property: str | None = None,
         seed_property: str | None = None,
         theta: float | None = 0.01,

@@ -7,6 +7,7 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
@@ -26,10 +27,10 @@ class KMeansEndpoints(ABC):
         k: int | None = 10,
         log_progress: bool = True,
         max_iterations: int | None = 10,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         number_of_restarts: int | None = 1,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         seed_centroids: list[list[float]] | None = None,
         sudo: bool | None = False,
         username: str | None = None,
@@ -97,10 +98,10 @@ class KMeansEndpoints(ABC):
         k: int | None = 10,
         log_progress: bool = True,
         max_iterations: int | None = 10,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         number_of_restarts: int | None = 1,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         seed_centroids: list[list[float]] | None = None,
         sudo: bool | None = False,
         username: str | None = None,
@@ -166,10 +167,10 @@ class KMeansEndpoints(ABC):
         k: int | None = 10,
         log_progress: bool = True,
         max_iterations: int | None = 10,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         number_of_restarts: int | None = 1,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         seed_centroids: list[list[float]] | None = None,
         sudo: bool | None = False,
         username: str | None = None,
@@ -236,10 +237,10 @@ class KMeansEndpoints(ABC):
         k: int | None = 10,
         log_progress: bool = True,
         max_iterations: int | None = 10,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         number_of_restarts: int | None = 1,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         seed_centroids: list[list[float]] | None = None,
         sudo: bool | None = False,
         username: str | None = None,
@@ -308,10 +309,10 @@ class KMeansEndpoints(ABC):
         initial_sampler: str | None = "UNIFORM",
         k: int | None = 10,
         max_iterations: int | None = 10,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         number_of_restarts: int | None = 1,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
         seed_centroids: list[list[float]] | None = None,
     ) -> EstimationResult:
         """

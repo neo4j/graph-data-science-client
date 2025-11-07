@@ -14,6 +14,7 @@ from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 from graphdatascience.tests.integrationV2.procedure_surface.session.gds_api_spec import (
     EndpointSpec,
     EndpointWithModesSpec,
+    Parameter,
     ReturnField,
 )
 
@@ -101,6 +102,12 @@ IGNORED_PARAMETERS = {
     ],
 }
 
+ADJUSTED_PARAM_DEFAULT_VALUES = {
+    "concurrency": None,  # default value differs for Aura Graph Analytics compared to plugin (spec is off)
+    "job_id": None,  # default value in spec is `random id`
+    "write_concurrency": None,  # default value is an internal "value of concurrency"
+}
+
 
 def method_str(s: MethodType) -> str:
     return f"{s.__self__.__class__.__name__}.{s.__name__}"
@@ -184,7 +191,7 @@ def verify_return_fields(
 
 
 def verify_configuration_fields(callable_object: MethodType, endpoint_spec: EndpointSpec) -> None:
-    expected_configuration = {to_snake(param.name): param for param in endpoint_spec.parameters}
+    expected_configuration: dict[str, Parameter] = {to_snake(param.name): param for param in endpoint_spec.parameters}
     py_endpoint = pythonic_endpoint_name(endpoint_spec.name)
     for endpoint_pattern, ignored_params in IGNORED_PARAMETERS.items():
         if re.match(endpoint_pattern, py_endpoint):
@@ -223,6 +230,17 @@ def verify_configuration_fields(callable_object: MethodType, endpoint_spec: Endp
         raise ValueError(
             f"Callable object {pythonic_endpoint_name(endpoint_spec.name)} has required parameters with default "
             f"values: {required_params_with_default}"
+        )
+
+    # validate default values match
+    for name, expected_param in expected_configuration.items():
+        expected_default = ADJUSTED_PARAM_DEFAULT_VALUES.get(name, expected_param.defaultValue)
+        actual_default = actual_parameters[name].default
+        if actual_default is inspect.Parameter.empty:
+            actual_default = None
+
+        assert actual_default == expected_default, (
+            f"Mismatching default value for parameter `{name}` at endpoint `{pythonic_endpoint_name(endpoint_spec.name)}`"
         )
 
     # validate optional parameters are keyword-only arguments

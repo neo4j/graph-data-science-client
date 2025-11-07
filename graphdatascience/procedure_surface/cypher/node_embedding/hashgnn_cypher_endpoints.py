@@ -4,6 +4,7 @@ from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import (
     HashGNNEndpoints,
@@ -37,8 +38,8 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
         heterogeneous: bool | None = None,
         feature_properties: list[str] | None = None,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -91,8 +92,8 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
         heterogeneous: bool | None = None,
         feature_properties: list[str] | None = None,
         random_seed: int | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
@@ -140,8 +141,8 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
         binarize_features: dict[str, Any] | None = None,
         heterogeneous: bool | None = None,
         feature_properties: list[str] | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,

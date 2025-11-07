@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from pandas import DataFrame
 
+from graphdatascience.model.v2.model import Model
 from graphdatascience.model.v2.model_api import ModelApi
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_endpoints import (
     GraphSageMutateResult,
     GraphSagePredictEndpoints,
     GraphSageWriteResult,
 )
-
-from ....model.v2.model import Model
 
 
 class GraphSageModelV2(Model):
@@ -29,8 +29,8 @@ class GraphSageModelV2(Model):
         G: GraphV2,
         write_property: str,
         *,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         batch_size: int | None = None,
         concurrency: int | None = None,
         write_concurrency: int | None = None,
@@ -93,8 +93,8 @@ class GraphSageModelV2(Model):
         self,
         G: GraphV2,
         *,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         batch_size: int | None = None,
         concurrency: int | None = None,
         log_progress: bool = True,
@@ -151,8 +151,8 @@ class GraphSageModelV2(Model):
         G: GraphV2,
         mutate_property: str,
         *,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         batch_size: int | None = None,
         concurrency: int | None = None,
         log_progress: bool = True,
@@ -211,8 +211,8 @@ class GraphSageModelV2(Model):
         self,
         G: GraphV2,
         *,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         batch_size: int | None = None,
         concurrency: int | None = None,
         log_progress: bool = True,

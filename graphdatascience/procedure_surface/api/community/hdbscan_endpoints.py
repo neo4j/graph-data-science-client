@@ -7,6 +7,7 @@ import pandas as pd
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
@@ -21,8 +22,8 @@ class HdbscanEndpoints(ABC):
         leaf_size: int | None = None,
         samples: int | None = None,
         min_cluster_size: int | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool | None = None,
@@ -79,8 +80,8 @@ class HdbscanEndpoints(ABC):
         leaf_size: int | None = None,
         samples: int | None = None,
         min_cluster_size: int | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool | None = None,
@@ -135,8 +136,8 @@ class HdbscanEndpoints(ABC):
         leaf_size: int | None = None,
         samples: int | None = None,
         min_cluster_size: int | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool | None = None,
@@ -192,8 +193,8 @@ class HdbscanEndpoints(ABC):
         leaf_size: int | None = None,
         samples: int | None = None,
         min_cluster_size: int | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         write_concurrency: int | None = None,
         concurrency: int | None = None,
         log_progress: bool = True,
@@ -250,8 +251,8 @@ class HdbscanEndpoints(ABC):
         leaf_size: int | None = None,
         samples: int | None = None,
         min_cluster_size: int | None = None,
-        relationship_types: list[str] | None = None,
-        node_labels: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool | None = None,

@@ -8,6 +8,7 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 
 
 class NodePropertiesEndpoints(ABC):
@@ -18,7 +19,7 @@ class NodePropertiesEndpoints(ABC):
         node_properties: str | list[str],
         *,
         list_node_labels: bool | None = None,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
         sudo: bool | None = None,
         log_progress: bool = True,
@@ -64,7 +65,7 @@ class NodePropertiesEndpoints(ABC):
         G: GraphV2,
         node_properties: str | list[str] | dict[str, str],
         *,
-        node_labels: list[str] | None = None,
+        node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
         write_concurrency: Any | None = None,
         sudo: bool | None = None,
