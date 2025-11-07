@@ -103,9 +103,24 @@ IGNORED_PARAMETERS = {
 }
 
 ADJUSTED_PARAM_DEFAULT_VALUES = {
-    "concurrency": None,  # default value differs for Aura Graph Analytics compared to plugin (spec is off)
-    "job_id": None,  # default value in spec is `random id`
-    "write_concurrency": None,  # default value is an internal "value of concurrency"
+    ".*": {
+        "concurrency": None,  # default value differs for Aura Graph Analytics compared to plugin (spec is off)
+        "job_id": None,  # default value in spec is `random id`
+        "write_concurrency": None,  # default value is an internal "value of concurrency"
+    },
+    ".*(knn|node_similarity).filtered.*": {
+        "source_node_filter": None,
+        "target_node_filter": None,
+    },
+    ".*sllpa.mutate": {
+        "mutate_property": None,
+    },
+    ".*sllpa.(write)": {
+        "write_property": None,
+    },
+    ".*triangle_count.*": {
+        "max_degree": None,
+    },
 }
 
 
@@ -233,8 +248,13 @@ def verify_configuration_fields(callable_object: MethodType, endpoint_spec: Endp
         )
 
     # validate default values match
+    default_adjustments: dict[str, str] = {}
+    for endpoint_pattern, adjustments in ADJUSTED_PARAM_DEFAULT_VALUES.items():
+        if re.match(endpoint_pattern, py_endpoint):
+            default_adjustments.update(adjustments)
+
     for name, expected_param in expected_configuration.items():
-        expected_default = ADJUSTED_PARAM_DEFAULT_VALUES.get(name, expected_param.defaultValue)
+        expected_default = default_adjustments.get(name, expected_param.defaultValue)
         if expected_default == []:
             expected_default = None  # empty list defaults to None in the python api
 
