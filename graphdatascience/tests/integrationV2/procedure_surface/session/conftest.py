@@ -17,7 +17,7 @@ from graphdatascience.tests.integrationV2.procedure_surface.conftest import (
     start_session,
 )
 from graphdatascience.tests.integrationV2.procedure_surface.session.gds_api_spec import (
-    EndpointSpec,
+    EndpointWithModesSpec,
     resolve_spec_from_file,
 )
 
@@ -45,7 +45,7 @@ def db_query_runner(neo4j_connection: DbmsConnectionInfo) -> Generator[QueryRunn
 
 
 @pytest.fixture(scope="session")
-def gds_api_spec(tmp_path_factory: pytest.TempPathFactory) -> Generator[list[EndpointSpec], None, None]:
+def gds_api_spec(tmp_path_factory: pytest.TempPathFactory) -> Generator[list[EndpointWithModesSpec], None, None]:
     provided_spec_file = os.environ.get("GDS_API_SPEC_FILE")
 
     spec_file: Path | None = None

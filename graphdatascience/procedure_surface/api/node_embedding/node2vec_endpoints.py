@@ -370,6 +370,7 @@ class Node2VecMutateResult(BaseResult):
     node_properties_written: int
     pre_processing_millis: int
     compute_millis: int
+    post_processing_millis: int
     mutate_millis: int
     configuration: dict[str, Any]
     loss_per_iteration: list[float]

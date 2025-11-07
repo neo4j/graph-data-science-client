@@ -1,12 +1,17 @@
 import re
+import typing
 from collections import OrderedDict
 from typing import Any
 from unittest import mock
 
+from pandas import DataFrame
+from pydantic import BaseModel
+
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 from graphdatascience.tests.integrationV2.procedure_surface.session.gds_api_spec import (
-    EndpointSpec,
+    EndpointWithModesSpec,
+    ReturnField,
 )
 
 MISSING_ENDPOINTS: set[str] = {
@@ -115,20 +120,51 @@ def resolve_callable_object(endpoints: SessionV2Endpoints, endpoint: str) -> Any
     return callable_object
 
 
-def test_api_spec_coverage(gds_api_spec: list[EndpointSpec]) -> None:
+def verify_return_fields(
+    callable_object: Any,
+    expected_return_fields: list[ReturnField],
+) -> None:
+    return_annotation: Any | None = typing.get_type_hints(callable_object).get("return")
+
+    if not return_annotation:
+        raise ValueError(f"Callable object {callable_object} has no return annotation. Mypy should complain :/")
+
+    if return_annotation is DataFrame:
+        return  # For DataFrames we dont know the columns in advance
+
+    # TODO check type of return fields
+    if issubclass(return_annotation, BaseModel):
+        actual_return_fields: set[str] = return_annotation.model_fields.keys()
+    else:
+        raise ValueError(
+            f"Return annotation {return_annotation} is not a Pydantic model. Please add support here for testing."
+        )
+
+    expected_return_field_keys = {to_snake(field.name) for field in expected_return_fields}
+
+    missing_fields = expected_return_field_keys - actual_return_fields
+    extra_fields = actual_return_fields - expected_return_field_keys
+
+    if missing_fields or extra_fields:
+        raise ValueError(
+            f"Callable object {callable_object} has mismatching return fields. "
+            f"Missing fields: {missing_fields}, Extra fields: {extra_fields}"
+        )
+
+
+def test_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec]) -> None:
     endpoints = SessionV2Endpoints(mock.Mock(speck=AuthenticatedArrowClient), db_client=None, show_progress=False)
 
     missing_endpoints: set[str] = set()
     available_endpoints: set[str] = set()
 
-    for endpoint_spec in gds_api_spec:
-        if "alpha." in endpoint_spec.name or "beta." in endpoint_spec.name:
+    for endpoint_with_modes_spec in gds_api_spec:
+        if "alpha." in endpoint_with_modes_spec.name or "beta." in endpoint_with_modes_spec.name:
             # skip alpha/beta endpoints
             continue
 
-        endpoint_names = [pythonic_endpoint_name(e) for e in endpoint_spec.callable_modes()]
-
-        for endpoint_name in endpoint_names:
+        for endpoint_spec in endpoint_with_modes_spec.callable_modes():
+            endpoint_name = pythonic_endpoint_name(endpoint_spec.name)
             callable_object = resolve_callable_object(
                 endpoints,
                 endpoint_name,
@@ -139,6 +175,7 @@ def test_api_spec_coverage(gds_api_spec: list[EndpointSpec]) -> None:
                 # TODO verify against gds-api spec
                 # returnFields = callable_object.__
                 available_endpoints.add(endpoint_name)
+                verify_return_fields(callable_object, expected_return_fields=endpoint_spec.returnFields)
 
     # Print summary
     print("\nGDS API Spec Coverage Summary:")
