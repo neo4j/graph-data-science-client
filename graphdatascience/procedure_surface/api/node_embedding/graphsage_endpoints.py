@@ -47,11 +47,11 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
             Weight of negative samples in the loss function
         embedding_dimension : int | None, default=None
             The dimension of the generated embeddings
-        tolerance : float | None, default=None
+        tolerance : float
             Tolerance for early stopping based on loss improvement
         learning_rate : float | None, default=None
             Learning rate for the training optimization
-        max_iterations : int | None, default=None
+        max_iterations : int
             Maximum number of training iterations
         sample_sizes : list[int] | None, default=None
             Number of neighbors to sample at each layer
@@ -69,15 +69,15 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
             Ratio of nodes to sample for each training batch
         store_model_to_disk : bool | None, default=None
             Whether to persist the model to disk
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         username : str | None = None
             The username to attribute the procedure run to
         log_progress : bool | None, default=None
             Whether to log progress
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         concurrency : Any | None, default=None
             The number of concurrent threads

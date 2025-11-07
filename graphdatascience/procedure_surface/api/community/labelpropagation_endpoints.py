@@ -50,11 +50,11 @@ class LabelPropagationEndpoints(ABC):
             Whether to log progress
         max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         node_weight_property : str | None, default=None
             The property name for node weights
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         relationship_weight_property : str | None, default=None
             The property name for relationship weights
@@ -107,11 +107,11 @@ class LabelPropagationEndpoints(ABC):
             Whether to log progress
         max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         node_weight_property : str | None, default=None
             The property name for node weights
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         relationship_weight_property : str | None, default=None
             The property name for relationship weights
@@ -167,11 +167,11 @@ class LabelPropagationEndpoints(ABC):
             The maximum number of iterations
         min_community_size : int | None, default=None
             Minimum community size to include in results
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         node_weight_property : str | None, default=None
             The property name for node weights
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         relationship_weight_property : str | None, default=None
             The property name for relationship weights
@@ -231,11 +231,11 @@ class LabelPropagationEndpoints(ABC):
             The maximum number of iterations
         min_community_size : int | None, default=None
             Minimum community size to include in results
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         node_weight_property : str | None, default=None
             The property name for node weights
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         relationship_weight_property : str | None, default=None
             The property name for relationship weights
@@ -282,11 +282,11 @@ class LabelPropagationEndpoints(ABC):
             Whether to use consecutive community IDs starting from 0
         max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         node_weight_property : str | None, default=None
             The property name for node weights
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         relationship_weight_property : str | None, default=None
             The property name for relationship weights

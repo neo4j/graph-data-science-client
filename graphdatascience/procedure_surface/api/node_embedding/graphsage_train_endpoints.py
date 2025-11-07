@@ -97,11 +97,11 @@ class GraphSageTrainEndpoints(ABC):
             Weight of negative samples in the loss function
         embedding_dimension : int | None, default=None
             The dimension of the generated embeddings
-        tolerance : float | None, default=None
+        tolerance : float
             Tolerance for early stopping based on loss improvement
         learning_rate : float | None, default=None
             Learning rate for the training optimization
-        max_iterations : int | None, default=None
+        max_iterations : int
             Maximum number of training iterations
         sample_sizes : list[int] | None, default=None
             Number of neighbors to sample at each layer
@@ -127,7 +127,7 @@ class GraphSageTrainEndpoints(ABC):
             The username to attribute the procedure run to
         log_progress : bool | None, default=None
             Whether to log progress
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         concurrency : Any | None, default=None
             The number of concurrent threads

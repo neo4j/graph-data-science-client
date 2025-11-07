@@ -77,9 +77,9 @@ class KnnEndpoints(ABC):
             The seed for the random number generator.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -147,9 +147,9 @@ class KnnEndpoints(ABC):
             The seed for the random number generator.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -217,9 +217,9 @@ class KnnEndpoints(ABC):
             The seed for the random number generator.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -294,9 +294,9 @@ class KnnEndpoints(ABC):
             The seed for the random number generator.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.
@@ -365,9 +365,9 @@ class KnnEndpoints(ABC):
             The seed for the random number generator.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter on node labels.
         sudo : bool, default=False
             Run the algorithm with elevated privileges.

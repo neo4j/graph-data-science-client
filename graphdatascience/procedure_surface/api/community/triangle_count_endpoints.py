@@ -51,9 +51,9 @@ class TriangleCountEndpoints(ABC):
         max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
         sudo : bool | None, default=False
@@ -105,9 +105,9 @@ class TriangleCountEndpoints(ABC):
         max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
         sudo : bool | None, default=False
@@ -159,9 +159,9 @@ class TriangleCountEndpoints(ABC):
         max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
         sudo : bool | None, default=False
@@ -219,9 +219,9 @@ class TriangleCountEndpoints(ABC):
         max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
         sudo : bool | None, default=False
@@ -267,9 +267,9 @@ class TriangleCountEndpoints(ABC):
         max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
 

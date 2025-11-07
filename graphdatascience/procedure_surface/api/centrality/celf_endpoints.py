@@ -18,16 +18,16 @@ class CelfEndpoints(ABC):
         G: GraphV2,
         seed_set_size: int,
         mutate_property: str,
-        propagation_probability: float | None = None,
-        monte_carlo_simulations: int | None = None,
-        random_seed: Any | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        monte_carlo_simulations: int = 100,
+        propagation_probability: float = 0.1,
+        random_seed: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> CelfMutateResult:
         """
         Runs the CELF algorithm and stores the results in the graph catalog as a new node property.
@@ -46,21 +46,21 @@ class CelfEndpoints(ABC):
             Probability of a node being activated by an active neighbour node.
         monte_carlo_simulations : int | None, default=None
             Number of Monte-Carlo simulations.
-        random_seed : Any | None, default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool | None, default=None
+        sudo : bool
             Disable the memory guard.
         log_progress : bool | None, default=None
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             Number of threads to use for running the algorithm.
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             Identifier for the job.
 
         Returns
@@ -75,16 +75,16 @@ class CelfEndpoints(ABC):
         self,
         G: GraphV2,
         seed_set_size: int,
-        propagation_probability: float | None = None,
-        monte_carlo_simulations: int | None = None,
-        random_seed: Any | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        monte_carlo_simulations: int = 100,
+        propagation_probability: float = 0.1,
+        random_seed: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> CelfStatsResult:
         """
         Runs the CELF algorithm and returns result statistics without storing the results.
@@ -103,11 +103,11 @@ class CelfEndpoints(ABC):
             Number of Monte-Carlo simulations.
         random_seed : Any | None, default=None
             Random seed for reproducible results.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool | None, default=None
+        sudo : bool
             Disable the memory guard.
         log_progress : bool | None, default=None
             Display progress logging.
@@ -130,16 +130,16 @@ class CelfEndpoints(ABC):
         self,
         G: GraphV2,
         seed_set_size: int,
-        propagation_probability: float | None = None,
-        monte_carlo_simulations: int | None = None,
-        random_seed: Any | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        monte_carlo_simulations: int = 100,
+        propagation_probability: float = 0.1,
+        random_seed: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> DataFrame:
         """
         Executes the CELF algorithm and returns a stream of results.
@@ -154,22 +154,22 @@ class CelfEndpoints(ABC):
             The probability that influence spreads from one node to another.
         monte_carlo_simulations : int | None, default=None
             The number of Monte-Carlo simulations.
-        random_seed : Any | None, default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         log_progress : bool | None, default=None
             Whether to log progress of the algorithm execution
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads used for the algorithm execution.
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             An identifier for the job that can be used for monitoring and cancellation
 
         Returns
@@ -186,17 +186,17 @@ class CelfEndpoints(ABC):
         G: GraphV2,
         seed_set_size: int,
         write_property: str,
-        propagation_probability: float | None = None,
-        monte_carlo_simulations: int | None = None,
-        random_seed: Any | None = None,
+        propagation_probability: float = 0.1,
+        monte_carlo_simulations: int = 100,
+        random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         sudo: bool | None = None,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        write_concurrency: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        write_concurrency: int | None = None,
     ) -> CelfWriteResult:
         """
         Runs the CELF algorithm and stores the result in the Neo4j database as a new node property.
@@ -215,23 +215,23 @@ class CelfEndpoints(ABC):
             Probability of a node being activated by an active neighbour node.
         monte_carlo_simulations : int | None, default=None
             Number of Monte-Carlo simulations.
-        random_seed : Any | None, default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool | None, default=None
+        sudo : bool
             Disable the memory guard.
         log_progress : bool | None, default=None
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             Number of threads to use for running the algorithm.
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             Identifier for the job.
-        write_concurrency : Any | None, default=None
+        write_concurrency : int | None, default=None
             The number of concurrent threads used during the write phase.
 
         Returns
@@ -246,12 +246,12 @@ class CelfEndpoints(ABC):
         self,
         G: GraphV2 | dict[str, Any],
         seed_set_size: int,
-        propagation_probability: float | None = None,
-        monte_carlo_simulations: int | None = None,
-        random_seed: Any | None = None,
+        propagation_probability: float = 0.1,
+        monte_carlo_simulations: int = 100,
+        random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.
@@ -262,17 +262,17 @@ class CelfEndpoints(ABC):
             The graph to be used in the estimation. Provided either as a GraphV2 object or a configuration dictionary for the projection.
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization.
-        propagation_probability : float | None, default=None
+        propagation_probability : float
             The probability that influence spreads from one node to another.
-        monte_carlo_simulations : int | None, default=None
+        monte_carlo_simulations : int
             The number of Monte-Carlo simulations.
-        random_seed : Any | None, default=None
+        random_seed : int | None, default=None
             Random seed for reproducible results.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads used for the estimation.
 
         Returns

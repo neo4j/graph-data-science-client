@@ -87,9 +87,9 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             Unique identifier for the projection job.
         concurrency : int, default=4
             Number of concurrent threads/processes to use during graph projection.
-        undirected_relationship_types : list[str] | None, default=None
+        undirected_relationship_types : list[str]
             List of relationship types to treat as undirected.
-        inverse_indexed_relationship_types : list[str] | None, default=None
+        inverse_indexed_relationship_types : list[str]
             List of relationship types to index in both directions.
         batch_size : int | None, default=None
             Number of rows to process in each batch when projecting the graph.

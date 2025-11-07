@@ -48,11 +48,11 @@ class SllpaEndpoints(ABC):
             Whether to log progress
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter nodes with specific labels
         partitioning : Any | None, default=None
             Partitioning configuration for the algorithm
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter relationships with specific types
         sudo : bool | None, default=False
             Run with elevated privileges
@@ -97,11 +97,11 @@ class SllpaEndpoints(ABC):
             Whether to log progress
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter nodes with specific labels
         partitioning : Any | None, default=None
             Partitioning configuration for the algorithm
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter relationships with specific types
         sudo : bool | None, default=False
             Run with elevated privileges
@@ -146,11 +146,11 @@ class SllpaEndpoints(ABC):
             Whether to log progress
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter nodes with specific labels
         partitioning : Any | None, default=None
             Partitioning configuration for the algorithm
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter relationships with specific types
         sudo : bool | None, default=False
             Run with elevated privileges
@@ -199,11 +199,11 @@ class SllpaEndpoints(ABC):
             Whether to log progress
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter nodes with specific labels
         partitioning : Any | None, default=None
             Partitioning configuration for the algorithm
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter relationships with specific types
         sudo : bool | None, default=False
             Run with elevated privileges
@@ -242,11 +242,11 @@ class SllpaEndpoints(ABC):
             The number of concurrent threads
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter nodes with specific labels
         partitioning : Any | None, default=None
             Partitioning configuration for the algorithm
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter relationships with specific types
 
         Returns

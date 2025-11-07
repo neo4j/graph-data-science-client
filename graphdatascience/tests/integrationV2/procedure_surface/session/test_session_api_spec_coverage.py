@@ -235,6 +235,9 @@ def verify_configuration_fields(callable_object: MethodType, endpoint_spec: Endp
     # validate default values match
     for name, expected_param in expected_configuration.items():
         expected_default = ADJUSTED_PARAM_DEFAULT_VALUES.get(name, expected_param.defaultValue)
+        if expected_default == []:
+            expected_default = None  # empty list defaults to None in the python api
+
         actual_default = actual_parameters[name].default
         if actual_default is inspect.Parameter.empty:
             actual_default = None

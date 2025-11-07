@@ -40,15 +40,15 @@ class GraphSagePredictEndpoints(ABC):
             The graph to run the algorithm on
         model_name : str
             Name under which the model will is stored
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         username : str | None = None
             The username to attribute the procedure run to
         log_progress : bool | None, default=None
             Whether to log progress
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         concurrency : Any | None, default=None
             The number of concurrent threads
@@ -91,15 +91,15 @@ class GraphSagePredictEndpoints(ABC):
             Name under which the model will is stored
         write_property : str
             The name of the node property to write the embeddings to
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         username : str | None = None
             The username to attribute the procedure run to
         log_progress : bool | None, default=None
             Whether to log progress
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         concurrency : Any | None, default=None
             The number of concurrent threads
@@ -142,15 +142,15 @@ class GraphSagePredictEndpoints(ABC):
             Name under which the model will is stored
         mutate_property : str
             The name of the node property to store the embeddings
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         username : str | None = None
             The username to attribute the procedure run to
         log_progress : bool | None, default=None
             Whether to log progress
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         concurrency : Any | None, default=None
             The number of concurrent threads
@@ -188,9 +188,9 @@ class GraphSagePredictEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph.
         model_name : str
             Name under which the model will is stored
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types to consider.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels to consider.
         batch_size : int | None, default=None
             The batch size for prediction.
@@ -200,7 +200,7 @@ class GraphSagePredictEndpoints(ABC):
             Whether to log progress.
         username : str | None, default=None
             The username for the operation.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         job_id : str | None, default=None

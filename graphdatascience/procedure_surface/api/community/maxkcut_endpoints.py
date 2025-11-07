@@ -55,11 +55,11 @@ class MaxKCutEndpoints(ABC):
             The number of communities to detect. Must be at least 2.
         log_progress : bool, default=True
             Whether to log progress information during execution
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
         random_seed : int | None, default=None
             Random seed for reproducible results. If None, a random seed is used.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
         relationship_weight_property : str | None, default=None
@@ -121,11 +121,11 @@ class MaxKCutEndpoints(ABC):
             Whether to log progress information during execution
         min_community_size : int | None, default=None
             The minimum community size. Communities smaller than this will be filtered from results.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
         random_seed : int | None, default=None
             Random seed for reproducible results. If None, a random seed is used.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
         relationship_weight_property : str | None, default=None
@@ -177,11 +177,11 @@ class MaxKCutEndpoints(ABC):
             The number of iterations the algorithm runs
         k : int | None, default=2
             The number of communities to detect. Must be at least 2.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run. If None, all nodes are used.
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
         relationship_weight_property : str | None, default=None

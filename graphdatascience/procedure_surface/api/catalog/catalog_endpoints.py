@@ -117,7 +117,7 @@ class CatalogEndpoints(ABC):
             Number of concurrent threads/processes to use during graph generation.
         job_id : str | None, default=None
             Unique identifier for the job associated with the graph generation.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress during graph generation.

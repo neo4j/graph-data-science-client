@@ -51,11 +51,11 @@ class ModularityOptimizationEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : int | None, default=None
+        max_iterations : int
             Maximum number of iterations for the algorithm
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter nodes with specific labels
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter relationships with specific types
         relationship_weight_property : str | None, default=None
             Property name for relationship weights
@@ -63,7 +63,7 @@ class ModularityOptimizationEndpoints(ABC):
             Property name for initial community assignments
         sudo : bool | None, default=False
             Run with elevated privileges
-        tolerance : float | None, default=None
+        tolerance : float
             Convergence tolerance for the algorithm
         username : str | None, default=None
             Username for authentication
@@ -111,11 +111,11 @@ class ModularityOptimizationEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : int | None, default=None
+        max_iterations : int
             Maximum number of iterations for the algorithm
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter nodes with specific labels
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter relationships with specific types
         relationship_weight_property : str | None, default=None
             Property name for relationship weights
@@ -123,7 +123,7 @@ class ModularityOptimizationEndpoints(ABC):
             Property name for initial community assignments
         sudo : bool | None, default=False
             Run with elevated privileges
-        tolerance : float | None, default=None
+        tolerance : float
             Convergence tolerance for the algorithm
         username : str | None, default=None
             Username for authentication
@@ -172,13 +172,13 @@ class ModularityOptimizationEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : int | None, default=None
+        max_iterations : int
             Maximum number of iterations for the algorithm
         min_community_size : int | None, default=None
             Minimum size for communities to be included in results
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter nodes with specific labels
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter relationships with specific types
         relationship_weight_property : str | None, default=None
             Property name for relationship weights
@@ -186,7 +186,7 @@ class ModularityOptimizationEndpoints(ABC):
             Property name for initial community assignments
         sudo : bool | None, default=False
             Run with elevated privileges
-        tolerance : float | None, default=None
+        tolerance : float
             Convergence tolerance for the algorithm
         username : str | None, default=None
             Username for authentication
@@ -239,13 +239,13 @@ class ModularityOptimizationEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        max_iterations : int | None, default=None
+        max_iterations : int
             Maximum number of iterations for the algorithm
         min_community_size : int | None, default=None
             Minimum size for communities to be included in results
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter nodes with specific labels
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter relationships with specific types
         relationship_weight_property : str | None, default=None
             Property name for relationship weights
@@ -253,7 +253,7 @@ class ModularityOptimizationEndpoints(ABC):
             Property name for initial community assignments
         sudo : bool | None, default=False
             Run with elevated privileges
-        tolerance : float | None, default=None
+        tolerance : float
             Convergence tolerance for the algorithm
         username : str | None, default=None
             Username for authentication
@@ -295,17 +295,17 @@ class ModularityOptimizationEndpoints(ABC):
             The number of concurrent threads
         consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
-        max_iterations : int | None, default=None
+        max_iterations : int
             Maximum number of iterations for the algorithm
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter nodes with specific labels
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             Filter relationships with specific types
         relationship_weight_property : str | None, default=None
             Property name for relationship weights
         seed_property : str | None, default=None
             Property name for initial community assignments
-        tolerance : float | None, default=None
+        tolerance : float
             Convergence tolerance for the algorithm
 
         Returns

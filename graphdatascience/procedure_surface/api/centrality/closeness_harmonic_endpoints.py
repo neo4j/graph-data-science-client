@@ -19,7 +19,7 @@ class ClosenessHarmonicEndpoints(ABC):
         mutate_property: str,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -37,11 +37,11 @@ class ClosenessHarmonicEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             The property name to store the harmonic closeness centrality score for each node
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         log_progress : bool | None, default=None
@@ -66,7 +66,7 @@ class ClosenessHarmonicEndpoints(ABC):
         G: GraphV2,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -84,11 +84,11 @@ class ClosenessHarmonicEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         log_progress : bool | None, default=None
@@ -113,7 +113,7 @@ class ClosenessHarmonicEndpoints(ABC):
         G: GraphV2,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
@@ -126,11 +126,11 @@ class ClosenessHarmonicEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         log_progress : bool | None, default=None
@@ -156,12 +156,12 @@ class ClosenessHarmonicEndpoints(ABC):
         write_property: str,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: Any | None = None,
         job_id: Any | None = None,
-        write_concurrency: Any | None = None,
+        write_concurrency: int | None = None,
     ) -> ClosenessHarmonicWriteResult:
         """
         Runs the Harmonic Centrality algorithm and stores the result in the Neo4j database as a new node property.
@@ -177,11 +177,11 @@ class ClosenessHarmonicEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to write the harmonic closeness centrality scores to
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         log_progress : bool | None, default=None
@@ -217,9 +217,9 @@ class ClosenessHarmonicEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
         concurrency : Any | None, default=None
             The number of concurrent threads used for the algorithm execution.

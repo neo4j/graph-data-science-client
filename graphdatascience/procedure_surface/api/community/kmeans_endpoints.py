@@ -62,13 +62,13 @@ class KMeansEndpoints(ABC):
             Whether to log progress
         max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
@@ -131,13 +131,13 @@ class KMeansEndpoints(ABC):
             Whether to log progress
         max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
@@ -200,13 +200,13 @@ class KMeansEndpoints(ABC):
             Whether to log progress
         max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
@@ -273,13 +273,13 @@ class KMeansEndpoints(ABC):
             Whether to log progress
         max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
@@ -336,13 +336,13 @@ class KMeansEndpoints(ABC):
             The number of clusters
         max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm

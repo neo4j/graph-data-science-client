@@ -38,11 +38,11 @@ class NodePropertiesEndpoints(ABC):
             The node properties to stream
         list_node_labels : boolean | None, default=None
             Whether to include node labels in the stream
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter by node labels
         concurrency : Any | None, default=None
             The number of concurrent threads
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -83,13 +83,13 @@ class NodePropertiesEndpoints(ABC):
         node_properties : str | list[str] | dict[str, str]
             The node properties to write.
             If a dictionary is provided, the keys are the property names and the values are the aliases that will be used as the property name in the database.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             Filter by node labels
         concurrency : Any | None, default=None
             The number of concurrent threads
         write_concurrency : Any | None, default=None
             The number of concurrent threads used for writing
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress

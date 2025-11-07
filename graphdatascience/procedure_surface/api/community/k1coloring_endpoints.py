@@ -42,13 +42,13 @@ class K1ColoringEndpoints(ABC):
             The property name to store the color for each node
         batch_size : int | None, default=None
             The batch size for processing
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations of K-1 Coloring to run
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -89,13 +89,13 @@ class K1ColoringEndpoints(ABC):
             The graph to run the algorithm on
         batch_size : int | None, default=None
             The batch size for processing
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations of K-1 Coloring to run
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -137,13 +137,13 @@ class K1ColoringEndpoints(ABC):
             The graph to run the algorithm on
         batch_size : int | None, default=None
             The batch size for processing
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations of K-1 Coloring to run
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationships types considered in this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -191,13 +191,13 @@ class K1ColoringEndpoints(ABC):
             The property name to write colors to
         batch_size : int | None, default=None
             The batch size for processing
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations of K-1 Coloring to run
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationships types considered in this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -238,11 +238,11 @@ class K1ColoringEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph.
         batch_size : int | None, default=None
             The batch size for processing
-        max_iterations : int | None, default=None
+        max_iterations : int
             The maximum number of iterations of K-1 Coloring to run
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         concurrency : Any | None, default=None
             The number of concurrent threads

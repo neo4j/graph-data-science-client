@@ -48,9 +48,9 @@ class GraphSageModelV2(Model):
             The graph to generate embeddings for.
         write_property : str
             The property to write the embeddings to.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types to consider.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels to consider.
         batch_size : int | None, default=None
             The batch size for prediction.
@@ -62,7 +62,7 @@ class GraphSageModelV2(Model):
             Whether to log progress.
         username : str | None, default=None
             The username for the operation.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         job_id : str | None, default=None
@@ -109,9 +109,9 @@ class GraphSageModelV2(Model):
         ----------
         G : GraphV2
             The graph to generate embeddings for.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types to consider.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels to consider.
         batch_size : int | None, default=None
             The batch size for prediction.
@@ -121,7 +121,7 @@ class GraphSageModelV2(Model):
             Whether to log progress.
         username : str | None, default=None
             The username for the operation.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         job_id : str | None, default=None
@@ -169,9 +169,9 @@ class GraphSageModelV2(Model):
             The graph to generate embeddings for.
         mutate_property : str
             The property to mutate with the embeddings.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types to consider.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels to consider.
         batch_size : int | None, default=None
             The batch size for prediction.
@@ -181,7 +181,7 @@ class GraphSageModelV2(Model):
             Whether to log progress.
         username : str | None, default=None
             The username for the operation.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         job_id : str | None, default=None
@@ -227,9 +227,9 @@ class GraphSageModelV2(Model):
         ----------
         G : GraphV2
             The graph to generate embeddings for.
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types to consider.
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels to consider.
         batch_size : int | None, default=None
             The batch size for prediction.
@@ -239,7 +239,7 @@ class GraphSageModelV2(Model):
             Whether to log progress.
         username : str | None, default=None
             The username for the operation.
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         job_id : str | None, default=None

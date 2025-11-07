@@ -61,11 +61,11 @@ class FastRPEndpoints(ABC):
             The ratio of node properties to use in the embedding
         feature_properties : list[str] | None, default=None
             List of node properties to use as features in the embedding
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -125,11 +125,11 @@ class FastRPEndpoints(ABC):
             The ratio of node properties to use in the embedding
         feature_properties : list[str] | None, default=None
             List of node properties to use as features in the embedding
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -189,11 +189,11 @@ class FastRPEndpoints(ABC):
             The ratio of node properties to use in the embedding
         feature_properties : list[str] | None, default=None
             List of node properties to use as features in the embedding
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -257,11 +257,11 @@ class FastRPEndpoints(ABC):
             The ratio of node properties to use in the embedding
         feature_properties : list[str] | None, default=None
             List of node properties to use as features in the embedding
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -319,9 +319,9 @@ class FastRPEndpoints(ABC):
             The ratio of node properties to use in the embedding
         feature_properties : list[str] | None, default=None
             List of node properties to use as features in the embedding
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         concurrency : Any | None, default=None
             The number of concurrent threads

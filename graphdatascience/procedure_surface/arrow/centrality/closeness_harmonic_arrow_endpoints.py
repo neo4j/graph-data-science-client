@@ -33,11 +33,11 @@ class ClosenessHarmonicArrowEndpoints(ClosenessHarmonicEndpoints):
         mutate_property: str,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> ClosenessHarmonicMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -59,11 +59,11 @@ class ClosenessHarmonicArrowEndpoints(ClosenessHarmonicEndpoints):
         G: GraphV2,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> ClosenessHarmonicStatsResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -85,11 +85,11 @@ class ClosenessHarmonicArrowEndpoints(ClosenessHarmonicEndpoints):
         G: GraphV2,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -110,12 +110,12 @@ class ClosenessHarmonicArrowEndpoints(ClosenessHarmonicEndpoints):
         write_property: str,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        write_concurrency: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        write_concurrency: int | None = None,
     ) -> ClosenessHarmonicWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,

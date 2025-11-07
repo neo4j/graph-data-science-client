@@ -44,11 +44,11 @@ class WccEndpoints(ABC):
             The property name to store the component ID for each node
         threshold : float | None, default=None
             The minimum required weight to consider a relationship during traversal
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -97,11 +97,11 @@ class WccEndpoints(ABC):
             The graph to run the algorithm on
         threshold : float | None, default=None
             The minimum required weight to consider a relationship during traversal
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -153,11 +153,11 @@ class WccEndpoints(ABC):
             Don't stream components with fewer nodes than this
         threshold : float | None, default=None
             The minimum required weight to consider a relationship during traversal
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationships types considered in this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -213,11 +213,11 @@ class WccEndpoints(ABC):
             Don't write components with fewer nodes than this
         threshold : float | None, default=None
             The minimum required weight to consider a relationship during traversal
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationships types considered in this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        sudo : bool | None, default=None
+        sudo : bool
             Override memory estimation limits
         log_progress : bool | None, default=None
             Whether to log progress
@@ -264,9 +264,9 @@ class WccEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph.
         threshold : float | None, default=None
             The minimum required weight to consider a relationship during traversal
-        relationship_types : list[str] | None, default=None
+        relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None, default=None
+        node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         concurrency : Any | None, default=None
             The number of concurrent threads
