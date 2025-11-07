@@ -38,10 +38,10 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        batch_size: int | None = None,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        batch_size: int = 100,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -67,11 +67,11 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
-        concurrency: Any | None = None,
+        sudo: bool = False,
+        concurrency: int | None = None,
         write_concurrency: int | None = None,
-        job_id: Any | None = None,
-        batch_size: int | None = None,
+        job_id: str | None = None,
+        batch_size: int = 100,
     ) -> GraphSageWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -106,10 +106,10 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        batch_size: int | None = None,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        batch_size: int = 100,
     ) -> GraphSageMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -138,11 +138,11 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         model_name: str,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        batch_size: int | None = None,
+        batch_size: int = 100,
         concurrency: int | None = None,
         log_progress: bool = True,
         username: str | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         job_id: str | None = None,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(

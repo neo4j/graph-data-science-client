@@ -31,12 +31,12 @@ class GraphSageModelV2(Model):
         *,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        batch_size: int | None = None,
+        batch_size: int = 100,
         concurrency: int | None = None,
         write_concurrency: int | None = None,
         log_progress: bool = True,
         username: str | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         job_id: str | None = None,
     ) -> GraphSageWriteResult:
         """
@@ -52,17 +52,17 @@ class GraphSageModelV2(Model):
             The relationship types to consider.
         node_labels : list[str]
             The node labels to consider.
-        batch_size : int | None, default=None
+        batch_size : int = 100
             The batch size for prediction.
         concurrency : int | None, default=None
             The concurrency for computation.
         write_concurrency : int | None, default=None
             The concurrency for writing.
-        log_progress : bool | None, default=None
+        log_progress : bool = True
             Whether to log progress.
         username : str | None, default=None
             The username for the operation.
-        sudo : bool
+        sudo : bool = False
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         job_id : str | None, default=None
@@ -95,11 +95,11 @@ class GraphSageModelV2(Model):
         *,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        batch_size: int | None = None,
+        batch_size: int = 100,
         concurrency: int | None = None,
         log_progress: bool = True,
         username: str | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         job_id: str | None = None,
     ) -> DataFrame:
         """
@@ -113,15 +113,15 @@ class GraphSageModelV2(Model):
             The relationship types to consider.
         node_labels : list[str]
             The node labels to consider.
-        batch_size : int | None, default=None
+        batch_size : int = 100
             The batch size for prediction.
         concurrency : int | None, default=None
             The concurrency for computation.
-        log_progress : bool | None, default=None
+        log_progress : bool = True
             Whether to log progress.
         username : str | None, default=None
             The username for the operation.
-        sudo : bool
+        sudo : bool = False
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         job_id : str | None, default=None
@@ -153,11 +153,11 @@ class GraphSageModelV2(Model):
         *,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        batch_size: int | None = None,
+        batch_size: int = 100,
         concurrency: int | None = None,
         log_progress: bool = True,
         username: str | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         job_id: str | None = None,
     ) -> GraphSageMutateResult:
         """
@@ -173,15 +173,15 @@ class GraphSageModelV2(Model):
             The relationship types to consider.
         node_labels : list[str]
             The node labels to consider.
-        batch_size : int | None, default=None
+        batch_size : int = 100
             The batch size for prediction.
         concurrency : int | None, default=None
             The concurrency for computation.
-        log_progress : bool | None, default=None
+        log_progress : bool = True
             Whether to log progress.
         username : str | None, default=None
             The username for the operation.
-        sudo : bool
+        sudo : bool = False
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         job_id : str | None, default=None
@@ -213,11 +213,11 @@ class GraphSageModelV2(Model):
         *,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        batch_size: int | None = None,
+        batch_size: int = 100,
         concurrency: int | None = None,
         log_progress: bool = True,
         username: str | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         job_id: str | None = None,
     ) -> EstimationResult:
         """
@@ -231,15 +231,15 @@ class GraphSageModelV2(Model):
             The relationship types to consider.
         node_labels : list[str]
             The node labels to consider.
-        batch_size : int | None, default=None
+        batch_size : int = 100
             The batch size for prediction.
         concurrency : int | None, default=None
             The concurrency for computation.
-        log_progress : bool | None, default=None
+        log_progress : bool = True
             Whether to log progress.
         username : str | None, default=None
             The username for the operation.
-        sudo : bool
+        sudo : bool = False
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         job_id : str | None, default=None

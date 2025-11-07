@@ -26,10 +26,10 @@ class GraphSagePredictEndpoints(ABC):
         node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        batch_size: int | None = None,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        batch_size: int = 100,
     ) -> DataFrame:
         """
         Uses a pre-trained GraphSage model to predict embeddings for a graph and returns the results as a stream.
@@ -46,15 +46,15 @@ class GraphSagePredictEndpoints(ABC):
             The node labels used to select nodes for this algorithm run
         username : str | None = None
             The username to attribute the procedure run to
-        log_progress : bool | None, default=None
+        log_progress : bool = True
             Whether to log progress
-        sudo : bool
+        sudo : bool = False
             Override memory estimation limits
         concurrency : Any | None, default=None
             The number of concurrent threads
         job_id : Any | None, default=None
             An identifier for the job
-        batch_size : int | None, default=None
+        batch_size : int = 100
             Batch size for training
 
         Returns
@@ -74,11 +74,11 @@ class GraphSagePredictEndpoints(ABC):
         node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
-        concurrency: Any | None = None,
+        sudo: bool = False,
+        concurrency: int | None = None,
         write_concurrency: int | None = None,
-        job_id: Any | None = None,
-        batch_size: int | None = None,
+        job_id: str | None = None,
+        batch_size: int = 100,
     ) -> GraphSageWriteResult:
         """
         Uses a pre-trained GraphSage model to predict embeddings for a graph and writes the results back to the database.
@@ -97,9 +97,9 @@ class GraphSagePredictEndpoints(ABC):
             The node labels used to select nodes for this algorithm run
         username : str | None = None
             The username to attribute the procedure run to
-        log_progress : bool | None, default=None
+        log_progress : bool = True
             Whether to log progress
-        sudo : bool
+        sudo : bool = False
             Override memory estimation limits
         concurrency : Any | None, default=None
             The number of concurrent threads
@@ -107,7 +107,7 @@ class GraphSagePredictEndpoints(ABC):
              The number of concurrent threads used for writing
         job_id : Any | None, default=None
             An identifier for the job
-        batch_size : int | None, default=None
+        batch_size : int = 100
             Batch size for training
 
         Returns
@@ -126,10 +126,10 @@ class GraphSagePredictEndpoints(ABC):
         node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        batch_size: int | None = None,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        batch_size: int = 100,
     ) -> GraphSageMutateResult:
         """
         Uses a pre-trained GraphSage model to predict embeddings for a graph and writes the results back to the graph as a node property.
@@ -172,11 +172,11 @@ class GraphSagePredictEndpoints(ABC):
         model_name: str,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        batch_size: int | None = None,
+        batch_size: int = 100,
         concurrency: int | None = None,
         log_progress: bool = True,
         username: str | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         job_id: str | None = None,
     ) -> EstimationResult:
         """
@@ -192,15 +192,15 @@ class GraphSagePredictEndpoints(ABC):
             The relationship types to consider.
         node_labels : list[str]
             The node labels to consider.
-        batch_size : int | None, default=None
+        batch_size : int = 100
             The batch size for prediction.
         concurrency : int | None, default=None
             The concurrency for computation.
-        log_progress : bool | None, default=None
+        log_progress : bool = True
             Whether to log progress.
         username : str | None, default=None
             The username for the operation.
-        sudo : bool
+        sudo : bool = False
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
         job_id : str | None, default=None

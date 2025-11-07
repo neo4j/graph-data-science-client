@@ -18,30 +18,30 @@ class GraphSageTrainEndpoints(ABC):
         model_name: str,
         feature_properties: list[str],
         *,
-        activation_function: Any | None = None,
-        negative_sample_weight: int | None = None,
-        embedding_dimension: int | None = None,
-        tolerance: float | None = None,
-        learning_rate: float | None = None,
-        max_iterations: int | None = None,
+        activation_function: str = "SIGMOID",
+        negative_sample_weight: int = 20,
+        embedding_dimension: int = 64,
+        tolerance: float = 0.0001,
+        learning_rate: float = 0.1,
+        max_iterations: int = 10,
         sample_sizes: list[int] | None = None,
-        aggregator: Any | None = None,
-        penalty_l2: float | None = None,
-        search_depth: int | None = None,
-        epochs: int | None = None,
+        aggregator: str = "MEAN",
+        penalty_l2: float = 0.0,
+        search_depth: int = 5,
+        epochs: int = 1,
         projected_feature_dimension: int | None = None,
         batch_sampling_ratio: float | None = None,
-        store_model_to_disk: bool | None = None,
+        store_model_to_disk: bool = False,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        batch_size: int | None = None,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        batch_size: int = 100,
         relationship_weight_property: str | None = None,
-        random_seed: Any | None = None,
+        random_seed: int | None = None,
     ) -> tuple[GraphSageModelV2, GraphSageTrainResult]: ...
 
     @abstractmethod
@@ -51,30 +51,30 @@ class GraphSageTrainEndpoints(ABC):
         model_name: str,
         feature_properties: list[str],
         *,
-        activation_function: Any | None = None,
-        negative_sample_weight: int | None = None,
-        embedding_dimension: int | None = None,
-        tolerance: float | None = None,
-        learning_rate: float | None = None,
-        max_iterations: int | None = None,
+        activation_function: str = "SIGMOID",
+        negative_sample_weight: int = 20,
+        embedding_dimension: int = 64,
+        tolerance: float = 0.0001,
+        learning_rate: float = 0.1,
+        max_iterations: int = 10,
         sample_sizes: list[int] | None = None,
-        aggregator: Any | None = None,
-        penalty_l2: float | None = None,
-        search_depth: int | None = None,
-        epochs: int | None = None,
+        aggregator: str = "MEAN",
+        penalty_l2: float = 0.0,
+        search_depth: int = 5,
+        epochs: int = 1,
         projected_feature_dimension: int | None = None,
         batch_sampling_ratio: float | None = None,
-        store_model_to_disk: bool | None = None,
+        store_model_to_disk: bool = False,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         username: str | None = None,
         log_progress: bool = True,
-        sudo: bool | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
-        batch_size: int | None = None,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        batch_size: int = 100,
         relationship_weight_property: str | None = None,
-        random_seed: Any | None = None,
+        random_seed: int | None = None,
     ) -> EstimationResult:
         """
         Estimates memory requirements and other statistics for training a GraphSage model.
@@ -91,53 +91,53 @@ class GraphSageTrainEndpoints(ABC):
             Name under which the model will be stored
         feature_properties : list[str]
             The names of the node properties to use as input features
-        activation_function : Any | None, default=None
+        activation_function : str = "SIGMOID"
             The activation function to apply after each layer
-        negative_sample_weight : int | None, default=None
+        negative_sample_weight : int = 20
             Weight of negative samples in the loss function
-        embedding_dimension : int | None, default=None
+        embedding_dimension : int = 64
             The dimension of the generated embeddings
-        tolerance : float
+        tolerance : float = 0.0001
             Tolerance for early stopping based on loss improvement
-        learning_rate : float | None, default=None
+        learning_rate : float = 0.1
             Learning rate for the training optimization
-        max_iterations : int
+        max_iterations : int = 10
             Maximum number of training iterations
-        sample_sizes : list[int] | None, default=None
-            Number of neighbors to sample at each layer
-        aggregator : Any | None, default=None
+        sample_sizes : list[int] | None = None
+            Number of neighbors to sample at each layer. Defaults to [25, 10] if not specified
+        aggregator : str = "MEAN"
             The aggregator function for neighborhood aggregation
-        penalty_l2 : float | None, default=None
+        penalty_l2 : float = 0.0
             L2 regularization penalty
-        search_depth : int | None, default=None
+        search_depth : int = 5
             Maximum search depth for neighbor sampling
-        epochs : int | None, default=None
+        epochs : int = 1
             Number of training epochs
-        projected_feature_dimension : int | None, default=None
+        projected_feature_dimension : int | None = None
             Dimension to project input features to before training
-        batch_sampling_ratio : float | None, default=None
+        batch_sampling_ratio : float | None = None
             Ratio of nodes to sample for each training batch
-        store_model_to_disk : bool | None, default=None
+        store_model_to_disk : bool = False
             Whether to persist the model to disk
-        relationship_types : list[str] | None = None
+        relationship_types : list[str] = ALL_TYPES
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str] | None = None
+        node_labels : list[str] = ALL_LABELS
             The node labels used to select nodes for this algorithm run
         username : str | None = None
             The username to attribute the procedure run to
-        log_progress : bool | None, default=None
+        log_progress : bool = True
             Whether to log progress
-        sudo : bool
+        sudo : bool = False
             Override memory estimation limits
         concurrency : Any | None, default=None
             The number of concurrent threads
         job_id : Any | None, default=None
             An identifier for the job
-        batch_size : int | None, default=None
+        batch_size : int = 100
             Batch size for training
-        relationship_weight_property : str | None, default=None
+        relationship_weight_property : str | None = None
             The property name that contains weight
-        random_seed : Any | None, default=None
+        random_seed : int | None = None
             Random seed for reproducible results
 
         Returns
