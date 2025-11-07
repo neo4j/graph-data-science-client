@@ -19,20 +19,20 @@ class KMeansEndpoints(ABC):
         node_property: str,
         mutate_property: str,
         *,
-        compute_silhouette: bool | None = False,
+        compute_silhouette: bool = False,
         concurrency: int | None = None,
-        delta_threshold: float | None = 0.05,
-        initial_sampler: str | None = "UNIFORM",
+        delta_threshold: float = 0.05,
+        initial_sampler: str = "UNIFORM",
         job_id: str | None = None,
-        k: int | None = 10,
+        k: int = 10,
         log_progress: bool = True,
-        max_iterations: int | None = 10,
+        max_iterations: int = 10,
         node_labels: list[str] = ALL_LABELS,
-        number_of_restarts: int | None = 1,
+        number_of_restarts: int = 1,
         random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         seed_centroids: list[list[float]] | None = None,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> KMeansMutateResult:
         """
@@ -90,20 +90,20 @@ class KMeansEndpoints(ABC):
         G: GraphV2,
         node_property: str,
         *,
-        compute_silhouette: bool | None = False,
+        compute_silhouette: bool = False,
         concurrency: int | None = None,
-        delta_threshold: float | None = 0.05,
-        initial_sampler: str | None = "UNIFORM",
+        delta_threshold: float = 0.05,
+        initial_sampler: str = "UNIFORM",
         job_id: str | None = None,
-        k: int | None = 10,
+        k: int = 10,
         log_progress: bool = True,
-        max_iterations: int | None = 10,
+        max_iterations: int = 10,
         node_labels: list[str] = ALL_LABELS,
-        number_of_restarts: int | None = 1,
+        number_of_restarts: int = 1,
         random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         seed_centroids: list[list[float]] | None = None,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> KMeansStatsResult:
         """
@@ -159,20 +159,20 @@ class KMeansEndpoints(ABC):
         G: GraphV2,
         node_property: str,
         *,
-        compute_silhouette: bool | None = False,
+        compute_silhouette: bool = False,
         concurrency: int | None = None,
-        delta_threshold: float | None = 0.05,
-        initial_sampler: str | None = "UNIFORM",
+        delta_threshold: float = 0.05,
+        initial_sampler: str = "UNIFORM",
         job_id: str | None = None,
-        k: int | None = 10,
+        k: int = 10,
         log_progress: bool = True,
-        max_iterations: int | None = 10,
+        max_iterations: int = 10,
         node_labels: list[str] = ALL_LABELS,
-        number_of_restarts: int | None = 1,
+        number_of_restarts: int = 1,
         random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         seed_centroids: list[list[float]] | None = None,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> DataFrame:
         """
@@ -229,20 +229,20 @@ class KMeansEndpoints(ABC):
         node_property: str,
         write_property: str,
         *,
-        compute_silhouette: bool | None = False,
+        compute_silhouette: bool = False,
         concurrency: int | None = None,
-        delta_threshold: float | None = 0.05,
-        initial_sampler: str | None = "UNIFORM",
+        delta_threshold: float = 0.05,
+        initial_sampler: str = "UNIFORM",
         job_id: str | None = None,
-        k: int | None = 10,
+        k: int = 10,
         log_progress: bool = True,
-        max_iterations: int | None = 10,
+        max_iterations: int = 10,
         node_labels: list[str] = ALL_LABELS,
-        number_of_restarts: int | None = 1,
+        number_of_restarts: int = 1,
         random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         seed_centroids: list[list[float]] | None = None,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
         write_concurrency: int | None = None,
     ) -> KMeansWriteResult:
@@ -303,14 +303,14 @@ class KMeansEndpoints(ABC):
         G: GraphV2 | dict[str, Any],
         node_property: str,
         *,
-        compute_silhouette: bool | None = False,
+        compute_silhouette: bool = False,
         concurrency: int | None = None,
-        delta_threshold: float | None = 0.05,
-        initial_sampler: str | None = "UNIFORM",
-        k: int | None = 10,
-        max_iterations: int | None = 10,
+        delta_threshold: float = 0.05,
+        initial_sampler: str = "UNIFORM",
+        k: int = 10,
+        max_iterations: int = 10,
         node_labels: list[str] = ALL_LABELS,
-        number_of_restarts: int | None = 1,
+        number_of_restarts: int = 1,
         random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         seed_centroids: list[list[float]] | None = None,
@@ -358,8 +358,8 @@ class KMeansEndpoints(ABC):
 class KMeansMutateResult(BaseResult):
     average_distance_to_centroid: float
     average_silhouette: float
-    centroids: list[Any]
-    community_distribution: dict[str, Any]
+    centroids: list[list[float]]
+    community_distribution: dict[str, int | float]
     compute_millis: int
     configuration: dict[str, Any]
     mutate_millis: int
@@ -371,8 +371,8 @@ class KMeansMutateResult(BaseResult):
 class KMeansStatsResult(BaseResult):
     average_distance_to_centroid: float
     average_silhouette: float
-    centroids: list[Any]
-    community_distribution: dict[str, Any]
+    centroids: list[list[float]]
+    community_distribution: dict[str, int | float]
     compute_millis: int
     configuration: dict[str, Any]
     post_processing_millis: int
@@ -382,8 +382,8 @@ class KMeansStatsResult(BaseResult):
 class KMeansWriteResult(BaseResult):
     average_distance_to_centroid: float
     average_silhouette: float
-    centroids: list[Any]
-    community_distribution: dict[str, Any]
+    centroids: list[list[float]]
+    community_distribution: dict[str, int | float]
     compute_millis: int
     configuration: dict[str, Any]
     node_properties_written: int

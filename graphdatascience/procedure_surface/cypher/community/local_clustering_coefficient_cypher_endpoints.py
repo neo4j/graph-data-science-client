@@ -1,4 +1,4 @@
-import pandas as pd
+from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
@@ -29,7 +29,7 @@ class LocalClusteringCoefficientCypherEndpoints(LocalClusteringCoefficientEndpoi
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
     ) -> LocalClusteringCoefficientMutateResult:
@@ -64,7 +64,7 @@ class LocalClusteringCoefficientCypherEndpoints(LocalClusteringCoefficientEndpoi
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
     ) -> LocalClusteringCoefficientStatsResult:
@@ -98,10 +98,10 @@ class LocalClusteringCoefficientCypherEndpoints(LocalClusteringCoefficientEndpoi
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
-    ) -> pd.DataFrame:
+    ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
             job_id=job_id,
@@ -131,7 +131,7 @@ class LocalClusteringCoefficientCypherEndpoints(LocalClusteringCoefficientEndpoi
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         triangle_count_property: str | None = None,
         username: str | None = None,
         write_concurrency: int | None = None,

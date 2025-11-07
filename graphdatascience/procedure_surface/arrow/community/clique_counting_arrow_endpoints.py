@@ -31,12 +31,13 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
         self,
         G: GraphV2,
         mutate_property: str,
+        *,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> CliqueCountingMutateResult:
         config = self._node_property_endpoints.create_base_config(
@@ -64,7 +65,7 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
     ) -> CliqueCountingStatsResult:
         config = self._node_property_endpoints.create_base_config(
@@ -117,9 +118,9 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        sudo: bool | None = False,
+        sudo: bool = False,
         username: str | None = None,
-        write_concurrency: Any | None = None,
+        write_concurrency: int | None = None,
     ) -> CliqueCountingWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,

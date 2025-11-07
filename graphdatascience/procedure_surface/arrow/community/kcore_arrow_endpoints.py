@@ -31,13 +31,14 @@ class KCoreArrowEndpoints(KCoreEndpoints):
         self,
         G: GraphV2,
         mutate_property: str,
-        relationship_types: list[str] = ALL_TYPES,
-        node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
-        log_progress: bool = True,
-        username: str | None = None,
+        *,
         concurrency: int | None = None,
         job_id: str | None = None,
+        log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
+        username: str | None = None,
     ) -> KCoreMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -56,13 +57,14 @@ class KCoreArrowEndpoints(KCoreEndpoints):
     def stats(
         self,
         G: GraphV2,
-        relationship_types: list[str] = ALL_TYPES,
-        node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
-        log_progress: bool = True,
-        username: str | None = None,
+        *,
         concurrency: int | None = None,
         job_id: str | None = None,
+        log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
+        username: str | None = None,
     ) -> KCoreStatsResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -81,13 +83,14 @@ class KCoreArrowEndpoints(KCoreEndpoints):
     def stream(
         self,
         G: GraphV2,
-        relationship_types: list[str] = ALL_TYPES,
-        node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
-        log_progress: bool = True,
-        username: str | None = None,
+        *,
         concurrency: int | None = None,
         job_id: str | None = None,
+        log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
+        username: str | None = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -105,13 +108,14 @@ class KCoreArrowEndpoints(KCoreEndpoints):
         self,
         G: GraphV2,
         write_property: str,
-        relationship_types: list[str] = ALL_TYPES,
-        node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
-        log_progress: bool = True,
-        username: str | None = None,
+        *,
         concurrency: int | None = None,
         job_id: str | None = None,
+        log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
+        username: str | None = None,
         write_concurrency: int | None = None,
     ) -> KCoreWriteResult:
         config = self._node_property_endpoints.create_base_config(
@@ -137,9 +141,10 @@ class KCoreArrowEndpoints(KCoreEndpoints):
     def estimate(
         self,
         G: GraphV2 | dict[str, Any],
-        relationship_types: list[str] = ALL_TYPES,
+        *,
+        concurrency: int | None = None,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        relationship_types: list[str] = ALL_TYPES,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(
             relationship_types=relationship_types,
