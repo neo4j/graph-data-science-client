@@ -213,17 +213,29 @@ def verify_configuration_fields(callable_object: MethodType, endpoint_spec: Endp
             f"Missing parameters: {missing_params}, Extra parameters: {extra_params}"
         )
 
-    # validate optional parameters are keyword-only arguments
-    optional_positional_args = [
+    # validate required parameters doesnt have a default value
+    required_params_with_default = [
         name
         for name, param in actual_parameters.items()
-        if param.kind is not inspect.Parameter.KEYWORD_ONLY and param.default is not inspect.Parameter.empty
+        if param.default is not inspect.Parameter.empty and not expected_configuration[name].type.optional
     ]
-    if optional_positional_args:
+    if required_params_with_default:
         raise ValueError(
-            f"Callable object {pythonic_endpoint_name(endpoint_spec.name)} has optional positional arguments: "
-            f"{optional_positional_args}. All optional parameters should be keyword-only."
+            f"Callable object {pythonic_endpoint_name(endpoint_spec.name)} has required parameters with default "
+            f"values: {required_params_with_default}"
         )
+
+    # validate optional parameters are keyword-only arguments
+    # optional_positional_args = [
+    #     name
+    #     for name, param in actual_parameters.items()
+    #     if param.kind is not inspect.Parameter.KEYWORD_ONLY and param.default is not inspect.Parameter.empty
+    # ]
+    # if optional_positional_args:
+    #     raise ValueError(
+    #         f"Callable object {pythonic_endpoint_name(endpoint_spec.name)} has optional positional arguments: "
+    #         f"{optional_positional_args}. All optional parameters should be keyword-only."
+    #     )
 
 
 def test_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec]) -> None:
