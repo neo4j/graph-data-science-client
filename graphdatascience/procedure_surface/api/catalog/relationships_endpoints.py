@@ -20,8 +20,8 @@ class RelationshipsEndpoints(ABC):
         relationship_types: list[str] = ALL_TYPES,
         relationship_properties: list[str] | None = None,
         *,
-        concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
     ) -> DataFrame:
@@ -37,11 +37,11 @@ class RelationshipsEndpoints(ABC):
             If not specified, all relationships in the graph will be streamed.
         relationship_properties: list[str] | None, default = None
             The relationship properties to stream. If not specified, no properties will be streamed.
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
         sudo : bool
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool = True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -59,12 +59,12 @@ class RelationshipsEndpoints(ABC):
         relationship_type: str,
         relationship_properties: list[str] | None = None,
         *,
-        concurrency: Any | None = None,
-        write_concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        write_concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,
+        job_id: str | None = None,
     ) -> RelationshipsWriteResult:
         """
         Writes all relationships of the specified relationship type with the specified properties from the graph to the database.
@@ -77,9 +77,9 @@ class RelationshipsEndpoints(ABC):
             The relationship type to write to the database
         relationship_properties: list[str] | None, default = None
             The relationship properties to write. If not specified, no properties will be written.
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        write_concurrency : Any | None, default=None
+        write_concurrency : int | None, default=None
             The number of concurrent threads used for writing
         sudo : bool
             Override memory estimation limits
@@ -87,7 +87,7 @@ class RelationshipsEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             An identifier for the job
         Returns
         -------
@@ -128,11 +128,11 @@ class RelationshipsEndpoints(ABC):
         G: GraphV2,
         relationship_types: list[str],
         *,
-        concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,
+        job_id: str | None = None,
     ) -> RelationshipsInverseIndexResult:
         """
         Creates an index of the specified relationships indexing the reverse direction of each relationship.
@@ -144,15 +144,15 @@ class RelationshipsEndpoints(ABC):
             The graph to operate on
         relationship_types: list[str] = ALL_TYPES,
             The relationship types to create the inverse index for
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        sudo : bool
+        sudo : bool = False,
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool = True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             An identifier for the job
         Returns
         -------
@@ -168,11 +168,11 @@ class RelationshipsEndpoints(ABC):
         mutate_relationship_type: str,
         *,
         aggregation: Aggregation | dict[str, Aggregation] | None = None,
-        concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,
+        job_id: str | None = None,
     ) -> RelationshipsToUndirectedResult:
         """
         Creates a new relationship type in the graph.
@@ -190,15 +190,15 @@ class RelationshipsEndpoints(ABC):
             Specifies how to aggregate parallel relationships in the graph.
             If a single aggregation is provided, it will be used for properties of the specified relationships.
             A dictionary can be provided to specify property specific aggregations.
-        concurrency : Any | None, default=None
+        concurrency : int | None, default=None
             The number of concurrent threads
-        sudo : bool
+        sudo : bool = False,
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool = True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : Any | None, default=None
+        job_id : str | None, default=None
             An identifier for the job
         Returns
         -------

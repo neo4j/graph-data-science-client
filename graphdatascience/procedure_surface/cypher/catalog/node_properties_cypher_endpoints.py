@@ -1,5 +1,3 @@
-from typing import Any
-
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
@@ -29,11 +27,11 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         *,
         list_node_labels: bool | None = None,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,  # setting the job id is not supported by the Cypher procedure
+        job_id: str | None = None,  # setting the job id is not supported by the Cypher procedure
         db_node_properties: list[str] | None = None,
     ) -> DataFrame:
         if self._gds_arrow_client is not None:
@@ -74,12 +72,12 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         node_properties: str | list[str] | dict[str, str],
         *,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
-        write_concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        write_concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,
+        job_id: str | None = None,
     ) -> NodePropertiesWriteResult:
         node_property_spec = NodePropertySpec(node_properties)
 
@@ -112,7 +110,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         node_properties: list[str],
         *,
         fail_if_missing: bool | None = None,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
         username: str | None = None,
     ) -> NodePropertiesDropResult:
         config = ConfigConverter.convert_to_gds_config(

@@ -1,5 +1,3 @@
-from typing import Any
-
 from pandas import DataFrame
 
 from graphdatascience import QueryRunner
@@ -29,8 +27,8 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         relationship_types: list[str] = ALL_TYPES,
         relationship_properties: list[str] | None = None,
         *,
-        concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
     ) -> DataFrame:
@@ -96,12 +94,12 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         relationship_type: str,
         relationship_properties: list[str] | None = None,
         *,
-        concurrency: Any | None = None,
-        write_concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        write_concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,
+        job_id: str | None = None,
     ) -> RelationshipsWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -158,11 +156,11 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         G: GraphV2,
         relationship_types: list[str],
         *,
-        concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,
+        job_id: str | None = None,
     ) -> RelationshipsInverseIndexResult:
         config = ConfigConverter.convert_to_gds_config(
             relationship_types=relationship_types,
@@ -192,11 +190,11 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         mutate_relationship_type: str,
         *,
         aggregation: Aggregation | dict[str, Aggregation] | None = None,
-        concurrency: Any | None = None,
-        sudo: bool | None = None,
+        concurrency: int | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: Any | None = None,
+        job_id: str | None = None,
     ) -> RelationshipsToUndirectedResult:
         aggregation_value: str | dict[str, str] | None = None
         if isinstance(aggregation, Aggregation):
