@@ -22,8 +22,8 @@ class ArticulationPointsEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> ArticulationPointsMutateResult:
         """
         Runs the Articulation Points algorithm and stores the results in the graph catalog as a new node property.
@@ -66,8 +66,8 @@ class ArticulationPointsEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> ArticulationPointsStatsResult:
         """
         Runs the Articulation Points algorithm and returns result statistics without storing the results.
@@ -108,8 +108,8 @@ class ArticulationPointsEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> DataFrame:
         """
         Executes the ArticulationPoints algorithm and returns results as a stream.
@@ -151,8 +151,8 @@ class ArticulationPointsEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         write_concurrency: int | None = None,
     ) -> ArticulationPointsWriteResult:
         """
@@ -195,7 +195,7 @@ class ArticulationPointsEndpoints(ABC):
         G: GraphV2 | dict[str, Any],
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.

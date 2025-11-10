@@ -39,8 +39,8 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> EigenvectorMutateResult:
         # Convert ScalerConfig to dict if needed
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
@@ -85,8 +85,8 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> EigenvectorStatsResult:
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
 
@@ -129,8 +129,8 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> DataFrame:
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
 
@@ -171,8 +171,8 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         write_concurrency: int | None = None,
     ) -> EigenvectorWriteResult:
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
@@ -215,7 +215,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
     ) -> EstimationResult:
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
 

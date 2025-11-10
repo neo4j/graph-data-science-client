@@ -186,7 +186,7 @@ class LeidenArrowEndpoints(LeidenEndpoints):
         theta: float = 0.01,
         tolerance: float = 0.0001,
         username: str | None = None,
-        write_concurrency: Any | None = None,
+        write_concurrency: int | None = None,
     ) -> LeidenWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,

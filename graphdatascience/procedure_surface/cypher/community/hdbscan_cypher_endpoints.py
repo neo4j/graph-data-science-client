@@ -40,7 +40,7 @@ class HdbscanCypherEndpoints(HdbscanEndpoints):
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool = False,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         username: str | None = None,
     ) -> HdbscanMutateResult:
         config = ConfigConverter.convert_to_gds_config(
@@ -80,7 +80,7 @@ class HdbscanCypherEndpoints(HdbscanEndpoints):
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool = False,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         username: str | None = None,
     ) -> HdbscanStatsResult:
         config = ConfigConverter.convert_to_gds_config(
@@ -119,7 +119,7 @@ class HdbscanCypherEndpoints(HdbscanEndpoints):
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool = False,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         username: str | None = None,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
@@ -160,7 +160,7 @@ class HdbscanCypherEndpoints(HdbscanEndpoints):
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool = False,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         username: str | None = None,
     ) -> HdbscanWriteResult:
         config = ConfigConverter.convert_to_gds_config(
@@ -201,7 +201,7 @@ class HdbscanCypherEndpoints(HdbscanEndpoints):
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool = False,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         username: str | None = None,
     ) -> EstimationResult:
         config = ConfigConverter.convert_to_gds_config(

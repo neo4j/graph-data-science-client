@@ -205,7 +205,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
         scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
         relationship_weight_property: str | None = None,
         source_nodes: Any | None = None,
     ) -> EstimationResult:

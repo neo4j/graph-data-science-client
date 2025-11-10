@@ -157,7 +157,7 @@ class DegreeArrowEndpoints(DegreeEndpoints):
         orientation: str = "NATURAL",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
         relationship_weight_property: str | None = None,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(

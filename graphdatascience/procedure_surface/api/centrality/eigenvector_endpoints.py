@@ -28,8 +28,8 @@ class EigenvectorEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> EigenvectorMutateResult:
         """
         Runs the Eigenvector Centrality algorithm and stores the results in the graph catalog as a new node property.
@@ -96,8 +96,8 @@ class EigenvectorEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> EigenvectorStatsResult:
         """
         Runs the Eigenvector Centrality algorithm and returns result statistics without storing the results.
@@ -162,8 +162,8 @@ class EigenvectorEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> DataFrame:
         """
         Executes the Eigenvector Centrality algorithm and returns a stream of results.
@@ -224,8 +224,8 @@ class EigenvectorEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         write_concurrency: int | None = None,
     ) -> EigenvectorWriteResult:
         """
@@ -292,7 +292,7 @@ class EigenvectorEndpoints(ABC):
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.

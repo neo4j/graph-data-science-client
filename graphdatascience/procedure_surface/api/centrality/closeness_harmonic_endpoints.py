@@ -22,8 +22,8 @@ class ClosenessHarmonicEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> ClosenessHarmonicMutateResult:
         """
         Runs the Harmonic Centrality algorithm and stores the results in the graph catalog as a new node property.
@@ -69,8 +69,8 @@ class ClosenessHarmonicEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> ClosenessHarmonicStatsResult:
         """
         Runs the Harmonic Centrality algorithm and returns result statistics without storing the results.
@@ -116,8 +116,8 @@ class ClosenessHarmonicEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> DataFrame:
         """
         Executes the Harmonic Closeness Centrality algorithm and returns a stream of results.
@@ -159,8 +159,8 @@ class ClosenessHarmonicEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         write_concurrency: int | None = None,
     ) -> ClosenessHarmonicWriteResult:
         """
@@ -208,7 +208,7 @@ class ClosenessHarmonicEndpoints(ABC):
         G: GraphV2 | dict[str, Any],
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of a Harmonic Closeness Centrality algorithm run.

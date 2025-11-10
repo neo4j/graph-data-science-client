@@ -182,7 +182,7 @@ class KMeansArrowEndpoints(KMeansEndpoints):
         seed_centroids: list[list[float]] | None = None,
         sudo: bool = False,
         username: str | None = None,
-        write_concurrency: Any | None = None,
+        write_concurrency: int | None = None,
     ) -> KMeansWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,

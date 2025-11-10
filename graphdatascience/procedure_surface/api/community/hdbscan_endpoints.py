@@ -27,7 +27,7 @@ class HdbscanEndpoints(ABC):
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool = False,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         username: str | None = None,
     ) -> HdbscanMutateResult:
         """
@@ -85,7 +85,7 @@ class HdbscanEndpoints(ABC):
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool = False,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         username: str | None = None,
     ) -> HdbscanStatsResult:
         """
@@ -141,7 +141,7 @@ class HdbscanEndpoints(ABC):
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool = False,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         username: str | None = None,
     ) -> DataFrame:
         """
@@ -198,7 +198,7 @@ class HdbscanEndpoints(ABC):
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool = False,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         username: str | None = None,
         write_concurrency: int | None = None,
     ) -> HdbscanWriteResult:

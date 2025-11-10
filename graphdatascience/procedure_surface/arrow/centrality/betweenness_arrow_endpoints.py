@@ -40,8 +40,8 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         relationship_weight_property: str | None = None,
     ) -> BetweennessMutateResult:
         config = self._node_property_endpoints.create_base_config(
@@ -72,8 +72,8 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         relationship_weight_property: str | None = None,
     ) -> BetweennessStatsResult:
         config = self._node_property_endpoints.create_base_config(
@@ -104,8 +104,8 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         relationship_weight_property: str | None = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
@@ -135,10 +135,10 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        write_concurrency: Any | None = None,
+        write_concurrency: int | None = None,
     ) -> BetweennessWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -172,7 +172,7 @@ class BetweennessArrowEndpoints(BetweennessEndpoints):
         sampling_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
         relationship_weight_property: str | None = None,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(
