@@ -191,7 +191,7 @@ class CelfEndpoints(ABC):
         random_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: int | None = None,

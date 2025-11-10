@@ -102,7 +102,7 @@ IGNORED_PARAMETERS = {
     ],
 }
 
-ADJUSTED_PARAM_DEFAULT_VALUES = {
+ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, str | None]] = {
     ".*": {
         "concurrency": None,  # default value differs for Aura Graph Analytics compared to plugin (spec is off)
         "job_id": None,  # default value in spec is `random id`
@@ -248,7 +248,7 @@ def verify_configuration_fields(callable_object: MethodType, endpoint_spec: Endp
         )
 
     # validate default values match
-    default_adjustments: dict[str, str] = {}
+    default_adjustments: dict[str, str | None] = {}
     for endpoint_pattern, adjustments in ADJUSTED_PARAM_DEFAULT_VALUES.items():
         if re.match(endpoint_pattern, py_endpoint):
             default_adjustments.update(adjustments)
