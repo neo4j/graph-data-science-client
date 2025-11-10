@@ -46,10 +46,6 @@ MISSING_ENDPOINTS: set[str] = {
     "ml.kge.predict.mutate",
     "ml.kge.predict.stream",
     "ml.kge.predict.write",
-    "scale_properties.mutate",
-    "scale_properties.stats",
-    "scale_properties.stream",
-    "scale_properties.write",
 }
 
 
@@ -99,6 +95,9 @@ IGNORED_PARAMETERS = {
     r".*sllpa\.write.*": [
         "mutate_property",
         "relationship_weight_property",
+    ],
+    r".*scale_properties.*": [
+        "relationship_types",  # not relevant for node properties scaling
     ],
 }
 
