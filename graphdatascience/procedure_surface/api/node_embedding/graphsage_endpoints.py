@@ -41,7 +41,7 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
             Name under which the model will be stored
         feature_properties : list[str]
             The names of the node properties to use as input features
-        activation_function : Any | None, default=None
+        activation_function : str | None
             The activation function to apply after each layer
         negative_sample_weight : int | None, default=None
             Weight of negative samples in the loss function
@@ -55,7 +55,7 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
             Maximum number of training iterations
         sample_sizes : list[int] | None, default=None
             Number of neighbors to sample at each layer
-        aggregator : Any | None, default=None
+        aggregator : str | None
             The aggregator function for neighborhood aggregation
         penalty_l2 : float | None, default=None
             L2 regularization penalty
