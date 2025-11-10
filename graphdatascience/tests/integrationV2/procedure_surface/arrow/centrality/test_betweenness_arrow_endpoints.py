@@ -19,9 +19,9 @@ from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation
 
 graph = """
         CREATE
-            (a: Node),
-            (b: Node),
-            (c: Node),
+            (a:Node),
+            (b:Node),
+            (c:Node),
             (a)-[:REL]->(b),
             (b)-[:REL]->(c)
         """
