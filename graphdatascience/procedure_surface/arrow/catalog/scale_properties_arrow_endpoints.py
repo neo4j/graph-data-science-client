@@ -120,7 +120,10 @@ class ScalePropertiesArrowEndpoints(ScalePropertiesEndpoints):
             scaler=scaler_value,
         )
 
-        return self._node_property_endpoints.run_job_and_stream("v2/graph.nodeProperties.scale", G, config)
+        result = self._node_property_endpoints.run_job_and_stream("v2/graph.nodeProperties.scale", G, config)
+        result.rename(columns={"scaledProperties": "scaledProperty"}, inplace=True)
+
+        return result
 
     def write(
         self,
