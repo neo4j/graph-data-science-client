@@ -7,6 +7,7 @@ from graphdatascience.procedure_surface.api.community.k1coloring_endpoints impor
     K1ColoringStatsResult,
     K1ColoringWriteResult,
 )
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.cypher.community.k1coloring_cypher_endpoints import K1ColoringCypherEndpoints
 from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 from graphdatascience.tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
@@ -317,7 +318,12 @@ def test_estimate_with_graph_name(graph: GraphV2) -> None:
     assert "gds.k1coloring.stats.estimate" in query_runner.queries[0]
     params = query_runner.params[0]
     assert params["graphNameOrConfiguration"] == "test_graph"
-    assert params["algoConfig"] == {}
+    assert params["algoConfig"] == {
+        "batchSize": 10000,
+        "maxIterations": 10,
+        "nodeLabels": ALL_LABELS,
+        "relationshipTypes": ALL_TYPES,
+    }
 
 
 def test_estimate_with_projection_config() -> None:
@@ -331,4 +337,9 @@ def test_estimate_with_projection_config() -> None:
     assert "gds.k1coloring.stats.estimate" in query_runner.queries[0]
     params = query_runner.params[0]
     assert params["graphNameOrConfiguration"] == {"foo": "bar"}
-    assert params["algoConfig"] == {}
+    assert params["algoConfig"] == {
+        "batchSize": 10000,
+        "maxIterations": 10,
+        "nodeLabels": ALL_LABELS,
+        "relationshipTypes": ALL_TYPES,
+    }
