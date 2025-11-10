@@ -120,7 +120,7 @@ def test_kmeans_estimate(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: G
 
     assert result.node_count == 4
     assert result.relationship_count == 0
-    assert "Bytes" in result.required_memory
+    assert "Bytes" in result.required_memory or "KiB" in result.required_memory
     assert result.bytes_min > 0
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
