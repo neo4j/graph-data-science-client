@@ -173,6 +173,10 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
 
     @property
     def v2(self) -> SessionV2Endpoints:
+        """
+        Return preview v2 endpoints. These endpoints may change without warning.
+        These endpoints are a preview of the API for the next major version of this library.
+        """
         return self._v2_endpoints
 
     def __getattr__(self, attr: str) -> IndirectCallBuilder:

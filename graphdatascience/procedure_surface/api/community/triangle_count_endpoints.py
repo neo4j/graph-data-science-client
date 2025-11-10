@@ -281,29 +281,6 @@ class TriangleCountEndpoints(ABC):
 
 
 class TriangleCountMutateResult(BaseResult):
-    """
-    Result object returned by the Triangle Count mutate operation.
-
-    Attributes
-    ----------
-    compute_millis : int
-        Time spent on computation in milliseconds
-    configuration : dict[str, Any]
-        The configuration used for the algorithm execution
-    global_triangle_count : int
-        The total number of triangles in the graph
-    mutate_millis : int
-        Time spent on mutating the graph in milliseconds
-    node_count : int
-        The total number of nodes processed
-    node_properties_written : int
-        The number of node properties written to the graph
-    post_processing_millis : int
-        Time spent on post-processing in milliseconds
-    pre_processing_millis : int
-        Time spent on pre-processing in milliseconds
-    """
-
     compute_millis: int
     configuration: dict[str, Any]
     global_triangle_count: int
@@ -315,25 +292,6 @@ class TriangleCountMutateResult(BaseResult):
 
 
 class TriangleCountStatsResult(BaseResult):
-    """
-    Result object returned by the Triangle Count stats operation.
-
-    Attributes
-    ----------
-    compute_millis : int
-        Time spent on computation in milliseconds
-    configuration : dict[str, Any]
-        The configuration used for the algorithm execution
-    global_triangle_count : int
-        The total number of triangles in the graph
-    node_count : int
-        The total number of nodes processed
-    post_processing_millis : int
-        Time spent on post-processing in milliseconds
-    pre_processing_millis : int
-        Time spent on pre-processing in milliseconds
-    """
-
     compute_millis: int
     configuration: dict[str, Any]
     global_triangle_count: int
@@ -343,29 +301,6 @@ class TriangleCountStatsResult(BaseResult):
 
 
 class TriangleCountWriteResult(BaseResult):
-    """
-    Result object returned by the Triangle Count write operation.
-
-    Attributes
-    ----------
-    compute_millis : int
-        Time spent on computation in milliseconds
-    configuration : dict[str, Any]
-        The configuration used for the algorithm execution
-    global_triangle_count : int
-        The total number of triangles in the graph
-    node_count : int
-        The total number of nodes processed
-    node_properties_written : int
-        The number of node properties written to the database
-    post_processing_millis : int
-        Time spent on post-processing in milliseconds
-    pre_processing_millis : int
-        Time spent on pre-processing in milliseconds
-    write_millis : int
-        Time spent on writing results to the database in milliseconds
-    """
-
     compute_millis: int
     configuration: dict[str, Any]
     global_triangle_count: int

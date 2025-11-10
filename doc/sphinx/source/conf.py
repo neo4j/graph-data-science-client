@@ -25,12 +25,23 @@ extensions = [
     "sphinx.ext.autodoc",  # include docs from docstrings
     "enum_tools.autoenum",  # specialised autoclass for enums
     "sphinx.ext.napoleon",  # Support for NumPy and Google style docstrings
+    "sphinxcontrib.autodoc_pydantic",  # Support for Pydantic models
 ]
 
 autodoc_class_signature = "separated"
 
 templates_path = ["_templates"]
 exclude_patterns = []  # type: ignore
+
+# -- Options for Autodoc Pydantic ------------------------------------------------
+autodoc_pydantic_model_show_json = False
+autodoc_pydantic_settings_show_json = False
+autodoc_pydantic_model_show_config_summary = False
+autodoc_pydantic_model_show_field_summary = False
+autodoc_pydantic_field_show_alias = False
+autodoc_pydantic_field_show_required = False
+autodoc_pydantic_field_show_optional = False
+autodoc_pydantic_field_show_default = False
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

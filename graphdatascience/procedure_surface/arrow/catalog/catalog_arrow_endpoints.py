@@ -250,6 +250,8 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
 
 class ProjectionResult(BaseResult):
+    """Result object for graph projection jobs."""
+
     graph_name: str
     node_count: int
     relationship_count: int
@@ -259,6 +261,9 @@ class ProjectionResult(BaseResult):
 
 
 class GraphWithProjectResult(NamedTuple):
+    """Result object for graph projection jobs, containing the projected graph and the projection result.
+    Can be used as a context manager to ensure the projected graph is dropped after use."""
+
     graph: GraphV2
     result: ProjectionResult
 

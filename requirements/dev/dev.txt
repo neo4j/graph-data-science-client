@@ -6,6 +6,7 @@ tox == 4.30.2
 types-setuptools == 75.8.0.20250110
 sphinx == 7.3.7
 enum-tools[sphinx] == 0.12.0
+autodoc_pydantic
 types-requests
 types-tqdm
 types-python-dateutil

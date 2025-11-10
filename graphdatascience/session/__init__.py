@@ -5,6 +5,7 @@ from .dbms_connection_info import DbmsConnectionInfo
 from .gds_sessions import AuraAPICredentials, GdsSessions
 from .session_info import SessionInfo
 from .session_sizes import SessionMemory, SessionMemoryValue
+from .aura_graph_data_science import AuraGraphDataScience
 
 __all__ = [
     "GdsSessions",
@@ -17,4 +18,5 @@ __all__ = [
     "AlgorithmCategory",
     "SessionStatusError",
     "AuraApiError",
+    "AuraGraphDataScience",
 ]

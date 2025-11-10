@@ -7,7 +7,7 @@ from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_singl
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
-from graphdatascience.procedure_surface.arrow.catalog_arrow_endpoints import CatalogArrowEndpoints
+from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
 
 
 @contextmanager
