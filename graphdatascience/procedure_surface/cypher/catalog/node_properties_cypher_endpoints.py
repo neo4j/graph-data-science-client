@@ -82,8 +82,8 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         node_property_spec = NodePropertySpec(node_properties)
 
         config = ConfigConverter.convert_to_gds_config(
-            node_labels=node_labels,
             concurrency=concurrency,
+            write_concurrency=write_concurrency,
             sudo=sudo,
             log_progress=log_progress,
             username=username,
