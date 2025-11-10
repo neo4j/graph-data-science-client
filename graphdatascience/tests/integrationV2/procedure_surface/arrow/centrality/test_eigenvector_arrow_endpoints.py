@@ -82,7 +82,7 @@ def test_eigenvector_mutate(eigenvector_endpoints: EigenvectorArrowEndpoints, sa
     result = eigenvector_endpoints.mutate(
         G=sample_graph,
         mutate_property="eigenvector",
-        source_nodes=[(0, 0.8), (1, 0.2)],
+        source_nodes=[0, 2],
     )
 
     assert result.pre_processing_millis >= 0
