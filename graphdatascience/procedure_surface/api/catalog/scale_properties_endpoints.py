@@ -42,7 +42,7 @@ class ScalePropertiesEndpoints(ABC):
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
         scaler : str | dict[str, str | int | float] | ScalerConfig
             The scaler to use. Can be:
-            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'L1Norm', 'L2Norm')
+            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - A ScalerConfig instance
         node_labels : list[str]
