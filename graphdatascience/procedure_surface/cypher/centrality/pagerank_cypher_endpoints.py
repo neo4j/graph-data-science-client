@@ -1,9 +1,11 @@
 from typing import Any
 
 from pandas import DataFrame
+from pydantic import BaseModel
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerConfig
 from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import (
     PageRankEndpoints,
     PageRankMutateResult,
@@ -33,7 +35,7 @@ class PageRankCypherEndpoints(PageRankEndpoints):
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
         max_iterations: int = 20,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
@@ -44,6 +46,9 @@ class PageRankCypherEndpoints(PageRankEndpoints):
         relationship_weight_property: str | None = None,
         source_nodes: Any | None = None,
     ) -> PageRankMutateResult:
+        # Convert ScalerConfig to dict if needed
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
+
         config = ConfigConverter.convert_to_gds_config(
             mutate_property=mutate_property,
             concurrency=concurrency,
@@ -54,7 +59,7 @@ class PageRankCypherEndpoints(PageRankEndpoints):
             node_labels=node_labels,
             relationship_types=relationship_types,
             relationship_weight_property=relationship_weight_property,
-            scaler=scaler,
+            scaler=scaler_value,
             source_nodes=source_nodes,
             sudo=sudo,
             tolerance=tolerance,
@@ -77,7 +82,7 @@ class PageRankCypherEndpoints(PageRankEndpoints):
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
         max_iterations: int = 20,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
@@ -88,6 +93,9 @@ class PageRankCypherEndpoints(PageRankEndpoints):
         relationship_weight_property: str | None = None,
         source_nodes: Any | None = None,
     ) -> PageRankStatsResult:
+        # Convert ScalerConfig to dict if needed
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
+
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
             damping_factor=damping_factor,
@@ -97,7 +105,7 @@ class PageRankCypherEndpoints(PageRankEndpoints):
             node_labels=node_labels,
             relationship_types=relationship_types,
             relationship_weight_property=relationship_weight_property,
-            scaler=scaler,
+            scaler=scaler_value,
             source_nodes=source_nodes,
             sudo=sudo,
             tolerance=tolerance,
@@ -120,7 +128,7 @@ class PageRankCypherEndpoints(PageRankEndpoints):
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
         max_iterations: int = 20,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
@@ -131,6 +139,9 @@ class PageRankCypherEndpoints(PageRankEndpoints):
         relationship_weight_property: str | None = None,
         source_nodes: Any | None = None,
     ) -> DataFrame:
+        # Convert ScalerConfig to dict if needed
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
+
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
             damping_factor=damping_factor,
@@ -140,7 +151,7 @@ class PageRankCypherEndpoints(PageRankEndpoints):
             node_labels=node_labels,
             relationship_types=relationship_types,
             relationship_weight_property=relationship_weight_property,
-            scaler=scaler,
+            scaler=scaler_value,
             source_nodes=source_nodes,
             sudo=sudo,
             tolerance=tolerance,
@@ -160,7 +171,7 @@ class PageRankCypherEndpoints(PageRankEndpoints):
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
         max_iterations: int = 20,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
@@ -172,6 +183,9 @@ class PageRankCypherEndpoints(PageRankEndpoints):
         source_nodes: Any | None = None,
         write_concurrency: int | None = None,
     ) -> PageRankWriteResult:
+        # Convert ScalerConfig to dict if needed
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
+
         config = ConfigConverter.convert_to_gds_config(
             write_property=write_property,
             concurrency=concurrency,
@@ -182,7 +196,7 @@ class PageRankCypherEndpoints(PageRankEndpoints):
             node_labels=node_labels,
             relationship_types=relationship_types,
             relationship_weight_property=relationship_weight_property,
-            scaler=scaler,
+            scaler=scaler_value,
             source_nodes=source_nodes,
             sudo=sudo,
             tolerance=tolerance,
@@ -207,18 +221,21 @@ class PageRankCypherEndpoints(PageRankEndpoints):
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
         max_iterations: int = 20,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
         relationship_weight_property: str | None = None,
         source_nodes: Any | None = None,
     ) -> EstimationResult:
+        # Convert ScalerConfig to dict if needed
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
+
         algo_config = ConfigConverter.convert_to_gds_config(
             damping_factor=damping_factor,
             tolerance=tolerance,
             max_iterations=max_iterations,
-            scaler=scaler,
+            scaler=scaler_value,
             relationship_types=relationship_types,
             node_labels=node_labels,
             concurrency=concurrency,

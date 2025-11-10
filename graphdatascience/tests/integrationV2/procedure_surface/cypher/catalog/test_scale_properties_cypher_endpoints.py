@@ -5,6 +5,7 @@ import pytest
 from graphdatascience import QueryRunner
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints import ScalePropertiesWriteResult
+from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerConfig
 from graphdatascience.procedure_surface.cypher.catalog.scale_properties_cypher_endpoints import (
     ScalePropertiesCypherEndpoints,
 )
@@ -41,7 +42,9 @@ def scale_properties_endpoints(query_runner: QueryRunner) -> Generator[ScaleProp
 def test_scale_properties_stats(
     scale_properties_endpoints: ScalePropertiesCypherEndpoints, sample_graph: GraphV2
 ) -> None:
-    result = scale_properties_endpoints.stats(G=sample_graph, node_properties=["prop1"], scaler="MinMax")
+    result = scale_properties_endpoints.stats(
+        G=sample_graph, node_properties=["prop1"], scaler=ScalerConfig(type="MinMax")
+    )
 
     assert result.compute_millis >= 0
     assert result.pre_processing_millis >= 0
@@ -53,10 +56,11 @@ def test_scale_properties_stats(
 def test_scale_properties_stream(
     scale_properties_endpoints: ScalePropertiesCypherEndpoints, sample_graph: GraphV2
 ) -> None:
-    result_df = scale_properties_endpoints.stream(G=sample_graph, node_properties=["prop1"], scaler="MinMax")
+    result_df = scale_properties_endpoints.stream(
+        G=sample_graph, node_properties=["prop1"], scaler=ScalerConfig(type="Log", offset=1.0)
+    )
 
-    assert "nodeId" in result_df.columns
-    assert "scaledProperty" in result_df.columns
+    assert set(result_df.columns) == {"nodeId", "scaledProperties"}
     assert len(result_df) == 3  # We have 3 nodes
 
 
