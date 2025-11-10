@@ -114,11 +114,12 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         job_id = job_id if job_id is not None else str(uuid4())
 
-        params = {
-            "concurrency": concurrency,
+        params: dict[str, Any] = {
             "undirected_relationship_types": undirected_relationship_types,
             "inverse_indexed_relationship_types": inverse_indexed_relationship_types,
         }
+        if concurrency is not None:
+            params["concurrency"] = concurrency
 
         project_params = self._project_protocol.project_params(graph_name, query, job_id, params, arrow_config)
 
