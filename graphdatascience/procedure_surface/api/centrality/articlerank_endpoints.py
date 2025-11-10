@@ -7,6 +7,7 @@ from pandas import DataFrame
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerConfig
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
@@ -21,7 +22,7 @@ class ArticleRankEndpoints(ABC):
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
         max_iterations: int = 20,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
@@ -51,8 +52,12 @@ class ArticleRankEndpoints(ABC):
             Minimum change in scores between iterations.
         max_iterations : int
             Maximum number of iterations to run.
-        scaler : Any
-            Name of the scaler applied on the resulting scores.
+        scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
+            The scaler to use. Can be:
+            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'L1Norm', 'L2Norm', 'NONE')
+            - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
+            - A ScalerConfig instance
+            - "NONE" (default, no scaling)
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : list[str]
@@ -86,7 +91,7 @@ class ArticleRankEndpoints(ABC):
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
         max_iterations: int = 20,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
@@ -114,8 +119,12 @@ class ArticleRankEndpoints(ABC):
             Minimum change in scores between iterations.
         max_iterations : int
             Maximum number of iterations to run.
-        scaler : Any
-            Name of the scaler applied on the resulting scores.
+        scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
+            The scaler to use. Can be:
+            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'L1Norm', 'L2Norm', 'NONE')
+            - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
+            - A ScalerConfig instance
+            - "NONE" (default, no scaling)
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : list[str]
@@ -149,7 +158,7 @@ class ArticleRankEndpoints(ABC):
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
         max_iterations: int = 20,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
@@ -240,8 +249,12 @@ class ArticleRankEndpoints(ABC):
             Minimum change in scores between iterations.
         max_iterations : int
             Maximum number of iterations to run.
-        scaler : Any
-            Name of the scaler applied on the resulting scores.
+        scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
+            The scaler to use. Can be:
+            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'L1Norm', 'L2Norm', 'NONE')
+            - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
+            - A ScalerConfig instance
+            - "NONE" (default, no scaling)
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels : list[str]

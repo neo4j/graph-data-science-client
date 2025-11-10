@@ -1,10 +1,12 @@
 from typing import Any
 
 from pandas import DataFrame
+from pydantic import BaseModel
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerConfig
 from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import (
     EigenvectorEndpoints,
     EigenvectorMutateResult,
@@ -34,7 +36,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -44,6 +46,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
     ) -> EigenvectorMutateResult:
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
         config = self._node_property_endpoints.create_base_config(
             G,
             concurrency=concurrency,
@@ -53,7 +56,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
             node_labels=node_labels,
             relationship_types=relationship_types,
             relationship_weight_property=relationship_weight_property,
-            scaler=scaler,
+            scaler=scaler_value,
             source_nodes=source_nodes,
             sudo=sudo,
             tolerance=tolerance,
@@ -70,7 +73,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -80,6 +83,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
     ) -> EigenvectorStatsResult:
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
         config = self._node_property_endpoints.create_base_config(
             G,
             concurrency=concurrency,
@@ -89,7 +93,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
             node_labels=node_labels,
             relationship_types=relationship_types,
             relationship_weight_property=relationship_weight_property,
-            scaler=scaler,
+            scaler=scaler_value,
             source_nodes=source_nodes,
             sudo=sudo,
             tolerance=tolerance,
@@ -106,7 +110,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -116,6 +120,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
     ) -> DataFrame:
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
         config = self._node_property_endpoints.create_base_config(
             G,
             concurrency=concurrency,
@@ -125,7 +130,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
             node_labels=node_labels,
             relationship_types=relationship_types,
             relationship_weight_property=relationship_weight_property,
-            scaler=scaler,
+            scaler=scaler_value,
             source_nodes=source_nodes,
             sudo=sudo,
             tolerance=tolerance,
@@ -141,7 +146,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -152,6 +157,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
         job_id: str | None = None,
         write_concurrency: int | None = None,
     ) -> EigenvectorWriteResult:
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
         config = self._node_property_endpoints.create_base_config(
             G,
             concurrency=concurrency,
@@ -161,7 +167,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
             node_labels=node_labels,
             relationship_types=relationship_types,
             relationship_weight_property=relationship_weight_property,
-            scaler=scaler,
+            scaler=scaler_value,
             source_nodes=source_nodes,
             sudo=sudo,
             tolerance=tolerance,
@@ -185,17 +191,18 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
     ) -> EstimationResult:
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
         algo_config = self._node_property_endpoints.create_estimate_config(
             max_iterations=max_iterations,
             tolerance=tolerance,
             source_nodes=source_nodes,
-            scaler=scaler,
+            scaler=scaler_value,
             relationship_weight_property=relationship_weight_property,
             relationship_types=relationship_types,
             node_labels=node_labels,

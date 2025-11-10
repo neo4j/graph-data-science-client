@@ -1,9 +1,11 @@
 from typing import Any
 
 from pandas import DataFrame
+from pydantic import BaseModel
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerConfig
 from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import (
     EigenvectorEndpoints,
     EigenvectorMutateResult,
@@ -30,7 +32,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -40,12 +42,15 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         concurrency: Any | None = None,
         job_id: Any | None = None,
     ) -> EigenvectorMutateResult:
+        # Convert ScalerConfig to dict if needed
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
+
         config = ConfigConverter.convert_to_gds_config(
             mutateProperty=mutate_property,
             maxIterations=max_iterations,
             tolerance=tolerance,
             sourceNodes=source_nodes,
-            scaler=scaler,
+            scaler=scaler_value,
             relationshipWeightProperty=relationship_weight_property,
             relationshipTypes=relationship_types,
             nodeLabels=node_labels,
@@ -73,7 +78,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -83,11 +88,13 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         concurrency: Any | None = None,
         job_id: Any | None = None,
     ) -> EigenvectorStatsResult:
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
+
         config = ConfigConverter.convert_to_gds_config(
             maxIterations=max_iterations,
             tolerance=tolerance,
             sourceNodes=source_nodes,
-            scaler=scaler,
+            scaler=scaler_value,
             relationshipWeightProperty=relationship_weight_property,
             relationshipTypes=relationship_types,
             nodeLabels=node_labels,
@@ -115,7 +122,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -125,11 +132,13 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         concurrency: Any | None = None,
         job_id: Any | None = None,
     ) -> DataFrame:
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
+
         config = ConfigConverter.convert_to_gds_config(
             maxIterations=max_iterations,
             tolerance=tolerance,
             sourceNodes=source_nodes,
-            scaler=scaler,
+            scaler=scaler_value,
             relationshipWeightProperty=relationship_weight_property,
             relationshipTypes=relationship_types,
             nodeLabels=node_labels,
@@ -155,7 +164,7 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -166,12 +175,14 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         job_id: Any | None = None,
         write_concurrency: int | None = None,
     ) -> EigenvectorWriteResult:
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
+
         config = ConfigConverter.convert_to_gds_config(
             writeProperty=write_property,
             maxIterations=max_iterations,
             tolerance=tolerance,
             sourceNodes=source_nodes,
-            scaler=scaler,
+            scaler=scaler_value,
             relationshipWeightProperty=relationship_weight_property,
             relationshipTypes=relationship_types,
             nodeLabels=node_labels,
@@ -200,17 +211,19 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: Any | None = None,
-        scaler: Any = "NONE",
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         concurrency: Any | None = None,
     ) -> EstimationResult:
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
+
         algo_config = ConfigConverter.convert_to_gds_config(
             maxIterations=max_iterations,
             tolerance=tolerance,
             sourceNodes=source_nodes,
-            scaler=scaler,
+            scaler=scaler_value,
             relationshipWeightProperty=relationship_weight_property,
             relationshipTypes=relationship_types,
             nodeLabels=node_labels,
