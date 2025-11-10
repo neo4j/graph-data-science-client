@@ -16,9 +16,9 @@ from graphdatascience.tests.integrationV2.procedure_surface.node_lookup_helper i
 
 graph = """
         CREATE
-            (a: Node {id: 0}),
-            (b: Node {id: 1}),
-            (c: Node {id: 2}),
+            (a:Node {id: 0}),
+            (b:Node {id: 1}),
+            (c:Node {id: 2}),
             (a)-[:REL]->(c),
             (b)-[:REL]->(c)
         """

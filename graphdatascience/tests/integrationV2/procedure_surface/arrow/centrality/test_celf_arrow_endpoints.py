@@ -15,11 +15,11 @@ from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation
 
 graph = """
         CREATE
-            (a: Node {id: 0}),
-            (b: Node {id: 1}),
-            (c: Node {id: 2}),
-            (d: Node {id: 3}),
-            (e: Node {id: 4}),
+            (a:Node {id: 0}),
+            (b:Node {id: 1}),
+            (c:Node {id: 2}),
+            (d:Node {id: 3}),
+            (e:Node {id: 4}),
             (a)-[:REL]->(b),
             (a)-[:REL]->(c),
             (b)-[:REL]->(d),
