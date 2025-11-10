@@ -223,7 +223,7 @@ class RelationshipsEndpoints(ABC):
         username: str | None = None,
     ) -> CollapsePathResult:
         """
-        Collapse a path in the graph catalog.
+        Collapse each existing path in the graph into a single relationship.
 
         Parameters
         ----------
@@ -237,9 +237,9 @@ class RelationshipsEndpoints(ABC):
         allow_self_loops : bool, default=False
             Whether nodes in the graph can have relationships where start and end nodes are the same.
         concurrency : int | None, default=None:
-            Number of concurrent threads to use. Defaults to None.
+            Number of concurrent threads to use.
         job_id : str | None, default=None
-            Unique identifier for the job associated with the graph generation.
+            Unique identifier for the job associated with the computation.
         sudo : bool | None, default=None
             Override memory estimation limits
         log_progress : bool | None, default=None

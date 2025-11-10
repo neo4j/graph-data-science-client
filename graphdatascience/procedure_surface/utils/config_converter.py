@@ -13,7 +13,7 @@ class ConfigConverter:
         return config
 
     @staticmethod
-    def _convert_to_camel_case(name: str) -> str:
+    def convert_to_camel_case(name: str) -> str:
         """Convert a snake_case string to camelCase."""
         parts = name.split("_")
 
@@ -29,7 +29,7 @@ class ConfigConverter:
         result = {}
         for key, value in input_dict.items():
             if value is not None:
-                camel_key = ConfigConverter._convert_to_camel_case(key)
+                camel_key = ConfigConverter.convert_to_camel_case(key)
                 # Recursively process nested dictionaries
                 if isinstance(value, dict):
                     result[camel_key] = ConfigConverter._process_dict_values(value)

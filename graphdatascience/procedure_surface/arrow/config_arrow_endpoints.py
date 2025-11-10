@@ -35,6 +35,7 @@ class DefaultsArrowEndpoints(DefaultsEndpoints):
         value: Any,
         username: str | None = None,
     ) -> None:
+        key = ConfigConverter.convert_to_camel_case(key)
         deserialize(self._arrow_client.do_action_with_retry("v2/defaults.set", {key: value}))
 
     def list(
@@ -65,6 +66,7 @@ class LimitsArrowEndpoints(LimitsEndpoints):
         value: Any,
         username: str | None = None,
     ) -> None:
+        key = ConfigConverter.convert_to_camel_case(key)
         deserialize(self._arrow_client.do_action_with_retry("v2/limits.set", {key: value}))
 
     def list(

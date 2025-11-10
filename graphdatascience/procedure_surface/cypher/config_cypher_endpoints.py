@@ -35,6 +35,8 @@ class DefaultsCypherEndpoints(DefaultsEndpoints):
         value: Any,
         username: str | None = None,
     ) -> None:
+        key = ConfigConverter.convert_to_camel_case(key)
+
         params = {
             "key": key,
             "value": value,
@@ -75,6 +77,8 @@ class LimitsCypherEndpoints(LimitsEndpoints):
         value: Any,
         username: str | None = None,
     ) -> None:
+        key = ConfigConverter.convert_to_camel_case(key)
+
         params = {
             "key": key,
             "value": value,
