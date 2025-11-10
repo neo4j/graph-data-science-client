@@ -60,7 +60,7 @@ def test_scale_properties_stream(
         G=sample_graph, node_properties=["prop1"], scaler=ScalerConfig(type="Log", offset=1.0)
     )
 
-    assert set(result_df.columns) == {"nodeId", "scaledProperties"}
+    assert set(result_df.columns) == {"nodeId", "scaledProperty"}
     assert len(result_df) == 3  # We have 3 nodes
 
 
