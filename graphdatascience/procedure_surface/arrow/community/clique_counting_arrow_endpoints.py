@@ -147,7 +147,7 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
     def estimate(
         self,
         G: GraphV2 | dict[str, Any],
-        concurrency: Any | None = 4,
+        concurrency: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
     ) -> EstimationResult:

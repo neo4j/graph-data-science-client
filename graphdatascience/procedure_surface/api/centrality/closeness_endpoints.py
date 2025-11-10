@@ -170,8 +170,8 @@ class ClosenessEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         write_concurrency: int | None = None,
     ) -> ClosenessWriteResult:
         """
@@ -221,7 +221,7 @@ class ClosenessEndpoints(ABC):
         use_wasserman_faust: bool = False,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.

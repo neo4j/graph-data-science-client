@@ -195,7 +195,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
     ) -> EstimationResult:
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
         algo_config = self._node_property_endpoints.create_estimate_config(

@@ -32,8 +32,8 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> ClosenessHarmonicMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             mutateProperty=mutate_property,
@@ -65,8 +65,8 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> ClosenessHarmonicStatsResult:
         config = ConfigConverter.convert_to_gds_config(
             relationshipTypes=relationship_types,
@@ -97,8 +97,8 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
             relationshipTypes=relationship_types,
@@ -129,8 +129,8 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         write_concurrency: int | None = None,
     ) -> ClosenessHarmonicWriteResult:
         config = ConfigConverter.convert_to_gds_config(
@@ -161,7 +161,7 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
         G: GraphV2 | dict[str, Any],
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
     ) -> EstimationResult:
         algo_config = ConfigConverter.convert_to_gds_config(
             relationshipTypes=relationship_types,

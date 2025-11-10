@@ -32,8 +32,8 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> ArticulationPointsMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             mutate_property=mutate_property,
@@ -64,8 +64,8 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> ArticulationPointsStatsResult:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -95,8 +95,8 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -125,8 +125,8 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         write_concurrency: int | None = None,
     ) -> ArticulationPointsWriteResult:
         config = ConfigConverter.convert_to_gds_config(
@@ -156,7 +156,7 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
         G: GraphV2 | dict[str, Any],
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
     ) -> EstimationResult:
         # Build algorithm configuration mirroring other algorithms (see CELF implementation)
         algo_config = ConfigConverter.convert_to_gds_config(

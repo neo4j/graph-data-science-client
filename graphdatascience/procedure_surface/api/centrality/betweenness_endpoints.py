@@ -24,8 +24,8 @@ class BetweennessEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         relationship_weight_property: str | None = None,
     ) -> BetweennessMutateResult:
         """
@@ -80,8 +80,8 @@ class BetweennessEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         relationship_weight_property: str | None = None,
     ) -> BetweennessStatsResult:
         """
@@ -134,8 +134,8 @@ class BetweennessEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         relationship_weight_property: str | None = None,
     ) -> DataFrame:
         """
@@ -184,10 +184,10 @@ class BetweennessEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        write_concurrency: Any | None = None,
+        write_concurrency: int | None = None,
     ) -> BetweennessWriteResult:
         """
         Runs the Betweenness Centrality algorithm and stores the result in the Neo4j database as a new node property.
@@ -240,7 +240,7 @@ class BetweennessEndpoints(ABC):
         sampling_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
         relationship_weight_property: str | None = None,
     ) -> EstimationResult:
         """

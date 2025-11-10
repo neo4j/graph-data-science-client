@@ -42,7 +42,7 @@ class HdbscanArrowEndpoints(HdbscanEndpoints):
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool = False,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         username: str | None = None,
     ) -> HdbscanMutateResult:
         config = self._node_property_endpoints.create_base_config(
@@ -77,7 +77,7 @@ class HdbscanArrowEndpoints(HdbscanEndpoints):
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool = False,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         username: str | None = None,
     ) -> HdbscanStatsResult:
         config = self._node_property_endpoints.create_base_config(
@@ -112,7 +112,7 @@ class HdbscanArrowEndpoints(HdbscanEndpoints):
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool = False,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         username: str | None = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
@@ -147,7 +147,7 @@ class HdbscanArrowEndpoints(HdbscanEndpoints):
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool = False,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         username: str | None = None,
     ) -> HdbscanWriteResult:
         config = self._node_property_endpoints.create_base_config(
@@ -190,7 +190,7 @@ class HdbscanArrowEndpoints(HdbscanEndpoints):
         concurrency: int | None = None,
         log_progress: bool = True,
         sudo: bool = False,
-        job_id: Any | None = None,
+        job_id: str | None = None,
         username: str | None = None,
     ) -> EstimationResult:
         config = self._node_property_endpoints.create_estimate_config(

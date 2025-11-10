@@ -44,8 +44,8 @@ class KnnFilteredCypherEndpoints(KnnFilteredEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> KnnMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             mutateRelationshipType=mutate_relationship_type,
@@ -99,8 +99,8 @@ class KnnFilteredCypherEndpoints(KnnFilteredEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> KnnStatsResult:
         config = ConfigConverter.convert_to_gds_config(
             nodeProperties=node_properties,
@@ -154,8 +154,8 @@ class KnnFilteredCypherEndpoints(KnnFilteredEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
             nodeProperties=node_properties,
@@ -208,8 +208,8 @@ class KnnFilteredCypherEndpoints(KnnFilteredEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> KnnWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             writeRelationshipType=write_relationship_type,
@@ -265,7 +265,7 @@ class KnnFilteredCypherEndpoints(KnnFilteredEndpoints):
         node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         username: str | None = None,
-        concurrency: Any | None = None,
+        concurrency: int | None = None,
     ) -> EstimationResult:
         config = ConfigConverter.convert_to_gds_config(
             nodeProperties=node_properties,

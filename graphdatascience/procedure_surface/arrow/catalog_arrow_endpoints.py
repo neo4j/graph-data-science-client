@@ -67,7 +67,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         query: str,
         *,
         job_id: str | None = None,
-        concurrency: int = 4,
+        concurrency: int | None = None,
         undirected_relationship_types: builtins.list[str] | None = None,
         inverse_indexed_relationship_types: builtins.list[str] | None = None,
         batch_size: int | None = None,
@@ -85,7 +85,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             Must contain `gds.graph.project.remote`. Example: `MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)`
         job_id : str | None, default=None
             Unique identifier for the projection job.
-        concurrency : int, default=4
+        concurrency : int | None
             Number of concurrent threads/processes to use during graph projection.
         undirected_relationship_types : list[str]
             List of relationship types to treat as undirected.

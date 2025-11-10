@@ -24,8 +24,8 @@ class ScalePropertiesEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        concurrency: Any | None = None,
-        job_id: Any | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> ScalePropertiesMutateResult:
         """
         Runs the Scale Properties algorithm and stores the results in the graph catalog as a new node property.
