@@ -51,7 +51,7 @@ def articlerank_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[A
 
 def test_articlerank_stats(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test ArticleRank stats operation."""
-    result = articlerank_endpoints.stats(G=sample_graph)
+    result = articlerank_endpoints.stats(G=sample_graph, source_nodes=[0, 1])
 
     assert result.ran_iterations > 0
     assert result.did_converge
@@ -65,6 +65,7 @@ def test_articlerank_stream(articlerank_endpoints: ArticleRankArrowEndpoints, sa
     """Test ArticleRank stream operation."""
     result_df = articlerank_endpoints.stream(
         G=sample_graph,
+        source_nodes=0,
     )
 
     assert "nodeId" in result_df.columns
@@ -78,6 +79,7 @@ def test_articlerank_mutate(articlerank_endpoints: ArticleRankArrowEndpoints, sa
     result = articlerank_endpoints.mutate(
         G=sample_graph,
         mutate_property="articlerank",
+        source_nodes=[(0, 0.6), (1, 0.4)],
     )
 
     assert result.ran_iterations > 0

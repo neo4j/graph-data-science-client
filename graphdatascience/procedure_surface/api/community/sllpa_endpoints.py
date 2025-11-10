@@ -50,7 +50,7 @@ class SllpaEndpoints(ABC):
             Minimum association strength for community assignment
         node_labels : list[str]
             Filter nodes with specific labels
-        partitioning : Any | None, default=None
+        partitioning : str | None
             Partitioning configuration for the algorithm
         relationship_types : list[str]
             Filter relationships with specific types
@@ -99,7 +99,7 @@ class SllpaEndpoints(ABC):
             Minimum association strength for community assignment
         node_labels : list[str]
             Filter nodes with specific labels
-        partitioning : Any | None, default=None
+        partitioning : str | None
             Partitioning configuration for the algorithm
         relationship_types : list[str]
             Filter relationships with specific types
@@ -148,7 +148,7 @@ class SllpaEndpoints(ABC):
             Minimum association strength for community assignment
         node_labels : list[str]
             Filter nodes with specific labels
-        partitioning : Any | None, default=None
+        partitioning : str | None
             Partitioning configuration for the algorithm
         relationship_types : list[str]
             Filter relationships with specific types
@@ -201,7 +201,7 @@ class SllpaEndpoints(ABC):
             Minimum association strength for community assignment
         node_labels : list[str]
             Filter nodes with specific labels
-        partitioning : Any | None, default=None
+        partitioning : str | None
             Partitioning configuration for the algorithm
         relationship_types : list[str]
             Filter relationships with specific types
@@ -244,7 +244,7 @@ class SllpaEndpoints(ABC):
             Minimum association strength for community assignment
         node_labels : list[str]
             Filter nodes with specific labels
-        partitioning : Any | None, default=None
+        partitioning : str | None
             Partitioning configuration for the algorithm
         relationship_types : list[str]
             Filter relationships with specific types

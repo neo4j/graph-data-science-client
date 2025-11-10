@@ -15,10 +15,10 @@ from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation
 
 graph = """
         CREATE
-            (a: Node),
-            (b: Node),
-            (c: Node),
-            (d: Node),
+            (a: Node {id: 0}),
+            (b: Node {id: 1}),
+            (c: Node {id: 2}),
+            (d: Node {id: 3}),
             (a)-[:REL]->(b),
             (b)-[:REL]->(c),
             (c)-[:REL]->(d),
@@ -41,7 +41,7 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
         graph,
         """
                     MATCH (n)-->(m)
-                    WITH gds.graph.project.remote(n, m) as g
+                    WITH gds.graph.project.remote(n, m, {sourceNodeProperties: properties(n), targetNodeProperties: properties(m)}) as g
                     RETURN g
                 """,
     ) as g:
@@ -55,7 +55,7 @@ def eigenvector_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[E
 
 def test_eigenvector_stats(eigenvector_endpoints: EigenvectorArrowEndpoints, sample_graph: GraphV2) -> None:
     """Test Eigenvector stats operation."""
-    result = eigenvector_endpoints.stats(G=sample_graph)
+    result = eigenvector_endpoints.stats(G=sample_graph, source_nodes=[0, 1])
 
     assert result.compute_millis >= 0
     assert result.pre_processing_millis >= 0
@@ -69,6 +69,7 @@ def test_eigenvector_stream(eigenvector_endpoints: EigenvectorArrowEndpoints, sa
     """Test Eigenvector stream operation."""
     result_df = eigenvector_endpoints.stream(
         G=sample_graph,
+        source_nodes=1,
     )
 
     assert "nodeId" in result_df.columns
@@ -81,6 +82,7 @@ def test_eigenvector_mutate(eigenvector_endpoints: EigenvectorArrowEndpoints, sa
     result = eigenvector_endpoints.mutate(
         G=sample_graph,
         mutate_property="eigenvector",
+        source_nodes=[(0, 0.8), (1, 0.2)],
     )
 
     assert result.pre_processing_millis >= 0

@@ -30,7 +30,7 @@ class PageRankEndpoints(ABC):
         concurrency: int | None = None,
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
     ) -> PageRankMutateResult:
         """
         Runs the PageRank algorithm and stores the results in the graph catalog as a new node property.
@@ -72,8 +72,11 @@ class PageRankEndpoints(ABC):
             Identifier for the job.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
-        source_nodes : Any | None, default=None
-            List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.
+        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+            node ids to use as starting points. Can be:
+            - single node id (e.g., 42)
+            - list of node id (e.g., [42, 43, 44])
+            - list of tuples to associate each node with a bias > 0 (e.g., [(42, 0.5), (43, 1.0)])
 
         Returns
         -------
@@ -98,7 +101,7 @@ class PageRankEndpoints(ABC):
         concurrency: int | None = None,
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
     ) -> PageRankStatsResult:
         """
         Runs the PageRank algorithm and returns result statistics without storing the results.
@@ -138,8 +141,11 @@ class PageRankEndpoints(ABC):
             Identifier for the job.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
-        source_nodes : Any | None, default=None
-            List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.
+                source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+            node ids to use as starting points. Can be:
+            - single node id (e.g., 42)
+            - list of node id (e.g., [42, 43, 44])
+            - list of tuples to associate each node with a bias > 0 (e.g., [(42, 0.5), (43, 1.0)])
 
         Returns
         -------
@@ -164,7 +170,7 @@ class PageRankEndpoints(ABC):
         concurrency: int | None = None,
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
     ) -> DataFrame:
         """
         Executes the PageRank algorithm and returns a stream of results.
@@ -228,7 +234,7 @@ class PageRankEndpoints(ABC):
         concurrency: int | None = None,
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
         write_concurrency: int | None = None,
     ) -> PageRankWriteResult:
         """
@@ -271,8 +277,11 @@ class PageRankEndpoints(ABC):
             Identifier for the job.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
-        source_nodes : Any | None, default=None
-            List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.
+                source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+            node ids to use as starting points. Can be:
+            - single node id (e.g., 42)
+            - list of node id (e.g., [42, 43, 44])
+            - list of tuples to associate each node with a bias > 0 (e.g., [(42, 0.5), (43, 1.0)])
         write_concurrency : int | None, default=None
             The number of concurrent threads used for writing
 
@@ -295,7 +304,7 @@ class PageRankEndpoints(ABC):
         node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
     ) -> EstimationResult:
         """
         Estimate the memory consumption of an algorithm run.

@@ -45,7 +45,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
     ) -> ArticleRankMutateResult:
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
 
@@ -92,7 +92,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
     ) -> ArticleRankStatsResult:
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
         config = ConfigConverter.convert_to_gds_config(
@@ -137,7 +137,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
     ) -> DataFrame:
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
         config = ConfigConverter.convert_to_gds_config(
@@ -179,7 +179,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
         write_concurrency: int | None = None,
     ) -> ArticleRankWriteResult:
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
@@ -223,7 +223,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
         node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
     ) -> EstimationResult:
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
         algo_config = ConfigConverter.convert_to_gds_config(

@@ -45,7 +45,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
     ) -> PageRankMutateResult:
         # Convert ScalerConfig to dict if needed
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
@@ -85,7 +85,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
     ) -> PageRankStatsResult:
         # Convert ScalerConfig to dict if needed
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
@@ -125,7 +125,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
     ) -> DataFrame:
         # Convert ScalerConfig to dict if needed
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
@@ -164,7 +164,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
         write_concurrency: int | None = None,
     ) -> PageRankWriteResult:
         # Convert ScalerConfig to dict if needed
@@ -207,7 +207,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
         node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,
         relationship_weight_property: str | None = None,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
     ) -> EstimationResult:
         # Convert ScalerConfig to dict if needed
         scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler

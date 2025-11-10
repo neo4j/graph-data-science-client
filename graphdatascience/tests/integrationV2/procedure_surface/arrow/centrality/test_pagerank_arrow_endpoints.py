@@ -12,12 +12,13 @@ from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation
     create_graph,
     create_graph_from_db,
 )
+from graphdatascience.tests.integrationV2.procedure_surface.node_lookup_helper import find_node_by_id
 
 graph = """
         CREATE
-            (a: Node),
-            (b: Node),
-            (c: Node),
+            (a: Node {id: 0}),
+            (b: Node {id: 1}),
+            (c: Node {id: 2}),
             (a)-[:REL]->(c),
             (b)-[:REL]->(c)
         """
@@ -38,7 +39,7 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
         graph,
         """
                     MATCH (n)-->(m)
-                    WITH gds.graph.project.remote(n, m) as g
+                    WITH gds.graph.project.remote(n, m, {sourceNodeProperties: properties(n), targetNodeProperties: properties(m)}) as g
                     RETURN g
                 """,
     ) as g:
@@ -67,6 +68,7 @@ def test_pagerank_stream(pagerank_endpoints: PageRankArrowEndpoints, sample_grap
     """Test PageRank stream operation."""
     result_df = pagerank_endpoints.stream(
         G=sample_graph,
+        source_nodes=[0, 1],
     )
 
     assert "nodeId" in result_df.columns
@@ -80,6 +82,7 @@ def test_pagerank_mutate(pagerank_endpoints: PageRankArrowEndpoints, sample_grap
     result = pagerank_endpoints.mutate(
         G=sample_graph,
         mutate_property="pagerank",
+        source_nodes=0,
     )
 
     assert result.ran_iterations > 0
@@ -98,7 +101,9 @@ def test_pagerank_write(arrow_client: AuthenticatedArrowClient, query_runner: Qu
     endpoints = PageRankArrowEndpoints(
         arrow_client, RemoteWriteBackClient(arrow_client, query_runner), show_progress=True
     )
-    result = endpoints.write(G=db_graph, write_property="pagerank")
+    result = endpoints.write(
+        G=db_graph, write_property="pagerank", source_nodes=[(find_node_by_id(query_runner, 0), 0.7)]
+    )
 
     assert isinstance(result, PageRankWriteResult)
     assert result.ran_iterations > 0

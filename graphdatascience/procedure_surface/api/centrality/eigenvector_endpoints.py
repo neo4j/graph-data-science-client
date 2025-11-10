@@ -20,7 +20,7 @@ class EigenvectorEndpoints(ABC):
         mutate_property: str,
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
         scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
@@ -49,8 +49,11 @@ class EigenvectorEndpoints(ABC):
             The maximum number of iterations to run the algorithm
         tolerance : float
             The tolerance for convergence detection
-        source_nodes : Any | None, default=None
-            The source nodes to start the computation from
+        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+            node ids to use as starting points. Can be:
+            - single node id (e.g., 42)
+            - list of node id (e.g., [42, 43, 44])
+            - list of tuples to associate each node with a bias > 0 (e.g., [(42, 0.5), (43, 1.0)])
         scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
             The scaler to use. Can be:
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
@@ -88,7 +91,7 @@ class EigenvectorEndpoints(ABC):
         G: GraphV2,
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
         scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
@@ -115,8 +118,11 @@ class EigenvectorEndpoints(ABC):
             The maximum number of iterations to run the algorithm
         tolerance : float
             The tolerance for convergence detection
-        source_nodes : Any | None, default=None
-            The source nodes to start the computation from
+        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+            node ids to use as starting points. Can be:
+            - single node id (e.g., 42)
+            - list of node id (e.g., [42, 43, 44])
+            - list of tuples to associate each node with a bias > 0 (e.g., [(42, 0.5), (43, 1.0)])
         scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
             The scaler to use. Can be:
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
@@ -154,7 +160,7 @@ class EigenvectorEndpoints(ABC):
         G: GraphV2,
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
         scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
@@ -176,8 +182,11 @@ class EigenvectorEndpoints(ABC):
             The maximum number of iterations to run the algorithm
         tolerance : float
             The tolerance for convergence detection
-        source_nodes : Any | None, default=None
-            The source nodes to start the computation from
+        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+            node ids to use as starting points. Can be:
+            - single node id (e.g., 42)
+            - list of node id (e.g., [42, 43, 44])
+            - list of tuples to associate each node with a bias > 0 (e.g., [(42, 0.5), (43, 1.0)])
         scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
             The scaler to use. Can be:
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
@@ -216,7 +225,7 @@ class EigenvectorEndpoints(ABC):
         write_property: str,
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
         scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
@@ -246,8 +255,11 @@ class EigenvectorEndpoints(ABC):
             The maximum number of iterations to run the algorithm
         tolerance : float
             The tolerance for convergence detection
-        source_nodes : Any | None, default=None
-            The source nodes to start the computation from
+        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+            node ids to use as starting points. Can be:
+            - single node id (e.g., 42)
+            - list of node id (e.g., [42, 43, 44])
+            - list of tuples to associate each node with a bias > 0 (e.g., [(42, 0.5), (43, 1.0)])
         scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
             The scaler to use. Can be:
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
@@ -287,7 +299,7 @@ class EigenvectorEndpoints(ABC):
         G: GraphV2 | dict[str, Any],
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
-        source_nodes: Any | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
         scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
@@ -305,8 +317,11 @@ class EigenvectorEndpoints(ABC):
             The maximum number of iterations to run the algorithm
         tolerance : float
             The tolerance for convergence detection
-        source_nodes : Any | None, default=None
-            The source nodes to start the computation from
+        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+            node ids to use as starting points. Can be:
+            - single node id (e.g., 42)
+            - list of node id (e.g., [42, 43, 44])
+            - list of tuples to associate each node with a bias > 0 (e.g., [(42, 0.5), (43, 1.0)])
         scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
             The scaler to use. Can be:
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')

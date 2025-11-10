@@ -41,7 +41,7 @@ class DegreeEndpoints(ABC):
             The graph to run the algorithm on
         mutate_property : str
             Name of the node property to store the results in.
-        orientation : Any | None, default=None
+        orientation : str | None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -93,7 +93,7 @@ class DegreeEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        orientation : Any | None, default=None
+        orientation : str | None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -140,7 +140,7 @@ class DegreeEndpoints(ABC):
         ----------
         G : GraphV2
             The graph to run the algorithm on
-        orientation : Any | None, default=None
+        orientation : str | None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
             'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
             'REVERSE' treats each relationship as if it were directed in the opposite direction.
@@ -203,7 +203,7 @@ class DegreeEndpoints(ABC):
             The graph to run the algorithm on
         write_property : str
             The property name to store the degree centrality score for each node in the database
-        orientation : Any | None, default=None
+        orientation : str | None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -248,7 +248,7 @@ class DegreeEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph.
-        orientation : Any | None, default=None
+        orientation : str | None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
