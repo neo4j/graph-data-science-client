@@ -54,7 +54,7 @@ class ArticleRankEndpoints(ABC):
             Maximum number of iterations to run.
         scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
             The scaler to use. Can be:
-            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'L1Norm', 'L2Norm', 'NONE')
+            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - A ScalerConfig instance
             - "NONE" (default, no scaling)
@@ -121,7 +121,7 @@ class ArticleRankEndpoints(ABC):
             Maximum number of iterations to run.
         scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
             The scaler to use. Can be:
-            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'L1Norm', 'L2Norm', 'NONE')
+            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - A ScalerConfig instance
             - "NONE" (default, no scaling)
@@ -251,7 +251,7 @@ class ArticleRankEndpoints(ABC):
             Maximum number of iterations to run.
         scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
             The scaler to use. Can be:
-            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'L1Norm', 'L2Norm', 'NONE')
+            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - A ScalerConfig instance
             - "NONE" (default, no scaling)
