@@ -177,7 +177,10 @@ class RemoteWriteBackV3(WriteProtocol):
             )
             result_row = result.iloc[0].to_dict()
             # for self-managed dbs the endpoint doesn't return the progress yet
-            progress = result_row.get("progress", 0.0) * 100
+            progress = result_row.get("progress", 0.0)
+            if progress == -1:  # progress not available
+                progress = 0.0
+            progress = progress * 100
 
             if progress_bar:
                 progress_bar.update(status=result_row["status"], progress=progress)
