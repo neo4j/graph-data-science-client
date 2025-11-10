@@ -60,7 +60,7 @@ class HdbscanEndpoints(ABC):
             Whether to log progress
         sudo : bool
             Override memory estimation limits
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -116,7 +116,7 @@ class HdbscanEndpoints(ABC):
             Whether to log progress
         sudo : bool
             Override memory estimation limits
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -172,7 +172,7 @@ class HdbscanEndpoints(ABC):
             Whether to log progress
         sudo : bool
             Override memory estimation limits
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -231,7 +231,7 @@ class HdbscanEndpoints(ABC):
             Whether to log progress
         sudo : bool
             Override memory estimation limits
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -284,7 +284,7 @@ class HdbscanEndpoints(ABC):
             Whether to log progress
         sudo : bool
             Override memory estimation limits
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         username : str | None, default=None
             The username to attribute the procedure run to

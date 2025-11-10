@@ -46,9 +46,9 @@ class ArticulationPointsEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
 
         Returns
@@ -88,9 +88,9 @@ class ArticulationPointsEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
 
         Returns
@@ -128,9 +128,9 @@ class ArticulationPointsEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
 
         Returns
@@ -176,11 +176,11 @@ class ArticulationPointsEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
-        write_concurrency : Any | None, default=None
+        write_concurrency : int | None
             The number of concurrent threads for writing
 
         Returns
@@ -208,7 +208,7 @@ class ArticulationPointsEndpoints(ABC):
             The relationship types used to select relationships for this algorithm run.
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run.
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads used for the estimation.
 
         Returns

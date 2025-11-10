@@ -101,7 +101,7 @@ class CelfEndpoints(ABC):
             Probability of a node being activated by an active neighbour node.
         monte_carlo_simulations : int | None, default=None
             Number of Monte-Carlo simulations.
-        random_seed : Any | None, default=None
+        random_seed : int | None
             Random seed for reproducible results.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -113,9 +113,9 @@ class CelfEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             Number of threads to use for running the algorithm.
-        job_id : Any | None, default=None
+        job_id : str | None
             Identifier for the job.
 
         Returns

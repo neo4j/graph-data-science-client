@@ -53,9 +53,9 @@ class ScalePropertiesEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             Number of threads to use for running the algorithm.
-        job_id : Any | None, default=None
+        job_id : str | None
             Identifier for the job.
 
         Returns

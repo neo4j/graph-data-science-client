@@ -129,9 +129,9 @@ class GraphSageTrainEndpoints(ABC):
             Whether to log progress
         sudo : bool = False
             Override memory estimation limits
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         batch_size : int = 100
             Batch size for training
