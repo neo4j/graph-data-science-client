@@ -51,7 +51,7 @@ class ProjectProtocolV1(ProjectProtocol):
         return CallParameters(
             graph_name=graph_name,
             query=query,
-            concurrency=params["concurrency"],
+            concurrency=params.get("concurrency", 4),
             undirected_relationship_types=params["undirected_relationship_types"],
             inverse_indexed_relationship_types=params["inverse_indexed_relationship_types"],
             arrow_configuration=arrow_config,
@@ -77,15 +77,17 @@ class ProjectProtocolV2(ProjectProtocol):
     def project_params(
         self, graph_name: str, query: str, job_id: str, params: dict[str, Any], arrow_config: dict[str, Any]
     ) -> CallParameters:
+        config = {
+            "undirectedRelationshipTypes": params["undirected_relationship_types"],
+            "inverseIndexedRelationshipTypes": params["inverse_indexed_relationship_types"],
+        }
+        if "concurrency" in params:
+            config["concurrency"] = params["concurrency"]
         return CallParameters(
             graph_name=graph_name,
             query=query,
             arrow_configuration=arrow_config,
-            configuration={
-                "concurrency": params["concurrency"],
-                "undirectedRelationshipTypes": params["undirected_relationship_types"],
-                "inverseIndexedRelationshipTypes": params["inverse_indexed_relationship_types"],
-            },
+            configuration=config,
         )
 
     def run_projection(
@@ -108,16 +110,19 @@ class ProjectProtocolV3(ProjectProtocol):
     def project_params(
         self, graph_name: str, query: str, job_id: str, params: dict[str, Any], arrow_config: dict[str, Any]
     ) -> CallParameters:
+        config = {
+            "undirectedRelationshipTypes": params["undirected_relationship_types"],
+            "inverseIndexedRelationshipTypes": params["inverse_indexed_relationship_types"],
+        }
+        if "concurrency" in params:
+            config["concurrency"] = params["concurrency"]
+
         return CallParameters(
             graph_name=graph_name,
             query=query,
             job_id=job_id,
             arrow_configuration=arrow_config,
-            configuration={
-                "concurrency": params["concurrency"],
-                "undirectedRelationshipTypes": params["undirected_relationship_types"],
-                "inverseIndexedRelationshipTypes": params["inverse_indexed_relationship_types"],
-            },
+            configuration=config,
         )
 
     def run_projection(
