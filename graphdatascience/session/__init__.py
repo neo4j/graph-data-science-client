@@ -1,11 +1,11 @@
 from .algorithm_category import AlgorithmCategory
 from .aura_api import AuraApiError, SessionStatusError
+from .aura_graph_data_science import AuraGraphDataScience
 from .cloud_location import CloudLocation
 from .dbms_connection_info import DbmsConnectionInfo
 from .gds_sessions import AuraAPICredentials, GdsSessions
 from .session_info import SessionInfo
 from .session_sizes import SessionMemory, SessionMemoryValue
-from .aura_graph_data_science import AuraGraphDataScience
 
 __all__ = [
     "GdsSessions",

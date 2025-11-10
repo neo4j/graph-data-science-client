@@ -6,8 +6,8 @@ from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints impo
 )
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_endpoints import (
-    GraphSagePredictEndpoints,
     GraphSageMutateResult,
+    GraphSagePredictEndpoints,
     GraphSageWriteResult,
 )
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpoints import (
