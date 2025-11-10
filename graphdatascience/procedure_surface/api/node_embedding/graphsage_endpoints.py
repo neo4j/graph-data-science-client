@@ -79,15 +79,15 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
             Whether to log progress
         sudo : bool
             Override memory estimation limits
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         batch_size : int | None, default=None
             Batch size for training
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : Any | None, default=None
+        random_seed : int | None
             Random seed for reproducible results
 
         Returns

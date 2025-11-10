@@ -53,9 +53,9 @@ class DegreeEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             Number of threads to use for running the algorithm.
-        job_id : Any | None, default=None
+        job_id : str | None
             Identifier for the job.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
@@ -105,9 +105,9 @@ class DegreeEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             Number of threads to use for running the algorithm.
-        job_id : Any | None, default=None
+        job_id : str | None
             Identifier for the job.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
@@ -156,9 +156,9 @@ class DegreeEndpoints(ABC):
             Whether to log progress of the algorithm execution
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads used for the algorithm execution.
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job that can be used for monitoring and cancellation
         relationship_weight_property : str | None, default=None
             The property name that contains relationship weights. If specified,
@@ -215,13 +215,13 @@ class DegreeEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of threads to use for running the algorithm.
-        job_id : Any | None, default=None
+        job_id : str | None
             Identifier for the job.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
-        write_concurrency : Any | None, default=None
+        write_concurrency : int | None
             The number of concurrent threads used during the write phase.
 
         Returns
@@ -254,7 +254,7 @@ class DegreeEndpoints(ABC):
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
         relationship_weight_property : str | None, default=None
             The property name that contains weight

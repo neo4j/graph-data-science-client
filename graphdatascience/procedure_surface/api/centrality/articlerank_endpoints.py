@@ -68,9 +68,9 @@ class ArticleRankEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             Number of threads to use for running the algorithm.
-        job_id : Any | None, default=None
+        job_id : str | None
             Identifier for the job.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
@@ -135,9 +135,9 @@ class ArticleRankEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             Number of threads to use for running the algorithm.
-        job_id : Any | None, default=None
+        job_id : str | None
             Identifier for the job.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
@@ -194,9 +194,9 @@ class ArticleRankEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         relationship_weight_property : str | None, default=None
             The property name that contains weight
@@ -265,9 +265,9 @@ class ArticleRankEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             Number of threads to use for running the algorithm.
-        job_id : Any | None, default=None
+        job_id : str | None
             Identifier for the job.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
@@ -316,7 +316,7 @@ class ArticleRankEndpoints(ABC):
             The relationships types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
         relationship_weight_property : str | None, default=None
             The property name that contains weight

@@ -72,13 +72,13 @@ class FastRPEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : Any | None, default=None
+        random_seed : int | None
             Random seed for reproducible results
 
         Returns
@@ -137,9 +137,9 @@ class FastRPEndpoints(ABC):
             Whether to log progress
         username : str | None = None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         relationship_weight_property : str | None, default=None
             The property name that contains weight
@@ -202,9 +202,9 @@ class FastRPEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         relationship_weight_property : str | None, default=None
             The property name that contains weight
@@ -271,9 +271,9 @@ class FastRPEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         relationship_weight_property : str | None, default=None
             The property name that contains weight
@@ -328,7 +328,7 @@ class FastRPEndpoints(ABC):
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
         relationship_weight_property : str | None, default=None
             The property name that contains weight

@@ -82,9 +82,9 @@ class Node2VecEndpoints(ABC):
             Whether to log progress
         sudo : bool, default=False
             Override memory estimation limits
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         walk_length : int, default=80
             The length of each random walk
@@ -170,9 +170,9 @@ class Node2VecEndpoints(ABC):
             Whether to log progress
         sudo : bool, default=False
             Override memory estimation limits
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         walk_length : int, default=80
             The length of each random walk
@@ -262,9 +262,9 @@ class Node2VecEndpoints(ABC):
             Whether to log progress
         sudo : bool, default=False
             Override memory estimation limits
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         walk_length : int, default=80
             The length of each random walk
@@ -342,7 +342,7 @@ class Node2VecEndpoints(ABC):
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
         walk_length : int, default=80
             The length of each random walk

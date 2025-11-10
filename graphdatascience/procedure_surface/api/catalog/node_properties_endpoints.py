@@ -40,7 +40,7 @@ class NodePropertiesEndpoints(ABC):
             Whether to include node labels in the stream
         node_labels : list[str]
             Filter by node labels
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
         sudo : bool
             Override memory estimation limits
@@ -48,7 +48,7 @@ class NodePropertiesEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         db_node_properties : list[str] | None, default=None
             Retrieves additional node properties from the database and attaches them to the stream.
@@ -85,9 +85,9 @@ class NodePropertiesEndpoints(ABC):
             If a dictionary is provided, the keys are the property names and the values are the aliases that will be used as the property name in the database.
         node_labels : list[str]
             Filter by node labels
-        concurrency : Any | None, default=None
+        concurrency : int | None
             The number of concurrent threads
-        write_concurrency : Any | None, default=None
+        write_concurrency : int | None
             The number of concurrent threads used for writing
         sudo : bool
             Override memory estimation limits
@@ -95,7 +95,7 @@ class NodePropertiesEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : Any | None, default=None
+        job_id : str | None
             An identifier for the job
         Returns
         -------
