@@ -280,7 +280,7 @@ class ArticleRankEndpoints(ABC):
             Identifier for the job.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
-                source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])

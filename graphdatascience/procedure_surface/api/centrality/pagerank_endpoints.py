@@ -141,8 +141,9 @@ class PageRankEndpoints(ABC):
             Identifier for the job.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
-                source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
             node ids to use as starting points. Can be:
+
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
             - list of tuples to associate each node with a bias > 0 (e.g., [(42, 0.5), (43, 1.0)])
@@ -151,6 +152,7 @@ class PageRankEndpoints(ABC):
         -------
         PageRankStatsResult
             Algorithm statistics
+
         """
         pass
 
@@ -277,7 +279,7 @@ class PageRankEndpoints(ABC):
             Identifier for the job.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
-                source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])

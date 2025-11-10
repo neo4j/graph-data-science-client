@@ -258,27 +258,6 @@ class SllpaEndpoints(ABC):
 
 
 class SllpaMutateResult(BaseResult):
-    """
-    Represents the result of the Speaker-Listener Label Propagation algorithm (SLLPA) mutate operation.
-
-    Attributes
-    ----------
-    ran_iterations : int
-        The number of iterations the algorithm ran
-    did_converge : bool
-        Whether the algorithm converged
-    pre_processing_millis : int
-        Time spent preprocessing in milliseconds
-    compute_millis : int
-        Time spent computing in milliseconds
-    mutate_millis : int
-        Time spent writing results to the graph in milliseconds
-    node_properties_written : int
-        The number of node properties written
-    configuration : dict
-        The configuration used for the algorithm
-    """
-
     ran_iterations: int
     did_converge: bool
     pre_processing_millis: int
@@ -289,23 +268,6 @@ class SllpaMutateResult(BaseResult):
 
 
 class SllpaStatsResult(BaseResult):
-    """
-    Represents the result of the Speaker-Listener Label Propagation algorithm (SLLPA) stats operation.
-
-    Attributes
-    ----------
-    ran_iterations : int
-        The number of iterations the algorithm ran
-    did_converge : bool
-        Whether the algorithm converged
-    pre_processing_millis : int
-        Time spent preprocessing in milliseconds
-    compute_millis : int
-        Time spent computing in milliseconds
-    configuration : dict
-        The configuration used for the algorithm
-    """
-
     ran_iterations: int
     did_converge: bool
     pre_processing_millis: int
@@ -314,27 +276,6 @@ class SllpaStatsResult(BaseResult):
 
 
 class SllpaWriteResult(BaseResult):
-    """
-    Represents the result of the Speaker-Listener Label Propagation algorithm (SLLPA) write operation.
-
-    Attributes
-    ----------
-    ran_iterations : int
-        The number of iterations the algorithm ran
-    did_converge : bool
-        Whether the algorithm converged
-    pre_processing_millis : int
-        Time spent preprocessing in milliseconds
-    compute_millis : int
-        Time spent computing in milliseconds
-    write_millis : int
-        Time spent writing results to the database in milliseconds
-    node_properties_written : int
-        The number of node properties written
-    configuration : dict
-        The configuration used for the algorithm
-    """
-
     ran_iterations: int
     did_converge: bool
     pre_processing_millis: int

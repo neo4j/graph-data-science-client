@@ -197,27 +197,6 @@ class MaxKCutEndpoints(ABC):
 
 
 class MaxKCutMutateResult(BaseResult):
-    """
-    Result object returned by the Approximate Maximum k-cut mutate operation.
-
-    Attributes
-    ----------
-    cut_cost : float
-        The cost of the cut, representing the sum of weights of edges between different communities
-    compute_millis : int
-        Time spent on computation in milliseconds
-    configuration : dict[str, Any]
-        The configuration used for the algorithm execution
-    mutate_millis : int
-        Time spent on mutating the graph in milliseconds
-    node_properties_written : int
-        The number of node properties written to the graph
-    post_processing_millis : int
-        Time spent on post-processing in milliseconds
-    pre_processing_millis : int
-        Time spent on pre-processing in milliseconds
-    """
-
     cut_cost: float
     compute_millis: int
     configuration: dict[str, Any]
