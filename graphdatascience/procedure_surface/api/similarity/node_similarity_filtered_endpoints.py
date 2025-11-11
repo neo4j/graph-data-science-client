@@ -48,7 +48,7 @@ class NodeSimilarityFilteredEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_relationship_type : str
             The relationship type to use for the new relationships.
         mutate_property : str
@@ -128,7 +128,7 @@ class NodeSimilarityFilteredEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         source_node_filter : str | list[int]
             A Cypher expression or list of node IDs to filter which nodes can be sources.
         target_node_filter : str | list[int]
@@ -204,7 +204,7 @@ class NodeSimilarityFilteredEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         source_node_filter : str | list[int]
             A Cypher expression or list of node IDs to filter which nodes can be sources.
         target_node_filter : str | list[int]
@@ -283,7 +283,7 @@ class NodeSimilarityFilteredEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_relationship_type : str
             The relationship type to use for the new relationships.
         write_property : str

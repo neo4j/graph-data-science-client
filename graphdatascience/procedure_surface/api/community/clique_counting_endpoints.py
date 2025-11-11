@@ -32,7 +32,7 @@ class CliqueCountingEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_property : str
             The property name to store the clique counts for each node
         concurrency : int | None, default=None
@@ -75,7 +75,7 @@ class CliqueCountingEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
         job_id : str | None, default=None
@@ -116,7 +116,7 @@ class CliqueCountingEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
         job_id : str | None, default=None
@@ -159,7 +159,7 @@ class CliqueCountingEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_property : str
             The property name to write the clique counts to
         concurrency : int | None, default=None

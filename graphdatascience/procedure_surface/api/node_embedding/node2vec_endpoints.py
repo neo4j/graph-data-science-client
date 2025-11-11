@@ -51,7 +51,7 @@ class Node2VecEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_property : str
             The name of the node property to store the embeddings
         iterations : int, default=1
@@ -141,7 +141,7 @@ class Node2VecEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         iterations : int, default=1
             The number of training iterations
         negative_sampling_rate : int, default=5
@@ -231,7 +231,7 @@ class Node2VecEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_property : str
             The name of the node property to write the embeddings to
         iterations : int, default=1

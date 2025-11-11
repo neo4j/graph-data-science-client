@@ -38,7 +38,7 @@ class ModularityOptimizationEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_property : str
             The property name to store the community ID for each node
         batch_size : int | None, default=None
@@ -100,7 +100,7 @@ class ModularityOptimizationEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         batch_size : int | None, default=None
             Number of nodes to process in each batch
         concurrency : int | None, default=None
@@ -161,7 +161,7 @@ class ModularityOptimizationEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         batch_size : int | None, default=None
             Number of nodes to process in each batch
         concurrency : int | None, default=None
@@ -226,7 +226,7 @@ class ModularityOptimizationEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_property : str
             The property name to store the community ID for each node
         batch_size : int | None, default=None

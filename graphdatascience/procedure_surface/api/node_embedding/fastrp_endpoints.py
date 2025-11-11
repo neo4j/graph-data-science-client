@@ -46,7 +46,7 @@ class FastRPEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_property : str
             The property name to store the FastRP embeddings for each node
         embedding_dimension : int
@@ -113,7 +113,7 @@ class FastRPEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         embedding_dimension : int
             The dimension of the generated embeddings
         iteration_weights : list[float] = [0.0, 1.0, 1.0]
@@ -178,7 +178,7 @@ class FastRPEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         embedding_dimension : int
             The dimension of the generated embeddings
         iteration_weights : list[float] = [0.0, 1.0, 1.0]
@@ -245,7 +245,7 @@ class FastRPEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_property : str
             The property name to write the FastRP embeddings for each node
         embedding_dimension : int

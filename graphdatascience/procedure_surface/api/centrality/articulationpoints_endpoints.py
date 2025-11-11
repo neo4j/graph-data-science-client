@@ -33,7 +33,7 @@ class ArticulationPointsEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_property : str
             The property name to store the articulation point flag for each node
         relationship_types : list[str]
@@ -77,7 +77,7 @@ class ArticulationPointsEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
@@ -117,7 +117,7 @@ class ArticulationPointsEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
         node_labels : list[str]
@@ -163,7 +163,7 @@ class ArticulationPointsEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_property : str
             The property name to store the articulation point flag for each node
         relationship_types : list[str]

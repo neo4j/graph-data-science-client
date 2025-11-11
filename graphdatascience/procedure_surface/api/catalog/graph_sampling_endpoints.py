@@ -42,7 +42,7 @@ class GraphSamplingEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The input graph to be sampled.
+            The graph to run the algorithm on.
         graph_name : str
             The name of the new graph that is stored in the graph catalog.
         start_nodes : list of int, optional
@@ -117,7 +117,7 @@ class GraphSamplingEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The input graph to be sampled.
+            The graph to run the algorithm on.
         graph_name : str
             The name of the new graph that is stored in the graph catalog.
         start_nodes : list of int, optional

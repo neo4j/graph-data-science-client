@@ -42,7 +42,7 @@ class EigenvectorEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_property : str
             The property name to store the eigenvector centrality score for each node
         max_iterations : int
@@ -112,7 +112,7 @@ class EigenvectorEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         max_iterations : int
             The maximum number of iterations to run the algorithm
         tolerance : float
@@ -175,7 +175,7 @@ class EigenvectorEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         max_iterations : int
             The maximum number of iterations to run the algorithm
         tolerance : float
@@ -245,7 +245,7 @@ class EigenvectorEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_property : str
             The property name to write the eigenvector centrality scores to
         max_iterations : int

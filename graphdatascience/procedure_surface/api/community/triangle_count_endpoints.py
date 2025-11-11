@@ -36,7 +36,7 @@ class TriangleCountEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_property : str
             The property name to store the triangle count for each node
         concurrency : int | None, default=None
@@ -92,7 +92,7 @@ class TriangleCountEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
         job_id : str | None, default=None
@@ -146,7 +146,7 @@ class TriangleCountEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
         job_id : str | None, default=None
@@ -204,7 +204,7 @@ class TriangleCountEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_property : str
             The property name to store the triangle count for each node in the database
         concurrency : int | None, default=None

@@ -12,7 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class K1ColoringEndpoints(ABC):
-
     @abstractmethod
     def mutate(
         self,
@@ -38,7 +37,7 @@ class K1ColoringEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_property : str
             Name of the node property to store the results in.
         batch_size : int, default=10000
@@ -88,7 +87,7 @@ class K1ColoringEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         batch_size : int, default=10000
             The batch size for processing
         concurrency : int | None, default=None
@@ -137,7 +136,7 @@ class K1ColoringEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         batch_size : int, default=10000
             The batch size for processing
         concurrency : int | None, default=None
@@ -190,7 +189,7 @@ class K1ColoringEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_property : str
             The property name to write colors to
         batch_size : int, default=10000

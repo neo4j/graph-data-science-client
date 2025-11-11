@@ -13,7 +13,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class PageRankEndpoints(ABC):
-
     @abstractmethod
     def mutate(
         self,
@@ -42,7 +41,7 @@ class PageRankEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_property : str
             Name of the node property to store the results in.
         damping_factor : float
@@ -113,7 +112,7 @@ class PageRankEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         damping_factor : float
             Probability of a jump to a random node.
         tolerance : float
@@ -181,7 +180,7 @@ class PageRankEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         damping_factor : float
             The damping factor controls the probability of a random jump to a random node
         tolerance : float
@@ -249,7 +248,7 @@ class PageRankEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_property : str
             Name of the node property to store the results in.
         damping_factor : float

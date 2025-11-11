@@ -44,7 +44,7 @@ class HashGNNEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         iterations : int
             The number of iterations to run the algorithm
         embedding_density : int
@@ -100,7 +100,7 @@ class HashGNNEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         iterations : int
             The number of iterations to run the algorithm
         embedding_density : int
@@ -156,7 +156,7 @@ class HashGNNEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         iterations : int
             The number of iterations to run the algorithm
         embedding_density : int

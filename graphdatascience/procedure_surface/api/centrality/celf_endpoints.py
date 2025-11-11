@@ -37,7 +37,7 @@ class CelfEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization
         mutate_property : str
@@ -94,7 +94,7 @@ class CelfEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization
         propagation_probability : float | None, default=None
@@ -147,7 +147,7 @@ class CelfEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization
         propagation_probability : float | None, default=None
@@ -206,7 +206,7 @@ class CelfEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization
         write_property : str

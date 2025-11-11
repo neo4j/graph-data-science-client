@@ -52,7 +52,7 @@ class NodeSimilarityEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_relationship_type : str
             The relationship type to use for the new relationships.
         mutate_property : str
@@ -126,7 +126,7 @@ class NodeSimilarityEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         top_k : int, default=10
             The maximum number of neighbors with the highest similarity scores to compute per node.
         bottom_k : int, default=10
@@ -196,7 +196,7 @@ class NodeSimilarityEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         top_k : int, default=10
             The maximum number of neighbors with the highest similarity scores to compute per node.
         bottom_k : int, default=10
@@ -269,7 +269,7 @@ class NodeSimilarityEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_relationship_type : str
             The relationship type to use for the new relationships.
         write_property : str
@@ -343,7 +343,7 @@ class NodeSimilarityEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         top_k : int, default=10
             The maximum number of neighbors with the highest similarity scores to compute per node.
         bottom_k : int, default=10
