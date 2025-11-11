@@ -37,7 +37,7 @@ class GraphSagePredictEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         model_name : str
             Name under which the model will is stored
         relationship_types : list[str]
@@ -86,7 +86,7 @@ class GraphSagePredictEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         model_name : str
             Name under which the model will is stored
         write_property : str
@@ -137,7 +137,7 @@ class GraphSagePredictEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         model_name : str
             Name under which the model will is stored
         mutate_property : str

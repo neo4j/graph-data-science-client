@@ -40,7 +40,7 @@ class SccEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_property : str
             Name of the node property to store the results in.
         concurrency : int | None, default=None
@@ -87,7 +87,7 @@ class SccEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
         consecutive_ids : bool, default=False
@@ -132,7 +132,7 @@ class SccEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
         consecutive_ids : bool, default=False
@@ -179,7 +179,7 @@ class SccEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_property : str
             The property name to write component IDs to
         concurrency : int | None, default=None

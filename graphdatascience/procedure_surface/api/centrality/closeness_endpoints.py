@@ -36,7 +36,7 @@ class ClosenessEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_property : str
             The property name to store the closeness centrality score for each node
         use_wasserman_faust : bool
@@ -87,7 +87,7 @@ class ClosenessEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         use_wasserman_faust : bool
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : list[str]
@@ -132,7 +132,7 @@ class ClosenessEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         use_wasserman_faust : bool
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : list[str]
@@ -184,7 +184,7 @@ class ClosenessEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_property : str
             The property name to write closeness centrality scores to in the Neo4j database
         use_wasserman_faust : bool | None, default=None

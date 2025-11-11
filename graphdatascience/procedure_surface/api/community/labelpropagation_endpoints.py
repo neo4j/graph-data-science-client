@@ -37,7 +37,7 @@ class LabelPropagationEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_property : str
             The property name to store the community ID for each node
         concurrency : int | None, default=None
@@ -96,7 +96,7 @@ class LabelPropagationEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
         consecutive_ids : bool, default=False
@@ -154,7 +154,7 @@ class LabelPropagationEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
         consecutive_ids : bool, default=False
@@ -216,7 +216,7 @@ class LabelPropagationEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_property : str
             The property name to write the community IDs to
         concurrency : int | None, default=None

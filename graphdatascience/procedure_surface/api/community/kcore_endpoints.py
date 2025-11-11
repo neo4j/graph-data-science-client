@@ -40,7 +40,7 @@ class KCoreEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_property : str
             Name of the node property to store the results in.
         concurrency : int | None, default=None
@@ -84,7 +84,7 @@ class KCoreEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
         job_id : str | None, default=None
@@ -126,7 +126,7 @@ class KCoreEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         relationship_types : list[str]
             The relationships types considered in this algorithm run
         node_labels : list[str]
@@ -170,7 +170,7 @@ class KCoreEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_property : str
             The property name to write core values to
         concurrency : int | None, default=None

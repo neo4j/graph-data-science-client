@@ -39,7 +39,7 @@ class BetweennessEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         mutate_property : str
             Name of the node property to store the results in.
         sampling_size : int | None, default=None
@@ -95,7 +95,7 @@ class BetweennessEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         sampling_size : int | None, default=None
             Number of source nodes to consider for computing centrality scores.
         sampling_seed : int | None, default=None
@@ -144,7 +144,7 @@ class BetweennessEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         sampling_size : int | None, default=None
             The number of nodes to use for sampling.
         sampling_seed : int | None, default=None
@@ -200,7 +200,7 @@ class BetweennessEndpoints(ABC):
         Parameters
         ----------
         G : GraphV2
-            The graph to run the algorithm on
+            The graph to run the algorithm on.
         write_property : str
             Name of the node property to store the results in.
         sampling_size : int | None, default=None

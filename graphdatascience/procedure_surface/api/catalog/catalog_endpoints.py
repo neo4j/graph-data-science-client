@@ -55,8 +55,8 @@ class CatalogEndpoints(ABC):
 
         Parameters
         ----------
-        G (GraphV2):
-            GraphV2 object to filter on
+        G : GraphV2
+            The graph to run the algorithm on.
         graph_name (str):
             Name of subgraph to create
         node_filter (str):
