@@ -5,7 +5,10 @@ set -o nounset
 set -o pipefail
 set -o xtrace
 
-cd doc/sphinx
-make clean html
-cd build/
-python3 -m http.server 8000
+(
+    cd doc/sphinx
+    make clean html
+    cd build/
+)
+
+python3 scripts/host_api_docs.py

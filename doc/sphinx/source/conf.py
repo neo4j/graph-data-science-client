@@ -52,6 +52,10 @@ autodoc_pydantic_field_show_default = False
 
 html_theme = "neo4j"
 html_theme_path = ["themes"]
+html_theme_options = {
+    "sidebar_includehidden": True,
+    "sidebar_collapse": True,
+}
 
 
 # 01-nav.js is a copy of a js file of the same name that is included in the docs-ui bundle
@@ -70,6 +74,11 @@ intersphinx_mapping = {
     "pyarrow": ("https://arrow.apache.org/docs/", None),
     "networkx": ("https://networkx.org/documentation/stable/", None),
 }
+
+# Additional templates that should be rendered to pages, maps page names to
+# template names.
+html_additional_pages = {"gentree": "gentree.html"}
+
 
 rst_epilog = """
 .. |api-version| replace:: {versionnum}
