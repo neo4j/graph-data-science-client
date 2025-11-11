@@ -86,6 +86,7 @@ from graphdatascience.procedure_surface.arrow.community.triangle_count_arrow_end
     TriangleCountArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.community.wcc_arrow_endpoints import WccArrowEndpoints
+from graphdatascience.procedure_surface.arrow.config_arrow_endpoints import ConfigArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.fastrp_arrow_endpoints import FastRPArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_predict_arrow_endpoints import (
     GraphSagePredictArrowEndpoints,
@@ -120,6 +121,7 @@ from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints imp
 from graphdatascience.procedure_surface.arrow.similarity.node_similarity_arrow_endpoints import (
     NodeSimilarityArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.system_arrow_endpoints import SystemArrowEndpoints
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
@@ -142,6 +144,14 @@ class SessionV2Endpoints:
     @property
     def graph(self) -> CatalogArrowEndpoints:
         return CatalogArrowEndpoints(self._arrow_client, self._db_client, show_progress=self._show_progress)
+
+    @property
+    def config(self) -> ConfigArrowEndpoints:
+        return ConfigArrowEndpoints(self._arrow_client)
+
+    @property
+    def system(self) -> SystemArrowEndpoints:
+        return SystemArrowEndpoints(self._arrow_client)
 
     ## Algorithms
 

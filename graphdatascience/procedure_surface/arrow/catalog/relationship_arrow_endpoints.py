@@ -7,6 +7,7 @@ from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWrit
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
     Aggregation,
+    CollapsePathResult,
     RelationshipsDropResult,
     RelationshipsEndpoints,
     RelationshipsInverseIndexResult,
@@ -197,3 +198,35 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         )
         result = JobClient.get_summary(self._arrow_client, job_id)
         return RelationshipsToUndirectedResult(**result)
+
+    def collapse_path(
+        self,
+        G: GraphV2,
+        path_templates: list[list[str]],
+        mutate_relationship_type: str,
+        *,
+        allow_self_loops: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        sudo: bool = False,
+        log_progress: bool = True,
+        username: str | None = None,
+    ) -> CollapsePathResult:
+        config = ConfigConverter.convert_to_gds_config(
+            graph_name=G.name(),
+            path_templates=path_templates,
+            mutate_relationship_type=mutate_relationship_type,
+            allow_self_loops=allow_self_loops,
+            concurrency=concurrency,
+            job_id=job_id,
+            sudo=sudo,
+            log_progress=log_progress,
+            username=username,
+        )
+
+        show_progress = self._show_progress and log_progress
+        job_id = JobClient.run_job_and_wait(
+            self._arrow_client, "v2/graph.relationships.collapsePath", config, show_progress=show_progress
+        )
+
+        return CollapsePathResult(**JobClient.get_summary(self._arrow_client, job_id))

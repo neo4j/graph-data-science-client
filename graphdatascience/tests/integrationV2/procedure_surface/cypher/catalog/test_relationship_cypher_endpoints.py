@@ -252,3 +252,16 @@ def test_to_undirected_with_property_aggregation(
     assert result.mutate_millis >= 0
     assert result.input_relationships == 3
     assert result.relationships_written == 6
+
+
+def test_collapse_path(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2) -> None:
+    result = relationship_endpoints.collapse_path(
+        G=sample_graph,
+        path_templates=[["REL", "REL"]],
+        mutate_relationship_type="FoF",
+    )
+
+    assert result.relationshipsWritten == 3
+    assert result.mutateMillis >= 0
+    assert result.preProcessingMillis >= 0
+    assert result.computeMillis >= 0
