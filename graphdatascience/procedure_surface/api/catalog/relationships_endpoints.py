@@ -40,7 +40,7 @@ class RelationshipsEndpoints(ABC):
         concurrency : int | None, default=None
             The number of concurrent threads
         sudo : bool
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : bool = True
             Whether to log progress
         username : str | None, default=None
@@ -82,7 +82,7 @@ class RelationshipsEndpoints(ABC):
         write_concurrency : int | None, default=None
             The number of concurrent threads used for writing
         sudo : bool
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : bool | None, default=None
             Whether to log progress
         username : str | None, default=None
@@ -147,7 +147,7 @@ class RelationshipsEndpoints(ABC):
         concurrency : int | None, default=None
             The number of concurrent threads
         sudo : bool = False,
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : bool = True
             Whether to log progress
         username : str | None, default=None
@@ -193,7 +193,7 @@ class RelationshipsEndpoints(ABC):
         concurrency : int | None, default=None
             The number of concurrent threads
         sudo : bool = False,
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : bool = True
             Whether to log progress
         username : str | None, default=None

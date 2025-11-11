@@ -41,7 +41,7 @@ class ArticulationPointsEndpoints(ABC):
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         sudo : bool
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : bool | None, default=None
             Whether to log progress
         username : str | None, default=None
@@ -83,7 +83,7 @@ class ArticulationPointsEndpoints(ABC):
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         sudo : bool
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : bool | None, default=None
             Whether to log progress
         username : str | None, default=None
@@ -123,7 +123,7 @@ class ArticulationPointsEndpoints(ABC):
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         sudo : bool
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : bool | None, default=None
             Whether to log progress
         username : str | None, default=None
@@ -171,7 +171,7 @@ class ArticulationPointsEndpoints(ABC):
         node_labels : list[str]
             The node labels used to select nodes for this algorithm run
         sudo : bool
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : bool | None, default=None
             Whether to log progress
         username : str | None, default=None

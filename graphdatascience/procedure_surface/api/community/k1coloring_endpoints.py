@@ -12,9 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class K1ColoringEndpoints(ABC):
-    """
-    Abstract base class defining the API for the K-1 Coloring algorithm.
-    """
 
     @abstractmethod
     def mutate(
@@ -33,32 +30,35 @@ class K1ColoringEndpoints(ABC):
         username: str | None = None,
     ) -> K1ColoringMutateResult:
         """
-        Executes the K-1 Coloring algorithm and writes the results to the in-memory graph as node properties.
+        Runs the K-1 Coloring algorithm and stores the results in the graph catalog as a new node property.
+
+        The K-1 Coloring algorithm assigns a color to every node in the graph, trying to optimize for two objectives:
+        to make sure that every neighbor of a given node has a different color than the node itself, and to use as few colors as possible.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the color for each node
+            Name of the node property to store the results in.
         batch_size : int, default=10000
             The batch size for processing
         concurrency : int | None, default=None
-            The number of concurrent threads
+            Number of CPU threads to use.
         job_id : str | None, default=None
-            An identifier for the job
+            Identifier for the computation.
         log_progress : bool, default=True
-            Whether to log progress
+            Display progress logging.
         max_iterations : int, default=10
-            The maximum number of iterations of K-1 Coloring to run
+            Maximum number of iterations to run.
         node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo : bool, default=False
-            Override memory estimation limits
+            Disable the memory guard.
         username : str | None, default=None
-            The username to attribute the procedure run to
+            As an administrator, run the algorithm as a different user, to access also their graphs.
 
         Returns
         -------

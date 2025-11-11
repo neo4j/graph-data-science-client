@@ -43,7 +43,7 @@ class NodePropertiesEndpoints(ABC):
         concurrency : int | None
             The number of concurrent threads
         sudo : bool
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : bool | None, default=None
             Whether to log progress
         username : str | None, default=None
@@ -90,7 +90,7 @@ class NodePropertiesEndpoints(ABC):
         write_concurrency : int | None
             The number of concurrent threads used for writing
         sudo : bool
-            Override memory estimation limits
+            Disable the memory guard.
         log_progress : bool | None, default=None
             Whether to log progress
         username : str | None, default=None

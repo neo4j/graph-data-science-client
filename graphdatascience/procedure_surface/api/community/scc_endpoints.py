@@ -32,30 +32,33 @@ class SccEndpoints(ABC):
         username: str | None = None,
     ) -> SccMutateResult:
         """
-        Executes the SCC algorithm and writes the results to the in-memory graph as node properties.
+        Runs the Strongly Connected Components algorithm and stores the results in the graph catalog as a new node property.
+
+        The Strongly Connected Components (SCC) algorithm finds maximal sets of connected nodes in a directed graph.
+        A set is considered a strongly connected component if there is a directed path between each pair of nodes within the set.
 
         Parameters
         ----------
         G : GraphV2
             The graph to run the algorithm on
         mutate_property : str
-            The property name to store the component ID for each node
+            Name of the node property to store the results in.
         concurrency : int | None, default=None
-            The number of concurrent threads
+            Number of CPU threads to use.
         consecutive_ids : bool, default=False
-            Flag to decide whether component identifiers are mapped into a consecutive id space
+            Whether to use consecutive IDs for components
         job_id : str | None, default=None
-            An identifier for the job
+            Identifier for the computation.
         log_progress : bool, default=True
-            Whether to log progress
+            Display progress logging.
         node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo : bool, default=False
-            Override memory estimation limits
+            Disable the memory guard.
         username : str | None, default=None
-            The username to attribute the procedure run to
+            As an administrator, run the algorithm as a different user, to access also their graphs.
 
         Returns
         -------
