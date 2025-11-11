@@ -83,7 +83,7 @@ class RelationshipsEndpoints(ABC):
             The number of concurrent threads used for writing
         sudo : bool
             Disable the memory guard.
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -242,7 +242,7 @@ class RelationshipsEndpoints(ABC):
             Unique identifier for the job associated with the computation.
         sudo : bool | None, default=None
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress during graph generation.
         username : str | None, default=None
             Username of the individual requesting the graph generation.

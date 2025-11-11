@@ -62,7 +62,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         relationship_properties: str | builtins.list[str] | dict[str, Any] | None = None,
         read_concurrency: int | None = None,
         job_id: str | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         username: str | None = None,
     ) -> GraphWithProjectResult:
         config = ConfigConverter.convert_to_gds_config(
@@ -125,7 +125,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         allow_self_loops: bool | None = None,
         read_concurrency: int | None = None,
         job_id: str | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
     ) -> GraphWithGenerationStats:
