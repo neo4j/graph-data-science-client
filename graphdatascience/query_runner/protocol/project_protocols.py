@@ -113,6 +113,7 @@ class ProjectProtocolV3(ProjectProtocol):
         config = {
             "undirectedRelationshipTypes": params["undirected_relationship_types"],
             "inverseIndexedRelationshipTypes": params["inverse_indexed_relationship_types"],
+            "queryParameters": params["query_parameters"],
         }
         if "concurrency" in params:
             config["concurrency"] = params["concurrency"]
