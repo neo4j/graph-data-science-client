@@ -88,7 +88,7 @@ class CatalogEndpoints(ABC):
         allow_self_loops: bool | None = None,
         read_concurrency: int | None = None,
         job_id: str | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
     ) -> GraphWithGenerationStats:
@@ -119,7 +119,7 @@ class CatalogEndpoints(ABC):
             Unique identifier for the job associated with the graph generation.
         sudo : bool
             Disable the memory guard.
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress during graph generation.
         username : str | None, default=None
             Username of the individual requesting the graph generation.

@@ -68,7 +68,7 @@ class EigenvectorEndpoints(ABC):
         sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress of the algorithm execution
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -136,7 +136,7 @@ class EigenvectorEndpoints(ABC):
         sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress of the algorithm execution
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -199,7 +199,7 @@ class EigenvectorEndpoints(ABC):
         sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress of the algorithm execution
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -271,7 +271,7 @@ class EigenvectorEndpoints(ABC):
         sudo : bool
             Override memory estimation limits. Use with caution as this can lead to
             memory issues if the estimation is significantly wrong.
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress of the algorithm execution
         username : str | None, default=None
             The username to attribute the procedure run to

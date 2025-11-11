@@ -68,7 +68,7 @@ class FastRPEndpoints(ABC):
             The node labels used to select nodes for this algorithm run
         sudo : bool
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to

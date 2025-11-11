@@ -62,7 +62,7 @@ class PageRankEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : bool
             Disable the memory guard.
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -131,7 +131,7 @@ class PageRankEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : bool
             Disable the memory guard.
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -199,7 +199,7 @@ class PageRankEndpoints(ABC):
             The node labels used to select nodes for this algorithm run
         sudo : bool
             Override memory estimation limits
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -269,7 +269,7 @@ class PageRankEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo : bool
             Disable the memory guard.
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to

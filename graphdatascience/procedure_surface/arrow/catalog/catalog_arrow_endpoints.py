@@ -182,7 +182,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         allow_self_loops: bool | None = None,
         read_concurrency: int | None = None,
         job_id: str | None = None,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
     ) -> GraphWithGenerationStats:

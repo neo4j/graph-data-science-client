@@ -148,7 +148,7 @@ class GraphSagePredictEndpoints(ABC):
             The node labels used to select nodes for this algorithm run
         username : str | None = None
             The username to attribute the procedure run to
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         sudo : bool
             Override memory estimation limits

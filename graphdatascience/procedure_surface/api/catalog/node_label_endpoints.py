@@ -14,7 +14,7 @@ class NodeLabelEndpoints(ABC):
         node_label: str,
         *,
         node_filter: str,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: int | None = None,
@@ -34,7 +34,7 @@ class NodeLabelEndpoints(ABC):
             A Cypher predicate for filtering nodes in the input graph.
         sudo : bool
             Disable the memory guard.
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -58,7 +58,7 @@ class NodeLabelEndpoints(ABC):
         node_label: str,
         *,
         node_filter: str,
-        sudo: bool | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         concurrency: int | None = None,
@@ -78,7 +78,7 @@ class NodeLabelEndpoints(ABC):
             A Cypher predicate for filtering nodes in the input graph.
         sudo : bool
             Disable the memory guard.
-        log_progress : bool | None, default=None
+        log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
