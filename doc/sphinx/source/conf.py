@@ -50,6 +50,10 @@ autodoc_pydantic_field_show_default = False
 
 html_theme = "neo4j"
 html_theme_path = ["themes"]
+html_theme_options = {
+    "sidebar_includehidden": True,
+    "sidebar_collapse": True,
+}
 
 
 # 01-nav.js is a copy of a js file of the same name that is included in the docs-ui bundle
@@ -57,6 +61,11 @@ def setup(app):  # type: ignore
     app.add_js_file("https://neo4j.com/docs/assets/js/site.js", loading_method="defer")
     app.add_js_file("js/12-fragment-jumper.js", loading_method="defer")
     app.add_js_file("js/deprecated.js", loading_method="defer")
+
+
+# Additional templates that should be rendered to pages, maps page names to
+# template names.
+html_additional_pages = {"gentree": "gentree.html"}
 
 
 rst_epilog = """
