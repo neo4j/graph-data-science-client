@@ -35,8 +35,8 @@ class CliqueCountingEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_property : str
             The property name to store the clique counts for each node
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -76,8 +76,8 @@ class CliqueCountingEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -117,8 +117,8 @@ class CliqueCountingEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -162,8 +162,8 @@ class CliqueCountingEndpoints(ABC):
             The graph to run the algorithm on.
         write_property : str
             The property name to write the clique counts to
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -176,10 +176,8 @@ class CliqueCountingEndpoints(ABC):
             Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
-        write_concurrency : int | None, default=None
-            The number of concurrent threads for write operations
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         CliqueCountingWriteResult
             Algorithm metrics and statistics
@@ -201,8 +199,8 @@ class CliqueCountingEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph or graph configuration to estimate for
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types

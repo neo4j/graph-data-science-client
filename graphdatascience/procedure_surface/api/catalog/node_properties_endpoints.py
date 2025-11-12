@@ -40,8 +40,8 @@ class NodePropertiesEndpoints(ABC):
             Whether to include node labels in the stream
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         sudo
             Disable the memory guard.
         log_progress : bool, default=True
@@ -85,10 +85,10 @@ class NodePropertiesEndpoints(ABC):
             If a dictionary is provided, the keys are the property names and the values are the aliases that will be used as the property name in the database.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        concurrency : int | None
-            The number of concurrent threads
-        write_concurrency : int | None
-            The number of concurrent threads used for writing
+        concurrency
+            Number of concurrent threads to use.
+        write_concurrency
+            Number of concurrent threads to use for writing.
         sudo
             Disable the memory guard.
         log_progress : bool, default=True
@@ -125,8 +125,8 @@ class NodePropertiesEndpoints(ABC):
             The node properties to drop
         fail_if_missing: bool | None = None,
             Whether to fail if any of the node properties are missing
-        concurrency : int | None = None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         username : str | None, default=None
             The username to attribute the procedure run to
         Returns

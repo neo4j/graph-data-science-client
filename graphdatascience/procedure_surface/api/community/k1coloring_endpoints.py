@@ -42,8 +42,8 @@ class K1ColoringEndpoints(ABC):
             Name of the node property to store the results in.
         batch_size : int, default=10000
             The batch size for processing
-        concurrency : int | None, default=None
-            Number of CPU threads to use.
+        concurrency
+            Number of concurrent threads to use.
         job_id : str | None, default=None
             Identifier for the computation.
         log_progress : bool, default=True
@@ -90,8 +90,8 @@ class K1ColoringEndpoints(ABC):
             The graph to run the algorithm on.
         batch_size : int, default=10000
             The batch size for processing
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -139,8 +139,8 @@ class K1ColoringEndpoints(ABC):
             The graph to run the algorithm on.
         batch_size : int, default=10000
             The batch size for processing
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -194,8 +194,8 @@ class K1ColoringEndpoints(ABC):
             The property name to write colors to
         batch_size : int, default=10000
             The batch size for processing
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -212,10 +212,8 @@ class K1ColoringEndpoints(ABC):
             Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
-        write_concurrency : int | None, default=None
-            The number of concurrent threads during the write phase
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         K1ColoringWriteResult
             Algorithm metrics and statistics
@@ -242,8 +240,8 @@ class K1ColoringEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph.
         batch_size : int, default=10000
             The batch size for processing
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         max_iterations : int, default=10
             The maximum number of iterations of K-1 Coloring to run
         node_labels

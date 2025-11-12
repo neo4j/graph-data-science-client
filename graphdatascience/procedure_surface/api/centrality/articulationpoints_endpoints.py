@@ -46,8 +46,8 @@ class ArticulationPointsEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -88,8 +88,8 @@ class ArticulationPointsEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -128,8 +128,8 @@ class ArticulationPointsEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -176,14 +176,12 @@ class ArticulationPointsEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        write_concurrency : int | None
-            The number of concurrent threads for writing
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         ArticulationPointsWriteResult
             Algorithm metrics and statistics including the count of articulation points found
@@ -208,8 +206,8 @@ class ArticulationPointsEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        concurrency : int | None
-            The number of concurrent threads used for the estimation.
+        concurrency
+            Number of concurrent threads to use.
 
         Returns
         -------

@@ -67,8 +67,8 @@ class LouvainEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             As an administrator, run the algorithm as a different user, to access also their graphs.
-        concurrency : int | None, default=None
-            Number of CPU threads to use.
+        concurrency
+            Number of concurrent threads to use.
         job_id : str | None, default=None
             Identifier for the computation.
         seed_property : str | None, default=None
@@ -129,8 +129,8 @@ class LouvainEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         seed_property : str | None, default=None
@@ -192,8 +192,8 @@ class LouvainEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         seed_property : str | None, default=None
@@ -261,8 +261,8 @@ class LouvainEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         seed_property : str | None, default=None
@@ -271,8 +271,8 @@ class LouvainEndpoints(ABC):
             Flag to decide whether community identifiers are mapped into a consecutive id space
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        write_concurrency : int | None, default=None
-            The number of concurrent threads during the write phase
+        write_concurrency
+            Number of concurrent threads to use for writing.
         min_community_size : int | None, default=None
             Don't write communities with fewer nodes than this
 
@@ -317,8 +317,8 @@ class LouvainEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         seed_property : str | None, default=None
             A property to use as the starting community id for a node
         consecutive_ids : bool, default=False

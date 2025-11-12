@@ -63,14 +63,12 @@ class KSpanningTreeEndpoints(ABC):
             Whether to log progress during execution.
         username : str, optional
             The username to use for logging.
-        concurrency : int, optional
-            The number of threads to use for parallel computation.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        write_concurrency : int, optional
-            The number of threads to use for writing results.
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         KSpanningTreeWriteResult
             Result containing statistics and timing information.

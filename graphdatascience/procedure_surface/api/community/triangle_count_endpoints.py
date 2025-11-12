@@ -39,8 +39,8 @@ class TriangleCountEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_property : str
             The property name to store the triangle count for each node
-        concurrency : int | None, default=None
-            The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         label_filter : list[str] | None, default=None
@@ -91,8 +91,8 @@ class TriangleCountEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         label_filter : list[str] | None, default=None
@@ -143,8 +143,8 @@ class TriangleCountEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         label_filter : list[str] | None, default=None
@@ -201,8 +201,8 @@ class TriangleCountEndpoints(ABC):
             The graph to run the algorithm on.
         write_property : str
             The property name to store the triangle count for each node in the database
-        concurrency : int | None, default=None
-            The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         label_filter : list[str] | None, default=None
@@ -221,8 +221,8 @@ class TriangleCountEndpoints(ABC):
             Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
-        write_concurrency : int | None, default=None
-            The number of concurrent threads for writing results to the database
+        write_concurrency
+            Number of concurrent threads to use for writing.
 
         Returns
         -------
@@ -251,8 +251,8 @@ class TriangleCountEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to estimate for, or a graph configuration dictionary
-        concurrency : int | None, default=None
-            The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
+        concurrency
+            Number of concurrent threads to use.
         label_filter : list[str] | None, default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.

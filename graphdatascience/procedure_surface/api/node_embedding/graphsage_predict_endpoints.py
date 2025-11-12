@@ -50,8 +50,8 @@ class GraphSagePredictEndpoints(ABC):
             Whether to log progress
         sudo
             Disable the memory guard.
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         batch_size : int = 100
@@ -101,10 +101,10 @@ class GraphSagePredictEndpoints(ABC):
             Whether to log progress
         sudo
             Disable the memory guard.
-        concurrency : int | None
-            The number of concurrent threads
-        write_concurrency : int | None, default=None
-             The number of concurrent threads used for writing
+        concurrency
+            Number of concurrent threads to use.
+        write_concurrency
+            Number of concurrent threads to use for writing.
         job_id
             Identifier for the computation.
         batch_size : int = 100
@@ -152,8 +152,8 @@ class GraphSagePredictEndpoints(ABC):
             Whether to log progress
         sudo
             Disable the memory guard.
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         batch_size : int | None, default=None
@@ -194,8 +194,8 @@ class GraphSagePredictEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         batch_size : int = 100
             The batch size for prediction.
-        concurrency : int | None, default=None
-            The concurrency for computation.
+        concurrency
+            Number of concurrent threads to use.
         log_progress : bool = True
             Whether to log progress.
         username : str | None, default=None

@@ -48,8 +48,8 @@ class KMeansEndpoints(ABC):
             The property name to store the community ID for each node
         compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         delta_threshold : float | None, default=0.05
             The convergence threshold for the algorithm
         initial_sampler : str | None, default="UNIFORM"
@@ -117,8 +117,8 @@ class KMeansEndpoints(ABC):
             The node property to use for clustering
         compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         delta_threshold : float | None, default=0.05
             The convergence threshold for the algorithm
         initial_sampler : str | None, default="UNIFORM"
@@ -186,8 +186,8 @@ class KMeansEndpoints(ABC):
             The node property to use for clustering
         compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         delta_threshold : float | None, default=0.05
             The convergence threshold for the algorithm
         initial_sampler : str | None, default="UNIFORM"
@@ -259,8 +259,8 @@ class KMeansEndpoints(ABC):
             The property name to write the community IDs to
         compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         delta_threshold : float | None, default=0.05
             The convergence threshold for the algorithm
         initial_sampler : str | None, default="UNIFORM"
@@ -287,10 +287,8 @@ class KMeansEndpoints(ABC):
             Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
-        write_concurrency : int | None, default=None
-            The number of concurrent threads for write operations
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         KMeansWriteResult
             Algorithm metrics and statistics
@@ -326,8 +324,8 @@ class KMeansEndpoints(ABC):
             The node property to use for clustering
         compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         delta_threshold : float | None, default=0.05
             The convergence threshold for the algorithm
         initial_sampler : str | None, default="UNIFORM"

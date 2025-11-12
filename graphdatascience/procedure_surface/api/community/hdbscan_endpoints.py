@@ -54,8 +54,8 @@ class HdbscanEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         log_progress : bool, default=True
             Whether to log progress
         sudo
@@ -110,8 +110,8 @@ class HdbscanEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         log_progress : bool, default=True
             Whether to log progress
         sudo
@@ -166,8 +166,8 @@ class HdbscanEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         log_progress : bool, default=True
             Whether to log progress
         sudo
@@ -223,10 +223,10 @@ class HdbscanEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        write_concurrency : int | None, default=None
-            The number of concurrent threads for writing
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        write_concurrency
+            Number of concurrent threads to use for writing.
+        concurrency
+            Number of concurrent threads to use.
         log_progress : bool, default=True
             Whether to log progress
         sudo
@@ -278,8 +278,8 @@ class HdbscanEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         log_progress : bool, default=True
             Whether to log progress
         sudo

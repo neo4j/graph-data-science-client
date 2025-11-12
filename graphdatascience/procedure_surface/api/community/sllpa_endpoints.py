@@ -40,8 +40,8 @@ class SllpaEndpoints(ABC):
             The property name to store the community ID for each node
         max_iterations : int
             Maximum number of iterations for the algorithm
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -89,8 +89,8 @@ class SllpaEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -138,8 +138,8 @@ class SllpaEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -191,8 +191,8 @@ class SllpaEndpoints(ABC):
             The graph to run the algorithm on.
         write_property : str
             The property name to store the community ID for each node in the database
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -209,10 +209,8 @@ class SllpaEndpoints(ABC):
             Disable the memory guard.
         username : str | None, default=None
             Username for authentication
-        write_concurrency : int | None, default=None
-            The number of concurrent threads for writing
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         SllpaWriteResult
             An object containing metadata about the algorithm execution and the write operation
@@ -238,8 +236,8 @@ class SllpaEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to estimate for, or a graph configuration dictionary
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
         node_labels

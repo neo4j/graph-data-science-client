@@ -68,8 +68,8 @@ class SourceTargetDijkstraEndpoints(ABC):
             Whether to log progress.
         username : str | None, default=None
             Username for the operation.
-        concurrency : int | None, default=None
-            Concurrency configuration.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -120,8 +120,8 @@ class SourceTargetDijkstraEndpoints(ABC):
             Whether to log progress.
         username : str | None, default=None
             Username for the operation.
-        concurrency : int | None, default=None
-            Concurrency configuration.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -179,14 +179,12 @@ class SourceTargetDijkstraEndpoints(ABC):
             Whether to log progress.
         username : str | None, default=None
             Username for the operation.
-        concurrency : int | None, default=None
-            Concurrency configuration.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        write_concurrency : int | None, default=None
-            Concurrency for writing results.
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         DijkstraWriteResult
             Object containing metadata from the execution.
@@ -226,8 +224,8 @@ class SourceTargetDijkstraEndpoints(ABC):
             Disable the memory guard.
         username : str | None, default=None
             Username for the operation.
-        concurrency : int | None, default=None
-            Concurrency configuration.
+        concurrency
+            Number of concurrent threads to use.
 
         Returns
         -------

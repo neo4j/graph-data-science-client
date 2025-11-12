@@ -44,8 +44,8 @@ class MaxKCutEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_property : str
             The property name to store the community ID for each node
-        concurrency : int | None, default=None
-            The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
+        concurrency
+            Number of concurrent threads to use.
         iterations : int | None, default=8
             The number of iterations the algorithm runs. More iterations may lead to better results but
             will increase computation time.
@@ -106,8 +106,8 @@ class MaxKCutEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
+        concurrency
+            Number of concurrent threads to use.
         iterations : int | None, default=8
             The number of iterations the algorithm runs. More iterations may lead to better results but
             will increase computation time.
@@ -167,8 +167,8 @@ class MaxKCutEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to estimate for, or a graph configuration dictionary
-        concurrency : int | None, default=None
-            The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
+        concurrency
+            Number of concurrent threads to use.
         iterations : int | None, default=8
             The number of iterations the algorithm runs
         k : int | None, default=2

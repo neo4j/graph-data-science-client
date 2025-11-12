@@ -63,8 +63,8 @@ class CatalogEndpoints(ABC):
             Filter expression for nodes
         relationship_filter (str):
             Filter expression for relationships
-        concurrency (int, optional):
-            Number of concurrent threads to use. Defaults to None.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 

@@ -85,8 +85,8 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             Must contain `gds.graph.project.remote`. Example: `MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)`
         job_id
             Identifier for the computation.
-        concurrency : int | None
-            Number of concurrent threads/processes to use during graph projection.
+        concurrency
+            Number of concurrent threads to use.
         undirected_relationship_types : list[str]
             List of relationship types to treat as undirected.
         inverse_indexed_relationship_types : list[str]

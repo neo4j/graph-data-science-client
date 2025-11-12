@@ -43,8 +43,8 @@ class SccEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_property : str
             Name of the node property to store the results in.
-        concurrency : int | None, default=None
-            Number of CPU threads to use.
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Whether to use consecutive IDs for components
         job_id : str | None, default=None
@@ -88,8 +88,8 @@ class SccEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Flag to decide whether component identifiers are mapped into a consecutive id space
         job_id
@@ -133,8 +133,8 @@ class SccEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Flag to decide whether component identifiers are mapped into a consecutive id space
         job_id
@@ -182,8 +182,8 @@ class SccEndpoints(ABC):
             The graph to run the algorithm on.
         write_property : str
             The property name to write component IDs to
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Flag to decide whether component identifiers are mapped into a consecutive id space
         job_id
@@ -198,10 +198,8 @@ class SccEndpoints(ABC):
             Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
-        write_concurrency : int | None, default=None
-            The number of concurrent threads during the write phase
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         SccWriteResult
             Algorithm metrics and statistics
@@ -225,8 +223,8 @@ class SccEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on or a dictionary representing the graph.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Flag to decide if the component identifiers should be returned consecutively or not
         node_labels

@@ -56,8 +56,8 @@ class BetweennessEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None
-            Number of threads to use for running the algorithm.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         relationship_weight_property : str | None, default=None
@@ -110,8 +110,8 @@ class BetweennessEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None
-            Number of threads to use for running the algorithm.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         relationship_weight_property : str | None, default=None
@@ -159,8 +159,8 @@ class BetweennessEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         relationship_weight_property : str | None, default=None
@@ -217,16 +217,14 @@ class BetweennessEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None
-            Number of threads to use for running the algorithm.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
-        write_concurrency : int | None
-            The number of concurrent threads during the write phase
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         BetweennessWriteResult
             Algorithm metrics and statistics including centrality distribution
@@ -258,8 +256,8 @@ class BetweennessEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         relationship_weight_property : str | None, default=None
             The property name that contains weight
 

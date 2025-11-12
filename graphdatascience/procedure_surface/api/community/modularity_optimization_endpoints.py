@@ -43,8 +43,8 @@ class ModularityOptimizationEndpoints(ABC):
             The property name to store the community ID for each node
         batch_size : int | None, default=None
             Number of nodes to process in each batch
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
         job_id
@@ -103,8 +103,8 @@ class ModularityOptimizationEndpoints(ABC):
             The graph to run the algorithm on.
         batch_size : int | None, default=None
             Number of nodes to process in each batch
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
         job_id
@@ -164,8 +164,8 @@ class ModularityOptimizationEndpoints(ABC):
             The graph to run the algorithm on.
         batch_size : int | None, default=None
             Number of nodes to process in each batch
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
         job_id
@@ -231,8 +231,8 @@ class ModularityOptimizationEndpoints(ABC):
             The property name to store the community ID for each node
         batch_size : int | None, default=None
             Number of nodes to process in each batch
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
         job_id
@@ -257,10 +257,8 @@ class ModularityOptimizationEndpoints(ABC):
             Convergence tolerance for the algorithm
         username : str | None, default=None
             Username for authentication
-        write_concurrency : int | None, default=None
-            The number of concurrent threads for writing
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         ModularityOptimizationWriteResult
             Result containing community statistics and timing information
@@ -291,8 +289,8 @@ class ModularityOptimizationEndpoints(ABC):
             The graph configuration or graph object
         batch_size : int | None, default=None
             Number of nodes to process in each batch
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
         max_iterations : int
