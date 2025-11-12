@@ -44,8 +44,8 @@ class NodePropertiesEndpoints(ABC):
             Number of concurrent threads to use.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
         job_id
@@ -91,8 +91,8 @@ class NodePropertiesEndpoints(ABC):
             Number of concurrent threads to use for writing.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
         job_id

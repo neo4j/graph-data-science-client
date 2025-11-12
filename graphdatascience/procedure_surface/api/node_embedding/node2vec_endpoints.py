@@ -78,8 +78,8 @@ class Node2VecEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         username : str | None, default=None
             The username to attribute the procedure run to
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         sudo
             Disable the memory guard.
         concurrency
@@ -166,8 +166,8 @@ class Node2VecEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         username : str | None, default=None
             The username to attribute the procedure run to
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         sudo
             Disable the memory guard.
         concurrency
@@ -258,8 +258,8 @@ class Node2VecEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         username : str | None, default=None
             The username to attribute the procedure run to
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         sudo
             Disable the memory guard.
         concurrency

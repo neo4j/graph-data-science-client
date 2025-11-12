@@ -49,7 +49,7 @@ class SccEndpoints(ABC):
             Whether to use consecutive IDs for components
         job_id : str | None, default=None
             Identifier for the computation.
-        log_progress : bool, default=True
+        log_progress
             Display progress logging.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -94,8 +94,8 @@ class SccEndpoints(ABC):
             Flag to decide whether component identifiers are mapped into a consecutive id space
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
@@ -139,8 +139,8 @@ class SccEndpoints(ABC):
             Flag to decide whether component identifiers are mapped into a consecutive id space
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
@@ -188,8 +188,8 @@ class SccEndpoints(ABC):
             Flag to decide whether component identifiers are mapped into a consecutive id space
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types

@@ -44,8 +44,8 @@ class LocalClusteringCoefficientEndpoints:
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
@@ -89,8 +89,8 @@ class LocalClusteringCoefficientEndpoints:
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
@@ -134,8 +134,8 @@ class LocalClusteringCoefficientEndpoints:
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
@@ -183,8 +183,8 @@ class LocalClusteringCoefficientEndpoints:
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
@@ -228,8 +228,8 @@ class LocalClusteringCoefficientEndpoints:
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types

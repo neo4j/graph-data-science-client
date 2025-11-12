@@ -58,8 +58,8 @@ class GraphSageModelV2(Model):
             Number of concurrent threads to use.
         write_concurrency : int | None, default=None
             The concurrency for writing.
-        log_progress : bool = True
-            Whether to log progress.
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username for the operation.
         sudo
@@ -116,8 +116,8 @@ class GraphSageModelV2(Model):
             The batch size for prediction.
         concurrency
             Number of concurrent threads to use.
-        log_progress : bool = True
-            Whether to log progress.
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username for the operation.
         sudo
@@ -175,8 +175,8 @@ class GraphSageModelV2(Model):
             The batch size for prediction.
         concurrency
             Number of concurrent threads to use.
-        log_progress : bool = True
-            Whether to log progress.
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username for the operation.
         sudo
@@ -232,8 +232,8 @@ class GraphSageModelV2(Model):
             The batch size for prediction.
         concurrency
             Number of concurrent threads to use.
-        log_progress : bool = True
-            Whether to log progress.
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username for the operation.
         sudo

@@ -64,7 +64,7 @@ class ArticleRankEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
+        log_progress
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -134,7 +134,7 @@ class ArticleRankEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
+        log_progress
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
@@ -200,8 +200,8 @@ class ArticleRankEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool
-            Whether to log progress
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
         concurrency
@@ -274,7 +274,7 @@ class ArticleRankEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
+        log_progress
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to

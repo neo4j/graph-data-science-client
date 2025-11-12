@@ -46,7 +46,7 @@ class K1ColoringEndpoints(ABC):
             Number of concurrent threads to use.
         job_id : str | None, default=None
             Identifier for the computation.
-        log_progress : bool, default=True
+        log_progress
             Display progress logging.
         max_iterations : int, default=10
             Maximum number of iterations to run.
@@ -94,8 +94,8 @@ class K1ColoringEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int, default=10
             The maximum number of iterations of K-1 Coloring to run
         node_labels
@@ -143,8 +143,8 @@ class K1ColoringEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int, default=10
             The maximum number of iterations of K-1 Coloring to run
         min_community_size : int | None, default=None
@@ -198,8 +198,8 @@ class K1ColoringEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int, default=10
             The maximum number of iterations of K-1 Coloring to run
         min_community_size : int | None, default=None

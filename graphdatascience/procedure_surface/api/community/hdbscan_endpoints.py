@@ -56,8 +56,8 @@ class HdbscanEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency
             Number of concurrent threads to use.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         sudo
             Disable the memory guard.
         job_id
@@ -112,8 +112,8 @@ class HdbscanEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency
             Number of concurrent threads to use.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         sudo
             Disable the memory guard.
         job_id
@@ -168,8 +168,8 @@ class HdbscanEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency
             Number of concurrent threads to use.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         sudo
             Disable the memory guard.
         job_id
@@ -227,8 +227,8 @@ class HdbscanEndpoints(ABC):
             Number of concurrent threads to use for writing.
         concurrency
             Number of concurrent threads to use.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         sudo
             Disable the memory guard.
         job_id
@@ -280,8 +280,8 @@ class HdbscanEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency
             Number of concurrent threads to use.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         sudo
             Disable the memory guard.
         job_id

@@ -46,8 +46,8 @@ class TriangleCountEndpoints(ABC):
         label_filter : list[str] | None, default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
-        log_progress : bool, default=True
-            Whether to log progress information during execution
+        log_progress
+            Display progress logging.
         max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
@@ -98,8 +98,8 @@ class TriangleCountEndpoints(ABC):
         label_filter : list[str] | None, default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
-        log_progress : bool, default=True
-            Whether to log progress information during execution
+        log_progress
+            Display progress logging.
         max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
@@ -150,8 +150,8 @@ class TriangleCountEndpoints(ABC):
         label_filter : list[str] | None, default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
-        log_progress : bool, default=True
-            Whether to log progress information during execution
+        log_progress
+            Display progress logging.
         max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
@@ -208,8 +208,8 @@ class TriangleCountEndpoints(ABC):
         label_filter : list[str] | None, default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
-        log_progress : bool, default=True
-            Whether to log progress information during execution
+        log_progress
+            Display progress logging.
         max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.

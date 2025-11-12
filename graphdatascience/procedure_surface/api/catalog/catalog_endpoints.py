@@ -119,8 +119,8 @@ class CatalogEndpoints(ABC):
             Identifier for the computation.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
-            Whether to log progress during graph generation.
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             Username of the individual requesting the graph generation.
 

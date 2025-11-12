@@ -67,8 +67,8 @@ class EigenvectorEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
-            Whether to log progress of the algorithm execution
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
         concurrency
@@ -134,8 +134,8 @@ class EigenvectorEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
-            Whether to log progress of the algorithm execution
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
         concurrency
@@ -196,8 +196,8 @@ class EigenvectorEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
-            Whether to log progress of the algorithm execution
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
         concurrency
@@ -267,8 +267,8 @@ class EigenvectorEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
-            Whether to log progress of the algorithm execution
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
         concurrency

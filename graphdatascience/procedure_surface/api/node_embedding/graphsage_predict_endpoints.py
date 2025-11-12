@@ -46,8 +46,8 @@ class GraphSagePredictEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         username : str | None = None
             The username to attribute the procedure run to
-        log_progress : bool = True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         sudo
             Disable the memory guard.
         concurrency
@@ -97,8 +97,8 @@ class GraphSagePredictEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         username : str | None = None
             The username to attribute the procedure run to
-        log_progress : bool = True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         sudo
             Disable the memory guard.
         concurrency
@@ -148,8 +148,8 @@ class GraphSagePredictEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         username : str | None = None
             The username to attribute the procedure run to
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         sudo
             Disable the memory guard.
         concurrency
@@ -196,8 +196,8 @@ class GraphSagePredictEndpoints(ABC):
             The batch size for prediction.
         concurrency
             Number of concurrent threads to use.
-        log_progress : bool = True
-            Whether to log progress.
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username for the operation.
         sudo

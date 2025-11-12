@@ -83,8 +83,8 @@ class NodeSimilarityEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
-            Whether to log progress.
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             Username for the operation.
         concurrency
@@ -153,8 +153,8 @@ class NodeSimilarityEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
-            Whether to log progress.
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             Username for the operation.
         concurrency
@@ -223,8 +223,8 @@ class NodeSimilarityEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
-            Whether to log progress.
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             Username for the operation.
         concurrency
@@ -300,8 +300,8 @@ class NodeSimilarityEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
-            Whether to log progress.
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             Username for the operation.
         concurrency

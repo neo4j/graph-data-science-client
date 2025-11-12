@@ -58,8 +58,8 @@ class KMeansEndpoints(ABC):
             Identifier for the computation.
         k : int | None, default=10
             The number of clusters
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int | None, default=10
             The maximum number of iterations
         node_labels
@@ -127,8 +127,8 @@ class KMeansEndpoints(ABC):
             Identifier for the computation.
         k : int | None, default=10
             The number of clusters
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int | None, default=10
             The maximum number of iterations
         node_labels
@@ -196,8 +196,8 @@ class KMeansEndpoints(ABC):
             Identifier for the computation.
         k : int | None, default=10
             The number of clusters
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int | None, default=10
             The maximum number of iterations
         node_labels
@@ -269,8 +269,8 @@ class KMeansEndpoints(ABC):
             Identifier for the computation.
         k : int | None, default=10
             The number of clusters
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int | None, default=10
             The maximum number of iterations
         node_labels

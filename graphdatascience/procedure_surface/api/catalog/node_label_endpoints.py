@@ -34,8 +34,8 @@ class NodeLabelEndpoints(ABC):
             A Cypher predicate for filtering nodes in the input graph.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
         concurrency
@@ -78,8 +78,8 @@ class NodeLabelEndpoints(ABC):
             A Cypher predicate for filtering nodes in the input graph.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
         concurrency
