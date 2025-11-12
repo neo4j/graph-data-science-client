@@ -57,7 +57,7 @@ class DegreeEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        relationship_weight_property : str | None, default=None
+        relationship_weight_property
             Name of the property to be used as weights.
 
         Returns
@@ -109,7 +109,7 @@ class DegreeEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        relationship_weight_property : str | None, default=None
+        relationship_weight_property
             Name of the property to be used as weights.
 
         Returns
@@ -159,10 +159,8 @@ class DegreeEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        relationship_weight_property : str | None, default=None
-            The property name that contains relationship weights. If specified,
-            weighted degree centrality is computed where each relationship contributes
-            its weight to the total degree.
+        relationship_weight_property
+            Name of the property to be used as weights.
 
         Returns
         -------
@@ -218,7 +216,7 @@ class DegreeEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        relationship_weight_property : str | None, default=None
+        relationship_weight_property
             Name of the property to be used as weights.
         write_concurrency
             Number of concurrent threads to use for writing.Returns
@@ -253,8 +251,8 @@ class DegreeEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency
             Number of concurrent threads to use.
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
 
         Returns
         -------

@@ -61,8 +61,8 @@ class MaxKCutEndpoints(ABC):
             Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        relationship_weight_property : str | None, default=None
-            The relationship weight property. If None, each relationship has weight 1.0.
+        relationship_weight_property
+            Name of the property to be used as weights.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -125,8 +125,8 @@ class MaxKCutEndpoints(ABC):
             Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        relationship_weight_property : str | None, default=None
-            The relationship weight property. If None, each relationship has weight 1.0.
+        relationship_weight_property
+            Name of the property to be used as weights.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -179,8 +179,8 @@ class MaxKCutEndpoints(ABC):
             Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        relationship_weight_property : str | None, default=None
-            The relationship weight property. If None, each relationship has weight 1.0.
+        relationship_weight_property
+            Name of the property to be used as weights.
         vns_max_neighborhood_order : int | None, default=0
             The maximum neighborhood order for the Variable Neighborhood Search
 

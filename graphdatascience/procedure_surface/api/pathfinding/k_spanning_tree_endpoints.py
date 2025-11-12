@@ -49,8 +49,8 @@ class KSpanningTreeEndpoints(ABC):
             Name of the node property to store the results in.
         source_node : int
             The source node (root) for the k-Spanning trees.
-        relationship_weight_property : str, optional
-            The name of the relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         objective : str, default="minimum"
             The objective function to optimize. Either "minimum" or "maximum".
         relationship_types

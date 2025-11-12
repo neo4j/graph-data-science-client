@@ -64,8 +64,8 @@ class SingleSourceDeltaEndpoints(ABC):
             The source node for the shortest path computation.
         delta : float, default=2.0
             The bucket width for grouping nodes by tentative distance.
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -114,8 +114,8 @@ class SingleSourceDeltaEndpoints(ABC):
             The source node for the shortest path computation.
         delta : float, default=2.0
             The bucket width for grouping nodes by tentative distance.
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -167,8 +167,8 @@ class SingleSourceDeltaEndpoints(ABC):
             The relationship type to use for the new relationships in the graph catalog.
         delta : float, default=2.0
             The bucket width for grouping nodes by tentative distance.
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -227,8 +227,8 @@ class SingleSourceDeltaEndpoints(ABC):
             Whether to write node IDs of the shortest path onto the relationship.
         write_costs : bool, default=False
             Whether to write costs of the shortest path onto the relationship.
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -275,8 +275,8 @@ class SingleSourceDeltaEndpoints(ABC):
             The source node for the shortest path computation.
         delta : float, default=2.0
             The bucket width for grouping nodes by tentative distance.
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

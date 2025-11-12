@@ -59,8 +59,8 @@ class EigenvectorEndpoints(ABC):
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight values for relationships
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -126,8 +126,8 @@ class EigenvectorEndpoints(ABC):
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight values for relationships
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -188,8 +188,8 @@ class EigenvectorEndpoints(ABC):
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight values for relationships
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -259,8 +259,8 @@ class EigenvectorEndpoints(ABC):
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight values for relationships
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -317,8 +317,8 @@ class EigenvectorEndpoints(ABC):
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight values for relationships
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

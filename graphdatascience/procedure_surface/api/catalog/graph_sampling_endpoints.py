@@ -57,8 +57,8 @@ class GraphSamplingEndpoints(ABC):
         node_label_stratification : bool, optional
             If true, preserves the node label distribution of the original graph.
             Default is False.
-        relationship_weight_property : str, optional
-            Name of the relationship property to use as weights. If unspecified, the algorithm runs unweighted.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -127,8 +127,8 @@ class GraphSamplingEndpoints(ABC):
         node_label_stratification : bool, optional
             If true, preserves the node label distribution of the original graph.
             Default is False.
-        relationship_weight_property : str, optional
-            Name of the relationship property to use as weights. If unspecified, the algorithm runs unweighted.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

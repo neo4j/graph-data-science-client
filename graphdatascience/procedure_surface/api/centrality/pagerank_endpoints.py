@@ -70,7 +70,7 @@ class PageRankEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        relationship_weight_property : str | None, default=None
+        relationship_weight_property
             Name of the property to be used as weights.
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
             node ids to use as starting points. Can be:
@@ -139,7 +139,7 @@ class PageRankEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        relationship_weight_property : str | None, default=None
+        relationship_weight_property
             Name of the property to be used as weights.
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
             node ids to use as starting points. Can be:
@@ -207,8 +207,8 @@ class PageRankEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
         source_nodes : Any | None, default=None
             The source nodes for personalized PageRank
 
@@ -277,7 +277,7 @@ class PageRankEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        relationship_weight_property : str | None, default=None
+        relationship_weight_property
             Name of the property to be used as weights.
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
             node ids to use as starting points. Can be:
@@ -331,8 +331,8 @@ class PageRankEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency
             Number of concurrent threads to use.
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
         source_nodes : Any | None, default=None
             The source nodes for personalized PageRank
 

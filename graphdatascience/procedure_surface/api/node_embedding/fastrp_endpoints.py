@@ -76,8 +76,8 @@ class FastRPEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
 
@@ -141,8 +141,8 @@ class FastRPEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
 
@@ -206,8 +206,8 @@ class FastRPEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
 
@@ -275,8 +275,8 @@ class FastRPEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
         write_concurrency
@@ -328,8 +328,8 @@ class FastRPEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency
             Number of concurrent threads to use.
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
 
