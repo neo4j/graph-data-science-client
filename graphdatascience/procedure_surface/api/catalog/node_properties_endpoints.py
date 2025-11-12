@@ -48,8 +48,8 @@ class NodePropertiesEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         db_node_properties : list[str] | None, default=None
             Retrieves additional node properties from the database and attaches them to the stream.
         Returns
@@ -95,8 +95,8 @@ class NodePropertiesEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         Returns
         -------
         NodePropertiesWriteResult

@@ -70,8 +70,8 @@ class ArticleRankEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             Number of threads to use for running the algorithm.
-        job_id : str | None
-            Identifier for the job.
+        job_id
+            Identifier for the computation.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
@@ -140,8 +140,8 @@ class ArticleRankEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             Number of threads to use for running the algorithm.
-        job_id : str | None
-            Identifier for the job.
+        job_id
+            Identifier for the computation.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
@@ -202,8 +202,8 @@ class ArticleRankEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         relationship_weight_property : str | None, default=None
             The property name that contains weight
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
@@ -276,8 +276,8 @@ class ArticleRankEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             Number of threads to use for running the algorithm.
-        job_id : str | None
-            Identifier for the job.
+        job_id
+            Identifier for the computation.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None

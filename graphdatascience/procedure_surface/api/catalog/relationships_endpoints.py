@@ -86,8 +86,8 @@ class RelationshipsEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         Returns
         -------
         RelationshipsWriteResult
@@ -151,8 +151,8 @@ class RelationshipsEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         Returns
         -------
         RelationshipsInverseIndexResult
@@ -197,8 +197,8 @@ class RelationshipsEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         Returns
         -------
         RelationshipsInverseIndexResult
@@ -237,8 +237,8 @@ class RelationshipsEndpoints(ABC):
             Whether nodes in the graph can have relationships where start and end nodes are the same.
         concurrency : int | None, default=None:
             Number of concurrent threads to use.
-        job_id : str | None, default=None
-            Unique identifier for the job associated with the computation.
+        job_id
+            Identifier for the computation.
         sudo
             Disable the memory guard.
         log_progress : bool, default=True

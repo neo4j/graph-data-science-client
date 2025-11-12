@@ -188,8 +188,8 @@ class HashGNNEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         write_concurrency : int | None, default=None
             The number of concurrent threads used for writing
         random_seed : int | None, default=None

@@ -60,8 +60,8 @@ class CelfEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None, default=None
             Number of threads to use for running the algorithm.
-        job_id : str | None, default=None
-            Identifier for the job.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -115,8 +115,8 @@ class CelfEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             Number of threads to use for running the algorithm.
-        job_id : str | None
-            Identifier for the job.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -168,8 +168,8 @@ class CelfEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None, default=None
             The number of concurrent threads used for the algorithm execution.
-        job_id : str | None, default=None
-            An identifier for the job that can be used for monitoring and cancellation
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -228,8 +228,8 @@ class CelfEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None, default=None
             Number of threads to use for running the algorithm.
-        job_id : str | None, default=None
-            Identifier for the job.
+        job_id
+            Identifier for the computation.
         write_concurrency : int | None, default=None
             The number of concurrent threads used during the write phase.
 

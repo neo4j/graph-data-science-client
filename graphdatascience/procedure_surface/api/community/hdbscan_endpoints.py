@@ -60,8 +60,8 @@ class HdbscanEndpoints(ABC):
             Whether to log progress
         sudo
             Disable the memory guard.
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -116,8 +116,8 @@ class HdbscanEndpoints(ABC):
             Whether to log progress
         sudo
             Disable the memory guard.
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -172,8 +172,8 @@ class HdbscanEndpoints(ABC):
             Whether to log progress
         sudo
             Disable the memory guard.
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -231,8 +231,8 @@ class HdbscanEndpoints(ABC):
             Whether to log progress
         sudo
             Disable the memory guard.
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -284,8 +284,8 @@ class HdbscanEndpoints(ABC):
             Whether to log progress
         sudo
             Disable the memory guard.
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         username : str | None, default=None
             The username to attribute the procedure run to
 

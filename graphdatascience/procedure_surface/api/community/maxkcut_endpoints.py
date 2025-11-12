@@ -49,8 +49,8 @@ class MaxKCutEndpoints(ABC):
         iterations : int | None, default=8
             The number of iterations the algorithm runs. More iterations may lead to better results but
             will increase computation time.
-        job_id : str | None, default=None
-            An identifier for the job that can be used to cancel or monitor progress
+        job_id
+            Identifier for the computation.
         k : int | None, default=2
             The number of communities to detect. Must be at least 2.
         log_progress : bool, default=True
@@ -111,8 +111,8 @@ class MaxKCutEndpoints(ABC):
         iterations : int | None, default=8
             The number of iterations the algorithm runs. More iterations may lead to better results but
             will increase computation time.
-        job_id : str | None, default=None
-            An identifier for the job that can be used to cancel or monitor progress
+        job_id
+            Identifier for the computation.
         k : int | None, default=2
             The number of communities to detect. Must be at least 2.
         log_progress : bool, default=True

@@ -64,8 +64,8 @@ class GraphSageModelV2(Model):
             The username for the operation.
         sudo
             Disable the memory guard.
-        job_id : str | None, default=None
-            The job ID for the operation.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -122,8 +122,8 @@ class GraphSageModelV2(Model):
             The username for the operation.
         sudo
             Disable the memory guard.
-        job_id : str | None, default=None
-            The job ID for the operation.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -181,8 +181,8 @@ class GraphSageModelV2(Model):
             The username for the operation.
         sudo
             Disable the memory guard.
-        job_id : str | None, default=None
-            The job ID for the operation.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -238,8 +238,8 @@ class GraphSageModelV2(Model):
             The username for the operation.
         sudo
             Disable the memory guard.
-        job_id : str | None, default=None
-            The job ID for the operation.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------

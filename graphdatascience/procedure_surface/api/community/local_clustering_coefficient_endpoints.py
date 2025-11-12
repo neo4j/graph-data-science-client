@@ -42,8 +42,8 @@ class LocalClusteringCoefficientEndpoints:
             Property name to store the result
         concurrency : int | None, default=None
             Number of concurrent threads
-        job_id : str | None, default=None
-            Job identifier for tracking
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         node_labels
@@ -87,8 +87,8 @@ class LocalClusteringCoefficientEndpoints:
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             Number of concurrent threads
-        job_id : str | None, default=None
-            Job identifier for tracking
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         node_labels
@@ -132,8 +132,8 @@ class LocalClusteringCoefficientEndpoints:
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             Number of concurrent threads
-        job_id : str | None, default=None
-            Job identifier for tracking
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         node_labels
@@ -181,8 +181,8 @@ class LocalClusteringCoefficientEndpoints:
             Property name to store results in the database
         concurrency : int | None, default=None
             Number of concurrent threads
-        job_id : str | None, default=None
-            Job identifier for tracking
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         node_labels
@@ -228,8 +228,8 @@ class LocalClusteringCoefficientEndpoints:
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             Number of concurrent threads
-        job_id : str | None, default=None
-            Job identifier for tracking
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         node_labels

@@ -42,8 +42,8 @@ class SllpaEndpoints(ABC):
             Maximum number of iterations for the algorithm
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         min_association_strength : float | None, default=None
@@ -91,8 +91,8 @@ class SllpaEndpoints(ABC):
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         min_association_strength : float | None, default=None
@@ -140,8 +140,8 @@ class SllpaEndpoints(ABC):
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         min_association_strength : float | None, default=None
@@ -193,8 +193,8 @@ class SllpaEndpoints(ABC):
             The property name to store the community ID for each node in the database
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         min_association_strength : float | None, default=None

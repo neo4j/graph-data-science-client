@@ -80,8 +80,8 @@ class SpanningTreeEndpoints(ABC):
             The username to use for logging.
         concurrency : int, optional
             The number of threads to use for parallel computation.
-        job_id : str, optional
-            An optional job ID for tracking the operation.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -130,8 +130,8 @@ class SpanningTreeEndpoints(ABC):
             The username to use for logging.
         concurrency : int, optional
             The number of threads to use for parallel computation.
-        job_id : str, optional
-            An optional job ID for tracking the operation.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -186,8 +186,8 @@ class SpanningTreeEndpoints(ABC):
             The username to use for logging.
         concurrency : int, optional
             The number of threads to use for parallel computation.
-        job_id : str, optional
-            An optional job ID for tracking the operation.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -243,8 +243,8 @@ class SpanningTreeEndpoints(ABC):
             The username to use for logging.
         concurrency : int, optional
             The number of threads to use for parallel computation.
-        job_id : str, optional
-            An optional job ID for tracking the operation.
+        job_id
+            Identifier for the computation.
         write_concurrency : int, optional
             The number of threads to use for writing results.
 

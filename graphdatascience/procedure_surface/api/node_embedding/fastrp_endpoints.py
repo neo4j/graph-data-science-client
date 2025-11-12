@@ -74,8 +74,8 @@ class FastRPEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         relationship_weight_property : str | None, default=None
             The property name that contains weight
         random_seed : int | None
@@ -139,8 +139,8 @@ class FastRPEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         relationship_weight_property : str | None, default=None
             The property name that contains weight
         random_seed : int | None, default=None
@@ -204,8 +204,8 @@ class FastRPEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         relationship_weight_property : str | None, default=None
             The property name that contains weight
         random_seed : int | None, default=None
@@ -273,8 +273,8 @@ class FastRPEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         relationship_weight_property : str | None, default=None
             The property name that contains weight
         random_seed : int | None, default=None

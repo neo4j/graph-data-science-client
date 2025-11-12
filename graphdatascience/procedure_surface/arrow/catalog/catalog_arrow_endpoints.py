@@ -83,8 +83,8 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         query : str
             Cypher query to select nodes and relationships for the graph projection.
             Must contain `gds.graph.project.remote`. Example: `MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)`
-        job_id : str | None, default=None
-            Unique identifier for the projection job.
+        job_id
+            Identifier for the computation.
         concurrency : int | None
             Number of concurrent threads/processes to use during graph projection.
         undirected_relationship_types : list[str]

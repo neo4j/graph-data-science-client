@@ -44,8 +44,8 @@ class LabelPropagationEndpoints(ABC):
             The number of concurrent threads
         consecutive_ids : bool, default=False
             Whether to use consecutive community IDs starting from 0
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_iterations : int, default=10
@@ -101,8 +101,8 @@ class LabelPropagationEndpoints(ABC):
             The number of concurrent threads
         consecutive_ids : bool, default=False
             Whether to use consecutive community IDs starting from 0
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_iterations : int, default=10
@@ -159,8 +159,8 @@ class LabelPropagationEndpoints(ABC):
             The number of concurrent threads
         consecutive_ids : bool, default=False
             Whether to use consecutive community IDs starting from 0
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_iterations : int, default=10
@@ -223,8 +223,8 @@ class LabelPropagationEndpoints(ABC):
             The number of concurrent threads
         consecutive_ids : bool, default=False
             Whether to use consecutive community IDs starting from 0
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_iterations : int, default=10

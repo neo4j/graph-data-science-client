@@ -48,8 +48,8 @@ class ArticulationPointsEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -90,8 +90,8 @@ class ArticulationPointsEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -130,8 +130,8 @@ class ArticulationPointsEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -178,8 +178,8 @@ class ArticulationPointsEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         write_concurrency : int | None
             The number of concurrent threads for writing
 

@@ -54,8 +54,8 @@ class KMeansEndpoints(ABC):
             The convergence threshold for the algorithm
         initial_sampler : str | None, default="UNIFORM"
             The sampling method for initial centroids
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         k : int | None, default=10
             The number of clusters
         log_progress : bool, default=True
@@ -123,8 +123,8 @@ class KMeansEndpoints(ABC):
             The convergence threshold for the algorithm
         initial_sampler : str | None, default="UNIFORM"
             The sampling method for initial centroids
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         k : int | None, default=10
             The number of clusters
         log_progress : bool, default=True
@@ -192,8 +192,8 @@ class KMeansEndpoints(ABC):
             The convergence threshold for the algorithm
         initial_sampler : str | None, default="UNIFORM"
             The sampling method for initial centroids
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         k : int | None, default=10
             The number of clusters
         log_progress : bool, default=True
@@ -265,8 +265,8 @@ class KMeansEndpoints(ABC):
             The convergence threshold for the algorithm
         initial_sampler : str | None, default="UNIFORM"
             The sampling method for initial centroids
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         k : int | None, default=10
             The number of clusters
         log_progress : bool, default=True
