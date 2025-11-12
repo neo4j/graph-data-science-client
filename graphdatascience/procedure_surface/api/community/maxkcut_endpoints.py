@@ -40,7 +40,7 @@ class MaxKCutEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         mutate_property : str
             The property name to store the community ID for each node
@@ -106,7 +106,7 @@ class MaxKCutEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.

@@ -45,7 +45,7 @@ class LouvainEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         mutate_property : str
             Name of the node property to store the results in.
@@ -109,7 +109,7 @@ class LouvainEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         tolerance : float, default=0.0001
             The tolerance value for the algorithm convergence
@@ -172,7 +172,7 @@ class LouvainEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         tolerance : float, default=0.0001
             The tolerance value for the algorithm convergence
@@ -239,7 +239,7 @@ class LouvainEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         write_property : str
             The property name to write community IDs to
@@ -303,7 +303,7 @@ class LouvainEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
+        G
             The graph to run the algorithm on or a dictionary representing the graph.
         tolerance : float, default=0.0001
             The tolerance value for the algorithm convergence

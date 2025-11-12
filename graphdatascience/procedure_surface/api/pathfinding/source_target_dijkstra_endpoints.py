@@ -50,7 +50,7 @@ class SourceTargetDijkstraEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         source_node : int
             The source node for the shortest path computation.
@@ -100,7 +100,7 @@ class SourceTargetDijkstraEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         mutate_relationship_type : str
             The relationship type to use for the new relationships in the graph catalog.
@@ -155,7 +155,7 @@ class SourceTargetDijkstraEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         write_relationship_type : str
             The relationship type to use for the new relationships.

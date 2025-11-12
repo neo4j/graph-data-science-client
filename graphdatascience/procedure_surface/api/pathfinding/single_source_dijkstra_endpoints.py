@@ -50,7 +50,7 @@ class SingleSourceDijkstraEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         source_node : int
             The source node for the shortest path computation.
@@ -98,7 +98,7 @@ class SingleSourceDijkstraEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         source_node : int
             The source node for the shortest path computation.
@@ -151,7 +151,7 @@ class SingleSourceDijkstraEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         source_node : int
             The source node for the shortest path computation.

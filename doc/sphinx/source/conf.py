@@ -29,6 +29,7 @@ extensions = [
 ]
 
 autodoc_class_signature = "separated"
+autodoc_typehints = "both"  # show type-hints inferred from signature, skip in docstring.
 
 templates_path = ["_templates"]
 exclude_patterns = []  # type: ignore

@@ -43,7 +43,7 @@ class HashGNNEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         iterations : int
             The number of iterations to run the algorithm
@@ -99,7 +99,7 @@ class HashGNNEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         iterations : int
             The number of iterations to run the algorithm
@@ -155,7 +155,7 @@ class HashGNNEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         iterations : int
             The number of iterations to run the algorithm
@@ -220,7 +220,7 @@ class HashGNNEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
+        G
             The graph to run the algorithm on or a dictionary representing the graph.
         iterations : int
             The number of iterations to run the algorithm

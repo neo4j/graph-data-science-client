@@ -41,7 +41,7 @@ class KSpanningTreeEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         k : int
             The number of spanning trees to compute.

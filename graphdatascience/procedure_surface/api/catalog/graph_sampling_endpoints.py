@@ -41,7 +41,7 @@ class GraphSamplingEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         graph_name : str
             The name of the new graph that is stored in the graph catalog.
@@ -116,7 +116,7 @@ class GraphSamplingEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         graph_name : str
             The name of the new graph that is stored in the graph catalog.

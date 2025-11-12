@@ -34,7 +34,7 @@ class SllpaEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         mutate_property : str
             The property name to store the community ID for each node
@@ -87,7 +87,7 @@ class SllpaEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
@@ -136,7 +136,7 @@ class SllpaEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
@@ -187,7 +187,7 @@ class SllpaEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         write_property : str
             The property name to store the community ID for each node in the database
