@@ -105,7 +105,7 @@ def test_common_parameter_consistency() -> None:
         "node_labels: list[str]",
         "sudo: bool",
         "job_id: str | None",
-        # "random_seed: int | None",
+        "random_seed: int | None",
         # "consecutive_ids: bool",
         # "mutate_property: str",
         # "concurrency: int | None",

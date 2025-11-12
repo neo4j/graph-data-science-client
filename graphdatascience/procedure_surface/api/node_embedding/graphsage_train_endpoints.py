@@ -137,8 +137,8 @@ class GraphSageTrainEndpoints(ABC):
             Batch size for training
         relationship_weight_property : str | None = None
             The property name that contains weight
-        random_seed : int | None = None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
 
         Returns
         -------

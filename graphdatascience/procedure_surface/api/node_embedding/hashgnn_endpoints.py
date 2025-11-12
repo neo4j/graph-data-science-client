@@ -64,8 +64,8 @@ class HashGNNEndpoints(ABC):
         feature_properties : list[str] | None, default=None
             The names of the node properties to use as input features.
             Defaults to [] if not specified
-        random_seed : int | None, default=None
-            Seed for random number generation to ensure reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
 
         Returns
         -------
@@ -118,8 +118,8 @@ class HashGNNEndpoints(ABC):
         feature_properties : list[str] | None, default=None
             The names of the node properties to use as input features.
             Defaults to [] if not specified
-        random_seed : int | None, default=None
-            Seed for random number generation to ensure reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
 
         Returns
         -------
@@ -192,8 +192,8 @@ class HashGNNEndpoints(ABC):
             Identifier for the computation.
         write_concurrency : int | None, default=None
             The number of concurrent threads used for writing
-        random_seed : int | None, default=None
-            Seed for random number generation to ensure reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
 
         Returns
         -------
@@ -239,8 +239,8 @@ class HashGNNEndpoints(ABC):
         feature_properties : list[str] | None, default=None
             The names of the node properties to use as input features.
             Defaults to [] if not specified
-        random_seed : int | None, default=None
-            Seed for random number generation to ensure reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
 
         Returns
         -------

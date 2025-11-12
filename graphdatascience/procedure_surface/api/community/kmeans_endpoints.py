@@ -66,8 +66,8 @@ class KMeansEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         seed_centroids : Optional[list[list[float]]], default=None
@@ -135,8 +135,8 @@ class KMeansEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         seed_centroids : Optional[list[list[float]]], default=None
@@ -204,8 +204,8 @@ class KMeansEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         seed_centroids : Optional[list[list[float]]], default=None
@@ -277,8 +277,8 @@ class KMeansEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         seed_centroids : Optional[list[list[float]]], default=None
@@ -340,8 +340,8 @@ class KMeansEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         seed_centroids : Optional[list[list[float]]], default=None

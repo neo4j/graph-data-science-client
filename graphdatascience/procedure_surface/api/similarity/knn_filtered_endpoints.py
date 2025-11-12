@@ -78,8 +78,8 @@ class KnnFilteredEndpoints(ABC):
             The rate at which to perturb the similarity graph.
         random_joins : int, default=10
             The number of random joins to perform.
-        random_seed : int | None, default=None
-            The seed for the random number generator.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
         relationship_types
@@ -160,8 +160,8 @@ class KnnFilteredEndpoints(ABC):
             The rate at which to perturb the similarity graph.
         random_joins : int, default=10
             The number of random joins to perform.
-        random_seed : int | None, default=None
-            The seed for the random number generator.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
         relationship_types
@@ -242,8 +242,8 @@ class KnnFilteredEndpoints(ABC):
             The rate at which to perturb the similarity graph.
         random_joins : int, default=10
             The number of random joins to perform.
-        random_seed : int | None, default=None
-            The seed for the random number generator.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
         relationship_types
@@ -331,8 +331,8 @@ class KnnFilteredEndpoints(ABC):
             The rate at which to perturb the similarity graph.
         random_joins : int, default=10
             The number of random joins to perform.
-        random_seed : int | None, default=None
-            The seed for the random number generator.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
         relationship_types
@@ -413,8 +413,8 @@ class KnnFilteredEndpoints(ABC):
             The rate at which to perturb the similarity graph.
         random_joins : int, default=10
             The number of random joins to perform.
-        random_seed : int | None, default=None
-            The seed for the random number generator.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
         relationship_types

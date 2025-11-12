@@ -46,8 +46,8 @@ class CelfEndpoints(ABC):
             Probability of a node being activated by an active neighbour node.
         monte_carlo_simulations : int | None, default=None
             Number of Monte-Carlo simulations.
-        random_seed : int | None, default=None
-            Random seed for reproducible results.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -101,8 +101,8 @@ class CelfEndpoints(ABC):
             Probability of a node being activated by an active neighbour node.
         monte_carlo_simulations : int | None, default=None
             Number of Monte-Carlo simulations.
-        random_seed : int | None
-            Random seed for reproducible results.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -154,8 +154,8 @@ class CelfEndpoints(ABC):
             The probability that influence spreads from one node to another.
         monte_carlo_simulations : int | None, default=None
             The number of Monte-Carlo simulations.
-        random_seed : int | None, default=None
-            Random seed for reproducible results.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -214,8 +214,8 @@ class CelfEndpoints(ABC):
             Probability of a node being activated by an active neighbour node.
         monte_carlo_simulations : int | None, default=None
             Number of Monte-Carlo simulations.
-        random_seed : int | None, default=None
-            Random seed for reproducible results.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -265,8 +265,8 @@ class CelfEndpoints(ABC):
             The probability that influence spreads from one node to another.
         monte_carlo_simulations : int
             The number of Monte-Carlo simulations.
-        random_seed : int | None, default=None
-            Random seed for reproducible results.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

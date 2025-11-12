@@ -57,8 +57,8 @@ class MaxKCutEndpoints(ABC):
             Whether to log progress information during execution
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        random_seed : int | None, default=None
-            Random seed for reproducible results. If None, a random seed is used.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
@@ -121,8 +121,8 @@ class MaxKCutEndpoints(ABC):
             The minimum community size. Communities smaller than this will be filtered from results.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        random_seed : int | None, default=None
-            Random seed for reproducible results. If None, a random seed is used.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
@@ -175,8 +175,8 @@ class MaxKCutEndpoints(ABC):
             The number of communities to detect. Must be at least 2.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
