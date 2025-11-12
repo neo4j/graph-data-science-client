@@ -12,7 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class K1ColoringEndpoints(ABC):
-
     @abstractmethod
     def mutate(
         self,
