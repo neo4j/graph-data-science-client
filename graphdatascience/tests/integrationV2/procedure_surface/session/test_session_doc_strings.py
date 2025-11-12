@@ -100,12 +100,14 @@ def test_common_parameter_consistency() -> None:
 
     # Common parameters that should have the same description everywhere
     common_params = {
+        "G: GraphV2",
+        "relationship_types: list[str]",
+        "node_labels: list[str]",
+        "sudo: bool",
         # "random_seed: int | None",
         # "consecutive_ids: bool",
-        "G: GraphV2",
         # "mutate_property: str",
         # "concurrency: int | None",
-        # "relationship_types: list[str]",
         # "scaler: str | dict[str, str | int | float] | ScalerConfig",
         # "log_progress: bool",
         # "max_iterations: int",
@@ -118,8 +120,6 @@ def test_common_parameter_consistency() -> None:
         # "username: str | None",
         # "job_id: str | None",
         # "seed_property: str | None",
-        "node_labels: list[str]",
-        "sudo: bool",
     }
 
     # Collect all descriptions for each common parameter
@@ -157,10 +157,10 @@ def test_common_parameter_consistency() -> None:
             continue
 
         # Get all unique descriptions for this parameter
-        all_descriptions: dict[str, int] = defaultdict(int)
-        for desc in desc_per_method.values():
-            all_descriptions[desc] += 1
-        all_descriptions = dict(sorted(all_descriptions.items(), key=lambda x: x[1], reverse=True))
+        all_descriptions: dict[str, list[str]] = defaultdict(list)
+        for method, desc in desc_per_method.items():
+            all_descriptions[desc] += [method]
+        all_descriptions = dict(sorted(all_descriptions.items(), key=lambda x: len(x[1]), reverse=True))
 
         if len(all_descriptions) > 1:
             inconsistencies.append(
@@ -174,8 +174,8 @@ def test_common_parameter_consistency() -> None:
             report += f"\nParameter: {issue['parameter']}\n"
             report += f"Found in methods: {len(issue['methods'])}\n"
             report += "Different descriptions:\n"
-            desc_options: dict[str, int] = issue["descriptions"]
-            for desc, count in desc_options.items():
-                report += f" * {desc} ({count}x)\n"
+            desc_options: dict[str, list[str]] = issue["descriptions"]
+            for desc, methods in desc_options.items():
+                report += f" * {desc} ({len(methods)}x) - Example method: {methods[0]}\n"
 
         pytest.fail(report)

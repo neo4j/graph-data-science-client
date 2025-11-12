@@ -77,8 +77,8 @@ class SteinerTreeEndpoints(ABC):
             The delta parameter for the shortest path computation used internally.
         apply_rerouting : bool, default=False
             Whether to apply rerouting optimization to improve the tree.
-        relationship_types : list[str], optional
-            Filter to only use relationships of specific types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -133,8 +133,8 @@ class SteinerTreeEndpoints(ABC):
             The delta parameter for the shortest path computation used internally.
         apply_rerouting : bool, default=False
             Whether to apply rerouting optimization to improve the tree.
-        relationship_types : list[str], optional
-            Filter to only use relationships of specific types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -195,8 +195,8 @@ class SteinerTreeEndpoints(ABC):
             The delta parameter for the shortest path computation used internally.
         apply_rerouting : bool, default=False
             Whether to apply rerouting optimization to improve the tree.
-        relationship_types : list[str], optional
-            Filter to only use relationships of specific types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -258,8 +258,8 @@ class SteinerTreeEndpoints(ABC):
             The delta parameter for the shortest path computation used internally.
         apply_rerouting : bool, default=False
             Whether to apply rerouting optimization to improve the tree.
-        relationship_types : list[str], optional
-            Filter to only use relationships of specific types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -314,8 +314,8 @@ class SteinerTreeEndpoints(ABC):
             The delta parameter for the shortest path computation.
         apply_rerouting : bool, default=False
             Whether to apply rerouting optimization.
-        relationship_types : list[str], optional
-            Filter to only use relationships of specific types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo

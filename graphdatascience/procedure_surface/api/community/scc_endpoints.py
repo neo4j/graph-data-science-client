@@ -98,8 +98,8 @@ class SccEndpoints(ABC):
             Whether to log progress
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -143,8 +143,8 @@ class SccEndpoints(ABC):
             Whether to log progress
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            The relationship types considered in this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -192,8 +192,8 @@ class SccEndpoints(ABC):
             Whether to log progress
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            The relationship types considered in this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -231,8 +231,8 @@ class SccEndpoints(ABC):
             Flag to decide if the component identifiers should be returned consecutively or not
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
 
         Returns
         -------

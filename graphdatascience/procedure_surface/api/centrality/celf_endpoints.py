@@ -156,8 +156,8 @@ class CelfEndpoints(ABC):
             The number of Monte-Carlo simulations.
         random_seed : int | None, default=None
             Random seed for reproducible results.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -267,8 +267,8 @@ class CelfEndpoints(ABC):
             The number of Monte-Carlo simulations.
         random_seed : int | None, default=None
             Random seed for reproducible results.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None, default=None

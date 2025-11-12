@@ -100,8 +100,8 @@ class WccEndpoints(ABC):
             The graph to run the algorithm on.
         threshold : float, default=0.0
             The minimum required weight to consider a relationship during traversal
-        relationship_types : list[str]
-            The relationships types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -156,8 +156,8 @@ class WccEndpoints(ABC):
             Don't stream components with fewer nodes than this
         threshold : float, default=0.0
             The minimum required weight to consider a relationship during traversal
-        relationship_types : list[str]
-            The relationships types considered in this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -216,8 +216,8 @@ class WccEndpoints(ABC):
             Don't write components with fewer nodes than this
         threshold : float, default=0.0
             The minimum required weight to consider a relationship during traversal
-        relationship_types : list[str]
-            The relationships types considered in this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -267,8 +267,8 @@ class WccEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph.
         threshold : float, default=0.0
             The minimum required weight to consider a relationship during traversal
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None, default=None

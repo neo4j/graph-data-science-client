@@ -63,8 +63,8 @@ class SourceTargetYensEndpoints(ABC):
             The number of shortest paths to compute.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -120,8 +120,8 @@ class SourceTargetYensEndpoints(ABC):
             The number of shortest paths to compute.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -184,8 +184,8 @@ class SourceTargetYensEndpoints(ABC):
             Whether to write costs of the shortest path onto the relationship.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -238,8 +238,8 @@ class SourceTargetYensEndpoints(ABC):
             The number of shortest paths to compute.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo

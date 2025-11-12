@@ -32,9 +32,8 @@ class RelationshipsEndpoints(ABC):
         ----------
         G : Graph
             The graph to stream relationships from
-        relationship_types: list[str] | None, default = None
-            The relationship types to stream
-            If not specified, all relationships in the graph will be streamed.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_properties: list[str] | None, default = None
             The relationship properties to stream. If not specified, no properties will be streamed.
         concurrency : int | None, default=None
@@ -142,8 +141,8 @@ class RelationshipsEndpoints(ABC):
         ----------
         G : Graph
             The graph to operate on
-        relationship_types: list[str] = ALL_TYPES,
-            The relationship types to create the inverse index for
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         concurrency : int | None, default=None
             The number of concurrent threads
         sudo : bool = False,

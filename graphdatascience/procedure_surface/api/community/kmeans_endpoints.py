@@ -68,8 +68,8 @@ class KMeansEndpoints(ABC):
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
         sudo
@@ -137,8 +137,8 @@ class KMeansEndpoints(ABC):
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
         sudo
@@ -206,8 +206,8 @@ class KMeansEndpoints(ABC):
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
         sudo
@@ -279,8 +279,8 @@ class KMeansEndpoints(ABC):
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
         sudo
@@ -342,8 +342,8 @@ class KMeansEndpoints(ABC):
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
 

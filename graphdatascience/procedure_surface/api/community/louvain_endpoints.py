@@ -119,8 +119,8 @@ class LouvainEndpoints(ABC):
             Whether to include intermediate community assignments
         max_iterations : int, default=10
             The maximum number of iterations per level
-        relationship_types : list[str]
-            The relationships types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -182,8 +182,8 @@ class LouvainEndpoints(ABC):
             Whether to include intermediate community assignments
         max_iterations : int, default=10
             The maximum number of iterations per level
-        relationship_types : list[str]
-            The relationships types considered in this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -251,8 +251,8 @@ class LouvainEndpoints(ABC):
             Whether to include intermediate community assignments
         max_iterations : int, default=10
             The maximum number of iterations per level
-        relationship_types : list[str]
-            The relationships types considered in this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -313,8 +313,8 @@ class LouvainEndpoints(ABC):
             Whether to include intermediate community assignments
         max_iterations : int, default=10
             The maximum number of iterations per level
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None, default=None

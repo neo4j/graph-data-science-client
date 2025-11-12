@@ -37,8 +37,8 @@ class ClosenessHarmonicEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_property : str
             The property name to store the harmonic closeness centrality score for each node
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -83,8 +83,8 @@ class ClosenessHarmonicEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -124,8 +124,8 @@ class ClosenessHarmonicEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -174,8 +174,8 @@ class ClosenessHarmonicEndpoints(ABC):
             The graph to run the algorithm on.
         write_property : str
             The property name to write the harmonic closeness centrality scores to
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -213,8 +213,8 @@ class ClosenessHarmonicEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on or a dictionary representing the graph.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None

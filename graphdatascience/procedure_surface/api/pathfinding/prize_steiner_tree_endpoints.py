@@ -68,8 +68,8 @@ class PrizeSteinerTreeEndpoints(ABC):
             The name of the node property containing prize values.
         relationship_weight_property : str, optional
             The name of the relationship property to use as weights.
-        relationship_types : list[str], optional
-            Filter to only use relationships of specific types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -115,8 +115,8 @@ class PrizeSteinerTreeEndpoints(ABC):
             The name of the node property containing prize values.
         relationship_weight_property : str, optional
             The name of the relationship property to use as weights.
-        relationship_types : list[str], optional
-            Filter to only use relationships of specific types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -168,8 +168,8 @@ class PrizeSteinerTreeEndpoints(ABC):
             The name of the node property containing prize values.
         relationship_weight_property : str, optional
             The name of the relationship property to use as weights.
-        relationship_types : list[str], optional
-            Filter to only use relationships of specific types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -222,8 +222,8 @@ class PrizeSteinerTreeEndpoints(ABC):
             The name of the node property containing prize values.
         relationship_weight_property : str, optional
             The name of the relationship property to use as weights.
-        relationship_types : list[str], optional
-            Filter to only use relationships of specific types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -269,8 +269,8 @@ class PrizeSteinerTreeEndpoints(ABC):
             The name of the node property containing prize values.
         relationship_weight_property : str, optional
             The name of the relationship property to use as weights.
-        relationship_types : list[str], optional
-            Filter to only use relationships of specific types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo

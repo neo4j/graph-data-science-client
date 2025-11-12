@@ -43,8 +43,8 @@ class CliqueCountingEndpoints(ABC):
             Whether to log progress
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -84,8 +84,8 @@ class CliqueCountingEndpoints(ABC):
             Whether to log progress
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -125,8 +125,8 @@ class CliqueCountingEndpoints(ABC):
             Whether to log progress
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -170,8 +170,8 @@ class CliqueCountingEndpoints(ABC):
             Whether to log progress
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -205,8 +205,8 @@ class CliqueCountingEndpoints(ABC):
             The number of concurrent threads
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
 
         Returns
         -------

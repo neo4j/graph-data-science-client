@@ -100,8 +100,8 @@ class K1ColoringEndpoints(ABC):
             The maximum number of iterations of K-1 Coloring to run
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -151,8 +151,8 @@ class K1ColoringEndpoints(ABC):
             Only community ids of communities with a size greater than or equal to the given value are returned
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            The relationship types considered in this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -206,8 +206,8 @@ class K1ColoringEndpoints(ABC):
             Only community ids of communities with a size greater than or equal to the given value are written to Neo4j
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            The relationship types considered in this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -248,8 +248,8 @@ class K1ColoringEndpoints(ABC):
             The maximum number of iterations of K-1 Coloring to run
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
 
         Returns
         -------
