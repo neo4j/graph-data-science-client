@@ -17,8 +17,8 @@ def extract_param_descriptions(docstring: str | None) -> Dict[str, str]:
         return {}
 
     descriptions = {}
-    # Match parameter sections (Google-style docstrings)
-    param_pattern = r"^\s*(\w+)\s*[:\(].*?\n\s*(.*?)(?=^\s*\w+\s*[:\(]|\Z)"
+    # Match parameter sections
+    param_pattern = r"^\s*(\w+)\s*(?:[:\(].*?)?\n\s+(.*?)(?=^\s*\w+\s*(?:[:\(]|\n\s+)|\Z)"
 
     # Find the Parameters section
     params_section = re.search(
@@ -118,8 +118,8 @@ def test_common_parameter_consistency() -> None:
         # "username: str | None",
         # "job_id: str | None",
         # "seed_property: str | None",
-        # "node_labels: list[str]",
-        # "sudo: bool",
+        "node_labels: list[str]",
+        "sudo: bool",
     }
 
     # Collect all descriptions for each common parameter

@@ -50,8 +50,8 @@ class LabelPropagationEndpoints(ABC):
             Whether to log progress
         max_iterations : int, default=10
             The maximum number of iterations
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
             The property name for node weights
         relationship_types : list[str]
@@ -60,8 +60,8 @@ class LabelPropagationEndpoints(ABC):
             The property name for relationship weights
         seed_property : str | None, default=None
             The property name containing seed values for initial community assignment
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -107,8 +107,8 @@ class LabelPropagationEndpoints(ABC):
             Whether to log progress
         max_iterations : int, default=10
             The maximum number of iterations
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
             The property name for node weights
         relationship_types : list[str]
@@ -117,8 +117,8 @@ class LabelPropagationEndpoints(ABC):
             The property name for relationship weights
         seed_property : str | None, default=None
             The property name containing seed values for initial community assignment
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -167,8 +167,8 @@ class LabelPropagationEndpoints(ABC):
             The maximum number of iterations
         min_community_size : int | None, default=None
             Minimum community size to include in results
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
             The property name for node weights
         relationship_types : list[str]
@@ -177,8 +177,8 @@ class LabelPropagationEndpoints(ABC):
             The property name for relationship weights
         seed_property : str | None, default=None
             The property name containing seed values for initial community assignment
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -231,8 +231,8 @@ class LabelPropagationEndpoints(ABC):
             The maximum number of iterations
         min_community_size : int | None, default=None
             Minimum community size to include in results
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
             The property name for node weights
         relationship_types : list[str]
@@ -241,8 +241,8 @@ class LabelPropagationEndpoints(ABC):
             The property name for relationship weights
         seed_property : str | None, default=None
             The property name containing seed values for initial community assignment
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
         write_concurrency : int | None, default=None
@@ -282,8 +282,8 @@ class LabelPropagationEndpoints(ABC):
             Whether to use consecutive community IDs starting from 0
         max_iterations : int, default=10
             The maximum number of iterations
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
             The property name for node weights
         relationship_types : list[str]

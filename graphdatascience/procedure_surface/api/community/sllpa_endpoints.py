@@ -48,14 +48,14 @@ class SllpaEndpoints(ABC):
             Whether to log progress
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : list[str]
-            Filter nodes with specific labels
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         partitioning : str | None
             Partitioning configuration for the algorithm
         relationship_types : list[str]
             Filter relationships with specific types
-        sudo : bool | None, default=False
-            Run with elevated privileges
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             Username for authentication
 
@@ -97,14 +97,14 @@ class SllpaEndpoints(ABC):
             Whether to log progress
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : list[str]
-            Filter nodes with specific labels
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         partitioning : str | None
             Partitioning configuration for the algorithm
         relationship_types : list[str]
             Filter relationships with specific types
-        sudo : bool | None, default=False
-            Run with elevated privileges
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             Username for authentication
 
@@ -146,14 +146,14 @@ class SllpaEndpoints(ABC):
             Whether to log progress
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : list[str]
-            Filter nodes with specific labels
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         partitioning : str | None
             Partitioning configuration for the algorithm
         relationship_types : list[str]
             Filter relationships with specific types
-        sudo : bool | None, default=False
-            Run with elevated privileges
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             Username for authentication
 
@@ -199,14 +199,14 @@ class SllpaEndpoints(ABC):
             Whether to log progress
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : list[str]
-            Filter nodes with specific labels
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         partitioning : str | None
             Partitioning configuration for the algorithm
         relationship_types : list[str]
             Filter relationships with specific types
-        sudo : bool | None, default=False
-            Run with elevated privileges
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             Username for authentication
         write_concurrency : int | None, default=None
@@ -242,8 +242,8 @@ class SllpaEndpoints(ABC):
             The number of concurrent threads
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
-        node_labels : list[str]
-            Filter nodes with specific labels
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         partitioning : str | None
             Partitioning configuration for the algorithm
         relationship_types : list[str]

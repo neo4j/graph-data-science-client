@@ -49,11 +49,11 @@ class KCoreEndpoints(ABC):
             Identifier for the computation.
         log_progress : bool, default=True
             Display progress logging.
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        sudo : bool, default=False
+        sudo
             Disable the memory guard.
         username : str | None, default=None
             As an administrator, run the algorithm as a different user, to access also their graphs.
@@ -91,12 +91,12 @@ class KCoreEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -129,10 +129,10 @@ class KCoreEndpoints(ABC):
             The graph to run the algorithm on.
         relationship_types : list[str]
             The relationships types considered in this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
-        sudo : bool
-            Override memory estimation limits
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
@@ -179,12 +179,12 @@ class KCoreEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types considered in this algorithm run
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
         write_concurrency : int | None, default=None
@@ -215,8 +215,8 @@ class KCoreEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph.
         concurrency : int | None, default=None
             The number of concurrent threads
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
 

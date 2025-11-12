@@ -71,14 +71,14 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
             Whether to persist the model to disk
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         username : str | None = None
             The username to attribute the procedure run to
         log_progress : bool, default=True
             Whether to log progress
-        sudo : bool
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         concurrency : int | None
             The number of concurrent threads
         job_id : str | None

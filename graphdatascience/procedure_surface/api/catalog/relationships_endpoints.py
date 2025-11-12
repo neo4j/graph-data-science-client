@@ -39,7 +39,7 @@ class RelationshipsEndpoints(ABC):
             The relationship properties to stream. If not specified, no properties will be streamed.
         concurrency : int | None, default=None
             The number of concurrent threads
-        sudo : bool
+        sudo
             Disable the memory guard.
         log_progress : bool = True
             Whether to log progress
@@ -81,7 +81,7 @@ class RelationshipsEndpoints(ABC):
             The number of concurrent threads
         write_concurrency : int | None, default=None
             The number of concurrent threads used for writing
-        sudo : bool
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress
@@ -240,8 +240,8 @@ class RelationshipsEndpoints(ABC):
             Number of concurrent threads to use.
         job_id : str | None, default=None
             Unique identifier for the job associated with the computation.
-        sudo : bool | None, default=None
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress during graph generation.
         username : str | None, default=None

@@ -50,11 +50,11 @@ class K1ColoringEndpoints(ABC):
             Display progress logging.
         max_iterations : int, default=10
             Maximum number of iterations to run.
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        sudo : bool, default=False
+        sudo
             Disable the memory guard.
         username : str | None, default=None
             As an administrator, run the algorithm as a different user, to access also their graphs.
@@ -98,12 +98,12 @@ class K1ColoringEndpoints(ABC):
             Whether to log progress
         max_iterations : int, default=10
             The maximum number of iterations of K-1 Coloring to run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -149,12 +149,12 @@ class K1ColoringEndpoints(ABC):
             The maximum number of iterations of K-1 Coloring to run
         min_community_size : int | None, default=None
             Only community ids of communities with a size greater than or equal to the given value are returned
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types considered in this algorithm run
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -204,12 +204,12 @@ class K1ColoringEndpoints(ABC):
             The maximum number of iterations of K-1 Coloring to run
         min_community_size : int | None, default=None
             Only community ids of communities with a size greater than or equal to the given value are written to Neo4j
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types considered in this algorithm run
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
         write_concurrency : int | None, default=None
@@ -246,8 +246,8 @@ class K1ColoringEndpoints(ABC):
             The number of concurrent threads
         max_iterations : int, default=10
             The maximum number of iterations of K-1 Coloring to run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
 

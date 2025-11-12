@@ -45,9 +45,9 @@ class DegreeEndpoints(ABC):
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Display progress logging.
@@ -97,9 +97,9 @@ class DegreeEndpoints(ABC):
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Display progress logging.
@@ -147,11 +147,10 @@ class DegreeEndpoints(ABC):
             'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run.
-        sudo : bool
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress of the algorithm execution
         username : str | None, default=None
@@ -207,9 +206,9 @@ class DegreeEndpoints(ABC):
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Display progress logging.
@@ -252,8 +251,8 @@ class DegreeEndpoints(ABC):
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None
             The number of concurrent threads
         relationship_weight_property : str | None, default=None

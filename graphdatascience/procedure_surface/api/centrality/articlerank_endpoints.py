@@ -60,9 +60,9 @@ class ArticleRankEndpoints(ABC):
             - "NONE" (default, no scaling)
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Display progress logging.
@@ -130,9 +130,9 @@ class ArticleRankEndpoints(ABC):
             - "NONE" (default, no scaling)
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Display progress logging.
@@ -192,9 +192,9 @@ class ArticleRankEndpoints(ABC):
             Configuration for scaling the scores
         relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
-        sudo : bool
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
             Disable the memory guard.
         log_progress : bool
             Whether to log progress
@@ -266,9 +266,9 @@ class ArticleRankEndpoints(ABC):
             - "NONE" (default, no scaling)
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Display progress logging.
@@ -326,8 +326,8 @@ class ArticleRankEndpoints(ABC):
             Configuration for scaling the scores
         relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None
             The number of concurrent threads
         relationship_weight_property : str | None, default=None

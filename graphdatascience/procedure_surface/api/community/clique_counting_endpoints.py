@@ -41,12 +41,12 @@ class CliqueCountingEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -82,12 +82,12 @@ class CliqueCountingEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        sudo : bool | None, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -123,12 +123,12 @@ class CliqueCountingEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        sudo : bool | None, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -168,12 +168,12 @@ class CliqueCountingEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        sudo : bool | None, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
         write_concurrency : int | None, default=None
@@ -203,8 +203,8 @@ class CliqueCountingEndpoints(ABC):
             The graph or graph configuration to estimate for
         concurrency : int | None, default=None
             The number of concurrent threads
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
 

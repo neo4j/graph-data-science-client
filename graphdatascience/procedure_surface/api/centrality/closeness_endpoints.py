@@ -43,11 +43,10 @@ class ClosenessEndpoints(ABC):
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run.
-        sudo : bool
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress of the algorithm execution
         username : str | None, default=None
@@ -92,11 +91,10 @@ class ClosenessEndpoints(ABC):
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run.
-        sudo : bool
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress of the algorithm execution
         username : str | None, default=None
@@ -137,11 +135,10 @@ class ClosenessEndpoints(ABC):
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run.
-        sudo : bool
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress of the algorithm execution
         username : str | None, default=None
@@ -191,11 +188,10 @@ class ClosenessEndpoints(ABC):
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run.
-        sudo : bool
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress of the algorithm execution
         username : str | None, default=None
@@ -234,8 +230,8 @@ class ClosenessEndpoints(ABC):
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run.
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None
             The number of concurrent threads used for the algorithm execution.
 

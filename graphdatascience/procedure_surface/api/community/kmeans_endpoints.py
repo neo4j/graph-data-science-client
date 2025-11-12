@@ -62,8 +62,8 @@ class KMeansEndpoints(ABC):
             Whether to log progress
         max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None
@@ -72,8 +72,8 @@ class KMeansEndpoints(ABC):
             The relationship types used to select relationships for this algorithm run
         seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
-        sudo : bool | None, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -131,8 +131,8 @@ class KMeansEndpoints(ABC):
             Whether to log progress
         max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None
@@ -141,8 +141,8 @@ class KMeansEndpoints(ABC):
             The relationship types used to select relationships for this algorithm run
         seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
-        sudo : bool | None, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -200,8 +200,8 @@ class KMeansEndpoints(ABC):
             Whether to log progress
         max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None
@@ -210,8 +210,8 @@ class KMeansEndpoints(ABC):
             The relationship types used to select relationships for this algorithm run
         seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
-        sudo : bool | None, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -273,8 +273,8 @@ class KMeansEndpoints(ABC):
             Whether to log progress
         max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None
@@ -283,8 +283,8 @@ class KMeansEndpoints(ABC):
             The relationship types used to select relationships for this algorithm run
         seed_centroids : Optional[list[list[float]]], default=None
             Initial centroids for the algorithm
-        sudo : bool | None, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
         write_concurrency : int | None, default=None
@@ -336,8 +336,8 @@ class KMeansEndpoints(ABC):
             The number of clusters
         max_iterations : int | None, default=10
             The maximum number of iterations
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1
             The number of times the algorithm should be restarted with different initial centers
         random_seed : int | None, default=None

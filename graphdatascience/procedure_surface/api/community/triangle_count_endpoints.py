@@ -51,14 +51,13 @@ class TriangleCountEndpoints(ABC):
         max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run. If None, all nodes are used.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        sudo : bool, default=False
-            Override memory estimation limits. Setting this to True allows running the algorithm
-            even if the estimated memory requirements exceed available memory.
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -105,14 +104,13 @@ class TriangleCountEndpoints(ABC):
         max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run. If None, all nodes are used.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        sudo : bool, default=False
-            Override memory estimation limits. Setting this to True allows running the algorithm
-            even if the estimated memory requirements exceed available memory.
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -159,14 +157,13 @@ class TriangleCountEndpoints(ABC):
         max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run. If None, all nodes are used.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        sudo : bool, default=False
-            Override memory estimation limits. Setting this to True allows running the algorithm
-            even if the estimated memory requirements exceed available memory.
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -219,14 +216,13 @@ class TriangleCountEndpoints(ABC):
         max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run. If None, all nodes are used.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.
-        sudo : bool, default=False
-            Override memory estimation limits. Setting this to True allows running the algorithm
-            even if the estimated memory requirements exceed available memory.
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
         write_concurrency : int | None, default=None
@@ -267,8 +263,8 @@ class TriangleCountEndpoints(ABC):
         max_degree : int | None, default=None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run. If None, all nodes are used.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run. If None, all
             relationship types are used.

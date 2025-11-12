@@ -46,12 +46,12 @@ class LocalClusteringCoefficientEndpoints:
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str]
-            Node labels to include in the computation
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             Relationship types to include in the computation
-        sudo : bool | None, default=False
-            Run with elevated privileges
+        sudo
+            Disable the memory guard.
         triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
         username : str | None, default=None
@@ -91,12 +91,12 @@ class LocalClusteringCoefficientEndpoints:
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str]
-            Node labels to include in the computation
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             Relationship types to include in the computation
-        sudo : bool | None, default=False
-            Run with elevated privileges
+        sudo
+            Disable the memory guard.
         triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
         username : str | None, default=None
@@ -136,12 +136,12 @@ class LocalClusteringCoefficientEndpoints:
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str]
-            Node labels to include in the computation
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             Relationship types to include in the computation
-        sudo : bool | None, default=False
-            Run with elevated privileges
+        sudo
+            Disable the memory guard.
         triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
         username : str | None, default=None
@@ -185,12 +185,12 @@ class LocalClusteringCoefficientEndpoints:
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str]
-            Node labels to include in the computation
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             Relationship types to include in the computation
-        sudo : bool | None, default=False
-            Run with elevated privileges
+        sudo
+            Disable the memory guard.
         triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
         username : str | None, default=None
@@ -232,12 +232,12 @@ class LocalClusteringCoefficientEndpoints:
             Job identifier for tracking
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str]
-            Node labels to include in the computation
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             Relationship types to include in the computation
-        sudo : bool | None, default=False
-            Run with elevated privileges
+        sudo
+            Disable the memory guard.
         triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
         username : str | None, default=None
