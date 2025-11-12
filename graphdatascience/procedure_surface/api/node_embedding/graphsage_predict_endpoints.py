@@ -40,8 +40,8 @@ class GraphSagePredictEndpoints(ABC):
             The graph to run the algorithm on.
         model_name : str
             Name under which the model will is stored
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         username : str | None = None
@@ -91,8 +91,8 @@ class GraphSagePredictEndpoints(ABC):
             Name under which the model will is stored
         write_property : str
             The name of the node property to write the embeddings to
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         username : str | None = None
@@ -142,8 +142,8 @@ class GraphSagePredictEndpoints(ABC):
             Name under which the model will is stored
         mutate_property : str
             The name of the node property to store the embeddings
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         username : str | None = None
@@ -188,8 +188,8 @@ class GraphSagePredictEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph.
         model_name : str
             Name under which the model will is stored
-        relationship_types : list[str]
-            The relationship types to consider.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         batch_size : int = 100

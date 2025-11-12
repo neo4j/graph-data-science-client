@@ -56,8 +56,8 @@ class SingleSourceDijkstraEndpoints(ABC):
             The source node for the shortest path computation.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -106,8 +106,8 @@ class SingleSourceDijkstraEndpoints(ABC):
             The relationship type to use for the new relationships in the graph catalog.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -163,8 +163,8 @@ class SingleSourceDijkstraEndpoints(ABC):
             Whether to write costs of the shortest path onto the relationship.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -210,8 +210,8 @@ class SingleSourceDijkstraEndpoints(ABC):
             The source node for the shortest path computation.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo

@@ -61,8 +61,8 @@ class EigenvectorEndpoints(ABC):
             - "NONE" (default, no scaling)
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -128,8 +128,8 @@ class EigenvectorEndpoints(ABC):
             - "NONE" (default, no scaling)
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -190,8 +190,8 @@ class EigenvectorEndpoints(ABC):
             - "NONE" (default, no scaling)
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -261,8 +261,8 @@ class EigenvectorEndpoints(ABC):
             - "NONE" (default, no scaling)
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -321,8 +321,8 @@ class EigenvectorEndpoints(ABC):
             - "NONE" (default, no scaling)
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None

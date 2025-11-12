@@ -77,8 +77,8 @@ class KnnEndpoints(ABC):
             The seed for the random number generator.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -147,8 +147,8 @@ class KnnEndpoints(ABC):
             The seed for the random number generator.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -217,8 +217,8 @@ class KnnEndpoints(ABC):
             The seed for the random number generator.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -294,8 +294,8 @@ class KnnEndpoints(ABC):
             The seed for the random number generator.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -365,8 +365,8 @@ class KnnEndpoints(ABC):
             The seed for the random number generator.
         initial_sampler : str, default="UNIFORM"
             The initial sampling strategy.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo

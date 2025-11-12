@@ -145,8 +145,8 @@ class DegreeEndpoints(ABC):
             'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
             'REVERSE' treats each relationship as if it were directed in the opposite direction.
             'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -249,8 +249,8 @@ class DegreeEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph.
         orientation : str | None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None

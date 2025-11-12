@@ -54,8 +54,8 @@ class LabelPropagationEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
             The property name for node weights
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
             The property name for relationship weights
         seed_property : str | None, default=None
@@ -111,8 +111,8 @@ class LabelPropagationEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
             The property name for node weights
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
             The property name for relationship weights
         seed_property : str | None, default=None
@@ -171,8 +171,8 @@ class LabelPropagationEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
             The property name for node weights
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
             The property name for relationship weights
         seed_property : str | None, default=None
@@ -235,8 +235,8 @@ class LabelPropagationEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
             The property name for node weights
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
             The property name for relationship weights
         seed_property : str | None, default=None
@@ -286,8 +286,8 @@ class LabelPropagationEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
             The property name for node weights
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
             The property name for relationship weights
         seed_property : str | None, default=None

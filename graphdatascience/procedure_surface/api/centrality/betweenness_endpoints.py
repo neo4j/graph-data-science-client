@@ -149,8 +149,8 @@ class BetweennessEndpoints(ABC):
             The number of nodes to use for sampling.
         sampling_seed : int | None, default=None
             The seed value for sampling randomization
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -254,8 +254,8 @@ class BetweennessEndpoints(ABC):
             The number of nodes to use for sampling.
         sampling_seed : int | None, default=None
             The seed value for sampling randomization
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None

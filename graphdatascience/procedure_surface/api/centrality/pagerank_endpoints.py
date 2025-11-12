@@ -193,8 +193,8 @@ class PageRankEndpoints(ABC):
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - A ScalerConfig instance
             - "NONE" (default, no scaling)
-        relationship_types : list[str]
-            The relationships types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -327,8 +327,8 @@ class PageRankEndpoints(ABC):
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - A ScalerConfig instance
             - "NONE" (default, no scaling)
-        relationship_types : list[str]
-            The relationships types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None

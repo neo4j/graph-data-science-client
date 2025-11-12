@@ -41,8 +41,8 @@ class ClosenessEndpoints(ABC):
             The property name to store the closeness centrality score for each node
         use_wasserman_faust : bool
             Use the improved Wasserman-Faust formula for closeness computation.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -89,8 +89,8 @@ class ClosenessEndpoints(ABC):
             The graph to run the algorithm on.
         use_wasserman_faust : bool
             Use the improved Wasserman-Faust formula for closeness computation.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -133,8 +133,8 @@ class ClosenessEndpoints(ABC):
             The graph to run the algorithm on.
         use_wasserman_faust : bool
             Use the improved Wasserman-Faust formula for closeness computation.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -186,8 +186,8 @@ class ClosenessEndpoints(ABC):
             The property name to write closeness centrality scores to in the Neo4j database
         use_wasserman_faust : bool | None, default=None
             Use the improved Wasserman-Faust formula for closeness computation.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -228,8 +228,8 @@ class ClosenessEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph configuration.
         use_wasserman_faust : bool | None, default=None
             Use the improved Wasserman-Faust formula for closeness computation.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None

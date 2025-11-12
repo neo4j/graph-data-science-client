@@ -55,8 +55,8 @@ class ModularityOptimizationEndpoints(ABC):
             Maximum number of iterations for the algorithm
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            Filter relationships with specific types
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
             Property name for relationship weights
         seed_property : str | None, default=None
@@ -115,8 +115,8 @@ class ModularityOptimizationEndpoints(ABC):
             Maximum number of iterations for the algorithm
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            Filter relationships with specific types
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
             Property name for relationship weights
         seed_property : str | None, default=None
@@ -178,8 +178,8 @@ class ModularityOptimizationEndpoints(ABC):
             Minimum size for communities to be included in results
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            Filter relationships with specific types
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
             Property name for relationship weights
         seed_property : str | None, default=None
@@ -245,8 +245,8 @@ class ModularityOptimizationEndpoints(ABC):
             Minimum size for communities to be included in results
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            Filter relationships with specific types
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
             Property name for relationship weights
         seed_property : str | None, default=None
@@ -299,8 +299,8 @@ class ModularityOptimizationEndpoints(ABC):
             Maximum number of iterations for the algorithm
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
-            Filter relationships with specific types
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
             Property name for relationship weights
         seed_property : str | None, default=None

@@ -176,8 +176,8 @@ class HashGNNEndpoints(ABC):
         feature_properties : list[str] | None, default=None
             The names of the node properties to use as input features.
             Defaults to [] if not specified
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo

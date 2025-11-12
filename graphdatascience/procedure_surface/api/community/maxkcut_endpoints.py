@@ -59,9 +59,8 @@ class MaxKCutEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed : int | None, default=None
             Random seed for reproducible results. If None, a random seed is used.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run. If None, all
-            relationship types are used.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
             The relationship weight property. If None, each relationship has weight 1.0.
         sudo
@@ -124,9 +123,8 @@ class MaxKCutEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed : int | None, default=None
             Random seed for reproducible results. If None, a random seed is used.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run. If None, all
-            relationship types are used.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
             The relationship weight property. If None, each relationship has weight 1.0.
         sudo
@@ -179,9 +177,8 @@ class MaxKCutEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed : int | None, default=None
             Random seed for reproducible results
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run. If None, all
-            relationship types are used.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
             The relationship weight property. If None, each relationship has weight 1.0.
         vns_max_neighborhood_order : int | None, default=0

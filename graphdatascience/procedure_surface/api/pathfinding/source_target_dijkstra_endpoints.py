@@ -58,8 +58,8 @@ class SourceTargetDijkstraEndpoints(ABC):
             A single target node or a list of target nodes for the shortest path computation.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -110,8 +110,8 @@ class SourceTargetDijkstraEndpoints(ABC):
             A single target node or a list of target nodes for the shortest path computation.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -169,8 +169,8 @@ class SourceTargetDijkstraEndpoints(ABC):
             Whether to write costs of the shortest path onto the relationship(s).
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -218,8 +218,8 @@ class SourceTargetDijkstraEndpoints(ABC):
             A single target node or a list of target nodes for the shortest path computation.
         relationship_weight_property : str | None, default=None
             The relationship property to use as weights.
-        relationship_types : list[str]
-            Filter on relationship types.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo

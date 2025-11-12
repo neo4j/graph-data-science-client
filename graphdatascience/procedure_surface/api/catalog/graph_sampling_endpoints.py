@@ -59,9 +59,8 @@ class GraphSamplingEndpoints(ABC):
             Default is False.
         relationship_weight_property : str, optional
             Name of the relationship property to use as weights. If unspecified, the algorithm runs unweighted.
-        relationship_types : list of str, optional
-            Filter the named graph using the given relationship types. Relationships with any of the given types will be
-            included.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -133,9 +132,8 @@ class GraphSamplingEndpoints(ABC):
             Default is False.
         relationship_weight_property : str, optional
             Name of the relationship property to use as weights. If unspecified, the algorithm runs unweighted.
-        relationship_types : list of str, optional
-            Filter the named graph using the given relationship types. Relationships with any of the given types will be
-            included.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo

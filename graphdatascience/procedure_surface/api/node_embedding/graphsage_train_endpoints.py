@@ -119,8 +119,8 @@ class GraphSageTrainEndpoints(ABC):
             Ratio of nodes to sample for each training batch
         store_model_to_disk : bool = False
             Whether to persist the model to disk
-        relationship_types : list[str] = ALL_TYPES
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         username : str | None = None

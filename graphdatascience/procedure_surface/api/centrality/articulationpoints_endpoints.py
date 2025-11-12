@@ -36,8 +36,8 @@ class ArticulationPointsEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_property : str
             The property name to store the articulation point flag for each node
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -78,8 +78,8 @@ class ArticulationPointsEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -118,8 +118,8 @@ class ArticulationPointsEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -166,8 +166,8 @@ class ArticulationPointsEndpoints(ABC):
             The graph to run the algorithm on.
         write_property : str
             The property name to store the articulation point flag for each node
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -204,8 +204,8 @@ class ArticulationPointsEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to be used in the estimation. Provided either as a GraphV2 object or a configuration dictionary for the projection.
-        relationship_types : list[str]
-            The relationship types used to select relationships for this algorithm run.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None

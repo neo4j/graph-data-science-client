@@ -52,8 +52,8 @@ class SllpaEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         partitioning : str | None
             Partitioning configuration for the algorithm
-        relationship_types : list[str]
-            Filter relationships with specific types
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -101,8 +101,8 @@ class SllpaEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         partitioning : str | None
             Partitioning configuration for the algorithm
-        relationship_types : list[str]
-            Filter relationships with specific types
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -150,8 +150,8 @@ class SllpaEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         partitioning : str | None
             Partitioning configuration for the algorithm
-        relationship_types : list[str]
-            Filter relationships with specific types
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -203,8 +203,8 @@ class SllpaEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         partitioning : str | None
             Partitioning configuration for the algorithm
-        relationship_types : list[str]
-            Filter relationships with specific types
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
         username : str | None, default=None
@@ -246,8 +246,8 @@ class SllpaEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         partitioning : str | None
             Partitioning configuration for the algorithm
-        relationship_types : list[str]
-            Filter relationships with specific types
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
 
         Returns
         -------
