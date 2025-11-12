@@ -50,12 +50,12 @@ class PageRankEndpoints(ABC):
             Minimum change in scores between iterations.
         max_iterations : int
             Maximum number of iterations to run.
-        scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
+        scaler
             The scaler to use. Can be:
+
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig instance
-            - "NONE" (default, no scaling)
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -119,12 +119,12 @@ class PageRankEndpoints(ABC):
             Minimum change in scores between iterations.
         max_iterations : int
             Maximum number of iterations to run.
-        scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
+        scaler
             The scaler to use. Can be:
+
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig instance
-            - "NONE" (default, no scaling)
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -187,12 +187,12 @@ class PageRankEndpoints(ABC):
             Minimum change in scores between iterations
         max_iterations : int
             The maximum number of iterations to run
-        scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
+        scaler
             The scaler to use. Can be:
+
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig instance
-            - "NONE" (default, no scaling)
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -257,12 +257,12 @@ class PageRankEndpoints(ABC):
             Minimum change in scores between iterations.
         max_iterations : int
             Maximum number of iterations to run.
-        scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
+        scaler
             The scaler to use. Can be:
+
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig instance
-            - "NONE" (default, no scaling)
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -319,12 +319,12 @@ class PageRankEndpoints(ABC):
             Minimum change in scores between iterations
         max_iterations : int
             The maximum number of iterations to run
-        scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
+        scaler
             The scaler to use. Can be:
+
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig instance
-            - "NONE" (default, no scaling)
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

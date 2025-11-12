@@ -53,12 +53,12 @@ class EigenvectorEndpoints(ABC):
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
-        scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
+        scaler
             The scaler to use. Can be:
+
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig instance
-            - "NONE" (default, no scaling)
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
         relationship_types
@@ -120,12 +120,12 @@ class EigenvectorEndpoints(ABC):
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
-        scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
+        scaler
             The scaler to use. Can be:
+
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig instance
-            - "NONE" (default, no scaling)
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
         relationship_types
@@ -182,12 +182,12 @@ class EigenvectorEndpoints(ABC):
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
-        scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
+        scaler
             The scaler to use. Can be:
+
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig instance
-            - "NONE" (default, no scaling)
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
         relationship_types
@@ -253,12 +253,12 @@ class EigenvectorEndpoints(ABC):
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
-        scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
+        scaler
             The scaler to use. Can be:
+
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig instance
-            - "NONE" (default, no scaling)
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
         relationship_types
@@ -311,12 +311,12 @@ class EigenvectorEndpoints(ABC):
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
-        scaler : str | dict[str, str | int | float] | ScalerConfig, default="NONE"
+        scaler
             The scaler to use. Can be:
+
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig instance
-            - "NONE" (default, no scaling)
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         relationship_weight_property : str | None, default=None
             The property name that contains weight values for relationships
         relationship_types

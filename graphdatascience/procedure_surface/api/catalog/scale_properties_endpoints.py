@@ -40,11 +40,12 @@ class ScalePropertiesEndpoints(ABC):
             Name of the node property to store the results in.
         node_properties : list[str]
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
-        scaler : str | dict[str, str | int | float] | ScalerConfig
+        scaler
             The scaler to use. Can be:
-            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center')
+
+            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig instance
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -89,11 +90,12 @@ class ScalePropertiesEndpoints(ABC):
             The graph to run the algorithm on.
         node_properties : list[str]
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
-        scaler : str | dict[str, str | int | float] | ScalerConfig
+        scaler
             The scaler to use. Can be:
-            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center')
+
+            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig or LogScalerConfig instance
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -136,11 +138,12 @@ class ScalePropertiesEndpoints(ABC):
             The graph to run the algorithm on.
         node_properties : list[str]
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
-        scaler : str | dict[str, str | int | float] | ScalerConfig
+        scaler
             The scaler to use. Can be:
-            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center')
+
+            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig instance
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -190,11 +193,12 @@ class ScalePropertiesEndpoints(ABC):
             Name of the node property to store the results in.
         node_properties : list[str]
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
-        scaler : str | dict[str, str | int | float] | ScalerConfig
+        scaler
             The scaler to use. Can be:
-            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center')
+
+            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig instance
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
@@ -233,11 +237,12 @@ class ScalePropertiesEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph.
         node_properties : Any
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
-        scaler : str | dict[str, str | int | float] | ScalerConfig
+        scaler
             The scaler to use. Can be:
-            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center')
+
+            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A ScalerConfig instance
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency
