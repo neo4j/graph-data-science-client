@@ -89,8 +89,8 @@ class GraphSagePredictEndpoints(ABC):
             The graph to run the algorithm on.
         model_name : str
             Name under which the model will is stored
-        write_property : str
-            The name of the node property to write the embeddings to
+        write_property
+            Name of the node property to store the results in.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -140,8 +140,8 @@ class GraphSagePredictEndpoints(ABC):
             The graph to run the algorithm on.
         model_name : str
             Name under which the model will is stored
-        mutate_property : str
-            The name of the node property to store the embeddings
+        mutate_property
+            Name of the node property to store the results in.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

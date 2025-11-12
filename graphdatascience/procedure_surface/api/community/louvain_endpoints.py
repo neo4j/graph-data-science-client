@@ -47,7 +47,7 @@ class LouvainEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        mutate_property : str
+        mutate_property
             Name of the node property to store the results in.
         tolerance : float, default=0.0001
             Minimum change in scores between iterations.
@@ -241,8 +241,8 @@ class LouvainEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        write_property : str
-            The property name to write community IDs to
+        write_property
+            Name of the node property to store the results in.
         tolerance : float, default=0.0001
             The tolerance value for the algorithm convergence
         max_levels : int, default=10

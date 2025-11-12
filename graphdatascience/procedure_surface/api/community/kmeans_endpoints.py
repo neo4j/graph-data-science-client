@@ -44,8 +44,8 @@ class KMeansEndpoints(ABC):
             The graph to run the algorithm on.
         node_property : str
             The node property to use for clustering
-        mutate_property : str
-            The property name to store the community ID for each node
+        mutate_property
+            Name of the node property to store the results in.
         compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
         concurrency
@@ -255,8 +255,8 @@ class KMeansEndpoints(ABC):
             The graph to run the algorithm on.
         node_property : str
             The node property to use for clustering
-        write_property : str
-            The property name to write the community IDs to
+        write_property
+            Name of the node property to store the results in.
         compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
         concurrency

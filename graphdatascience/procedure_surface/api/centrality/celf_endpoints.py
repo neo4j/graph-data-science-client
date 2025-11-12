@@ -40,7 +40,7 @@ class CelfEndpoints(ABC):
             The graph to run the algorithm on.
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization
-        mutate_property : str
+        mutate_property
             Name of the node property to store the results in.
         propagation_probability : float | None, default=None
             Probability of a node being activated by an active neighbour node.
@@ -208,7 +208,7 @@ class CelfEndpoints(ABC):
             The graph to run the algorithm on.
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization
-        write_property : str
+        write_property
             Name of the node property to store the results in.
         propagation_probability : float | None, default=None
             Probability of a node being activated by an active neighbour node.

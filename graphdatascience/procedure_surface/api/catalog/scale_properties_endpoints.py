@@ -36,7 +36,7 @@ class ScalePropertiesEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        mutate_property : str
+        mutate_property
             Name of the node property to store the results in.
         node_properties : list[str]
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
@@ -186,8 +186,8 @@ class ScalePropertiesEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        write_property : str
-            The property name to store the scaled property values for each node in the database
+        write_property
+            Name of the node property to store the results in.
         node_properties : list[str]
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
         scaler : str | dict[str, str | int | float] | ScalerConfig

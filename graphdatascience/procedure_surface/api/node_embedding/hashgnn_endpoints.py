@@ -49,8 +49,8 @@ class HashGNNEndpoints(ABC):
             The number of iterations to run the algorithm
         embedding_density : int
             The density of the generated embeddings (number of bits per embedding)
-        mutate_property : str
-            The name of the node property to store the embeddings
+        mutate_property
+            Name of the node property to store the results in.
         output_dimension : int | None, default=None
             The dimension of the output embeddings
         neighbor_influence : float, default=1.0
@@ -161,8 +161,8 @@ class HashGNNEndpoints(ABC):
             The number of iterations to run the algorithm
         embedding_density : int
             The density of the generated embeddings (number of bits per embedding)
-        write_property : str
-            The name of the node property to write the embeddings to
+        write_property
+            Name of the node property to store the results in.
         output_dimension : int | None, default=None
             The dimension of the output embeddings. If not specified, defaults to embedding_density / 64
         neighbor_influence : float, default=1.0

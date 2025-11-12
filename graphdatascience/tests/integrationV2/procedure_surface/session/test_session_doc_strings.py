@@ -1,11 +1,26 @@
 import inspect
+import json
 import re
 from collections import defaultdict
+from pathlib import Path
 from typing import Any, Dict, get_type_hints
 
 import pytest
 
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
+
+
+def load_parameter_descriptions() -> Dict[str, str]:
+    """Load the canonical parameter descriptions from parameters.json."""
+    # Option 1: Relative to current test file
+    current_file = Path(__file__)
+    params_file = current_file.parent / "resources" / "parameters.json"
+
+    if not params_file.exists():
+        return {}
+
+    with open(params_file, "r") as f:
+        return json.load(f)  # type: ignore
 
 
 def extract_param_descriptions(docstring: str | None) -> Dict[str, str]:
@@ -106,17 +121,17 @@ def test_common_parameter_consistency() -> None:
         "sudo: bool",
         "job_id: str | None",
         "random_seed: int | None",
-        # "consecutive_ids: bool",
-        # "mutate_property: str",
         "concurrency: int | None",
+        "write_concurrency: int | None",
+        "mutate_property: str",
+        "write_property: str",
+        # "consecutive_ids: bool",
         # "scaler: str | dict[str, str | int | float] | ScalerConfig",
         # "log_progress: bool",
         # "max_iterations: int",
-        "write_concurrency: int | None",
         # "G: GraphV2 | dict[str, Any]",
         # "tolerance: float",
         # "source_node: int",
-        # "write_property: str",
         # "relationship_weight_property: str | None",
         # "username: str | None",
         # "seed_property: str | None",
@@ -167,6 +182,8 @@ def test_common_parameter_consistency() -> None:
                 {"parameter": param, "descriptions": all_descriptions, "methods": list(desc_per_method.keys())}
             )
 
+    suggested_descriptions = load_parameter_descriptions()
+
     # Report inconsistencies
     if inconsistencies:
         report = "\n\nInconsistent parameter descriptions found:\n"
@@ -177,8 +194,9 @@ def test_common_parameter_consistency() -> None:
             desc_options: dict[str, Any] = issue["descriptions"]  # type: ignore
             for desc, methods in desc_options.items():
                 report += f" * {desc} ({len(methods)}x) - Example method: {methods[0]}\n"  # type: ignore
+            report += f"Suggested description: {suggested_descriptions.get(issue['parameter'].split(':')[0], 'not present in parameters.json')}\n"
             report += "Copyable description regex: \n"
-            desc_regex = {"|".join([desc for desc in desc_options.keys()])}
+            desc_regex = "|".join([desc for desc in desc_options.keys()])
             report += f"({desc_regex})\n"
 
         pytest.fail(report)

@@ -34,8 +34,8 @@ class ArticulationPointsEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        mutate_property : str
-            The property name to store the articulation point flag for each node
+        mutate_property
+            Name of the node property to store the results in.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -164,8 +164,8 @@ class ArticulationPointsEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        write_property : str
-            The property name to store the articulation point flag for each node
+        write_property
+            Name of the node property to store the results in.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

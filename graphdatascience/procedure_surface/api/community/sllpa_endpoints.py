@@ -36,8 +36,8 @@ class SllpaEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        mutate_property : str
-            The property name to store the community ID for each node
+        mutate_property
+            Name of the node property to store the results in.
         max_iterations : int
             Maximum number of iterations for the algorithm
         concurrency
@@ -189,8 +189,8 @@ class SllpaEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        write_property : str
-            The property name to store the community ID for each node in the database
+        write_property
+            Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
         job_id

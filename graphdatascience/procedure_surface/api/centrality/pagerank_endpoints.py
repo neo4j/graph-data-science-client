@@ -42,7 +42,7 @@ class PageRankEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        mutate_property : str
+        mutate_property
             Name of the node property to store the results in.
         damping_factor : float
             Probability of a jump to a random node.
@@ -249,7 +249,7 @@ class PageRankEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        write_property : str
+        write_property
             Name of the node property to store the results in.
         damping_factor : float
             Probability of a jump to a random node.

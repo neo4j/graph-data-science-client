@@ -38,8 +38,8 @@ class LocalClusteringCoefficientEndpoints:
         ----------
         G
             The graph to run the algorithm on.
-        mutate_property : str
-            Property name to store the result
+        mutate_property
+            Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -177,8 +177,8 @@ class LocalClusteringCoefficientEndpoints:
         ----------
         G
             The graph to run the algorithm on.
-        write_property : str
-            Property name to store results in the database
+        write_property
+            Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
         job_id

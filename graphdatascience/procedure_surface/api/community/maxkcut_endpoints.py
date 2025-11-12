@@ -42,8 +42,8 @@ class MaxKCutEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        mutate_property : str
-            The property name to store the community ID for each node
+        mutate_property
+            Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
         iterations : int | None, default=8
