@@ -174,8 +174,8 @@ def test_common_parameter_consistency() -> None:
             report += f"\nParameter: {issue['parameter']}\n"
             report += f"Found in methods: {len(issue['methods'])}\n"
             report += "Different descriptions:\n"
-            desc_options: dict[str, list[str]] = issue["descriptions"]
+            desc_options: dict[str, Any] = issue["descriptions"]  # type: ignore
             for desc, methods in desc_options.items():
-                report += f" * {desc} ({len(methods)}x) - Example method: {methods[0]}\n"
+                report += f" * {desc} ({len(methods)}x) - Example method: {methods[0]}\n"  # type: ignore
 
         pytest.fail(report)
