@@ -42,8 +42,8 @@ class LeidenEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        mutate_property : str
-            The property name to store the community ID for each node
+        mutate_property
+            Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
         consecutive_ids : bool, default=False
@@ -254,8 +254,8 @@ class LeidenEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        write_property : str
-            The property name to write the community ID to
+        write_property
+            Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
         consecutive_ids : bool, default=False

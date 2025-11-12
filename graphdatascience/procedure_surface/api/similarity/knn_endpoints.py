@@ -55,8 +55,8 @@ class KnnEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_relationship_type : str
             The relationship type to use for the new relationships.
-        mutate_property : str
-            The relationship property to store the similarity score in.
+        mutate_property
+            Name of the node property to store the results in.
         node_properties : str | list[str] | dict[str, str],
             The node properties to use for similarity computation.
         top_k : int, default=10
@@ -272,8 +272,8 @@ class KnnEndpoints(ABC):
             The graph to run the algorithm on.
         write_relationship_type : str
             The relationship type to use for the new relationships.
-        write_property : str
-            The relationship property to store the similarity score in.
+        write_property
+            Name of the node property to store the results in.
         node_properties:  str | list[str] | dict[str, str],
             The node properties to use for similarity computation.
         top_k : int, default=10

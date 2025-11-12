@@ -41,7 +41,7 @@ class KCoreEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        mutate_property : str
+        mutate_property
             Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
@@ -171,8 +171,8 @@ class KCoreEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        write_property : str
-            The property name to write core values to
+        write_property
+            Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
         job_id

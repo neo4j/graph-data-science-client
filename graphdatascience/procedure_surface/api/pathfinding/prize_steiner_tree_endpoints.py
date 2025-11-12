@@ -162,8 +162,8 @@ class PrizeSteinerTreeEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_relationship_type : str
             The relationship type to use for the new relationships.
-        mutate_property : str
-            The property name to store the edge weight.
+        mutate_property
+            Name of the node property to store the results in.
         prize_property : str
             The name of the node property containing prize values.
         relationship_weight_property : str, optional
@@ -216,8 +216,8 @@ class PrizeSteinerTreeEndpoints(ABC):
             The graph to run the algorithm on.
         write_relationship_type : str
             The relationship type to use for the new relationships.
-        write_property : str
-            The property name to store the edge weight.
+        write_property
+            Name of the node property to store the results in.
         prize_property : str
             The name of the node property containing prize values.
         relationship_weight_property : str, optional

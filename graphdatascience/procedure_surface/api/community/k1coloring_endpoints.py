@@ -38,7 +38,7 @@ class K1ColoringEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        mutate_property : str
+        mutate_property
             Name of the node property to store the results in.
         batch_size : int, default=10000
             The batch size for processing
@@ -190,8 +190,8 @@ class K1ColoringEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        write_property : str
-            The property name to write colors to
+        write_property
+            Name of the node property to store the results in.
         batch_size : int, default=10000
             The batch size for processing
         concurrency

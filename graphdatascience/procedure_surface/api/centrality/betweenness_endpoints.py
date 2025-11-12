@@ -40,7 +40,7 @@ class BetweennessEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        mutate_property : str
+        mutate_property
             Name of the node property to store the results in.
         sampling_size : int | None, default=None
             Number of source nodes to consider for computing centrality scores.
@@ -201,7 +201,7 @@ class BetweennessEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        write_property : str
+        write_property
             Name of the node property to store the results in.
         sampling_size : int | None, default=None
             Number of source nodes to consider for computing centrality scores.

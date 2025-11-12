@@ -166,8 +166,8 @@ class SpanningTreeEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_relationship_type : str
             The relationship type to use for the new relationships.
-        mutate_property : str
-            The property name to store the edge weight.
+        mutate_property
+            Name of the node property to store the results in.
         source_node : int
             The source node (root) for the Spanning tree.
         relationship_weight_property : str, optional
@@ -223,8 +223,8 @@ class SpanningTreeEndpoints(ABC):
             The graph to run the algorithm on.
         write_relationship_type : str
             The relationship type to use for the new relationships.
-        write_property : str
-            The property name to store the edge weight.
+        write_property
+            Name of the node property to store the results in.
         source_node : int
             The source node (root) for the Spanning tree.
         relationship_weight_property : str, optional

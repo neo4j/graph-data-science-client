@@ -35,8 +35,8 @@ class ClosenessHarmonicEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        mutate_property : str
-            The property name to store the harmonic closeness centrality score for each node
+        mutate_property
+            Name of the node property to store the results in.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -172,8 +172,8 @@ class ClosenessHarmonicEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        write_property : str
-            The property name to write the harmonic closeness centrality scores to
+        write_property
+            Name of the node property to store the results in.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

@@ -42,8 +42,8 @@ class HdbscanEndpoints(ABC):
             The graph to run the algorithm on.
         node_property : str
             The node property to use for clustering (required)
-        mutate_property : str
-            The name of the node property to write the cluster ID to
+        mutate_property
+            Name of the node property to store the results in.
         leaf_size : int | None, default=None
             The maximum leaf size of the tree structure used in the algorithm
         samples : int | None, default=None
@@ -211,8 +211,8 @@ class HdbscanEndpoints(ABC):
             The graph to run the algorithm on.
         node_property : str
             The node property to use for clustering (required)
-        write_property : str
-            The name of the node property to write the cluster ID to
+        write_property
+            Name of the node property to store the results in.
         leaf_size : int | None, default=None
             The maximum leaf size of the tree structure used in the algorithm
         samples : int | None, default=None

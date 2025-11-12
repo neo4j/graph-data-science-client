@@ -45,8 +45,8 @@ class KSpanningTreeEndpoints(ABC):
             The graph to run the algorithm on.
         k : int
             The number of spanning trees to compute.
-        write_property : str
-            The property name to store the edge weight.
+        write_property
+            Name of the node property to store the results in.
         source_node : int
             The source node (root) for the k-Spanning trees.
         relationship_weight_property : str, optional

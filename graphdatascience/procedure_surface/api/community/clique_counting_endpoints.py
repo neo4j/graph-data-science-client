@@ -33,8 +33,8 @@ class CliqueCountingEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        mutate_property : str
-            The property name to store the clique counts for each node
+        mutate_property
+            Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -160,8 +160,8 @@ class CliqueCountingEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        write_property : str
-            The property name to write the clique counts to
+        write_property
+            Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
         job_id
