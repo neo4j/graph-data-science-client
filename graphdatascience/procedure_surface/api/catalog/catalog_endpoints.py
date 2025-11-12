@@ -65,8 +65,8 @@ class CatalogEndpoints(ABC):
             Filter expression for relationships
         concurrency (int, optional):
             Number of concurrent threads to use. Defaults to None.
-        job_id (str, optional):
-            Unique identifier for the filtering job. Defaults to None.
+        job_id
+            Identifier for the computation.
 
         Returns:
             GraphWithFilterResult: tuple of the filtered graph object and the information like
@@ -115,8 +115,8 @@ class CatalogEndpoints(ABC):
             Whether nodes in the graph can have relationships where start and end nodes are the same.
         read_concurrency : int | None, default=None
             Number of concurrent threads/processes to use during graph generation.
-        job_id : str | None, default=None
-            Unique identifier for the job associated with the graph generation.
+        job_id
+            Identifier for the computation.
         sudo
             Disable the memory guard.
         log_progress : bool, default=True

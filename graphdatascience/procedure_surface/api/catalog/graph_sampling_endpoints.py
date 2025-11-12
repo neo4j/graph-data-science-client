@@ -74,9 +74,8 @@ class GraphSamplingEndpoints(ABC):
         concurrency : int, optional
             The number of concurrent threads used for running the algorithm.
             Default is 4.
-        job_id : str, optional
-            An ID that can be provided to more easily track the algorithm’s progress.
-            By default, a random job id is generated.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -147,9 +146,8 @@ class GraphSamplingEndpoints(ABC):
         concurrency : int, optional
             The number of concurrent threads used for running the algorithm.
             Default is 4.
-        job_id : str, optional
-            An ID that can be provided to more easily track the algorithm’s progress.
-            By default, a random job id is generated.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------

@@ -47,8 +47,8 @@ class ModularityOptimizationEndpoints(ABC):
             The number of concurrent threads
         consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_iterations : int
@@ -107,8 +107,8 @@ class ModularityOptimizationEndpoints(ABC):
             The number of concurrent threads
         consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_iterations : int
@@ -168,8 +168,8 @@ class ModularityOptimizationEndpoints(ABC):
             The number of concurrent threads
         consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_iterations : int
@@ -235,8 +235,8 @@ class ModularityOptimizationEndpoints(ABC):
             The number of concurrent threads
         consecutive_ids : bool | None, default=None
             Whether to assign consecutive community IDs
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_iterations : int

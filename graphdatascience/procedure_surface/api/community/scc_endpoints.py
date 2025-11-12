@@ -92,8 +92,8 @@ class SccEndpoints(ABC):
             The number of concurrent threads
         consecutive_ids : bool, default=False
             Flag to decide whether component identifiers are mapped into a consecutive id space
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         node_labels
@@ -137,8 +137,8 @@ class SccEndpoints(ABC):
             The number of concurrent threads
         consecutive_ids : bool, default=False
             Flag to decide whether component identifiers are mapped into a consecutive id space
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         node_labels
@@ -186,8 +186,8 @@ class SccEndpoints(ABC):
             The number of concurrent threads
         consecutive_ids : bool, default=False
             Flag to decide whether component identifiers are mapped into a consecutive id space
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         node_labels

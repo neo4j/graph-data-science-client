@@ -37,8 +37,8 @@ class CliqueCountingEndpoints(ABC):
             The property name to store the clique counts for each node
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         node_labels
@@ -78,8 +78,8 @@ class CliqueCountingEndpoints(ABC):
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         node_labels
@@ -119,8 +119,8 @@ class CliqueCountingEndpoints(ABC):
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         node_labels
@@ -164,8 +164,8 @@ class CliqueCountingEndpoints(ABC):
             The property name to write the clique counts to
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         node_labels

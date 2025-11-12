@@ -42,8 +42,8 @@ class NodeLabelEndpoints(ABC):
             The number of concurrent threads
         write_concurrency : int | None, default=None
             The number of concurrent threads used for the mutation
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         Returns
         -------
         NodeLabelMutateResult
@@ -86,8 +86,8 @@ class NodeLabelEndpoints(ABC):
             The number of concurrent threads
         write_concurrency : int | None
             The number of concurrent threads used for the mutation
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         Returns
         -------
         NodeLabelWriteResult

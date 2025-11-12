@@ -81,8 +81,8 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
             Disable the memory guard.
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         batch_size : int | None, default=None
             Batch size for training
         relationship_weight_property : str | None, default=None

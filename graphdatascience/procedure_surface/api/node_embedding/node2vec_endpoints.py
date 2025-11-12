@@ -84,8 +84,8 @@ class Node2VecEndpoints(ABC):
             Disable the memory guard.
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         walk_length : int, default=80
             The length of each random walk
         walks_per_node : int, default=10
@@ -172,8 +172,8 @@ class Node2VecEndpoints(ABC):
             Disable the memory guard.
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         walk_length : int, default=80
             The length of each random walk
         walks_per_node : int, default=10
@@ -264,8 +264,8 @@ class Node2VecEndpoints(ABC):
             Disable the memory guard.
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         walk_length : int, default=80
             The length of each random walk
         walks_per_node : int, default=10

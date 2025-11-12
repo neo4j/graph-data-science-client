@@ -92,8 +92,8 @@ class K1ColoringEndpoints(ABC):
             The batch size for processing
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_iterations : int, default=10
@@ -141,8 +141,8 @@ class K1ColoringEndpoints(ABC):
             The batch size for processing
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_iterations : int, default=10
@@ -196,8 +196,8 @@ class K1ColoringEndpoints(ABC):
             The batch size for processing
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_iterations : int, default=10

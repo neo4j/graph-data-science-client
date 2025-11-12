@@ -55,8 +55,8 @@ class DegreeEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             Number of threads to use for running the algorithm.
-        job_id : str | None
-            Identifier for the job.
+        job_id
+            Identifier for the computation.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
 
@@ -107,8 +107,8 @@ class DegreeEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             Number of threads to use for running the algorithm.
-        job_id : str | None
-            Identifier for the job.
+        job_id
+            Identifier for the computation.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
 
@@ -157,8 +157,8 @@ class DegreeEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads used for the algorithm execution.
-        job_id : str | None
-            An identifier for the job that can be used for monitoring and cancellation
+        job_id
+            Identifier for the computation.
         relationship_weight_property : str | None, default=None
             The property name that contains relationship weights. If specified,
             weighted degree centrality is computed where each relationship contributes
@@ -216,8 +216,8 @@ class DegreeEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of threads to use for running the algorithm.
-        job_id : str | None
-            Identifier for the job.
+        job_id
+            Identifier for the computation.
         relationship_weight_property : str | None, default=None
             Name of the property to be used as weights.
         write_concurrency : int | None

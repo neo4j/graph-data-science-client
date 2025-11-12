@@ -41,8 +41,8 @@ class TriangleCountEndpoints(ABC):
             The property name to store the triangle count for each node
         concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
-        job_id : str | None, default=None
-            An identifier for the job that can be used to cancel or monitor progress
+        job_id
+            Identifier for the computation.
         label_filter : list[str] | None, default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
@@ -93,8 +93,8 @@ class TriangleCountEndpoints(ABC):
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
-        job_id : str | None, default=None
-            An identifier for the job that can be used to cancel or monitor progress
+        job_id
+            Identifier for the computation.
         label_filter : list[str] | None, default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
@@ -145,8 +145,8 @@ class TriangleCountEndpoints(ABC):
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
-        job_id : str | None, default=None
-            An identifier for the job that can be used to cancel or monitor progress
+        job_id
+            Identifier for the computation.
         label_filter : list[str] | None, default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
@@ -203,8 +203,8 @@ class TriangleCountEndpoints(ABC):
             The property name to store the triangle count for each node in the database
         concurrency : int | None, default=None
             The number of concurrent threads. Setting this to 1 will run the algorithm single-threaded.
-        job_id : str | None, default=None
-            An identifier for the job that can be used to cancel or monitor progress
+        job_id
+            Identifier for the computation.
         label_filter : list[str] | None, default=None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.

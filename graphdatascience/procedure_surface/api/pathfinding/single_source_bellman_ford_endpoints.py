@@ -79,8 +79,8 @@ class SingleSourceBellmanFordEndpoints(ABC):
             Username for the operation.
         concurrency : int | None, default=None
             Concurrency configuration.
-        job_id : str | None, default=None
-            Job ID for the operation.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -128,8 +128,8 @@ class SingleSourceBellmanFordEndpoints(ABC):
             Username for the operation.
         concurrency : int | None, default=None
             Concurrency configuration.
-        job_id : str | None, default=None
-            Job ID for the operation.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -180,8 +180,8 @@ class SingleSourceBellmanFordEndpoints(ABC):
             Username for the operation.
         concurrency : int | None, default=None
             Concurrency configuration.
-        job_id : str | None, default=None
-            Job ID for the operation.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -239,8 +239,8 @@ class SingleSourceBellmanFordEndpoints(ABC):
             Username for the operation.
         concurrency : int | None, default=None
             Concurrency configuration.
-        job_id : str | None, default=None
-            Job ID for the operation.
+        job_id
+            Identifier for the computation.
         write_concurrency : int | None, default=None
             Concurrency for writing results.
 

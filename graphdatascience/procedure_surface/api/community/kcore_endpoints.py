@@ -87,8 +87,8 @@ class KCoreEndpoints(ABC):
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         node_labels
@@ -139,8 +139,8 @@ class KCoreEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -175,8 +175,8 @@ class KCoreEndpoints(ABC):
             The property name to write core values to
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         node_labels

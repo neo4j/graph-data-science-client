@@ -104,6 +104,7 @@ def test_common_parameter_consistency() -> None:
         "relationship_types: list[str]",
         "node_labels: list[str]",
         "sudo: bool",
+        "job_id: str | None",
         # "random_seed: int | None",
         # "consecutive_ids: bool",
         # "mutate_property: str",
@@ -118,7 +119,6 @@ def test_common_parameter_consistency() -> None:
         # "write_property: str",
         # "relationship_weight_property: str | None",
         # "username: str | None",
-        # "job_id: str | None",
         # "seed_property: str | None",
     }
 

@@ -53,8 +53,8 @@ class ClosenessEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads used for the algorithm execution.
-        job_id : str | None
-            An identifier for the job that can be used for monitoring and cancellation
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -101,8 +101,8 @@ class ClosenessEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads used for the algorithm execution.
-        job_id : str | None
-            An identifier for the job that can be used for monitoring and cancellation
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -145,8 +145,8 @@ class ClosenessEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None, default=None
             The number of concurrent threads used for the algorithm execution.
-        job_id : str | None, default=None
-            An identifier for the job that can be used for monitoring and cancellation
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -198,8 +198,8 @@ class ClosenessEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None
             The number of concurrent threads used for the algorithm execution.
-        job_id : str | None
-            An identifier for the job that can be used for monitoring and cancellation
+        job_id
+            Identifier for the computation.
         write_concurrency : int | None
             The number of concurrent threads used during the write phase.
 

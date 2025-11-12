@@ -131,8 +131,8 @@ class LouvainEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         seed_property : str | None, default=None
             Defines node properties that are used as initial community identifiers
         consecutive_ids : bool, default=False
@@ -194,8 +194,8 @@ class LouvainEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         seed_property : str | None, default=None
             Defines node properties that are used as initial community identifiers
         consecutive_ids : bool, default=False
@@ -263,8 +263,8 @@ class LouvainEndpoints(ABC):
             The username to attribute the procedure run to
         concurrency : int | None, default=None
             The number of concurrent threads
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         seed_property : str | None, default=None
             Defines node properties that are used as initial community identifiers
         consecutive_ids : bool, default=False

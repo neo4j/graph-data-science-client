@@ -52,8 +52,8 @@ class GraphSagePredictEndpoints(ABC):
             Disable the memory guard.
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         batch_size : int = 100
             Batch size for training
 
@@ -105,8 +105,8 @@ class GraphSagePredictEndpoints(ABC):
             The number of concurrent threads
         write_concurrency : int | None, default=None
              The number of concurrent threads used for writing
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         batch_size : int = 100
             Batch size for training
 
@@ -154,8 +154,8 @@ class GraphSagePredictEndpoints(ABC):
             Disable the memory guard.
         concurrency : int | None
             The number of concurrent threads
-        job_id : str | None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         batch_size : int | None, default=None
             Batch size for training
 
@@ -202,8 +202,8 @@ class GraphSagePredictEndpoints(ABC):
             The username for the operation.
         sudo
             Disable the memory guard.
-        job_id : str | None, default=None
-            The job ID for the operation.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------

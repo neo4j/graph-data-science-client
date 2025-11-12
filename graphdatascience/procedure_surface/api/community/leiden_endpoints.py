@@ -52,8 +52,8 @@ class LeidenEndpoints(ABC):
             The gamma parameter for the Leiden algorithm
         include_intermediate_communities : bool, default=False
             Whether to include intermediate communities
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_levels : int, default=10
@@ -120,8 +120,8 @@ class LeidenEndpoints(ABC):
             The gamma parameter for the Leiden algorithm
         include_intermediate_communities : bool, default=False
             Whether to include intermediate communities
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_levels : int, default=10
@@ -189,8 +189,8 @@ class LeidenEndpoints(ABC):
             The gamma parameter for the Leiden algorithm
         include_intermediate_communities : bool, default=False
             Whether to include intermediate communities
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_levels : int, default=10
@@ -264,8 +264,8 @@ class LeidenEndpoints(ABC):
             The gamma parameter for the Leiden algorithm
         include_intermediate_communities : bool, default=False
             Whether to include intermediate communities
-        job_id : str | None, default=None
-            An identifier for the job
+        job_id
+            Identifier for the computation.
         log_progress : bool, default=True
             Whether to log progress
         max_levels : int, default=10
