@@ -46,8 +46,8 @@ class LabelPropagationEndpoints(ABC):
             Whether to use consecutive community IDs starting from 0
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int, default=10
             The maximum number of iterations
         node_labels
@@ -103,8 +103,8 @@ class LabelPropagationEndpoints(ABC):
             Whether to use consecutive community IDs starting from 0
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int, default=10
             The maximum number of iterations
         node_labels
@@ -161,8 +161,8 @@ class LabelPropagationEndpoints(ABC):
             Whether to use consecutive community IDs starting from 0
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int, default=10
             The maximum number of iterations
         min_community_size : int | None, default=None
@@ -225,8 +225,8 @@ class LabelPropagationEndpoints(ABC):
             Whether to use consecutive community IDs starting from 0
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int, default=10
             The maximum number of iterations
         min_community_size : int | None, default=None

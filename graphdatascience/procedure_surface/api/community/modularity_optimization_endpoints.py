@@ -49,8 +49,8 @@ class ModularityOptimizationEndpoints(ABC):
             Whether to assign consecutive community IDs
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int
             Maximum number of iterations for the algorithm
         node_labels
@@ -109,8 +109,8 @@ class ModularityOptimizationEndpoints(ABC):
             Whether to assign consecutive community IDs
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int
             Maximum number of iterations for the algorithm
         node_labels
@@ -170,8 +170,8 @@ class ModularityOptimizationEndpoints(ABC):
             Whether to assign consecutive community IDs
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int
             Maximum number of iterations for the algorithm
         min_community_size : int | None, default=None
@@ -237,8 +237,8 @@ class ModularityOptimizationEndpoints(ABC):
             Whether to assign consecutive community IDs
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_iterations : int
             Maximum number of iterations for the algorithm
         min_community_size : int | None, default=None

@@ -47,7 +47,7 @@ class KCoreEndpoints(ABC):
             Number of concurrent threads to use.
         job_id : str | None, default=None
             Identifier for the computation.
-        log_progress : bool, default=True
+        log_progress
             Display progress logging.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -89,8 +89,8 @@ class KCoreEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
@@ -133,8 +133,8 @@ class KCoreEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
         concurrency
@@ -177,8 +177,8 @@ class KCoreEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types

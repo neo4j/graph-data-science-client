@@ -125,8 +125,8 @@ class GraphSageTrainEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         username : str | None = None
             The username to attribute the procedure run to
-        log_progress : bool = True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         sudo
             Disable the memory guard.
         concurrency

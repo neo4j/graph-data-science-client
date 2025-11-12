@@ -54,8 +54,8 @@ class LeidenEndpoints(ABC):
             Whether to include intermediate communities
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_levels : int, default=10
             The maximum number of levels
         node_labels
@@ -122,8 +122,8 @@ class LeidenEndpoints(ABC):
             Whether to include intermediate communities
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_levels : int, default=10
             The maximum number of levels
         node_labels
@@ -191,8 +191,8 @@ class LeidenEndpoints(ABC):
             Whether to include intermediate communities
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_levels : int, default=10
             The maximum number of levels
         min_community_size : int | None, default=None
@@ -266,8 +266,8 @@ class LeidenEndpoints(ABC):
             Whether to include intermediate communities
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         max_levels : int, default=10
             The maximum number of levels
         min_community_size : int | None, default=None

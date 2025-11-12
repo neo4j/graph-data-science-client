@@ -53,8 +53,8 @@ class MaxKCutEndpoints(ABC):
             Identifier for the computation.
         k : int | None, default=2
             The number of communities to detect. Must be at least 2.
-        log_progress : bool, default=True
-            Whether to log progress information during execution
+        log_progress
+            Display progress logging.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed
@@ -115,8 +115,8 @@ class MaxKCutEndpoints(ABC):
             Identifier for the computation.
         k : int | None, default=2
             The number of communities to detect. Must be at least 2.
-        log_progress : bool, default=True
-            Whether to log progress information during execution
+        log_progress
+            Display progress logging.
         min_community_size : int | None, default=None
             The minimum community size. Communities smaller than this will be filtered from results.
         node_labels

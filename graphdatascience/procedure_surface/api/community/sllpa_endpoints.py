@@ -44,8 +44,8 @@ class SllpaEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
         node_labels
@@ -93,8 +93,8 @@ class SllpaEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
         node_labels
@@ -142,8 +142,8 @@ class SllpaEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
         node_labels
@@ -195,8 +195,8 @@ class SllpaEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        log_progress : bool, default=True
-            Whether to log progress
+        log_progress
+            Display progress logging.
         min_association_strength : float | None, default=None
             Minimum association strength for community assignment
         node_labels

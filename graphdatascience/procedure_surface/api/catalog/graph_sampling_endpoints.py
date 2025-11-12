@@ -65,9 +65,8 @@ class GraphSamplingEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool, optional
-            Turn `on/off` percentage logging while running procedure.
-            Default is True.
+        log_progress
+            Display progress logging.
         username : str, optional
             Use Administrator access to run an algorithm on a graph owned by another user.
             Default is None.
@@ -136,9 +135,8 @@ class GraphSamplingEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
             Disable the memory guard.
-        log_progress : bool, optional
-            Turn `on/off` percentage logging while running procedure.
-            Default is True.
+        log_progress
+            Display progress logging.
         username : str, optional
             Use Administrator access to run an algorithm on a graph owned by another user.
             Default is None.
