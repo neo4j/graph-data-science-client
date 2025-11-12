@@ -50,7 +50,7 @@ class KnnFilteredEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         mutate_relationship_type : str
             The relationship type to use for the new relationships.
@@ -136,7 +136,7 @@ class KnnFilteredEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         node_properties : str | list[str] | dict[str, str]
             The node properties to use for similarity computation.
@@ -218,7 +218,7 @@ class KnnFilteredEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         node_properties : str | list[str] | dict[str, str]
             The node properties to use for similarity computation.
@@ -303,7 +303,7 @@ class KnnFilteredEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         write_relationship_type : str
             The relationship type to use for the new relationships.

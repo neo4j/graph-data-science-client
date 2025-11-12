@@ -40,7 +40,7 @@ class KMeansEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         node_property : str
             The node property to use for clustering
@@ -111,7 +111,7 @@ class KMeansEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         node_property : str
             The node property to use for clustering
@@ -180,7 +180,7 @@ class KMeansEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         node_property : str
             The node property to use for clustering
@@ -251,7 +251,7 @@ class KMeansEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         node_property : str
             The node property to use for clustering

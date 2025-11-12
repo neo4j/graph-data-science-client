@@ -39,7 +39,7 @@ class KCoreEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         mutate_property : str
             Name of the node property to store the results in.
@@ -83,7 +83,7 @@ class KCoreEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             The number of concurrent threads
@@ -125,7 +125,7 @@ class KCoreEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         relationship_types : list[str]
             The relationships types considered in this algorithm run
@@ -169,7 +169,7 @@ class KCoreEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         write_property : str
             The property name to write core values to
@@ -211,7 +211,7 @@ class KCoreEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
+        G
             The graph to run the algorithm on or a dictionary representing the graph.
         concurrency : int | None, default=None
             The number of concurrent threads

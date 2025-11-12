@@ -36,7 +36,7 @@ class LocalClusteringCoefficientEndpoints:
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         mutate_property : str
             Property name to store the result
@@ -83,7 +83,7 @@ class LocalClusteringCoefficientEndpoints:
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             Number of concurrent threads
@@ -128,7 +128,7 @@ class LocalClusteringCoefficientEndpoints:
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             Number of concurrent threads
@@ -175,7 +175,7 @@ class LocalClusteringCoefficientEndpoints:
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         write_property : str
             Property name to store results in the database
@@ -224,7 +224,7 @@ class LocalClusteringCoefficientEndpoints:
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         concurrency : int | None, default=None
             Number of concurrent threads

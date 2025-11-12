@@ -38,7 +38,7 @@ class BetweennessEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         mutate_property : str
             Name of the node property to store the results in.
@@ -94,7 +94,7 @@ class BetweennessEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         sampling_size : int | None, default=None
             Number of source nodes to consider for computing centrality scores.
@@ -143,7 +143,7 @@ class BetweennessEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         sampling_size : int | None, default=None
             The number of nodes to use for sampling.
@@ -199,7 +199,7 @@ class BetweennessEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         write_property : str
             Name of the node property to store the results in.
@@ -248,7 +248,7 @@ class BetweennessEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
+        G
             The graph to run the algorithm on or a dictionary representing the graph.
         sampling_size : int | None, default=None
             The number of nodes to use for sampling.

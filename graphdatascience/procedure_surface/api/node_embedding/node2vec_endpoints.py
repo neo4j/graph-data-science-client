@@ -50,7 +50,7 @@ class Node2VecEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         mutate_property : str
             The name of the node property to store the embeddings
@@ -140,7 +140,7 @@ class Node2VecEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         iterations : int, default=1
             The number of training iterations
@@ -230,7 +230,7 @@ class Node2VecEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         write_property : str
             The name of the node property to write the embeddings to
@@ -318,7 +318,7 @@ class Node2VecEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
+        G
             The graph to run the algorithm on or a dictionary representing the graph.
         iterations : int, default=1
             The number of training iterations

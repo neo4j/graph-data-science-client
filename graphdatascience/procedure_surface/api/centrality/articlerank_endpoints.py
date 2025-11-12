@@ -42,7 +42,7 @@ class ArticleRankEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         mutate_property : str
             Name of the node property to store the results in.
@@ -114,7 +114,7 @@ class ArticleRankEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         damping_factor : float
             Probability of a jump to a random node.
@@ -180,7 +180,7 @@ class ArticleRankEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         damping_factor : float
             The damping factor controls the probability of a random jump to a random node
@@ -248,7 +248,7 @@ class ArticleRankEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
+        G
             The graph to run the algorithm on.
         write_property : str
             The property name to write the ArticleRank score for each node
@@ -314,7 +314,7 @@ class ArticleRankEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
+        G
             The graph to run the algorithm on or a dictionary representing the graph.
         damping_factor : float
             The damping factor controls the probability of a random jump to a random node
