@@ -78,8 +78,8 @@ class FastRPEndpoints(ABC):
             Identifier for the computation.
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : int | None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
 
         Returns
         -------
@@ -143,8 +143,8 @@ class FastRPEndpoints(ABC):
             Identifier for the computation.
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
 
         Returns
         -------
@@ -208,8 +208,8 @@ class FastRPEndpoints(ABC):
             Identifier for the computation.
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
 
         Returns
         -------
@@ -277,8 +277,8 @@ class FastRPEndpoints(ABC):
             Identifier for the computation.
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         write_concurrency : int | None, default=None
             The number of concurrent threads used for writing
 
@@ -332,8 +332,8 @@ class FastRPEndpoints(ABC):
             The number of concurrent threads
         relationship_weight_property : str | None, default=None
             The property name that contains weight
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
 
         Returns
         -------

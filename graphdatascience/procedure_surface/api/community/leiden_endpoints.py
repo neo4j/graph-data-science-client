@@ -60,8 +60,8 @@ class LeidenEndpoints(ABC):
             The maximum number of levels
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
@@ -128,8 +128,8 @@ class LeidenEndpoints(ABC):
             The maximum number of levels
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
@@ -199,8 +199,8 @@ class LeidenEndpoints(ABC):
             The minimum community size
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
@@ -274,8 +274,8 @@ class LeidenEndpoints(ABC):
             The minimum community size
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
@@ -336,8 +336,8 @@ class LeidenEndpoints(ABC):
             The maximum number of levels
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        random_seed : int | None, default=None
-            Random seed for reproducible results
+        random_seed
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property : str | None, default=None
