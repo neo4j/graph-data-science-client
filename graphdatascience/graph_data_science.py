@@ -10,6 +10,7 @@ from pandas import DataFrame
 
 from graphdatascience.query_runner.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.topological_lp.topological_lp_runner import TopologicalLPRunner
 
 from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
@@ -143,6 +144,10 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
     @property
     def alpha(self) -> AlphaEndpoints:
         return AlphaEndpoints(self._query_runner, "gds.alpha", self._server_version)
+
+    @property
+    def linkprediction(self) -> TopologicalLPRunner:
+        return TopologicalLPRunner(self._query_runner, f"{self._namespace}.linkprediction", self._server_version)
 
     @property
     def beta(self) -> BetaEndpoints:

@@ -4,6 +4,7 @@ import pytest
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 @pytest.fixture(autouse=True)
@@ -38,8 +39,14 @@ def node2(gds: GraphDataScience) -> int:
     return gds.find_node_id(["Node"], {"x": 7})
 
 
-def test_adamicAdar(node1: int, node2: int, gds: GraphDataScience) -> None:
+def test_alpha_adamicAdar(node1: int, node2: int, gds: GraphDataScience) -> None:
     score = gds.alpha.linkprediction.adamicAdar(node1, node2)
+    assert score == pytest.approx(0.72, 0.01)
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 24, 0))
+def test_adamicAdar(node1: int, node2: int, gds: GraphDataScience) -> None:
+    score = gds.linkprediction.adamicAdar(node1, node2)
     assert score == pytest.approx(0.72, 0.01)
 
 

@@ -22,7 +22,7 @@ from .system.system_endpoints import (
     SystemAlphaEndpoints,
     SystemBetaEndpoints,
 )
-from .topological_lp.topological_lp_endpoints import TopologicalLPAlphaEndpoints
+from .topological_lp.topological_lp_alpha_endpoints import TopologicalLPAlphaEndpoints
 from .utils.direct_util_endpoints import DirectUtilEndpoints
 
 """
