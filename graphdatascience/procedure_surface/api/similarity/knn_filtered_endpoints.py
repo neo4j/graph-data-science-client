@@ -92,8 +92,8 @@ class KnnFilteredEndpoints(ABC):
             Whether to log progress.
         username : str | None, default=None
             Username for the operation.
-        concurrency : int | None, default=None
-            Concurrency configuration.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -174,8 +174,8 @@ class KnnFilteredEndpoints(ABC):
             Whether to log progress.
         username : str | None, default=None
             Username for the operation.
-        concurrency : int | None, default=None
-            Concurrency configuration.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -256,8 +256,8 @@ class KnnFilteredEndpoints(ABC):
             Whether to log progress.
         username : str | None, default=None
             Username for the operation.
-        concurrency : int | None, default=None
-            Concurrency configuration.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -339,16 +339,16 @@ class KnnFilteredEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        write_concurrency : int | None, default=None
-            Concurrency for writing results.
+        write_concurrency
+            Number of concurrent threads to use for writing.
         sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress.
         username : str | None, default=None
             Username for the operation.
-        concurrency : int | None, default=None
-            Concurrency configuration.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -425,8 +425,8 @@ class KnnFilteredEndpoints(ABC):
             Disable the memory guard.
         username : str | None, default=None
             Username for the operation.
-        concurrency : int | None, default=None
-            Concurrency configuration.
+        concurrency
+            Number of concurrent threads to use.
 
         Returns
         -------

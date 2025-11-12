@@ -36,8 +36,8 @@ class RelationshipsEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_properties: list[str] | None, default = None
             The relationship properties to stream. If not specified, no properties will be streamed.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         sudo
             Disable the memory guard.
         log_progress : bool = True
@@ -76,10 +76,10 @@ class RelationshipsEndpoints(ABC):
             The relationship type to write to the database
         relationship_properties: list[str] | None, default = None
             The relationship properties to write. If not specified, no properties will be written.
-        concurrency : int | None, default=None
-            The number of concurrent threads
-        write_concurrency : int | None, default=None
-            The number of concurrent threads used for writing
+        concurrency
+            Number of concurrent threads to use.
+        write_concurrency
+            Number of concurrent threads to use for writing.
         sudo
             Disable the memory guard.
         log_progress : bool, default=True
@@ -143,8 +143,8 @@ class RelationshipsEndpoints(ABC):
             The graph to operate on
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         sudo : bool = False,
             Disable the memory guard.
         log_progress : bool = True
@@ -189,8 +189,8 @@ class RelationshipsEndpoints(ABC):
             Specifies how to aggregate parallel relationships in the graph.
             If a single aggregation is provided, it will be used for properties of the specified relationships.
             A dictionary can be provided to specify property specific aggregations.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         sudo : bool = False,
             Disable the memory guard.
         log_progress : bool = True
@@ -235,7 +235,7 @@ class RelationshipsEndpoints(ABC):
             The name of the new relationship type to be created.
         allow_self_loops : bool, default=False
             Whether nodes in the graph can have relationships where start and end nodes are the same.
-        concurrency : int | None, default=None:
+        concurrency
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.

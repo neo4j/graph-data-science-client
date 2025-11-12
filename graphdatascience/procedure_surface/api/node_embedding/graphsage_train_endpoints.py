@@ -129,8 +129,8 @@ class GraphSageTrainEndpoints(ABC):
             Whether to log progress
         sudo
             Disable the memory guard.
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         batch_size : int = 100

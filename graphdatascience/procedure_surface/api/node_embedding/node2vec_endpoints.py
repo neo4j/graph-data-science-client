@@ -82,8 +82,8 @@ class Node2VecEndpoints(ABC):
             Whether to log progress
         sudo
             Disable the memory guard.
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         walk_length : int, default=80
@@ -170,8 +170,8 @@ class Node2VecEndpoints(ABC):
             Whether to log progress
         sudo
             Disable the memory guard.
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         walk_length : int, default=80
@@ -262,8 +262,8 @@ class Node2VecEndpoints(ABC):
             Whether to log progress
         sudo
             Disable the memory guard.
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         walk_length : int, default=80
@@ -280,10 +280,8 @@ class Node2VecEndpoints(ABC):
             The property name that contains weight
         random_seed
             Seed for random number generation to ensure reproducible results.
-        write_concurrency : int | None, default=None
-            The number of concurrent threads used for writing result
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         Node2VecWriteResult
             Algorithm metrics and statistics
@@ -342,8 +340,8 @@ class Node2VecEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         walk_length : int, default=80
             The length of each random walk
         walks_per_node : int, default=10

@@ -53,8 +53,8 @@ class ScalePropertiesEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None
-            Number of threads to use for running the algorithm.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -102,8 +102,8 @@ class ScalePropertiesEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None, default=None
-            Number of threads to use for running the algorithm.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -149,8 +149,8 @@ class ScalePropertiesEndpoints(ABC):
             Whether to log progress of the algorithm execution
         username : str | None
             The username to attribute the procedure run to
-        concurrency : int | None
-            The number of concurrent threads used for the algorithm execution.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -203,14 +203,12 @@ class ScalePropertiesEndpoints(ABC):
             Display progress logging.
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None, default=None
-            The number of threads to use for running the algorithm.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        write_concurrency : int | None, default=None
-            The number of concurrent threads used during the write phase.
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         ScalePropertiesWriteResult
             Algorithm metrics and statistics including the scaler statistics and write timing
@@ -242,8 +240,8 @@ class ScalePropertiesEndpoints(ABC):
             - A ScalerConfig instance
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
 
         Returns
         -------

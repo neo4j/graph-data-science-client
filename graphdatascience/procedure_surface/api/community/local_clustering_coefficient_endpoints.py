@@ -40,8 +40,8 @@ class LocalClusteringCoefficientEndpoints:
             The graph to run the algorithm on.
         mutate_property : str
             Property name to store the result
-        concurrency : int | None, default=None
-            Number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -85,8 +85,8 @@ class LocalClusteringCoefficientEndpoints:
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            Number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -130,8 +130,8 @@ class LocalClusteringCoefficientEndpoints:
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            Number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -179,8 +179,8 @@ class LocalClusteringCoefficientEndpoints:
             The graph to run the algorithm on.
         write_property : str
             Property name to store results in the database
-        concurrency : int | None, default=None
-            Number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -195,10 +195,8 @@ class LocalClusteringCoefficientEndpoints:
             Property name for pre-computed triangle counts
         username : str | None, default=None
             Username for authentication
-        write_concurrency : int | None, default=None
-            Concurrency for writing back to the database
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         LocalClusteringCoefficientWriteResult
             Result containing clustering coefficient statistics and timing information
@@ -226,8 +224,8 @@ class LocalClusteringCoefficientEndpoints:
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            Number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True

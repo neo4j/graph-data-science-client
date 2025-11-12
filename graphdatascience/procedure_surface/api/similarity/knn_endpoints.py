@@ -87,8 +87,8 @@ class KnnEndpoints(ABC):
             Whether to log progress.
         username : str | None, default=None
             Username for the operation.
-        concurrency : int | None, default=None
-            Concurrency configuration.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -157,8 +157,8 @@ class KnnEndpoints(ABC):
             Whether to log progress.
         username : str | None, default=None
             Username for the operation.
-        concurrency : int | None, default=None
-            Concurrency configuration.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -227,8 +227,8 @@ class KnnEndpoints(ABC):
             Whether to log progress.
         username : str | None, default=None
             Username for the operation.
-        concurrency : int | None, default=None
-            Concurrency configuration.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -304,14 +304,12 @@ class KnnEndpoints(ABC):
             Whether to log progress.
         username : str | None, default=None
             Username for the operation.
-        concurrency : int | None, default=None
-            Concurrency configuration.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        write_concurrency : int | None, default=None
-            Concurrency for writing results.
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         KnnWriteResult
             Object containing metadata from the execution.
@@ -375,8 +373,8 @@ class KnnEndpoints(ABC):
             Whether to log progress.
         username : str | None, default=None
             Username for the operation.
-        concurrency : int | None, default=None
-            Concurrency configuration.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 

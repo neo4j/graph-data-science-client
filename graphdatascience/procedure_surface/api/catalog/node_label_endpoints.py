@@ -38,10 +38,10 @@ class NodeLabelEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None, default=None
-            The number of concurrent threads
-        write_concurrency : int | None, default=None
-            The number of concurrent threads used for the mutation
+        concurrency
+            Number of concurrent threads to use.
+        write_concurrency
+            Number of concurrent threads to use for writing.
         job_id
             Identifier for the computation.
         Returns
@@ -82,10 +82,10 @@ class NodeLabelEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None
-            The number of concurrent threads
-        write_concurrency : int | None
-            The number of concurrent threads used for the mutation
+        concurrency
+            Number of concurrent threads to use.
+        write_concurrency
+            Number of concurrent threads to use for writing.
         job_id
             Identifier for the computation.
         Returns

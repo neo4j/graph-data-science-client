@@ -186,12 +186,12 @@ class HashGNNEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        write_concurrency : int | None, default=None
-            The number of concurrent threads used for writing
+        write_concurrency
+            Number of concurrent threads to use for writing.
         random_seed
             Seed for random number generation to ensure reproducible results.
 

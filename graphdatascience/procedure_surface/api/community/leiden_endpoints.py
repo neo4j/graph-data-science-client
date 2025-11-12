@@ -44,8 +44,8 @@ class LeidenEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_property : str
             The property name to store the community ID for each node
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Whether to use consecutive community IDs
         gamma : float, default=1.0
@@ -112,8 +112,8 @@ class LeidenEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Whether to use consecutive community IDs
         gamma : float, default=1.0
@@ -181,8 +181,8 @@ class LeidenEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Whether to use consecutive community IDs
         gamma : float, default=1.0
@@ -256,8 +256,8 @@ class LeidenEndpoints(ABC):
             The graph to run the algorithm on.
         write_property : str
             The property name to write the community ID to
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Whether to use consecutive community IDs
         gamma : float, default=1.0
@@ -290,10 +290,8 @@ class LeidenEndpoints(ABC):
             The tolerance parameter for the Leiden algorithm
         username : str | None, default=None
             The username to attribute the procedure run to
-        write_concurrency : int | None, default=None
-            The number of concurrent threads for writing
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         LeidenWriteResult
             Algorithm metrics and statistics
@@ -324,8 +322,8 @@ class LeidenEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to estimate for
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Whether to use consecutive community IDs
         gamma : float, default=1.0

@@ -40,8 +40,8 @@ class LabelPropagationEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_property : str
             The property name to store the community ID for each node
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Whether to use consecutive community IDs starting from 0
         job_id
@@ -97,8 +97,8 @@ class LabelPropagationEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Whether to use consecutive community IDs starting from 0
         job_id
@@ -155,8 +155,8 @@ class LabelPropagationEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Whether to use consecutive community IDs starting from 0
         job_id
@@ -219,8 +219,8 @@ class LabelPropagationEndpoints(ABC):
             The graph to run the algorithm on.
         write_property : str
             The property name to write the community IDs to
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Whether to use consecutive community IDs starting from 0
         job_id
@@ -245,10 +245,8 @@ class LabelPropagationEndpoints(ABC):
             Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
-        write_concurrency : int | None, default=None
-            The number of concurrent threads for write operations
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         LabelPropagationWriteResult
             Algorithm metrics and statistics
@@ -276,8 +274,8 @@ class LabelPropagationEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph or graph configuration to estimate for
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         consecutive_ids : bool, default=False
             Whether to use consecutive community IDs starting from 0
         max_iterations : int, default=10

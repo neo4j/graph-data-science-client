@@ -108,11 +108,11 @@ def test_common_parameter_consistency() -> None:
         "random_seed: int | None",
         # "consecutive_ids: bool",
         # "mutate_property: str",
-        # "concurrency: int | None",
+        "concurrency: int | None",
         # "scaler: str | dict[str, str | int | float] | ScalerConfig",
         # "log_progress: bool",
         # "max_iterations: int",
-        # "write_concurrency: int | None",
+        "write_concurrency: int | None",
         # "G: GraphV2 | dict[str, Any]",
         # "tolerance: float",
         # "source_node: int",
@@ -177,5 +177,8 @@ def test_common_parameter_consistency() -> None:
             desc_options: dict[str, Any] = issue["descriptions"]  # type: ignore
             for desc, methods in desc_options.items():
                 report += f" * {desc} ({len(methods)}x) - Example method: {methods[0]}\n"  # type: ignore
+            report += "Copyable description regex: \n"
+            desc_regex = {"|".join([desc for desc in desc_options.keys()])}
+            report += f"({desc_regex})\n"
 
         pytest.fail(report)

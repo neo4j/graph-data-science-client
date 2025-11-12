@@ -6,7 +6,8 @@
   "job_id": "Identifier for the computation.",
 
   "tolerance": "Minimum change in scores between iterations.",
-  "concurrency": "Number of CPU threads to use.",
+  "concurrency": "Number of concurrent threads to use.",
+  "write_concurrency": "Number of concurrent threads to use for writing.",
   "max_iterations": "Maximum number of iterations to run.",
   "scaler": "Name of the scaler applied on the resulting scores.",
   "source_nodes": "List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.",

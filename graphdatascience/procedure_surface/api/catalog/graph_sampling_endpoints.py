@@ -71,9 +71,8 @@ class GraphSamplingEndpoints(ABC):
         username : str, optional
             Use Administrator access to run an algorithm on a graph owned by another user.
             Default is None.
-        concurrency : int, optional
-            The number of concurrent threads used for running the algorithm.
-            Default is 4.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -143,9 +142,8 @@ class GraphSamplingEndpoints(ABC):
         username : str, optional
             Use Administrator access to run an algorithm on a graph owned by another user.
             Default is None.
-        concurrency : int, optional
-            The number of concurrent threads used for running the algorithm.
-            Default is 4.
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 

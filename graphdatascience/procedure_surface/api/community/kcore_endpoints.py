@@ -43,8 +43,8 @@ class KCoreEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_property : str
             Name of the node property to store the results in.
-        concurrency : int | None, default=None
-            Number of CPU threads to use.
+        concurrency
+            Number of concurrent threads to use.
         job_id : str | None, default=None
             Identifier for the computation.
         log_progress : bool, default=True
@@ -85,8 +85,8 @@ class KCoreEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -137,8 +137,8 @@ class KCoreEndpoints(ABC):
             Whether to log progress
         username : str | None, default=None
             The username to attribute the procedure run to
-        concurrency : int | None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
 
@@ -173,8 +173,8 @@ class KCoreEndpoints(ABC):
             The graph to run the algorithm on.
         write_property : str
             The property name to write core values to
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         job_id
             Identifier for the computation.
         log_progress : bool, default=True
@@ -187,10 +187,8 @@ class KCoreEndpoints(ABC):
             Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
-        write_concurrency : int | None, default=None
-            The number of concurrent threads during the write phase
-
-        Returns
+        write_concurrency
+            Number of concurrent threads to use for writing.Returns
         -------
         KCoreWriteResult
             Algorithm metrics and statistics
@@ -213,8 +211,8 @@ class KCoreEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on or a dictionary representing the graph.
-        concurrency : int | None, default=None
-            The number of concurrent threads
+        concurrency
+            Number of concurrent threads to use.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types

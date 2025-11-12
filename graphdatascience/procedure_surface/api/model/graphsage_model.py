@@ -54,8 +54,8 @@ class GraphSageModelV2(Model):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         batch_size : int = 100
             The batch size for prediction.
-        concurrency : int | None, default=None
-            The concurrency for computation.
+        concurrency
+            Number of concurrent threads to use.
         write_concurrency : int | None, default=None
             The concurrency for writing.
         log_progress : bool = True
@@ -114,8 +114,8 @@ class GraphSageModelV2(Model):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         batch_size : int = 100
             The batch size for prediction.
-        concurrency : int | None, default=None
-            The concurrency for computation.
+        concurrency
+            Number of concurrent threads to use.
         log_progress : bool = True
             Whether to log progress.
         username : str | None, default=None
@@ -173,8 +173,8 @@ class GraphSageModelV2(Model):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         batch_size : int = 100
             The batch size for prediction.
-        concurrency : int | None, default=None
-            The concurrency for computation.
+        concurrency
+            Number of concurrent threads to use.
         log_progress : bool = True
             Whether to log progress.
         username : str | None, default=None
@@ -230,8 +230,8 @@ class GraphSageModelV2(Model):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         batch_size : int = 100
             The batch size for prediction.
-        concurrency : int | None, default=None
-            The concurrency for computation.
+        concurrency
+            Number of concurrent threads to use.
         log_progress : bool = True
             Whether to log progress.
         username : str | None, default=None
