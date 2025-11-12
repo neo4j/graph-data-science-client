@@ -56,8 +56,8 @@ class SourceTargetDijkstraEndpoints(ABC):
             The source node for the shortest path computation.
         target_nodes : int | list[int]
             A single target node or a list of target nodes for the shortest path computation.
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -108,8 +108,8 @@ class SourceTargetDijkstraEndpoints(ABC):
             The source node for the shortest path computation.
         target_nodes : int | list[int]
             A single target node or a list of target nodes for the shortest path computation.
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -167,8 +167,8 @@ class SourceTargetDijkstraEndpoints(ABC):
             Whether to write node IDs of the shortest path onto the relationship(s).
         write_costs : bool, default=False
             Whether to write costs of the shortest path onto the relationship(s).
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -214,8 +214,8 @@ class SourceTargetDijkstraEndpoints(ABC):
             The source node for the shortest path computation.
         target_nodes : int | list[int]
             A single target node or a list of target nodes for the shortest path computation.
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

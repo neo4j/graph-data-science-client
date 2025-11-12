@@ -54,8 +54,8 @@ class SingleSourceDijkstraEndpoints(ABC):
             The graph to run the algorithm on.
         source_node : int
             The source node for the shortest path computation.
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -104,8 +104,8 @@ class SingleSourceDijkstraEndpoints(ABC):
             The source node for the shortest path computation.
         mutate_relationship_type : str
             The relationship type to use for the new relationships in the graph catalog.
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -161,8 +161,8 @@ class SingleSourceDijkstraEndpoints(ABC):
             Whether to write node IDs of the shortest path onto the relationship.
         write_costs : bool, default=False
             Whether to write costs of the shortest path onto the relationship.
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -206,8 +206,8 @@ class SingleSourceDijkstraEndpoints(ABC):
             The graph to run the algorithm on.
         source_node : int
             The source node for the shortest path computation.
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

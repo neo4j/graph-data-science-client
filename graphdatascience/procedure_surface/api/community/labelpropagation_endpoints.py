@@ -56,8 +56,8 @@ class LabelPropagationEndpoints(ABC):
             The property name for node weights
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        relationship_weight_property : str | None, default=None
-            The property name for relationship weights
+        relationship_weight_property
+            Name of the property to be used as weights.
         seed_property : str | None, default=None
             The property name containing seed values for initial community assignment
         sudo
@@ -113,8 +113,8 @@ class LabelPropagationEndpoints(ABC):
             The property name for node weights
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        relationship_weight_property : str | None, default=None
-            The property name for relationship weights
+        relationship_weight_property
+            Name of the property to be used as weights.
         seed_property : str | None, default=None
             The property name containing seed values for initial community assignment
         sudo
@@ -173,8 +173,8 @@ class LabelPropagationEndpoints(ABC):
             The property name for node weights
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        relationship_weight_property : str | None, default=None
-            The property name for relationship weights
+        relationship_weight_property
+            Name of the property to be used as weights.
         seed_property : str | None, default=None
             The property name containing seed values for initial community assignment
         sudo
@@ -237,8 +237,8 @@ class LabelPropagationEndpoints(ABC):
             The property name for node weights
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        relationship_weight_property : str | None, default=None
-            The property name for relationship weights
+        relationship_weight_property
+            Name of the property to be used as weights.
         seed_property : str | None, default=None
             The property name containing seed values for initial community assignment
         sudo
@@ -286,8 +286,8 @@ class LabelPropagationEndpoints(ABC):
             The property name for node weights
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        relationship_weight_property : str | None, default=None
-            The property name for relationship weights
+        relationship_weight_property
+            Name of the property to be used as weights.
         seed_property : str | None, default=None
             The property name containing seed values for initial community assignment
 

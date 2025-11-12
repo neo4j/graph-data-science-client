@@ -96,8 +96,8 @@ class Node2VecEndpoints(ABC):
             Controls the likelihood of visiting already visited nodes
         walk_buffer_size : int, default=1000
             Buffer size for walk sampling
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
 
@@ -184,8 +184,8 @@ class Node2VecEndpoints(ABC):
             Controls the likelihood of visiting already visited nodes
         walk_buffer_size : int, default=1000
             Buffer size for walk sampling
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
 
@@ -276,8 +276,8 @@ class Node2VecEndpoints(ABC):
             Controls the likelihood of visiting already visited nodes
         walk_buffer_size : int, default=1000
             Buffer size for walk sampling
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
         write_concurrency
@@ -352,8 +352,8 @@ class Node2VecEndpoints(ABC):
             Controls the likelihood of visiting already visited nodes
         walk_buffer_size : int, default=1000
             Buffer size for walk sampling
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
 

@@ -66,8 +66,8 @@ class PrizeSteinerTreeEndpoints(ABC):
             The graph to run the algorithm on.
         prize_property : str
             The name of the node property containing prize values.
-        relationship_weight_property : str, optional
-            The name of the relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -113,8 +113,8 @@ class PrizeSteinerTreeEndpoints(ABC):
             The graph to run the algorithm on.
         prize_property : str
             The name of the node property containing prize values.
-        relationship_weight_property : str, optional
-            The name of the relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -166,8 +166,8 @@ class PrizeSteinerTreeEndpoints(ABC):
             Name of the node property to store the results in.
         prize_property : str
             The name of the node property containing prize values.
-        relationship_weight_property : str, optional
-            The name of the relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -220,8 +220,8 @@ class PrizeSteinerTreeEndpoints(ABC):
             Name of the node property to store the results in.
         prize_property : str
             The name of the node property containing prize values.
-        relationship_weight_property : str, optional
-            The name of the relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -265,8 +265,8 @@ class PrizeSteinerTreeEndpoints(ABC):
             The graph to estimate for, or a dictionary with nodeCount and relationshipCount.
         prize_property : str
             The name of the node property containing prize values.
-        relationship_weight_property : str, optional
-            The name of the relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

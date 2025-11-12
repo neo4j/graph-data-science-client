@@ -132,7 +132,7 @@ def test_common_parameter_consistency() -> None:
         # "G: GraphV2 | dict[str, Any]",
         # "tolerance: float",
         # "source_node: int",
-        # "relationship_weight_property: str | None",
+        "relationship_weight_property: str | None",
         # "username: str | None",
         # "seed_property: str | None",
     }

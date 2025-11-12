@@ -75,8 +75,8 @@ class NodeSimilarityFilteredEndpoints(ABC):
             The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components : bool | str, default=False
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -151,8 +151,8 @@ class NodeSimilarityFilteredEndpoints(ABC):
             The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components : bool | str, default=False
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -227,8 +227,8 @@ class NodeSimilarityFilteredEndpoints(ABC):
             The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components : bool | str, default=False
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -310,8 +310,8 @@ class NodeSimilarityFilteredEndpoints(ABC):
             The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components : bool | str, default=False
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -384,8 +384,8 @@ class NodeSimilarityFilteredEndpoints(ABC):
             The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components : bool | str, default=False
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
-        relationship_weight_property : str | None, default=None
-            The relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

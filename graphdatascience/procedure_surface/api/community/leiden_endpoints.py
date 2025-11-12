@@ -64,8 +64,8 @@ class LeidenEndpoints(ABC):
             Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        relationship_weight_property : str | None, default=None
-            The relationship weight property
+        relationship_weight_property
+            Name of the property to be used as weights.
         seed_property : str | None, default=None
             The seed property
         sudo
@@ -132,8 +132,8 @@ class LeidenEndpoints(ABC):
             Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        relationship_weight_property : str | None, default=None
-            The relationship weight property
+        relationship_weight_property
+            Name of the property to be used as weights.
         seed_property : str | None, default=None
             The seed property
         sudo
@@ -203,8 +203,8 @@ class LeidenEndpoints(ABC):
             Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        relationship_weight_property : str | None, default=None
-            The relationship weight property
+        relationship_weight_property
+            Name of the property to be used as weights.
         seed_property : str | None, default=None
             The seed property
         sudo
@@ -278,8 +278,8 @@ class LeidenEndpoints(ABC):
             Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        relationship_weight_property : str | None, default=None
-            The relationship weight property
+        relationship_weight_property
+            Name of the property to be used as weights.
         seed_property : str | None, default=None
             The seed property
         sudo
@@ -338,8 +338,8 @@ class LeidenEndpoints(ABC):
             Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        relationship_weight_property : str | None, default=None
-            The relationship weight property
+        relationship_weight_property
+            Name of the property to be used as weights.
         seed_property : str | None, default=None
             The seed property
         theta : float, default=0.01

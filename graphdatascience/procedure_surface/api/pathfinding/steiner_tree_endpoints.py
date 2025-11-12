@@ -71,8 +71,8 @@ class SteinerTreeEndpoints(ABC):
             The source node (root) for the Steiner tree.
         target_nodes : list[int]
             The list of target nodes (terminals) that must be connected.
-        relationship_weight_property : str, optional
-            The name of the relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         delta : float, default=2.0
             The delta parameter for the shortest path computation used internally.
         apply_rerouting : bool, default=False
@@ -127,8 +127,8 @@ class SteinerTreeEndpoints(ABC):
             The source node (root) for the Steiner tree.
         target_nodes : list[int]
             The list of target nodes (terminals) that must be connected.
-        relationship_weight_property : str, optional
-            The name of the relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         delta : float, default=2.0
             The delta parameter for the shortest path computation used internally.
         apply_rerouting : bool, default=False
@@ -189,8 +189,8 @@ class SteinerTreeEndpoints(ABC):
             The source node (root) for the Steiner tree.
         target_nodes : list[int]
             The list of target nodes (terminals) that must be connected.
-        relationship_weight_property : str, optional
-            The name of the relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         delta : float, default=2.0
             The delta parameter for the shortest path computation used internally.
         apply_rerouting : bool, default=False
@@ -252,8 +252,8 @@ class SteinerTreeEndpoints(ABC):
             The source node (root) for the Steiner tree.
         target_nodes : list[int]
             The list of target nodes (terminals) that must be connected.
-        relationship_weight_property : str, optional
-            The name of the relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         delta : float, default=2.0
             The delta parameter for the shortest path computation used internally.
         apply_rerouting : bool, default=False
@@ -306,8 +306,8 @@ class SteinerTreeEndpoints(ABC):
             The source node (root) for the Steiner tree.
         target_nodes : list[int]
             The list of target nodes (terminals) that must be connected.
-        relationship_weight_property : str, optional
-            The name of the relationship property to use as weights.
+        relationship_weight_property
+            Name of the property to be used as weights.
         delta : float, default=2.0
             The delta parameter for the shortest path computation.
         apply_rerouting : bool, default=False

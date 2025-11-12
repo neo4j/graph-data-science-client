@@ -75,7 +75,7 @@ class LouvainEndpoints(ABC):
             The property name that contains seed values
         consecutive_ids : bool, default=False
             Whether to use consecutive IDs
-        relationship_weight_property : str | None, default=None
+        relationship_weight_property
             Name of the property to be used as weights.
 
         Returns
@@ -137,8 +137,8 @@ class LouvainEndpoints(ABC):
             Defines node properties that are used as initial community identifiers
         consecutive_ids : bool, default=False
             Flag to decide whether community identifiers are mapped into a consecutive id space
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
 
         Returns
         -------
@@ -200,8 +200,8 @@ class LouvainEndpoints(ABC):
             Defines node properties that are used as initial community identifiers
         consecutive_ids : bool, default=False
             Flag to decide whether community identifiers are mapped into a consecutive id space
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
         min_community_size : int | None, default=None
             Don't stream communities with fewer nodes than this
 
@@ -269,8 +269,8 @@ class LouvainEndpoints(ABC):
             Defines node properties that are used as initial community identifiers
         consecutive_ids : bool, default=False
             Flag to decide whether community identifiers are mapped into a consecutive id space
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
         write_concurrency
             Number of concurrent threads to use for writing.
         min_community_size : int | None, default=None
@@ -323,8 +323,8 @@ class LouvainEndpoints(ABC):
             A property to use as the starting community id for a node
         consecutive_ids : bool, default=False
             Flag to decide if the component identifiers should be returned consecutively or not
-        relationship_weight_property : str | None, default=None
-            The property name that contains weight
+        relationship_weight_property
+            Name of the property to be used as weights.
 
         Returns
         -------
