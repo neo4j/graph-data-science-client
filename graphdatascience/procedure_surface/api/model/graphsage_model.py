@@ -50,8 +50,8 @@ class GraphSageModelV2(Model):
             The property to write the embeddings to.
         relationship_types : list[str]
             The relationship types to consider.
-        node_labels : list[str]
-            The node labels to consider.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         batch_size : int = 100
             The batch size for prediction.
         concurrency : int | None, default=None
@@ -62,9 +62,8 @@ class GraphSageModelV2(Model):
             Whether to log progress.
         username : str | None, default=None
             The username for the operation.
-        sudo : bool = False
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+        sudo
+            Disable the memory guard.
         job_id : str | None, default=None
             The job ID for the operation.
 
@@ -111,8 +110,8 @@ class GraphSageModelV2(Model):
             The graph to generate embeddings for.
         relationship_types : list[str]
             The relationship types to consider.
-        node_labels : list[str]
-            The node labels to consider.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         batch_size : int = 100
             The batch size for prediction.
         concurrency : int | None, default=None
@@ -121,9 +120,8 @@ class GraphSageModelV2(Model):
             Whether to log progress.
         username : str | None, default=None
             The username for the operation.
-        sudo : bool = False
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+        sudo
+            Disable the memory guard.
         job_id : str | None, default=None
             The job ID for the operation.
 
@@ -171,8 +169,8 @@ class GraphSageModelV2(Model):
             The property to mutate with the embeddings.
         relationship_types : list[str]
             The relationship types to consider.
-        node_labels : list[str]
-            The node labels to consider.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         batch_size : int = 100
             The batch size for prediction.
         concurrency : int | None, default=None
@@ -181,9 +179,8 @@ class GraphSageModelV2(Model):
             Whether to log progress.
         username : str | None, default=None
             The username for the operation.
-        sudo : bool = False
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+        sudo
+            Disable the memory guard.
         job_id : str | None, default=None
             The job ID for the operation.
 
@@ -229,8 +226,8 @@ class GraphSageModelV2(Model):
             The graph to generate embeddings for.
         relationship_types : list[str]
             The relationship types to consider.
-        node_labels : list[str]
-            The node labels to consider.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         batch_size : int = 100
             The batch size for prediction.
         concurrency : int | None, default=None
@@ -239,9 +236,8 @@ class GraphSageModelV2(Model):
             Whether to log progress.
         username : str | None, default=None
             The username for the operation.
-        sudo : bool = False
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+        sudo
+            Disable the memory guard.
         job_id : str | None, default=None
             The job ID for the operation.
 

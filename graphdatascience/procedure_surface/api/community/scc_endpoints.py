@@ -51,11 +51,11 @@ class SccEndpoints(ABC):
             Identifier for the computation.
         log_progress : bool, default=True
             Display progress logging.
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        sudo : bool, default=False
+        sudo
             Disable the memory guard.
         username : str | None, default=None
             As an administrator, run the algorithm as a different user, to access also their graphs.
@@ -96,12 +96,12 @@ class SccEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -141,12 +141,12 @@ class SccEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types considered in this algorithm run
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
 
@@ -190,12 +190,12 @@ class SccEndpoints(ABC):
             An identifier for the job
         log_progress : bool, default=True
             Whether to log progress
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types considered in this algorithm run
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
         write_concurrency : int | None, default=None
@@ -229,8 +229,8 @@ class SccEndpoints(ABC):
             The number of concurrent threads
         consecutive_ids : bool, default=False
             Flag to decide if the component identifiers should be returned consecutively or not
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
 

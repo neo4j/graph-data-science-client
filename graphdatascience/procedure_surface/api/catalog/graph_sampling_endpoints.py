@@ -62,11 +62,10 @@ class GraphSamplingEndpoints(ABC):
         relationship_types : list of str, optional
             Filter the named graph using the given relationship types. Relationships with any of the given types will be
             included.
-        node_labels : list of str, optional
-            Filter the named graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool, optional
-            Bypass heap control. Use with caution.
-            Default is False.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, optional
             Turn `on/off` percentage logging while running procedure.
             Default is True.
@@ -137,11 +136,10 @@ class GraphSamplingEndpoints(ABC):
         relationship_types : list of str, optional
             Filter the named graph using the given relationship types. Relationships with any of the given types will be
             included.
-        node_labels : list of str, optional
-            Filter the named graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool, optional
-            Bypass heap control. Use with caution.
-            Default is False.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, optional
             Turn `on/off` percentage logging while running procedure.
             Default is True.

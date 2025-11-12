@@ -48,9 +48,9 @@ class BetweennessEndpoints(ABC):
             Seed value for the random number generator that selects source nodes.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Display progress logging.
@@ -102,9 +102,9 @@ class BetweennessEndpoints(ABC):
             Seed value for the random number generator that selects source nodes.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Display progress logging.
@@ -151,10 +151,10 @@ class BetweennessEndpoints(ABC):
             The seed value for sampling randomization
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
-        sudo : bool
-            Override memory estimation limits
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
@@ -209,9 +209,9 @@ class BetweennessEndpoints(ABC):
             Seed value for the random number generator that selects source nodes.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Display progress logging.
@@ -256,8 +256,8 @@ class BetweennessEndpoints(ABC):
             The seed value for sampling randomization
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None
             The number of concurrent threads
         relationship_weight_property : str | None, default=None

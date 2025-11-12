@@ -55,8 +55,8 @@ class MaxKCutEndpoints(ABC):
             The number of communities to detect. Must be at least 2.
         log_progress : bool, default=True
             Whether to log progress information during execution
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run. If None, all nodes are used.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed : int | None, default=None
             Random seed for reproducible results. If None, a random seed is used.
         relationship_types : list[str]
@@ -64,9 +64,8 @@ class MaxKCutEndpoints(ABC):
             relationship types are used.
         relationship_weight_property : str | None, default=None
             The relationship weight property. If None, each relationship has weight 1.0.
-        sudo : bool | None, default=False
-            Override memory estimation limits. Setting this to True allows running the algorithm
-            even if the estimated memory requirements exceed available memory.
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
         vns_max_neighborhood_order : int | None, default=0
@@ -121,8 +120,8 @@ class MaxKCutEndpoints(ABC):
             Whether to log progress information during execution
         min_community_size : int | None, default=None
             The minimum community size. Communities smaller than this will be filtered from results.
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run. If None, all nodes are used.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed : int | None, default=None
             Random seed for reproducible results. If None, a random seed is used.
         relationship_types : list[str]
@@ -130,9 +129,8 @@ class MaxKCutEndpoints(ABC):
             relationship types are used.
         relationship_weight_property : str | None, default=None
             The relationship weight property. If None, each relationship has weight 1.0.
-        sudo : bool | None, default=False
-            Override memory estimation limits. Setting this to True allows running the algorithm
-            even if the estimated memory requirements exceed available memory.
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             The username to attribute the procedure run to
         vns_max_neighborhood_order : int | None, default=0
@@ -177,8 +175,8 @@ class MaxKCutEndpoints(ABC):
             The number of iterations the algorithm runs
         k : int | None, default=2
             The number of communities to detect. Must be at least 2.
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run. If None, all nodes are used.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed : int | None, default=None
             Random seed for reproducible results
         relationship_types : list[str]

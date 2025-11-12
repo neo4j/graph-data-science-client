@@ -32,7 +32,7 @@ class NodeLabelEndpoints(ABC):
             The node label to write back.
         node_filter : str
             A Cypher predicate for filtering nodes in the input graph.
-        sudo : bool
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress
@@ -76,7 +76,7 @@ class NodeLabelEndpoints(ABC):
             The node label to write back.
         node_filter : str
             A Cypher predicate for filtering nodes in the input graph.
-        sudo : bool
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress

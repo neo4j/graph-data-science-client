@@ -53,16 +53,16 @@ class ModularityOptimizationEndpoints(ABC):
             Whether to log progress
         max_iterations : int
             Maximum number of iterations for the algorithm
-        node_labels : list[str]
-            Filter nodes with specific labels
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             Filter relationships with specific types
         relationship_weight_property : str | None, default=None
             Property name for relationship weights
         seed_property : str | None, default=None
             Property name for initial community assignments
-        sudo : bool | None, default=False
-            Run with elevated privileges
+        sudo
+            Disable the memory guard.
         tolerance : float
             Convergence tolerance for the algorithm
         username : str | None, default=None
@@ -113,16 +113,16 @@ class ModularityOptimizationEndpoints(ABC):
             Whether to log progress
         max_iterations : int
             Maximum number of iterations for the algorithm
-        node_labels : list[str]
-            Filter nodes with specific labels
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             Filter relationships with specific types
         relationship_weight_property : str | None, default=None
             Property name for relationship weights
         seed_property : str | None, default=None
             Property name for initial community assignments
-        sudo : bool | None, default=False
-            Run with elevated privileges
+        sudo
+            Disable the memory guard.
         tolerance : float
             Convergence tolerance for the algorithm
         username : str | None, default=None
@@ -176,16 +176,16 @@ class ModularityOptimizationEndpoints(ABC):
             Maximum number of iterations for the algorithm
         min_community_size : int | None, default=None
             Minimum size for communities to be included in results
-        node_labels : list[str]
-            Filter nodes with specific labels
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             Filter relationships with specific types
         relationship_weight_property : str | None, default=None
             Property name for relationship weights
         seed_property : str | None, default=None
             Property name for initial community assignments
-        sudo : bool | None, default=False
-            Run with elevated privileges
+        sudo
+            Disable the memory guard.
         tolerance : float
             Convergence tolerance for the algorithm
         username : str | None, default=None
@@ -243,16 +243,16 @@ class ModularityOptimizationEndpoints(ABC):
             Maximum number of iterations for the algorithm
         min_community_size : int | None, default=None
             Minimum size for communities to be included in results
-        node_labels : list[str]
-            Filter nodes with specific labels
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             Filter relationships with specific types
         relationship_weight_property : str | None, default=None
             Property name for relationship weights
         seed_property : str | None, default=None
             Property name for initial community assignments
-        sudo : bool | None, default=False
-            Run with elevated privileges
+        sudo
+            Disable the memory guard.
         tolerance : float
             Convergence tolerance for the algorithm
         username : str | None, default=None
@@ -297,8 +297,8 @@ class ModularityOptimizationEndpoints(ABC):
             Whether to assign consecutive community IDs
         max_iterations : int
             Maximum number of iterations for the algorithm
-        node_labels : list[str]
-            Filter nodes with specific labels
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types : list[str]
             Filter relationships with specific types
         relationship_weight_property : str | None, default=None

@@ -59,9 +59,9 @@ class LouvainEndpoints(ABC):
             Maximum number of iterations to run.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool, default=False
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Display progress logging.
@@ -121,10 +121,10 @@ class LouvainEndpoints(ABC):
             The maximum number of iterations per level
         relationship_types : list[str]
             The relationships types used to select relationships for this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
-        sudo : bool, default=False
-            Override memory estimation limits
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
@@ -184,10 +184,10 @@ class LouvainEndpoints(ABC):
             The maximum number of iterations per level
         relationship_types : list[str]
             The relationships types considered in this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
-        sudo : bool, default=False
-            Override memory estimation limits
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
@@ -253,10 +253,10 @@ class LouvainEndpoints(ABC):
             The maximum number of iterations per level
         relationship_types : list[str]
             The relationships types considered in this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
-        sudo : bool, default=False
-            Override memory estimation limits
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress
         username : str | None, default=None
@@ -315,8 +315,8 @@ class LouvainEndpoints(ABC):
             The maximum number of iterations per level
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None, default=None
             The number of concurrent threads
         seed_property : str | None, default=None

@@ -73,10 +73,10 @@ class DijkstraEndpoints(ABC):
             The relationship property to use as weights.
         relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str]
-            Filter on node labels.
-        sudo : bool, default=False
-            Run the algorithm with elevated privileges.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress.
         username : str | None, default=None
@@ -128,10 +128,10 @@ class DijkstraEndpoints(ABC):
             The relationship property to use as weights.
         relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str]
-            Filter on node labels.
-        sudo : bool, default=False
-            Run the algorithm with elevated privileges.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress.
         username : str | None, default=None
@@ -190,10 +190,10 @@ class DijkstraEndpoints(ABC):
             The relationship property to use as weights.
         relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str]
-            Filter on node labels.
-        sudo : bool, default=False
-            Run the algorithm with elevated privileges.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress.
         username : str | None, default=None
@@ -242,10 +242,10 @@ class DijkstraEndpoints(ABC):
             The relationship property to use as weights.
         relationship_types : list[str]
             Filter on relationship types.
-        node_labels : list[str]
-            Filter on node labels.
-        sudo : bool, default=False
-            Run the algorithm with elevated privileges.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         username : str | None, default=None
             Username for the operation.
         concurrency : int | None, default=None

@@ -52,14 +52,14 @@ class HdbscanEndpoints(ABC):
             The minimum size of clusters
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None, default=None
             The number of concurrent threads
         log_progress : bool, default=True
             Whether to log progress
-        sudo : bool
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         job_id : str | None
             An identifier for the job
         username : str | None, default=None
@@ -108,14 +108,14 @@ class HdbscanEndpoints(ABC):
             The minimum size of clusters
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None, default=None
             The number of concurrent threads
         log_progress : bool, default=True
             Whether to log progress
-        sudo : bool
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         job_id : str | None
             An identifier for the job
         username : str | None, default=None
@@ -164,14 +164,14 @@ class HdbscanEndpoints(ABC):
             The minimum size of clusters
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None, default=None
             The number of concurrent threads
         log_progress : bool, default=True
             Whether to log progress
-        sudo : bool
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         job_id : str | None
             An identifier for the job
         username : str | None, default=None
@@ -221,16 +221,16 @@ class HdbscanEndpoints(ABC):
             The minimum size of clusters
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         write_concurrency : int | None, default=None
             The number of concurrent threads for writing
         concurrency : int | None, default=None
             The number of concurrent threads
         log_progress : bool, default=True
             Whether to log progress
-        sudo : bool
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         job_id : str | None
             An identifier for the job
         username : str | None, default=None
@@ -276,14 +276,14 @@ class HdbscanEndpoints(ABC):
             The minimum size of clusters
         relationship_types : list[str]
             The relationship types used to select relationships for this algorithm run
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None, default=None
             The number of concurrent threads
         log_progress : bool, default=True
             Whether to log progress
-        sudo : bool
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         job_id : str | None
             An identifier for the job
         username : str | None, default=None

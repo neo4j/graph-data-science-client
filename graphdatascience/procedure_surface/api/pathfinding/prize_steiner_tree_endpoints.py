@@ -70,10 +70,10 @@ class PrizeSteinerTreeEndpoints(ABC):
             The name of the relationship property to use as weights.
         relationship_types : list[str], optional
             Filter to only use relationships of specific types.
-        node_labels : list[str], optional
-            Filter to only use nodes with specific labels.
-        sudo : bool, default=False
-            Whether to run with elevated privileges.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress during execution.
         username : str, optional
@@ -117,10 +117,10 @@ class PrizeSteinerTreeEndpoints(ABC):
             The name of the relationship property to use as weights.
         relationship_types : list[str], optional
             Filter to only use relationships of specific types.
-        node_labels : list[str], optional
-            Filter to only use nodes with specific labels.
-        sudo : bool, default=False
-            Whether to run with elevated privileges.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress during execution.
         username : str, optional
@@ -170,10 +170,10 @@ class PrizeSteinerTreeEndpoints(ABC):
             The name of the relationship property to use as weights.
         relationship_types : list[str], optional
             Filter to only use relationships of specific types.
-        node_labels : list[str], optional
-            Filter to only use nodes with specific labels.
-        sudo : bool, default=False
-            Whether to run with elevated privileges.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress during execution.
         username : str, optional
@@ -224,10 +224,10 @@ class PrizeSteinerTreeEndpoints(ABC):
             The name of the relationship property to use as weights.
         relationship_types : list[str], optional
             Filter to only use relationships of specific types.
-        node_labels : list[str], optional
-            Filter to only use nodes with specific labels.
-        sudo : bool, default=False
-            Whether to run with elevated privileges.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool, default=True
             Whether to log progress during execution.
         username : str, optional
@@ -271,10 +271,10 @@ class PrizeSteinerTreeEndpoints(ABC):
             The name of the relationship property to use as weights.
         relationship_types : list[str], optional
             Filter to only use relationships of specific types.
-        node_labels : list[str], optional
-            Filter to only use nodes with specific labels.
-        sudo : bool, default=False
-            Whether to run with elevated privileges.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         username : str, optional
             The username to use for logging.
         concurrency : int, optional

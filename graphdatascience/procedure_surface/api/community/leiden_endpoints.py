@@ -58,8 +58,8 @@ class LeidenEndpoints(ABC):
             Whether to log progress
         max_levels : int, default=10
             The maximum number of levels
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed : int | None, default=None
             Random seed for reproducible results
         relationship_types : list[str]
@@ -68,8 +68,8 @@ class LeidenEndpoints(ABC):
             The relationship weight property
         seed_property : str | None, default=None
             The seed property
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         theta : float, default=0.01
             The theta parameter for the Leiden algorithm
         tolerance : float, default=0.0001
@@ -126,8 +126,8 @@ class LeidenEndpoints(ABC):
             Whether to log progress
         max_levels : int, default=10
             The maximum number of levels
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed : int | None, default=None
             Random seed for reproducible results
         relationship_types : list[str]
@@ -136,8 +136,8 @@ class LeidenEndpoints(ABC):
             The relationship weight property
         seed_property : str | None, default=None
             The seed property
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         theta : float, default=0.01
             The theta parameter for the Leiden algorithm
         tolerance : float, default=0.0001
@@ -197,8 +197,8 @@ class LeidenEndpoints(ABC):
             The maximum number of levels
         min_community_size : int | None, default=None
             The minimum community size
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed : int | None, default=None
             Random seed for reproducible results
         relationship_types : list[str]
@@ -207,8 +207,8 @@ class LeidenEndpoints(ABC):
             The relationship weight property
         seed_property : str | None, default=None
             The seed property
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         theta : float, default=0.01
             The theta parameter for the Leiden algorithm
         tolerance : float, default=0.0001
@@ -272,8 +272,8 @@ class LeidenEndpoints(ABC):
             The maximum number of levels
         min_community_size : int | None, default=None
             The minimum community size
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed : int | None, default=None
             Random seed for reproducible results
         relationship_types : list[str]
@@ -282,8 +282,8 @@ class LeidenEndpoints(ABC):
             The relationship weight property
         seed_property : str | None, default=None
             The seed property
-        sudo : bool, default=False
-            Override memory estimation limits
+        sudo
+            Disable the memory guard.
         theta : float, default=0.01
             The theta parameter for the Leiden algorithm
         tolerance : float, default=0.0001
@@ -334,8 +334,8 @@ class LeidenEndpoints(ABC):
             Whether to include intermediate communities
         max_levels : int, default=10
             The maximum number of levels
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed : int | None, default=None
             Random seed for reproducible results
         relationship_types : list[str]

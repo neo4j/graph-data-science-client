@@ -45,9 +45,9 @@ class ScalePropertiesEndpoints(ABC):
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - A ScalerConfig instance
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool, default=False
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Display progress logging.
@@ -94,9 +94,9 @@ class ScalePropertiesEndpoints(ABC):
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - A ScalerConfig or LogScalerConfig instance
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool
+        sudo
             Disable the memory guard.
         log_progress : bool
             Display progress logging.
@@ -141,11 +141,10 @@ class ScalePropertiesEndpoints(ABC):
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - A ScalerConfig instance
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run.
-        sudo : bool
-            Override memory estimation limits. Use with caution as this can lead to
-            memory issues if the estimation is significantly wrong.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
         log_progress : bool
             Whether to log progress of the algorithm execution
         username : str | None
@@ -196,9 +195,9 @@ class ScalePropertiesEndpoints(ABC):
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - A ScalerConfig instance
-        node_labels : list[str]
+        node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        sudo : bool, default=False
+        sudo
             Disable the memory guard.
         log_progress : bool, default=True
             Display progress logging.
@@ -241,8 +240,8 @@ class ScalePropertiesEndpoints(ABC):
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
             - A ScalerConfig instance
-        node_labels : list[str]
-            The node labels used to select nodes for this algorithm run
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency : int | None
             The number of concurrent threads
 
