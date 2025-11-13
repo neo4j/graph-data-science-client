@@ -234,8 +234,8 @@ class SllpaEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
-            The graph to estimate for, or a graph configuration dictionary
+        G
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         concurrency
             Number of concurrent threads to use.
         min_association_strength : float | None, default=None

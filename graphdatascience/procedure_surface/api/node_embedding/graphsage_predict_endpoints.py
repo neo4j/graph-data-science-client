@@ -185,7 +185,7 @@ class GraphSagePredictEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         model_name : str
             Name under which the model will is stored
         relationship_types

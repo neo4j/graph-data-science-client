@@ -317,7 +317,7 @@ class Node2VecEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         iterations : int, default=1
             The number of training iterations
         negative_sampling_rate : int, default=5

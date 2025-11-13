@@ -304,7 +304,7 @@ class LouvainEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         tolerance : float, default=0.0001
             The tolerance value for the algorithm convergence
         max_levels : int, default=10

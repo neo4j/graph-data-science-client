@@ -197,8 +197,8 @@ class CliqueCountingEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
-            The graph or graph configuration to estimate for
+        G
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         concurrency
             Number of concurrent threads to use.
         node_labels

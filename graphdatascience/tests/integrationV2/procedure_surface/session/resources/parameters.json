@@ -2,7 +2,7 @@
   "concurrency": "Number of concurrent threads to use.",
   "consecutive_ids": "Use consecutive IDs for the components.",
   "damping_factor": "Probability of a jump to a random node.",
-  "G": "The graph to run the algorithm on.",
+  "G": ["The graph to run the algorithm on.", "The graph to run the algorithm on or a dictionary representing the graph dimensions."],
   "job_id": "Identifier for the computation.",
   "log_progress": "Display progress logging.",
   "max_iterations": [

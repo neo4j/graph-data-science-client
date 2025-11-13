@@ -255,8 +255,8 @@ class CelfEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
-            The graph to be used in the estimation. Provided either as a GraphV2 object or a configuration dictionary for the projection.
+        G
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         seed_set_size : int
             The number of nodes to select as the seed set for influence maximization.
         propagation_probability : float

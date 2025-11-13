@@ -234,7 +234,7 @@ class ScalePropertiesEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         node_properties : Any
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
         scaler

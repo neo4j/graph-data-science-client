@@ -389,8 +389,8 @@ class KnnFilteredEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
-            The graph to run the algorithm on.
+        G
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         node_properties : str | list[str] | dict[str, str]
             The node properties to use for similarity computation.
         source_node_filter : str

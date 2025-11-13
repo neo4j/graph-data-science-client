@@ -262,7 +262,7 @@ class WccEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         threshold : float, default=0.0
             The minimum required weight to consider a relationship during traversal
         relationship_types

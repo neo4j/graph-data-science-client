@@ -318,8 +318,8 @@ class KMeansEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
-            The graph or graph configuration to estimate for
+        G
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         node_property : str
             The node property to use for clustering
         compute_silhouette : bool | None, default=False

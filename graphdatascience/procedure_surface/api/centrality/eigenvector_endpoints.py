@@ -301,8 +301,8 @@ class EigenvectorEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
-            The graph to run the algorithm on or a dictionary representing the graph configuration.
+        G
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         max_iterations
             Maximum number of iterations to run.
         tolerance : float

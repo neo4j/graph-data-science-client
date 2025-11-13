@@ -261,8 +261,8 @@ class PrizeSteinerTreeEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
-            The graph to estimate for, or a dictionary with nodeCount and relationshipCount.
+        G
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         prize_property : str
             The name of the node property containing prize values.
         relationship_weight_property

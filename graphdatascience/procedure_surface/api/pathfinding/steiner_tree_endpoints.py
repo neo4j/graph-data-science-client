@@ -300,8 +300,8 @@ class SteinerTreeEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
-            The graph to estimate for, or a dictionary with nodeCount and relationshipCount.
+        G
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         source_node : int
             The source node (root) for the Steiner tree.
         target_nodes : list[int]

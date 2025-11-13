@@ -317,7 +317,7 @@ class ArticleRankEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         damping_factor : float
             The damping factor controls the probability of a random jump to a random node
         tolerance : float

@@ -221,7 +221,7 @@ class HashGNNEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         iterations : int
             The number of iterations to run the algorithm
         embedding_density : int

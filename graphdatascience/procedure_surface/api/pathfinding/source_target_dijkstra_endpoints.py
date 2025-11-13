@@ -208,8 +208,8 @@ class SourceTargetDijkstraEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
-            The graph to run the algorithm on.
+        G
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         source_node : int
             The source node for the shortest path computation.
         target_nodes : int | list[int]

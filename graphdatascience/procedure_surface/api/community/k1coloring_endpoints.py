@@ -237,7 +237,7 @@ class K1ColoringEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         batch_size : int, default=10000
             The batch size for processing
         concurrency
