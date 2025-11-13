@@ -46,8 +46,8 @@ class LeidenEndpoints(ABC):
             Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Whether to use consecutive community IDs
+        consecutive_ids
+            Use consecutive IDs for the components.
         gamma : float, default=1.0
             The gamma parameter for the Leiden algorithm
         include_intermediate_communities : bool, default=False
@@ -114,8 +114,8 @@ class LeidenEndpoints(ABC):
             The graph to run the algorithm on.
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Whether to use consecutive community IDs
+        consecutive_ids
+            Use consecutive IDs for the components.
         gamma : float, default=1.0
             The gamma parameter for the Leiden algorithm
         include_intermediate_communities : bool, default=False
@@ -183,8 +183,8 @@ class LeidenEndpoints(ABC):
             The graph to run the algorithm on.
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Whether to use consecutive community IDs
+        consecutive_ids
+            Use consecutive IDs for the components.
         gamma : float, default=1.0
             The gamma parameter for the Leiden algorithm
         include_intermediate_communities : bool, default=False
@@ -258,8 +258,8 @@ class LeidenEndpoints(ABC):
             Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Whether to use consecutive community IDs
+        consecutive_ids
+            Use consecutive IDs for the components.
         gamma : float, default=1.0
             The gamma parameter for the Leiden algorithm
         include_intermediate_communities : bool, default=False
@@ -324,8 +324,8 @@ class LeidenEndpoints(ABC):
             The graph to estimate for
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Whether to use consecutive community IDs
+        consecutive_ids
+            Use consecutive IDs for the components.
         gamma : float, default=1.0
             The gamma parameter for the Leiden algorithm
         include_intermediate_communities : bool, default=False

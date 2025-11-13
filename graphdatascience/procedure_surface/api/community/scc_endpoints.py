@@ -45,8 +45,8 @@ class SccEndpoints(ABC):
             Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Whether to use consecutive IDs for components
+        consecutive_ids
+            Use consecutive IDs for the components.
         job_id : str | None, default=None
             Identifier for the computation.
         log_progress
@@ -90,8 +90,8 @@ class SccEndpoints(ABC):
             The graph to run the algorithm on.
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Flag to decide whether component identifiers are mapped into a consecutive id space
+        consecutive_ids
+            Use consecutive IDs for the components.
         job_id
             Identifier for the computation.
         log_progress
@@ -135,8 +135,8 @@ class SccEndpoints(ABC):
             The graph to run the algorithm on.
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Flag to decide whether component identifiers are mapped into a consecutive id space
+        consecutive_ids
+            Use consecutive IDs for the components.
         job_id
             Identifier for the computation.
         log_progress
@@ -184,8 +184,8 @@ class SccEndpoints(ABC):
             Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Flag to decide whether component identifiers are mapped into a consecutive id space
+        consecutive_ids
+            Use consecutive IDs for the components.
         job_id
             Identifier for the computation.
         log_progress
@@ -225,8 +225,8 @@ class SccEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph.
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Flag to decide if the component identifiers should be returned consecutively or not
+        consecutive_ids
+            Use consecutive IDs for the components.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
