@@ -247,7 +247,7 @@ class BetweennessEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         sampling_size : int | None, default=None
             The number of nodes to use for sampling.
         sampling_seed : int | None, default=None

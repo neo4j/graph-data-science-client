@@ -210,7 +210,7 @@ class KCoreEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         concurrency
             Number of concurrent threads to use.
         node_labels

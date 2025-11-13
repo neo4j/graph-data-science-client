@@ -222,8 +222,8 @@ class ClosenessEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
-            The graph to run the algorithm on or a dictionary representing the graph configuration.
+        G
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         use_wasserman_faust : bool | None, default=None
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types

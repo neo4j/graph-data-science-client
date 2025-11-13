@@ -308,7 +308,7 @@ class FastRPEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         embedding_dimension : int
             The dimension of the generated embeddings
         iteration_weights : list[float] = [0.0, 1.0, 1.0]

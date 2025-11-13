@@ -210,7 +210,7 @@ class ClosenessHarmonicEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

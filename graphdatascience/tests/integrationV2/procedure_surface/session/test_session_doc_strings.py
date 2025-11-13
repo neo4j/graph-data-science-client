@@ -129,7 +129,7 @@ def test_common_parameter_consistency() -> None:
         "scaler: str | dict[str, str | int | float] | ScalerConfig",
         "log_progress: bool",
         "max_iterations: int",
-        # "G: GraphV2 | dict[str, Any]",
+        "G: GraphV2 | dict[str, Any]",
         # "tolerance: float",
         # "source_node: int",
         "relationship_weight_property: str | None",

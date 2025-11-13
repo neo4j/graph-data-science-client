@@ -242,7 +242,7 @@ class DegreeEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph.
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         orientation : str | None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
         relationship_types

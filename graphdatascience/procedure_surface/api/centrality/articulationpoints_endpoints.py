@@ -200,8 +200,8 @@ class ArticulationPointsEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
-            The graph to be used in the estimation. Provided either as a GraphV2 object or a configuration dictionary for the projection.
+        G
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

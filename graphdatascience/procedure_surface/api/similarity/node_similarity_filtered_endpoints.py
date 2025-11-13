@@ -360,8 +360,8 @@ class NodeSimilarityFilteredEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
-            The graph to run the algorithm on.
+        G
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         source_node_filter : str | list[int]
             A Cypher expression or list of node IDs to filter which nodes can be sources.
         target_node_filter : str | list[int]

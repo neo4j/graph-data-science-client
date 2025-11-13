@@ -285,8 +285,8 @@ class ModularityOptimizationEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2 | dict[str, Any]
-            The graph configuration or graph object
+        G
+            The graph to run the algorithm on or a dictionary representing the graph dimensions.
         batch_size : int | None, default=None
             Number of nodes to process in each batch
         concurrency
