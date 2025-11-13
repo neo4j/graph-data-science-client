@@ -38,8 +38,8 @@ class SllpaEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_property
             Name of the node property to store the results in.
-        max_iterations : int
-            Maximum number of iterations for the algorithm
+        max_iterations
+            Maximum number of iterations to run.
         concurrency
             Number of concurrent threads to use.
         job_id

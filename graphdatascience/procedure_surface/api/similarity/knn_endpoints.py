@@ -65,8 +65,8 @@ class KnnEndpoints(ABC):
             The threshold for similarity scores.
         delta_threshold : float, default=0.001
             The threshold for convergence assessment.
-        max_iterations : int, default=100
-            The maximum number of iterations to run.
+        max_iterations
+            Maximum number of iterations to run.
         sample_rate : float, default=0.5
             The sampling rate for the algorithm.
         perturbation_rate : float, default=0.0
@@ -135,8 +135,8 @@ class KnnEndpoints(ABC):
             The threshold for similarity scores.
         delta_threshold : float, default=0.001
             The threshold for convergence assessment.
-        max_iterations : int, default=100
-            The maximum number of iterations to run.
+        max_iterations
+            Maximum number of iterations to run.
         sample_rate : float, default=0.5
             The sampling rate for the algorithm.
         perturbation_rate : float, default=0.0
@@ -205,8 +205,8 @@ class KnnEndpoints(ABC):
             The threshold for similarity scores.
         delta_threshold : float, default=0.001
             The threshold for convergence assessment.
-        max_iterations : int, default=100
-            The maximum number of iterations to run.
+        max_iterations
+            Maximum number of iterations to run.
         sample_rate : float, default=0.5
             The sampling rate for the algorithm.
         perturbation_rate : float, default=0.0
@@ -282,8 +282,8 @@ class KnnEndpoints(ABC):
             The threshold for similarity scores.
         delta_threshold : float, default=0.001
             The threshold for convergence assessment.
-        max_iterations : int, default=100
-            The maximum number of iterations to run.
+        max_iterations
+            Maximum number of iterations to run.
         sample_rate : float, default=0.5
             The sampling rate for the algorithm.
         perturbation_rate : float, default=0.0
@@ -351,8 +351,8 @@ class KnnEndpoints(ABC):
             The threshold for similarity scores.
         delta_threshold : float, default=0.001
             The threshold for convergence assessment.
-        max_iterations : int, default=100
-            The maximum number of iterations to run.
+        max_iterations
+            Maximum number of iterations to run.
         sample_rate : float, default=0.5
             The sampling rate for the algorithm.
         perturbation_rate : float, default=0.0

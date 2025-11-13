@@ -60,8 +60,8 @@ class KMeansEndpoints(ABC):
             The number of clusters
         log_progress
             Display progress logging.
-        max_iterations : int | None, default=10
-            The maximum number of iterations
+        max_iterations
+            Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1
@@ -129,8 +129,8 @@ class KMeansEndpoints(ABC):
             The number of clusters
         log_progress
             Display progress logging.
-        max_iterations : int | None, default=10
-            The maximum number of iterations
+        max_iterations
+            Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1
@@ -198,8 +198,8 @@ class KMeansEndpoints(ABC):
             The number of clusters
         log_progress
             Display progress logging.
-        max_iterations : int | None, default=10
-            The maximum number of iterations
+        max_iterations
+            Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1
@@ -271,8 +271,8 @@ class KMeansEndpoints(ABC):
             The number of clusters
         log_progress
             Display progress logging.
-        max_iterations : int | None, default=10
-            The maximum number of iterations
+        max_iterations
+            Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1
@@ -332,8 +332,8 @@ class KMeansEndpoints(ABC):
             The sampling method for initial centroids
         k : int | None, default=10
             The number of clusters
-        max_iterations : int | None, default=10
-            The maximum number of iterations
+        max_iterations
+            Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         number_of_restarts : int | None, default=1

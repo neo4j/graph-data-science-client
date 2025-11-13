@@ -101,8 +101,8 @@ class GraphSageTrainEndpoints(ABC):
             Tolerance for early stopping based on loss improvement
         learning_rate : float = 0.1
             Learning rate for the training optimization
-        max_iterations : int = 10
-            Maximum number of training iterations
+        max_iterations
+            Maximum number of iterations to run.
         sample_sizes : list[int] | None = None
             Number of neighbors to sample at each layer. Defaults to [25, 10] if not specified
         aggregator : str = "MEAN"

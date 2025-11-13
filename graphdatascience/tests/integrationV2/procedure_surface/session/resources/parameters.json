@@ -5,7 +5,10 @@
   "G": "The graph to run the algorithm on.",
   "job_id": "Identifier for the computation.",
   "log_progress": "Display progress logging.",
-  "max_iterations": "Maximum number of iterations to run.",
+  "max_iterations": [
+    "Maximum number of iterations to run.",
+    "Maximum number of iterations to run per level."
+  ],
   "monte_carlo_simulations": "Number of Monte-Carlo simulations.",
   "mutate_property": "Name of the node property to store the results in.",
   "node_labels": "Filter the graph using the given node labels. Nodes with any of the given labels will be included.",

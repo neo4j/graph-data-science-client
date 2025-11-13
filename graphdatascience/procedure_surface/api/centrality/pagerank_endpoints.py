@@ -185,8 +185,8 @@ class PageRankEndpoints(ABC):
             The damping factor controls the probability of a random jump to a random node
         tolerance : float
             Minimum change in scores between iterations
-        max_iterations : int
-            The maximum number of iterations to run
+        max_iterations
+            Maximum number of iterations to run.
         scaler
             The scaler to use. Can be:
 
@@ -317,8 +317,8 @@ class PageRankEndpoints(ABC):
             The damping factor controls the probability of a random jump to a random node
         tolerance : float
             Minimum change in scores between iterations
-        max_iterations : int
-            The maximum number of iterations to run
+        max_iterations
+            Maximum number of iterations to run.
         scaler
             The scaler to use. Can be:
 

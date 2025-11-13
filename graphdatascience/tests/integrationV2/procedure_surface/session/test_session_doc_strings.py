@@ -10,7 +10,7 @@ import pytest
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
 
-def load_parameter_descriptions() -> Dict[str, str]:
+def load_parameter_descriptions() -> Dict[str, list[str] | str]:
     """Load the canonical parameter descriptions from parameters.json."""
     # Option 1: Relative to current test file
     current_file = Path(__file__)
@@ -128,7 +128,7 @@ def test_common_parameter_consistency() -> None:
         "consecutive_ids: bool",
         "scaler: str | dict[str, str | int | float] | ScalerConfig",
         "log_progress: bool",
-        # "max_iterations: int",
+        "max_iterations: int",
         # "G: GraphV2 | dict[str, Any]",
         # "tolerance: float",
         # "source_node: int",
@@ -167,6 +167,8 @@ def test_common_parameter_consistency() -> None:
 
     param_descriptions = {k: v for k, v in param_descriptions.items() if k in common_params}
 
+    suggested_descriptions = load_parameter_descriptions()
+
     for param, desc_per_method in param_descriptions.items():
         if not desc_per_method:
             continue
@@ -177,12 +179,19 @@ def test_common_parameter_consistency() -> None:
             all_descriptions[desc] += [method]
         all_descriptions = dict(sorted(all_descriptions.items(), key=lambda x: len(x[1]), reverse=True))
 
-        if len(all_descriptions) > 1:
-            inconsistencies.append(
-                {"parameter": param, "descriptions": all_descriptions, "methods": list(desc_per_method.keys())}
-            )
+        suggestions: list[str] | str | set[str] = suggested_descriptions.get(param.split(":")[0], set())
+        if isinstance(suggestions, str):
+            suggestions = {suggestions}
 
-    suggested_descriptions = load_parameter_descriptions()
+        if len(all_descriptions) > 1 and len(all_descriptions.keys() - suggestions) > 0:
+            inconsistencies.append(
+                {
+                    "parameter": param,
+                    "descriptions": all_descriptions,
+                    "methods": list(desc_per_method.keys()),
+                    "suggestion(s)": suggestions,
+                }
+            )
 
     # Report inconsistencies
     if inconsistencies:
@@ -194,7 +203,7 @@ def test_common_parameter_consistency() -> None:
             desc_options: dict[str, Any] = issue["descriptions"]  # type: ignore
             for desc, methods in desc_options.items():
                 report += f" * {desc} ({len(methods)}x) - Example method: {methods[0]}\n"  # type: ignore
-            report += f"Suggested description: {suggested_descriptions.get(issue['parameter'].split(':')[0], 'not present in parameters.json')}\n"
+            report += f"Suggested description: {issue['suggestion(s)']}\n"
             report += "Copyable description regex: \n"
             desc_regex = "|".join([desc for desc in desc_options.keys()])
             report += f"({desc_regex})\n"

@@ -96,8 +96,8 @@ class K1ColoringEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_iterations : int, default=10
-            The maximum number of iterations of K-1 Coloring to run
+        max_iterations
+            Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
@@ -145,8 +145,8 @@ class K1ColoringEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_iterations : int, default=10
-            The maximum number of iterations of K-1 Coloring to run
+        max_iterations
+            Maximum number of iterations to run.
         min_community_size : int | None, default=None
             Only community ids of communities with a size greater than or equal to the given value are returned
         node_labels
@@ -200,8 +200,8 @@ class K1ColoringEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_iterations : int, default=10
-            The maximum number of iterations of K-1 Coloring to run
+        max_iterations
+            Maximum number of iterations to run.
         min_community_size : int | None, default=None
             Only community ids of communities with a size greater than or equal to the given value are written to Neo4j
         node_labels
@@ -242,8 +242,8 @@ class K1ColoringEndpoints(ABC):
             The batch size for processing
         concurrency
             Number of concurrent threads to use.
-        max_iterations : int, default=10
-            The maximum number of iterations of K-1 Coloring to run
+        max_iterations
+            Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types

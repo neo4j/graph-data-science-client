@@ -55,8 +55,8 @@ class LouvainEndpoints(ABC):
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool, default=False
             Whether to include intermediate communities
-        max_iterations : int, default=10
-            Maximum number of iterations to run.
+        max_iterations
+            Maximum number of iterations to run per level.
         relationship_types : list[str]
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -117,8 +117,8 @@ class LouvainEndpoints(ABC):
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool, default=False
             Whether to include intermediate community assignments
-        max_iterations : int, default=10
-            The maximum number of iterations per level
+        max_iterations
+            Maximum number of iterations to run per level.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -180,8 +180,8 @@ class LouvainEndpoints(ABC):
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool, default=False
             Whether to include intermediate community assignments
-        max_iterations : int, default=10
-            The maximum number of iterations per level
+        max_iterations
+            Maximum number of iterations to run per level.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -249,8 +249,8 @@ class LouvainEndpoints(ABC):
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool, default=False
             Whether to include intermediate community assignments
-        max_iterations : int, default=10
-            The maximum number of iterations per level
+        max_iterations
+            Maximum number of iterations to run per level.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -311,8 +311,8 @@ class LouvainEndpoints(ABC):
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool, default=False
             Whether to include intermediate community assignments
-        max_iterations : int, default=10
-            The maximum number of iterations per level
+        max_iterations
+            Maximum number of iterations to run per level.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
