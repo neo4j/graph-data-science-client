@@ -23,6 +23,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
 extensions = [
     "sphinx.ext.autodoc",  # include docs from docstrings
+    "sphinx.ext.intersphinx",  # link to other projects' documentation such as neo4j driver or pyArrow
     "enum_tools.autoenum",  # specialised autoclass for enums
     "sphinx.ext.napoleon",  # Support for NumPy and Google style docstrings
     "sphinxcontrib.autodoc_pydantic",  # Support for Pydantic models
@@ -59,6 +60,17 @@ def setup(app):  # type: ignore
     app.add_js_file("js/12-fragment-jumper.js", loading_method="defer")
     app.add_js_file("js/deprecated.js", loading_method="defer")
 
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "neo4j": ("https://neo4j.com/docs/api/python-driver/current/", None),
+    "dateutil": ("https://dateutil.readthedocs.io/en/stable/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "pandas": ("https://pandas.pydata.org/docs/", None),
+    "pyarrow": ("https://arrow.apache.org/docs/", None),
+    "networkx": ("https://networkx.org/documentation/stable/", None),
+    "nx": ("https://networkx.org/documentation/stable/", None),
+}
 
 rst_epilog = """
 .. |api-version| replace:: {versionnum}
