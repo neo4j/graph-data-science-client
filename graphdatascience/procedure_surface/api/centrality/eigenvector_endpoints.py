@@ -45,8 +45,8 @@ class EigenvectorEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_property
             Name of the node property to store the results in.
-        max_iterations : int
-            The maximum number of iterations to run the algorithm
+        max_iterations
+            Maximum number of iterations to run.
         tolerance : float
             The tolerance for convergence detection
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
@@ -112,8 +112,8 @@ class EigenvectorEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        max_iterations : int
-            The maximum number of iterations to run the algorithm
+        max_iterations
+            Maximum number of iterations to run.
         tolerance : float
             The tolerance for convergence detection
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
@@ -174,8 +174,8 @@ class EigenvectorEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        max_iterations : int
-            The maximum number of iterations to run the algorithm
+        max_iterations
+            Maximum number of iterations to run.
         tolerance : float
             The tolerance for convergence detection
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
@@ -245,8 +245,8 @@ class EigenvectorEndpoints(ABC):
             The graph to run the algorithm on.
         write_property
             Name of the node property to store the results in.
-        max_iterations : int
-            The maximum number of iterations to run the algorithm
+        max_iterations
+            Maximum number of iterations to run.
         tolerance : float
             The tolerance for convergence detection
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
@@ -303,8 +303,8 @@ class EigenvectorEndpoints(ABC):
         ----------
         G : GraphV2 | dict[str, Any]
             The graph to run the algorithm on or a dictionary representing the graph configuration.
-        max_iterations : int
-            The maximum number of iterations to run the algorithm
+        max_iterations
+            Maximum number of iterations to run.
         tolerance : float
             The tolerance for convergence detection
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None

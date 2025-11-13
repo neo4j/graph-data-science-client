@@ -51,8 +51,8 @@ class ModularityOptimizationEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_iterations : int
-            Maximum number of iterations for the algorithm
+        max_iterations
+            Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
@@ -111,8 +111,8 @@ class ModularityOptimizationEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_iterations : int
-            Maximum number of iterations for the algorithm
+        max_iterations
+            Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
@@ -172,8 +172,8 @@ class ModularityOptimizationEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_iterations : int
-            Maximum number of iterations for the algorithm
+        max_iterations
+            Maximum number of iterations to run.
         min_community_size : int | None, default=None
             Minimum size for communities to be included in results
         node_labels
@@ -239,8 +239,8 @@ class ModularityOptimizationEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_iterations : int
-            Maximum number of iterations for the algorithm
+        max_iterations
+            Maximum number of iterations to run.
         min_community_size : int | None, default=None
             Minimum size for communities to be included in results
         node_labels
@@ -293,8 +293,8 @@ class ModularityOptimizationEndpoints(ABC):
             Number of concurrent threads to use.
         consecutive_ids
             Use consecutive IDs for the components.
-        max_iterations : int
-            Maximum number of iterations for the algorithm
+        max_iterations
+            Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types

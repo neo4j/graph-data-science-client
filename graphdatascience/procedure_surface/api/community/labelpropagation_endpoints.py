@@ -48,8 +48,8 @@ class LabelPropagationEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_iterations : int, default=10
-            The maximum number of iterations
+        max_iterations
+            Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
@@ -105,8 +105,8 @@ class LabelPropagationEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_iterations : int, default=10
-            The maximum number of iterations
+        max_iterations
+            Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
@@ -163,8 +163,8 @@ class LabelPropagationEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_iterations : int, default=10
-            The maximum number of iterations
+        max_iterations
+            Maximum number of iterations to run.
         min_community_size : int | None, default=None
             Minimum community size to include in results
         node_labels
@@ -227,8 +227,8 @@ class LabelPropagationEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_iterations : int, default=10
-            The maximum number of iterations
+        max_iterations
+            Maximum number of iterations to run.
         min_community_size : int | None, default=None
             Minimum community size to include in results
         node_labels
@@ -278,8 +278,8 @@ class LabelPropagationEndpoints(ABC):
             Number of concurrent threads to use.
         consecutive_ids
             Use consecutive IDs for the components.
-        max_iterations : int, default=10
-            The maximum number of iterations
+        max_iterations
+            Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
