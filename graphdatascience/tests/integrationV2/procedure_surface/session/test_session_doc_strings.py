@@ -125,7 +125,7 @@ def test_common_parameter_consistency() -> None:
         "write_concurrency: int | None",
         "mutate_property: str",
         "write_property: str",
-        # "consecutive_ids: bool",
+        "consecutive_ids: bool",
         "scaler: str | dict[str, str | int | float] | ScalerConfig",
         "log_progress: bool",
         # "max_iterations: int",

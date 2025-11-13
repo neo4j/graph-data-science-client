@@ -1,5 +1,6 @@
 {
   "concurrency": "Number of concurrent threads to use.",
+  "consecutive_ids": "Use consecutive IDs for the components.",
   "damping_factor": "Probability of a jump to a random node.",
   "G": "The graph to run the algorithm on.",
   "job_id": "Identifier for the computation.",

@@ -45,8 +45,8 @@ class ModularityOptimizationEndpoints(ABC):
             Number of nodes to process in each batch
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool | None, default=None
-            Whether to assign consecutive community IDs
+        consecutive_ids
+            Use consecutive IDs for the components.
         job_id
             Identifier for the computation.
         log_progress
@@ -105,8 +105,8 @@ class ModularityOptimizationEndpoints(ABC):
             Number of nodes to process in each batch
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool | None, default=None
-            Whether to assign consecutive community IDs
+        consecutive_ids
+            Use consecutive IDs for the components.
         job_id
             Identifier for the computation.
         log_progress
@@ -166,8 +166,8 @@ class ModularityOptimizationEndpoints(ABC):
             Number of nodes to process in each batch
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool | None, default=None
-            Whether to assign consecutive community IDs
+        consecutive_ids
+            Use consecutive IDs for the components.
         job_id
             Identifier for the computation.
         log_progress
@@ -233,8 +233,8 @@ class ModularityOptimizationEndpoints(ABC):
             Number of nodes to process in each batch
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool | None, default=None
-            Whether to assign consecutive community IDs
+        consecutive_ids
+            Use consecutive IDs for the components.
         job_id
             Identifier for the computation.
         log_progress
@@ -291,8 +291,8 @@ class ModularityOptimizationEndpoints(ABC):
             Number of nodes to process in each batch
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool | None, default=None
-            Whether to assign consecutive community IDs
+        consecutive_ids
+            Use consecutive IDs for the components.
         max_iterations : int
             Maximum number of iterations for the algorithm
         node_labels

@@ -42,8 +42,8 @@ class LabelPropagationEndpoints(ABC):
             Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Whether to use consecutive community IDs starting from 0
+        consecutive_ids
+            Use consecutive IDs for the components.
         job_id
             Identifier for the computation.
         log_progress
@@ -99,8 +99,8 @@ class LabelPropagationEndpoints(ABC):
             The graph to run the algorithm on.
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Whether to use consecutive community IDs starting from 0
+        consecutive_ids
+            Use consecutive IDs for the components.
         job_id
             Identifier for the computation.
         log_progress
@@ -157,8 +157,8 @@ class LabelPropagationEndpoints(ABC):
             The graph to run the algorithm on.
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Whether to use consecutive community IDs starting from 0
+        consecutive_ids
+            Use consecutive IDs for the components.
         job_id
             Identifier for the computation.
         log_progress
@@ -221,8 +221,8 @@ class LabelPropagationEndpoints(ABC):
             Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Whether to use consecutive community IDs starting from 0
+        consecutive_ids
+            Use consecutive IDs for the components.
         job_id
             Identifier for the computation.
         log_progress
@@ -276,8 +276,8 @@ class LabelPropagationEndpoints(ABC):
             The graph or graph configuration to estimate for
         concurrency
             Number of concurrent threads to use.
-        consecutive_ids : bool, default=False
-            Whether to use consecutive community IDs starting from 0
+        consecutive_ids
+            Use consecutive IDs for the components.
         max_iterations : int, default=10
             The maximum number of iterations
         node_labels
