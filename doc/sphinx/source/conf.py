@@ -69,7 +69,6 @@ intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/docs/", None),
     "pyarrow": ("https://arrow.apache.org/docs/", None),
     "networkx": ("https://networkx.org/documentation/stable/", None),
-    "nx": ("https://networkx.org/documentation/stable/", None),
 }
 
 rst_epilog = """

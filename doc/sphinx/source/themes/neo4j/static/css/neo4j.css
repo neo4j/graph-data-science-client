@@ -30,6 +30,14 @@ body.sphinx .content .search {
     background: initial;
 }
 
+body.sphinx a.external::after {
+    display: inline-block;
+    content: "";
+    padding: 0;
+    margin: 0;
+    background-position: 50%;
+}
+
 @media screen and (min-width: 1024px) {
 
     body.sphinx .toolbar {
@@ -50,7 +58,7 @@ body.sphinx .content .search {
     body.sphinx .nav-container {
         border: none;
     }
-    
+
     body.sphinx .nav,
     body.sphinx .nav-panel-menu {
         height: auto;
@@ -60,11 +68,11 @@ body.sphinx .content .search {
     body.sphinx .sphinxsidebar {
         background: #f5f7fa;
     }
-    
+
     body.sphinx .nav-panel-menu:not(.is-active)::after {
         background: initial;
     }
-    
+
     body.sphinx .navbar-start {
         display: -webkit-box;
         display: -ms-flexbox;
@@ -78,7 +86,7 @@ body.sphinx .content .search {
         align-items: center;
         margin-right: 2rem;
     }
-    
+
     body.sphinx .navbar-start .navbar-link {
         margin-left: auto;
     }
@@ -216,7 +224,7 @@ body.sphinx .deprecated > *::after {
     content: unset;
 }
 
-body.sphinx .doc dl.deprecated dt:first-of-type span.sig-prename, 
+body.sphinx .doc dl.deprecated dt:first-of-type span.sig-prename,
 body.sphinx .doc dl.deprecated dt:first-of-type span.sig-name {
     border-bottom: 1px solid #f6ad55;
     /* color: #702459; */
