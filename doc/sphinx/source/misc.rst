@@ -5,7 +5,7 @@ This includes procedures for configuring the library.
 These all assume that an object of :class:`.GraphDataScience` is available as `gds`.
 
 
-.. py:function:: gds.alpha.config.defaults.list(key: Optional[str] = None, username: Optional[str] = None) -> DataFrame
+.. py:function:: gds.alpha.config.defaults.list(key: Optional[str] = None, username: Optional[str] = None) -> pandas.DataFrame
 
     List defaults; global by default, but also optionally for a specific user and/ or key
 .. deprecated:: 2.5.0
@@ -17,7 +17,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. deprecated:: 2.5.0
     Since GDS server version 2.5.0 you should use the endpoint :func:`gds.config.defaults.set` instead.
 
-.. py:function:: gds.alpha.config.limits.list(key: Optional[str] = None, username: Optional[str] = None) -> DataFrame
+.. py:function:: gds.alpha.config.limits.list(key: Optional[str] = None, username: Optional[str] = None) -> pandas.DataFrame
 
     List limits; global by default, but also optionally for a specific user and/ or key
 .. deprecated:: 2.5.0
@@ -28,7 +28,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
     Set a limit; global by, default, but also optionally for a specific user
 .. deprecated:: 2.5.0
         Since GDS server version 2.5.0 you should use the endpoint :func:`gds.config.limits.set` instead.
-.. py:function:: gds.config.defaults.list(key: Optional[str] = None, username: Optional[str] = None) -> DataFrame
+.. py:function:: gds.config.defaults.list(key: Optional[str] = None, username: Optional[str] = None) -> pandas.DataFrame
 
     List defaults; global by default, but also optionally for a specific user and/ or key
 
@@ -36,7 +36,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Set a default; global by, default, but also optionally for a specific user
 
-.. py:function:: gds.config.limits.list(key: Optional[str] = None, username: Optional[str] = None) -> DataFrame
+.. py:function:: gds.config.limits.list(key: Optional[str] = None, username: Optional[str] = None) -> pandas.DataFrame
 
     List limits; global by default, but also optionally for a specific user and/ or key
 
@@ -49,21 +49,21 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. deprecated:: 2.5.0
         Since GDS server version 2.5.0 you should use the endpoint :func:`gds.systemMonitor` instead.
 
-.. py:function:: gds.alpha.userLog() -> DataFrame
+.. py:function:: gds.alpha.userLog() -> pandas.DataFrame
     Log warnings and hints for currently running tasks.
     .. deprecated:: 2.5.0
             Since GDS server version 2.5.0 you should use the endpoint :func:`gds.userLog` instead.
 
-.. py:function:: gds.beta.listProgress(job_id: Optional[str] = None) -> DataFrame
+.. py:function:: gds.beta.listProgress(job_id: Optional[str] = None) -> pandas.DataFrame
     List progress events for currently running tasks.
 .. deprecated:: 2.5.0
-    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.listProgress` instead.   
+    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.listProgress` instead.
 
 .. py:function:: gds.systemMonitor() -> Series[Any]
 
     Get an overview of the system's workload and available resources
 
-.. py:function:: gds.listProgress(job_id: Optional[str] = None) -> DataFrame
+.. py:function:: gds.listProgress(job_id: Optional[str] = None) -> pandas.DataFrame
 
     List progress events for currently running tasks.
 
@@ -111,5 +111,5 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Return True if the graph data science library is licensed.
 
-.. py:function:: gds.userLog() -> DataFrame
+.. py:function:: gds.userLog() -> pandas.DataFrame
     Log warnings and hints for currently running tasks.
