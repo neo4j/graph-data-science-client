@@ -69,8 +69,8 @@ class EigenvectorEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -136,8 +136,8 @@ class EigenvectorEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -198,8 +198,8 @@ class EigenvectorEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -269,8 +269,8 @@ class EigenvectorEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
         job_id

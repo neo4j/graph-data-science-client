@@ -67,9 +67,8 @@ class GraphSamplingEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str, optional
-            Use Administrator access to run an algorithm on a graph owned by another user.
-            Default is None.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -137,9 +136,8 @@ class GraphSamplingEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str, optional
-            Use Administrator access to run an algorithm on a graph owned by another user.
-            Default is None.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
         job_id

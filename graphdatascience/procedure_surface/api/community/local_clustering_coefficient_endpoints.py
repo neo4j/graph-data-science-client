@@ -54,8 +54,8 @@ class LocalClusteringCoefficientEndpoints:
             Disable the memory guard.
         triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
-        username : str | None, default=None
-            Username for authentication
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -99,8 +99,8 @@ class LocalClusteringCoefficientEndpoints:
             Disable the memory guard.
         triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
-        username : str | None, default=None
-            Username for authentication
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -144,8 +144,8 @@ class LocalClusteringCoefficientEndpoints:
             Disable the memory guard.
         triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
-        username : str | None, default=None
-            Username for authentication
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -193,8 +193,8 @@ class LocalClusteringCoefficientEndpoints:
             Disable the memory guard.
         triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
-        username : str | None, default=None
-            Username for authentication
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         write_concurrency
             Number of concurrent threads to use for writing.Returns
         -------
@@ -238,8 +238,8 @@ class LocalClusteringCoefficientEndpoints:
             Disable the memory guard.
         triangle_count_property : str | None, default=None
             Property name for pre-computed triangle counts
-        username : str | None, default=None
-            Username for authentication
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------

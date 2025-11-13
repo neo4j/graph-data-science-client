@@ -85,8 +85,8 @@ class KnnEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            Username for the operation.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -155,8 +155,8 @@ class KnnEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            Username for the operation.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -225,8 +225,8 @@ class KnnEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            Username for the operation.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -302,8 +302,8 @@ class KnnEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            Username for the operation.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -371,8 +371,8 @@ class KnnEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            Username for the operation.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
         job_id

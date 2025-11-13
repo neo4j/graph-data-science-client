@@ -65,8 +65,8 @@ class MaxKCutEndpoints(ABC):
             Name of the property to be used as weights.
         sudo
             Disable the memory guard.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         vns_max_neighborhood_order : int | None, default=0
             The maximum neighborhood order for the Variable Neighborhood Search. Higher values may
             lead to better results but increase computation time.
@@ -129,8 +129,8 @@ class MaxKCutEndpoints(ABC):
             Name of the property to be used as weights.
         sudo
             Disable the memory guard.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         vns_max_neighborhood_order : int | None, default=0
             The maximum neighborhood order for the Variable Neighborhood Search. Higher values may
             lead to better results but increase computation time.

@@ -62,8 +62,8 @@ class LabelPropagationEndpoints(ABC):
             The property name containing seed values for initial community assignment
         sudo
             Disable the memory guard.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -119,8 +119,8 @@ class LabelPropagationEndpoints(ABC):
             The property name containing seed values for initial community assignment
         sudo
             Disable the memory guard.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -179,8 +179,8 @@ class LabelPropagationEndpoints(ABC):
             The property name containing seed values for initial community assignment
         sudo
             Disable the memory guard.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -243,8 +243,8 @@ class LabelPropagationEndpoints(ABC):
             The property name containing seed values for initial community assignment
         sudo
             Disable the memory guard.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         write_concurrency
             Number of concurrent threads to use for writing.Returns
         -------

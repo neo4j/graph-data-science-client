@@ -121,8 +121,8 @@ class CatalogEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            Username of the individual requesting the graph generation.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------

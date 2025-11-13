@@ -42,8 +42,8 @@ class RelationshipsEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         Returns
         -------
         DataFrame
@@ -84,8 +84,8 @@ class RelationshipsEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         job_id
             Identifier for the computation.
         Returns
@@ -149,8 +149,8 @@ class RelationshipsEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         job_id
             Identifier for the computation.
         Returns
@@ -195,8 +195,8 @@ class RelationshipsEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         job_id
             Identifier for the computation.
         Returns
@@ -243,8 +243,8 @@ class RelationshipsEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            Username of the individual requesting the graph generation.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------

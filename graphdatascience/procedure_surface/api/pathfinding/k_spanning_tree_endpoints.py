@@ -61,8 +61,8 @@ class KSpanningTreeEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str, optional
-            The username to use for logging.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
         job_id
