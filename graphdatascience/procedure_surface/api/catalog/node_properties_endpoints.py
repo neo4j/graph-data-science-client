@@ -46,8 +46,8 @@ class NodePropertiesEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         job_id
             Identifier for the computation.
         db_node_properties : list[str] | None, default=None
@@ -93,8 +93,8 @@ class NodePropertiesEndpoints(ABC):
             Disable the memory guard.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         job_id
             Identifier for the computation.
         Returns
@@ -127,8 +127,8 @@ class NodePropertiesEndpoints(ABC):
             Whether to fail if any of the node properties are missing
         concurrency
             Number of concurrent threads to use.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         Returns
         -------
         NodePropertiesDropResult

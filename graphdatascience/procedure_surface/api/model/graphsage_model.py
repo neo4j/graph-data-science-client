@@ -60,8 +60,8 @@ class GraphSageModelV2(Model):
             The concurrency for writing.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username for the operation.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         sudo
             Disable the memory guard.
         job_id
@@ -118,8 +118,8 @@ class GraphSageModelV2(Model):
             Number of concurrent threads to use.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username for the operation.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         sudo
             Disable the memory guard.
         job_id
@@ -177,8 +177,8 @@ class GraphSageModelV2(Model):
             Number of concurrent threads to use.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username for the operation.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         sudo
             Disable the memory guard.
         job_id
@@ -234,8 +234,8 @@ class GraphSageModelV2(Model):
             Number of concurrent threads to use.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username for the operation.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         sudo
             Disable the memory guard.
         job_id

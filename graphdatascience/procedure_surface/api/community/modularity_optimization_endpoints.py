@@ -65,8 +65,8 @@ class ModularityOptimizationEndpoints(ABC):
             Disable the memory guard.
         tolerance : float
             Convergence tolerance for the algorithm
-        username : str | None, default=None
-            Username for authentication
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -125,8 +125,8 @@ class ModularityOptimizationEndpoints(ABC):
             Disable the memory guard.
         tolerance : float
             Convergence tolerance for the algorithm
-        username : str | None, default=None
-            Username for authentication
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -188,8 +188,8 @@ class ModularityOptimizationEndpoints(ABC):
             Disable the memory guard.
         tolerance : float
             Convergence tolerance for the algorithm
-        username : str | None, default=None
-            Username for authentication
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -255,8 +255,8 @@ class ModularityOptimizationEndpoints(ABC):
             Disable the memory guard.
         tolerance : float
             Convergence tolerance for the algorithm
-        username : str | None, default=None
-            Username for authentication
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         write_concurrency
             Number of concurrent threads to use for writing.Returns
         -------

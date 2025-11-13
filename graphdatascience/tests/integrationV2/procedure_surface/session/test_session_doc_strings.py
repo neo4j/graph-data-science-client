@@ -133,7 +133,7 @@ def test_common_parameter_consistency() -> None:
         # "tolerance: float",
         # "source_node: int",
         "relationship_weight_property: str | None",
-        # "username: str | None",
+        "username: str | None",
         # "seed_property: str | None",
     }
 

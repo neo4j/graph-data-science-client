@@ -62,8 +62,8 @@ class HdbscanEndpoints(ABC):
             Disable the memory guard.
         job_id
             Identifier for the computation.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -118,8 +118,8 @@ class HdbscanEndpoints(ABC):
             Disable the memory guard.
         job_id
             Identifier for the computation.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -174,8 +174,8 @@ class HdbscanEndpoints(ABC):
             Disable the memory guard.
         job_id
             Identifier for the computation.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -233,8 +233,8 @@ class HdbscanEndpoints(ABC):
             Disable the memory guard.
         job_id
             Identifier for the computation.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -286,8 +286,8 @@ class HdbscanEndpoints(ABC):
             Disable the memory guard.
         job_id
             Identifier for the computation.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------

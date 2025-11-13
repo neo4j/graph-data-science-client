@@ -44,8 +44,8 @@ class GraphSagePredictEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        username : str | None = None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         log_progress
             Display progress logging.
         sudo
@@ -95,8 +95,8 @@ class GraphSagePredictEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        username : str | None = None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         log_progress
             Display progress logging.
         sudo
@@ -146,8 +146,8 @@ class GraphSagePredictEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        username : str | None = None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         log_progress
             Display progress logging.
         sudo
@@ -198,8 +198,8 @@ class GraphSagePredictEndpoints(ABC):
             Number of concurrent threads to use.
         log_progress
             Display progress logging.
-        username : str | None, default=None
-            The username for the operation.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         sudo
             Disable the memory guard.
         job_id

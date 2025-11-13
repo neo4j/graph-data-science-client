@@ -74,8 +74,8 @@ class LeidenEndpoints(ABC):
             The theta parameter for the Leiden algorithm
         tolerance : float, default=0.0001
             The tolerance parameter for the Leiden algorithm
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -142,8 +142,8 @@ class LeidenEndpoints(ABC):
             The theta parameter for the Leiden algorithm
         tolerance : float, default=0.0001
             The tolerance parameter for the Leiden algorithm
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -213,8 +213,8 @@ class LeidenEndpoints(ABC):
             The theta parameter for the Leiden algorithm
         tolerance : float, default=0.0001
             The tolerance parameter for the Leiden algorithm
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -288,8 +288,8 @@ class LeidenEndpoints(ABC):
             The theta parameter for the Leiden algorithm
         tolerance : float, default=0.0001
             The tolerance parameter for the Leiden algorithm
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         write_concurrency
             Number of concurrent threads to use for writing.Returns
         -------

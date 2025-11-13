@@ -76,8 +76,8 @@ class Node2VecEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         log_progress
             Display progress logging.
         sudo
@@ -164,8 +164,8 @@ class Node2VecEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         log_progress
             Display progress logging.
         sudo
@@ -256,8 +256,8 @@ class Node2VecEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        username : str | None, default=None
-            The username to attribute the procedure run to
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         log_progress
             Display progress logging.
         sudo
