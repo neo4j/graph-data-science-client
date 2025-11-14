@@ -3684,6 +3684,18 @@
       "signature": "node1: int, node2: int, **config: Any",
       "return_type": "float"
     },
+    "description": "Given two nodes, calculate Resource Allocation similarity",
+        "deprecated": {
+        "version": "2.24.0",
+        "message": "Since GDS server version 2.24.0 you should use the endpoint :func:`gds.linkprediction.resourceAllocation` instead."
+    }
+  },
+  {
+    "function": {
+      "name": "gds.linkprediction.resourceAllocation",
+      "signature": "node1: int, node2: int, **config: Any",
+      "return_type": "float"
+    },
     "description": "Given two nodes, calculate Resource Allocation similarity"
   },
   {

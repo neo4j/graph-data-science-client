@@ -61,8 +61,15 @@ def test_preferentialAttachment(node1: int, node2: int, gds: GraphDataScience) -
     assert score == 16
 
 
-def test_resourceAllocation(node1: int, node2: int, gds: GraphDataScience) -> None:
+@pytest.mark.filterwarnings("ignore: .*gds.alpha.linkprediction.resourceAllocation.*")
+def test_alpha_resourceAllocation(node1: int, node2: int, gds: GraphDataScience) -> None:
     score = gds.alpha.linkprediction.resourceAllocation(node1, node2, direction="BOTH")
+    assert score == pytest.approx(0.25, 0.01)
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 24, 0))
+def test_resourceAllocation(node1: int, node2: int, gds: GraphDataScience) -> None:
+    score = gds.linkprediction.resourceAllocation(node1, node2, direction="BOTH")
     assert score == pytest.approx(0.25, 0.01)
 
 
