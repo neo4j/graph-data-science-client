@@ -103,6 +103,13 @@ def test_util_nodeProperty(gds: GraphDataScience, G: Graph) -> None:
     assert result == 1337
 
 
-def test_ml_oneHotEncoding(gds: GraphDataScience) -> None:
+@pytest.mark.filterwarnings("ignore: .*gds.alpha.ml.oneHotEncoding.*")
+def test_alpha_ml_oneHotEncoding(gds: GraphDataScience) -> None:
     result = gds.alpha.ml.oneHotEncoding(["Chinese", "Indian", "Italian"], ["Italian"])
+    assert result == [0, 0, 1]
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 24, 0))
+def test_util_oneHotEncoding(gds: GraphDataScience) -> None:
+    result = gds.util.oneHotEncoding(["Chinese", "Indian", "Italian"], ["Italian"])
     assert result == [0, 0, 1]
