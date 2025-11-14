@@ -27,6 +27,7 @@
     "Minimum change in scores between iterations.",
     "Minimum change in loss between iterations for early stopping an epoch."
   ],
+  "top_k": "Number of top similar nodes to return for each node.",
   "use_wasserman_faust": "Use the improved Wasserman-Faust formula for closeness computation.",
   "username": "As an administrator, impersonate a different user for accessing their graphs.",
   "write_concurrency": "Number of concurrent threads to use for writing.",

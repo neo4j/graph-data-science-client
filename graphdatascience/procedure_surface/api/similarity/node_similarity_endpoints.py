@@ -57,15 +57,15 @@ class NodeSimilarityEndpoints(ABC):
             The relationship type to use for the new relationships.
         mutate_property
             Name of the node property to store the results in.
-        top_k : int, default=10
-            The maximum number of neighbors with the highest similarity scores to compute per node.
+        top_k
+            Number of most similar nodes to return for each node.
         bottom_k : int, default=10
             The maximum number of neighbors with the lowest similarity scores to compute per node.
         top_n : int, default=0
             The maximum number of neighbors to select globally based on similarity scores.
         bottom_n : int, default=0
             The maximum number of neighbors to select globally based on lowest similarity scores.
-        similarity_cutoff : float, default=1.0e-42
+        similarity_cutoff
             The threshold for similarity scores.
         degree_cutoff : int, default=1
             The minimum degree a node must have to be considered.
@@ -127,15 +127,15 @@ class NodeSimilarityEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        top_k : int, default=10
-            The maximum number of neighbors with the highest similarity scores to compute per node.
+        top_k
+            Number of most similar nodes to return for each node.
         bottom_k : int, default=10
             The maximum number of neighbors with the lowest similarity scores to compute per node.
         top_n : int, default=0
             The maximum number of neighbors to select globally based on similarity scores.
         bottom_n : int, default=0
             The maximum number of neighbors to select globally based on lowest similarity scores.
-        similarity_cutoff : float, default=1.0e-42
+        similarity_cutoff
             The threshold for similarity scores.
         degree_cutoff : int, default=1
             The minimum degree a node must have to be considered.
@@ -197,15 +197,15 @@ class NodeSimilarityEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        top_k : int, default=10
-            The maximum number of neighbors with the highest similarity scores to compute per node.
+        top_k
+            Number of most similar nodes to return for each node.
         bottom_k : int, default=10
             The maximum number of neighbors with the lowest similarity scores to compute per node.
         top_n : int, default=0
             The maximum number of neighbors to select globally based on similarity scores.
         bottom_n : int, default=0
             The maximum number of neighbors to select globally based on lowest similarity scores.
-        similarity_cutoff : float, default=1.0e-42
+        similarity_cutoff
             The threshold for similarity scores.
         degree_cutoff : int, default=1
             The minimum degree a node must have to be considered.
@@ -274,15 +274,15 @@ class NodeSimilarityEndpoints(ABC):
             The relationship type to use for the new relationships.
         write_property
             Name of the node property to store the results in.
-        top_k : int, default=10
-            The maximum number of neighbors with the highest similarity scores to compute per node.
+        top_k
+            Number of most similar nodes to return for each node.
         bottom_k : int, default=10
             The maximum number of neighbors with the lowest similarity scores to compute per node.
         top_n : int, default=0
             The maximum number of neighbors to select globally based on similarity scores.
         bottom_n : int, default=0
             The maximum number of neighbors to select globally based on lowest similarity scores.
-        similarity_cutoff : float, default=1.0e-42
+        similarity_cutoff
             The threshold for similarity scores.
         degree_cutoff : int, default=1
             The minimum degree a node must have to be considered.
@@ -342,15 +342,15 @@ class NodeSimilarityEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        top_k : int, default=10
-            The maximum number of neighbors with the highest similarity scores to compute per node.
+        top_k
+            Number of most similar nodes to return for each node.
         bottom_k : int, default=10
             The maximum number of neighbors with the lowest similarity scores to compute per node.
         top_n : int, default=0
             The maximum number of neighbors to select globally based on similarity scores.
         bottom_n : int, default=0
             The maximum number of neighbors to select globally based on lowest similarity scores.
-        similarity_cutoff : float, default=1.0e-42
+        similarity_cutoff
             The threshold for similarity scores.
         degree_cutoff : int, default=1
             The minimum degree a node must have to be considered.
