@@ -64,8 +64,8 @@ class KnnFilteredEndpoints(ABC):
             A Cypher expression to filter which nodes can be targets in the similarity computation.
         seed_target_nodes : bool | None, default=None
             Whether to use a seeded approach for target node selection.
-        top_k : int, default=10
-            The number of nearest neighbors to find for each node.
+        top_k
+            Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
         delta_threshold : float, default=0.001
@@ -146,8 +146,8 @@ class KnnFilteredEndpoints(ABC):
             A Cypher expression to filter which nodes can be targets in the similarity computation.
         seed_target_nodes : bool | None, default=None
             Whether to use a seeded approach for target node selection.
-        top_k : int, default=10
-            The number of nearest neighbors to find for each node.
+        top_k
+            Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
         delta_threshold : float, default=0.001
@@ -228,8 +228,8 @@ class KnnFilteredEndpoints(ABC):
             A Cypher expression to filter which nodes can be targets in the similarity computation.
         seed_target_nodes : bool | None, default=None
             Whether to use a seeded approach for target node selection.
-        top_k : int, default=10
-            The number of nearest neighbors to find for each node.
+        top_k
+            Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
         delta_threshold : float, default=0.001
@@ -317,8 +317,8 @@ class KnnFilteredEndpoints(ABC):
             A Cypher expression to filter which nodes can be targets in the similarity computation.
         seed_target_nodes : bool | None, default=None
             Whether to use a seeded approach for target node selection.
-        top_k : int, default=10
-            The number of nearest neighbors to find for each node.
+        top_k
+            Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
         delta_threshold : float, default=0.001
@@ -399,8 +399,8 @@ class KnnFilteredEndpoints(ABC):
             A Cypher expression to filter which nodes can be targets in the similarity computation.
         seed_target_nodes : bool | None, default=None
             Whether to use a seeded approach for target node selection.
-        top_k : int, default=10
-            The number of nearest neighbors to find for each node.
+        top_k
+            Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
         delta_threshold : float, default=0.001

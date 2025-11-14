@@ -134,8 +134,8 @@ def test_common_parameter_consistency() -> None:
         "username: str | None",
         "tolerance: float",
         "seed_property: str | None",
-        # "top_k: int",
-        # "similarity_cutoff: float",
+        "top_k: int",
+        "similarity_cutoff: float",
     }
 
     # Collect all descriptions for each common parameter
@@ -163,7 +163,6 @@ def test_common_parameter_consistency() -> None:
     }
     top_20_shared_params = dict(sorted(shared_params.items(), key=lambda item: item[1], reverse=True)[:20])
     print(f"Top 20 shared parameters: {top_20_shared_params}")
-    # assert False
 
     # Check consistency
     inconsistencies: list[dict[str, Any]] = []

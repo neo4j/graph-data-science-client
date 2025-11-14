@@ -57,15 +57,15 @@ class NodeSimilarityFilteredEndpoints(ABC):
             A Cypher expression or list of node IDs to filter which nodes can be sources.
         target_node_filter : str | list[int]
             A Cypher expression or list of node IDs to filter which nodes can be targets.
-        top_k : int, default=10
-            The maximum number of neighbors with the highest similarity scores to compute per node.
+        top_k
+            Number of most similar nodes to return for each node.
         bottom_k : int, default=10
             The maximum number of neighbors with the lowest similarity scores to compute per node.
         top_n : int, default=0
             The maximum number of neighbors to select globally based on similarity scores.
         bottom_n : int, default=0
             The maximum number of neighbors to select globally based on lowest similarity scores.
-        similarity_cutoff : float, default=1.0e-42
+        similarity_cutoff
             The threshold for similarity scores.
         degree_cutoff : int, default=1
             The minimum degree a node must have to be considered.
@@ -133,15 +133,15 @@ class NodeSimilarityFilteredEndpoints(ABC):
             A Cypher expression or list of node IDs to filter which nodes can be sources.
         target_node_filter : str | list[int]
             A Cypher expression or list of node IDs to filter which nodes can be targets.
-        top_k : int, default=10
-            The maximum number of neighbors with the highest similarity scores to compute per node.
+        top_k
+            Number of most similar nodes to return for each node.
         bottom_k : int, default=10
             The maximum number of neighbors with the lowest similarity scores to compute per node.
         top_n : int, default=0
             The maximum number of neighbors to select globally based on similarity scores.
         bottom_n : int, default=0
             The maximum number of neighbors to select globally based on lowest similarity scores.
-        similarity_cutoff : float, default=1.0e-42
+        similarity_cutoff
             The threshold for similarity scores.
         degree_cutoff : int, default=1
             The minimum degree a node must have to be considered.
@@ -209,15 +209,15 @@ class NodeSimilarityFilteredEndpoints(ABC):
             A Cypher expression or list of node IDs to filter which nodes can be sources.
         target_node_filter : str | list[int]
             A Cypher expression or list of node IDs to filter which nodes can be targets.
-        top_k : int, default=10
-            The maximum number of neighbors with the highest similarity scores to compute per node.
+        top_k
+            Number of most similar nodes to return for each node.
         bottom_k : int, default=10
             The maximum number of neighbors with the lowest similarity scores to compute per node.
         top_n : int, default=0
             The maximum number of neighbors to select globally based on similarity scores.
         bottom_n : int, default=0
             The maximum number of neighbors to select globally based on lowest similarity scores.
-        similarity_cutoff : float, default=1.0e-42
+        similarity_cutoff
             The threshold for similarity scores.
         degree_cutoff : int, default=1
             The minimum degree a node must have to be considered.
@@ -292,15 +292,15 @@ class NodeSimilarityFilteredEndpoints(ABC):
             A Cypher expression or list of node IDs to filter which nodes can be sources.
         target_node_filter : str | list[int]
             A Cypher expression or list of node IDs to filter which nodes can be targets.
-        top_k : int, default=10
-            The maximum number of neighbors with the highest similarity scores to compute per node.
+        top_k
+            Number of most similar nodes to return for each node.
         bottom_k : int, default=10
             The maximum number of neighbors with the lowest similarity scores to compute per node.
         top_n : int, default=0
             The maximum number of neighbors to select globally based on similarity scores.
         bottom_n : int, default=0
             The maximum number of neighbors to select globally based on lowest similarity scores.
-        similarity_cutoff : float, default=1.0e-42
+        similarity_cutoff
             The threshold for similarity scores.
         degree_cutoff : int, default=1
             The minimum degree a node must have to be considered.
@@ -366,15 +366,15 @@ class NodeSimilarityFilteredEndpoints(ABC):
             A Cypher expression or list of node IDs to filter which nodes can be sources.
         target_node_filter : str | list[int]
             A Cypher expression or list of node IDs to filter which nodes can be targets.
-        top_k : int, default=10
-            The maximum number of neighbors with the highest similarity scores to compute per node.
+        top_k
+            Number of most similar nodes to return for each node.
         bottom_k : int, default=10
             The maximum number of neighbors with the lowest similarity scores to compute per node.
         top_n : int, default=0
             The maximum number of neighbors to select globally based on similarity scores.
         bottom_n : int, default=0
             The maximum number of neighbors to select globally based on lowest similarity scores.
-        similarity_cutoff : float, default=1.0e-42
+        similarity_cutoff
             The threshold for similarity scores.
         degree_cutoff : int, default=1
             The minimum degree a node must have to be considered.

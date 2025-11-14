@@ -59,8 +59,8 @@ class KnnEndpoints(ABC):
             Name of the node property to store the results in.
         node_properties : str | list[str] | dict[str, str],
             The node properties to use for similarity computation.
-        top_k : int, default=10
-            The number of nearest neighbors to find for each node.
+        top_k
+            Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
         delta_threshold : float, default=0.001
@@ -129,8 +129,8 @@ class KnnEndpoints(ABC):
             The graph to run the algorithm on.
         node_properties:  str | list[str] | dict[str, str],
             The node properties to use for similarity computation.
-        top_k : int, default=10
-            The number of nearest neighbors to find for each node.
+        top_k
+            Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
         delta_threshold : float, default=0.001
@@ -199,8 +199,8 @@ class KnnEndpoints(ABC):
             The graph to run the algorithm on.
         node_properties:  str | list[str] | dict[str, str],
             The node properties to use for similarity computation.
-        top_k : int, default=10
-            The number of nearest neighbors to find for each node.
+        top_k
+            Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
         delta_threshold : float, default=0.001
@@ -276,8 +276,8 @@ class KnnEndpoints(ABC):
             Name of the node property to store the results in.
         node_properties:  str | list[str] | dict[str, str],
             The node properties to use for similarity computation.
-        top_k : int, default=10
-            The number of nearest neighbors to find for each node.
+        top_k
+            Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
         delta_threshold : float, default=0.001
@@ -345,8 +345,8 @@ class KnnEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph dimensions.
         node_properties:  str | list[str] | dict[str, str],
             The node properties to use for similarity computation.
-        top_k : int, default=10
-            The number of nearest neighbors to find for each node.
+        top_k
+            Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
         delta_threshold : float, default=0.001
