@@ -46,7 +46,7 @@ class BetweennessEndpoints(ABC):
             Number of source nodes to consider for computing centrality scores.
         sampling_seed : int | None, default=None
             Seed value for the random number generator that selects source nodes.
-        relationship_types : list[str]
+        relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -100,7 +100,7 @@ class BetweennessEndpoints(ABC):
             Number of source nodes to consider for computing centrality scores.
         sampling_seed : int | None, default=None
             Seed value for the random number generator that selects source nodes.
-        relationship_types : list[str]
+        relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -207,7 +207,7 @@ class BetweennessEndpoints(ABC):
             Number of source nodes to consider for computing centrality scores.
         sampling_seed : int | None, default=None
             Seed value for the random number generator that selects source nodes.
-        relationship_types : list[str]
+        relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.

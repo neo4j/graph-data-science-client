@@ -52,7 +52,7 @@ class K1ColoringEndpoints(ABC):
             Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types : list[str]
+        relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.

@@ -48,7 +48,7 @@ class CelfEndpoints(ABC):
             Number of Monte-Carlo simulations.
         random_seed
             Seed for random number generation to ensure reproducible results.
-        relationship_types : list[str]
+        relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -103,7 +103,7 @@ class CelfEndpoints(ABC):
             Number of Monte-Carlo simulations.
         random_seed
             Seed for random number generation to ensure reproducible results.
-        relationship_types : list[str]
+        relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -216,7 +216,7 @@ class CelfEndpoints(ABC):
             Number of Monte-Carlo simulations.
         random_seed
             Seed for random number generation to ensure reproducible results.
-        relationship_types : list[str]
+        relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
