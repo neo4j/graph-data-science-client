@@ -95,6 +95,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns a node property value from a named in-memory graph.
 
+.. py:function:: gds.util.oneHotEncoding(available_values: List[Any], selected_values: List[Any]) -> List[int]
+
+    Return a list of selected values in a one hot encoding format.
+
 .. py:function:: gds.version() -> str
 
     Return the installed graph data science library version.

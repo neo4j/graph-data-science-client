@@ -200,6 +200,9 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Return a list of selected values in a one hot encoding format.
 
+.. deprecated:: 2.24.0
+    Since GDS server version 2.24.0 you should use the endpoint :func:`gds.util.oneHotEncoding` instead.
+
 .. py:function:: gds.hashgnn.mutate(G: Graph, **config: Any) -> pandas.Series[Any]
 
     HashGNN creates node embeddings by hashing and message passing.
