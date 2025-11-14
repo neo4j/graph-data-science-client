@@ -72,8 +72,8 @@ class LeidenEndpoints(ABC):
             Disable the memory guard.
         theta : float, default=0.01
             The theta parameter for the Leiden algorithm
-        tolerance : float, default=0.0001
-            The tolerance parameter for the Leiden algorithm
+        tolerance
+            Minimum change in scores between iterations.
         username
             As an administrator, impersonate a different user for accessing their graphs.
 
@@ -140,8 +140,8 @@ class LeidenEndpoints(ABC):
             Disable the memory guard.
         theta : float, default=0.01
             The theta parameter for the Leiden algorithm
-        tolerance : float, default=0.0001
-            The tolerance parameter for the Leiden algorithm
+        tolerance
+            Minimum change in scores between iterations.
         username
             As an administrator, impersonate a different user for accessing their graphs.
 
@@ -211,8 +211,8 @@ class LeidenEndpoints(ABC):
             Disable the memory guard.
         theta : float, default=0.01
             The theta parameter for the Leiden algorithm
-        tolerance : float, default=0.0001
-            The tolerance parameter for the Leiden algorithm
+        tolerance
+            Minimum change in scores between iterations.
         username
             As an administrator, impersonate a different user for accessing their graphs.
 
@@ -286,8 +286,8 @@ class LeidenEndpoints(ABC):
             Disable the memory guard.
         theta : float, default=0.01
             The theta parameter for the Leiden algorithm
-        tolerance : float, default=0.0001
-            The tolerance parameter for the Leiden algorithm
+        tolerance
+            Minimum change in scores between iterations.
         username
             As an administrator, impersonate a different user for accessing their graphs.
         write_concurrency
@@ -344,8 +344,8 @@ class LeidenEndpoints(ABC):
             The seed property
         theta : float, default=0.01
             The theta parameter for the Leiden algorithm
-        tolerance : float, default=0.0001
-            The tolerance parameter for the Leiden algorithm
+        tolerance
+            Minimum change in scores between iterations.
 
         Returns
         -------

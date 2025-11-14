@@ -63,8 +63,8 @@ class ModularityOptimizationEndpoints(ABC):
             Property name for initial community assignments
         sudo
             Disable the memory guard.
-        tolerance : float
-            Convergence tolerance for the algorithm
+        tolerance
+            Minimum change in scores between iterations.
         username
             As an administrator, impersonate a different user for accessing their graphs.
 
@@ -123,8 +123,8 @@ class ModularityOptimizationEndpoints(ABC):
             Property name for initial community assignments
         sudo
             Disable the memory guard.
-        tolerance : float
-            Convergence tolerance for the algorithm
+        tolerance
+            Minimum change in scores between iterations.
         username
             As an administrator, impersonate a different user for accessing their graphs.
 
@@ -186,8 +186,8 @@ class ModularityOptimizationEndpoints(ABC):
             Property name for initial community assignments
         sudo
             Disable the memory guard.
-        tolerance : float
-            Convergence tolerance for the algorithm
+        tolerance
+            Minimum change in scores between iterations.
         username
             As an administrator, impersonate a different user for accessing their graphs.
 
@@ -253,8 +253,8 @@ class ModularityOptimizationEndpoints(ABC):
             Property name for initial community assignments
         sudo
             Disable the memory guard.
-        tolerance : float
-            Convergence tolerance for the algorithm
+        tolerance
+            Minimum change in scores between iterations.
         username
             As an administrator, impersonate a different user for accessing their graphs.
         write_concurrency
@@ -303,8 +303,8 @@ class ModularityOptimizationEndpoints(ABC):
             Name of the property to be used as weights.
         seed_property : str | None, default=None
             Property name for initial community assignments
-        tolerance : float
-            Convergence tolerance for the algorithm
+        tolerance
+            Minimum change in scores between iterations.
 
         Returns
         -------
