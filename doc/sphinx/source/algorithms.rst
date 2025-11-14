@@ -224,6 +224,9 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Given two nodes, calculate Resource Allocation similarity
 
+.. deprecated:: 2.24.0
+   Since GDS server version 2.24.0 you should use the endpoint :func:`gds.linkprediction.resourceAllocation` instead.
+
 .. py:function:: gds.alpha.linkprediction.sameCommunity(node1: int, node2: int, communityProperty: Optional[str] = None) -> float
 
     Given two nodes, indicates if they have the same community
@@ -1386,6 +1389,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.linkprediction.adamicAdar(node1: int, node2: int, **config: Any) -> float
 
     Given two nodes, calculate Adamic Adar similarity
+
+.. py:function:: gds.linkprediction.resourceAllocation(node1: int, node2: int, **config: Any) -> float
+
+    Given two nodes, calculate Resource Allocation similarity
 
 .. py:function:: gds.localClusteringCoefficient.mutate(G: Graph, **config: Any) -> pandas.Series[Any]
 
