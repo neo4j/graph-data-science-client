@@ -62,8 +62,8 @@ class SpanningTreeEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        source_node : int
-            The source node (root) for the Spanning tree.
+        source_node
+            Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
         objective : str, default="minimum"
@@ -112,8 +112,8 @@ class SpanningTreeEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        source_node : int
-            The source node (root) for the Spanning tree.
+        source_node
+            Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
         objective : str, default="minimum"
@@ -168,8 +168,8 @@ class SpanningTreeEndpoints(ABC):
             The relationship type to use for the new relationships.
         mutate_property
             Name of the node property to store the results in.
-        source_node : int
-            The source node (root) for the Spanning tree.
+        source_node
+            Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
         objective : str, default="minimum"
@@ -225,8 +225,8 @@ class SpanningTreeEndpoints(ABC):
             The relationship type to use for the new relationships.
         write_property
             Name of the node property to store the results in.
-        source_node : int
-            The source node (root) for the Spanning tree.
+        source_node
+            Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
         objective : str, default="minimum"
@@ -273,8 +273,8 @@ class SpanningTreeEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on or a dictionary representing the graph dimensions.
-        source_node : int
-            The source node (root) for the Spanning tree.
+        source_node
+            Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
         objective : str, default="minimum"

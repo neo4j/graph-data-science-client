@@ -136,6 +136,7 @@ def test_common_parameter_consistency() -> None:
         "seed_property: str | None",
         "top_k: int",
         "similarity_cutoff: float",
+        "source_node: int",
     }
 
     # Collect all descriptions for each common parameter

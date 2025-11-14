@@ -60,8 +60,8 @@ class SingleSourceDeltaEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        source_node : int
-            The source node for the shortest path computation.
+        source_node
+            Node id to use as the starting point.
         delta : float, default=2.0
             The bucket width for grouping nodes by tentative distance.
         relationship_weight_property
@@ -110,8 +110,8 @@ class SingleSourceDeltaEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        source_node : int
-            The source node for the shortest path computation.
+        source_node
+            Node id to use as the starting point.
         delta : float, default=2.0
             The bucket width for grouping nodes by tentative distance.
         relationship_weight_property
@@ -161,8 +161,8 @@ class SingleSourceDeltaEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        source_node : int
-            The source node for the shortest path computation.
+        source_node
+            Node id to use as the starting point.
         mutate_relationship_type : str
             The relationship type to use for the new relationships in the graph catalog.
         delta : float, default=2.0
@@ -217,8 +217,8 @@ class SingleSourceDeltaEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        source_node : int
-            The source node for the shortest path computation.
+        source_node
+            Node id to use as the starting point.
         write_relationship_type : str
             The relationship type to use for the new relationships.
         delta : float, default=2.0
@@ -271,8 +271,8 @@ class SingleSourceDeltaEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on or a dictionary representing the graph dimensions.
-        source_node : int
-            The source node for the shortest path computation.
+        source_node
+            Node id to use as the starting point.
         delta : float, default=2.0
             The bucket width for grouping nodes by tentative distance.
         relationship_weight_property
