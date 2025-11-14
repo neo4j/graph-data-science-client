@@ -47,7 +47,7 @@ class WccEndpoints(ABC):
             Name of the node property to store the results in.
         threshold : float, default=0.0
             The minimum required weight to consider a relationship during traversal
-        relationship_types : list[str]
+        relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.

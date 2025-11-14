@@ -43,7 +43,7 @@ class DegreeEndpoints(ABC):
             Name of the node property to store the results in.
         orientation : str | None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-        relationship_types : list[str]
+        relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -95,7 +95,7 @@ class DegreeEndpoints(ABC):
             The graph to run the algorithm on.
         orientation : str | None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-        relationship_types : list[str]
+        relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -202,7 +202,7 @@ class DegreeEndpoints(ABC):
             Name of the node property to store the results in.
         orientation : str | None
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-        relationship_types : list[str]
+        relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
