@@ -46,7 +46,7 @@ class LouvainEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
         tolerance
@@ -110,7 +110,7 @@ class LouvainEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         tolerance
             Minimum change in scores between iterations.
         max_levels : int, default=10
@@ -173,7 +173,7 @@ class LouvainEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         tolerance
             Minimum change in scores between iterations.
         max_levels : int, default=10
@@ -202,8 +202,8 @@ class LouvainEndpoints(ABC):
             Use consecutive IDs for the components.
         relationship_weight_property
             Name of the property to be used as weights.
-        min_community_size : int | None, default=None
-            Don't stream communities with fewer nodes than this
+        min_community_size
+            Minimum size for communities to be included in results.
 
         Returns
         -------
@@ -240,7 +240,7 @@ class LouvainEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
         tolerance
@@ -273,8 +273,8 @@ class LouvainEndpoints(ABC):
             Name of the property to be used as weights.
         write_concurrency
             Number of concurrent threads to use for writing.
-        min_community_size : int | None, default=None
-            Don't write communities with fewer nodes than this
+        min_community_size
+            Minimum size for communities to be included in results.
 
         Returns
         -------
@@ -304,7 +304,7 @@ class LouvainEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         tolerance
             Minimum change in scores between iterations.
         max_levels : int, default=10

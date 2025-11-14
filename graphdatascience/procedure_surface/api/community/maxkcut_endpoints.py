@@ -41,18 +41,17 @@ class MaxKCutEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
-        iterations : int | None, default=8
-            The number of iterations the algorithm runs. More iterations may lead to better results but
-            will increase computation time.
+        iterations
+            Number of iterations to run.
         job_id
             Identifier for the computation.
-        k : int | None, default=2
-            The number of communities to detect. Must be at least 2.
+        k
+            Number of communities to detect.
         log_progress
             Display progress logging.
         node_labels
@@ -105,20 +104,19 @@ class MaxKCutEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         concurrency
             Number of concurrent threads to use.
-        iterations : int | None, default=8
-            The number of iterations the algorithm runs. More iterations may lead to better results but
-            will increase computation time.
+        iterations
+            Number of iterations to run.
         job_id
             Identifier for the computation.
-        k : int | None, default=2
-            The number of communities to detect. Must be at least 2.
+        k
+            Number of communities to detect.
         log_progress
             Display progress logging.
-        min_community_size : int | None, default=None
-            The minimum community size. Communities smaller than this will be filtered from results.
+        min_community_size
+            Minimum size for communities to be included in results.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed
@@ -166,13 +164,13 @@ class MaxKCutEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         concurrency
             Number of concurrent threads to use.
-        iterations : int | None, default=8
-            The number of iterations the algorithm runs
-        k : int | None, default=2
-            The number of communities to detect. Must be at least 2.
+        iterations
+            Number of iterations to run.
+        k
+            Number of communities to detect.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed

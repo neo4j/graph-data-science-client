@@ -36,7 +36,7 @@ class ClosenessEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
         use_wasserman_faust : bool
@@ -86,7 +86,7 @@ class ClosenessEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         use_wasserman_faust : bool
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types
@@ -130,7 +130,7 @@ class ClosenessEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         use_wasserman_faust : bool
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types
@@ -181,7 +181,7 @@ class ClosenessEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
         use_wasserman_faust : bool | None, default=None
@@ -223,7 +223,7 @@ class ClosenessEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         use_wasserman_faust : bool | None, default=None
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types

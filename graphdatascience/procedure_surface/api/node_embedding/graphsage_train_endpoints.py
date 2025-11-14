@@ -86,7 +86,7 @@ class GraphSageTrainEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         model_name : str
             Name under which the model will be stored
         feature_properties : list[str]
@@ -133,8 +133,8 @@ class GraphSageTrainEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        batch_size : int = 100
-            Batch size for training
+        batch_size
+            Number of nodes to process in each batch.
         relationship_weight_property
             Name of the property to be used as weights.
         random_seed

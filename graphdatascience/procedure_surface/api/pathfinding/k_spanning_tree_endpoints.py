@@ -42,9 +42,9 @@ class KSpanningTreeEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
-        k : int
-            The number of spanning trees to compute.
+           Graph object to use
+        k
+            Number of spanning trees to compute.
         write_property
             Name of the node property to store the results in.
         source_node

@@ -37,7 +37,7 @@ class LocalClusteringCoefficientEndpoints:
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
         concurrency
@@ -84,7 +84,7 @@ class LocalClusteringCoefficientEndpoints:
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -129,7 +129,7 @@ class LocalClusteringCoefficientEndpoints:
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -176,7 +176,7 @@ class LocalClusteringCoefficientEndpoints:
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
         concurrency
@@ -223,7 +223,7 @@ class LocalClusteringCoefficientEndpoints:
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         concurrency
             Number of concurrent threads to use.
         job_id

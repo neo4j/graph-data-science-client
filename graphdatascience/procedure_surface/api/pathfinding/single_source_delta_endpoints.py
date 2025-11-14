@@ -59,7 +59,7 @@ class SingleSourceDeltaEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         source_node
             Node id to use as the starting point.
         delta : float, default=2.0
@@ -109,7 +109,7 @@ class SingleSourceDeltaEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         source_node
             Node id to use as the starting point.
         delta : float, default=2.0
@@ -160,11 +160,11 @@ class SingleSourceDeltaEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         source_node
             Node id to use as the starting point.
-        mutate_relationship_type : str
-            The relationship type to use for the new relationships in the graph catalog.
+        mutate_relationship_type
+           Name of the relationship type to store the results in.
         delta : float, default=2.0
             The bucket width for grouping nodes by tentative distance.
         relationship_weight_property
@@ -216,7 +216,7 @@ class SingleSourceDeltaEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         source_node
             Node id to use as the starting point.
         write_relationship_type : str
@@ -270,7 +270,7 @@ class SingleSourceDeltaEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         source_node
             Node id to use as the starting point.
         delta : float, default=2.0

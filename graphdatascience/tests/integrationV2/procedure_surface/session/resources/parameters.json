@@ -1,17 +1,39 @@
 {
+  "batch_size": "Number of nodes to process in each batch.",
   "concurrency": "Number of concurrent threads to use.",
   "consecutive_ids": "Use consecutive IDs for the components.",
   "damping_factor": "Probability of a jump to a random node.",
-  "G": ["The graph to run the algorithm on.", "The graph to run the algorithm on or a dictionary representing the graph dimensions."],
+  "delta_threshold": "Minimum change between iterations.",
+  "G": [
+    "Graph object to use.",
+    "Graph object to use or a dictionary representing the graph dimensions."
+  ],
+  "initial_sampler": [
+    "Sampling method for initial centroids.",
+    "Sampling strategy for the initial nearest neighbors."
+  ],
+  "iterations": "Number of iterations to run.",
   "job_id": "Identifier for the computation.",
+  "k": [
+    "Number of clusters to form.",
+    "Number of communities to detect.",
+    "Number of spanning trees to compute.",
+    "Number of shortest paths to find."
+  ],
   "log_progress": "Display progress logging.",
   "max_iterations": [
     "Maximum number of iterations to run.",
     "Maximum number of iterations to run per level."
   ],
+  "min_community_size": "Minimum size for communities to be included in results.",
   "monte_carlo_simulations": "Number of Monte-Carlo simulations.",
   "mutate_property": "Name of the node property to store the results in.",
+  "mutate_relationship_type": "Name of the relationship type to store the results in.",
   "node_labels": "Filter the graph using the given node labels. Nodes with any of the given labels will be included.",
+  "node_properties": [
+    "Node properties to write. Can be: - A string representing a single property name. - A list of strings representing multiple property names. - A dictionary mapping from property names in the GDS graph to property names in the database.",
+    "Node properties to use for the similarity computation."
+  ],
   "orientation": "The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.",
   "propagation_probability": "Probability of a node being activated by an active neighbour node.",
   "relationship_types": "Filter the graph using the given relationship types. Relationships with any of the given types will be included.",

@@ -35,7 +35,7 @@ class ScalePropertiesEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
         node_properties : list[str]
@@ -87,7 +87,7 @@ class ScalePropertiesEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         node_properties : list[str]
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
         scaler
@@ -135,7 +135,7 @@ class ScalePropertiesEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         node_properties : list[str]
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
         scaler
@@ -188,7 +188,7 @@ class ScalePropertiesEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
         node_properties : list[str]
@@ -234,7 +234,7 @@ class ScalePropertiesEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         node_properties : Any
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
         scaler

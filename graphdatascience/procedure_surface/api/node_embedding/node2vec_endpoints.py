@@ -51,11 +51,11 @@ class Node2VecEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
-        iterations : int, default=1
-            The number of training iterations
+        iterations
+            Number of iterations to run.
         negative_sampling_rate : int, default=5
             Number of negative samples for each positive sample
         positive_sampling_factor : float, default=0.001
@@ -141,9 +141,9 @@ class Node2VecEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
-        iterations : int, default=1
-            The number of training iterations
+           Graph object to use
+        iterations
+            Number of iterations to run.
         negative_sampling_rate : int, default=5
             Number of negative samples for each positive sample
         positive_sampling_factor : float, default=0.001
@@ -231,11 +231,11 @@ class Node2VecEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
-        iterations : int, default=1
-            The number of training iterations
+        iterations
+            Number of iterations to run.
         negative_sampling_rate : int, default=5
             Number of negative samples for each positive sample
         positive_sampling_factor : float, default=0.001
@@ -317,9 +317,9 @@ class Node2VecEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
-        iterations : int, default=1
-            The number of training iterations
+           Graph object to use or a dictionary representing the graph dimensions.
+        iterations
+            Number of iterations to run.
         negative_sampling_rate : int, default=5
             Number of negative samples for each positive sample
         positive_sampling_factor : float, default=0.001

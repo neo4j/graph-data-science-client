@@ -56,7 +56,7 @@ class CatalogEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         graph_name (str):
             Name of subgraph to create
         node_filter (str):

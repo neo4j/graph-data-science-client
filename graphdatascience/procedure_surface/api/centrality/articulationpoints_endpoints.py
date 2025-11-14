@@ -33,7 +33,7 @@ class ArticulationPointsEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
         relationship_types
@@ -77,7 +77,7 @@ class ArticulationPointsEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -117,7 +117,7 @@ class ArticulationPointsEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -163,7 +163,7 @@ class ArticulationPointsEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
         relationship_types
@@ -201,7 +201,7 @@ class ArticulationPointsEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

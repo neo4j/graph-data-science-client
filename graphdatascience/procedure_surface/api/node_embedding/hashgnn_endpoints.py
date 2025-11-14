@@ -44,9 +44,9 @@ class HashGNNEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
-        iterations : int
-            The number of iterations to run the algorithm
+           Graph object to use
+        iterations
+            Number of iterations to run.
         embedding_density : int
             The density of the generated embeddings (number of bits per embedding)
         mutate_property
@@ -100,9 +100,9 @@ class HashGNNEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
-        iterations : int
-            The number of iterations to run the algorithm
+           Graph object to use
+        iterations
+            Number of iterations to run.
         embedding_density : int
             The density of the generated embeddings (number of bits per embedding)
         output_dimension : int | None, default=None
@@ -156,9 +156,9 @@ class HashGNNEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
-        iterations : int
-            The number of iterations to run the algorithm
+           Graph object to use
+        iterations
+            Number of iterations to run.
         embedding_density : int
             The density of the generated embeddings (number of bits per embedding)
         write_property
@@ -221,9 +221,9 @@ class HashGNNEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
-        iterations : int
-            The number of iterations to run the algorithm
+           Graph object to use or a dictionary representing the graph dimensions.
+        iterations
+            Number of iterations to run.
         embedding_density : int
             The density of the generated embeddings (number of bits per embedding)
         output_dimension : int | None, default=None

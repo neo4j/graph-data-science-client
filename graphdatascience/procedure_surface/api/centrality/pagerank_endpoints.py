@@ -41,7 +41,7 @@ class PageRankEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
         damping_factor : float
@@ -112,7 +112,7 @@ class PageRankEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         damping_factor : float
             Probability of a jump to a random node.
         tolerance
@@ -180,7 +180,7 @@ class PageRankEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         damping_factor : float
             The damping factor controls the probability of a random jump to a random node
         tolerance
@@ -248,7 +248,7 @@ class PageRankEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
         damping_factor : float
@@ -312,7 +312,7 @@ class PageRankEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         damping_factor : float
             The damping factor controls the probability of a random jump to a random node
         tolerance

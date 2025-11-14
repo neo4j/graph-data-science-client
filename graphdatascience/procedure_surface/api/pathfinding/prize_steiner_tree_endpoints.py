@@ -63,7 +63,7 @@ class PrizeSteinerTreeEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         prize_property : str
             The name of the node property containing prize values.
         relationship_weight_property
@@ -110,7 +110,7 @@ class PrizeSteinerTreeEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         prize_property : str
             The name of the node property containing prize values.
         relationship_weight_property
@@ -159,9 +159,9 @@ class PrizeSteinerTreeEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
-        mutate_relationship_type : str
-            The relationship type to use for the new relationships.
+           Graph object to use
+        mutate_relationship_type
+            Name of the relationship type to store the results in.
         mutate_property
             Name of the node property to store the results in.
         prize_property : str
@@ -213,7 +213,7 @@ class PrizeSteinerTreeEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_relationship_type : str
             The relationship type to use for the new relationships.
         write_property
@@ -262,7 +262,7 @@ class PrizeSteinerTreeEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         prize_property : str
             The name of the node property containing prize values.
         relationship_weight_property

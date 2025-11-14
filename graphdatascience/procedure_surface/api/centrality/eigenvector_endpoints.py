@@ -42,7 +42,7 @@ class EigenvectorEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
         max_iterations
@@ -111,7 +111,7 @@ class EigenvectorEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         max_iterations
             Maximum number of iterations to run.
         tolerance
@@ -173,7 +173,7 @@ class EigenvectorEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         max_iterations
             Maximum number of iterations to run.
         tolerance
@@ -242,7 +242,7 @@ class EigenvectorEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
         max_iterations
@@ -302,7 +302,7 @@ class EigenvectorEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         max_iterations
             Maximum number of iterations to run.
         tolerance

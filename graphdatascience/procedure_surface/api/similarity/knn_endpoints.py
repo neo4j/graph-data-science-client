@@ -52,19 +52,19 @@ class KnnEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
-        mutate_relationship_type : str
-            The relationship type to use for the new relationships.
+           Graph object to use
+        mutate_relationship_type
+            Name of the relationship type to store the results in.
         mutate_property
             Name of the node property to store the results in.
         node_properties : str | list[str] | dict[str, str],
-            The node properties to use for similarity computation.
+            Node properties to use for the similarity computation.
         top_k
             Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
-        delta_threshold : float, default=0.001
-            The threshold for convergence assessment.
+        delta_threshold
+            Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
         sample_rate : float, default=0.5
@@ -75,8 +75,8 @@ class KnnEndpoints(ABC):
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.
-        initial_sampler : str, default="UNIFORM"
-            The initial sampling strategy.
+        initial_sampler
+            Sampling strategy for the initial nearest neighbors.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -126,15 +126,15 @@ class KnnEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         node_properties:  str | list[str] | dict[str, str],
-            The node properties to use for similarity computation.
+            Node properties to use for the similarity computation.
         top_k
             Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
-        delta_threshold : float, default=0.001
-            The threshold for convergence assessment.
+        delta_threshold
+            Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
         sample_rate : float, default=0.5
@@ -145,8 +145,8 @@ class KnnEndpoints(ABC):
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.
-        initial_sampler : str, default="UNIFORM"
-            The initial sampling strategy.
+        initial_sampler
+            Sampling strategy for the initial nearest neighbors.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -196,15 +196,15 @@ class KnnEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         node_properties:  str | list[str] | dict[str, str],
-            The node properties to use for similarity computation.
+            Node properties to use for the similarity computation.
         top_k
             Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
-        delta_threshold : float, default=0.001
-            The threshold for convergence assessment.
+        delta_threshold
+            Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
         sample_rate : float, default=0.5
@@ -215,8 +215,8 @@ class KnnEndpoints(ABC):
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.
-        initial_sampler : str, default="UNIFORM"
-            The initial sampling strategy.
+        initial_sampler
+            Sampling strategy for the initial nearest neighbors.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -269,19 +269,19 @@ class KnnEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_relationship_type : str
             The relationship type to use for the new relationships.
         write_property
             Name of the node property to store the results in.
         node_properties:  str | list[str] | dict[str, str],
-            The node properties to use for similarity computation.
+            Node properties to use for the similarity computation.
         top_k
             Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
-        delta_threshold : float, default=0.001
-            The threshold for convergence assessment.
+        delta_threshold
+            Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
         sample_rate : float, default=0.5
@@ -292,8 +292,8 @@ class KnnEndpoints(ABC):
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.
-        initial_sampler : str, default="UNIFORM"
-            The initial sampling strategy.
+        initial_sampler
+            Sampling strategy for the initial nearest neighbors.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -342,15 +342,15 @@ class KnnEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         node_properties:  str | list[str] | dict[str, str],
-            The node properties to use for similarity computation.
+            Node properties to use for the similarity computation.
         top_k
             Number of most similar nodes to return for each node.
         similarity_cutoff : float, default=0.0
             The threshold for similarity scores.
-        delta_threshold : float, default=0.001
-            The threshold for convergence assessment.
+        delta_threshold
+            Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
         sample_rate : float, default=0.5
@@ -361,8 +361,8 @@ class KnnEndpoints(ABC):
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.
-        initial_sampler : str, default="UNIFORM"
-            The initial sampling strategy.
+        initial_sampler
+            Sampling strategy for the initial nearest neighbors.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

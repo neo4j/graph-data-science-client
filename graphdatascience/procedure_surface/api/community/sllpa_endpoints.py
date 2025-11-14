@@ -35,7 +35,7 @@ class SllpaEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
         max_iterations
@@ -88,7 +88,7 @@ class SllpaEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -137,7 +137,7 @@ class SllpaEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -188,7 +188,7 @@ class SllpaEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
         concurrency
@@ -235,7 +235,7 @@ class SllpaEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         concurrency
             Number of concurrent threads to use.
         min_association_strength : float | None, default=None
