@@ -113,32 +113,6 @@ def get_all_endpoint_methods(session_class: type, prefix: str = "", visited: set
 def test_common_parameter_consistency() -> None:
     """Test that common parameters have consistent descriptions across all endpoints."""
 
-    # Common parameters that should have the same description everywhere
-    common_params = {
-        "G: GraphV2",
-        "relationship_types: list[str]",
-        "node_labels: list[str]",
-        "sudo: bool",
-        "job_id: str | None",
-        "random_seed: int | None",
-        "concurrency: int | None",
-        "write_concurrency: int | None",
-        "mutate_property: str",
-        "write_property: str",
-        "consecutive_ids: bool",
-        "scaler: str | dict[str, str | int | float] | ScalerConfig",
-        "log_progress: bool",
-        "max_iterations: int",
-        "G: GraphV2 | dict[str, Any]",
-        "relationship_weight_property: str | None",
-        "username: str | None",
-        "tolerance: float",
-        "seed_property: str | None",
-        "top_k: int",
-        "similarity_cutoff: float",
-        "source_node: int",
-    }
-
     # Collect all descriptions for each common parameter
     # parameter -> (method_name -> descriptions)
     param_descriptions: Dict[str, Dict[str, str]] = defaultdict(dict)
