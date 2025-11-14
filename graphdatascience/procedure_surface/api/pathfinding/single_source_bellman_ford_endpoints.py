@@ -63,8 +63,8 @@ class SingleSourceBellmanFordEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        source_node : int
-            The source node for the shortest path computation.
+        source_node
+            Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
         relationship_types
@@ -112,8 +112,8 @@ class SingleSourceBellmanFordEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        source_node : int
-            The source node for the shortest path computation.
+        source_node
+            Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
         relationship_types
@@ -162,8 +162,8 @@ class SingleSourceBellmanFordEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_relationship_type : str
             The relationship type to use for the new relationships in the graph catalog.
-        source_node : int
-            The source node for the shortest path computation.
+        source_node
+            Node id to use as the starting point.
         mutate_negative_cycles : bool, default=False
             Whether to write negative cycles to the in-memory graph.
         relationship_weight_property
@@ -217,8 +217,8 @@ class SingleSourceBellmanFordEndpoints(ABC):
             The graph to run the algorithm on.
         write_relationship_type : str
             The relationship type to use for the new relationships.
-        source_node : int
-            The source node for the shortest path computation.
+        source_node
+            Node id to use as the starting point.
         write_node_ids : bool, default=False
             Whether to write node IDs of the shortest path onto the relationship.
         write_costs : bool, default=False
@@ -267,8 +267,8 @@ class SingleSourceBellmanFordEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on or a dictionary representing the graph dimensions.
-        source_node : int
-            The source node for the shortest path computation.
+        source_node
+            Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
         relationship_types

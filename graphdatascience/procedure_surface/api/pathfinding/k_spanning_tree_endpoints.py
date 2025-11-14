@@ -47,8 +47,8 @@ class KSpanningTreeEndpoints(ABC):
             The number of spanning trees to compute.
         write_property
             Name of the node property to store the results in.
-        source_node : int
-            The source node (root) for the k-Spanning trees.
+        source_node
+            Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
         objective : str, default="minimum"

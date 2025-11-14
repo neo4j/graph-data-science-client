@@ -65,8 +65,8 @@ class DijkstraEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        source_node : int
-            The source node for the shortest path computation.
+        source_node
+            Node id to use as the starting point.
         target_nodes : int | list[int]
             A single target node or a list of target nodes for the shortest path computation.
         relationship_weight_property
@@ -120,8 +120,8 @@ class DijkstraEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_relationship_type : str
             The relationship type to use for the new relationships in the graph catalog.
-        source_node : int
-            The source node for the shortest path computation.
+        source_node
+            Node id to use as the starting point.
         target_nodes : int | list[int]
             A single target node or a list of target nodes for the shortest path computation.
         relationship_weight_property
@@ -178,8 +178,8 @@ class DijkstraEndpoints(ABC):
             The graph to run the algorithm on.
         write_relationship_type : str
             The relationship type to use for the new relationships.
-        source_node : int
-            The source node for the shortest path computation.
+        source_node
+            Node id to use as the starting point.
         target_nodes : int | list[int]
             A single target node or a list of target nodes for the shortest path computation.
         write_node_ids : bool, default=False
@@ -232,8 +232,8 @@ class DijkstraEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on or a dictionary representing the graph dimensions.
-        source_node : int
-            The source node for the shortest path computation.
+        source_node
+            Node id to use as the starting point.
         target_nodes : int | list[int]
             A single target node or a list of target nodes for the shortest path computation.
         relationship_weight_property

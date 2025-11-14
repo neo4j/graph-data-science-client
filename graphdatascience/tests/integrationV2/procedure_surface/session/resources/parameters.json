@@ -21,6 +21,7 @@
   "scaler": "Name of the scaler applied on the resulting scores.",
   "seed_property": "Name of the property to be used to for the initial value of a node.",
   "seed_set_size": "Number of nodes that maximize the expected spread in the network.",
+  "source_node": "Node id to use as the starting point.",
   "source_nodes": "List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.",
   "sudo": "Disable the memory guard.",
   "tolerance": [
