@@ -59,8 +59,8 @@ class ModularityOptimizationEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property
             Name of the property to be used as weights.
-        seed_property : str | None, default=None
-            Property name for initial community assignments
+        seed_property
+            Name of the property to be used to for the initial value of a node.
         sudo
             Disable the memory guard.
         tolerance
@@ -119,8 +119,8 @@ class ModularityOptimizationEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property
             Name of the property to be used as weights.
-        seed_property : str | None, default=None
-            Property name for initial community assignments
+        seed_property
+            Name of the property to be used to for the initial value of a node.
         sudo
             Disable the memory guard.
         tolerance
@@ -182,8 +182,8 @@ class ModularityOptimizationEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property
             Name of the property to be used as weights.
-        seed_property : str | None, default=None
-            Property name for initial community assignments
+        seed_property
+            Name of the property to be used to for the initial value of a node.
         sudo
             Disable the memory guard.
         tolerance
@@ -249,8 +249,8 @@ class ModularityOptimizationEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property
             Name of the property to be used as weights.
-        seed_property : str | None, default=None
-            Property name for initial community assignments
+        seed_property
+            Name of the property to be used to for the initial value of a node.
         sudo
             Disable the memory guard.
         tolerance
@@ -301,8 +301,8 @@ class ModularityOptimizationEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property
             Name of the property to be used as weights.
-        seed_property : str | None, default=None
-            Property name for initial community assignments
+        seed_property
+            Name of the property to be used to for the initial value of a node.
         tolerance
             Minimum change in scores between iterations.
 
