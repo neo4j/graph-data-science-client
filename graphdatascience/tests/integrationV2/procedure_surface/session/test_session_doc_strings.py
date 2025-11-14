@@ -133,8 +133,7 @@ def test_common_parameter_consistency() -> None:
         "relationship_weight_property: str | None",
         "username: str | None",
         "tolerance: float",
-        "source_node: int",
-        # "seed_property: str | None",
+        "seed_property: str | None",
         # "top_k: int",
         # "similarity_cutoff: float",
     }

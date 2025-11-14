@@ -71,8 +71,8 @@ class LouvainEndpoints(ABC):
             Number of concurrent threads to use.
         job_id : str | None, default=None
             Identifier for the computation.
-        seed_property : str | None, default=None
-            The property name that contains seed values
+        seed_property
+            Name of the property to be used to for the initial value of a node.
         consecutive_ids
             Use consecutive IDs for the components.
         relationship_weight_property
@@ -133,8 +133,8 @@ class LouvainEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        seed_property : str | None, default=None
-            Defines node properties that are used as initial community identifiers
+        seed_property
+            Name of the property to be used to for the initial value of a node.
         consecutive_ids
             Use consecutive IDs for the components.
         relationship_weight_property
@@ -196,8 +196,8 @@ class LouvainEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        seed_property : str | None, default=None
-            Defines node properties that are used as initial community identifiers
+        seed_property
+            Name of the property to be used to for the initial value of a node.
         consecutive_ids
             Use consecutive IDs for the components.
         relationship_weight_property
@@ -265,8 +265,8 @@ class LouvainEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        seed_property : str | None, default=None
-            Defines node properties that are used as initial community identifiers
+        seed_property
+            Name of the property to be used to for the initial value of a node.
         consecutive_ids
             Use consecutive IDs for the components.
         relationship_weight_property
@@ -319,8 +319,8 @@ class LouvainEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency
             Number of concurrent threads to use.
-        seed_property : str | None, default=None
-            A property to use as the starting community id for a node
+        seed_property
+            Name of the property to be used to for the initial value of a node.
         consecutive_ids
             Use consecutive IDs for the components.
         relationship_weight_property
