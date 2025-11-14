@@ -47,8 +47,8 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
             Weight of negative samples in the loss function
         embedding_dimension : int | None, default=None
             The dimension of the generated embeddings
-        tolerance : float
-            Tolerance for early stopping based on loss improvement
+        tolerance
+            Minimum change in loss between iterations for early stopping an epoch.
         learning_rate : float | None, default=None
             Learning rate for the training optimization
         max_iterations

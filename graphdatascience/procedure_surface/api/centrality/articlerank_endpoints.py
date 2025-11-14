@@ -48,7 +48,7 @@ class ArticleRankEndpoints(ABC):
             Name of the node property to store the results in.
         damping_factor : float
             Probability of a jump to a random node.
-        tolerance : float
+        tolerance
             Minimum change in scores between iterations.
         max_iterations
             Maximum number of iterations to run.
@@ -118,7 +118,7 @@ class ArticleRankEndpoints(ABC):
             The graph to run the algorithm on.
         damping_factor : float
             Probability of a jump to a random node.
-        tolerance : float
+        tolerance
             Minimum change in scores between iterations.
         max_iterations
             Maximum number of iterations to run.
@@ -185,7 +185,7 @@ class ArticleRankEndpoints(ABC):
         damping_factor : float
             The damping factor controls the probability of a random jump to a random node
         tolerance : float
-            Minimum change in scores between iterations
+            Minimum change in scores between iterations.
         max_iterations
             Maximum number of iterations to run.
         scaler
@@ -258,7 +258,7 @@ class ArticleRankEndpoints(ABC):
             Name of the node property to store the results in.
         damping_factor : float
             Probability of a jump to a random node.
-        tolerance : float
+        tolerance
             Minimum change in scores between iterations.
         max_iterations
             Maximum number of iterations to run.
@@ -321,7 +321,7 @@ class ArticleRankEndpoints(ABC):
         damping_factor : float
             The damping factor controls the probability of a random jump to a random node
         tolerance : float
-            Minimum change in scores between iterations
+            Minimum change in scores between iterations.
         max_iterations
             Maximum number of iterations to run.
         scaler

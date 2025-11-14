@@ -49,7 +49,7 @@ class LouvainEndpoints(ABC):
             The graph to run the algorithm on.
         mutate_property
             Name of the node property to store the results in.
-        tolerance : float, default=0.0001
+        tolerance
             Minimum change in scores between iterations.
         max_levels : int, default=10
             The maximum number of levels in the hierarchy
@@ -111,8 +111,8 @@ class LouvainEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        tolerance : float, default=0.0001
-            The tolerance value for the algorithm convergence
+        tolerance
+            Minimum change in scores between iterations.
         max_levels : int, default=10
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool, default=False
@@ -174,8 +174,8 @@ class LouvainEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on.
-        tolerance : float, default=0.0001
-            The tolerance value for the algorithm convergence
+        tolerance
+            Minimum change in scores between iterations.
         max_levels : int, default=10
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool, default=False
@@ -243,8 +243,8 @@ class LouvainEndpoints(ABC):
             The graph to run the algorithm on.
         write_property
             Name of the node property to store the results in.
-        tolerance : float, default=0.0001
-            The tolerance value for the algorithm convergence
+        tolerance
+            Minimum change in scores between iterations.
         max_levels : int, default=10
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool, default=False
@@ -305,8 +305,8 @@ class LouvainEndpoints(ABC):
         ----------
         G
             The graph to run the algorithm on or a dictionary representing the graph dimensions.
-        tolerance : float, default=0.0001
-            The tolerance value for the algorithm convergence
+        tolerance
+            Minimum change in scores between iterations.
         max_levels : int, default=10
             The maximum number of levels in the hierarchy
         include_intermediate_communities : bool, default=False

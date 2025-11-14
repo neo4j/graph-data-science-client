@@ -47,8 +47,8 @@ class EigenvectorEndpoints(ABC):
             Name of the node property to store the results in.
         max_iterations
             Maximum number of iterations to run.
-        tolerance : float
-            The tolerance for convergence detection
+        tolerance
+            Minimum change in scores between iterations.
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
@@ -114,8 +114,8 @@ class EigenvectorEndpoints(ABC):
             The graph to run the algorithm on.
         max_iterations
             Maximum number of iterations to run.
-        tolerance : float
-            The tolerance for convergence detection
+        tolerance
+            Minimum change in scores between iterations.
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
@@ -176,8 +176,8 @@ class EigenvectorEndpoints(ABC):
             The graph to run the algorithm on.
         max_iterations
             Maximum number of iterations to run.
-        tolerance : float
-            The tolerance for convergence detection
+        tolerance
+            Minimum change in scores between iterations.
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
@@ -247,8 +247,8 @@ class EigenvectorEndpoints(ABC):
             Name of the node property to store the results in.
         max_iterations
             Maximum number of iterations to run.
-        tolerance : float
-            The tolerance for convergence detection
+        tolerance
+            Minimum change in scores between iterations.
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
@@ -305,8 +305,8 @@ class EigenvectorEndpoints(ABC):
             The graph to run the algorithm on or a dictionary representing the graph dimensions.
         max_iterations
             Maximum number of iterations to run.
-        tolerance : float
-            The tolerance for convergence detection
+        tolerance
+            Minimum change in scores between iterations.
         source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
