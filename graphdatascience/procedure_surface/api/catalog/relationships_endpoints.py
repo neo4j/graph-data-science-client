@@ -30,8 +30,8 @@ class RelationshipsEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
-            The graph to stream relationships from
+        G
+           Graph object to use
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_properties: list[str] | None, default = None
@@ -70,8 +70,8 @@ class RelationshipsEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
-            The graph to write relationships from
+        G
+           Graph object to use
         relationship_type : str
             The relationship type to write to the database
         relationship_properties: list[str] | None, default = None
@@ -108,8 +108,8 @@ class RelationshipsEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
-            The graph to drop relationships from
+        G
+           Graph object to use
         relationship_type: str
             The relationship type to drop
         fail_if_missing: bool, default=True
@@ -139,8 +139,8 @@ class RelationshipsEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
-            The graph to operate on
+        G
+           Graph object to use
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         concurrency
@@ -179,8 +179,8 @@ class RelationshipsEndpoints(ABC):
 
         Parameters
         ----------
-        G : Graph
-            The graph to operate on
+        G
+           Graph object to use
         relationship_type: str,
             The input relationship type
         mutate_relationship_type: str,
@@ -227,8 +227,8 @@ class RelationshipsEndpoints(ABC):
         Parameters
         ----------
 
-        G : GraphV2
-            Name of the generated graph.
+        G
+           Graph object to use
         path_templates : list[list[str]]
             A path template is an ordered list of relationship types used for the traversal. The same relationship type can be added multiple times, in order to traverse them as indicated. And, you may specify several path templates to process in one go.
         mutate_relationship_type : str

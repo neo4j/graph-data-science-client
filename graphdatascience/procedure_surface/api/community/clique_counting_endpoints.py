@@ -32,7 +32,7 @@ class CliqueCountingEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
         concurrency
@@ -75,7 +75,7 @@ class CliqueCountingEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -116,7 +116,7 @@ class CliqueCountingEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -159,7 +159,7 @@ class CliqueCountingEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
         concurrency
@@ -198,7 +198,7 @@ class CliqueCountingEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         concurrency
             Number of concurrent threads to use.
         node_labels

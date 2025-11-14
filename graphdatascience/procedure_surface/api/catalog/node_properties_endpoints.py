@@ -32,8 +32,8 @@ class NodePropertiesEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
-            The graph to stream node properties from
+        G
+           Graph object to use
         node_properties : str | list[str]
             The node properties to stream
         list_node_labels : boolean | None, default=None
@@ -78,11 +78,14 @@ class NodePropertiesEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
-            The graph to write node properties from
-        node_properties : str | list[str] | dict[str, str]
-            The node properties to write.
-            If a dictionary is provided, the keys are the property names and the values are the aliases that will be used as the property name in the database.
+        G
+           Graph object to use
+        node_properties
+            Node properties to write. Can be:
+
+            - A string representing a single property name.
+            - A list of strings representing multiple property names.
+            - A dictionary mapping from property names in the GDS graph to property names in the database.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency
@@ -119,8 +122,8 @@ class NodePropertiesEndpoints(ABC):
 
         Parameters
         ----------
-        G : GraphV2
-            The graph to drop node properties from
+        G
+           Graph object to use
         node_properties : list[str]
             The node properties to drop
         fail_if_missing: bool | None = None,

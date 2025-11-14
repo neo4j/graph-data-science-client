@@ -39,7 +39,7 @@ class HdbscanEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         node_property : str
             The node property to use for clustering (required)
         mutate_property
@@ -97,7 +97,7 @@ class HdbscanEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         node_property : str
             The node property to use for clustering (required)
         leaf_size : int | None, default=None
@@ -153,7 +153,7 @@ class HdbscanEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         node_property : str
             The node property to use for clustering (required)
         leaf_size : int | None, default=None
@@ -208,7 +208,7 @@ class HdbscanEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         node_property : str
             The node property to use for clustering (required)
         write_property
@@ -265,7 +265,7 @@ class HdbscanEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use or a dictionary representing the graph dimensions.
         node_property : str
             The node property to use for clustering (required)
         leaf_size : int | None, default=None

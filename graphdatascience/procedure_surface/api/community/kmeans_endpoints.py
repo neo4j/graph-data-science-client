@@ -41,7 +41,7 @@ class KMeansEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         node_property : str
             The node property to use for clustering
         mutate_property
@@ -50,14 +50,14 @@ class KMeansEndpoints(ABC):
             Whether to compute silhouette coefficient
         concurrency
             Number of concurrent threads to use.
-        delta_threshold : float | None, default=0.05
-            The convergence threshold for the algorithm
-        initial_sampler : str | None, default="UNIFORM"
-            The sampling method for initial centroids
+        delta_threshold
+            Minimum change between iterations.
+        initial_sampler
+           Sampling method for initial centroids.
         job_id
             Identifier for the computation.
-        k : int | None, default=10
-            The number of clusters
+        k
+            Number of clusters to form.
         log_progress
             Display progress logging.
         max_iterations
@@ -112,21 +112,21 @@ class KMeansEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         node_property : str
             The node property to use for clustering
         compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
         concurrency
             Number of concurrent threads to use.
-        delta_threshold : float | None, default=0.05
-            The convergence threshold for the algorithm
-        initial_sampler : str | None, default="UNIFORM"
-            The sampling method for initial centroids
+        delta_threshold
+            Minimum change between iterations.
+        initial_sampler
+           Sampling method for initial centroids.
         job_id
             Identifier for the computation.
-        k : int | None, default=10
-            The number of clusters
+        k
+            Number of clusters to form.
         log_progress
             Display progress logging.
         max_iterations
@@ -181,21 +181,21 @@ class KMeansEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         node_property : str
             The node property to use for clustering
         compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
         concurrency
             Number of concurrent threads to use.
-        delta_threshold : float | None, default=0.05
-            The convergence threshold for the algorithm
-        initial_sampler : str | None, default="UNIFORM"
-            The sampling method for initial centroids
+        delta_threshold
+            Minimum change between iterations.
+        initial_sampler
+           Sampling method for initial centroids.
         job_id
             Identifier for the computation.
-        k : int | None, default=10
-            The number of clusters
+        k
+            Number of clusters to form.
         log_progress
             Display progress logging.
         max_iterations
@@ -252,7 +252,7 @@ class KMeansEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         node_property : str
             The node property to use for clustering
         write_property
@@ -261,14 +261,14 @@ class KMeansEndpoints(ABC):
             Whether to compute silhouette coefficient
         concurrency
             Number of concurrent threads to use.
-        delta_threshold : float | None, default=0.05
-            The convergence threshold for the algorithm
-        initial_sampler : str | None, default="UNIFORM"
-            The sampling method for initial centroids
+        delta_threshold
+            Minimum change between iterations.
+        initial_sampler
+           Sampling method for initial centroids.
         job_id
             Identifier for the computation.
-        k : int | None, default=10
-            The number of clusters
+        k
+            Number of clusters to form.
         log_progress
             Display progress logging.
         max_iterations
@@ -319,19 +319,19 @@ class KMeansEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         node_property : str
             The node property to use for clustering
         compute_silhouette : bool | None, default=False
             Whether to compute silhouette coefficient
         concurrency
             Number of concurrent threads to use.
-        delta_threshold : float | None, default=0.05
-            The convergence threshold for the algorithm
-        initial_sampler : str | None, default="UNIFORM"
-            The sampling method for initial centroids
-        k : int | None, default=10
-            The number of clusters
+        delta_threshold
+            Minimum change between iterations.
+        initial_sampler
+           Sampling method for initial centroids.
+        k
+            Number of clusters to form.
         max_iterations
             Maximum number of iterations to run.
         node_labels

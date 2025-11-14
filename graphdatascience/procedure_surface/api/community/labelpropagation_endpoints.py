@@ -37,7 +37,7 @@ class LabelPropagationEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
         concurrency
@@ -96,7 +96,7 @@ class LabelPropagationEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         concurrency
             Number of concurrent threads to use.
         consecutive_ids
@@ -154,7 +154,7 @@ class LabelPropagationEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         concurrency
             Number of concurrent threads to use.
         consecutive_ids
@@ -165,8 +165,8 @@ class LabelPropagationEndpoints(ABC):
             Display progress logging.
         max_iterations
             Maximum number of iterations to run.
-        min_community_size : int | None, default=None
-            Minimum community size to include in results
+        min_community_size
+            Minimum size for communities to be included in results.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
@@ -216,7 +216,7 @@ class LabelPropagationEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
         concurrency
@@ -229,8 +229,8 @@ class LabelPropagationEndpoints(ABC):
             Display progress logging.
         max_iterations
             Maximum number of iterations to run.
-        min_community_size : int | None, default=None
-            Minimum community size to include in results
+        min_community_size
+            Minimum size for communities to be included in results.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         node_weight_property : str | None, default=None
@@ -273,7 +273,7 @@ class LabelPropagationEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         concurrency
             Number of concurrent threads to use.
         consecutive_ids

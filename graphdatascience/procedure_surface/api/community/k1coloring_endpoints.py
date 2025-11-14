@@ -37,11 +37,11 @@ class K1ColoringEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
-        batch_size : int, default=10000
-            The batch size for processing
+        batch_size
+            Number of nodes to process in each batch.
         concurrency
             Number of concurrent threads to use.
         job_id : str | None, default=None
@@ -87,9 +87,9 @@ class K1ColoringEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
-        batch_size : int, default=10000
-            The batch size for processing
+           Graph object to use
+        batch_size
+            Number of nodes to process in each batch.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -136,9 +136,9 @@ class K1ColoringEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
-        batch_size : int, default=10000
-            The batch size for processing
+           Graph object to use
+        batch_size
+            Number of nodes to process in each batch.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -147,8 +147,8 @@ class K1ColoringEndpoints(ABC):
             Display progress logging.
         max_iterations
             Maximum number of iterations to run.
-        min_community_size : int | None, default=None
-            Only community ids of communities with a size greater than or equal to the given value are returned
+        min_community_size
+            Minimum size for communities to be included in results.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
@@ -189,11 +189,11 @@ class K1ColoringEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
-        batch_size : int, default=10000
-            The batch size for processing
+        batch_size
+            Number of nodes to process in each batch.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -202,8 +202,8 @@ class K1ColoringEndpoints(ABC):
             Display progress logging.
         max_iterations
             Maximum number of iterations to run.
-        min_community_size : int | None, default=None
-            Only community ids of communities with a size greater than or equal to the given value are written to Neo4j
+        min_community_size
+            Minimum size for communities to be included in results.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
@@ -237,9 +237,9 @@ class K1ColoringEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
-        batch_size : int, default=10000
-            The batch size for processing
+           Graph object to use or a dictionary representing the graph dimensions.
+        batch_size
+            Number of nodes to process in each batch.
         concurrency
             Number of concurrent threads to use.
         max_iterations

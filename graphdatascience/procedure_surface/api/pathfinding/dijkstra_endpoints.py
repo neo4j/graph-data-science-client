@@ -64,7 +64,7 @@ class DijkstraEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         source_node
             Node id to use as the starting point.
         target_nodes : int | list[int]
@@ -117,9 +117,9 @@ class DijkstraEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
-        mutate_relationship_type : str
-            The relationship type to use for the new relationships in the graph catalog.
+           Graph object to use
+        mutate_relationship_type
+           Name of the relationship type to store the results in.
         source_node
             Node id to use as the starting point.
         target_nodes : int | list[int]
@@ -175,7 +175,7 @@ class DijkstraEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_relationship_type : str
             The relationship type to use for the new relationships.
         source_node
@@ -231,7 +231,7 @@ class DijkstraEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         source_node
             Node id to use as the starting point.
         target_nodes : int | list[int]

@@ -157,18 +157,11 @@ def test_common_parameter_consistency() -> None:
             typed_key = f"{param}: {param_types[param].annotation}" if param in param_types else param
             param_descriptions[typed_key][method_name] = descriptions[param]
 
-    shared_params: dict[str, int] = {
-        param: len(desc_per_method)
-        for param, desc_per_method in param_descriptions.items()
-        if len(desc_per_method) > 1 and param not in common_params
-    }
-    top_20_shared_params = dict(sorted(shared_params.items(), key=lambda item: item[1], reverse=True)[:20])
-    print(f"Top 20 shared parameters: {top_20_shared_params}")
-
     # Check consistency
     inconsistencies: list[dict[str, Any]] = []
 
-    param_descriptions = {k: v for k, v in param_descriptions.items() if k in common_params}
+    # Only assert consistency for parameters used more than 10x
+    param_descriptions = {k: v for k, v in param_descriptions.items() if len(v.keys()) > 10}
 
     suggested_descriptions = load_parameter_descriptions()
 

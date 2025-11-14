@@ -37,7 +37,7 @@ class GraphSagePredictEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         model_name : str
             Name under which the model will is stored
         relationship_types
@@ -54,8 +54,8 @@ class GraphSagePredictEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        batch_size : int = 100
-            Batch size for training
+        batch_size
+            Number of nodes to process in each batch.
 
         Returns
         -------
@@ -86,7 +86,7 @@ class GraphSagePredictEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         model_name : str
             Name under which the model will is stored
         write_property
@@ -107,8 +107,8 @@ class GraphSagePredictEndpoints(ABC):
             Number of concurrent threads to use for writing.
         job_id
             Identifier for the computation.
-        batch_size : int = 100
-            Batch size for training
+        batch_size
+            Number of nodes to process in each batch.
 
         Returns
         -------
@@ -137,7 +137,7 @@ class GraphSagePredictEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         model_name : str
             Name under which the model will is stored
         mutate_property
@@ -156,8 +156,8 @@ class GraphSagePredictEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        batch_size : int | None, default=None
-            Batch size for training
+        batch_size
+            Number of nodes to process in each batch.
 
         Returns
         -------
@@ -185,7 +185,7 @@ class GraphSagePredictEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         model_name : str
             Name under which the model will is stored
         relationship_types

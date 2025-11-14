@@ -42,7 +42,7 @@ class WccEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
         threshold : float, default=0.0
@@ -97,7 +97,7 @@ class WccEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         threshold : float, default=0.0
             The minimum required weight to consider a relationship during traversal
         relationship_types
@@ -151,7 +151,7 @@ class WccEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         min_component_size : int | None, default=None
             Don't stream components with fewer nodes than this
         threshold : float, default=0.0
@@ -209,7 +209,7 @@ class WccEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
         min_component_size : int | None, default=None
@@ -262,7 +262,7 @@ class WccEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         threshold : float, default=0.0
             The minimum required weight to consider a relationship during traversal
         relationship_types

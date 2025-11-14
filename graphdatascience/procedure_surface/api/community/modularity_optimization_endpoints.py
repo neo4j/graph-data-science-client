@@ -38,11 +38,11 @@ class ModularityOptimizationEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
-        batch_size : int | None, default=None
-            Number of nodes to process in each batch
+        batch_size
+            Number of nodes to process in each batch.
         concurrency
             Number of concurrent threads to use.
         consecutive_ids
@@ -100,9 +100,9 @@ class ModularityOptimizationEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
-        batch_size : int | None, default=None
-            Number of nodes to process in each batch
+           Graph object to use
+        batch_size
+            Number of nodes to process in each batch.
         concurrency
             Number of concurrent threads to use.
         consecutive_ids
@@ -161,9 +161,9 @@ class ModularityOptimizationEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
-        batch_size : int | None, default=None
-            Number of nodes to process in each batch
+           Graph object to use
+        batch_size
+            Number of nodes to process in each batch.
         concurrency
             Number of concurrent threads to use.
         consecutive_ids
@@ -174,8 +174,8 @@ class ModularityOptimizationEndpoints(ABC):
             Display progress logging.
         max_iterations
             Maximum number of iterations to run.
-        min_community_size : int | None, default=None
-            Minimum size for communities to be included in results
+        min_community_size
+            Minimum size for communities to be included in results.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
@@ -226,11 +226,11 @@ class ModularityOptimizationEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
-        batch_size : int | None, default=None
-            Number of nodes to process in each batch
+        batch_size
+            Number of nodes to process in each batch.
         concurrency
             Number of concurrent threads to use.
         consecutive_ids
@@ -241,8 +241,8 @@ class ModularityOptimizationEndpoints(ABC):
             Display progress logging.
         max_iterations
             Maximum number of iterations to run.
-        min_community_size : int | None, default=None
-            Minimum size for communities to be included in results
+        min_community_size
+            Minimum size for communities to be included in results.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
@@ -286,9 +286,9 @@ class ModularityOptimizationEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
-        batch_size : int | None, default=None
-            Number of nodes to process in each batch
+           Graph object to use or a dictionary representing the graph dimensions.
+        batch_size
+            Number of nodes to process in each batch.
         concurrency
             Number of concurrent threads to use.
         consecutive_ids

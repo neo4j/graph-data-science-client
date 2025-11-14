@@ -41,7 +41,7 @@ class LeidenEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         mutate_property
             Name of the node property to store the results in.
         concurrency
@@ -111,7 +111,7 @@ class LeidenEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         concurrency
             Number of concurrent threads to use.
         consecutive_ids
@@ -180,7 +180,7 @@ class LeidenEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         concurrency
             Number of concurrent threads to use.
         consecutive_ids
@@ -195,8 +195,8 @@ class LeidenEndpoints(ABC):
             Display progress logging.
         max_levels : int, default=10
             The maximum number of levels
-        min_community_size : int | None, default=None
-            The minimum community size
+        min_community_size
+            Minimum size for communities to be included in results.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed
@@ -253,7 +253,7 @@ class LeidenEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         write_property
             Name of the node property to store the results in.
         concurrency
@@ -270,8 +270,8 @@ class LeidenEndpoints(ABC):
             Display progress logging.
         max_levels : int, default=10
             The maximum number of levels
-        min_community_size : int | None, default=None
-            The minimum community size
+        min_community_size
+            Minimum size for communities to be included in results.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed
@@ -321,7 +321,7 @@ class LeidenEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         concurrency
             Number of concurrent threads to use.
         consecutive_ids

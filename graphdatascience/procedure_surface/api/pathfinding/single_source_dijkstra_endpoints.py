@@ -51,7 +51,7 @@ class SingleSourceDijkstraEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         source_node
             Node id to use as the starting point.
         relationship_weight_property
@@ -99,11 +99,11 @@ class SingleSourceDijkstraEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         source_node
             Node id to use as the starting point.
-        mutate_relationship_type : str
-            The relationship type to use for the new relationships in the graph catalog.
+        mutate_relationship_type
+           Name of the relationship type to store the results in.
         relationship_weight_property
             Name of the property to be used as weights.
         relationship_types
@@ -152,7 +152,7 @@ class SingleSourceDijkstraEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on.
+           Graph object to use
         source_node
             Node id to use as the starting point.
         write_relationship_type : str
@@ -203,7 +203,7 @@ class SingleSourceDijkstraEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run the algorithm on or a dictionary representing the graph dimensions.
+           Graph object to use or a dictionary representing the graph dimensions.
         source_node
             Node id to use as the starting point.
         relationship_weight_property
