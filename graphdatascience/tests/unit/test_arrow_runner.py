@@ -7,7 +7,7 @@ from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.retry_utils.retry_config import RetryConfig
 from graphdatascience.server_version.server_version import ServerVersion
 
-from ...query_runner.arrow_endpoint_version import ArrowEndpointVersion
+from ...arrow_client.arrow_endpoint_version import ArrowEndpointVersion
 from .conftest import CollectingQueryRunner
 
 

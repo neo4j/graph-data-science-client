@@ -3,7 +3,6 @@ from __future__ import annotations
 import base64
 import json
 import logging
-import platform
 import re
 import time
 import warnings
@@ -11,7 +10,6 @@ from dataclasses import dataclass
 from types import TracebackType
 from typing import Any, Callable, Iterable, Type
 
-import certifi
 import pandas
 import pyarrow
 from neo4j.exceptions import ClientError
@@ -28,6 +26,7 @@ from pyarrow.flight import (
     FlightUnavailableError,
 )
 from pyarrow.types import is_dictionary
+from pydantic import BaseModel
 from tenacity import (
     retry,
     retry_any,
@@ -37,203 +36,25 @@ from tenacity import (
     wait_exponential,
 )
 
+from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVersion
+from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication, UsernamePasswordAuthentication
 from graphdatascience.retry_utils.retry_config import RetryConfig
 from graphdatascience.retry_utils.retry_utils import before_log
 
-from ..semantic_version.semantic_version import SemanticVersion
-from ..version import __version__
-from ..arrow_client.arrow_endpoint_version import ArrowEndpointVersion
-from .arrow_info import ArrowInfo
+from ...semantic_version.semantic_version import SemanticVersion
+from ...version import __version__
+from ..arrow_info import ArrowInfo
 
 
 class GdsArrowClient:
-    @staticmethod
-    def create(
-        arrow_info: ArrowInfo,
-        auth: ArrowAuthentication | tuple[str, str] | None = None,
-        encrypted: bool = False,
-        disable_server_verification: bool = False,
-        tls_root_certs: bytes | None = None,
-        connection_string_override: str | None = None,
-        retry_config: RetryConfig | None = None,
-        arrow_client_options: dict[str, Any] | None = None,
-    ) -> GdsArrowClient:
-        connection_string: str
-        if connection_string_override is not None:
-            connection_string = connection_string_override
-        else:
-            connection_string = arrow_info.listenAddress
-
-        host, port = connection_string.split(":")
-
-        arrow_endpoint_version = ArrowEndpointVersion.from_arrow_info(arrow_info.versions)
-
-        return GdsArrowClient(
-            host=host,
-            port=int(port),
-            auth=auth,
-            encrypted=encrypted,
-            disable_server_verification=disable_server_verification,
-            tls_root_certs=tls_root_certs,
-            arrow_endpoint_version=arrow_endpoint_version,
-            retry_config=retry_config,
-            arrow_client_options=arrow_client_options,
-        )
-
     def __init__(
         self,
-        host: str,
-        port: int = 8491,
-        auth: ArrowAuthentication | tuple[str, str] | None = None,
-        encrypted: bool = False,
-        disable_server_verification: bool = False,
-        tls_root_certs: bytes | None = None,
-        arrow_endpoint_version: ArrowEndpointVersion = ArrowEndpointVersion.V1,
-        user_agent: str | None = None,
-        retry_config: RetryConfig | None = None,
-        arrow_client_options: dict[str, Any] | None = None,
+        flight_client: AuthenticatedArrowClient,
     ):
-        """Creates a new GdsArrowClient instance.
-
-        Parameters
-        ----------
-        host: str
-            The host address of the GDS Arrow server
-        port: int
-            The host port of the GDS Arrow server (default is 8491)
-        auth: Optional[ArrowAuthentication | tuple[str, str]]
-            Either an implementation of ArrowAuthentication providing a pair to be used for basic authentication, or a username, password tuple
-        encrypted: bool
-            A flag that indicates whether the connection should be encrypted (default is False)
-        disable_server_verification: bool
-            .. deprecated:: 1.16
-                Use arrow_client_options instead
-            A flag that disables server verification for TLS connections (default is False)
-        tls_root_certs: bytes | None
-            .. deprecated:: 1.16
-                Use arrow_client_options instead
-            PEM-encoded certificates that are used for the connection to the GDS Arrow Flight server
-        arrow_endpoint_version:
-            The version of the Arrow endpoint to use (default is ArrowEndpointVersion.V1)
-        user_agent: str | None
-            The user agent string to use for the connection. (default is `neo4j-graphdatascience-v[VERSION] pyarrow-v[PYARROW_VERSION])
-        retry_config: RetryConfig | None
-            The retry configuration to use for the Arrow requests send by the client.
-        arrow_client_options: dict[str, Any] | None
-            Additional configuration for the Arrow flight client.
-
-        """
-        self._arrow_endpoint_version = arrow_endpoint_version
-        self._host = host
-        self._port = port
-        self._auth = None
-        self._encrypted = encrypted
-        self._user_agent = user_agent
-
+        """Creates a new GdsArrowClient instance."""
+        self._flight_client = flight_client
         self._logger = logging.getLogger("gds_arrow_client")
-
-        if retry_config is None:
-            retry_config = RetryConfig(
-                retry=retry_any(
-                    retry_if_exception_type(FlightTimedOutError),
-                    retry_if_exception_type(FlightUnavailableError),
-                    retry_if_exception_type(FlightInternalError),
-                ),
-                stop=(stop_after_delay(10) | stop_after_attempt(5)),
-                wait=wait_exponential(multiplier=1, min=1, max=10),
-            )
-        self._retry_config = retry_config
-
-        self._arrow_client_options = arrow_client_options if arrow_client_options is not None else {}
-
-        if disable_server_verification:
-            self._arrow_client_options["disable_server_verification"] = True
-        if tls_root_certs is not None:
-            self._arrow_client_options["tls_root_certs"] = tls_root_certs
-
-        if auth:
-            if not isinstance(auth, ArrowAuthentication):
-                username, password = auth
-                auth = UsernamePasswordAuthentication(username, password)
-            self._auth = auth
-            self._auth_middleware = AuthMiddleware(auth)
-
-        self._flight_client = self._instantiate_flight_client()
-
-    def _instantiate_flight_client(self) -> flight.FlightClient:
-        location = (
-            flight.Location.for_grpc_tls(self._host, self._port)
-            if self._encrypted
-            else flight.Location.for_grpc_tcp(self._host, self._port)
-        )
-
-        client_options = self._arrow_client_options.copy()
-
-        # We need to specify the system root certificates on Windows
-        if platform.system() == "Windows":
-            if not client_options["tls_root_certs"]:
-                client_options["tls_root_certs"] = certifi.contents()
-
-        if self._auth:
-            user_agent = f"neo4j-graphdatascience-v{__version__} pyarrow-v{arrow_version}"
-            if self._user_agent:
-                user_agent = self._user_agent
-
-            if "middleware" in client_options:
-                if not isinstance(client_options["middleware"], list):
-                    raise TypeError("client_options['middleware'] must be a list")
-            else:
-                client_options["middleware"] = []
-
-            client_options["middleware"].extend(
-                [
-                    AuthFactory(self._auth_middleware),
-                    UserAgentFactory(useragent=user_agent),
-                ]
-            )
-
-        return flight.FlightClient(location, **client_options)
-
-    def connection_info(self) -> tuple[str, int]:
-        """
-        Returns the host and port of the GDS Arrow server.
-
-        Returns
-        -------
-        tuple[str, int]
-            the host and port of the GDS Arrow server
-        """
-        return self._host, self._port
-
-    def request_token(self) -> str | None:
-        """
-        Requests a token from the server and returns it.
-
-        Returns
-        -------
-        str | None
-            a token from the server and returns it.
-        """
-
-        @retry(
-            reraise=True,
-            before=before_log("Request token", self._logger, logging.DEBUG),
-            retry=self._retry_config.retry,
-            stop=self._retry_config.stop,
-            wait=self._retry_config.wait,
-        )
-        def auth_with_retry() -> None:
-            client = self._client()
-            if self._auth:
-                auth_pair = self._auth.auth_pair()
-                client.authenticate_basic_token(auth_pair[0], auth_pair[1])
-
-        if self._auth:
-            auth_with_retry()
-            return self._auth_middleware.token()
-        else:
-            return "IGNORED"
 
     def get_node_properties(
         self,
@@ -249,17 +70,17 @@ class GdsArrowClient:
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             The name of the graph
-        database : str
+        database
             The name of the database to which the graph belongs
-        node_properties : str | list[str]
+        node_properties
             The name of the node properties to retrieve
-        node_labels : list[str] | None
+        node_labels
             A list of node labels to filter the nodes
-        list_node_labels : bool
+        list_node_labels
             A flag that indicates whether the node labels should be included in the result
-        concurrency : int | None
+        concurrency
             The number of threads used on the server side when serving the data
 
         Returns
@@ -281,7 +102,11 @@ class GdsArrowClient:
         if node_labels:
             config["node_labels"] = node_labels
 
-        return self._do_get_with_retry(database, graph_name, proc, concurrency, config)
+        result = self._get_data(database, graph_name, proc, concurrency, config)
+        if list_node_labels:
+            result.rename(columns={"labels": "nodeLabels"}, inplace=True)
+
+        return result
 
     def get_node_labels(self, graph_name: str, database: str, concurrency: int | None = None) -> pandas.DataFrame:
         """
@@ -289,11 +114,11 @@ class GdsArrowClient:
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             The name of the graph
-        database : str
+        database
             The name of the database to which the graph belongs
-        concurrency : int | None
+        concurrency
             The number of threads used on the server side when serving the data
 
         Returns
@@ -301,10 +126,14 @@ class GdsArrowClient:
         DataFrame
             The requested nodes as a DataFrame
         """
-        return self._do_get_with_retry(database, graph_name, "gds.graph.nodeLabels.stream", concurrency, {})
+        return self._get_data(database, graph_name, "gds.graph.nodeLabels.stream", concurrency, {})
 
     def get_relationships(
-        self, graph_name: str, database: str, relationship_types: list[str], concurrency: int | None = None
+        self,
+        graph_name: str,
+        database: str,
+        relationship_types: list[str],
+        concurrency: int | None = None,
     ) -> pandas.DataFrame:
         """
         Get relationships from the graph.
@@ -325,13 +154,11 @@ class GdsArrowClient:
         DataFrame
             The requested relationships as a DataFrame
         """
-        return self._do_get_with_retry(
-            database,
+        return self._flight_client._get_data( database,
             graph_name,
             "gds.graph.relationships.stream",
             concurrency,
-            {"relationship_types": relationship_types},
-        )
+            {"relationship_types": relationship_types})
 
     def get_relationship_properties(
         self,
@@ -346,15 +173,15 @@ class GdsArrowClient:
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             The name of the graph
-        database : str
+        database
             The name of the database to which the graph belongs
-        relationship_properties : str | list[str]
+        relationship_properties
             The name of the relationship properties to retrieve
-        relationship_types : list[str]
+        relationship_types
             The name of the relationship types to retrieve
-        concurrency : int | None
+        concurrency
             The number of threads used on the server side when serving the data
 
         Returns
@@ -373,7 +200,8 @@ class GdsArrowClient:
         if relationship_types:
             config["relationship_types"] = relationship_types
 
-        return self._do_get_with_retry(database, graph_name, proc, concurrency, config)
+        return self._get_data(database, graph_name, proc, concurrency, config)
+
 
     def create_graph(
         self,
@@ -643,50 +471,9 @@ class GdsArrowClient:
         """
         self._upload_data(graph_name, "triplet", triplet_data, batch_size, progress_callback)
 
-    def __getstate__(self) -> dict[str, Any]:
-        state = self.__dict__.copy()
-        # Remove the FlightClient as it isn't serializable
-        if "_flight_client" in state:
-            del state["_flight_client"]
-        return state
-
-    def _client(self) -> flight.FlightClient:
-        """
-        Lazy client construction to help pickle this class because a PyArrow
-        FlightClient is not serializable.
-        """
-        if not hasattr(self, "_flight_client") or not self._flight_client:
-            self._flight_client = self._instantiate_flight_client()
-        return self._flight_client
-
     def _send_action(self, action_type: str, meta_data: dict[str, Any]) -> dict[str, Any]:
-        action_type = self._versioned_action_type(action_type)
-        client = self._client()
-
-        @retry(
-            reraise=True,
-            before=before_log("Send action", self._logger, logging.DEBUG),
-            retry=self._retry_config.retry,
-            stop=self._retry_config.stop,
-            wait=self._retry_config.wait,
-        )
-        def send_with_retry() -> dict[str, Any]:
-            try:
-                result = client.do_action(
-                    action=flight.Action(action_type, json.dumps(meta_data).encode("utf-8")),
-                    options=flight.FlightCallOptions(timeout=20.0),
-                )
-
-                # Consume result fully to sanity check and avoid cancelled streams
-                collected_result = list(result)
-                assert len(collected_result) == 1
-
-                return json.loads(collected_result[0].body.to_pybytes().decode())  # type: ignore
-            except Exception as e:
-                self.handle_flight_error(e)
-                raise e  # unreachable
-
-        return send_with_retry()
+        action_type = f"{ArrowEndpointVersion.V1.prefix()}/{action_type}"
+        return self._flight_client.do_action_with_retry(action_type, meta_data)
 
     def _upload_data(
         self,
@@ -704,22 +491,14 @@ class GdsArrowClient:
             case _:
                 batches = data
 
-        flight_descriptor = self._versioned_flight_descriptor({"name": graph_name, "entity_type": entity_type})
+        flight_descriptor = {
+            "name": "PUT_COMMAND",
+            "version": ArrowEndpointVersion.V1.version(),
+            "body": {"name": graph_name, "entity_type": entity_type},
+        }
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
 
-        @retry(
-            reraise=True,
-            before=before_log("Do put", self._logger, logging.DEBUG),
-            retry=self._retry_config.retry,
-            stop=self._retry_config.stop,
-            wait=self._retry_config.wait,
-        )
-        def safe_do_put(
-            upload_descriptor: FlightDescriptor, schema: Schema
-        ) -> tuple[FlightStreamWriter, FlightMetadataReader]:
-            return self._client().do_put(upload_descriptor, schema)  # type: ignore
-
-        put_stream, ack_stream = safe_do_put(upload_descriptor, batches[0].schema)
+        put_stream, ack_stream = self._flight_client.do_put_with_retry(upload_descriptor, batches[0].schema)
 
         @retry(
             reraise=True,
@@ -740,35 +519,28 @@ class GdsArrowClient:
         except Exception as e:
             GdsArrowClient.handle_flight_error(e)
 
-    def _do_get_with_retry(
+    def _get_data(
+        self,
+        graph_name: str,
+        database: str,
+        proc: str,
+        concurrency: int | None,
+        config: dict[str, Any],
+    ) -> pandas.DataFrame:
+        ticket = self._build_get_ticket(database, graph_name, proc, concurrency, config)
+        get = self._flight_client.get_stream(ticket)
+        result = self._fetch_get_result(get)
+        return result
+
+    def _build_get_ticket(
         self,
         database: str,
         graph_name: str,
         procedure_name: str,
         concurrency: int | None,
         configuration: dict[str, Any],
-    ) -> pandas.DataFrame:
-        @retry(
-            reraise=True,
-            before=before_log("Do get", self._logger, logging.DEBUG),
-            retry=self._retry_config.retry,
-            stop=self._retry_config.stop,
-            wait=self._retry_config.wait,
-        )
-        def safe_do_get() -> pandas.DataFrame:
-            return self._do_get(database, graph_name, procedure_name, concurrency, configuration)
-
-        return safe_do_get()
-
-    def _do_get(
-        self,
-        database: str,
-        graph_name: str,
-        procedure_name: str,
-        concurrency: int | None,
-        configuration: dict[str, Any],
-    ) -> pandas.DataFrame:
-        payload: dict[str, Any] = {
+    ) -> flight.Ticket:
+        body: dict[str, Any] = {
             "database_name": database,
             "graph_name": graph_name,
             "procedure_name": procedure_name,
@@ -776,36 +548,22 @@ class GdsArrowClient:
         }
 
         if concurrency:
-            payload["concurrency"] = concurrency
+            body["concurrency"] = concurrency
 
-        if self._arrow_endpoint_version == ArrowEndpointVersion.V1:
-            payload = {
-                "name": "GET_COMMAND",
-                "version": ArrowEndpointVersion.V1.version(),
-                "body": payload,
-            }
+        payload = {
+            "name": "GET_COMMAND",
+            "version": ArrowEndpointVersion.V1.version(),
+            "body": body,
+        }
 
-        ticket = flight.Ticket(json.dumps(payload).encode("utf-8"))
+        return flight.Ticket(json.dumps(payload).encode("utf-8"))
 
-        client = self._client()
+    def _fetch_get_result(self, get: flight.FlightStreamReader) -> pandas.DataFrame:
         try:
-            get = client.do_get(ticket)
             arrow_table = get.read_all()
         except Exception as e:
-            self.handle_flight_error(e)
-
-        if configuration.get("list_node_labels", False):
-            # GDS 2.5 had an inconsistent naming of the node labels column
-            new_colum_names = ["nodeLabels" if i == "labels" else i for i in arrow_table.column_names]
-            arrow_table = arrow_table.rename_columns(new_colum_names)
-
-        # Pandas 2.2.0 deprecated an API used by ArrowTable.to_pandas() (< pyarrow 15.0)
-        warnings.filterwarnings(
-            "ignore",
-            category=DeprecationWarning,
-            message=r"Passing a BlockManager to DataFrame is deprecated",
-        )
-
+            GdsArrowClient.handle_flight_error(e)
+        arrow_table = self._sanitize_arrow_table(arrow_table)
         if SemanticVersion.from_string(pandas.__version__) >= SemanticVersion(2, 0, 0):
             return arrow_table.to_pandas(types_mapper=pandas.ArrowDtype)  # type: ignore
         else:
@@ -824,18 +582,9 @@ class GdsArrowClient:
         self.close()
 
     def close(self) -> None:
-        if self._flight_client:
-            self._flight_client.close()
+        self._client.close()
 
-    def _versioned_action_type(self, action_type: str) -> str:
-        return self._arrow_endpoint_version.prefix() + action_type
-
-    def _versioned_flight_descriptor(self, flight_descriptor: dict[str, Any]) -> dict[str, Any]:
-        return {
-            "name": "PUT_COMMAND",
-            "version": ArrowEndpointVersion.V1.version(),
-            "body": flight_descriptor,
-        }
+    def _parse
 
     @staticmethod
     def _sanitize_arrow_table(arrow_table: Table) -> Table:
@@ -891,113 +640,17 @@ class GdsArrowClient:
             raise e
 
 
-class UserAgentFactory(ClientMiddlewareFactory):  # type: ignore
-    def __init__(self, useragent: str, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self._middleware = UserAgentMiddleware(useragent)
-
-    def start_call(self, info: Any) -> ClientMiddleware:
-        return self._middleware
-
-
-class UserAgentMiddleware(ClientMiddleware):  # type: ignore
-    def __init__(self, useragent: str, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self._useragent = useragent
-
-    def sending_headers(self) -> dict[str, str]:
-        return {"x-gds-user-agent": self._useragent}
-
-    def received_headers(self, headers: dict[str, Any]) -> None:
-        pass
-
-
-class AuthFactory(ClientMiddlewareFactory):  # type: ignore
-    def __init__(self, middleware: AuthMiddleware, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self._middleware = middleware
-
-    def start_call(self, info: Any) -> AuthMiddleware:
-        return self._middleware
-
-
-class AuthMiddleware(ClientMiddleware):  # type: ignore
-    def __init__(self, auth: ArrowAuthentication, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self._auth = auth
-        self._token: str | None = None
-        self._token_timestamp = 0
-
-    def token(self) -> str | None:
-        # check whether the token is older than 10 minutes. If so, reset it.
-        if self._token and int(time.time()) - self._token_timestamp > 600:
-            self._token = None
-
-        return self._token
-
-    def _set_token(self, token: str) -> None:
-        self._token = token
-        self._token_timestamp = int(time.time())
-
-    def received_headers(self, headers: dict[str, Any]) -> None:
-        auth_header = headers.get("authorization", None)
-        if not auth_header:
-            return
-
-        # the result is always a list
-        header_value = auth_header[0]
-
-        if not isinstance(header_value, str):
-            raise ValueError(f"Incompatible header value received from server: `{header_value}`")
-
-        auth_type, token = header_value.split(" ", 1)
-        if auth_type == "Bearer":
-            self._set_token(token)
-
-    def sending_headers(self) -> dict[str, str]:
-        token = self.token()
-        if token is not None:
-            return {"authorization": "Bearer " + token}
-
-        auth_pair = self._auth.auth_pair()
-        auth_token = f"{auth_pair[0]}:{auth_pair[1]}"
-        auth_token = "Basic " + base64.b64encode(auth_token.encode("utf-8")).decode("ASCII")
-        # There seems to be a bug, `authorization` must be lower key
-        return {"authorization": auth_token}
-
-
-@dataclass(repr=True, frozen=True)
-class NodeLoadDoneResult:
+class NodeLoadDoneResult(BaseModel):
     name: str
     node_count: int
 
-    @classmethod
-    def from_json(cls, json: dict[str, Any]) -> NodeLoadDoneResult:
-        return cls(
-            name=json["name"],
-            node_count=json["node_count"],
-        )
 
-
-@dataclass(repr=True, frozen=True)
-class RelationshipLoadDoneResult:
+class RelationshipLoadDoneResult(BaseModel):
     name: str
     relationship_count: int
 
-    @classmethod
-    def from_json(cls, json: dict[str, Any]) -> RelationshipLoadDoneResult:
-        return cls(
-            name=json["name"],
-            relationship_count=json["relationship_count"],
-        )
 
-
-@dataclass(repr=True, frozen=True)
-class TripletLoadDoneResult:
+class TripletLoadDoneResult(BaseModel):
     name: str
     node_count: int
     relationship_count: int
-
-    @classmethod
-    def from_json(cls, json: dict[str, Any]) -> TripletLoadDoneResult:
-        return cls(name=json["name"], node_count=json["node_count"], relationship_count=json["relationship_count"])

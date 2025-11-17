@@ -8,7 +8,7 @@ from typing import Any, Iterator
 
 import certifi
 from pyarrow import __version__ as arrow_version
-from pyarrow import flight
+from pyarrow import flight, Schema
 from pyarrow._flight import (
     Action,
     ActionType,
@@ -82,7 +82,7 @@ class AuthenticatedArrowClient:
         user_agent: str | None = None,
         advertised_listen_address: tuple[str, int] | None = None,
     ):
-        """Creates a new GdsArrowClient instance.
+        """Creates a new AuthenticatedArrowClient instance.
 
         Parameters
         ----------
@@ -200,6 +200,21 @@ class AuthenticatedArrowClient:
     def list_actions(self) -> set[ActionType]:
         return self._flight_client.list_actions()  # type: ignore
 
+    def do_put_with_retry(
+        self, descriptor: flight.FlightDescriptor, schema: Schema
+    ) -> tuple[flight.FlightStreamWriter, flight.FlightMetadataReader]:
+        @retry(
+            reraise=True,
+            before=before_log("Do put", self._logger, logging.DEBUG),
+            retry=self._retry_config.retry,
+            stop=self._retry_config.stop,
+            wait=self._retry_config.wait,
+        )
+        def run_with_retry() -> list[Result]:
+            return self._client().do_put(descriptor, schema)
+
+        return run_with_retry()
+
     def _instantiate_flight_client(self) -> flight.FlightClient:
         location = (
             flight.Location.for_grpc_tls(self._host, self._port)
@@ -224,6 +239,17 @@ class AuthenticatedArrowClient:
             ]
 
         return flight.FlightClient(location, **client_options)
+
+    def __getstate__(self) -> dict[str, Any]:
+        state = self.__dict__.copy()
+        # Remove the FlightClient as it isn't serializable
+        if "_flight_client" in state:
+            del state["_flight_client"]
+        return state
+
+    def __setstate__(self, state: dict[str, Any]) -> None:
+        self.__dict__.update(state)
+        self._flight_client = self._instantiate_flight_client()
 
 
 @dataclass
