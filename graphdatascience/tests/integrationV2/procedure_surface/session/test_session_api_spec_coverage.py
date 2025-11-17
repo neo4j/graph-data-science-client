@@ -38,14 +38,15 @@ MISSING_ENDPOINTS: set[str] = {
     "max_flow.write",
     "max_flow.stats",
     "max_flow.mutate",
+    "ml.kge.predict.mutate",
+    "ml.kge.predict.stream",
+    "ml.kge.predict.write",
     "modularity.stats",
     "modularity.stream",
     "random_walk.stats",
     "random_walk.stream",
     "random_walk.mutate",
-    "ml.kge.predict.mutate",
-    "ml.kge.predict.stream",
-    "ml.kge.predict.write",
+    "split_relationships.mutate",
 }
 
 
