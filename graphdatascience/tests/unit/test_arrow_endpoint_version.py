@@ -1,6 +1,6 @@
 import pytest
 
-from graphdatascience.query_runner.arrow_endpoint_version import (
+from graphdatascience.arrow_client.arrow_endpoint_version import (
     ArrowEndpointVersion,
     UnsupportedArrowEndpointVersion,
 )
