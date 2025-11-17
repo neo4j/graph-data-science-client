@@ -13,9 +13,15 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Splits a graph into holdout and remaining relationship types and adds them to the graph.
 
+.. deprecated:: 2.24.0
+    Since GDS server version 2.24.0 you should use the endpoint :func:`gds.splitRelationships.mutate` instead.
+
 .. py:function:: gds.alpha.ml.splitRelationships.mutate.estimate(G: Graph, **config: Any) -> pandas.Series[Any]
 
     Splits a graph into holdout and remaining relationship types and adds them to the graph.
+
+.. deprecated:: 2.24.0
+    Since GDS server version 2.24.0 you should use the endpoint :func:`gds.splitRelationships.mutate.estimate` instead.
 
 .. py:function:: gds.alpha.pipeline.nodeRegression.create(name: str) -> Tuple[NRTrainingPipeline, pandas.Series[Any]]
 
@@ -250,3 +256,11 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.node2vec.write.estimate(G: Graph, **config: Any) -> pandas.Series[Any]
 
     Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.splitRelationships.mutate(G: Graph, **config: Any) -> pandas.Series[Any]
+
+    Splits a graph into holdout and remaining relationship types and adds them to the graph.
+
+.. py:function:: gds.splitRelationships.mutate.estimate(G: Graph, **config: Any) -> pandas.Series[Any]
+
+    Splits a graph into holdout and remaining relationship types and adds them to the graph.
