@@ -70,6 +70,35 @@ def test_remote_projection_defaults(mocker: MockerFixture) -> None:
     }
 
 
+def test_remote_projection_query_parameters(mocker: MockerFixture) -> None:
+    v = ServerVersion(9, 9, 9)
+    query_runner = CollectingQueryRunner(v)
+    gds = AuraGraphDataScience(
+        query_runner=query_runner,
+        delete_fn=lambda: True,
+        gds_version=v,
+        v2_endpoints=mocker.Mock(),
+    )
+
+    g = gds.graph.project("foo", "RETURN gds.graph.project($one, $two)", query_parameters={"one": 1, "two": 2})
+
+    assert g.graph.name() == "foo"
+    assert (
+        query_runner.last_query()
+        == "CALL gds.arrow.project($graph_name, $query, $job_id, $concurrency, $undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_configuration)"
+    )
+    assert query_runner.last_params() == {
+        "graph_name": "foo",
+        "query": "RETURN gds.graph.project($one, $two)",
+        "job_id": None,
+        "concurrency": 4,
+        "undirected_relationship_types": [],
+        "inverse_indexed_relationship_types": [],
+        "arrow_configuration": {},
+        "query_parameters": {"one": 1, "two": 2},
+    }
+
+
 def test_remote_algo_write(mocker: MockerFixture) -> None:
     v = ServerVersion(9, 9, 9)
     query_runner = CollectingQueryRunner(v)
