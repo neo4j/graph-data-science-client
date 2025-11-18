@@ -223,6 +223,9 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Given two nodes, calculate Preferential Attachment
 
+.. deprecated:: 2.24.0
+   Since GDS server version 2.24.0 you should use the endpoint :func:`gds.linkprediction.preferentialAttachment` instead.
+
 .. py:function:: gds.alpha.linkprediction.resourceAllocation(node1: int, node2: int, **config: Any) -> float
 
     Given two nodes, calculate Resource Allocation similarity
@@ -1399,6 +1402,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.linkprediction.commonNeighbors(node1: int, node2: int, **config: Any) -> float
 
     Given two nodes, returns the number of common neighbors
+
+.. py:function:: gds.linkprediction.preferentialAttachment(node1: int, node2: int, **config: Any) -> float
+
+    Given two nodes, calculate Preferential Attachment
 
 .. py:function:: gds.linkprediction.resourceAllocation(node1: int, node2: int, **config: Any) -> float
 

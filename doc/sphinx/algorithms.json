@@ -3688,6 +3688,18 @@
       "signature": "node1: int, node2: int, **config: Any",
       "return_type": "float"
     },
+    "description": "Given two nodes, calculate Preferential Attachment",
+    "deprecated": {
+        "version": "2.24.0",
+        "message": "Since GDS server version 2.24.0 you should use the endpoint :func:`gds.linkprediction.preferentialAttachment` instead."
+    }
+  },
+  {
+    "function": {
+      "name": "gds.linkprediction.preferentialAttachment",
+      "signature": "node1: int, node2: int, **config: Any",
+      "return_type": "float"
+    },
     "description": "Given two nodes, calculate Preferential Attachment"
   },
   {
