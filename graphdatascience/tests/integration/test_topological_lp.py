@@ -85,6 +85,13 @@ def test_sameCommunity(node1: int, node2: int, gds: GraphDataScience) -> None:
     assert score == 0
 
 
-def test_totalNeighbors(node1: int, node2: int, gds: GraphDataScience) -> None:
+@pytest.mark.filterwarnings("ignore: .*gds.alpha.linkprediction.totalNeighbors.*")
+def test_alpha_totalNeighbors(node1: int, node2: int, gds: GraphDataScience) -> None:
     score = gds.alpha.linkprediction.totalNeighbors(node1, node2)
+    assert score == 3
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 24, 0))
+def test_totalNeighbors(node1: int, node2: int, gds: GraphDataScience) -> None:
+    score = gds.linkprediction.totalNeighbors(node1, node2)
     assert score == 3
