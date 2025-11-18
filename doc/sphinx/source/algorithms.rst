@@ -238,6 +238,9 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Given two nodes, calculate Total Neighbors
 
+.. deprecated:: 2.24.0
+   Since GDS server version 2.24.0 you should use the endpoint :func:`gds.linkprediction.totalNeighbors` instead.
+
 .. py:function:: gds.alpha.maxkcut.mutate(G: Graph, **config: Any) -> pandas.Series[Any]
 
     Approximate Maximum k-cut maps each node into one of k disjoint communities
@@ -1400,6 +1403,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.linkprediction.resourceAllocation(node1: int, node2: int, **config: Any) -> float
 
     Given two nodes, calculate Resource Allocation similarity
+
+.. py:function:: gds.linkprediction.totalNeighbors(node1: int, node2: int, **config: Any) -> float
+
+    Given two nodes, calculate Total Neighbors
 
 .. py:function:: gds.localClusteringCoefficient.mutate(G: Graph, **config: Any) -> pandas.Series[Any]
 

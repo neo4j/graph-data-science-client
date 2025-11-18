@@ -36,3 +36,8 @@ class TopologicalLPRunner(UncallableNamespace, IllegalAttrChecker):
     def commonNeighbors(self, node1: int, node2: int, **config: Any) -> float:
         self._namespace += ".commonNeighbors"
         return self._run_standard_function(node1, node2, config)
+
+    @compatible_with("totalNeighbors", min_inclusive=ServerVersion(2, 24, 0))
+    def totalNeighbors(self, node1: int, node2: int, **config: Any) -> float:
+        self._namespace += ".totalNeighbors"
+        return self._run_standard_function(node1, node2, config)
