@@ -51,8 +51,15 @@ def test_adamicAdar(node1: int, node2: int, gds: GraphDataScience) -> None:
     assert score == pytest.approx(0.72, 0.01)
 
 
-def test_commonNeighbors(node1: int, node2: int, gds: GraphDataScience) -> None:
+@pytest.mark.filterwarnings("ignore: .*gds.alpha.linkprediction.commonNeighbors.*")
+def test_alpha_commonNeighbors(node1: int, node2: int, gds: GraphDataScience) -> None:
     score = gds.alpha.linkprediction.commonNeighbors(node1, node2)
+    assert score == 1
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 24, 0))
+def test_commonNeighbors(node1: int, node2: int, gds: GraphDataScience) -> None:
+    score = gds.linkprediction.commonNeighbors(node1, node2)
     assert score == 1
 
 

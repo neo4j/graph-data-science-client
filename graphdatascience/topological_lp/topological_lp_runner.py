@@ -31,3 +31,8 @@ class TopologicalLPRunner(UncallableNamespace, IllegalAttrChecker):
     def resourceAllocation(self, node1: int, node2: int, **config: Any) -> float:
         self._namespace += ".resourceAllocation"
         return self._run_standard_function(node1, node2, config)
+
+    @compatible_with("commonNeighbors", min_inclusive=ServerVersion(2, 24, 0))
+    def commonNeighbors(self, node1: int, node2: int, **config: Any) -> float:
+        self._namespace += ".commonNeighbors"
+        return self._run_standard_function(node1, node2, config)

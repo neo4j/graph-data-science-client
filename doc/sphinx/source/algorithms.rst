@@ -216,6 +216,9 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Given two nodes, returns the number of common neighbors
 
+.. deprecated:: 2.24.0
+   Since GDS server version 2.24.0 you should use the endpoint :func:`gds.linkprediction.commonNeighbors` instead.
+
 .. py:function:: gds.alpha.linkprediction.preferentialAttachment(node1: int, node2: int, **config: Any) -> float
 
     Given two nodes, calculate Preferential Attachment
@@ -1389,6 +1392,10 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 .. py:function:: gds.linkprediction.adamicAdar(node1: int, node2: int, **config: Any) -> float
 
     Given two nodes, calculate Adamic Adar similarity
+
+.. py:function:: gds.linkprediction.commonNeighbors(node1: int, node2: int, **config: Any) -> float
+
+    Given two nodes, returns the number of common neighbors
 
 .. py:function:: gds.linkprediction.resourceAllocation(node1: int, node2: int, **config: Any) -> float
 
