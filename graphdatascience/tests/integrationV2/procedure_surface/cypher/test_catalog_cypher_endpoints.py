@@ -8,13 +8,15 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import Rel
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.cypher.catalog_cypher_endpoints import CatalogCypherEndpoints
+from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
     create_graph,
 )
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: Neo4jQueryRunner) -> Generator[GraphV2, None, None]:
     create_statement = """
     CREATE
     (a: Node:A {id: 0}),
@@ -40,8 +42,10 @@ def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
 
 
 @pytest.fixture
-def catalog_endpoints(query_runner: QueryRunner) -> Generator[CatalogCypherEndpoints, None, None]:
-    yield CatalogCypherEndpoints(query_runner)
+def catalog_endpoints(
+    query_runner: Neo4jQueryRunner, gds_arrow_client: GdsArrowClient
+) -> Generator[CatalogCypherEndpoints, None, None]:
+    yield CatalogCypherEndpoints(query_runner, gds_arrow_client)
 
 
 def test_list_with_graph(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:

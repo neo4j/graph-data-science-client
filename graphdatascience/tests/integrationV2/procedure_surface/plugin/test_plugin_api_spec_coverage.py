@@ -10,7 +10,8 @@ from pandas import DataFrame
 from pydantic import BaseModel
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
+from graphdatascience.plugin_v2_endpoints import PluginV2Endpoints
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.tests.integrationV2.procedure_surface.gds_api_spec import (
     EndpointSpec,
     EndpointWithModesSpec,
@@ -151,11 +152,11 @@ def pythonic_endpoint_name(endpoint: str) -> str:
     return ".".join(endpoint_parts)
 
 
-def resolve_callable_object(endpoints: SessionV2Endpoints, endpoint: str) -> MethodType | None:
+def resolve_callable_object(endpoints: PluginV2Endpoints, endpoint: str) -> MethodType | None:
     """Check if an algorithm is available through gds.v2 interface"""
     endpoint_parts = endpoint.split(".")
 
-    callable_object: SessionV2Endpoints | MethodType = endpoints
+    callable_object: PluginV2Endpoints | MethodType = endpoints
     for endpoint_part in endpoint_parts:
         # Get the algorithm endpoint
         if not hasattr(callable_object, endpoint_part):
@@ -264,21 +265,12 @@ def verify_configuration_fields(callable_object: MethodType, endpoint_spec: Endp
             f"Mismatching default value for parameter `{name}` at endpoint `{pythonic_endpoint_name(endpoint_spec.name)}`"
         )
 
-    # validate optional parameters are keyword-only arguments
-    # optional_positional_args = [
-    #     name
-    #     for name, param in actual_parameters.items()
-    #     if param.kind is not inspect.Parameter.KEYWORD_ONLY and param.default is not inspect.Parameter.empty
-    # ]
-    # if optional_positional_args:
-    #     raise ValueError(
-    #         f"Callable object {pythonic_endpoint_name(endpoint_spec.name)} has optional positional arguments: "
-    #         f"{optional_positional_args}. All optional parameters should be keyword-only."
-    #     )
-
 
 def test_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec]) -> None:
-    endpoints = SessionV2Endpoints(mock.Mock(speck=AuthenticatedArrowClient), db_client=None, show_progress=False)
+    endpoints = PluginV2Endpoints(
+        arrow_client=mock.Mock(speck=AuthenticatedArrowClient),
+        db_client=mock.Mock(speck=Neo4jQueryRunner),
+    )
 
     missing_endpoints: set[str] = set()
     available_endpoints: set[str] = set()

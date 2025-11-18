@@ -2,8 +2,8 @@ from functools import reduce
 
 from pandas import DataFrame
 
-from graphdatascience import QueryRunner
 from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.query_runner.query_runner import QueryRunner
 
 
 def transpose_property_columns(result: DataFrame, list_node_labels: bool) -> DataFrame:
