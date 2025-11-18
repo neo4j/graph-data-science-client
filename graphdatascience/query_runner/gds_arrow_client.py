@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import json
 import logging
+import platform
 import re
 import time
 import warnings
@@ -10,6 +11,7 @@ from dataclasses import dataclass
 from types import TracebackType
 from typing import Any, Callable, Iterable, Type
 
+import certifi
 import pandas
 import pyarrow
 from neo4j.exceptions import ClientError
@@ -167,6 +169,11 @@ class GdsArrowClient:
         )
 
         client_options = self._arrow_client_options.copy()
+
+        # We need to specify the system root certificates on Windows
+        if platform.system() == "Windows":
+            if not client_options["tls_root_certs"]:
+                client_options["tls_root_certs"] = certifi.contents()
 
         if self._auth:
             user_agent = f"neo4j-graphdatascience-v{__version__} pyarrow-v{arrow_version}"

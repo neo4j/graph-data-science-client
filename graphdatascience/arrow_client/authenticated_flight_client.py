@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import json
 import logging
+import platform
 from dataclasses import dataclass
 from typing import Any, Iterator
 
+import certifi
 from pyarrow import __version__ as arrow_version
 from pyarrow import flight
 from pyarrow._flight import (
@@ -205,6 +207,12 @@ class AuthenticatedArrowClient:
             else flight.Location.for_grpc_tcp(self._host, self._port)
         )
         client_options: dict[str, Any] = (self._arrow_client_options or {}).copy()
+
+        # We need to specify the system root certificates on Windows
+        if platform.system() == "Windows":
+            if not client_options["tls_root_certs"]:
+                client_options["tls_root_certs"] = certifi.contents()
+
         if self._auth:
             user_agent = f"neo4j-graphdatascience-v{__version__} pyarrow-v{arrow_version}"
             if self._user_agent:
