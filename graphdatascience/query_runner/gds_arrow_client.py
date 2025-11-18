@@ -41,9 +41,9 @@ from graphdatascience.query_runner.arrow_authentication import ArrowAuthenticati
 from graphdatascience.retry_utils.retry_config import RetryConfig
 from graphdatascience.retry_utils.retry_utils import before_log
 
+from ..arrow_client.arrow_endpoint_version import ArrowEndpointVersion
 from ..semantic_version.semantic_version import SemanticVersion
 from ..version import __version__
-from ..arrow_client.arrow_endpoint_version import ArrowEndpointVersion
 from .arrow_info import ArrowInfo
 
 
