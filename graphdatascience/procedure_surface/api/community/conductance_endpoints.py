@@ -48,7 +48,7 @@ class ConductanceEndpoints(ABC):
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property
-            Name of the relationship property to use as weights.
+            Name of the property to be used as weights.
         sudo
             Disable the memory guard.
         username
