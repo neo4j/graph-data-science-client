@@ -21,6 +21,10 @@ def map_shortest_path_stream_result(result: DataFrame) -> None:
     result["index"] = range(len(result))
 
 
+def map_all_shortest_path_stream_result(result: DataFrame) -> None:
+    result.drop(columns=["relationshipType"], inplace=True)
+
+
 def map_steiner_tree_stream_result(result: DataFrame) -> None:
     result.rename(
         columns={

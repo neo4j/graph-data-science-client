@@ -19,7 +19,6 @@ from graphdatascience.tests.integrationV2.procedure_surface.session.gds_api_spec
 )
 
 MISSING_ENDPOINTS: set[str] = {
-    "all_shortest_paths.stream",
     "bfs.stream",
     "bfs.mutate",
     "bfs.stats",
