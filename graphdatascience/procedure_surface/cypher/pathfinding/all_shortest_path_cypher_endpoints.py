@@ -1,11 +1,8 @@
-from __future__ import annotations
-
 from typing import Any
 
 from pandas import DataFrame
 
-from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -14,30 +11,22 @@ from graphdatascience.procedure_surface.api.pathfinding.single_source_delta_endp
 from graphdatascience.procedure_surface.api.pathfinding.single_source_dijkstra_endpoints import (
     SingleSourceDijkstraEndpoints,
 )
-from graphdatascience.procedure_surface.arrow.pathfinding.single_source_bellman_ford_arrow_endpoints import (
-    BellmanFordArrowEndpoints,
+from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
+from graphdatascience.procedure_surface.cypher.pathfinding.single_source_delta_cypher_endpoints import (
+    DeltaSteppingCypherEndpoints,
 )
-from graphdatascience.procedure_surface.arrow.pathfinding.single_source_delta_arrow_endpoints import (
-    DeltaSteppingArrowEndpoints,
+from graphdatascience.procedure_surface.cypher.pathfinding.single_source_dijkstra_cypher_endpoints import (
+    SingleSourceDijkstraCypherEndpoints,
 )
-from graphdatascience.procedure_surface.arrow.pathfinding.single_source_dijkstra_arrow_endpoints import (
-    SingleSourceDijkstraArrowEndpoints,
-)
-from graphdatascience.procedure_surface.arrow.stream_result_mapper import map_all_shortest_path_stream_result
-from graphdatascience.procedure_surface.arrow.table_endpoints_helper import TableEndpointsHelper
+from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.query_runner.query_runner import QueryRunner
 
 
-class AllShortestPathArrowEndpoints(AllShortestPathEndpoints):
-    def __init__(
-        self,
-        arrow_client: AuthenticatedArrowClient,
-        write_back_client: RemoteWriteBackClient | None = None,
-        show_progress: bool = False,
-    ):
-        self._delta = DeltaSteppingArrowEndpoints(arrow_client, write_back_client, show_progress)
-        self._dijkstra = SingleSourceDijkstraArrowEndpoints(arrow_client, write_back_client, show_progress)
-        self._bellman_ford = BellmanFordArrowEndpoints(arrow_client, write_back_client, show_progress)
-        self._endpoint_helper = TableEndpointsHelper(arrow_client, show_progress=show_progress)
+class AllShortestPathCypherEndpoints(AllShortestPathEndpoints):
+    def __init__(self, query_runner: QueryRunner):
+        self._query_runner = query_runner
+        self._delta = DeltaSteppingCypherEndpoints(query_runner)
+        self._dijkstra = SingleSourceDijkstraCypherEndpoints(query_runner)
 
     def stream(
         self,
@@ -52,20 +41,23 @@ class AllShortestPathArrowEndpoints(AllShortestPathEndpoints):
         sudo: bool = False,
         username: str | None = None,
     ) -> DataFrame:
-        config = self._endpoint_helper.create_base_config(
-            G,
+        config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
             job_id=job_id,
             log_progress=log_progress,
             node_labels=node_labels,
             relationship_types=relationship_types,
-            sudo=sudo,
             relationship_weight_property=relationship_weight_property,
+            sudo=sudo,
+            username=username,
         )
 
-        result = self._endpoint_helper.run_job_and_stream("v2/pathfinding.allShortestPaths", G, config)
-        map_all_shortest_path_stream_result(result)
-        return result
+        params = CallParameters(graph_name=G.name(), config=config)
+        params.ensure_job_id_in_config()
+
+        return self._query_runner.call_procedure(
+            endpoint="gds.allShortestPaths.stream", params=params, logging=log_progress
+        )
 
     def estimate(
         self,
@@ -78,7 +70,7 @@ class AllShortestPathArrowEndpoints(AllShortestPathEndpoints):
         username: str | None = None,
         concurrency: int | None = None,
     ) -> EstimationResult:
-        config = self._endpoint_helper.create_estimate_config(
+        config = ConfigConverter.convert_to_gds_config(
             relationshipWeightProperty=relationship_weight_property,
             relationshipTypes=relationship_types,
             nodeLabels=node_labels,
@@ -87,7 +79,7 @@ class AllShortestPathArrowEndpoints(AllShortestPathEndpoints):
             concurrency=concurrency,
         )
 
-        return self._endpoint_helper.estimate("v2/pathfinding.allShortestPaths.estimate", G, config)
+        return estimate_algorithm("gds.allShortestPaths.stream.estimate", self._query_runner, G, config)
 
     @property
     def delta(self) -> SingleSourceDeltaEndpoints:
