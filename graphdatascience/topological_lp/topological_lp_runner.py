@@ -41,3 +41,8 @@ class TopologicalLPRunner(UncallableNamespace, IllegalAttrChecker):
     def totalNeighbors(self, node1: int, node2: int, **config: Any) -> float:
         self._namespace += ".totalNeighbors"
         return self._run_standard_function(node1, node2, config)
+
+    @compatible_with("totalNeighbors", min_inclusive=ServerVersion(2, 24, 0))
+    def preferentialAttachment(self, node1: int, node2: int, **config: Any) -> float:
+        self._namespace += ".preferentialAttachment"
+        return self._run_standard_function(node1, node2, config)

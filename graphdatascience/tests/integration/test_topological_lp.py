@@ -63,8 +63,15 @@ def test_commonNeighbors(node1: int, node2: int, gds: GraphDataScience) -> None:
     assert score == 1
 
 
-def test_preferentialAttachment(node1: int, node2: int, gds: GraphDataScience) -> None:
+@pytest.mark.filterwarnings("ignore: .*gds.alpha.linkprediction.preferentialAttachment.*")
+def test_alpha_preferentialAttachment(node1: int, node2: int, gds: GraphDataScience) -> None:
     score = gds.alpha.linkprediction.preferentialAttachment(node1, node2)
+    assert score == 16
+
+
+@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 24, 0))
+def test_preferentialAttachment(node1: int, node2: int, gds: GraphDataScience) -> None:
+    score = gds.linkprediction.preferentialAttachment(node1, node2)
     assert score == 16
 
 
