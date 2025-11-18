@@ -1,59 +1,34 @@
 from __future__ import annotations
 
-import base64
 import json
 import logging
 import re
-import time
-import warnings
-from dataclasses import dataclass
 from types import TracebackType
 from typing import Any, Callable, Iterable, Type
 
 import pandas
 import pyarrow
 from neo4j.exceptions import ClientError
-from pyarrow import Array, ChunkedArray, DictionaryArray, RecordBatch, Schema, Table, chunked_array, flight
-from pyarrow import __version__ as arrow_version
-from pyarrow.flight import (
-    ClientMiddleware,
-    ClientMiddlewareFactory,
-    FlightDescriptor,
-    FlightInternalError,
-    FlightMetadataReader,
-    FlightStreamWriter,
-    FlightTimedOutError,
-    FlightUnavailableError,
-)
+from pyarrow import Array, ChunkedArray, DictionaryArray, RecordBatch, Table, chunked_array, flight
 from pyarrow.types import is_dictionary
 from pydantic import BaseModel
-from tenacity import (
-    retry,
-    retry_any,
-    retry_if_exception_type,
-    stop_after_attempt,
-    stop_after_delay,
-    wait_exponential,
-)
 
 from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVersion
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication, UsernamePasswordAuthentication
-from graphdatascience.retry_utils.retry_config import RetryConfig
-from graphdatascience.retry_utils.retry_utils import before_log
+from graphdatascience.arrow_client.v1.data_mapper_utils import deserialize_single
 
 from ...semantic_version.semantic_version import SemanticVersion
-from ...version import __version__
-from ..arrow_info import ArrowInfo
 
 
 class GdsArrowClient:
     def __init__(
         self,
         flight_client: AuthenticatedArrowClient,
+        auto_close: bool = True,
     ):
         """Creates a new GdsArrowClient instance."""
         self._flight_client = flight_client
+        self._auto_close = auto_close
         self._logger = logging.getLogger("gds_arrow_client")
 
     def get_node_properties(
@@ -102,7 +77,7 @@ class GdsArrowClient:
         if node_labels:
             config["node_labels"] = node_labels
 
-        result = self._get_data(database, graph_name, proc, concurrency, config)
+        result = self._get_data(graph_name, database, proc, concurrency, config)
         if list_node_labels:
             result.rename(columns={"labels": "nodeLabels"}, inplace=True)
 
@@ -126,7 +101,7 @@ class GdsArrowClient:
         DataFrame
             The requested nodes as a DataFrame
         """
-        return self._get_data(database, graph_name, "gds.graph.nodeLabels.stream", concurrency, {})
+        return self._get_data(graph_name, database, "gds.graph.nodeLabels.stream", concurrency, {})
 
     def get_relationships(
         self,
@@ -154,11 +129,13 @@ class GdsArrowClient:
         DataFrame
             The requested relationships as a DataFrame
         """
-        return self._flight_client._get_data( database,
+        return self._get_data(
             graph_name,
+            database,
             "gds.graph.relationships.stream",
             concurrency,
-            {"relationship_types": relationship_types})
+            {"relationship_types": relationship_types},
+        )
 
     def get_relationship_properties(
         self,
@@ -200,8 +177,7 @@ class GdsArrowClient:
         if relationship_types:
             config["relationship_types"] = relationship_types
 
-        return self._get_data(database, graph_name, proc, concurrency, config)
-
+        return self._get_data(graph_name, database, proc, concurrency, config)
 
     def create_graph(
         self,
@@ -353,7 +329,7 @@ class GdsArrowClient:
         NodeLoadDoneResult
             A result object containing the name of the import process and the number of nodes loaded
         """
-        return NodeLoadDoneResult.from_json(self._send_action("NODE_LOAD_DONE", {"name": graph_name}))
+        return NodeLoadDoneResult(**self._send_action("NODE_LOAD_DONE", {"name": graph_name}))
 
     def relationship_load_done(self, graph_name: str) -> RelationshipLoadDoneResult:
         """
@@ -371,7 +347,7 @@ class GdsArrowClient:
         RelationshipLoadDoneResult
             A result object containing the name of the import process and the number of relationships loaded
         """
-        return RelationshipLoadDoneResult.from_json(self._send_action("RELATIONSHIP_LOAD_DONE", {"name": graph_name}))
+        return RelationshipLoadDoneResult(**self._send_action("RELATIONSHIP_LOAD_DONE", {"name": graph_name}))
 
     def triplet_load_done(self, graph_name: str) -> TripletLoadDoneResult:
         """
@@ -389,7 +365,7 @@ class GdsArrowClient:
         TripletLoadDoneResult
             A result object containing the name of the import process and the number of nodes and relationships loaded
         """
-        return TripletLoadDoneResult.from_json(self._send_action("TRIPLET_LOAD_DONE", {"name": graph_name}))
+        return TripletLoadDoneResult(**self._send_action("TRIPLET_LOAD_DONE", {"name": graph_name}))
 
     def abort(self, graph_name: str) -> None:
         """
@@ -472,8 +448,9 @@ class GdsArrowClient:
         self._upload_data(graph_name, "triplet", triplet_data, batch_size, progress_callback)
 
     def _send_action(self, action_type: str, meta_data: dict[str, Any]) -> dict[str, Any]:
-        action_type = f"{ArrowEndpointVersion.V1.prefix()}/{action_type}"
-        return self._flight_client.do_action_with_retry(action_type, meta_data)
+        action_type = f"{ArrowEndpointVersion.V1.prefix()}{action_type}"
+        raw_result = self._flight_client.do_action_with_retry(action_type, meta_data)
+        return deserialize_single(raw_result)
 
     def _upload_data(
         self,
@@ -500,13 +477,7 @@ class GdsArrowClient:
 
         put_stream, ack_stream = self._flight_client.do_put_with_retry(upload_descriptor, batches[0].schema)
 
-        @retry(
-            reraise=True,
-            before=before_log("Upload batch", self._logger, logging.DEBUG),
-            retry=self._retry_config.retry,
-            stop=self._retry_config.stop,
-            wait=self._retry_config.wait,
-        )
+        @self._flight_client._retry_config.decorator(operation_name="Upload batch", logger=self._logger)
         def upload_batch(p: RecordBatch) -> None:
             put_stream.write_batch(p)
 
@@ -582,9 +553,8 @@ class GdsArrowClient:
         self.close()
 
     def close(self) -> None:
-        self._client.close()
-
-    def _parse
+        if self._auto_close:
+            self._flight_client.close()
 
     @staticmethod
     def _sanitize_arrow_table(arrow_table: Table) -> Table:
