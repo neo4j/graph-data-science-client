@@ -4,11 +4,12 @@ import json
 import logging
 import platform
 from dataclasses import dataclass
-from typing import Any, Iterator
+from types import TracebackType
+from typing import Any, Iterator, Type
 
 import certifi
+from pyarrow import Schema, flight
 from pyarrow import __version__ as arrow_version
-from pyarrow import flight, Schema
 from pyarrow._flight import (
     Action,
     ActionType,
@@ -19,13 +20,11 @@ from pyarrow._flight import (
     Result,
     Ticket,
 )
-from tenacity import retry, retry_any, retry_if_exception_type, stop_after_attempt, stop_after_delay, wait_exponential
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 from graphdatascience.arrow_client.arrow_info import ArrowInfo
-from graphdatascience.retry_utils.retry_config import RetryConfig
+from graphdatascience.retry_utils.retry_config import ExponentialWaitConfig, RetryConfigV2, StopConfig
 
-from ..retry_utils.retry_utils import before_log
 from ..version import __version__
 from .middleware.auth_middleware import AuthFactory, AuthMiddleware
 from .middleware.user_agent_middleware import UserAgentFactory
@@ -39,7 +38,7 @@ class AuthenticatedArrowClient:
         encrypted: bool = False,
         arrow_client_options: dict[str, Any] | None = None,
         connection_string_override: str | None = None,
-        retry_config: RetryConfig | None = None,
+        retry_config: RetryConfigV2 | None = None,
         advertised_listen_address: tuple[str, int] | None = None,
     ) -> AuthenticatedArrowClient:
         connection_string: str
@@ -51,14 +50,14 @@ class AuthenticatedArrowClient:
         host, port = connection_string.split(":")
 
         if retry_config is None:
-            retry_config = RetryConfig(
-                retry=retry_any(
-                    retry_if_exception_type(FlightTimedOutError),
-                    retry_if_exception_type(FlightUnavailableError),
-                    retry_if_exception_type(FlightInternalError),
-                ),
-                stop=(stop_after_delay(10) | stop_after_attempt(5)),
-                wait=wait_exponential(multiplier=1, min=1, max=10),
+            retry_config = RetryConfigV2(
+                retryable_exceptions=[
+                    FlightTimedOutError,
+                    FlightUnavailableError,
+                    FlightInternalError,
+                ],
+                stop=StopConfig(after_delay=10, after_attempt=5),
+                wait=ExponentialWaitConfig(multiplier=1, min=1, max=10),
             )
 
         return AuthenticatedArrowClient(
@@ -74,7 +73,7 @@ class AuthenticatedArrowClient:
     def __init__(
         self,
         host: str,
-        retry_config: RetryConfig,
+        retry_config: RetryConfigV2,
         port: int = 8491,
         auth: ArrowAuthentication | None = None,
         encrypted: bool = False,
@@ -117,7 +116,7 @@ class AuthenticatedArrowClient:
             self._auth_middleware = AuthMiddleware(auth)
         self.advertised_listen_address = advertised_listen_address
 
-        self._flight_client = self._instantiate_flight_client()
+        self._flight_client: flight.FlightClient = self._instantiate_flight_client()
 
     def connection_info(self) -> ConnectionInfo:
         """
@@ -155,13 +154,7 @@ class AuthenticatedArrowClient:
             a token from the server and returns it.
         """
 
-        @retry(
-            reraise=True,
-            before=before_log("Request token", self._logger, logging.DEBUG),
-            retry=self._retry_config.retry,
-            stop=self._retry_config.stop,
-            wait=self._retry_config.wait,
-        )
+        @self._retry_config.decorator(operation_name="Request token", logger=self._logger)
         def auth_with_retry() -> None:
             client = self._flight_client
             if self._auth:
@@ -183,13 +176,7 @@ class AuthenticatedArrowClient:
         return self._flight_client.do_action(Action(endpoint, payload_bytes))  # type: ignore
 
     def do_action_with_retry(self, endpoint: str, payload: bytes | dict[str, Any]) -> list[Result]:
-        @retry(
-            reraise=True,
-            before=before_log("Send action", self._logger, logging.DEBUG),
-            retry=self._retry_config.retry,
-            stop=self._retry_config.stop,
-            wait=self._retry_config.wait,
-        )
+        @self._retry_config.decorator(operation_name="Send action", logger=self._logger)
         def run_with_retry() -> list[Result]:
             # the Flight response error code is only checked on iterator consumption
             # we eagerly collect iterator here to trigger retry in case of an error
@@ -203,17 +190,26 @@ class AuthenticatedArrowClient:
     def do_put_with_retry(
         self, descriptor: flight.FlightDescriptor, schema: Schema
     ) -> tuple[flight.FlightStreamWriter, flight.FlightMetadataReader]:
-        @retry(
-            reraise=True,
-            before=before_log("Do put", self._logger, logging.DEBUG),
-            retry=self._retry_config.retry,
-            stop=self._retry_config.stop,
-            wait=self._retry_config.wait,
-        )
-        def run_with_retry() -> list[Result]:
-            return self._client().do_put(descriptor, schema)
+        @self._retry_config.decorator(operation_name="Do put", logger=self._logger)
+        def run_with_retry() -> tuple[flight.FlightStreamWriter, flight.FlightMetadataReader]:
+            return self._flight_client.do_put(descriptor, schema)  # type: ignore
 
         return run_with_retry()
+
+    def __enter__(self) -> AuthenticatedArrowClient:
+        return self
+
+    def __exit__(
+        self,
+        exception_type: Type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        self.close()
+
+    def close(self) -> None:
+        if self._flight_client:
+            self._flight_client.close()
 
     def _instantiate_flight_client(self) -> flight.FlightClient:
         location = (
