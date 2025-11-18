@@ -31,3 +31,10 @@ def map_steiner_tree_stream_result(result: DataFrame) -> None:
     )
     if "relationshipType" in result.columns:
         result.drop(columns=["relationshipType"], inplace=True)
+
+
+def map_conductance_stream_result(result: DataFrame) -> None:
+    result.rename(
+        columns={"communityId": "community"},
+        inplace=True,
+    )

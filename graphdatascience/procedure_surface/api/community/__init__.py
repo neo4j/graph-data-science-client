@@ -4,6 +4,7 @@ from graphdatascience.procedure_surface.api.community.clique_counting_endpoints 
     CliqueCountingStatsResult,
     CliqueCountingWriteResult,
 )
+from graphdatascience.procedure_surface.api.community.conductance_endpoints import ConductanceEndpoints
 from graphdatascience.procedure_surface.api.community.hdbscan_endpoints import (
     HdbscanEndpoints,
     HdbscanMutateResult,
@@ -89,6 +90,7 @@ __all__ = [
     "CliqueCountingMutateResult",
     "CliqueCountingStatsResult",
     "CliqueCountingWriteResult",
+    "ConductanceEndpoints",
     "HdbscanEndpoints",
     "HdbscanMutateResult",
     "HdbscanStatsResult",

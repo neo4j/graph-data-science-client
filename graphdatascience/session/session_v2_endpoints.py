@@ -11,6 +11,7 @@ from graphdatascience.procedure_surface.api.centrality.degree_endpoints import D
 from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import EigenvectorEndpoints
 from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import PageRankEndpoints
 from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import CliqueCountingEndpoints
+from graphdatascience.procedure_surface.api.community.conductance_endpoints import ConductanceEndpoints
 from graphdatascience.procedure_surface.api.community.hdbscan_endpoints import HdbscanEndpoints
 from graphdatascience.procedure_surface.api.community.k1coloring_endpoints import K1ColoringEndpoints
 from graphdatascience.procedure_surface.api.community.kcore_endpoints import KCoreEndpoints
@@ -64,6 +65,7 @@ from graphdatascience.procedure_surface.arrow.centrality.pagerank_arrow_endpoint
 from graphdatascience.procedure_surface.arrow.community.clique_counting_arrow_endpoints import (
     CliqueCountingArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.community.conductance_arrow_endpoints import ConductanceArrowEndpoints
 from graphdatascience.procedure_surface.arrow.community.hdbscan_arrow_endpoints import HdbscanArrowEndpoints
 from graphdatascience.procedure_surface.arrow.community.k1coloring_arrow_endpoints import K1ColoringArrowEndpoints
 from graphdatascience.procedure_surface.arrow.community.kcore_arrow_endpoints import KCoreArrowEndpoints
@@ -205,6 +207,13 @@ class SessionV2Endpoints:
         return CliqueCountingArrowEndpoints(
             self._arrow_client, self._write_back_client, show_progress=self._show_progress
         )
+
+    @property
+    def conductance(self) -> ConductanceEndpoints:
+        """
+        Return endpoints for the conductance algorithm.
+        """
+        return ConductanceArrowEndpoints(self._arrow_client, show_progress=self._show_progress)
 
     @property
     def closeness_centrality(self) -> ClosenessEndpoints:
