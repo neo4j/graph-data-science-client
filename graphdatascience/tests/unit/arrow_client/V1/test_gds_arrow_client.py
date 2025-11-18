@@ -415,6 +415,7 @@ def test_handle_flight_error() -> None:
             )
         )
 
+
 def assert_action(action: Action, expected_type: str, expected_body: dict[str, Any]) -> None:
     assert action.type == expected_type
     assert json.loads(action.body.to_pybytes().decode()) == expected_body
