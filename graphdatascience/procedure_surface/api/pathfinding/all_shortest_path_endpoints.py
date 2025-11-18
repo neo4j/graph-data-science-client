@@ -52,7 +52,7 @@ class AllShortestPathEndpoints(ABC):
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property
-            Name of the relationship property to use as weights.
+            Name of the property to be used as weights.
         sudo
             Disable the memory guard.
         username
@@ -77,7 +77,35 @@ class AllShortestPathEndpoints(ABC):
         username: str | None = None,
         concurrency: int | None = None,
     ) -> EstimationResult:
-        """Estimate memory requirements for the All Shortest Paths algorithm."""
+        """Estimate memory requirements for the All Shortest Paths algorithm.
+
+        Parameters
+        ----------
+        G
+            Graph object to use or a dictionary representing the graph dimensions.
+        concurrency
+            Number of concurrent threads to use.
+        job_id
+            Identifier for the computation.
+        log_progress
+            Display progress logging.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
+        relationship_weight_property
+            Name of the property to be used as weights.
+        sudo
+            Disable the memory guard.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
+
+        Returns
+        -------
+        EstimationResult
+            An estimation result object containing memory and resource usage estimates.
+
+        """
         pass
 
     @property
