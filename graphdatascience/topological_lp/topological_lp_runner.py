@@ -46,3 +46,17 @@ class TopologicalLPRunner(UncallableNamespace, IllegalAttrChecker):
     def preferentialAttachment(self, node1: int, node2: int, **config: Any) -> float:
         self._namespace += ".preferentialAttachment"
         return self._run_standard_function(node1, node2, config)
+
+    @filter_id_func_deprecation_warning()
+    def sameCommunity(self, node1: int, node2: int, communityProperty: str | None = None) -> float:
+        self._namespace += ".sameCommunity"
+        community_property = f", '{communityProperty}'" if communityProperty else ""
+
+        query = f"""
+        MATCH (n1) WHERE id(n1) = {node1}
+        MATCH (n2) WHERE id(n2) = {node2}
+        RETURN {self._namespace}(n1, n2{community_property}) AS score
+        """
+        # TODO use execute query
+        return self._query_runner.run_cypher(query)["score"].squeeze()  # type: ignore
+
