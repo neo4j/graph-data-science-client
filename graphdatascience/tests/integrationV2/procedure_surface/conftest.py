@@ -74,13 +74,14 @@ def start_session(
         .with_env("ALLOW_LIST", "DEFAULT")
         .with_env("DNS_NAME", "gds-session")
         .with_env("PAGE_CACHE_SIZE", "100M")
+        .with_env("MODEL_STORAGE_BASE_LOCATION", "/models")
         .with_exposed_ports(8491)
         .with_volume_mapping(password_dir, "/passwords")
     )
     if not inside_ci():
         session_container = session_container.with_network(network).with_network_aliases("gds-session")
     with session_container as session_container:
-        wait_for_logs(session_container, "Running GDS tasks: 0")
+        wait_for_logs(session_container, "Running GDS tasks: 0", timeout=20)
         yield GdsSessionConnectionInfo(
             host=session_container.get_container_host_ip(),
             arrow_port=session_container.get_exposed_port(8491),
