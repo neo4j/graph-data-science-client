@@ -127,8 +127,7 @@ def gds_client(flight_server: FlightServer) -> Generator[GdsArrowClient, None, N
         ArrowInfo(f"localhost:{flight_server.port}", True, True, ["v1"]),
         UsernamePasswordAuthentication("user", "password"),
     ) as arrow_client:
-        with GdsArrowClient(arrow_client, auto_close=False) as gds_client:
-            yield gds_client
+        yield GdsArrowClient(arrow_client)
 
 
 @pytest.fixture()
@@ -137,8 +136,7 @@ def flaky_gds_client(flaky_flight_server: FlakyFlightServer) -> Generator[GdsArr
         ArrowInfo(f"localhost:{flaky_flight_server.port}", True, True, ["v1"]),
         UsernamePasswordAuthentication("user", "password"),
     ) as arrow_client:
-        with GdsArrowClient(arrow_client, auto_close=False) as gds_client:
-            yield gds_client
+        yield GdsArrowClient(arrow_client)
 
 
 def test_create_graph_with_defaults(flight_server: FlightServer, gds_client: GdsArrowClient) -> None:
