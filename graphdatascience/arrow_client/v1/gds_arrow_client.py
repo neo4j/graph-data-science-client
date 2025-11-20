@@ -14,7 +14,7 @@ from pyarrow.types import is_dictionary
 from pydantic import BaseModel
 
 from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVersion
-from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient, ConnectionInfo
 from graphdatascience.arrow_client.v1.data_mapper_utils import deserialize_single
 
 from ...semantic_version.semantic_version import SemanticVersion
@@ -450,6 +450,29 @@ class GdsArrowClient:
             A callback function that is called with the number of rows uploaded after each batch
         """
         self._upload_data(graph_name, "triplet", triplet_data, batch_size, progress_callback)
+
+    def advertised_connection_info(self) -> ConnectionInfo:
+        """
+        Returns the host and port of the GDS Arrow server.
+
+        Returns
+        -------
+        ConnectionInfo
+            the host and port of the GDS Arrow server
+        """
+        return self._flight_client.advertised_connection_info()
+
+    def request_token(self) -> str | None:
+        """
+        Requests a token from the server and returns it.
+
+        Returns
+        -------
+        str | None
+            a token from the server and returns it.
+        """
+
+        return self._flight_client.request_token()
 
     def _send_action(self, action_type: str, meta_data: dict[str, Any]) -> dict[str, Any]:
         action_type = f"{ArrowEndpointVersion.V1.prefix()}{action_type}"

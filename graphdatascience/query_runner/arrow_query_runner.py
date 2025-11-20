@@ -5,15 +5,16 @@ from typing import Any
 
 from pandas import DataFrame
 
+from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
 from graphdatascience.query_runner.query_mode import QueryMode
-from graphdatascience.retry_utils.retry_config import RetryConfig
+from graphdatascience.retry_utils.retry_config import RetryConfigV2
 
 from ..call_parameters import CallParameters
 from ..query_runner.arrow_info import ArrowInfo
 from ..server_version.server_version import ServerVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
-from .gds_arrow_client import GdsArrowClient
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
 
@@ -27,19 +28,21 @@ class ArrowQueryRunner(QueryRunner):
         encrypted: bool = False,
         arrow_client_options: dict[str, Any] | None = None,
         connection_string_override: str | None = None,
-        retry_config: RetryConfig | None = None,
+        retry_config: RetryConfigV2 | None = None,
     ) -> ArrowQueryRunner:
         if not arrow_info.enabled:
             raise ValueError("Arrow is not enabled on the server")
 
-        gds_arrow_client = GdsArrowClient.create(
+        arrow_client = AuthenticatedArrowClient.create(
             arrow_info=arrow_info,
             auth=arrow_authentication,
             encrypted=encrypted,
+            arrow_client_options=arrow_client_options,
             connection_string_override=connection_string_override,
             retry_config=retry_config,
-            arrow_client_options=arrow_client_options,
         )
+
+        gds_arrow_client = GdsArrowClient(flight_client=arrow_client)
 
         return ArrowQueryRunner(gds_arrow_client, fallback_query_runner, fallback_query_runner.server_version())
 

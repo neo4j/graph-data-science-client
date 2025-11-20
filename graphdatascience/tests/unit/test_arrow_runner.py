@@ -1,25 +1,21 @@
 import pytest
 from pyarrow.flight import FlightUnavailableError
-from tenacity import retry_any, stop_after_attempt, wait_fixed
 
 from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
-from graphdatascience.retry_utils.retry_config import RetryConfig
-from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.retry_utils.retry_config import RetryConfigV2, StopConfig
 
 from ...arrow_client.arrow_endpoint_version import ArrowEndpointVersion
 from .conftest import CollectingQueryRunner
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 6, 0)])
 def test_create(runner: CollectingQueryRunner) -> None:
     arrow_info = ArrowInfo(
         listenAddress="localhost:1234", enabled=True, running=True, versions=[ArrowEndpointVersion.V1.version()]
     )
-    retry_config = RetryConfig(
-        retry=retry_any(),
-        stop=(stop_after_attempt(1)),
-        wait=wait_fixed(0),
+    retry_config = RetryConfigV2(
+        retryable_exceptions=[],
+        stop_config=StopConfig(after_attempt=1),
     )
 
     arrow_runner = ArrowQueryRunner.create(runner, arrow_info, retry_config=retry_config)
@@ -30,7 +26,6 @@ def test_create(runner: CollectingQueryRunner) -> None:
         arrow_runner._gds_arrow_client._send_action("TEST", {})
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 6, 0)])
 def test_return_fallback_when_arrow_is_not_enabled(runner: CollectingQueryRunner) -> None:
     arrow_info = ArrowInfo(listenAddress="localhost:1234", enabled=False, running=False, versions=[])
 
@@ -38,7 +33,6 @@ def test_return_fallback_when_arrow_is_not_enabled(runner: CollectingQueryRunner
         ArrowQueryRunner.create(runner, arrow_info)
 
 
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 6, 0)])
 def test_create_with_provided_connection(runner: CollectingQueryRunner) -> None:
     arrow_info = ArrowInfo(
         listenAddress="localhost:1234", enabled=True, running=True, versions=[ArrowEndpointVersion.V1.version()]

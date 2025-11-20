@@ -9,7 +9,11 @@ from testcontainers.core.waiting_utils import wait_for_logs
 from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience import QueryRunner
-from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
+from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
+from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVersion
+from graphdatascience.arrow_client.arrow_info import ArrowInfo
+from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.tests.integrationV2.conftest import inside_ci
 
@@ -84,14 +88,18 @@ def query_runner(gds_plugin_container: DockerContainer) -> Generator[QueryRunner
 
 
 @pytest.fixture(scope="package")
-def gds_arrow_client(
-    gds_plugin_container: DockerContainer, query_runner: QueryRunner
-) -> Generator[GdsArrowClient, None, None]:
+def gds_arrow_client(gds_plugin_container: DockerContainer) -> Generator[GdsArrowClient, None, None]:
     arrow_port = int(gds_plugin_container.get_exposed_port(8491))
     with GdsArrowClient(
-        gds_plugin_container.get_container_host_ip(),
-        arrow_port,
-        ("neo4j", "password"),
-        encrypted=False,
+        flight_client=AuthenticatedArrowClient.create(
+            arrow_info=ArrowInfo(
+                listenAddress=f"{gds_plugin_container.get_container_host_ip()}:{arrow_port}",
+                enabled=True,
+                running=True,
+                versions=[ArrowEndpointVersion.V2.version()],
+            ),
+            auth=UsernamePasswordAuthentication("neo4j", "password"),
+            encrypted=False,
+        )
     ) as client:
         yield client

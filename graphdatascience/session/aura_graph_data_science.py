@@ -6,6 +6,7 @@ from pandas import DataFrame
 
 from graphdatascience import QueryRunner, ServerVersion
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_builder import IndirectCallBuilder
 from graphdatascience.endpoints import (
     AlphaRemoteEndpoints,
@@ -17,7 +18,6 @@ from graphdatascience.graph.graph_remote_proc_runner import GraphRemoteProcRunne
 from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
 from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
-from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.session_query_runner import SessionQueryRunner
@@ -59,22 +59,16 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             arrow_client_options=arrow_client_options,
         )
 
-        # TODO: merge with the gds_arrow_client created inside ArrowQueryRunner
-        session_arrow_client = GdsArrowClient.create(
-            arrow_info,
-            arrow_authentication,
-            session_bolt_query_runner.encrypted(),
-            arrow_client_options=arrow_client_options,
-        )
-
-        gds_version = session_bolt_query_runner.server_version()
-
         session_auth_arrow_client = AuthenticatedArrowClient.create(
             arrow_info=arrow_info,
             auth=arrow_authentication,
             encrypted=session_bolt_query_runner.encrypted(),
             arrow_client_options=arrow_client_options,
         )
+
+        session_arrow_client = GdsArrowClient(flight_client=session_auth_arrow_client)
+
+        gds_version = session_bolt_query_runner.server_version()
 
         if db_endpoint is not None:
             if isinstance(db_endpoint, Neo4jQueryRunner):

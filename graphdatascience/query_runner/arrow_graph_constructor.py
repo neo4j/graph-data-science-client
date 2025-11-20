@@ -11,7 +11,8 @@ import numpy
 from pandas import DataFrame
 from tqdm.auto import tqdm
 
-from .gds_arrow_client import GdsArrowClient
+from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
+
 from .graph_constructor import GraphConstructor
 
 
