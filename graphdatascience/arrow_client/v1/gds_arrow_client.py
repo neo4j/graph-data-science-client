@@ -24,11 +24,15 @@ class GdsArrowClient:
     def __init__(
         self,
         flight_client: AuthenticatedArrowClient,
-        auto_close: bool = True,
     ):
-        """Creates a new GdsArrowClient instance."""
+        """Creates a new GdsArrowClient instance.
+
+        Parameters
+        ----------
+        flight_client : AuthenticatedArrowClient
+            The authenticated flight client to use for communication with the GDS server. Ownership of the client is transferred to this GdsArrowClient.
+        """
         self._flight_client = flight_client
-        self._auto_close = auto_close
         self._logger = logging.getLogger("gds_arrow_client")
 
     def get_node_properties(
@@ -553,8 +557,7 @@ class GdsArrowClient:
         self.close()
 
     def close(self) -> None:
-        if self._auto_close:
-            self._flight_client.close()
+        self._flight_client.close()
 
     @staticmethod
     def _sanitize_arrow_table(arrow_table: Table) -> Table:
