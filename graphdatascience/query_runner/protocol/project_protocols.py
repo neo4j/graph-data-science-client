@@ -5,9 +5,9 @@ from typing import Any
 from pandas import DataFrame
 from tenacity import retry, retry_if_result, wait_incrementing
 
-from graphdatascience import QueryRunner
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.query_runner.protocol.status import Status
+from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.retry_utils.retry_utils import before_log
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
