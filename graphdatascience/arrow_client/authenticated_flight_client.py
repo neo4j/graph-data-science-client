@@ -124,7 +124,7 @@ class AuthenticatedArrowClient:
 
         Returns
         -------
-        tuple[str, int]
+        ConnectionInfo
             the host and port of the GDS Arrow server
         """
         return ConnectionInfo(self._host, self._port, self._encrypted)

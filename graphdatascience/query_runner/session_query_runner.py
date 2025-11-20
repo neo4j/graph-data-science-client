@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from pandas import DataFrame
 
+from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
 from graphdatascience.query_runner.query_mode import QueryMode
@@ -14,7 +15,6 @@ from graphdatascience.server_version.server_version import ServerVersion
 
 from ..call_parameters import CallParameters
 from ..session.dbms.protocol_resolver import ProtocolVersionResolver
-from .gds_arrow_client import GdsArrowClient
 from .protocol.project_protocols import ProjectProtocol
 from .protocol.write_protocols import WriteProtocol
 from .query_runner import QueryRunner
@@ -263,12 +263,12 @@ class SessionQueryRunner(QueryRunner):
         return self._show_progress and show_progress
 
     def _inject_arrow_config(self, params: dict[str, Any]) -> None:
-        host, port = self._gds_arrow_client.connection_info()
+        connection_info = self._gds_arrow_client.advertised_connection_info()
         token = self._gds_arrow_client.request_token()
         if token is None:
             token = "IGNORED"
 
-        params["host"] = host
-        params["port"] = port
+        params["host"] = connection_info.host
+        params["port"] = connection_info.port
         params["token"] = token
-        params["encrypted"] = self._gds_query_runner.encrypted()
+        params["encrypted"] = connection_info.encrypted

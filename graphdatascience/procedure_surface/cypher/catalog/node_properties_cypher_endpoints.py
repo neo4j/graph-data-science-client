@@ -1,5 +1,6 @@
 from pandas import DataFrame
 
+from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import (
@@ -11,7 +12,6 @@ from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints im
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.procedure_surface.utils.result_utils import join_db_node_properties, transpose_property_columns
-from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
