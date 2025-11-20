@@ -58,14 +58,13 @@ class CypherGraphConstructor(GraphConstructor):
         self,
         query_runner: QueryRunner,
         graph_name: str,
-        concurrency: int,
-        undirected_relationship_types: list[str] | None,
-        server_version: ServerVersion,
+        concurrency: int | None = None,
+        undirected_relationship_types: list[str] | None = None,
     ):
         self._query_runner = query_runner
         self._concurrency = concurrency
         self._graph_name = graph_name
-        self._server_version = server_version
+        self._server_version = query_runner.server_version()
         self._undirected_relationship_types = undirected_relationship_types
 
     def run(self, node_dfs: list[DataFrame], relationship_dfs: list[DataFrame]) -> None:
@@ -81,9 +80,9 @@ class CypherGraphConstructor(GraphConstructor):
             self.CypherProjectionRunner(
                 self._query_runner,
                 self._graph_name,
+                self._server_version,
                 self._concurrency,
                 self._undirected_relationship_types,
-                self._server_version,
             ).run(node_dfs, relationship_dfs)
         else:
             assert not self._undirected_relationship_types, "This should have been raised earlier."
@@ -130,9 +129,9 @@ class CypherGraphConstructor(GraphConstructor):
             self,
             query_runner: QueryRunner,
             graph_name: str,
-            concurrency: int,
-            undirected_relationship_types: list[str] | None,
             server_version: ServerVersion,
+            concurrency: int | None = None,
+            undirected_relationship_types: list[str] | None = None,
         ):
             self._query_runner = query_runner
             self._concurrency = concurrency
@@ -359,9 +358,9 @@ class CypherGraphConstructor(GraphConstructor):
             return rels_config_fields
 
     class LegacyCypherProjectionRunner:
-        def __init__(self, query_runner: QueryRunner, graph_name: str, concurrency: int):
+        def __init__(self, query_runner: QueryRunner, graph_name: str, concurrency: int | None = None):
             self._query_runner = query_runner
-            self._concurrency = concurrency
+            self._concurrency = concurrency if concurrency is not None else 4
             self._graph_name = graph_name
 
         def run(self, node_df: DataFrame, relationship_df: DataFrame) -> None:

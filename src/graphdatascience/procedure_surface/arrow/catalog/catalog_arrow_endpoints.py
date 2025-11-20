@@ -5,6 +5,8 @@ from types import TracebackType
 from typing import Any, NamedTuple, Type
 from uuid import uuid4
 
+from pandas import DataFrame
+
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
@@ -51,15 +53,6 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         if query_runner is not None:
             protocol_version = ProtocolVersionResolver(query_runner).resolve()
             self._project_protocol = ProjectProtocol.select(protocol_version)
-
-    def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
-        graph_name: str | None = None
-        if isinstance(G, GraphV2):
-            graph_name = G.name()
-        elif isinstance(G, str):
-            graph_name = G
-
-        return self._graph_backend.list(graph_name)
 
     def project(
         self,
@@ -137,6 +130,16 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         return GraphWithProjectResult(get_graph(graph_name, self._arrow_client), job_result)
 
+    def construct(
+        self,
+        graph_name: str,
+        nodes: DataFrame | list[DataFrame],
+        relationships: DataFrame | list[DataFrame] | None = None,
+        concurrency: int = 4,
+        undirected_relationship_types: list[str] | None = None,
+    ) -> GraphV2:
+        raise NotImplementedError("Graph construction is not yet supported via V2 endpoints.")
+
     def drop(self, G: GraphV2 | str, fail_if_missing: bool = True) -> GraphInfo | None:
         graph_name = G.name() if isinstance(G, GraphV2) else G
 
@@ -211,6 +214,15 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             get_graph(graph_name, self._arrow_client),
             GraphGenerationStats(**JobClient.get_summary(self._arrow_client, job_id)),
         )
+
+    def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
+        graph_name: str | None = None
+        if isinstance(G, GraphV2):
+            graph_name = G.name()
+        elif isinstance(G, str):
+            graph_name = G
+
+        return self._graph_backend.list(graph_name)
 
     @property
     def sample(self) -> GraphSamplingEndpoints:

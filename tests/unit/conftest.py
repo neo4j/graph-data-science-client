@@ -160,9 +160,7 @@ class CollectingQueryRunner(QueryRunner):
     def create_graph_constructor(
         self, graph_name: str, concurrency: int, undirected_relationship_types: list[str] | None
     ) -> GraphConstructor:
-        return CypherGraphConstructor(
-            self, graph_name, concurrency, undirected_relationship_types, self._server_version
-        )
+        return CypherGraphConstructor(self, graph_name, concurrency, undirected_relationship_types)
 
     def cloneWithoutRouting(self, host: str, port: int) -> QueryRunner:
         return self
