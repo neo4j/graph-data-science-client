@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 from types import TracebackType
 from typing import NamedTuple, Type
 
+from pandas import DataFrame
+
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
@@ -15,16 +17,57 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
 
 class CatalogEndpoints(ABC):
     @abstractmethod
+    def construct(
+        self,
+        graph_name: str,
+        nodes: DataFrame | list[DataFrame],
+        relationships: DataFrame | list[DataFrame] | None = None,
+        concurrency: int = 4,
+        undirected_relationship_types: list[str] | None = None,
+    ) -> GraphV2:
+        """Construct a graph from a list of node and relationship dataframes.
+
+        Parameters
+        ----------
+        graph_name
+            Name of the graph to construct
+        nodes
+            Node dataframes. A dataframe should follow the schema:
+
+            - `nodeId` to identify uniquely the node overall dataframes
+            - `labels` to specify the labels of the node as a list of strings (optional)
+            - other columns are treated as node properties
+        relationships
+            Relationship dataframes. A dataframe should follow the schema:
+
+            - `sourceNodeId` to identify the start node of the relationship
+            - `targetNodeId` to identify the end node of the relationship
+            - `relationshipType` to specify the type of the relationship (optional)
+            - other columns are treated as relationship properties
+        concurrency
+            Number of concurrent threads to use.
+        undirected_relationship_types
+            List of relationship types to treat as undirected.
+
+        Returns
+        -------
+        GraphV2
+            Constructed graph object.
+        """
+
+    @abstractmethod
     def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
         """List graphs in the graph catalog.
 
-        Args:
-            G (GraphV2 | str | None, optional): GraphV2 object or name to filter results.
-               If None, list all graphs. Defaults to None.
+        Parameters
+        ----------
+        G
+            GraphV2 object or name to filter results. If None, list all graphs.
 
-        Returns:
-            list[GraphListResult]: List of graph metadata objects containing information like
-                                 graph name, node count, relationship count, etc.
+        Returns
+        -------
+        list[GraphInfoWithDegrees]
+            List of graph metadata objects containing information like node count.
         """
         pass
 
@@ -32,13 +75,17 @@ class CatalogEndpoints(ABC):
     def drop(self, G: GraphV2 | str, fail_if_missing: bool = True) -> GraphInfo | None:
         """Drop a graph from the graph catalog.
 
-        Args:
-            G (GraphV2 | str): GraphV2 object or name to drop.
-            fail_if_missing (bool): Whether to fail if the graph is missing. Defaults to True.
+        Parameters
+        ----------
+        G
+            Graph to drop by name of object.
+        fail_if_missing
+            Whether to fail if the graph is missing
 
-        Returns:
-              GraphListResult: GraphV2 metadata object containing information like
-                               graph name, node count, relationship count, etc.
+        Returns
+        -------
+        GraphListResult
+            GraphV2 metadata object containing information like node count.
         """
 
     @abstractmethod
@@ -68,9 +115,10 @@ class CatalogEndpoints(ABC):
         job_id
             Identifier for the computation.
 
-        Returns:
-            GraphWithFilterResult: tuple of the filtered graph object and the information like
-                                graph name, node count, relationship count, etc.
+        Returns
+        -------
+        GraphWithFilterResult:
+            tuple of the filtered graph object and the information like graph name, node count, relationship count, etc.
         """
         pass
 

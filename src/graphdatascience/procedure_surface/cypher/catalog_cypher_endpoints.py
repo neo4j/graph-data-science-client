@@ -4,6 +4,8 @@ import builtins
 from types import TracebackType
 from typing import Any, NamedTuple, Type
 
+from pandas import DataFrame
+
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     CatalogEndpoints,
@@ -16,8 +18,11 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
-from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
-from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import CypherGraphBackend, get_graph
+from graphdatascience.procedure_surface.cypher.catalog.utils import require_database
+from graphdatascience.query_runner.arrow_graph_constructor import ArrowGraphConstructor
+from graphdatascience.query_runner.cypher_graph_constructor import CypherGraphConstructor
+from graphdatascience.query_runner.graph_constructor import GraphConstructor
 
 from ...call_parameters import CallParameters
 from ..api.base_result import BaseResult
@@ -29,9 +34,47 @@ from .catalog.relationship_cypher_endpoints import RelationshipCypherEndpoints
 
 
 class CatalogCypherEndpoints(CatalogEndpoints):
-    def __init__(self, cypher_runner: Neo4jQueryRunner, arrow_client: GdsArrowClient | None = None):
+    def __init__(self, cypher_runner: Neo4jQueryRunner, arrow_client: GdsArrowClient | None = None, arrow_client: GdsArrowClient | None = None):
         self.cypher_runner = cypher_runner
         self._arrow_client = arrow_client
+        self._arrow_client = arrow_client
+
+    def construct(
+        self,
+        graph_name: str,
+        nodes: DataFrame | list[DataFrame],
+        relationships: DataFrame | list[DataFrame] | None = None,
+        concurrency: int | None = None,
+        undirected_relationship_types: list[str] | None = None,
+    ) -> GraphV2:
+        if isinstance(nodes, DataFrame):
+            nodes = [nodes]
+        if relationships is None:
+            relationships = []
+        elif isinstance(relationships, DataFrame):
+            relationships = [relationships]
+
+        graph_constructor: GraphConstructor
+        if self._arrow_client is not None:
+            database = require_database(self._query_runner)
+
+            graph_constructor = ArrowGraphConstructor(
+                database=database,
+                graph_name=graph_name,
+                flight_client=self._arrow_client,
+                concurrency=concurrency,
+                undirected_relationship_types=undirected_relationship_types,
+            )
+        else:
+            graph_constructor = CypherGraphConstructor(
+                query_runner=self._query_runner,
+                graph_name=graph_name,
+                concurrency=concurrency,
+                undirected_relationship_types=undirected_relationship_types,
+            )
+
+        graph_constructor.run(node_dfs=nodes, relationship_dfs=relationships)
+        return GraphV2(name=graph_name, backend=CypherGraphBackend(graph_name, self._query_runner))
 
     def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
         graph_name = G if isinstance(G, str) else G.name() if G is not None else None
