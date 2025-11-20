@@ -2,8 +2,10 @@ import datetime
 from typing import Generator
 
 import pytest
+from pandas import DataFrame
 
 from graphdatascience import QueryRunner
+from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import RelationshipPropertySpec
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
@@ -42,6 +44,13 @@ def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
 @pytest.fixture
 def catalog_endpoints(query_runner: QueryRunner) -> Generator[CatalogCypherEndpoints, None, None]:
     yield CatalogCypherEndpoints(query_runner)
+
+
+@pytest.fixture
+def catalog_endpoints_arrow(
+    query_runner: QueryRunner, gds_arrow_client: GdsArrowClient
+) -> Generator[CatalogCypherEndpoints, None, None]:
+    yield CatalogCypherEndpoints(query_runner, gds_arrow_client)
 
 
 def test_list_with_graph(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
@@ -185,3 +194,62 @@ def test_graph_generate(catalog_endpoints: CatalogCypherEndpoints) -> None:
     assert result.relationship_property == RelationshipPropertySpec.fixed("weight", 42)
 
     assert catalog_endpoints.list("generated") is not None
+
+
+@pytest.mark.filterwarnings("ignore: .*use Apache Arrow.*")
+def test_graph_construct_cypher(catalog_endpoints: CatalogCypherEndpoints) -> None:
+    nodes = DataFrame(
+        {
+            "nodeId": [0, 1],
+            "labels": [["A"], ["B"]],
+            "propA": [1337, 42.1],
+        }
+    )
+    relationships = DataFrame(
+        {
+            "sourceNodeId": [0, 1],
+            "targetNodeId": [1, 0],
+            "relationshipType": ["REL", "REL2"],
+            "relPropA": [1337.2, 42],
+        }
+    )
+
+    with catalog_endpoints.construct(
+        graph_name="constructed_graph",
+        nodes=nodes,
+        relationships=relationships,
+    ) as G:
+        assert G.name() == "constructed_graph"
+        assert G.node_count() == 2
+        assert G.relationship_count() == 2
+        assert "REL" in G.relationship_types()
+
+
+def test_graph_construct_arrow_v1(catalog_endpoints_arrow: CatalogCypherEndpoints) -> None:
+    nodes = DataFrame(
+        {
+            "nodeId": [0, 1],
+            "labels": [["A"], ["B"]],
+            "propA": [1337, 42.1],
+        }
+    )
+    relationships = DataFrame(
+        {
+            "sourceNodeId": [0, 1],
+            "targetNodeId": [1, 0],
+            "relationshipType": ["REL", "REL2"],
+            "relPropA": [1337.2, 42],
+        }
+    )
+
+    catalog_endpoints_arrow._query_runner.set_database("neo4j")
+
+    with catalog_endpoints_arrow.construct(
+        graph_name="constructed_graph",
+        nodes=nodes,
+        relationships=relationships,
+    ) as G:
+        assert G.name() == "constructed_graph"
+        assert G.node_count() == 2
+        assert G.relationship_count() == 2
+        assert "REL" in G.relationship_types()
