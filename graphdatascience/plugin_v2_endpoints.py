@@ -1,3 +1,4 @@
+from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints import ScalePropertiesEndpoints
 from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import ArticleRankEndpoints
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import ArticulationPointsEndpoints
@@ -124,7 +125,6 @@ from graphdatascience.procedure_surface.cypher.similarity.node_similarity_cypher
     NodeSimilarityCypherEndpoints,
 )
 from graphdatascience.procedure_surface.cypher.system_cypher_endpoints import SystemCypherEndpoints
-from graphdatascience.query_runner.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 

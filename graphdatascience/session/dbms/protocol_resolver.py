@@ -1,7 +1,7 @@
 from neo4j.exceptions import Neo4jError
 
-from graphdatascience import QueryRunner
 from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 
 
