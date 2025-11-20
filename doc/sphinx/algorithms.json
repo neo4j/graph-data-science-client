@@ -3728,6 +3728,18 @@
       "signature": "node1: int, node2: int, communityProperty: Optional[str] = None",
       "return_type": "float"
     },
+    "description": "Given two nodes, indicates if they have the same community",
+    "deprecated": {
+        "version": "2.24.0",
+        "message": "Since GDS server version 2.24.0 you should use the endpoint :func:`gds.linkprediction.sameCommunity` instead."
+    }
+  },
+  {
+    "function": {
+      "name": "gds.linkprediction.sameCommunity",
+      "signature": "node1: int, node2: int, communityProperty: Optional[str] = None",
+      "return_type": "float"
+    },
     "description": "Given two nodes, indicates if they have the same community"
   },
   {
