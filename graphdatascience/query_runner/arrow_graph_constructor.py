@@ -22,8 +22,8 @@ class ArrowGraphConstructor(GraphConstructor):
         database: str,
         graph_name: str,
         flight_client: GdsArrowClient,
-        concurrency: int,
-        undirected_relationship_types: list[str] | None,
+        concurrency: int | None = None,
+        undirected_relationship_types: list[str] | None = None,
         chunk_size: int = 10_000,
     ):
         self._database = database

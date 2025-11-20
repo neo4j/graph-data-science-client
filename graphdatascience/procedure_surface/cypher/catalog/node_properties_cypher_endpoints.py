@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints im
     NodePropertySpec,
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
+from graphdatascience.procedure_surface.cypher.catalog.utils import require_database
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.procedure_surface.utils.result_utils import join_db_node_properties, transpose_property_columns
 from graphdatascience.query_runner.query_runner import QueryRunner
@@ -35,9 +36,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         db_node_properties: list[str] | None = None,
     ) -> DataFrame:
         if self._gds_arrow_client is not None:
-            database = self._query_runner.database()
-            if database is None:
-                raise ValueError("The database is not set")
+            database = require_database(self._query_runner)
 
             result = self._gds_arrow_client.get_node_properties(
                 G.name(), database, node_properties, node_labels, list_node_labels or False, concurrency

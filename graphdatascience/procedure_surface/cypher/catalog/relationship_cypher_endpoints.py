@@ -13,6 +13,7 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
     RelationshipsWriteResult,
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
+from graphdatascience.procedure_surface.cypher.catalog.utils import require_database
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
 
@@ -36,9 +37,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         effective_rel_types = relationship_types if relationship_types is not None else ["*"]
 
         if self._gds_arrow_client is not None:
-            database = self._query_runner.database()
-            if database is None:
-                raise ValueError("The database is not set")
+            database = require_database(self._query_runner)
 
             if relationship_properties:
                 return self._gds_arrow_client.get_relationship_properties(
