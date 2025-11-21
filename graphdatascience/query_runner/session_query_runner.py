@@ -269,6 +269,6 @@ class SessionQueryRunner(QueryRunner):
             token = "IGNORED"
 
         params["host"] = connection_info.host
-        params["port"] = connection_info.port
+        params["port"] = str(connection_info.port)
         params["token"] = token
         params["encrypted"] = connection_info.encrypted
