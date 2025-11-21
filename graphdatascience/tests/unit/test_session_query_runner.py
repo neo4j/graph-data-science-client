@@ -1,14 +1,21 @@
+from unittest import mock
+
 from pandas import DataFrame
 
 from graphdatascience import ServerVersion
+from graphdatascience.arrow_client.authenticated_flight_client import ConnectionInfo
+from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.query_runner.session_query_runner import SessionQueryRunner
 from graphdatascience.tests.unit.conftest import CollectingQueryRunner
 
 
-class FakeArrowClient:
-    def connection_info(self) -> tuple[str, str]:
-        return "myHost", "1234"
+class FakeArrowClient(GdsArrowClient):
+    def __init__(self) -> None:
+        super().__init__(flight_client=mock.Mock(spec=GdsArrowClient))
+
+    def advertised_connection_info(self) -> ConnectionInfo:
+        return ConnectionInfo("myHost", 1234, encrypted=False)
 
     def request_token(self) -> str:
         return "myToken"
