@@ -57,18 +57,20 @@ def gds_plugin_container(
         neo4j_container.with_env("NEO4J_gds_enterprise_license__file", "/licenses/license_key")
 
     with neo4j_container as neo4j_db:
-        wait_for_logs(neo4j_db, "Started.")
-        yield neo4j_db
-        stdout, stderr = neo4j_db.get_logs()
-        if stderr:
-            print(f"Error logs from Neo4j container:\n{stderr}")
+        try:
+            wait_for_logs(neo4j_db, "Started.")
+            yield neo4j_db
+        finally:
+            stdout, stderr = neo4j_db.get_logs()
+            if stderr:
+                print(f"Error logs from Neo4j container:\n{stderr}")
 
-        if inside_ci():
-            print(f"Neo4j container logs:\n{stdout}")
+            if inside_ci():
+                print(f"Neo4j container logs:\n{stdout}")
 
-        out_file = db_logs_dir / "stdout.log"
-        with open(out_file, "w") as f:
-            f.write(stdout.decode("utf-8"))
+            out_file = db_logs_dir / "stdout.log"
+            with open(out_file, "w") as f:
+                f.write(stdout.decode("utf-8"))
 
 
 @pytest.fixture(scope="package")

@@ -81,23 +81,25 @@ def start_session(
     if not inside_ci():
         session_container = session_container.with_network(network).with_network_aliases("gds-session")
     with session_container as session_container:
-        wait_for_logs(session_container, "Running GDS tasks: 0", timeout=20)
-        yield GdsSessionConnectionInfo(
-            host=session_container.get_container_host_ip(),
-            arrow_port=session_container.get_exposed_port(8491),
-            bolt_port=-1,  # not used in tests
-        )
-        stdout, stderr = session_container.get_logs()
+        try:
+            wait_for_logs(session_container, "Running GDS tasks: 0", timeout=20)
+            yield GdsSessionConnectionInfo(
+                host=session_container.get_container_host_ip(),
+                arrow_port=session_container.get_exposed_port(8491),
+                bolt_port=-1,  # not used in tests
+            )
+        finally:
+            stdout, stderr = session_container.get_logs()
 
-        if stderr:
-            print(f"Error logs from session container:\n{stderr}")
+            if stderr:
+                print(f"Error logs from session container:\n{stderr}")
 
-        if inside_ci():
-            print(f"Session container logs:\n{stdout}")
+            if inside_ci():
+                print(f"Session container logs:\n{stdout}")
 
-        out_file = logs_dir / "session_container.log"
-        with open(out_file, "w") as f:
-            f.write(stdout.decode("utf-8"))
+            out_file = logs_dir / "session_container.log"
+            with open(out_file, "w") as f:
+                f.write(stdout.decode("utf-8"))
 
 
 def create_arrow_client(session_uri: GdsSessionConnectionInfo) -> AuthenticatedArrowClient:
@@ -133,23 +135,25 @@ def start_database(logs_dir: Path, network: Network) -> Generator[DbmsConnection
         .with_volume_mapping(db_logs_dir, "/logs", mode="rw")
     )
     with db_container as db_container:
-        wait_for_logs(db_container, "Started.")
-        yield DbmsConnectionInfo(
-            uri=f"{db_container.get_container_host_ip()}:{db_container.get_exposed_port(7687)}",
-            username="neo4j",
-            password="password",
-        )
-        stdout, stderr = db_container.get_logs()
+        try:
+            wait_for_logs(db_container, "Started.")
+            yield DbmsConnectionInfo(
+                uri=f"{db_container.get_container_host_ip()}:{db_container.get_exposed_port(7687)}",
+                username="neo4j",
+                password="password",
+            )
+        finally:
+            stdout, stderr = db_container.get_logs()
 
-        if stderr:
-            print(f"Error logs from database container:\n{stderr}")
+            if stderr:
+                print(f"Error logs from database container:\n{stderr}")
 
-        if inside_ci():
-            print(f"Database container logs:\n{stdout}")
+            if inside_ci():
+                print(f"Database container logs:\n{stdout}")
 
-        out_file = db_logs_dir / "stdout.log"
-        with open(out_file, "w") as f:
-            f.write(stdout.decode("utf-8"))
+            out_file = db_logs_dir / "stdout.log"
+            with open(out_file, "w") as f:
+                f.write(stdout.decode("utf-8"))
 
 
 def create_db_query_runner(neo4j_connection: DbmsConnectionInfo) -> Generator[Neo4jQueryRunner, None, None]:
