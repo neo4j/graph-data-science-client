@@ -21,7 +21,10 @@ class RetryConfig:
     retry: retry_base
 
 
-class RetryConfigV2(BaseModel):
+class RetryConfigV2(
+    BaseModel,
+    extra="forbid",
+):
     """Retry configuration which can be serialized/deserialized."""
 
     retryable_exceptions: list[type[BaseException]] | None = None
@@ -109,7 +112,7 @@ class RetryConfigV2(BaseModel):
         return retry_any(*retries)
 
 
-class StopConfig(BaseModel):
+class StopConfig(BaseModel, extra="forbid"):
     after_attempt: int | None = None
     after_delay: int | None = None
 
@@ -128,7 +131,7 @@ class StopConfig(BaseModel):
         return stop_any(*stops)
 
 
-class ExponentialWaitConfig(BaseModel):
+class ExponentialWaitConfig(BaseModel, extra="forbid"):
     multiplier: float = 1
     min: int = 0
     max: float | int = sys.maxsize / 2
