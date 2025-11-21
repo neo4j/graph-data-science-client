@@ -12,9 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class KCoreEndpoints(ABC):
-    """
-    Abstract base class defining the API for the K-Core decomposition algorithm.
-    """
 
     @abstractmethod
     def mutate(

@@ -12,9 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class WccEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Weakly Connected Components (WCC) algorithm.
-    """
 
     @abstractmethod
     def mutate(

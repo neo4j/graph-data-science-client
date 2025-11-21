@@ -12,9 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class LouvainEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Louvain algorithm.
-    """
 
     @abstractmethod
     def mutate(

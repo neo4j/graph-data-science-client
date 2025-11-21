@@ -12,9 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class SccEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Strongly Connected Components (SCC) algorithm.
-    """
 
     @abstractmethod
     def mutate(

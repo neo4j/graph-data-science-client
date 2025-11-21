@@ -12,12 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class FastRPEndpoints(ABC):
-    """
-    Abstract base class defining the API for the FastRP (Fast Random Projection) algorithm.
-
-    FastRP is a node embedding algorithm that creates vector representations of nodes
-    by combining random projections and iterative neighbor aggregation.
-    """
 
     @abstractmethod
     def mutate(
