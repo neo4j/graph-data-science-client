@@ -56,8 +56,8 @@ class AuthenticatedArrowClient:
                     FlightUnavailableError,
                     FlightInternalError,
                 ],
-                stop=StopConfig(after_delay=10, after_attempt=5),
-                wait=ExponentialWaitConfig(multiplier=1, min=1, max=10),
+                stop_config=StopConfig(after_delay=10, after_attempt=5),
+                wait_config=ExponentialWaitConfig(multiplier=1, min=1, max=10),
             )
 
         return AuthenticatedArrowClient(

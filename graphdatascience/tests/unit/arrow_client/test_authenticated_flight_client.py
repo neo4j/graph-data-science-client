@@ -35,12 +35,10 @@ def mock_auth() -> ArrowAuthentication:
     return MockAuthentication()
 
 
-def test_create_authenticated_arrow_client(
-    arrow_info: ArrowInfo, retry_config: RetryConfigV2, mock_auth: ArrowAuthentication
-) -> None:
-    client = AuthenticatedArrowClient.create(
-        arrow_info=arrow_info, auth=mock_auth, encrypted=True, retry_config=retry_config
-    )
+def test_create_authenticated_arrow_client(arrow_info: ArrowInfo, mock_auth: ArrowAuthentication) -> None:
+    client = AuthenticatedArrowClient.create(arrow_info=arrow_info, auth=mock_auth, encrypted=True)
+
+    assert client._retry_config.wait_config == ExponentialWaitConfig(multiplier=1, min=1, max=10)
     assert isinstance(client, AuthenticatedArrowClient)
     assert client.connection_info() == ConnectionInfo("localhost", 8491, encrypted=True)
 
