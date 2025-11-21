@@ -10,7 +10,6 @@ from .model.simple_rel_embedding_model import SimpleRelEmbeddingModel
 from .pipeline.lp_training_pipeline import LPTrainingPipeline
 from .pipeline.nc_training_pipeline import NCTrainingPipeline
 from .pipeline.nr_training_pipeline import NRTrainingPipeline
-from .plugin_v2_endpoints import PluginV2Endpoints
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
 from .session.gds_sessions import GdsSessions
@@ -34,5 +33,4 @@ __all__ = [
     "NRModel",
     "GraphSageModel",
     "SimpleRelEmbeddingModel",
-    "PluginV2Endpoints",
 ]
