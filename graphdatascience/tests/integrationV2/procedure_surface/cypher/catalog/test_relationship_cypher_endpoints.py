@@ -9,6 +9,7 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
 from graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpoints import (
     RelationshipCypherEndpoints,
 )
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
@@ -45,7 +46,7 @@ def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
 
 @pytest.fixture
 def relationship_endpoints(
-    query_runner: QueryRunner,
+    query_runner: Neo4jQueryRunner,
 ) -> Generator[RelationshipCypherEndpoints, None, None]:
     yield RelationshipCypherEndpoints(query_runner)
 

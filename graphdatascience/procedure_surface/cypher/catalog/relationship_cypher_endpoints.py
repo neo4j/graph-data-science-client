@@ -1,6 +1,5 @@
 from pandas import DataFrame
 
-from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
@@ -15,6 +14,7 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.query_runner.query_runner import QueryRunner
 
 
 class RelationshipCypherEndpoints(RelationshipsEndpoints):

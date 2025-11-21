@@ -152,10 +152,16 @@ class SessionV2Endpoints:
 
     @property
     def config(self) -> ConfigArrowEndpoints:
+        """
+        Return configuration-related endpoints.
+        """
         return ConfigArrowEndpoints(self._arrow_client)
 
     @property
     def system(self) -> SystemArrowEndpoints:
+        """
+        Return system-related endpoints.
+        """
         return SystemArrowEndpoints(self._arrow_client)
 
     ## Algorithms

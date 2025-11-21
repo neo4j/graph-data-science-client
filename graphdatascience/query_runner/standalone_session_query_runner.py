@@ -4,10 +4,11 @@ from typing import Any
 
 from pandas import DataFrame
 
-from graphdatascience import QueryRunner, ServerVersion
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 class StandaloneSessionQueryRunner(QueryRunner):

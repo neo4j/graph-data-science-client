@@ -5,7 +5,7 @@ from textwrap import dedent
 root_dir = Path(__file__).parent
 
 
-with open(root_dir / "algorithms.json") as f, open(root_dir / "source/algorithms.rst", "w") as fw:
+with open(root_dir / "algorithms.json") as f, open(root_dir / "source" / "plugin" / "algorithms.rst", "w") as fw:
     functions = json.load(f)
 
     fw.write(

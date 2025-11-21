@@ -3,11 +3,11 @@ from __future__ import annotations
 import time
 from typing import Any
 
-from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
 

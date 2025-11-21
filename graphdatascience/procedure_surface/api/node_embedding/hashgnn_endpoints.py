@@ -12,9 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class HashGNNEndpoints(ABC):
-    """
-    Abstract base class for HashGNN (Heterogeneous GraphV2 Neural Network) endpoints.
-    """
 
     @abstractmethod
     def mutate(

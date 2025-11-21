@@ -12,24 +12,11 @@ This API reference manual lists all available endpoints in the Neo4j Graph Data 
    :maxdepth: 1
    :caption: Contents
 
-   graphdatascience
-   graph
+   plugin/index
    graph_object
    graph_create_result
-   algorithms
-   ml
-   pipeline/link-prediction
-   pipeline/node-classification
-   pipeline/node-regression
-   pipeline/node_property_step
-   pipeline/link_feature
-   model
-   model/link-prediction-model
-   model/node-classification-model
-   model/node-regression-model
-   model/graphsage-model
-   model/simple_rel_embedding_model
-   misc
+   pipeline/index
+   model/index
    server_version
    sessions/index
    v2_endpoints/index

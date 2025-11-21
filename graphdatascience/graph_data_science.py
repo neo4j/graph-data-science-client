@@ -8,6 +8,7 @@ import neo4j
 from neo4j import Driver
 from pandas import DataFrame
 
+from graphdatascience.plugin_v2_endpoints import PluginV2Endpoints
 from graphdatascience.query_runner.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.topological_lp.topological_lp_runner import TopologicalLPRunner
@@ -87,15 +88,17 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         if aura_ds:
             GraphDataScience._validate_endpoint(endpoint)
 
+        neo4j_query_runner: Neo4jQueryRunner | None = None
         if isinstance(endpoint, QueryRunner):
             self._query_runner = endpoint
         else:
             db_auth = None
             if auth:
                 db_auth = neo4j.basic_auth(*auth)
-            self._query_runner = Neo4jQueryRunner.create_for_db(
+            neo4j_query_runner = Neo4jQueryRunner.create_for_db(
                 endpoint, db_auth, aura_ds, database, bookmarks, show_progress
             )
+            self._query_runner = neo4j_query_runner
 
         self._server_version = self._query_runner.server_version()
 
@@ -129,6 +132,14 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
                 arrow_client_options=arrow_client_options,
                 connection_string_override=None if arrow is True else arrow,
             )
+
+        arrow_client = (
+            None if not isinstance(self._query_runner, ArrowQueryRunner) else self._query_runner._gds_arrow_client
+        )
+        if neo4j_query_runner:
+            self._v2_endpoints: PluginV2Endpoints | None = PluginV2Endpoints(neo4j_query_runner, arrow_client)
+        else:
+            self._v2_endpoints = None
 
         self._query_runner.set_show_progress(show_progress)
         super().__init__(self._query_runner, namespace="gds", server_version=self._server_version)
@@ -264,6 +275,17 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             The configuration as a dictionary.
         """
         return self._query_runner.driver_config()
+
+    @property
+    def v2(self) -> PluginV2Endpoints:
+        """
+        Return preview v2 endpoints. These endpoints may change without warning.
+        These endpoints are a preview of the API for the next major version of this library.
+        """
+        if not self._v2_endpoints:
+            raise RuntimeError("v2 endpoints are not available.")
+
+        return self._v2_endpoints
 
     @classmethod
     def from_neo4j_driver(

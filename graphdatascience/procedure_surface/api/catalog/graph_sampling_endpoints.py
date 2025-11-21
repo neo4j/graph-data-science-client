@@ -10,9 +10,6 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 
 
 class GraphSamplingEndpoints(ABC):
-    """
-    Abstract base class defining the API for graph sampling operations.
-    """
 
     @abstractmethod
     def rwr(

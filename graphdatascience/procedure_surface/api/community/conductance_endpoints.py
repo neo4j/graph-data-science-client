@@ -9,9 +9,6 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 
 
 class ConductanceEndpoints(ABC):
-    """
-    Abstract base class defining the API for the Conductance algorithm.
-    """
 
     @abstractmethod
     def stream(

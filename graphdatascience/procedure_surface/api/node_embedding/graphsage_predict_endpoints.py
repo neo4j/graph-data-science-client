@@ -12,9 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class GraphSagePredictEndpoints(ABC):
-    """
-    Abstract base class defining the API for the GraphSage prediction algorithm.
-    """
 
     @abstractmethod
     def stream(

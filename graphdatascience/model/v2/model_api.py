@@ -4,10 +4,6 @@ from graphdatascience.model.v2.model_details import ModelDetails
 
 
 class ModelApi(ABC):
-    """
-    Abstract base class defining the API for model operations.
-    This class is intended to be subclassed by specific model implementations.
-    """
 
     @abstractmethod
     def exists(self, model: str) -> bool:

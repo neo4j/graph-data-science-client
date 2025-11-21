@@ -4,7 +4,6 @@ from typing import Any, Callable
 
 from pandas import DataFrame
 
-from graphdatascience import QueryRunner, ServerVersion
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_builder import IndirectCallBuilder
@@ -20,8 +19,10 @@ from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.session_query_runner import SessionQueryRunner
 from graphdatascience.query_runner.standalone_session_query_runner import StandaloneSessionQueryRunner
+from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 from graphdatascience.utils.util_remote_proc_runner import UtilRemoteProcRunner
