@@ -247,7 +247,7 @@ def start_gds_plugin_database(
         try:
             wait_for_logs(neo4j_db, "Started.")
             yield neo4j_db
-        finally
+        finally:
             stdout, stderr = neo4j_db.get_logs()
             if stderr:
                 print(f"Error logs from Neo4j container:\n{stderr}")
