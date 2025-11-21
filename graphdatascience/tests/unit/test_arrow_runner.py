@@ -38,7 +38,14 @@ def test_create_with_provided_connection(runner: CollectingQueryRunner) -> None:
         listenAddress="localhost:1234", enabled=True, running=True, versions=[ArrowEndpointVersion.V1.version()]
     )
 
-    arrow_runner = ArrowQueryRunner.create(runner, arrow_info, connection_string_override="localhost:4321")
+    retry_config = RetryConfigV2(
+        retryable_exceptions=[],
+        stop_config=StopConfig(after_attempt=1),
+    )
+
+    arrow_runner = ArrowQueryRunner.create(
+        runner, arrow_info, retry_config=retry_config, connection_string_override="localhost:4321"
+    )
 
     assert isinstance(arrow_runner, ArrowQueryRunner)
 
