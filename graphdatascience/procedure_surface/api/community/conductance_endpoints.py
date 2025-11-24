@@ -9,7 +9,6 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 
 
 class ConductanceEndpoints(ABC):
-
     @abstractmethod
     def stream(
         self,

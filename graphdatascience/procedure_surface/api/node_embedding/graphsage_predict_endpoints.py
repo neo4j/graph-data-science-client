@@ -12,7 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class GraphSagePredictEndpoints(ABC):
-
     @abstractmethod
     def stream(
         self,

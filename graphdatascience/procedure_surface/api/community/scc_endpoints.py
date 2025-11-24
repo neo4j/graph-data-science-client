@@ -12,7 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class SccEndpoints(ABC):
-
     @abstractmethod
     def mutate(
         self,

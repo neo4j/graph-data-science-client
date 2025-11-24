@@ -4,7 +4,6 @@ from graphdatascience.model.v2.model_details import ModelDetails
 
 
 class ModelApi(ABC):
-
     @abstractmethod
     def exists(self, model: str) -> bool:
         """
