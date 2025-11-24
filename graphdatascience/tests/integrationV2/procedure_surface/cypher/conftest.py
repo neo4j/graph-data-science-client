@@ -17,7 +17,7 @@ from graphdatascience.tests.integrationV2.procedure_surface.conftest import star
 def gds_plugin_container(
     logs_dir: Path, tmp_path_factory: pytest.TempPathFactory
 ) -> Generator[Neo4jContainer, None, None]:
-    return start_gds_plugin_database(logs_dir, tmp_path_factory)
+    yield from start_gds_plugin_database(logs_dir, tmp_path_factory)
 
 
 @pytest.fixture(scope="package")
