@@ -12,7 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class LouvainEndpoints(ABC):
-
     @abstractmethod
     def mutate(
         self,

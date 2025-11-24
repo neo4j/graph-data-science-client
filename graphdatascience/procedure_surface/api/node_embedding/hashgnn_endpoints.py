@@ -12,7 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class HashGNNEndpoints(ABC):
-
     @abstractmethod
     def mutate(
         self,

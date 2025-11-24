@@ -12,7 +12,6 @@ from graphdatascience.procedure_surface.api.estimation_result import EstimationR
 
 
 class KCoreEndpoints(ABC):
-
     @abstractmethod
     def mutate(
         self,
