@@ -36,6 +36,7 @@ from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints imp
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import KSpanningTreeEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import MaxFlowEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_endpoints import PrizeSteinerTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.shortest_path_endpoints import ShortestPathEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_ford_endpoints import (
@@ -105,6 +106,7 @@ from graphdatascience.procedure_surface.cypher.pathfinding.all_shortest_path_cyp
 from graphdatascience.procedure_surface.cypher.pathfinding.k_spanning_tree_cypher_endpoints import (
     KSpanningTreeCypherEndpoints,
 )
+from graphdatascience.procedure_surface.cypher.pathfinding.max_flow_cypher_endpoints import MaxFlowCypherEndpoints
 from graphdatascience.procedure_surface.cypher.pathfinding.prize_steiner_tree_cypher_endpoints import (
     PrizeSteinerTreeCypherEndpoints,
 )
@@ -336,6 +338,13 @@ class PluginV2Endpoints:
         Return endpoints for the Louvain algorithm.
         """
         return LouvainCypherEndpoints(self._db_client)
+
+    @property
+    def max_flow(self) -> MaxFlowEndpoints:
+        """
+        Return endpoints for the Max Flow algorithm.
+        """
+        return MaxFlowCypherEndpoints(self._db_client)
 
     @property
     def max_k_cut(self) -> MaxKCutEndpoints:

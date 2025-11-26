@@ -36,6 +36,7 @@ from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints imp
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import KSpanningTreeEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import MaxFlowEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_endpoints import PrizeSteinerTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.shortest_path_endpoints import ShortestPathEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_ford_endpoints import (
@@ -104,6 +105,7 @@ from graphdatascience.procedure_surface.arrow.pathfinding.all_shortest_path_arro
 from graphdatascience.procedure_surface.arrow.pathfinding.k_spanning_tree_arrow_endpoints import (
     KSpanningTreeArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.pathfinding.max_flow_arrow_endpoints import MaxFlowArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pathfinding.prize_steiner_tree_arrow_endpoints import (
     PrizeSteinerTreeArrowEndpoints,
 )
@@ -345,6 +347,13 @@ class SessionV2Endpoints:
         Return endpoints for the Leiden algorithm.
         """
         return LeidenArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
+
+    @property
+    def max_flow(self) -> MaxFlowEndpoints:
+        """
+        Return endpoints for the Max Flow algorithm.
+        """
+        return MaxFlowArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def local_clustering_coefficient(self) -> LocalClusteringCoefficientEndpoints:
