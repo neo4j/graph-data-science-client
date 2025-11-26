@@ -50,8 +50,7 @@ class JobClient:
             with attempt:
                 termination_flag.assert_running()
 
-                arrow_res = client.do_action_with_retry(JOB_STATUS_ENDPOINT, JobIdConfig(jobId=job_id).dump_camel())
-                job_status = JobStatus(**deserialize_single(arrow_res))
+                job_status = self.get_job_status(client, job_id)
 
                 if job_status.succeeded() or job_status.aborted():
                     if progress_bar:
@@ -69,6 +68,12 @@ class JobClient:
                             )
                     if progress_bar:
                         progress_bar.update(job_status.status, job_status.progress_percent(), job_status.sub_tasks())
+
+    @staticmethod
+    def get_job_status(client: AuthenticatedArrowClient, job_id: str) -> JobStatus:
+        arrow_res = client.do_action_with_retry(JOB_STATUS_ENDPOINT, JobIdConfig(jobId=job_id).dump_camel())
+        job_status = JobStatus(**deserialize_single(arrow_res))
+        return job_status
 
     @staticmethod
     def get_summary(client: AuthenticatedArrowClient, job_id: str) -> dict[str, Any]:

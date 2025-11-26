@@ -108,7 +108,6 @@ class AuthenticatedArrowClient:
         self._encrypted = encrypted
         self._arrow_client_options = arrow_client_options
         self._user_agent = user_agent
-        self._retry_config = retry_config
         self._logger = logging.getLogger("gds_arrow_client")
         self._retry_config = retry_config
         if auth:
