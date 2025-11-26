@@ -9,13 +9,15 @@ from testcontainers.core.network import Network
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-from graphdatascience.tests.integrationV2.conftest import inside_ci
-from graphdatascience.tests.integrationV2.procedure_surface.conftest import (
+from graphdatascience.tests.integrationV2.conftest import (
     GdsSessionConnectionInfo,
     create_arrow_client,
+    inside_ci,
+    start_session,
+)
+from graphdatascience.tests.integrationV2.procedure_surface.conftest import (
     create_db_query_runner,
     start_database,
-    start_session,
 )
 
 LOGGER = logging.getLogger(__name__)

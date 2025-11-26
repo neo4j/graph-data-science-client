@@ -82,12 +82,11 @@ class GdsArrowClient:
 
         return JobClient.run_job(self._flight_client, "v2/graph.nodeProperties.stream", config)
 
-    def get_node_labels(
+    def get_nodes(
         self,
         graph_name: str,
-        node_label: str,
         *,
-        node_filter: str,
+        node_filter: str | None = None,
         log_progress: bool = True,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -99,8 +98,6 @@ class GdsArrowClient:
         ----------
         graph_name
            The name of the graph
-        node_label
-            The node label to stream back.
         node_filter
             A Cypher predicate for filtering nodes in the input graph.
         log_progress
@@ -117,14 +114,14 @@ class GdsArrowClient:
         """
         config = ConfigConverter.convert_to_gds_config(
             graph_name=graph_name,
-            node_label=node_label,
+            node_label="__IGNORED__",
             node_filter=node_filter,
             concurrency=concurrency,
             log_progress=log_progress,
             job_id=job_id,
         )
 
-        return JobClient.run_job(self._flight_client, "v2/graph.nodeLabel.stream", config)
+        return JobClient.run_job_and_wait(self._flight_client, "v2/graph.nodeLabel.stream", config, log_progress)
 
     def get_relationships(
         self,
@@ -325,7 +322,7 @@ class GdsArrowClient:
         """
         self._flight_client.do_action_with_retry("v2/graph.project.fromTriplets.done", {"jobId": job_id})
 
-    def upload_data(
+    def upload_nodes(
         self,
         job_id: str,
         data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
@@ -333,7 +330,7 @@ class GdsArrowClient:
         progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
         """
-        Uploads data to the server for a given job.
+        Uploads node data to the server for a given job.
 
         Parameters
         ----------
@@ -346,7 +343,62 @@ class GdsArrowClient:
         progress_callback
             A callback function that is called with the number of rows uploaded after each batch
         """
+        self._upload_data("graph.project.fromTables.nodes", job_id, data, batch_size, progress_callback)
 
+    def upload_relationships(
+        self,
+        job_id: str,
+        data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
+        batch_size: int = 10000,
+        progress_callback: Callable[[int], None] = lambda x: None,
+    ) -> None:
+        """
+        Uploads relationship data to the server for a given job.
+
+        Parameters
+        ----------
+        job_id
+            The job id of the import process
+        data
+            The data to upload
+        batch_size
+            The number of rows per batch
+        progress_callback
+            A callback function that is called with the number of rows uploaded after each batch
+        """
+        self._upload_data("graph.project.fromTables.relationships", job_id, data, batch_size, progress_callback)
+
+    def upload_triplets(
+        self,
+        job_id: str,
+        data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
+        batch_size: int = 10000,
+        progress_callback: Callable[[int], None] = lambda x: None,
+    ) -> None:
+        """
+        Uploads triplet data to the server for a given job.
+
+        Parameters
+        ----------
+        job_id
+            The job id of the import process
+        data
+            The data to upload
+        batch_size
+            The number of rows per batch
+        progress_callback
+            A callback function that is called with the number of rows uploaded after each batch
+        """
+        self._upload_data("graph.project.fromTriplets", job_id, data, batch_size, progress_callback)
+
+    def _upload_data(
+        self,
+        endpoint: str,
+        job_id: str,
+        data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
+        batch_size: int = 10000,
+        progress_callback: Callable[[int], None] = lambda x: None,
+    ) -> None:
         match data:
             case pyarrow.Table():
                 batches = data.to_batches(batch_size)
@@ -356,9 +408,11 @@ class GdsArrowClient:
                 batches = data
 
         flight_descriptor = {
-            "name": job_id,
+            "name": endpoint,
             "version": ArrowEndpointVersion.V2.version(),
-            "body": {},
+            "body": {
+                "jobId": job_id,
+            },
         }
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
 
