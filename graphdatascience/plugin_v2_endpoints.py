@@ -35,6 +35,7 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints i
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.dag_endpoints import DagEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import KSpanningTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import MaxFlowEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_endpoints import PrizeSteinerTreeEndpoints
@@ -103,6 +104,7 @@ from graphdatascience.procedure_surface.cypher.node_embedding.node2vec_cypher_en
 from graphdatascience.procedure_surface.cypher.pathfinding.all_shortest_path_cypher_endpoints import (
     AllShortestPathCypherEndpoints,
 )
+from graphdatascience.procedure_surface.cypher.pathfinding.dag_cypher_endpoints import DagCypherEndpoints
 from graphdatascience.procedure_surface.cypher.pathfinding.k_spanning_tree_cypher_endpoints import (
     KSpanningTreeCypherEndpoints,
 )
@@ -216,6 +218,13 @@ class PluginV2Endpoints:
         Return endpoints for the closeness centrality algorithm.
         """
         return ClosenessCypherEndpoints(self._db_client)
+
+    @property
+    def dag(self) -> DagEndpoints:
+        """
+        Return endpoints for Directed Acyclic Graph (DAG) algorithms.
+        """
+        return DagCypherEndpoints(self._db_client)
 
     @property
     def degree_centrality(self) -> DegreeEndpoints:
