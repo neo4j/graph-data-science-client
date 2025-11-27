@@ -38,9 +38,9 @@ class MaxFlowEndpoints(ABC):
         G
            Graph object to use
         mutate_property
-            Name of the node property to store the flow results in.
+            Name of the node property to store the results in.
         mutate_relationship_type
-            Name of the relationship type to store the flow relationships in.
+            Name of the relationship type to store the results in.
         capacity_property
             Name of the relationship property containing capacities.
         concurrency
@@ -198,9 +198,9 @@ class MaxFlowEndpoints(ABC):
         G
            Graph object to use
         write_property
-            Name of the node property to store the flow results in.
+            Name of the node property to store the results in.
         write_relationship_type
-            Name of the relationship type to store the flow relationships in.
+            Name of the relationship type to store the results in.
         capacity_property
             Name of the relationship property containing capacities.
         concurrency

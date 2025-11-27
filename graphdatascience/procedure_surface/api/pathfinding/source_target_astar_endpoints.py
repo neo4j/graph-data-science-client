@@ -172,7 +172,7 @@ class SourceTargetAStarEndpoints(ABC):
         G
            Graph object to use
         write_relationship_type : str
-            The relationship type to use for the new relationships.
+            Name of the relationship type to store the results in.
         source_node
             Node id to use as the starting point.
         target_node : int

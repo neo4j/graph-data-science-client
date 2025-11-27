@@ -23,6 +23,7 @@ class LongestPathArrowEndpoints(LongestPathEndpoints):
     def stream(
         self,
         G: GraphV2,
+        *,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
