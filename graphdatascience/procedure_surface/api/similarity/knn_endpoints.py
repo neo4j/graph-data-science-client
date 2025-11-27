@@ -271,7 +271,7 @@ class KnnEndpoints(ABC):
         G
            Graph object to use
         write_relationship_type : str
-            The relationship type to use for the new relationships.
+            Name of the relationship type to store the results in.
         write_property
             Name of the node property to store the results in.
         node_properties:  str | list[str] | dict[str, str],

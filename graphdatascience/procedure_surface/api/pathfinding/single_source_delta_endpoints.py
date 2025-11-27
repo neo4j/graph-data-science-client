@@ -220,7 +220,7 @@ class SingleSourceDeltaEndpoints(ABC):
         source_node
             Node id to use as the starting point.
         write_relationship_type : str
-            The relationship type to use for the new relationships.
+            Name of the relationship type to store the results in.
         delta : float, default=2.0
             The bucket width for grouping nodes by tentative distance.
         write_node_ids : bool, default=False

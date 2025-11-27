@@ -54,5 +54,6 @@
   "use_wasserman_faust": "Use the improved Wasserman-Faust formula for closeness computation.",
   "username": "As an administrator, impersonate a different user for accessing their graphs.",
   "write_concurrency": "Number of concurrent threads to use for writing.",
-  "write_property": "Name of the node property to store the results in."
+  "write_property": "Name of the node property to store the results in.",
+  "write_relationship_type": "Name of the relationship type to store the results in."
 }
