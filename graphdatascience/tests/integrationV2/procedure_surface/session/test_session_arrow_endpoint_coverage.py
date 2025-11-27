@@ -6,7 +6,7 @@ import pytest
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
-# mapping of the snake-cased version of endpoint parts to the actual attribute names in SessionV2Endpoints
+# mapping for arrow endpoint name parts -> endpoint callable from SessionV2Endpoints
 ENDPOINT_MAPPINGS = {
     # centrality algos
     "betweenness": "betweenness_centrality",
@@ -30,8 +30,7 @@ ENDPOINT_MAPPINGS = {
     "deltaStepping": "delta",
     "kspanning_tree": "k_spanning_tree",
     "prizesteiner_tree": "prize_steiner_tree",
-    "spanning_tree": "spanning_tree",
-    "steiner_tree": "steiner_tree",
+    "longestPath": "dag.longest_path",
 }
 
 
