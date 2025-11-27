@@ -97,7 +97,12 @@ class MaxFlowCypherEndpoints(MaxFlowEndpoints):
             endpoint="gds.maxFlow.stats", params=params, logging=log_progress
         ).squeeze()
 
-        return MaxFlowStatsResult(**cypher_result.to_dict())
+        raw_result = cypher_result.to_dict()
+        # return field got added in 2.24
+        if "postProcessingMillis" not in raw_result:
+            raw_result["postProcessingMillis"] = 0
+
+        return MaxFlowStatsResult(**raw_result)
 
     def stream(
         self,
