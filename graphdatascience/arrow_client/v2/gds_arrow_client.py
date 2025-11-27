@@ -458,12 +458,12 @@ class GdsArrowClient:
         return self._flight_client.request_token()
 
     def _upload_data(
-            self,
-            endpoint: str,
-            job_id: str,
-            data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
-            batch_size: int = 10000,
-            progress_callback: Callable[[int], None] = lambda x: None,
+        self,
+        endpoint: str,
+        job_id: str,
+        data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
+        batch_size: int = 10000,
+        progress_callback: Callable[[int], None] = lambda x: None,
     ) -> None:
         match data:
             case pyarrow.Table():
