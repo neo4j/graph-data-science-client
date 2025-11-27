@@ -173,7 +173,7 @@ class GdsArrowClient:
 
         return JobClient.run_job(self._flight_client, endpoint, config)
 
-    def stream(self, graph_name: str, job_id: str) -> pandas.DataFrame:
+    def stream_job(self, graph_name: str, job_id: str) -> pandas.DataFrame:
         """
         Streams the results of a previously started job.
 
@@ -391,44 +391,7 @@ class GdsArrowClient:
         """
         self._upload_data("graph.project.fromTriplets", job_id, data, batch_size, progress_callback)
 
-    def _upload_data(
-        self,
-        endpoint: str,
-        job_id: str,
-        data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
-        batch_size: int = 10000,
-        progress_callback: Callable[[int], None] = lambda x: None,
-    ) -> None:
-        match data:
-            case pyarrow.Table():
-                batches = data.to_batches(batch_size)
-            case pandas.DataFrame():
-                batches = pyarrow.Table.from_pandas(data).to_batches(batch_size)
-            case _:
-                batches = data
-
-        flight_descriptor = {
-            "name": endpoint,
-            "version": ArrowEndpointVersion.V2.version(),
-            "body": {
-                "jobId": job_id,
-            },
-        }
-        upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
-
-        put_stream, ack_stream = self._flight_client.do_put_with_retry(upload_descriptor, batches[0].schema)
-
-        @self._flight_client._retry_config.decorator(operation_name="Upload batch", logger=self._logger)
-        def upload_batch(p: RecordBatch) -> None:
-            put_stream.write_batch(p)
-
-        with put_stream:
-            for partition in batches:
-                upload_batch(partition)
-                ack_stream.read()
-                progress_callback(partition.num_rows)
-
-    def abort(self, job_id: str) -> None:
+    def abort_job(self, job_id: str) -> None:
         """
         Aborts the specified process
 
@@ -493,6 +456,43 @@ class GdsArrowClient:
         """
 
         return self._flight_client.request_token()
+
+    def _upload_data(
+            self,
+            endpoint: str,
+            job_id: str,
+            data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
+            batch_size: int = 10000,
+            progress_callback: Callable[[int], None] = lambda x: None,
+    ) -> None:
+        match data:
+            case pyarrow.Table():
+                batches = data.to_batches(batch_size)
+            case pandas.DataFrame():
+                batches = pyarrow.Table.from_pandas(data).to_batches(batch_size)
+            case _:
+                batches = data
+
+        flight_descriptor = {
+            "name": endpoint,
+            "version": ArrowEndpointVersion.V2.version(),
+            "body": {
+                "jobId": job_id,
+            },
+        }
+        upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
+
+        put_stream, ack_stream = self._flight_client.do_put_with_retry(upload_descriptor, batches[0].schema)
+
+        @self._flight_client._retry_config.decorator(operation_name="Upload batch", logger=self._logger)
+        def upload_batch(p: RecordBatch) -> None:
+            put_stream.write_batch(p)
+
+        with put_stream:
+            for partition in batches:
+                upload_batch(partition)
+                ack_stream.read()
+                progress_callback(partition.num_rows)
 
     def __enter__(self) -> GdsArrowClient:
         return self
