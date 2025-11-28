@@ -15,6 +15,7 @@ def gds(arrow_client: AuthenticatedArrowClient, db_query_runner: QueryRunner) ->
         delete_fn=lambda: True,
         gds_version=ServerVersion.from_string("1.2.3"),
         v2_endpoints=SessionV2Endpoints(arrow_client, db_query_runner),
+        authenticated_arrow_client=arrow_client,
     )
 
 
